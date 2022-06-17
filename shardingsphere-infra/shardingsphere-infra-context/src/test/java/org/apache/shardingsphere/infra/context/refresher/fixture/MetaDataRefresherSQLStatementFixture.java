@@ -15,18 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.operation.impl;
+package org.apache.shardingsphere.infra.context.refresher.fixture;
 
-import org.apache.shardingsphere.distsql.parser.operation.DistSQLOperationSupplier;
-import org.apache.shardingsphere.distsql.parser.operation.DistSQLOperationTypeEnum;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
-/**
- * Create operation supplier.
- */
-public interface CreateOperationSupplier extends DistSQLOperationSupplier {
-    
-    @Override
-    default DistSQLOperationTypeEnum getOperationType() {
-        return DistSQLOperationTypeEnum.CREATE;
-    }
+public final class MetaDataRefresherSQLStatementFixture extends AbstractSQLStatement {
 }

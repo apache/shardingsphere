@@ -28,6 +28,7 @@ import org.apache.shardingsphere.encrypt.context.EncryptContextBuilder;
 import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
@@ -46,6 +47,9 @@ import java.util.Optional;
  */
 public final class EncryptRule implements DatabaseRule, TableContainedRule {
     
+    @Getter
+    private final RuleConfiguration configuration;
+    
     @SuppressWarnings("rawtypes")
     private final Map<String, EncryptAlgorithm> encryptors = new LinkedHashMap<>();
     
@@ -54,18 +58,20 @@ public final class EncryptRule implements DatabaseRule, TableContainedRule {
     @Getter
     private final boolean queryWithCipherColumn;
     
-    public EncryptRule(final EncryptRuleConfiguration config) {
-        Preconditions.checkArgument(isValidRuleConfiguration(config), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
-        config.getEncryptors().forEach((key, value) -> encryptors.put(key, EncryptAlgorithmFactory.newInstance(value)));
-        config.getTables().forEach(each -> tables.put(each.getName().toLowerCase(), new EncryptTable(each)));
-        queryWithCipherColumn = config.isQueryWithCipherColumn();
+    public EncryptRule(final EncryptRuleConfiguration ruleConfig) {
+        configuration = ruleConfig;
+        Preconditions.checkArgument(isValidRuleConfiguration(ruleConfig), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
+        ruleConfig.getEncryptors().forEach((key, value) -> encryptors.put(key, EncryptAlgorithmFactory.newInstance(value)));
+        ruleConfig.getTables().forEach(each -> tables.put(each.getName().toLowerCase(), new EncryptTable(each)));
+        queryWithCipherColumn = ruleConfig.isQueryWithCipherColumn();
     }
     
-    public EncryptRule(final AlgorithmProvidedEncryptRuleConfiguration config) {
-        Preconditions.checkArgument(isValidRuleConfigurationWithAlgorithmProvided(config), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
-        encryptors.putAll(config.getEncryptors());
-        config.getTables().forEach(each -> tables.put(each.getName().toLowerCase(), new EncryptTable(each)));
-        queryWithCipherColumn = config.isQueryWithCipherColumn();
+    public EncryptRule(final AlgorithmProvidedEncryptRuleConfiguration ruleConfig) {
+        configuration = ruleConfig;
+        Preconditions.checkArgument(isValidRuleConfigurationWithAlgorithmProvided(ruleConfig), "Invalid encrypt column configurations in EncryptTableRuleConfigurations.");
+        encryptors.putAll(ruleConfig.getEncryptors());
+        ruleConfig.getTables().forEach(each -> tables.put(each.getName().toLowerCase(), new EncryptTable(each)));
+        queryWithCipherColumn = ruleConfig.isQueryWithCipherColumn();
     }
     
     private boolean isValidRuleConfiguration(final EncryptRuleConfiguration config) {

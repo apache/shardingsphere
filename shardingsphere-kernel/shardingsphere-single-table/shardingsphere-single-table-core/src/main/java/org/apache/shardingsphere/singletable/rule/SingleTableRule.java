@@ -55,6 +55,9 @@ import java.util.stream.Collectors;
  */
 public final class SingleTableRule implements DatabaseRule, DataNodeContainedRule, TableContainedRule, MutableDataNodeRule, ExportableRule {
     
+    @Getter
+    private final SingleTableRuleConfiguration configuration;
+    
     private final String defaultDataSource;
     
     @Getter
@@ -65,12 +68,13 @@ public final class SingleTableRule implements DatabaseRule, DataNodeContainedRul
     
     private final Map<String, String> tableNames;
     
-    public SingleTableRule(final SingleTableRuleConfiguration config, final String databaseName,
+    public SingleTableRule(final SingleTableRuleConfiguration ruleConfig, final String databaseName,
                            final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
-        defaultDataSource = config.getDefaultDataSource().orElse(null);
+        configuration = ruleConfig;
+        defaultDataSource = ruleConfig.getDefaultDataSource().orElse(null);
         Map<String, DataSource> aggregateDataSourceMap = getAggregateDataSourceMap(dataSourceMap, builtRules);
         dataSourceNames = aggregateDataSourceMap.keySet();
-        singleTableDataNodes = SingleTableDataNodeLoader.load(databaseName, DatabaseTypeEngine.getDatabaseType(dataSourceMap.values()), aggregateDataSourceMap, getExcludedTables(builtRules), props);
+        singleTableDataNodes = SingleTableDataNodeLoader.load(databaseName, DatabaseTypeEngine.getDatabaseType(dataSourceMap.values()), aggregateDataSourceMap, getLoadedTables(builtRules), props);
         tableNames = singleTableDataNodes.entrySet().stream().collect(Collectors.toConcurrentMap(Entry::getKey, entry -> entry.getValue().iterator().next().getTableName()));
     }
     
@@ -95,6 +99,11 @@ public final class SingleTableRule implements DatabaseRule, DataNodeContainedRul
         }
         result.putAll(dataSourceMap);
         return result;
+    }
+    
+    private Collection<String> getLoadedTables(final Collection<ShardingSphereRule> builtRules) {
+        return builtRules.stream().filter(each -> each instanceof DataNodeContainedRule)
+                .flatMap(each -> ((DataNodeContainedRule) each).getAllTables().stream()).collect(Collectors.toCollection(() -> new TreeSet<>(String.CASE_INSENSITIVE_ORDER)));
     }
     
     /**
@@ -219,11 +228,6 @@ public final class SingleTableRule implements DatabaseRule, DataNodeContainedRul
         return Optional.empty();
     }
     
-    private Collection<String> getExcludedTables(final Collection<ShardingSphereRule> rules) {
-        return rules.stream().filter(each -> each instanceof DataNodeContainedRule)
-                .flatMap(each -> ((DataNodeContainedRule) each).getAllTables().stream()).collect(Collectors.toCollection(() -> new TreeSet<>(String.CASE_INSENSITIVE_ORDER)));
-    }
-    
     @Override
     public Map<String, Collection<DataNode>> getAllDataNodes() {
         return singleTableDataNodes;
@@ -265,12 +269,12 @@ public final class SingleTableRule implements DatabaseRule, DataNodeContainedRul
     }
     
     @Override
-    public String getType() {
-        return SingleTableRule.class.getSimpleName();
+    public Map<String, Object> getExportData() {
+        return Collections.singletonMap(ExportableConstants.EXPORT_SINGLE_TABLES, tableNames.keySet());
     }
     
     @Override
-    public Map<String, Object> getExportData() {
-        return Collections.singletonMap(ExportableConstants.EXPORT_SINGLE_TABLES, tableNames.keySet());
+    public String getType() {
+        return SingleTableRule.class.getSimpleName();
     }
 }

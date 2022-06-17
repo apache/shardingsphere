@@ -124,7 +124,11 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm impl
     
     private long queryReplicationDelayMilliseconds(final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
-            return resultSet.next() ? resultSet.getLong("Seconds_Behind_Master") * 1000L : 0L;
+            if (resultSet.next()) {
+                long delay = resultSet.getLong("Seconds_Behind_Master") * 1000;
+                return resultSet.wasNull() ? Long.MAX_VALUE : delay;
+            }
+            return Long.MAX_VALUE;
         }
     }
     

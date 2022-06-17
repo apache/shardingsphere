@@ -15,18 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.operation.impl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.distsql.parser.operation.DistSQLOperationSupplier;
-import org.apache.shardingsphere.distsql.parser.operation.DistSQLOperationTypeEnum;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateAccessMethodStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * RAL operation supplier.
+ * PostgreSQL create access method statement.
  */
-public interface RALOperationSupplier extends DistSQLOperationSupplier {
-    
-    @Override
-    default DistSQLOperationTypeEnum getOperationType() {
-        return DistSQLOperationTypeEnum.RAL_OPERATION;
-    }
+@ToString
+public final class PostgreSQLCreateAccessMethodStatement extends CreateAccessMethodStatement implements PostgreSQLStatement {
 }

@@ -66,18 +66,13 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultS
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        Optional<DatabaseDiscoveryRuleConfiguration> ruleConfig = database.getRuleMetaData().findSingleRuleConfiguration(DatabaseDiscoveryRuleConfiguration.class);
-        Preconditions.checkState(ruleConfig.isPresent());
-        dataSourceRules = ruleConfig.get().getDataSources().iterator();
-        discoveryTypes = ruleConfig.get().getDiscoveryTypes();
-        discoveryHeartbeats = ruleConfig.get().getDiscoveryHeartbeats();
-        primaryDataSources = getPrimaryDataSources(database);
-    }
-    
-    private Map<String, String> getPrimaryDataSources(final ShardingSphereDatabase database) {
         Optional<DatabaseDiscoveryRule> rule = database.getRuleMetaData().findSingleRule(DatabaseDiscoveryRule.class);
         Preconditions.checkState(rule.isPresent());
-        return rule.get().getDataSourceRules().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getPrimaryDataSourceName(), (a, b) -> b));
+        DatabaseDiscoveryRuleConfiguration ruleConfig = (DatabaseDiscoveryRuleConfiguration) rule.get().getConfiguration();
+        dataSourceRules = ruleConfig.getDataSources().iterator();
+        discoveryTypes = ruleConfig.getDiscoveryTypes();
+        discoveryHeartbeats = ruleConfig.getDiscoveryHeartbeats();
+        primaryDataSources = rule.get().getDataSourceRules().entrySet().stream().collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getPrimaryDataSourceName(), (a, b) -> b));
     }
     
     @Override

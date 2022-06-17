@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.metadata.database.rule;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
@@ -26,17 +25,22 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * ShardingSphere rule meta data.
  */
-@RequiredArgsConstructor
 @Getter
 public final class ShardingSphereRuleMetaData {
     
+    private final Collection<ShardingSphereRule> rules;
+    
     private final Collection<RuleConfiguration> configurations;
     
-    private final Collection<ShardingSphereRule> rules;
+    public ShardingSphereRuleMetaData(final Collection<ShardingSphereRule> rules) {
+        this.rules = rules;
+        configurations = rules.stream().map(ShardingSphereRule::getConfiguration).collect(Collectors.toList());
+    }
     
     /**
      * Find rules by class.
@@ -64,9 +68,9 @@ public final class ShardingSphereRuleMetaData {
      */
     public <T extends RuleConfiguration> Collection<T> findRuleConfigurations(final Class<T> clazz) {
         Collection<T> result = new LinkedList<>();
-        for (RuleConfiguration each : configurations) {
-            if (clazz.isAssignableFrom(each.getClass())) {
-                result.add(clazz.cast(each));
+        for (ShardingSphereRule each : rules) {
+            if (clazz.isAssignableFrom(each.getConfiguration().getClass())) {
+                result.add(clazz.cast(each.getConfiguration()));
             }
         }
         return result;
@@ -82,17 +86,5 @@ public final class ShardingSphereRuleMetaData {
     public <T extends ShardingSphereRule> Optional<T> findSingleRule(final Class<T> clazz) {
         Collection<T> foundRules = findRules(clazz);
         return foundRules.isEmpty() ? Optional.empty() : Optional.of(foundRules.iterator().next());
-    }
-    
-    /**
-     * Find single rule configuration by class.
-     *
-     * @param clazz target class
-     * @param <T> type of rule configuration
-     * @return found rule configuration
-     */
-    public <T extends RuleConfiguration> Optional<T> findSingleRuleConfiguration(final Class<T> clazz) {
-        Collection<T> foundRuleConfig = findRuleConfigurations(clazz);
-        return foundRuleConfig.isEmpty() ? Optional.empty() : Optional.of(foundRuleConfig.iterator().next());
     }
 }

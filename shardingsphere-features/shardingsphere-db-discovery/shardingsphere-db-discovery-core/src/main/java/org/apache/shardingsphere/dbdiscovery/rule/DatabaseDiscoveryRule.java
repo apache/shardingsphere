@@ -27,6 +27,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHe
 import org.apache.shardingsphere.dbdiscovery.factory.DatabaseDiscoveryProviderAlgorithmFactory;
 import org.apache.shardingsphere.dbdiscovery.heartbeat.HeartbeatJob;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datasource.strategy.DynamicDataSourceStrategyFactory;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
@@ -60,29 +61,34 @@ import java.util.stream.Collectors;
  */
 public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceContainedRule, StatusContainedRule, ExportableRule, InstanceAwareRule {
     
-    private final Map<String, DatabaseDiscoveryProviderAlgorithm> discoveryTypes;
-    
     @Getter
-    private final Map<String, DatabaseDiscoveryDataSourceRule> dataSourceRules;
+    private final RuleConfiguration configuration;
     
     private final String databaseName;
     
     private final Map<String, DataSource> dataSourceMap;
     
-    public DatabaseDiscoveryRule(final String databaseName, final Map<String, DataSource> dataSourceMap, final DatabaseDiscoveryRuleConfiguration config) {
-        this(databaseName, dataSourceMap, config.getDataSources(), config.getDiscoveryHeartbeats(), getDiscoveryProviderAlgorithms(config.getDiscoveryTypes()));
-    }
+    private final Map<String, DatabaseDiscoveryProviderAlgorithm> discoveryTypes;
     
-    public DatabaseDiscoveryRule(final String databaseName, final Map<String, DataSource> dataSourceMap, final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration config) {
-        this(databaseName, dataSourceMap, config.getDataSources(), config.getDiscoveryHeartbeats(), config.getDiscoveryTypes());
-    }
+    @Getter
+    private final Map<String, DatabaseDiscoveryDataSourceRule> dataSourceRules;
     
-    private DatabaseDiscoveryRule(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRuleConfigs,
-                                  final Map<String, DatabaseDiscoveryHeartBeatConfiguration> heartBeatConfig, final Map<String, DatabaseDiscoveryProviderAlgorithm> discoveryTypes) {
-        this.discoveryTypes = discoveryTypes;
+    public DatabaseDiscoveryRule(final String databaseName, final Map<String, DataSource> dataSourceMap, final DatabaseDiscoveryRuleConfiguration ruleConfig) {
+        configuration = ruleConfig;
         this.databaseName = databaseName;
         this.dataSourceMap = dataSourceMap;
-        dataSourceRules = getDataSourceRules(dataSourceRuleConfigs, heartBeatConfig);
+        discoveryTypes = getDiscoveryProviderAlgorithms(ruleConfig.getDiscoveryTypes());
+        dataSourceRules = getDataSourceRules(ruleConfig.getDataSources(), ruleConfig.getDiscoveryHeartbeats());
+        findPrimaryReplicaRelationship(databaseName, dataSourceMap);
+        initAware();
+    }
+    
+    public DatabaseDiscoveryRule(final String databaseName, final Map<String, DataSource> dataSourceMap, final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration ruleConfig) {
+        configuration = ruleConfig;
+        this.databaseName = databaseName;
+        this.dataSourceMap = dataSourceMap;
+        discoveryTypes = ruleConfig.getDiscoveryTypes();
+        dataSourceRules = getDataSourceRules(ruleConfig.getDataSources(), ruleConfig.getDiscoveryHeartbeats());
         findPrimaryReplicaRelationship(databaseName, dataSourceMap);
         initAware();
     }

@@ -15,14 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.refresher.fixture;
+package org.apache.shardingsphere.proxy.backend.exception;
 
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
-public final class FixtureSQLStatement extends AbstractSQLStatement {
+/**
+ * In transaction exception.
+ */
+@Getter
+@RequiredArgsConstructor
+public final class InTransactionException extends BackendException {
     
-    @Override
-    public int getParameterCount() {
-        return 0;
-    }
+    private final String message;
 }

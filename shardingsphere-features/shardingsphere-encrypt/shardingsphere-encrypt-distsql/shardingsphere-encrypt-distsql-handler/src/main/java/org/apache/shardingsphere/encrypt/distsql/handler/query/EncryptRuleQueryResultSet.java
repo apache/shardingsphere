@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.encrypt.distsql.handler.query;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.distsql.parser.statement.ShowEncryptRulesStatement;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -45,8 +47,9 @@ public final class EncryptRuleQueryResultSet implements DistSQLResultSet {
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        Optional<EncryptRuleConfiguration> ruleConfig = database.getRuleMetaData().findRuleConfigurations(EncryptRuleConfiguration.class).stream().findAny();
-        ruleConfig.ifPresent(optional -> data = buildData(optional, (ShowEncryptRulesStatement) sqlStatement).iterator());
+        Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
+        Preconditions.checkState(rule.isPresent());
+        data = buildData((EncryptRuleConfiguration) rule.get().getConfiguration(), (ShowEncryptRulesStatement) sqlStatement).iterator();
     }
     
     private Collection<Collection<Object>> buildData(final EncryptRuleConfiguration ruleConfig, final ShowEncryptRulesStatement sqlStatement) {

@@ -15,18 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.operation.impl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import org.apache.shardingsphere.distsql.parser.operation.DistSQLOperationSupplier;
-import org.apache.shardingsphere.distsql.parser.operation.DistSQLOperationTypeEnum;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Add operation supplier.
+ * Alter policy statement test case.
  */
-public interface AddOperationSupplier extends DistSQLOperationSupplier {
-    
-    @Override
-    default DistSQLOperationTypeEnum getOperationType() {
-        return DistSQLOperationTypeEnum.ADD;
-    }
+public final class AlterPolicyStatementTestCase extends SQLParserTestCase {
 }

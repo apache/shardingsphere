@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.DropTrafficRuleStatement;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
+import org.apache.shardingsphere.traffic.rule.TrafficRule;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -40,18 +42,16 @@ public final class DropTrafficRuleHandler extends UpdatableRALBackendHandler<Dro
     
     @Override
     protected void update(final ContextManager contextManager) throws DistSQLException {
-        Optional<TrafficRuleConfiguration> config = ProxyContext.getInstance()
-                .getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRuleConfiguration(TrafficRuleConfiguration.class);
+        Optional<TrafficRule> rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TrafficRule.class);
+        Preconditions.checkState(rule.isPresent());
+        TrafficRuleConfiguration config = rule.get().getConfiguration();
         if (!getSqlStatement().isContainsIfExistClause()) {
-            DistSQLException.predictionThrow(config.isPresent(), () -> new RequiredRuleMissedException("Traffic"));
-            checkTrafficRuleConfiguration(config.get());
+            checkTrafficRuleConfiguration(config);
         }
-        if (config.isPresent()) {
-            config.get().getTrafficStrategies().removeIf(each -> getSqlStatement().getRuleNames().contains(each.getName()));
-            getUnusedAlgorithm(config.get()).forEach(each -> config.get().getTrafficAlgorithms().remove(each));
-            getUnusedLoadBalancer(config.get()).forEach(each -> config.get().getLoadBalancers().remove(each));
-            updateToRepository(config.get());
-        }
+        config.getTrafficStrategies().removeIf(each -> getSqlStatement().getRuleNames().contains(each.getName()));
+        getUnusedAlgorithm(config).forEach(each -> config.getTrafficAlgorithms().remove(each));
+        getUnusedLoadBalancer(config).forEach(each -> config.getLoadBalancers().remove(each));
+        updateToRepository(config);
     }
     
     private void checkTrafficRuleConfiguration(final TrafficRuleConfiguration config) throws DistSQLException {

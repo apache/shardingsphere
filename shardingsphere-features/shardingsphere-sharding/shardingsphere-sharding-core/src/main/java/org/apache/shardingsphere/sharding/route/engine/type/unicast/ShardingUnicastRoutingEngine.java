@@ -19,6 +19,8 @@ package org.apache.shardingsphere.sharding.route.engine.type.unicast;
 
 import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -43,12 +45,16 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
     
+    private final SQLStatementContext<?> sqlStatementContext;
+    
     private final Collection<String> logicTables;
     
     @Override
     public RouteContext route(final ShardingRule shardingRule) {
         RouteContext result = new RouteContext();
-        String dataSourceName = getRandomDataSourceName(shardingRule.getDataSourceNames());
+        String dataSourceName = sqlStatementContext instanceof CursorAvailable
+                ? shardingRule.getDataSourceNames().iterator().next()
+                : getRandomDataSourceName(shardingRule.getDataSourceNames());
         RouteMapper dataSourceMapper = new RouteMapper(dataSourceName, dataSourceName);
         if (shardingRule.isAllBroadcastTables(logicTables)) {
             List<RouteMapper> tableMappers = new ArrayList<>(logicTables.size());

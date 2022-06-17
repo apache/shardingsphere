@@ -57,7 +57,7 @@ public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
     @Before
     public void init() {
         database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(null, Collections.emptyList()));
+        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
     }
     
     @Test(expected = RequiredRuleMissedException.class)

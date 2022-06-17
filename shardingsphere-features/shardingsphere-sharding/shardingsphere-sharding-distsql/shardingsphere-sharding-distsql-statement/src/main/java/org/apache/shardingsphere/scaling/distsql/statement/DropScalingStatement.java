@@ -19,7 +19,6 @@ package org.apache.shardingsphere.scaling.distsql.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.subject.impl.ScalingSubjectSupplier;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 
 /**
@@ -27,7 +26,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableS
  */
 @RequiredArgsConstructor
 @Getter
-public final class DropScalingStatement extends UpdatableScalingRALStatement implements ScalingSubjectSupplier {
+public final class DropScalingStatement extends UpdatableScalingRALStatement {
     
     private final String jobId;
 }
