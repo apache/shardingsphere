@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockMode;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
@@ -28,6 +28,7 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 
+import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -45,8 +46,8 @@ public final class DistributedLockContext implements LockContext {
     private ShardingSphereLockManager lockManager;
     
     @Override
-    public void initLockState(final InstanceContext instanceContext) {
-        loadLockManager(new ShardingSphereInterMutexLockHolder(repository, instanceContext.getInstance(), instanceContext.getComputeNodeInstances()));
+    public void initLockState(final ComputeNodeInstance instance, final Collection<ComputeNodeInstance> computeNodeInstances) {
+        loadLockManager(new ShardingSphereInterMutexLockHolder(repository, instance, computeNodeInstances));
     }
     
     private void loadLockManager(final ShardingSphereInterMutexLockHolder lockHolder) {

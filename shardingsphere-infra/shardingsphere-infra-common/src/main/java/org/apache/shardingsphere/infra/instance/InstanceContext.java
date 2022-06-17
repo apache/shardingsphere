@@ -52,12 +52,8 @@ public final class InstanceContext {
         this.workerIdGenerator = workerIdGenerator;
         this.modeConfiguration = modeConfiguration;
         this.lockContext = lockContext;
-        initLockContext();
         getWorkerId();
-    }
-    
-    private void initLockContext() {
-        lockContext.initLockState(this);
+        lockContext.initLockState(instance, computeNodeInstances);
     }
     
     /**
