@@ -114,7 +114,8 @@ public final class InstanceContext {
             computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().equals(instanceId)).forEach(each -> each.getXaRecoveryIds().add(xaRecoveryId));
             return true;
         }
-        computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().equals(instanceId)).forEach(each -> each.getXaRecoveryIds().add(xaRecoveryId));
+        computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().equals(instanceId) && !each.getXaRecoveryIds().contains(xaRecoveryId))
+                .forEach(each -> each.getXaRecoveryIds().add(xaRecoveryId));
         return false;
     }
     
