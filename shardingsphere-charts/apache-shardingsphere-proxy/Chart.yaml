@@ -17,7 +17,7 @@
 
 apiVersion: v2
 appVersion: 5.1.2
-name: shardingsphere-proxy
+name: apache-shardingsphere-proxy
 version: 1.1.0
 maintainers:
   - name: dev@shardingsphere.apache.org

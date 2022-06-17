@@ -5,7 +5,7 @@ weight = 3
 
 ## 配置项说明
 
-命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/database-discovery/database-discovery-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/database-discovery/database-discovery-5.1.1.xsd)
+命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/database-discovery/database-discovery-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/database-discovery/database-discovery-5.1.2.xsd)
 
 \<database-discovery:rule />
 

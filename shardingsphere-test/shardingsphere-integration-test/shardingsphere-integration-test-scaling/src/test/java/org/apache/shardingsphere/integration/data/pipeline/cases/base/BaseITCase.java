@@ -51,6 +51,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -313,7 +314,8 @@ public abstract class BaseITCase {
     
     protected void assertPreviewTableSuccess(final String tableName, final List<String> expect) {
         List<Map<String, Object>> actualResults = queryForListWithLog(String.format("PREVIEW SELECT COUNT(1) FROM %s", tableName));
-        List<String> dataSourceNames = actualResults.stream().map(each -> String.valueOf(each.get("data_source_name"))).collect(Collectors.toList());
+        List<String> dataSourceNames = actualResults.stream().map(each -> String.valueOf(each.get("data_source_name"))).sorted().collect(Collectors.toList());
+        Collections.sort(expect);
         assertThat(dataSourceNames, is(expect));
     }
     
