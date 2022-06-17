@@ -44,7 +44,7 @@ public final class MetaDataContexts implements AutoCloseable {
     private final OptimizerContext optimizerContext;
     
     public MetaDataContexts(final MetaDataPersistService persistService) {
-        this(persistService, new ShardingSphereMetaData(), OptimizerContextFactory.create(new HashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList())));
+        this(persistService, new ShardingSphereMetaData(), OptimizerContextFactory.create(new HashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList())));
     }
     
     /**

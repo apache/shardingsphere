@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
+import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.distsql.parser.segment.TrafficRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.CreateTrafficRuleStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
 import org.apache.shardingsphere.traffic.factory.TrafficAlgorithmFactory;
 import org.apache.shardingsphere.traffic.factory.TrafficLoadBalanceAlgorithmFactory;
+import org.apache.shardingsphere.traffic.rule.TrafficRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -47,13 +49,11 @@ public final class CreateTrafficRuleHandler extends UpdatableRALBackendHandler<C
     
     @Override
     protected void update(final ContextManager contextManager) throws DistSQLException {
-        Optional<TrafficRuleConfiguration> trafficRuleConfig = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()
-                .findRuleConfigurations(TrafficRuleConfiguration.class).stream().findAny();
-        if (trafficRuleConfig.isPresent()) {
-            checkTrafficRuleConfiguration(trafficRuleConfig.get());
-        }
+        Optional<TrafficRule> trafficRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TrafficRule.class);
+        Preconditions.checkState(trafficRule.isPresent());
+        checkTrafficRuleConfiguration(trafficRule.get().getConfiguration());
         checkInvalidAlgorithmNames();
-        updateToRepository(TrafficRuleConverter.convert(getSqlStatement().getSegments()), trafficRuleConfig.orElse(null));
+        updateToRepository(TrafficRuleConverter.convert(getSqlStatement().getSegments()), trafficRule.get().getConfiguration());
     }
     
     private void checkTrafficRuleConfiguration(final TrafficRuleConfiguration trafficRuleConfig) throws DistSQLException {
@@ -78,11 +78,7 @@ public final class CreateTrafficRuleHandler extends UpdatableRALBackendHandler<C
     private void updateToRepository(final TrafficRuleConfiguration toBeCreatedRuleConfig, final TrafficRuleConfiguration currentRuleConfig) {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         Collection<RuleConfiguration> globalRuleConfigs = metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations();
-        if (null == currentRuleConfig) {
-            globalRuleConfigs.add(toBeCreatedRuleConfig);
-        } else {
-            setUpCurrentRuleConfiguration(toBeCreatedRuleConfig, currentRuleConfig);
-        }
+        setUpCurrentRuleConfiguration(toBeCreatedRuleConfig, currentRuleConfig);
         Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getPersistService();
         metaDataPersistService.ifPresent(optional -> optional.getGlobalRuleService().persist(globalRuleConfigs, true));
     }

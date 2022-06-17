@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.shadow.rule;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
@@ -45,6 +46,8 @@ import java.util.Optional;
 @Getter
 public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
     
+    private final RuleConfiguration configuration;
+    
     private ShadowAlgorithm defaultShadowAlgorithm;
     
     private final Collection<String> hintShadowAlgorithmNames = new LinkedList<>();
@@ -55,18 +58,20 @@ public final class ShadowRule implements DatabaseRule, DataSourceContainedRule {
     
     private final Map<String, ShadowTableRule> shadowTableRules = new LinkedHashMap<>();
     
-    public ShadowRule(final ShadowRuleConfiguration config) {
-        initShadowDataSourceMappings(config.getDataSources());
-        initShadowAlgorithmConfigurations(config.getShadowAlgorithms());
-        initDefaultShadowAlgorithm(config.getDefaultShadowAlgorithmName());
-        initShadowTableRules(config.getTables());
+    public ShadowRule(final ShadowRuleConfiguration ruleConfig) {
+        configuration = ruleConfig;
+        initShadowDataSourceMappings(ruleConfig.getDataSources());
+        initShadowAlgorithmConfigurations(ruleConfig.getShadowAlgorithms());
+        initDefaultShadowAlgorithm(ruleConfig.getDefaultShadowAlgorithmName());
+        initShadowTableRules(ruleConfig.getTables());
     }
     
-    public ShadowRule(final AlgorithmProvidedShadowRuleConfiguration config) {
-        initShadowDataSourceMappings(config.getDataSources());
-        initShadowAlgorithms(config.getShadowAlgorithms());
-        initDefaultShadowAlgorithm(config.getDefaultShadowAlgorithmName());
-        initShadowTableRules(config.getTables());
+    public ShadowRule(final AlgorithmProvidedShadowRuleConfiguration ruleConfig) {
+        configuration = ruleConfig;
+        initShadowDataSourceMappings(ruleConfig.getDataSources());
+        initShadowAlgorithms(ruleConfig.getShadowAlgorithms());
+        initDefaultShadowAlgorithm(ruleConfig.getDefaultShadowAlgorithmName());
+        initShadowTableRules(ruleConfig.getTables());
     }
     
     private void initShadowDataSourceMappings(final Map<String, ShadowDataSourceConfiguration> dataSources) {

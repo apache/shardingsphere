@@ -15,29 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.subject;
+package org.apache.shardingsphere.mode.manager.lock;
 
-import java.util.Collection;
-import java.util.Collections;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 
 /**
- * Dist SQL subject supplier.
+ * Lock judge engine builder.
  */
-public interface DistSQLSubjectSupplier {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class LockJudgeEngineBuilder {
+    
+    static {
+        ShardingSphereServiceLoader.register(LockJudgeEngine.class);
+    }
     
     /**
-     * Get subject type.
+     * Build.
      *
-     * @return subject type
+     * @param lockContext lock context
+     * @return lock judge engine
      */
-    DistSQLSubjectTypeEnum getSubjectType();
-    
-    /**
-     * Get subject names.
-     *
-     * @return subject names
-     */
-    default Collection<String> getSubjectNames() {
-        return Collections.emptyList();
+    public static LockJudgeEngine build(final LockContext lockContext) {
+        LockJudgeEngine result = RequiredSPIRegistry.getRegisteredService(LockJudgeEngine.class);
+        result.init(lockContext);
+        return result;
     }
 }

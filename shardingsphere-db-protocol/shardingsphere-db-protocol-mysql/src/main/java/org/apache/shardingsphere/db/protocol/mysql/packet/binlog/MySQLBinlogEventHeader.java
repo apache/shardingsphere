@@ -44,19 +44,25 @@ public final class MySQLBinlogEventHeader implements MySQLPacket {
     
     private final int serverId;
     
+    /**
+     * Size of the event (header, post-header, body).
+     */
     private final int eventSize;
     
     private final int logPos;
     
     private final int flags;
     
-    public MySQLBinlogEventHeader(final MySQLPacketPayload payload) {
+    private final int checksumLength;
+    
+    public MySQLBinlogEventHeader(final MySQLPacketPayload payload, final int checksumLength) {
         timestamp = payload.readInt4();
         eventType = payload.readInt1();
         serverId = payload.readInt4();
         eventSize = payload.readInt4();
         logPos = payload.readInt4();
         flags = payload.readInt2();
+        this.checksumLength = checksumLength;
     }
     
     @Override

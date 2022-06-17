@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.federation.optimizer.context.planner.Opti
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
@@ -34,7 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Meta data refresh engine.
@@ -53,15 +54,15 @@ public final class MetaDataRefreshEngine {
     private final ConfigurationProperties props;
     
     /**
-     * Refresh.
+     * Refresh meta data.
      *
      * @param sqlStatementContext SQL statement context
-     * @param logicDataSourceNamesSupplier logic data source names supplier
+     * @param routeUnits route units
      * @throws SQLException SQL exception
      * @return meta data refreshed event
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public Optional<MetaDataRefreshedEvent> refresh(final SQLStatementContext<?> sqlStatementContext, final Supplier<Collection<String>> logicDataSourceNamesSupplier) throws SQLException {
+    public Optional<MetaDataRefreshedEvent> refresh(final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
         Class<? extends SQLStatement> sqlStatementClass = sqlStatementContext.getSqlStatement().getClass();
         if (IGNORABLE_SQL_STATEMENT_CLASSES.contains(sqlStatementClass)) {
             return Optional.empty();
@@ -70,10 +71,10 @@ public final class MetaDataRefreshEngine {
         if (schemaRefresher.isPresent()) {
             String schemaName = sqlStatementContext.getTablesContext().getSchemaName()
                     .orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName()));
-            return schemaRefresher.get().refresh(database, federationMetaData, optimizerPlanners, logicDataSourceNamesSupplier.get(), schemaName, sqlStatementContext.getSqlStatement(), props);
-        } else {
-            IGNORABLE_SQL_STATEMENT_CLASSES.add(sqlStatementClass);
+            Collection<String> logicDataSourceNames = routeUnits.stream().map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toList());
+            return schemaRefresher.get().refresh(database, federationMetaData, optimizerPlanners, logicDataSourceNames, schemaName, sqlStatementContext.getSqlStatement(), props);
         }
+        IGNORABLE_SQL_STATEMENT_CLASSES.add(sqlStatementClass);
         return Optional.empty();
     }
 }

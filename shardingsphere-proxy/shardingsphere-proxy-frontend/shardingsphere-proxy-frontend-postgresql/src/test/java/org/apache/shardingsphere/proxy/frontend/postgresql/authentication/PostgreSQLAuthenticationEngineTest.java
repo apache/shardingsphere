@@ -185,7 +185,7 @@ public final class PostgreSQLAuthenticationEngineTest extends ProxyContextRestor
     private ShardingSphereRuleMetaData buildGlobalRuleMetaData(final ShardingSphereUser user) {
         AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.singletonList(user), new ShardingSphereAlgorithmConfiguration("NATIVE", new Properties()));
         AuthorityRule rule = new AuthorityRuleBuilder().build(ruleConfig, Collections.emptyMap());
-        return new ShardingSphereRuleMetaData(Collections.singletonList(ruleConfig), Collections.singletonList(rule));
+        return new ShardingSphereRuleMetaData(Collections.singletonList(rule));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

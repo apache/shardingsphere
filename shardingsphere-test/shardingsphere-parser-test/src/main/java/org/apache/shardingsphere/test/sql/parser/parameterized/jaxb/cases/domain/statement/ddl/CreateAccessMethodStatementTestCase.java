@@ -15,18 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.subject.impl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectSupplier;
-import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectTypeEnum;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Sharding subject supplier.
+ * Create access method statement test case.
  */
-public interface ShardingSubjectSupplier extends DistSQLSubjectSupplier {
-    
-    @Override
-    default DistSQLSubjectTypeEnum getSubjectType() {
-        return DistSQLSubjectTypeEnum.SHARDING;
-    }
+public final class CreateAccessMethodStatementTestCase extends SQLParserTestCase {
 }

@@ -16,9 +16,9 @@
   ~ limitations under the License.
   -->
 
-<rewrite-assertions yaml-rule="scenario/encrypt/config/query-with-cipher.yaml">
-    <rewrite-assertion id="create_table_for_cipher" db-types="MySQL">
-        <input sql="CREATE TABLE t_account_bak (id int not null, name varchar(100) not null default '', password varchar(255) not null default '', primary key (`id`))" />
-        <output sql="CREATE TABLE t_account_bak (id int not null, name varchar(100) not null default '', cipher_password varchar(255) not null default '', assisted_query_password varchar(255) not null default '', plain_password varchar(255) not null default '', primary key (`id`))" />
-    </rewrite-assertion>
-</rewrite-assertions>
+<sql-cases>
+    <sql-case id="alter_policy_rename" value="ALTER POLICY p1 ON t1 RENAME TO p1;" db-types="PostgreSQL" />
+    <sql-case id="alter_policy_to" value="ALTER POLICY dep_p1 ON dep1 TO regress_rls_bob,regress_rls_carol;" db-types="PostgreSQL" />
+    <sql-case id="alter_policy_using" value="ALTER POLICY dep_p1 ON dep1 USING (true);" db-types="PostgreSQL" />
+    <sql-case id="alter_policy_with_check" value="ALTER POLICY dep_p1 ON dep1 WITH CHECK (dauthor = current_user);" db-types="PostgreSQL" />
+</sql-cases>

@@ -41,7 +41,7 @@ public final class MySQLBinlogEventHeaderTest {
         when(payload.readInt4()).thenReturn(1234567890, 123456, 19, 4);
         when(payload.readInt1()).thenReturn(MySQLBinlogEventType.UNKNOWN_EVENT.getValue());
         when(payload.readInt2()).thenReturn(MySQLBinlogEventFlag.LOG_EVENT_BINLOG_IN_USE_F.getValue());
-        MySQLBinlogEventHeader actual = new MySQLBinlogEventHeader(payload);
+        MySQLBinlogEventHeader actual = new MySQLBinlogEventHeader(payload, 4);
         assertThat(actual.getSequenceId(), is(0));
         assertThat(actual.getTimestamp(), is(1234567890));
         assertThat(actual.getEventType(), is(MySQLBinlogEventType.UNKNOWN_EVENT.getValue()));
@@ -53,7 +53,7 @@ public final class MySQLBinlogEventHeaderTest {
     
     @Test
     public void assertWrite() {
-        new MySQLBinlogEventHeader(1234567890, MySQLBinlogEventType.UNKNOWN_EVENT.getValue(), 123456, 19, 4, MySQLBinlogEventFlag.LOG_EVENT_BINLOG_IN_USE_F.getValue()).write(payload);
+        new MySQLBinlogEventHeader(1234567890, MySQLBinlogEventType.UNKNOWN_EVENT.getValue(), 123456, 19, 4, MySQLBinlogEventFlag.LOG_EVENT_BINLOG_IN_USE_F.getValue(), 4).write(payload);
         verify(payload).writeInt4(1234567890);
         verify(payload).writeInt1(MySQLBinlogEventType.UNKNOWN_EVENT.getValue());
         verify(payload).writeInt4(123456);

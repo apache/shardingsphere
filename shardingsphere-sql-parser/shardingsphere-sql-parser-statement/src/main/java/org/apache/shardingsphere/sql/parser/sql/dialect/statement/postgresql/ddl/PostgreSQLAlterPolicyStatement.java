@@ -15,18 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.subject.impl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectSupplier;
-import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectTypeEnum;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterPolicyStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Encrypt subject supplier.
+ * PostgreSQL alter policy statement.
  */
-public interface EncryptSubjectSupplier extends DistSQLSubjectSupplier {
-    
-    @Override
-    default DistSQLSubjectTypeEnum getSubjectType() {
-        return DistSQLSubjectTypeEnum.ENCRYPT;
-    }
+@ToString
+public final class PostgreSQLAlterPolicyStatement extends AlterPolicyStatement implements PostgreSQLStatement {
 }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.context.refresher;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.context.refresher.type.DummyDropDatabaseMetaDataRefresher;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -33,13 +34,14 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Optional;
 import java.util.Set;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -48,9 +50,9 @@ public final class MetaDataRefreshEngineTest {
     @InjectMocks
     private MetaDataRefreshEngine metaDataRefreshEngine;
     
+    @SuppressWarnings("rawtypes")
     @Test
     public void assertRefreshNonIgnorableSQLStatement() throws Exception {
-        final int dropTimes = 10;
         SQLStatementContext<DropDatabaseStatement> sqlStatementContext = mock(SQLStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DropDatabaseStatement.class));
         when(sqlStatementContext.getTablesContext()).thenReturn(mock(TablesContext.class));
@@ -60,21 +62,26 @@ public final class MetaDataRefreshEngineTest {
         Field field = metaDataRefreshEngine.getClass().getDeclaredField("database");
         field.setAccessible(true);
         field.set(metaDataRefreshEngine, database);
+        int dropTimes = 10;
         for (int i = 0; i < dropTimes; i++) {
-            metaDataRefreshEngine.refresh(sqlStatementContext, Collections::emptyList);
+            metaDataRefreshEngine.refresh(sqlStatementContext, Collections.emptyList());
         }
-        verify(sqlStatementContext.getSqlStatement(), times(dropTimes)).getDatabaseName();
+        Optional<MetaDataRefresher> refresher = MetaDataRefresherFactory.findInstance(mock(DropDatabaseStatement.class).getClass());
+        assertTrue(refresher.isPresent());
+        assertThat(((DummyDropDatabaseMetaDataRefresher) refresher.get()).getCount(), is(dropTimes));
     }
     
+    @SuppressWarnings("unchecked")
     @Test
     public void assertRefreshIgnorableSQLStatement() throws SQLException {
         SQLStatementContext<SelectStatement> sqlStatementContext = mock(SQLStatementContext.class);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(SelectStatement.class));
-        metaDataRefreshEngine.refresh(sqlStatementContext, Collections::emptyList);
+        metaDataRefreshEngine.refresh(sqlStatementContext, Collections.emptyList());
         assertTrue(getIgnorableSQLStatementClasses().contains(sqlStatementContext.getSqlStatement().getClass()));
     }
     
-    @SneakyThrows
+    @SuppressWarnings("unchecked")
+    @SneakyThrows(ReflectiveOperationException.class)
     private Set<Class<? extends SQLStatement>> getIgnorableSQLStatementClasses() {
         Field field = MetaDataRefreshEngine.class.getDeclaredField("IGNORABLE_SQL_STATEMENT_CLASSES");
         field.setAccessible(true);

@@ -66,8 +66,9 @@ public final class CountInstanceRulesTest extends ProxyContextRestorer {
     @Before
     public void before() {
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(ruleMetaData.findSingleRuleConfiguration(ShardingRuleConfiguration.class)).thenReturn(Optional.of(mock(ShardingRuleConfiguration.class)));
-        Collection<ShardingSphereRule> rules = Arrays.asList(mockSingleTableRule(), mockShardingRule(), mockReadwriteSplittingRule(), mockEncryptRule());
+        ShardingRule shardingRule = mockShardingRule();
+        Collection<ShardingSphereRule> rules = Arrays.asList(mockSingleTableRule(), shardingRule, mockReadwriteSplittingRule(), mockEncryptRule());
+        when(ruleMetaData.findSingleRule(ShardingRule.class)).thenReturn(Optional.of(shardingRule));
         when(ruleMetaData.getRules()).thenReturn(rules);
         when(database1.getRuleMetaData()).thenReturn(ruleMetaData);
         when(database2.getRuleMetaData()).thenReturn(ruleMetaData);
@@ -86,6 +87,7 @@ public final class CountInstanceRulesTest extends ProxyContextRestorer {
     
     private ShardingRule mockShardingRule() {
         ShardingRule result = mock(ShardingRule.class);
+        when(result.getConfiguration()).thenReturn(mock(ShardingRuleConfiguration.class));
         when(result.getTables()).thenReturn(Arrays.asList("sharding_table", "sharding_auto_table"));
         when(result.getBindingTableRules()).thenReturn(Collections.singletonMap("binding_table", mock(BindingTableRule.class)));
         when(result.getBroadcastTables()).thenReturn(Arrays.asList("broadcast_table_1", "broadcast_table_2"));

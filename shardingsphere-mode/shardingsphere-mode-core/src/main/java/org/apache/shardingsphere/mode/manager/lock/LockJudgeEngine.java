@@ -15,18 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.subject.impl;
+package org.apache.shardingsphere.mode.manager.lock;
 
-import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectSupplier;
-import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectTypeEnum;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.required.RequiredSPI;
 
 /**
- * Shadow subject supplier.
+ * Lock judge engine.
  */
-public interface ShadowSubjectSupplier extends DistSQLSubjectSupplier {
+@SingletonSPI
+public interface LockJudgeEngine extends RequiredSPI {
     
-    @Override
-    default DistSQLSubjectTypeEnum getSubjectType() {
-        return DistSQLSubjectTypeEnum.SHADOW;
-    }
+    /**
+     * Init.
+     *
+     * @param lockContext lock context
+     */
+    void init(LockContext lockContext);
+    
+    /**
+     * Is locked.
+     *
+     * @param databaseName database name
+     * @param sqlStatementContext sql statement context
+     * @return is locked or not
+     */
+    boolean isLocked(String databaseName, SQLStatementContext<?> sqlStatementContext);
 }
