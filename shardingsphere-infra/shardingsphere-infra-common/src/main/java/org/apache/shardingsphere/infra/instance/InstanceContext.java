@@ -56,6 +56,10 @@ public final class InstanceContext {
         getWorkerId();
     }
     
+    private void initLockContext() {
+        lockContext.initLockState(this);
+    }
+    
     /**
      * Update instance status.
      *
@@ -192,13 +196,6 @@ public final class InstanceContext {
      */
     public Optional<ComputeNodeInstance> getComputeNodeInstanceById(final String instanceId) {
         return computeNodeInstances.stream().filter(each -> instanceId.equals(each.getCurrentInstanceId())).findFirst();
-    }
-    
-    /**
-     * Init lock context.
-     */
-    public void initLockContext() {
-        lockContext.initLockState(this);
     }
     
     /**
