@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.frontend.mysql.command;
 
 import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacketFactory;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacketType;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.MySQLCommandPacketTypeLoader;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;

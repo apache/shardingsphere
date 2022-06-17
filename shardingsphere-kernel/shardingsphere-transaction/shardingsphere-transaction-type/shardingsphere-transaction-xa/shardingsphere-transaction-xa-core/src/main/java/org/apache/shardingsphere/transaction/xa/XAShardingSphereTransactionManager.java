@@ -21,7 +21,6 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.transaction.core.ResourceDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.XATransactionDataSource;
 import org.apache.shardingsphere.transaction.xa.manager.XATransactionManagerProviderFactory;
@@ -51,8 +50,8 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
     private XATransactionManagerProvider xaTransactionManagerProvider;
     
     @Override
-    public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources, final TransactionRule transactionRule) {
-        xaTransactionManagerProvider = XATransactionManagerProviderFactory.getInstance(transactionRule.getProviderType());
+    public void init(final DatabaseType databaseType, final Collection<ResourceDataSource> resourceDataSources, final String providerType) {
+        xaTransactionManagerProvider = XATransactionManagerProviderFactory.getInstance(providerType);
         xaTransactionManagerProvider.init();
         resourceDataSources.forEach(each -> cachedDataSources.put(each.getOriginalName(), newXATransactionDataSource(databaseType, each)));
     }

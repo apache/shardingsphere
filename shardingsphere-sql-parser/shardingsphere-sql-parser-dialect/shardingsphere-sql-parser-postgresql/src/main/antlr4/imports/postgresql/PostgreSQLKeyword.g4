@@ -1388,3 +1388,19 @@ OUT
 INOUT
     : I N O U T
     ;
+
+FORMAT
+    : F O R M A T
+    ;
+
+FORCE_QUOTE
+    : F O R C E UL_ Q U O T E
+    ;
+
+FORCE_NOT_NULL
+    : F O R C E UL_ N O T UL_ N U L L
+    ;
+
+FORCE_NULL
+    : F O R C E UL_ N U L L
+    ;

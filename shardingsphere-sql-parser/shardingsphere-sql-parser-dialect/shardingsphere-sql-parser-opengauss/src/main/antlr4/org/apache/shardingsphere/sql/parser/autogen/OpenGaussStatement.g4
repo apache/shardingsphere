@@ -135,5 +135,6 @@ execute
     | alterType
     | createPublication
     | dropPublication
+    | createAggregate
     ) SEMI_? EOF
     ;

@@ -40,14 +40,13 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.HintDistS
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.SetVariableHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionAutoCommitHandler;
 import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBackendHandler;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -92,8 +91,6 @@ public final class TextProtocolBackendHandlerFactoryTest extends ProxyContextRes
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        TransactionContexts transactionContexts = mockTransactionContexts();
-        when(contextManager.getTransactionContexts()).thenReturn(transactionContexts);
         CacheOption cacheOption = new CacheOption(1024, 1024);
         when(metaDataContexts.getMetaData().getGlobalRuleMetaData()
                 .findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(new SQLParserRule(new SQLParserRuleConfiguration(true, cacheOption, cacheOption))));
@@ -109,14 +106,10 @@ public final class TextProtocolBackendHandlerFactoryTest extends ProxyContextRes
     
     private void mockGlobalRuleMetaData(final MetaDataContexts metaDataContexts) {
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(globalRuleMetaData.getRules()).thenReturn(Collections.emptyList());
+        TransactionRule transactionRule = mock(TransactionRule.class);
+        when(transactionRule.getResources()).thenReturn(Collections.singletonMap("schema", new ShardingSphereTransactionManagerEngine()));
+        when(globalRuleMetaData.findSingleRule(TransactionRule.class)).thenReturn(Optional.of(transactionRule));
         when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-    }
-    
-    private TransactionContexts mockTransactionContexts() {
-        TransactionContexts result = mock(TransactionContexts.class, RETURNS_DEEP_STUBS);
-        when(result.getEngines().get("schema")).thenReturn(new ShardingSphereTransactionManagerEngine());
-        return result;
     }
     
     @Test
@@ -153,28 +146,28 @@ public final class TextProtocolBackendHandlerFactoryTest extends ProxyContextRes
     public void assertNewInstanceWithSetAutoCommitToOff() throws SQLException {
         String sql = "SET AUTOCOMMIT=0";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
-        assertThat(actual, instanceOf(TransactionAutoCommitHandler.class));
+        assertThat(actual, instanceOf(TransactionBackendHandler.class));
     }
     
     @Test
     public void assertNewInstanceWithScopeSetAutoCommitToOff() throws SQLException {
         String sql = "SET @@SESSION.AUTOCOMMIT = OFF";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
-        assertThat(actual, instanceOf(TransactionAutoCommitHandler.class));
+        assertThat(actual, instanceOf(TransactionBackendHandler.class));
     }
     
     @Test
     public void assertNewInstanceWithSetAutoCommitToOn() throws SQLException {
         String sql = "SET AUTOCOMMIT=1";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
-        assertThat(actual, instanceOf(TransactionAutoCommitHandler.class));
+        assertThat(actual, instanceOf(TransactionBackendHandler.class));
     }
     
     @Test
     public void assertNewInstanceWithScopeSetAutoCommitToOnForInTransaction() throws SQLException {
         String sql = "SET @@SESSION.AUTOCOMMIT = ON";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
-        assertThat(actual, instanceOf(TransactionAutoCommitHandler.class));
+        assertThat(actual, instanceOf(TransactionBackendHandler.class));
     }
     
     @Test

@@ -209,7 +209,7 @@ Specifying version of xsd instead of using `sharding.xsd`, is to make legacy doc
 **5. Pre-Release Check**
 
 ```shell
-mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github username}
+mvn release:prepare -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=true" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github username}
 ```
 
 -Prelease: choose release profile, which will pack all the source codes, jar files and executable binary packages of ShardingSphere-Proxy.
@@ -229,7 +229,7 @@ mvn release:clean
 Then, prepare to execute the release.
 
 ```shell
-mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github username}
+mvn release:prepare -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=true" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github username}
 ```
 
 It is basically the same as the previous rehearsal command, but deleting -DdryRun=true parameter.
@@ -245,7 +245,7 @@ git push origin --tags
 **7. Deploy the Release**
 
 ```shell
-mvn release:perform -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -Dusername=${Github username}
+mvn release:perform -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=true" -DautoVersionSubmodules=true -Dusername=${Github username}
 ```
 
 After that command is executed, the version to be released will be uploaded to Apache staging repository automatically. 
@@ -310,7 +310,7 @@ svn --username=${APACHE LDAP username} commit -m "release ${RELEASE.VERSION}"
 **Check sha512 hash**
 
 ```shell
-shasum -c apache-shardingsphere-${RELEASE.VERSION}-*.sha512
+shasum -c *.sha512
 ```
 
 **Check gpg Signature**
@@ -351,6 +351,7 @@ gpg --verify apache-shardingsphere-${RELEASE.VERSION}-src.zip.asc apache-shardin
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-agent-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-agent-bin.tar.gz
+gpg --verify apache-shardingsphere-proxy-chart-${CHART.RELEASE.VERSION}.tgz.asc apache-shardingsphere-proxy-chart-${CHART.RELEASE.VERSION}.tgz
 ```
 
 **Check Released Files**

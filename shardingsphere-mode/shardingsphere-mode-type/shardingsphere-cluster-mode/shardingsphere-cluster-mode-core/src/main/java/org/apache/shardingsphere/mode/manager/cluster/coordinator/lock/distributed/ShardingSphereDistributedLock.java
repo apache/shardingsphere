@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeServiceFactory;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockNodeServiceFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.InterMutexLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.ShardingSphereInterMutexLockHolder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.event.DistributedAckLockReleasedEvent;
@@ -47,11 +47,11 @@ public final class ShardingSphereDistributedLock implements ShardingSphereLock {
     public ShardingSphereDistributedLock(final ShardingSphereInterMutexLockHolder lockHolder) {
         this.lockHolder = lockHolder;
         ShardingSphereEventBus.getInstance().register(this);
-        syncMutexLockStatus();
+        syncDistributedLockStatus();
     }
     
-    private void syncMutexLockStatus() {
-        lockHolder.synchronizeMutexLock(lockNodeService);
+    private void syncDistributedLockStatus() {
+        lockHolder.synchronizeLock(lockNodeService);
     }
     
     @Override
@@ -83,9 +83,9 @@ public final class ShardingSphereDistributedLock implements ShardingSphereLock {
     }
     
     /**
-     * Mutex locked.
+     * Distributed locked.
      *
-     * @param event mutex locked event
+     * @param event distributed locked event
      */
     @Subscribe
     public synchronized void locked(final DistributedLockedEvent event) {
@@ -96,9 +96,9 @@ public final class ShardingSphereDistributedLock implements ShardingSphereLock {
     }
     
     /**
-     * Mutex lock released.
+     * Distributed lock released.
      *
-     * @param event mutex lock released event
+     * @param event distributed lock released event
      */
     @Subscribe
     public synchronized void lockReleased(final DistributedLockReleasedEvent event) {
@@ -108,9 +108,9 @@ public final class ShardingSphereDistributedLock implements ShardingSphereLock {
     }
     
     /**
-     * Mutex ack locked.
+     * Distributed ack locked.
      *
-     * @param event mutex ack locked event
+     * @param event distributed ack locked event
      */
     @Subscribe
     public synchronized void ackLocked(final DistributedAckLockedEvent event) {
@@ -118,9 +118,9 @@ public final class ShardingSphereDistributedLock implements ShardingSphereLock {
     }
     
     /**
-     * Mutex ack lock released.
+     * Distributed ack lock released.
      *
-     * @param event mutex ack lock released event
+     * @param event distributed ack lock released event
      */
     @Subscribe
     public synchronized void ackLockReleased(final DistributedAckLockReleasedEvent event) {

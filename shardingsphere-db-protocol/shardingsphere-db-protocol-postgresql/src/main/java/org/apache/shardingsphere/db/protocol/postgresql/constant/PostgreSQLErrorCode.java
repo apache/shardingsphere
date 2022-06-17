@@ -44,6 +44,7 @@ public enum PostgreSQLErrorCode {
     SQLCLIENT_UNABLE_TO_ESTABLISH_SQLCONNECTION("08001", "sqlclient_unable_to_establish_sqlconnection"),
     SQLSERVER_REJECTED_ESTABLISHMENT_OF_SQLCONNECTION("08004", "sqlserver_rejected_establishment_of_sqlconnection"),
     TRANSACTION_RESOLUTION_UNKNOWN("08007", "transaction_resolution_unknown"),
+    MODIFYING_SQL_DATA_NOT_PERMITTED("38002", "modifying_sql_data_not_permitted"),
     PROTOCOL_VIOLATION("08P01", "protocol_violation"),
     FEATURE_NOT_SUPPORTED("0A000", "feature_not_supported"),
     DUPLICATE_DATABASE("42P04", "Database '%s' already exists"),

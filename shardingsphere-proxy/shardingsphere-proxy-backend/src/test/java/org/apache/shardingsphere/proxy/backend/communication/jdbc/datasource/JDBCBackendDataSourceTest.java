@@ -32,7 +32,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.fix
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -45,6 +45,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -68,11 +69,8 @@ public final class JDBCBackendDataSourceTest extends ProxyContextRestorer {
     public void setUp() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(createDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
+                new ShardingSphereMetaData(createDatabases(), mockGlobalRuleMetaData(), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        TransactionContexts transactionContexts = createTransactionContexts();
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(contextManager.getTransactionContexts()).thenReturn(transactionContexts);
         ProxyContext.init(contextManager);
     }
     
@@ -84,9 +82,11 @@ public final class JDBCBackendDataSourceTest extends ProxyContextRestorer {
         return Collections.singletonMap("schema", result);
     }
     
-    private TransactionContexts createTransactionContexts() {
-        TransactionContexts result = mock(TransactionContexts.class, RETURNS_DEEP_STUBS);
-        when(result.getEngines().get("schema")).thenReturn(mock(ShardingSphereTransactionManagerEngine.class));
+    private ShardingSphereRuleMetaData mockGlobalRuleMetaData() {
+        ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class, RETURNS_DEEP_STUBS);
+        TransactionRule transactionRule = mock(TransactionRule.class);
+        when(transactionRule.getResources()).thenReturn(Collections.singletonMap("schema", mock(ShardingSphereTransactionManagerEngine.class)));
+        when(result.findSingleRule(TransactionRule.class)).thenReturn(Optional.of(transactionRule));
         return result;
     }
     

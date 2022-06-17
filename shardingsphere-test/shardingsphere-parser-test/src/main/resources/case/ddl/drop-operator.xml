@@ -19,4 +19,5 @@
 <sql-parser-test-cases>
     <drop-operator sql-case-id="drop_operator" />
     <drop-operator sql-case-id="drop_operator_if_exists" />
+    <drop-operator sql-case-id="drop_operator_force" />
 </sql-parser-test-cases>

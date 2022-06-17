@@ -23,13 +23,14 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
-import org.apache.shardingsphere.sharding.merge.dal.common.SingleLocalDataMergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
 
 import java.sql.Types;
 import java.util.Collection;
@@ -54,7 +55,7 @@ public final class ShowCurrentUserExecutor implements DatabaseAdminQueryExecutor
         Optional<Grantee> grantee = rules.stream().filter(each -> each instanceof AuthorityRule)
                 .map(each -> ((AuthorityRule) each).findUser(connectionSession.getGrantee())).filter(Optional::isPresent)
                 .map(Optional::get).map(ShardingSphereUser::getGrantee).findFirst();
-        mergedResult = new SingleLocalDataMergedResult(Collections.singleton(grantee.isPresent() ? grantee.get().toString() : ""));
+        mergedResult = new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow(grantee.isPresent() ? grantee.get().toString() : "")));
     }
     
     @Override

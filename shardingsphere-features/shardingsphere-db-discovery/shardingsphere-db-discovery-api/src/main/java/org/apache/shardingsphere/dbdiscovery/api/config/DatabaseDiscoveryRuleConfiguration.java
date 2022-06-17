@@ -23,7 +23,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHe
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.function.DistributedRuleConfiguration;
-import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
+import org.apache.shardingsphere.infra.config.scope.DatabaseRuleConfiguration;
 
 import java.util.Collection;
 import java.util.Map;
@@ -33,7 +33,7 @@ import java.util.Map;
  */
 @RequiredArgsConstructor
 @Getter
-public final class DatabaseDiscoveryRuleConfiguration implements SchemaRuleConfiguration, DistributedRuleConfiguration {
+public final class DatabaseDiscoveryRuleConfiguration implements DatabaseRuleConfiguration, DistributedRuleConfiguration {
     
     private final Collection<DatabaseDiscoveryDataSourceRuleConfiguration> dataSources;
     

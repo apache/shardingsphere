@@ -2826,3 +2826,11 @@ CONTENTS
 LOCKDOWN
     : L O C K D O W N
     ;
+
+CLEAN
+    : C L E A N
+    ;
+
+GUARANTEE
+    : G U A R A N T E E
+    ;

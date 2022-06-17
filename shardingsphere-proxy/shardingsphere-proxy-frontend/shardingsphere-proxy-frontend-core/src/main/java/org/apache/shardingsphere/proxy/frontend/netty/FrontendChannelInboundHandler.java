@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.netty;
 
+import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -32,10 +33,10 @@ import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionExcept
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationResult;
 import org.apache.shardingsphere.proxy.frontend.executor.ConnectionThreadExecutorGroup;
+import org.apache.shardingsphere.proxy.frontend.executor.UserExecutorGroup;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.proxy.frontend.state.ProxyStateContext;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.apache.shardingsphere.transaction.rule.builder.DefaultTransactionRuleConfigurationBuilder;
 
 import java.util.Optional;
 
@@ -57,9 +58,9 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     }
     
     private TransactionRule getTransactionRule() {
-        Optional<TransactionRule> transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules().stream()
-                .filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
-        return transactionRule.orElseGet(() -> new TransactionRule(new DefaultTransactionRuleConfigurationBuilder().build()));
+        Optional<TransactionRule> result = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
+        Preconditions.checkState(result.isPresent());
+        return result.get();
     }
     
     @Override
@@ -99,7 +100,7 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     @Override
     public void channelInactive(final ChannelHandlerContext context) {
         context.fireChannelInactive();
-        closeAllResources();
+        UserExecutorGroup.getInstance().getExecutorService().execute(this::closeAllResources);
     }
     
     private void closeAllResources() {

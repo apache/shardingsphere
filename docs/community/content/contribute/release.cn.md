@@ -207,7 +207,7 @@ http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-${RELEA
 **5. 发布预校验**
 
 ```shell
-mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github用户名}
+mvn release:prepare -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=true" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github用户名}
 ```
 
 -Prelease：选择 release 的 profile，这个 profile 会打包所有源码、jar 文件以及 ShardingSphere-Proxy 的可执行二进制包。
@@ -225,7 +225,7 @@ mvn release:clean
 ```
 
 ```shell
-mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github 用户名}
+mvn release:prepare -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=true" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github 用户名}
 ```
 
 和上一步演练的命令基本相同，去掉了 -DdryRun=true 参数。
@@ -242,7 +242,7 @@ git push origin --tags
 **7. 部署发布**
 
 ```shell
-mvn release:perform -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -Dusername=${Github 用户名}
+mvn release:perform -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=true" -DautoVersionSubmodules=true -Dusername=${Github 用户名}
 ```
 
 执行完该命令后，待发布版本会自动上传到 Apache 的临时筹备仓库 (staging repository)。
@@ -306,7 +306,7 @@ svn --username=${APACHE LDAP 用户名} commit -m "release ${RELEASE.VERSION}"
 **检查 sha512 哈希**
 
 ```shell
-shasum -c apache-shardingsphere-${RELEASE.VERSION}-*.sha512
+shasum -c *.sha512
 ```
 
 **检查 gpg 签名**
@@ -347,6 +347,7 @@ gpg --verify apache-shardingsphere-${RELEASE.VERSION}-src.zip.asc apache-shardin
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-agent-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-agent-bin.tar.gz
+gpg --verify apache-shardingsphere-proxy-chart-${CHART.RELEASE.VERSION}.tgz.asc apache-shardingsphere-proxy-chart-${CHART.RELEASE.VERSION}.tgz
 ```
 
 **检查发布文件内容**

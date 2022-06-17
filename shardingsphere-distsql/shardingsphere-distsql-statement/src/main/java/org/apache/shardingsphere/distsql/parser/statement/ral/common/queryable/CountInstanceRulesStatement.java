@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable;
 
-import lombok.Getter;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
- * Count schema rules statement.
+ * Count instance rules statement.
  */
-@Getter
 public final class CountInstanceRulesStatement extends QueryableRALStatement {
 }

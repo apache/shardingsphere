@@ -40,6 +40,14 @@
         )
     </create-table-order>
     
+    <create-table-index>
+        CREATE INDEX "idx_user_id" ON test.t_order ( user_id );
+    </create-table-index>
+    
+    <create-column-comment>
+        COMMENT ON COLUMN test.t_order.user_id IS 'user id';
+    </create-column-comment>
+    
     <create-table-order-item>
         CREATE TABLE test.t_order_item (
         item_id int8 NOT NULL,
@@ -52,11 +60,19 @@
     
     <full-insert-order>
         INSERT INTO
-        test.t_order(id,order_id,user_id,status,t_int2,t_numeric,t_bool, t_char,t_varchar,t_float,t_double)
-        VALUES (?,?,?,?,?,?,?,?,?,?,?)
+        test.t_order(id,order_id,user_id,status,t_int2,t_numeric,t_bool,t_char,t_varchar,t_float,t_double,t_timestmap,t_timestamptz)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)
     </full-insert-order>
     
     <full-insert-order-item>
         INSERT INTO test.t_order_item(item_id,order_id,user_id,status) VALUES(?,?,?,?)
     </full-insert-order-item>
+
+    <update-table-order-status>
+        UPDATE test.t_order SET status= 'unlock'
+    </update-table-order-status>
+
+    <create-index-status>
+        CREATE INDEX "idx_user_status" ON test.t_order ( status )
+    </create-index-status>
 </command>

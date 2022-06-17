@@ -39,7 +39,6 @@
     <sql-case id="create_foreign_data_wrapper" value="CREATE FOREIGN DATA WRAPPER alt_fdw1" db-types="PostgreSQL" />
     <sql-case id="create_server" value="CREATE SERVER alt_fserv1 FOREIGN DATA WRAPPER alt_fdw1;" db-types="PostgreSQL" />
     <sql-case id="create_operator" value="CREATE OPERATOR @-@ ( leftarg = int4, rightarg = int4, procedure = int4mi )" db-types="PostgreSQL" />
-    <sql-case id="alter_operator" value="ALTER OPERATOR @+@(int4, int4) OWNER TO regress_alter_generic_user2" db-types="PostgreSQL" />
     <sql-case id="create_statistics" value="CREATE STATISTICS alt_stat1 ON a, b FROM alt_regress_1" db-types="PostgreSQL" />
     <sql-case id="alter_statistics" value="ALTER STATISTICS alt_stat1 RENAME TO alt_stat2" db-types="PostgreSQL" />
     <sql-case id="create_table_no_valid" value="create table nv_parent (d date, check (false) no inherit not valid)" db-types="PostgreSQL" />
@@ -3875,26 +3874,6 @@
     <sql-case id="low_with_by_mysql_source_test_case1" value="with qn as (SELECT  MAX(a) FROM t1 WHERE (b) IN ( SELECT MIN(t2.b) FROM (SELECT b from t1) AS t2 GROUP BY t2.b WITH ROLLUP HAVING GROUPING (t2.b)=0)) SELECT * FROM qn" db-types="MySQL" />
     <sql-case id="low_with_by_mysql_source_test_case2" value="with t1 as (select * from t1 where a=3) delete from t1" db-types="MySQL" />
     <sql-case id="low_with_by_mysql_source_test_case3" value="with t1 as (select * from t1 where a=3) delete t1.* from t1, t1 as t2" db-types="MySQL" />
-    <sql-case id="alter_by_postgresql_source_test_case131" value="ALTER OPERATOR &amp; (bit, bit) SET (&quot;Restrict&quot; = _int_contsel, &quot;Join&quot; = _int_contjoinsel);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case132" value="ALTER OPERATOR === (boolean, boolean) SET (COMMUTATOR = !==);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case133" value="ALTER OPERATOR === (boolean, boolean) SET (COMMUTATOR = ====);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case134" value="ALTER OPERATOR === (boolean, boolean) SET (JOIN = NONE);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case135" value="ALTER OPERATOR === (boolean, boolean) SET (JOIN = contjoinsel);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case136" value="ALTER OPERATOR === (boolean, boolean) SET (JOIN = non_existent_func);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case137" value="ALTER OPERATOR === (boolean, boolean) SET (NEGATOR = !==);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case138" value="ALTER OPERATOR === (boolean, boolean) SET (NEGATOR = ====);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case139" value="ALTER OPERATOR === (boolean, boolean) SET (RESTRICT = NONE);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case140" value="ALTER OPERATOR === (boolean, boolean) SET (RESTRICT = NONE);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case141" value="ALTER OPERATOR === (boolean, boolean) SET (RESTRICT = NONE, JOIN = NONE);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case142" value="ALTER OPERATOR === (boolean, boolean) SET (RESTRICT = contsel);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case143" value="ALTER OPERATOR === (boolean, boolean) SET (RESTRICT = customcontsel, JOIN = contjoinsel);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case144" value="ALTER OPERATOR === (boolean, boolean) SET (RESTRICT = non_existent_func);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case145" value="ALTER OPERATOR @+@(int4, int4) OWNER TO regress_alter_generic_user2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case146" value="ALTER OPERATOR @+@(int4, int4) OWNER TO regress_alter_generic_user2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case147" value="ALTER OPERATOR @+@(int4, int4) OWNER TO regress_alter_generic_user3;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case148" value="ALTER OPERATOR @+@(int4, int4) SET SCHEMA alt_nsp2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case149" value="ALTER OPERATOR @-@(int4, int4) OWNER TO regress_alter_generic_user3;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case150" value="ALTER OPERATOR @-@(int4, int4) SET SCHEMA alt_nsp2;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case151" value="ALTER OPERATOR CLASS alt_opc1 USING hash OWNER TO regress_alter_generic_user1;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case152" value="ALTER OPERATOR CLASS alt_opc1 USING hash OWNER TO regress_alter_generic_user2;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case153" value="ALTER OPERATOR CLASS alt_opc1 USING hash RENAME TO alt_opc2;" db-types="PostgreSQL" />
@@ -3961,23 +3940,6 @@
     <sql-case id="alter_by_postgresql_source_test_case214" value="ALTER OPERATOR FAMILY alt_opf7 USING btree DROP OPERATOR 1 (int4, int2, int8);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case215" value="ALTER OPERATOR FAMILY alt_opf8 USING btree ADD OPERATOR 1 &lt; (int4, int4);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case216" value="ALTER OPERATOR FAMILY alt_opf9 USING gist ADD OPERATOR 1 &lt; (int4, int4) FOR ORDER BY float_ops;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case217" value="ALTER POLICY dep_p1 ON dep1 TO regress_rls_bob,regress_rls_carol;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case218" value="ALTER POLICY dep_p1 ON dep1 USING (true);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case219" value="ALTER POLICY p ON tbl1 TO regress_rls_frank USING (true);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case220" value="ALTER POLICY p1 ON document USING (dauthor = current_user);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case221" value="ALTER POLICY p1 ON document USING (true);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case222" value="ALTER POLICY p1 ON event_trigger_test RENAME TO p2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case223" value="ALTER POLICY p1 ON event_trigger_test USING (TRUE);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case224" value="ALTER POLICY p1 ON s1 USING (a in (select x from v2));" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case225" value="ALTER POLICY p1 ON t1 RENAME TO p1;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case226" value="ALTER POLICY p1 ON t1 RENAME TO p2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case227" value="ALTER POLICY p2 ON s2 USING (x % 2 = 0);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case228" value="ALTER POLICY p2 ON s2 USING (x in (select a from s1 where b like &apos;%d2%&apos;));" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case229" value="ALTER POLICY pp1 ON part_document USING (dauthor = current_user);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case230" value="ALTER POLICY pp1 ON part_document USING (true);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case231" value="ALTER POLICY r1 ON rec1 USING (x = (SELECT a FROM rec2 WHERE b = y));" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case232" value="ALTER POLICY r1 ON rec1 USING (x = (SELECT a FROM rec2v WHERE b = y));" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case233" value="ALTER POLICY r2 ON rec2 USING (a = (SELECT x FROM rec1v WHERE y = b));" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case234" value="ALTER PUBLICATION testpib_ins_trunct ADD TABLE pub_test.testpub_nopk, testpub_tbl1;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case235" value="ALTER PUBLICATION testpub1_forschema ADD ALL TABLES IN SCHEMA non_existent_schema;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case236" value="ALTER PUBLICATION testpub1_forschema ADD ALL TABLES IN SCHEMA pub_test1;" db-types="PostgreSQL" />
@@ -4202,18 +4164,6 @@
     <sql-case id="alter_by_postgresql_source_test_case459" value="ALTER TYPE test_typex DROP ATTRIBUTE a;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case460" value="ALTER TYPE tt_t0 DROP ATTRIBUTE z;" db-types="PostgreSQL" />
     <sql-case id="analyze_by_postgresql_source_test_case1" value="ANALYZE (nonexistent-arg) does_not_exist;" db-types="PostgreSQL" />
-    <sql-case id="copy_by_postgresql_source_test_case1" value="COPY testnull FROM stdin WITH NULL AS E&apos;\\0&apos;;" db-types="PostgreSQL" />
-    <sql-case id="copy_by_postgresql_source_test_case2" value="COPY testnull TO stdout WITH NULL AS E&apos;\\0&apos;;" db-types="PostgreSQL" />
-    <sql-case id="copy_by_postgresql_source_test_case3" value="COPY x from stdin WITH DELIMITER AS &apos;:&apos; NULL AS E&apos;\\X&apos; ENCODING &apos;sql_ascii&apos;;" db-types="PostgreSQL" />
-    <sql-case id="copy_by_postgresql_source_test_case4" value="COPY y TO stdout (FORMAT CSV, FORCE_QUOTE (col2), ESCAPE E&apos;\\&apos;);" db-types="PostgreSQL" />
-    <sql-case id="copy_by_postgresql_source_test_case5" value="COPY y TO stdout WITH CSV FORCE QUOTE col2 ESCAPE E&apos;\\&apos; ENCODING &apos;sql_ascii&apos;;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case1" value="CREATE ACCESS METHOD bogus TYPE INDEX HANDLER heap_tableam_handler;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case2" value="CREATE ACCESS METHOD bogus TYPE INDEX HANDLER int4in;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case3" value="CREATE ACCESS METHOD bogus TYPE TABLE HANDLER bthandler;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case4" value="CREATE ACCESS METHOD bogus TYPE TABLE HANDLER int4in;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case5" value="CREATE ACCESS METHOD gist2 TYPE INDEX HANDLER gisthandler;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case6" value="CREATE ACCESS METHOD heap2 TYPE TABLE HANDLER heap_tableam_handler;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case7" value="CREATE ACCESS METHOD heap_psql TYPE TABLE HANDLER heap_tableam_handler;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case8" value="CREATE AGGREGATE addr_nsp.genaggr(int4) (sfunc = int4pl, stype = int4);" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case9" value="CREATE AGGREGATE alt_agg1 (   sfunc1 = int4pl, basetype = int4, stype1 = int4, initcond = 0 );" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case10" value="CREATE AGGREGATE alt_agg1 (   sfunc1 = int4pl, basetype = int4, stype1 = int4, initcond = 100 );" db-types="PostgreSQL" />
@@ -7070,7 +7020,6 @@
     <sql-case id="low_alter_by_postgresql_source_test_case47" value="alter event trigger regress_event_trigger owner to regress_evt_user;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case48" value="alter event trigger regress_event_trigger rename to regress_event_trigger2;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case49" value="alter event trigger regress_event_trigger rename to regress_event_trigger3;" db-types="PostgreSQL" />
-    <sql-case id="low_alter_by_postgresql_source_test_case50" value="alter operator alter1.=(alter1.ctype, alter1.ctype) set schema alter2;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case51" value="alter operator class alter1.ctype_hash_ops using hash set schema alter2;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case52" value="alter operator family alter1.ctype_hash_ops using hash set schema alter2;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case53" value="alter operator family integer_ops using btree add   function 1 int8alias1cmp (int8, int8alias1);" db-types="PostgreSQL" />
@@ -7127,10 +7076,6 @@
     <sql-case id="low_alter_by_postgresql_source_test_case105" value="alter type rewritetype alter attribute a type varchar cascade;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case106" value="alter type testdomain2 rename to testdomain3;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case107" value="alter type two_ints add attribute c two_ints_range;" db-types="PostgreSQL" />
-    <sql-case id="low_copy_by_postgresql_source_test_case1" value="copy (select * from test1) (t,id) to stdout;" db-types="PostgreSQL" />
-    <sql-case id="low_copy_by_postgresql_source_test_case2" value="copy (select * from test1) from stdin;" db-types="PostgreSQL" />
-    <sql-case id="low_copy_by_postgresql_source_test_case3" value="copy (select 1) to stdout\; copy (select 2) to stdout\; select 0\; select 3;" db-types="PostgreSQL" />
-    <sql-case id="low_copy_by_postgresql_source_test_case4" value="copy (select 1) to stdout\; select 1/0;	-- row, then error select 1/0\; copy (select 1) to stdout;" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case1" value="create aggregate aggfns(integer,integer,text) (    sfunc = aggfns_trans, stype = aggtype[], sspace = 10000,    initcond = &apos;{}&apos; );" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case2" value="create aggregate aggfstr(integer,integer,text) (    sfunc = aggf_trans, stype = aggtype[],    initcond = &apos;{}&apos; );" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case3" value="create aggregate build_group(anyelement, integer) (   SFUNC = add_group,   STYPE = anyarray );" db-types="PostgreSQL" />

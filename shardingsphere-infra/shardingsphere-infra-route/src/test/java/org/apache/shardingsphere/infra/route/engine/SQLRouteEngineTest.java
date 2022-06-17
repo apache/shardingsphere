@@ -44,7 +44,7 @@ public final class SQLRouteEngineTest {
     @Test
     public void assertRouteSuccess() {
         LogicSQL logicSQL = new LogicSQL(mock(CommonSQLStatementContext.class), "SELECT 1", Collections.emptyList());
-        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(new RouteRuleFixture()));
+        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(new RouteRuleFixture()));
         ShardingSphereDatabase database = new ShardingSphereDatabase("logic_schema",
                 mock(DatabaseType.class), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyMap());
         SQLRouteEngine sqlRouteEngine = new SQLRouteEngine(Collections.singleton(new RouteRuleFixture()), new ConfigurationProperties(new Properties()));
@@ -59,7 +59,7 @@ public final class SQLRouteEngineTest {
     @Test(expected = UnsupportedOperationException.class)
     public void assertRouteFailure() {
         LogicSQL logicSQL = new LogicSQL(mock(CommonSQLStatementContext.class), "SELECT 1", Collections.emptyList());
-        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(new RouteRuleFixture()));
+        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(new RouteRuleFixture()));
         ShardingSphereDatabase database = new ShardingSphereDatabase("logic_schema",
                 mock(DatabaseType.class), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyMap());
         new SQLRouteEngine(Collections.singleton(new RouteFailureRuleFixture()), new ConfigurationProperties(new Properties())).route(logicSQL, database);

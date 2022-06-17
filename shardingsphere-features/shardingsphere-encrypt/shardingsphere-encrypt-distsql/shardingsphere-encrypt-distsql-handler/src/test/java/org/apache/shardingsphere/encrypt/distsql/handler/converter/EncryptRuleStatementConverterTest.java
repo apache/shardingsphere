@@ -44,7 +44,8 @@ public final class EncryptRuleStatementConverterTest {
     }
     
     private Collection<EncryptColumnSegment> createColumns() {
-        return Collections.singleton(new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", new AlgorithmSegment("MD5", createProperties())));
+        return Collections.singleton(new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column",
+                new AlgorithmSegment("MD5", createProperties()), new AlgorithmSegment("MD5", createProperties())));
     }
     
     private Properties createProperties() {

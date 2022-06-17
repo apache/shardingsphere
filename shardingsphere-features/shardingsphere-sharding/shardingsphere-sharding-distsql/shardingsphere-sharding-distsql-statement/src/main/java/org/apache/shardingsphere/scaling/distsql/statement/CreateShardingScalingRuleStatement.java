@@ -20,7 +20,6 @@ package org.apache.shardingsphere.scaling.distsql.statement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.CreateRuleStatement;
-import org.apache.shardingsphere.distsql.parser.subject.impl.ScalingSubjectSupplier;
 import org.apache.shardingsphere.scaling.distsql.statement.segment.ShardingScalingRuleConfigurationSegment;
 
 /**
@@ -28,7 +27,7 @@ import org.apache.shardingsphere.scaling.distsql.statement.segment.ShardingScali
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateShardingScalingRuleStatement extends CreateRuleStatement implements ScalingSubjectSupplier {
+public final class CreateShardingScalingRuleStatement extends CreateRuleStatement {
     
     private final String scalingName;
     

@@ -19,8 +19,6 @@ package org.apache.shardingsphere.distsql.parser.statement.rdl.alter;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.operation.impl.AlterOperationSupplier;
-import org.apache.shardingsphere.distsql.parser.subject.impl.ResourceSubjectSupplier;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.ResourceDefinitionStatement;
 
@@ -31,7 +29,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterResourceStatement extends ResourceDefinitionStatement implements ResourceSubjectSupplier, AlterOperationSupplier {
+public final class AlterResourceStatement extends ResourceDefinitionStatement {
     
     private final Collection<DataSourceSegment> dataSources;
 }

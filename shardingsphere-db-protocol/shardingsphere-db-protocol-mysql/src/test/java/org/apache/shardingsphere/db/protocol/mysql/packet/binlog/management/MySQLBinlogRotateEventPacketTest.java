@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.binlog.management;
 
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.MySQLBinlogEventHeader;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.junit.Test;
@@ -26,6 +27,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -41,7 +43,8 @@ public final class MySQLBinlogRotateEventPacketTest {
     @Test
     public void assertNew() {
         when(payload.readInt8()).thenReturn(4L);
-        when(payload.readStringEOF()).thenReturn("binlog-000001");
+        when(payload.readStringFix(anyInt())).thenReturn("binlog-000001");
+        when(payload.getByteBuf()).thenReturn(Unpooled.buffer());
         MySQLBinlogRotateEventPacket actual = new MySQLBinlogRotateEventPacket(binlogEventHeader, payload);
         assertThat(actual.getSequenceId(), is(0));
         assertThat(actual.getBinlogEventHeader(), is(binlogEventHeader));

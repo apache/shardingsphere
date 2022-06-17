@@ -2491,3 +2491,17 @@ tableColumnClause
 dropInmemoryJoinGroup
     : DROP INMEMORY JOIN GROUP (schemaName DOT_)? joinGroupName
     ;
+
+createRestorePoint
+    : CREATE CLEAN? RESTORE POINT restorePointName (FOR PLUGGABLE DATABASE pdbName)?
+      (AS OF (TIMESTAMP | SCN) expr)?
+      (PRESERVE | GUARANTEE FLASHBACK DATABASE)?
+    ;
+
+dropRestorePoint
+    : DROP RESTORE POINT restorePointName (FOR PLUGGABLE DATABASE pdbName)?
+    ;
+    
+dropOperator
+    : DROP OPERATOR (schemaName DOT_)? operatorName FORCE?
+    ;

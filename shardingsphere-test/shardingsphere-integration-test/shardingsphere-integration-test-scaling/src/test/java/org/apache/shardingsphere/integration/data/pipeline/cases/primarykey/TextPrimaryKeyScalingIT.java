@@ -31,6 +31,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,8 +39,8 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.Assert.assertTrue;
 
-@Slf4j
 @RunWith(Parameterized.class)
+@Slf4j
 public class TextPrimaryKeyScalingIT extends BaseExtraSQLITCase {
     
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
@@ -75,7 +76,11 @@ public class TextPrimaryKeyScalingIT extends BaseExtraSQLITCase {
         batchInsertOrder();
         addTargetResource();
         executeWithLog(getCommonSQLCommand().getAutoAlterOrderShardingTableRule());
-        assertCheckMatchConsistencySuccess();
+        String jobId = getScalingJobId();
+        waitScalingFinished(jobId);
+        assertCheckScalingSuccess(jobId);
+        applyScaling(jobId);
+        assertPreviewTableSuccess("t_order", Arrays.asList("ds_2", "ds_3", "ds_4"));
     }
     
     private void batchInsertOrder() {

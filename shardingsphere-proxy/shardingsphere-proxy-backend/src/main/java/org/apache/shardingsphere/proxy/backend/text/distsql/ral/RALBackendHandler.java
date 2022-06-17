@@ -17,68 +17,29 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.Accessors;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-
-import java.sql.SQLException;
 
 /**
  * RAL backend handler.
  */
-public abstract class RALBackendHandler<E extends RALStatement, R extends RALBackendHandler> implements TextProtocolBackendHandler {
+@Getter
+public abstract class RALBackendHandler<E extends RALStatement> implements TextProtocolBackendHandler {
     
-    // CHECKSTYLE:OFF
-    protected E sqlStatement;
-    // CHECKSTYLE:ON
+    private E sqlStatement;
     
-    @Override
-    public final ResponseHeader execute() throws SQLException {
-        Preconditions.checkArgument(null != sqlStatement, "sql statement cannot be empty.");
-        ContextManager contextManager = ProxyContext.getInstance().getContextManager();
-        return handle(contextManager, sqlStatement);
-    }
-    
-    protected abstract ResponseHeader handle(ContextManager contextManager, E sqlStatement) throws SQLException;
+    private ConnectionSession connectionSession;
     
     /**
-     * Method to initialize handler, this method needs to be rewritten when the handler has properties other than sql statement.
+     * Initialize.
      *
-     * @param parameter parameters required by handler
-     * @return the object itself
+     * @param sqlStatement SQL statement
+     * @param connectionSession connection session
      */
-    public R init(final HandlerParameter<E> parameter) {
-        initStatement(parameter.getStatement());
-        return (R) this;
-    }
-    
-    /**
-     * Initialize statement.
-     * @param statement RAL statement
-     * @return the object itself
-     */
-    public final R initStatement(final E statement) {
-        sqlStatement = statement;
-        return (R) this;
-    }
-    
-    @Getter
-    @Accessors(chain = true)
-    @RequiredArgsConstructor
-    public static class HandlerParameter<E extends RALStatement> {
-        
-        private final E statement;
-        
-        private final DatabaseType databaseType;
-        
-        private final ConnectionSession connectionSession;
+    public final void init(final RALStatement sqlStatement, final ConnectionSession connectionSession) {
+        this.sqlStatement = (E) sqlStatement;
+        this.connectionSession = connectionSession;
     }
 }

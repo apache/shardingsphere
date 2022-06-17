@@ -35,7 +35,7 @@ public final class ShardingTableRuleConfiguration {
     
     private final String actualDataNodes;
     
-    private String replaceTablePrefix;
+    private String actualTablePrefix;
     
     private ShardingStrategyConfiguration databaseShardingStrategy;
     

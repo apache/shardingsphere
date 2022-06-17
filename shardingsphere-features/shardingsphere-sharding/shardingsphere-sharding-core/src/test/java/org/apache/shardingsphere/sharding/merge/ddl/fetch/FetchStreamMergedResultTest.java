@@ -67,6 +67,7 @@ public final class FetchStreamMergedResultTest {
         resultMerger = new ShardingDDLResultMerger();
         database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        FetchOrderByValueGroupsHolder.remove();
     }
     
     private OpenGaussFetchStatement createFetchStatement(final boolean containsAllDirectionType) {
