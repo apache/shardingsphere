@@ -19,30 +19,12 @@ package org.apache.shardingsphere.mode.manager.lock;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-
-import java.util.Collections;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Lock judge engine for ShardingSphere.
  */
 @RequiredArgsConstructor
-public final class ShardingSphereLockJudgeEngine implements LockJudgeEngine {
-    
-    private static final Set<Class<? extends SQLStatement>> IGNORABLE_SQL_STATEMENT_CLASSES_STOP_WRITING = Collections.newSetFromMap(new ConcurrentHashMap<>());
-    
-    private LockContext lockContext;
-    
-    @Override
-    public void init(final LockContext lockContext) {
-        this.lockContext = lockContext;
-    }
+public final class ShardingSphereLockJudgeEngine extends AbstractLockJudgeEngine {
     
     /**
      * Is locked.
@@ -54,31 +36,8 @@ public final class ShardingSphereLockJudgeEngine implements LockJudgeEngine {
     @Override
     public boolean isLocked(final String databaseName, final SQLStatementContext<?> sqlStatementContext) {
         if (isWriteStatement(sqlStatementContext.getSqlStatement())) {
-            return lockContext.isLocked(databaseName);
+            return getLockContext().isLocked(databaseName);
         }
         return false;
-    }
-    
-    private boolean isWriteStatement(final SQLStatement sqlStatement) {
-        Class<? extends SQLStatement> sqlStatementClass = sqlStatement.getClass();
-        if (IGNORABLE_SQL_STATEMENT_CLASSES_STOP_WRITING.contains(sqlStatementClass)) {
-            return false;
-        }
-        if (sqlStatement instanceof SelectStatement) {
-            catchIgnorable(sqlStatementClass);
-            return false;
-        }
-        if (sqlStatement instanceof DMLStatement) {
-            return true;
-        }
-        if (sqlStatement instanceof DDLStatement) {
-            return true;
-        }
-        catchIgnorable(sqlStatementClass);
-        return false;
-    }
-    
-    private void catchIgnorable(final Class<? extends SQLStatement> sqlStatementClass) {
-        IGNORABLE_SQL_STATEMENT_CLASSES_STOP_WRITING.add(sqlStatementClass);
     }
 }

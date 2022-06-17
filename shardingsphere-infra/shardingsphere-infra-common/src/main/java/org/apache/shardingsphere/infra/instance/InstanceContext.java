@@ -52,8 +52,8 @@ public final class InstanceContext {
         this.workerIdGenerator = workerIdGenerator;
         this.modeConfiguration = modeConfiguration;
         this.lockContext = lockContext;
-        initLockContext();
         getWorkerId();
+        lockContext.initLockState(this);
     }
     
     /**
@@ -192,13 +192,6 @@ public final class InstanceContext {
      */
     public Optional<ComputeNodeInstance> getComputeNodeInstanceById(final String instanceId) {
         return computeNodeInstances.stream().filter(each -> instanceId.equals(each.getCurrentInstanceId())).findFirst();
-    }
-    
-    /**
-     * Init lock context.
-     */
-    public void initLockContext() {
-        lockContext.initLockState(this);
     }
     
     /**
