@@ -121,10 +121,22 @@ public final class ShardingRouteEngineFactory {
             return new ShardingIgnoreRoutingEngine();
         }
         if (sqlStatementContext instanceof CursorAvailable) {
-            return shardingRule.isAllBroadcastTables(shardingRuleTableNames) ? new ShardingUnicastRoutingEngine(sqlStatementContext, shardingRuleTableNames)
-                    : new ShardingStandardRoutingEngine(shardingRuleTableNames.iterator().next(), shardingConditions, props);
+            return getCursorRouteEngine(shardingRule, database, sqlStatementContext, shardingConditions, props, tableNames);
         }
         return new ShardingTableBroadcastRoutingEngine(database, sqlStatementContext, shardingRuleTableNames);
+    }
+    
+    private static ShardingRouteEngine getCursorRouteEngine(final ShardingRule shardingRule, final ShardingSphereDatabase database, final SQLStatementContext<?> sqlStatementContext,
+                                                            final ShardingConditions shardingConditions, final ConfigurationProperties props, final Collection<String> tableNames) {
+        if (shardingRule.isAllBroadcastTables(tableNames)) {
+            return new ShardingUnicastRoutingEngine(sqlStatementContext, tableNames);
+        }
+        Collection<String> logicTableNames = shardingRule.getShardingLogicTableNames(tableNames);
+        boolean allBindingTables = logicTableNames.size() > 1 && shardingRule.isAllBindingTables(database, sqlStatementContext, logicTableNames);
+        if (isShardingStandardQuery(shardingRule, logicTableNames, allBindingTables)) {
+            return new ShardingStandardRoutingEngine(getLogicTableName(shardingConditions, logicTableNames), shardingConditions, props);
+        }
+        return new ShardingIgnoreRoutingEngine();
     }
     
     private static ShardingRouteEngine getDALRoutingEngine(final ShardingRule shardingRule, final ShardingSphereDatabase database, final SQLStatementContext<?> sqlStatementContext) {

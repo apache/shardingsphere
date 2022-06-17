@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.type;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dcl.GrantStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -56,6 +57,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLGrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleGrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLSetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dcl.PostgreSQLGrantStatement;
@@ -73,6 +75,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -365,5 +368,49 @@ public final class ShardingRouteEngineFactoryTest {
         when(shardingRule.getShardingRuleTableNames(tableNames)).thenReturn(Collections.emptyList());
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, sqlStatementContext, shardingConditions, props);
         assertThat(actual, instanceOf(ShardingIgnoreRoutingEngine.class));
+    }
+    
+    @Test
+    public void assertNewInstanceForCursorStatementWithBroadcastTable() {
+        CursorStatementContext cursorStatementContext = mock(CursorStatementContext.class);
+        OpenGaussCursorStatement cursorStatement = mock(OpenGaussCursorStatement.class);
+        when(cursorStatementContext.getSqlStatement()).thenReturn(cursorStatement);
+        Collection<SimpleTableSegment> tableSegments = createSimpleTableSegments();
+        Collection<String> tableNames = tableSegments.stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet());
+        when(cursorStatementContext.getAllTables()).thenReturn(tableSegments);
+        when(shardingRule.isAllBroadcastTables(tableNames)).thenReturn(true);
+        when(shardingRule.getShardingRuleTableNames(tableNames)).thenReturn(tableNames);
+        ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, cursorStatementContext, shardingConditions, props);
+        assertThat(actual, instanceOf(ShardingUnicastRoutingEngine.class));
+    }
+    
+    @Test
+    public void assertNewInstanceForCursorStatementWithShardingTable() {
+        CursorStatementContext cursorStatementContext = mock(CursorStatementContext.class);
+        OpenGaussCursorStatement cursorStatement = mock(OpenGaussCursorStatement.class);
+        when(cursorStatementContext.getSqlStatement()).thenReturn(cursorStatement);
+        Collection<SimpleTableSegment> tableSegments = createSimpleTableSegments();
+        Collection<String> tableNames = tableSegments.stream().map(each -> each.getTableName().getIdentifier().getValue()).collect(Collectors.toSet());
+        when(cursorStatementContext.getAllTables()).thenReturn(tableSegments);
+        when(shardingRule.isAllShardingTables(tableNames)).thenReturn(true);
+        when(shardingRule.getShardingRuleTableNames(tableNames)).thenReturn(tableNames);
+        when(shardingRule.getShardingLogicTableNames(tableNames)).thenReturn(tableNames);
+        ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, cursorStatementContext, shardingConditions, props);
+        assertThat(actual, instanceOf(ShardingStandardRoutingEngine.class));
+    }
+    
+    @Test
+    public void assertNewInstanceForCursorStatementWithSingleTable() {
+        CursorStatementContext cursorStatementContext = mock(CursorStatementContext.class);
+        OpenGaussCursorStatement cursorStatement = mock(OpenGaussCursorStatement.class);
+        when(cursorStatementContext.getSqlStatement()).thenReturn(cursorStatement);
+        Collection<SimpleTableSegment> tableSegments = createSimpleTableSegments();
+        when(cursorStatementContext.getAllTables()).thenReturn(tableSegments);
+        ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, cursorStatementContext, shardingConditions, props);
+        assertThat(actual, instanceOf(ShardingIgnoreRoutingEngine.class));
+    }
+    
+    private Collection<SimpleTableSegment> createSimpleTableSegments() {
+        return Collections.singletonList(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
     }
 }
