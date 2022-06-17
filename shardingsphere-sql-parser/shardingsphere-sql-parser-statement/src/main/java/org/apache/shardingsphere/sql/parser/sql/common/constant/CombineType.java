@@ -17,26 +17,17 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.constant;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
-
 /**
- * Direction type enum.
+ * Combine type.
  */
-public enum DirectionType {
+public enum CombineType {
     
-    NEXT, PRIOR, FIRST, LAST, ABSOLUTE_COUNT, RELATIVE_COUNT, COUNT, ALL, FORWARD, FORWARD_COUNT, FORWARD_ALL, BACKWARD, BACKWARD_COUNT, BACKWARD_ALL;
-    
-    private static final Set<DirectionType> ALL_DIRECTION_TYPES = new HashSet<>(Arrays.asList(ALL, FORWARD_ALL, BACKWARD_ALL));
-    
-    /**
-     * Is all direction type.
-     * 
-     * @param directionType direction type
-     * @return is all direction type or not
-     */
-    public static boolean isAllDirectionType(final DirectionType directionType) {
-        return ALL_DIRECTION_TYPES.contains(directionType);
-    }
+    UNION_ALL,
+    UNION,
+    INTERSECT_ALL,
+    INTERSECT,
+    EXCEPT_ALL,
+    EXCEPT,
+    MINUS_ALL,
+    MINUS
 }

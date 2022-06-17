@@ -50,10 +50,10 @@ public final class ShardingDDLResultMerger implements ResultMerger {
         if (1 == queryResults.size()) {
             return new IteratorStreamMergedResult(queryResults);
         }
+        FetchStatementContext fetchStatementContext = (FetchStatementContext) sqlStatementContext;
         Map<String, Integer> columnLabelIndexMap = getColumnLabelIndexMap(queryResults.get(0));
-        FetchStatementContext statementContext = (FetchStatementContext) sqlStatementContext;
-        statementContext.getCursorStatementContext().getSelectStatementContext().setIndexes(columnLabelIndexMap);
-        return new FetchStreamMergedResult(queryResults, statementContext, getSchema(sqlStatementContext, database));
+        fetchStatementContext.getCursorStatementContext().getSelectStatementContext().setIndexes(columnLabelIndexMap);
+        return new FetchStreamMergedResult(queryResults, fetchStatementContext, getSchema(sqlStatementContext, database));
     }
     
     private ShardingSphereSchema getSchema(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereDatabase database) {

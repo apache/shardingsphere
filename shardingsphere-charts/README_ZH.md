@@ -19,7 +19,7 @@ kubectl
 
 helm 3.2.0+
 
-可以动态申请 PV(Persistent Volumes) 的 StorageClass 已持久化数据。
+可以动态申请 PV(Persistent Volumes) 的 StorageClass (可选)。
 
 ### 安装
 

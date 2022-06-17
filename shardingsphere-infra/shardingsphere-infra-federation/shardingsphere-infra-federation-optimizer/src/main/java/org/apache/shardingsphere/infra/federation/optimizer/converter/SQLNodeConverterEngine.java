@@ -17,41 +17,26 @@
 
 package org.apache.shardingsphere.infra.federation.optimizer.converter;
 
-import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.sql.SqlBasicCall;
 import org.apache.calcite.sql.SqlKind;
 import org.apache.calcite.sql.SqlNode;
-import org.apache.calcite.sql.SqlOperator;
 import org.apache.calcite.sql.SqlOrderBy;
 import org.apache.calcite.sql.SqlSelect;
-import org.apache.calcite.sql.fun.SqlStdOperatorTable;
 import org.apache.calcite.sql.parser.SqlParserPos;
-import org.apache.shardingsphere.infra.federation.optimizer.converter.statement.SelectStatementConverter;
-import org.apache.shardingsphere.sql.parser.sql.common.constant.UnionType;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.union.UnionSegment;
+import org.apache.shardingsphere.infra.federation.optimizer.converter.statement.select.SelectStatementConverter;
+import org.apache.shardingsphere.infra.federation.optimizer.converter.type.CombineOperatorConverter;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.CombineType;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
-
-import java.util.Map;
-import java.util.TreeMap;
 
 /**
  * SQL node converter engine.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SQLNodeConverterEngine {
-    
-    private static final Map<UnionType, SqlOperator> REGISTRY = new TreeMap<>();
-    
-    static {
-        registerUnion();
-    }
-    
-    private static void registerUnion() {
-        REGISTRY.put(UnionType.UNION_DISTINCT, SqlStdOperatorTable.UNION);
-    }
     
     /**
      * Convert SQL statement to SQL node.
@@ -62,11 +47,9 @@ public final class SQLNodeConverterEngine {
     public static SqlNode convertToSQLNode(final SQLStatement statement) {
         if (statement instanceof SelectStatement) {
             SqlNode sqlNode = new SelectStatementConverter().convertToSQLNode((SelectStatement) statement);
-            if (null != ((SelectStatement) statement).getUnionSegments()) {
-                for (final UnionSegment unionSegment : ((SelectStatement) statement).getUnionSegments()) {
-                    SqlNode unionSqlNode = convertToSQLNode(unionSegment.getSelectStatement());
-                    return new SqlBasicCall(convertUnionOperator(unionSegment.getUnionType()), new SqlNode[]{sqlNode, unionSqlNode}, SqlParserPos.ZERO);
-                }
+            for (CombineSegment each : ((SelectStatement) statement).getCombines()) {
+                SqlNode combineSqlNode = convertToSQLNode(each.getSelectStatement());
+                return new SqlBasicCall(CombineOperatorConverter.convert(each.getCombineType()), new SqlNode[]{sqlNode, combineSqlNode}, SqlParserPos.ZERO);
             }
             return sqlNode;
         }
@@ -88,15 +71,10 @@ public final class SQLNodeConverterEngine {
             SqlNode rightSqlNode = ((SqlBasicCall) sqlNode).getOperandList().get(1);
             SelectStatement leftSelectStatement = (SelectStatement) convertToSQLStatement(leftSqlNode);
             SelectStatement rightSelectStatement = (SelectStatement) convertToSQLStatement(rightSqlNode);
-            leftSelectStatement.getUnionSegments().add(new UnionSegment(UnionType.UNION_DISTINCT, rightSelectStatement, rightSqlNode.getParserPosition().getColumnNum() - 7,
-                    rightSqlNode.getParserPosition().getEndColumnNum() - 1));
+            leftSelectStatement.getCombines().add(
+                    new CombineSegment(rightSqlNode.getParserPosition().getColumnNum() - 7, rightSqlNode.getParserPosition().getEndColumnNum() - 1, CombineType.UNION, rightSelectStatement));
             return leftSelectStatement;
         }
         throw new UnsupportedOperationException("Unsupported SQL statement conversion.");
-    }
-    
-    private static SqlOperator convertUnionOperator(final UnionType unionType) {
-        Preconditions.checkState(REGISTRY.containsKey(unionType), "Unsupported unionType: `%s`", unionType);
-        return REGISTRY.get(unionType);
     }
 }

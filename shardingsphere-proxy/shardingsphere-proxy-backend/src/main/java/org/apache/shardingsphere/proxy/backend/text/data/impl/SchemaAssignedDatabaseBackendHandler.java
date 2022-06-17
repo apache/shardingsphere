@@ -22,6 +22,7 @@ import io.vertx.core.Future;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.aware.CursorDefinitionAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CloseStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
@@ -35,6 +36,7 @@ import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler;
+import org.apache.shardingsphere.sharding.merge.ddl.fetch.FetchOrderByValueQueuesHolder;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -92,6 +94,9 @@ public final class SchemaAssignedDatabaseBackendHandler implements DatabaseBacke
         String cursorName = statementContext.getCursorName().getIdentifier().getValue().toLowerCase();
         if (statementContext instanceof CursorStatementContext) {
             connectionSession.getCursorDefinitions().put(cursorName, (CursorStatementContext) statementContext);
+        }
+        if (statementContext instanceof CloseStatementContext) {
+            FetchOrderByValueQueuesHolder.get().remove(cursorName);
         }
         if (statementContext instanceof CursorDefinitionAware) {
             CursorStatementContext cursorStatementContext = connectionSession.getCursorDefinitions().get(cursorName);
