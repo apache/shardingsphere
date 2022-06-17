@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database.rule;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -60,6 +61,31 @@ public final class ShardingSphereRuleMetaData {
     }
     
     /**
+     * Find single rule by class.
+     *
+     * @param clazz target class
+     * @param <T> type of rule
+     * @return found single rule
+     */
+    public <T extends ShardingSphereRule> Optional<T> findSingleRule(final Class<T> clazz) {
+        Collection<T> foundRules = findRules(clazz);
+        return foundRules.isEmpty() ? Optional.empty() : Optional.of(foundRules.iterator().next());
+    }
+    
+    /**
+     * Find single rule by class.
+     *
+     * @param clazz target class
+     * @param <T> type of rule
+     * @return found single rule
+     */
+    public <T extends ShardingSphereRule> T getSingleRule(final Class<T> clazz) {
+        Collection<T> foundRules = findRules(clazz);
+        Preconditions.checkState(1 == foundRules.size(), "Rule `%s` should have and only have one instance.", clazz.getSimpleName());
+        return foundRules.iterator().next();
+    }
+    
+    /**
      * Find rule configuration by class.
      *
      * @param clazz target class
@@ -74,17 +100,5 @@ public final class ShardingSphereRuleMetaData {
             }
         }
         return result;
-    }
-    
-    /**
-     * Find single rule by class.
-     *
-     * @param clazz target class
-     * @param <T> type of rule
-     * @return found single rule
-     */
-    public <T extends ShardingSphereRule> Optional<T> findSingleRule(final Class<T> clazz) {
-        Collection<T> foundRules = findRules(clazz);
-        return foundRules.isEmpty() ? Optional.empty() : Optional.of(foundRules.iterator().next());
     }
 }

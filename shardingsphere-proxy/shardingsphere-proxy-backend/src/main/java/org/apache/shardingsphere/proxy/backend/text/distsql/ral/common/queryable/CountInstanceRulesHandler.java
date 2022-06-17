@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.CountInstanceRulesStatement;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -38,7 +37,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -89,8 +87,6 @@ public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<
             if (each instanceof SingleTableRule) {
                 addSingleTableData(rowMap, (SingleTableRule) each);
             } else if (each instanceof ShardingRule) {
-                Optional<ShardingRule> shardingRule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-                Preconditions.checkState(shardingRule.isPresent());
                 addShardingData(rowMap, (ShardingRule) each);
             } else if (each instanceof ReadwriteSplittingRule) {
                 addReadwriteSplittingData(rowMap, (ReadwriteSplittingRule) each);

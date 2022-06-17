@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.ParseStatement;
@@ -33,7 +32,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 
 /**
  * Parse Dist SQL handler.
@@ -56,10 +54,9 @@ public final class ParseDistSQLHandler extends QueryableRALBackendHandler<ParseS
     }
     
     private SQLStatement parseSQL(final ContextManager contextManager) {
-        Optional<SQLParserRule> sqlParserRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
-        Preconditions.checkState(sqlParserRule.isPresent());
+        SQLParserRule sqlParserRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         try {
-            return sqlParserRule.get().getSQLParserEngine(getStorageType().getType()).parse(getSqlStatement().getSql(), false);
+            return sqlParserRule.getSQLParserEngine(getStorageType().getType()).parse(getSqlStatement().getSql(), false);
         } catch (final SQLParsingException ex) {
             throw new SQLParsingException("You have a syntax error in your parsed statement");
         }

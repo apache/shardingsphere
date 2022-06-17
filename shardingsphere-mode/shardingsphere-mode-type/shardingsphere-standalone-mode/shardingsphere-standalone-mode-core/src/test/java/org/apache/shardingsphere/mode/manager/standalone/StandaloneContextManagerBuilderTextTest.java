@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.mode.manager.standalone;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.instance.InstanceIdGeneratorFactory;
-import org.apache.shardingsphere.mode.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
+import org.apache.shardingsphere.mode.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
@@ -34,7 +34,6 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.Properties;
 
 import static org.junit.Assert.assertNotNull;
@@ -57,8 +56,6 @@ public final class StandaloneContextManagerBuilderTextTest {
         assertNotNull(repository.get(GlobalNode.getGlobalRuleNode()));
         assertNotNull(repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath("foo_schema", "0")));
         assertNotNull(repository.get(DatabaseMetaDataNode.getRulePath("foo_schema", "0")));
-        Optional<TransactionRule> transactionRule = actual.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
-        assertTrue(transactionRule.isPresent());
-        assertTrue(transactionRule.get().getResources().containsKey("foo_schema"));
+        assertTrue(actual.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getResources().containsKey("foo_schema"));
     }
 }
