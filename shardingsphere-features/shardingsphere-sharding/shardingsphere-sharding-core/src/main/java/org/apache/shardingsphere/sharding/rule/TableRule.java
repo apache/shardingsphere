@@ -160,7 +160,7 @@ public final class TableRule {
         }
         List<String> dataSources = Strings.isNullOrEmpty(tableRuleConfig.getActualDataSources()) ? new LinkedList<>(dataSourceNames)
                 : new InlineExpressionParser(tableRuleConfig.getActualDataSources()).splitAndEvaluate();
-        return DataNodeUtil.getFormatDataNodeList(shardingAlgorithm.getAutoTablesAmount(), logicTable, dataSources);
+        return DataNodeUtil.getFormatDataNodes(shardingAlgorithm.getAutoTablesAmount(), logicTable, dataSources);
     }
     
     private Set<String> getActualTables() {

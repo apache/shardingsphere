@@ -117,7 +117,7 @@ public final class ShardingAutoTableRuleConfigurationYamlSwapper implements Yaml
     
     private String getActualDataNodes(final ShardingAutoTableRuleConfiguration data, final int shardingCount) {
         Collection<String> dataSourceNames = getDataSourceNames(data.getActualDataSources());
-        return String.join(",", DataNodeUtil.getFormatDataNodeList(shardingCount, data.getLogicTable(), dataSourceNames));
+        return String.join(",", DataNodeUtil.getFormatDataNodes(shardingCount, data.getLogicTable(), dataSourceNames));
     }
     
     private Collection<String> getDataSourceNames(final String dataSources) {
