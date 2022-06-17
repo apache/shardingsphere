@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
-import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
@@ -93,7 +92,6 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
                 new StandaloneLockContext());
         generateTransactionConfigurationFile(instanceContext, metaDataContexts);
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);
-        setInstanceContext(result);
         return result;
     }
     
@@ -104,12 +102,6 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
             Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.findInstance(transactionRule.get().getProviderType());
             fileGenerator.ifPresent(optional -> optional.generateFile(transactionRule.get().getProps(), instanceContext));
         }
-    }
-    
-    private void setInstanceContext(final ContextManager contextManager) {
-        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRules(InstanceAwareRule.class).forEach(each -> each.setInstanceContext(contextManager.getInstanceContext()));
-        contextManager.getMetaDataContexts().getMetaData().getDatabases()
-                .forEach((key, value) -> value.getRuleMetaData().findRules(InstanceAwareRule.class).forEach(each -> each.setInstanceContext(contextManager.getInstanceContext())));
     }
     
     @Override
