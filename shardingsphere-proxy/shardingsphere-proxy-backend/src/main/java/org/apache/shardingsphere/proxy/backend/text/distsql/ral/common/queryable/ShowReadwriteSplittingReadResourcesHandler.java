@@ -92,7 +92,7 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
                 .filter(each -> new RuleExportEngine(each).containExportableKey(exportKeys)).findFirst().map(each -> new RuleExportEngine(each).export(exportKeys)).orElse(Collections.emptyMap());
         Map<String, Map<String, String>> allReadwriteRuleMap = exportMap.values().stream().map(each -> ((Map<String, Map<String, String>>) each).entrySet())
                 .flatMap(Collection::stream).collect(Collectors.toMap(Entry::getKey, Entry::getValue, (v1, v2) -> v2, LinkedHashMap::new));
-        return allReadwriteRuleMap.values().stream().map(each -> each.getOrDefault(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES, ""))
+        return allReadwriteRuleMap.values().stream().map(each -> each.get(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES)).filter(each -> null != each && !each.isEmpty())
                 .map(this::deconstructString).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
     }
     
