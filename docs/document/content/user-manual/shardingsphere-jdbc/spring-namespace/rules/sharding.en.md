@@ -5,7 +5,7 @@ weight = 1
 
 ## Configuration Item Explanation
 
-Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-5.1.1.xsd)
+Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-5.1.2.xsd)
 
 \<sharding:rule />
 
