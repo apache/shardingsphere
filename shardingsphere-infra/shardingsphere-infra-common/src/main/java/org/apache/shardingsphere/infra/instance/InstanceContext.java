@@ -53,7 +53,7 @@ public final class InstanceContext {
         this.modeConfiguration = modeConfiguration;
         this.lockContext = lockContext;
         getWorkerId();
-        lockContext.initLockState(instance, computeNodeInstances);
+        lockContext.initLockState(this);
     }
     
     /**

@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.infra.lock;
 
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 
-import java.util.Collection;
 import java.util.Set;
 
 /**
@@ -30,10 +29,9 @@ public interface LockContext {
     /**
      * Init lock state.
      *
-     * @param instance compute node instance
-     * @param computeNodeInstances compute node instances
+     * @param instanceContext instance context
      */
-    default void initLockState(ComputeNodeInstance instance, Collection<ComputeNodeInstance> computeNodeInstances) {
+    default void initLockState(InstanceContext instanceContext) {
     }
     
     /**
