@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.distsql.parser.segment.CacheOptionSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -40,18 +39,13 @@ public final class AlterSQLParserRuleHandler extends UpdatableRALBackendHandler<
     
     @Override
     protected void update(final ContextManager contextManager) {
-        SQLParserRuleConfiguration currentConfig = findCurrentConfiguration();
+        SQLParserRuleConfiguration currentConfig = ProxyContext
+                .getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getConfiguration();
         SQLParserRuleConfiguration toBeAlteredRuleConfig = createSQLParserRuleConfiguration(currentConfig);
         Collection<ShardingSphereRule> globalRules = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules();
         globalRules.removeIf(each -> each instanceof SQLParserRule);
         globalRules.add(new SQLParserRule(toBeAlteredRuleConfig));
         persistNewRuleConfigurations(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations());
-    }
-    
-    private SQLParserRuleConfiguration findCurrentConfiguration() {
-        Optional<SQLParserRule> rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
-        Preconditions.checkState(rule.isPresent());
-        return rule.get().getConfiguration();
     }
     
     private SQLParserRuleConfiguration createSQLParserRuleConfiguration(final SQLParserRuleConfiguration currentConfig) {

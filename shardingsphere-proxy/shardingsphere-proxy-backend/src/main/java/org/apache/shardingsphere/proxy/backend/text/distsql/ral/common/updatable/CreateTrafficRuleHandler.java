@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.distsql.parser.segment.TrafficRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.CreateTrafficRuleStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -49,11 +48,10 @@ public final class CreateTrafficRuleHandler extends UpdatableRALBackendHandler<C
     
     @Override
     protected void update(final ContextManager contextManager) throws DistSQLException {
-        Optional<TrafficRule> trafficRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TrafficRule.class);
-        Preconditions.checkState(trafficRule.isPresent());
-        checkTrafficRuleConfiguration(trafficRule.get().getConfiguration());
+        TrafficRule trafficRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
+        checkTrafficRuleConfiguration(trafficRule.getConfiguration());
         checkInvalidAlgorithmNames();
-        updateToRepository(TrafficRuleConverter.convert(getSqlStatement().getSegments()), trafficRule.get().getConfiguration());
+        updateToRepository(TrafficRuleConverter.convert(getSqlStatement().getSegments()), trafficRule.getConfiguration());
     }
     
     private void checkTrafficRuleConfiguration(final TrafficRuleConfiguration trafficRuleConfig) throws DistSQLException {

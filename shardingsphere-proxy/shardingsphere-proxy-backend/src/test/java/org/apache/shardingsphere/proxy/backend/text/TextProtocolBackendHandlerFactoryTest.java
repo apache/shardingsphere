@@ -92,8 +92,7 @@ public final class TextProtocolBackendHandlerFactoryTest extends ProxyContextRes
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         CacheOption cacheOption = new CacheOption(1024, 1024);
-        when(metaDataContexts.getMetaData().getGlobalRuleMetaData()
-                .findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(new SQLParserRule(new SQLParserRuleConfiguration(true, cacheOption, cacheOption))));
+        when(metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class)).thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(true, cacheOption, cacheOption)));
         ProxyContext.init(contextManager);
     }
     
@@ -108,7 +107,7 @@ public final class TextProtocolBackendHandlerFactoryTest extends ProxyContextRes
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         TransactionRule transactionRule = mock(TransactionRule.class);
         when(transactionRule.getResources()).thenReturn(Collections.singletonMap("schema", new ShardingSphereTransactionManagerEngine()));
-        when(globalRuleMetaData.findSingleRule(TransactionRule.class)).thenReturn(Optional.of(transactionRule));
+        when(globalRuleMetaData.getSingleRule(TransactionRule.class)).thenReturn(transactionRule);
         when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
     }
     

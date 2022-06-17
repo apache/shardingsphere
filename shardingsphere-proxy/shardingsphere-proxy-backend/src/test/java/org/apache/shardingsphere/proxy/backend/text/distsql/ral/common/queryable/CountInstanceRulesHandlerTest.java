@@ -44,7 +44,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -52,7 +51,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class CountInstanceRulesTest extends ProxyContextRestorer {
+public final class CountInstanceRulesHandlerTest extends ProxyContextRestorer {
     
     @Mock
     private ShardingSphereDatabase database1;
@@ -68,7 +67,6 @@ public final class CountInstanceRulesTest extends ProxyContextRestorer {
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         ShardingRule shardingRule = mockShardingRule();
         Collection<ShardingSphereRule> rules = Arrays.asList(mockSingleTableRule(), shardingRule, mockReadwriteSplittingRule(), mockEncryptRule());
-        when(ruleMetaData.findSingleRule(ShardingRule.class)).thenReturn(Optional.of(shardingRule));
         when(ruleMetaData.getRules()).thenReturn(rules);
         when(database1.getRuleMetaData()).thenReturn(ruleMetaData);
         when(database2.getRuleMetaData()).thenReturn(ruleMetaData);

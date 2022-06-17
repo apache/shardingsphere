@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.AlterTransactionRuleStatement;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -47,10 +46,9 @@ public final class AlterTransactionRuleHandler extends UpdatableRALBackendHandle
         TransactionRuleConfiguration toBeAlteredRuleConfig = buildTransactionRuleConfiguration();
         globalRules.add(new TransactionRule(toBeAlteredRuleConfig, contextManager.getMetaDataContexts().getMetaData().getDatabases()));
         globalRuleConfigs.add(toBeAlteredRuleConfig);
-        Optional<TransactionRule> transactionRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
-        Preconditions.checkState(transactionRule.isPresent());
-        for (String each : transactionRule.get().getResources().keySet()) {
-            transactionRule.get().addResource(contextManager.getMetaDataContexts().getMetaData().getDatabases().get(each));
+        TransactionRule transactionRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
+        for (String each : transactionRule.getResources().keySet()) {
+            transactionRule.addResource(contextManager.getMetaDataContexts().getMetaData().getDatabases().get(each));
         }
         Optional<MetaDataPersistService> metaDataPersistService = contextManager.getMetaDataContexts().getPersistService();
         if (metaDataPersistService.isPresent() && null != metaDataPersistService.get().getGlobalRuleService()) {

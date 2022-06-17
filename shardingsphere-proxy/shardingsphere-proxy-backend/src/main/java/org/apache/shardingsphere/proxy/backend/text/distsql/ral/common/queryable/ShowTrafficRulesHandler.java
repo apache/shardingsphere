@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
-import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowTrafficRulesStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
@@ -60,13 +59,12 @@ public final class ShowTrafficRulesHandler extends QueryableRALBackendHandler<Sh
     
     @Override
     protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
-        Optional<TrafficRule> rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TrafficRule.class);
-        Preconditions.checkState(rule.isPresent());
+        TrafficRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
         Collection<LocalDataQueryResultRow> result = new LinkedList<>();
         Optional<String> ruleName = Optional.ofNullable(getSqlStatement().getRuleName());
-        Map<String, ShardingSphereAlgorithmConfiguration> trafficAlgorithms = rule.get().getConfiguration().getTrafficAlgorithms();
-        Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = rule.get().getConfiguration().getLoadBalancers();
-        rule.get().getConfiguration().getTrafficStrategies().stream().filter(each -> !ruleName.isPresent() || each.getName().equals(ruleName.get()))
+        Map<String, ShardingSphereAlgorithmConfiguration> trafficAlgorithms = rule.getConfiguration().getTrafficAlgorithms();
+        Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = rule.getConfiguration().getLoadBalancers();
+        rule.getConfiguration().getTrafficStrategies().stream().filter(each -> !ruleName.isPresent() || each.getName().equals(ruleName.get()))
                 .forEach(each -> result.add(buildRow(each, trafficAlgorithms.get(each.getAlgorithmName()), loadBalancers.get(each.getLoadBalancerName()))));
         return result;
     }

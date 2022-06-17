@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.DropTrafficRuleStatement;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
@@ -42,9 +41,8 @@ public final class DropTrafficRuleHandler extends UpdatableRALBackendHandler<Dro
     
     @Override
     protected void update(final ContextManager contextManager) throws DistSQLException {
-        Optional<TrafficRule> rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TrafficRule.class);
-        Preconditions.checkState(rule.isPresent());
-        TrafficRuleConfiguration config = rule.get().getConfiguration();
+        TrafficRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
+        TrafficRuleConfiguration config = rule.getConfiguration();
         if (!getSqlStatement().isContainsIfExistClause()) {
             checkTrafficRuleConfiguration(config);
         }

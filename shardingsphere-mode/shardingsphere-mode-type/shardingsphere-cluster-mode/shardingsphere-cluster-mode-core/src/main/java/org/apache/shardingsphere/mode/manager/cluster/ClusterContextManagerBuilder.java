@@ -93,20 +93,18 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private Properties getTransactionProperties(final MetaDataContexts metaDataContexts) {
         Optional<String> databaseName = metaDataContexts.getMetaData().getDatabases().keySet().stream().findFirst();
-        Optional<TransactionRule> transactionRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
-        Optional<TransactionConfigurationFileGenerator> fileGenerator = transactionRule.isPresent()
-                ? TransactionConfigurationFileGeneratorFactory.findInstance(transactionRule.get().getProviderType())
-                : Optional.empty();
+        TransactionRule transactionRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
+        Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.findInstance(transactionRule.getProviderType());
         if (!databaseName.isPresent() || !fileGenerator.isPresent()) {
-            return transactionRule.isPresent() ? transactionRule.get().getProps() : new Properties();
+            return transactionRule.getProps();
         }
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(databaseName.get());
-        Properties result = fileGenerator.get().getTransactionProps(transactionRule.get().getProps(),
-                new DataSourceProvidedDatabaseConfiguration(database.getResource().getDataSources(), database.getRuleMetaData().getConfigurations()), getType());
-        transactionRule.get().getProps().clear();
-        transactionRule.get().getProps().putAll(result);
-        transactionRule.get().getProps().clear();
-        transactionRule.get().getProps().putAll(result);
+        Properties result = fileGenerator.get().getTransactionProps(
+                transactionRule.getProps(), new DataSourceProvidedDatabaseConfiguration(database.getResource().getDataSources(), database.getRuleMetaData().getConfigurations()), getType());
+        transactionRule.getProps().clear();
+        transactionRule.getProps().putAll(result);
+        transactionRule.getProps().clear();
+        transactionRule.getProps().putAll(result);
         return result;
     }
     

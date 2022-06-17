@@ -45,7 +45,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -83,10 +82,10 @@ public final class JDBCBackendDataSourceTest extends ProxyContextRestorer {
     }
     
     private ShardingSphereRuleMetaData mockGlobalRuleMetaData() {
-        ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class, RETURNS_DEEP_STUBS);
+        ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class);
         TransactionRule transactionRule = mock(TransactionRule.class);
         when(transactionRule.getResources()).thenReturn(Collections.singletonMap("schema", mock(ShardingSphereTransactionManagerEngine.class)));
-        when(result.findSingleRule(TransactionRule.class)).thenReturn(Optional.of(transactionRule));
+        when(result.getSingleRule(TransactionRule.class)).thenReturn(transactionRule);
         return result;
     }
     
