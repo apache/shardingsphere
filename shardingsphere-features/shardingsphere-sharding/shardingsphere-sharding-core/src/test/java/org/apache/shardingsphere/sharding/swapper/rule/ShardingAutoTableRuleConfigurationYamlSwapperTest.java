@@ -58,7 +58,7 @@ public final class ShardingAutoTableRuleConfigurationYamlSwapperTest {
     @Mock
     private KeyGenerateStrategyConfigurationYamlSwapper keyGenerateStrategyYamlSwapper;
     
-    private final ShardingAutoTableRuleConfigurationYamlSwapper tableYamlSwapper = new ShardingAutoTableRuleConfigurationYamlSwapper();
+    private final ShardingAutoTableRuleConfigurationYamlSwapper tableYamlSwapper = new ShardingAutoTableRuleConfigurationYamlSwapper(mockAlgorithms(), Collections.emptyMap());
     
     @Before
     public void setUp() throws ReflectiveOperationException {
@@ -76,7 +76,7 @@ public final class ShardingAutoTableRuleConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYamlWithMinProperties() {
-        YamlShardingAutoTableRuleConfiguration actual = tableYamlSwapper.swapToYamlConfigurationWithAlgorithms(new ShardingAutoTableRuleConfiguration("tbl", "ds0,ds1"), Collections.emptyMap());
+        YamlShardingAutoTableRuleConfiguration actual = tableYamlSwapper.swapToYamlConfiguration(new ShardingAutoTableRuleConfiguration("tbl", "ds0,ds1"));
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataSources(), is("ds0,ds1"));
         assertNull(actual.getShardingStrategy());
@@ -89,12 +89,12 @@ public final class ShardingAutoTableRuleConfigurationYamlSwapperTest {
         shardingTableRuleConfig.setActualTablePrefix("tmp_");
         shardingTableRuleConfig.setShardingStrategy(mock(StandardShardingStrategyConfiguration.class));
         shardingTableRuleConfig.setKeyGenerateStrategy(mock(KeyGenerateStrategyConfiguration.class));
-        shardingTableRuleConfig.setActualDataNodes("ds0.tbl_0,ds1.tbl_1");
-        YamlShardingAutoTableRuleConfiguration actual = tableYamlSwapper.swapToYamlConfigurationWithAlgorithms(shardingTableRuleConfig, Collections.emptyMap());
+        shardingTableRuleConfig.setActualDataNodes("ds0.tbl_0");
+        YamlShardingAutoTableRuleConfiguration actual = tableYamlSwapper.swapToYamlConfiguration(shardingTableRuleConfig);
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataSources(), is("ds0,ds1"));
         assertThat(actual.getActualTablePrefix(), is("tmp_"));
-        assertThat(actual.getActualDataNodes(), is("ds0.tbl_0,ds1.tbl_1"));
+        assertThat(actual.getActualDataNodes(), is("ds0.tbl_0"));
         assertNotNull(actual.getShardingStrategy());
         assertNotNull(actual.getKeyGenerateStrategy());
     }
@@ -107,7 +107,7 @@ public final class ShardingAutoTableRuleConfigurationYamlSwapperTest {
         when(strategyConfiguration.getShardingAlgorithmName()).thenReturn("mod_2");
         shardingTableRuleConfig.setShardingStrategy(strategyConfiguration);
         shardingTableRuleConfig.setKeyGenerateStrategy(mock(KeyGenerateStrategyConfiguration.class));
-        YamlShardingAutoTableRuleConfiguration actual = tableYamlSwapper.swapToYamlConfigurationWithAlgorithms(shardingTableRuleConfig, mockAlgorithms());
+        YamlShardingAutoTableRuleConfiguration actual = tableYamlSwapper.swapToYamlConfiguration(shardingTableRuleConfig);
         assertThat(actual.getLogicTable(), is("tbl"));
         assertThat(actual.getActualDataSources(), is("ds0,ds1"));
         assertThat(actual.getActualTablePrefix(), is("tmp_"));
@@ -126,6 +126,6 @@ public final class ShardingAutoTableRuleConfigurationYamlSwapperTest {
     
     @Test(expected = NullPointerException.class)
     public void assertSwapToObjectWithoutLogicTable() {
-        new ShardingAutoTableRuleConfigurationYamlSwapper().swapToObject(new YamlShardingAutoTableRuleConfiguration());
+        new ShardingAutoTableRuleConfigurationYamlSwapper(Collections.emptyMap(), Collections.emptyMap()).swapToObject(new YamlShardingAutoTableRuleConfiguration());
     }
 }
