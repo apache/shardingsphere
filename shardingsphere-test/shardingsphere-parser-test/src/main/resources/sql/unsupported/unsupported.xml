@@ -3558,7 +3558,6 @@
     <sql-case id="low_do_by_mysql_source_test_case2" value="do ((3273059463432352943 )* (-9223372036854775808 ))" db-types="MySQL" />
     <sql-case id="low_do_by_mysql_source_test_case3" value="do ((repeat(1,9223372036854775808))or(convert((0x6d5b5d8d)using dec8)))" db-types="MySQL" />
     <sql-case id="low_do_by_mysql_source_test_case4" value="do (is_ipv4_mapped(bin_to_uuid(@a:=34))) &lt;=&gt; (json_objectagg(&apos;key2&apos;,42 ) and rtrim(&quot;&quot;))" db-types="MySQL" />
-    <sql-case id="low_do_by_mysql_source_test_case5" value="do 1" db-types="MySQL" />
     <sql-case id="low_do_by_mysql_source_test_case6" value="do 1 div nullif(min(from_days(1)),_utf8mb4&apos;2000-01-01&apos;)" db-types="MySQL" />
     <sql-case id="low_do_by_mysql_source_test_case7" value="do _cp852 &quot;&quot; &lt;= lcase(trim(leading 1 from 12222)) not between &apos;1&apos; and &apos;2&apos;" db-types="MySQL" />
     <sql-case id="low_do_by_mysql_source_test_case8" value="do char((weight_string(extractvalue((&apos;&apos;),(&apos;tX&apos;)))) using cp852)" db-types="MySQL" />
@@ -3568,15 +3567,12 @@
     <sql-case id="low_do_by_mysql_source_test_case12" value="do concat(export_set(1,1,repeat(&apos;a&apos;,31),&apos; $&apos;,213))" db-types="MySQL" />
     <sql-case id="low_do_by_mysql_source_test_case13" value="do concat_ws(&apos;,&apos;,&apos;111&apos;,&apos;11111111111111111111111111&apos;, substring_index(uuid(),0,1.111111e+308))" db-types="MySQL" />
     <sql-case id="low_do_by_mysql_source_test_case14" value="do convert(inet_aton(cast(left(-1,1)as binary(30))) using utf8)" db-types="MySQL" />
-    <sql-case id="low_do_by_mysql_source_test_case15" value="do crc32(char(1.134475e+308))" db-types="MySQL" />
     <sql-case id="low_do_by_mysql_source_test_case16" value="do date_add(utc_time(), interval(oct(-11779)) microsecond)" db-types="MySQL" />
     <sql-case id="low_do_by_mysql_source_test_case17" value="do dayofmonth( ( not( trim( trailing( convert((&apos;&apos;), binary(4))) from( make_set( (&apos;&gt;&gt;&apos;), (&apos;`&apos;)))) )))" db-types="MySQL" />
     <sql-case id="low_do_by_mysql_source_test_case18" value="do format(rpad(&apos;111111111.1&apos;, 1111111, &apos;999999999999999999999999999999999999999999&apos;),0,&apos;be_BY&apos;)" db-types="MySQL" />
     <sql-case id="low_do_by_mysql_source_test_case19" value="do from_base64(aes_encrypt(right(cast((0x5d44f4d736397d92c8267c12)as decimal),1), rand(to_days(&apos;2028-12-04 15:50:01.284969&apos;))))" db-types="MySQL" />
     <sql-case id="low_do_by_mysql_source_test_case20" value="do from_base64(cast((left(collation(4097),((repeat(&apos;1&apos;,32))or((-18772))))) as binary(40)))" db-types="MySQL" />
     <sql-case id="low_do_by_mysql_source_test_case21" value="do from_base64(cast((mid(17653,row(&apos;-688:20:12.162697&apos;,(null)) &gt;= row((&apos;*.)$&apos;),(0xc254b6)),1))as binary(34)))" db-types="MySQL" />
-    <sql-case id="low_do_by_mysql_source_test_case22" value="do from_base64(cast((mid(uuid(),20,64)) as binary(55)))" db-types="MySQL" />
-    <sql-case id="low_do_by_mysql_source_test_case23" value="do from_base64(cast(right(11,1)as binary(24)))" db-types="MySQL" />
     <sql-case id="low_do_by_mysql_source_test_case24" value="do ifnull((bin_to_uuid(uuid_to_bin(date_format(&apos;7088-02-14&apos; ,0xabbd95)))),(maketime(&apos;4678-07-20 03:51:44.174847&apos;,1,&apos;b&apos;)))" db-types="MySQL" />
     <sql-case id="low_do_by_mysql_source_test_case25" value="do inet_aton(aes_encrypt(left(@e,1),5))" db-types="MySQL" />
     <sql-case id="low_do_by_mysql_source_test_case26" value="do insert(ltrim(from_unixtime(0,&apos; %T &apos;)), 2, 1, &apos;hi&apos;)" db-types="MySQL" />
