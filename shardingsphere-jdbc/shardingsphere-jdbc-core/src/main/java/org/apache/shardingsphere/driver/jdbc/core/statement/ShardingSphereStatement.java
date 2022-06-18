@@ -464,7 +464,8 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         SQLCheckEngine.check(logicSQL.getSqlStatementContext().getSqlStatement(), logicSQL.getParameters(),
                 metaDataContexts.getMetaData().getDatabases().get(connection.getDatabaseName()).getRuleMetaData().getRules(),
                 connection.getDatabaseName(), metaDataContexts.getMetaData().getDatabases(), null);
-        return kernelProcessor.generateExecutionContext(logicSQL, metaDataContexts.getMetaData().getDatabases().get(connection.getDatabaseName()), metaDataContexts.getMetaData().getProps());
+        return kernelProcessor.generateExecutionContext(logicSQL,
+                metaDataContexts.getMetaData().getDatabases().get(connection.getDatabaseName()), metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps());
     }
     
     private ExecutionGroupContext<JDBCExecutionUnit> createExecutionContext() throws SQLException {

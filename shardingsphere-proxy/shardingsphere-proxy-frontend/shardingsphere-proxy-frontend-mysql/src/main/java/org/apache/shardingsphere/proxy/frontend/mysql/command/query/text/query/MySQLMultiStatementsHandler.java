@@ -129,7 +129,8 @@ public final class MySQLMultiStatementsHandler implements TextProtocolBackendHan
         SQLCheckEngine.check(logicSQL.getSqlStatementContext().getSqlStatement(), logicSQL.getParameters(),
                 metaDataContexts.getMetaData().getDatabases().get(connectionSession.getDatabaseName()).getRuleMetaData().getRules(),
                 connectionSession.getDatabaseName(), metaDataContexts.getMetaData().getDatabases(), null);
-        return kernelProcessor.generateExecutionContext(logicSQL, metaDataContexts.getMetaData().getDatabases().get(connectionSession.getDatabaseName()), metaDataContexts.getMetaData().getProps());
+        return kernelProcessor.generateExecutionContext(logicSQL, metaDataContexts.getMetaData().getDatabases().get(connectionSession.getDatabaseName()),
+                metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps());
     }
     
     @Override

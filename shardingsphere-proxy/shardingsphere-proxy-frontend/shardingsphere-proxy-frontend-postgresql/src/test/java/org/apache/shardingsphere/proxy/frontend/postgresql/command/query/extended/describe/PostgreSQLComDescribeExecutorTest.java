@@ -45,8 +45,8 @@ import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLCon
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.Portal;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
+import org.apache.shardingsphere.sqltranslator.rule.builder.DefaultSQLTranslatorRuleConfigurationBuilder;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -67,7 +67,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -110,11 +109,10 @@ public final class PostgreSQLComDescribeExecutorTest extends ProxyContextRestore
         ProxyContext.init(contextManager);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(false);
         when(connectionSession.getDatabaseName()).thenReturn(DATABASE_NAME);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        ShardingSphereRuleMetaData databaseRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(database.getRuleMetaData()).thenReturn(databaseRuleMetaData);
-        when(databaseRuleMetaData.findSingleRule(SQLTranslatorRule.class)).thenReturn(Optional.of(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration())));
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap(DATABASE_NAME, database));
+        ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(globalRuleMetaData.getSingleRule(SQLTranslatorRule.class)).thenReturn(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()));
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap(DATABASE_NAME, mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS)));
         prepareTableMetaData();
     }
     

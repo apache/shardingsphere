@@ -29,8 +29,8 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
+import org.apache.shardingsphere.traffic.rule.builder.DefaultTrafficRuleConfigurationBuilder;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
@@ -89,7 +89,7 @@ public abstract class AbstractBaseExecutorTest {
         when(result.getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         TransactionRule transactionRule = mockTransactionRule();
         when(globalRuleMetaData.getSingleRule(TransactionRule.class)).thenReturn(transactionRule);
-        when(globalRuleMetaData.getSingleRule(TrafficRule.class)).thenReturn(new TrafficRule(new TrafficRuleConfiguration()));
+        when(globalRuleMetaData.getSingleRule(TrafficRule.class)).thenReturn(new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build()));
         when(result.getMetaData().getDatabases().get(DefaultDatabase.LOGIC_NAME).getResource().getDatabaseType()).thenReturn(DatabaseTypeFactory.getInstance("H2"));
         ShardingRule shardingRule = mockShardingRule();
         when(result.getMetaData().getDatabases().get(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getRules()).thenReturn(Collections.singleton(shardingRule));

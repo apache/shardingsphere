@@ -53,6 +53,8 @@ import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParameters;
+import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
+import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -125,7 +127,7 @@ public abstract class AbstractSQLRewriterParameterizedTest {
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
         ConfigurationProperties props = new ConfigurationProperties(rootConfig.getProps());
         RouteContext routeContext = new SQLRouteEngine(databaseRules, props).route(logicSQL, database);
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(database, props);
+        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(database, new ShardingSphereRuleMetaData(Collections.singleton(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()))), props);
         SQLRewriteResult sqlRewriteResult = sqlRewriteEntry.rewrite(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), sqlStatementContext, routeContext);
         return sqlRewriteResult instanceof GenericSQLRewriteResult
                 ? Collections.singletonList(((GenericSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnit())

@@ -200,7 +200,8 @@ public final class PostgreSQLComDescribeExecutor implements CommandExecutor {
                 SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), preparedStatement.getSqlStatement(), databaseName);
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, preparedStatement.getSql(), Collections.emptyList());
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
-        ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(logicSQL, database, metaDataContexts.getMetaData().getProps());
+        ExecutionContext executionContext = new KernelProcessor().generateExecutionContext(
+                logicSQL, database, metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps());
         ExecutionUnit executionUnitSample = executionContext.getExecutionUnits().iterator().next();
         JDBCBackendConnection backendConnection = (JDBCBackendConnection) connectionSession.getBackendConnection();
         Connection connection = backendConnection.getConnections(executionUnitSample.getDataSourceName(), 1, ConnectionMode.CONNECTION_STRICTLY).iterator().next();
