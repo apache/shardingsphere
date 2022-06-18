@@ -53,7 +53,7 @@ public final class KernelProcessorTest {
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class),
                 mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(Collections.singleton(mock(SQLTranslatorRule.class))), Collections.emptyMap());
         ConfigurationProperties props = new ConfigurationProperties(createProperties());
-        ExecutionContext actual = new KernelProcessor().generateExecutionContext(logicSQL, database, props);
+        ExecutionContext actual = new KernelProcessor().generateExecutionContext(logicSQL, database, new ShardingSphereRuleMetaData(Collections.singleton(mock(SQLTranslatorRule.class))), props);
         assertThat(actual.getExecutionUnits().size(), is(1));
     }
     
