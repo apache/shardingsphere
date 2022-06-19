@@ -99,101 +99,117 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
     
     @Override
     protected Collection<String> getColumnNames() {
-        return Collections.singletonList(RESULT);
+        return Collections.singleton(RESULT);
     }
     
     @Override
     protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
-        String databaseName = getDatabaseName();
-        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
-        StringBuilder result = new StringBuilder();
-        configItem(ZERO, "databaseName", databaseName, result);
-        getDataSourcesConfig(database, result);
-        getRuleConfigurations(database.getRuleMetaData().getConfigurations(), result);
+        String exportedData = generateExportData(getDatabaseName());
         if (!getSqlStatement().getFilePath().isPresent()) {
-            return Collections.singleton(new LocalDataQueryResultRow(result.toString()));
+            return Collections.singleton(new LocalDataQueryResultRow(exportedData));
         }
-        File outFile = new File(getSqlStatement().getFilePath().get());
-        if (!outFile.exists()) {
-            outFile.getParentFile().mkdirs();
+        File file = new File(getSqlStatement().getFilePath().get());
+        if (!file.exists()) {
+            file.getParentFile().mkdirs();
         }
-        try (FileOutputStream stream = new FileOutputStream(outFile)) {
-            stream.write(result.toString().getBytes());
-            stream.flush();
+        try (FileOutputStream output = new FileOutputStream(file)) {
+            output.write(exportedData.getBytes());
+            output.flush();
         } catch (final IOException ex) {
             throw new ShardingSphereException(ex);
         }
         return Collections.singleton(new LocalDataQueryResultRow(String.format("Successfully exported to：'%s'", getSqlStatement().getFilePath().get())));
     }
     
-    private void getDataSourcesConfig(final ShardingSphereDatabase database, final StringBuilder result) {
+    private String getDatabaseName() {
+        String result = getSqlStatement().getDatabase().isPresent() ? getSqlStatement().getDatabase().get().getIdentifier().getValue() : getConnectionSession().getDatabaseName();
+        if (Strings.isNullOrEmpty(result)) {
+            throw new NoDatabaseSelectedException();
+        }
+        if (!ProxyContext.getInstance().getAllDatabaseNames().contains(result)) {
+            throw new DatabaseNotExistedException(result);
+        }
+        return result;
+    }
+    
+    private String generateExportData(final String databaseName) {
+        StringBuilder result = new StringBuilder();
+        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
+        appendConfigItem(ZERO, "databaseName", databaseName, result);
+        appendDataSourcesConfig(database, result);
+        appendRuleConfigurations(database.getRuleMetaData().getConfigurations(), result);
+        return result.toString();
+    }
+    
+    private void appendDataSourcesConfig(final ShardingSphereDatabase database, final StringBuilder stringBuilder) {
         if (null == database.getResource().getDataSources() || database.getResource().getDataSources().isEmpty()) {
             return;
         }
-        configItem(ZERO, "dataSources", result);
+        appendConfigItem(ZERO, "dataSources", stringBuilder);
         for (Entry<String, DataSource> each : database.getResource().getDataSources().entrySet()) {
-            configItem(ONE, each.getKey(), result);
+            appendConfigItem(ONE, each.getKey(), stringBuilder);
             DataSourceProperties dataSourceProps = DataSourcePropertiesCreator.create(each.getValue());
-            dataSourceProps.getConnectionPropertySynonyms().getStandardProperties().forEach((key, value) -> configItem(TWO, key, value, result));
-            dataSourceProps.getPoolPropertySynonyms().getStandardProperties().forEach((key, value) -> configItem(TWO, key, value, result));
+            dataSourceProps.getConnectionPropertySynonyms().getStandardProperties().forEach((key, value) -> appendConfigItem(TWO, key, value, stringBuilder));
+            dataSourceProps.getPoolPropertySynonyms().getStandardProperties().forEach((key, value) -> appendConfigItem(TWO, key, value, stringBuilder));
         }
     }
     
-    private void getRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs, final StringBuilder result) {
+    private void appendRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs, final StringBuilder stringBuilder) {
         if (null == ruleConfigs || ruleConfigs.isEmpty()) {
             return;
         }
-        configItem(ZERO, "rules", result);
+        appendConfigItem(ZERO, "rules", stringBuilder);
         ruleConfigs.forEach(each -> {
-            getRulesConfigForSharding(each, result);
-            getRulesConfigForReadwriteSplitting(each, result);
-            getRulesConfigForDBDiscovery(each, result);
-            getRulesConfigForEncrypt(each, result);
-            getRulesConfigForShadow(each, result);
+            getRulesConfigForSharding(each, stringBuilder);
+            getRulesConfigForReadwriteSplitting(each, stringBuilder);
+            getRulesConfigForDBDiscovery(each, stringBuilder);
+            getRulesConfigForEncrypt(each, stringBuilder);
+            getRulesConfigForShadow(each, stringBuilder);
         });
+    }
+    
+    private void appendConfigItem(final int indent, final Object key, final Object value, final StringBuilder stringBuilder) {
+        stringBuilder.append(indent(indent)).append(key).append(COLON_SPACE).append(value).append(NEWLINE);
+    }
+    
+    private void appendConfigItem(final int indent, final Object key, final StringBuilder stringBuilder) {
+        stringBuilder.append(indent(indent)).append(key).append(COLON_NEWLINE);
+    }
+    
+    private void getRulesConfigForSharding(final RuleConfiguration ruleConfig, final StringBuilder stringBuilder) {
+        if (matchFeature(ruleConfig, SHARDING)) {
+            stringBuilder.append(YamlEngine.marshal(Collections.singleton(new ShardingRuleConfigurationYamlSwapper().swapToYamlConfiguration((ShardingRuleConfiguration) ruleConfig))));
+        }
+    }
+    
+    private void getRulesConfigForReadwriteSplitting(final RuleConfiguration ruleConfig, final StringBuilder stringBuilder) {
+        if (matchFeature(ruleConfig, READWRITE_SPLITTING)) {
+            stringBuilder.append(YamlEngine.marshal(
+                    Collections.singleton(new ReadwriteSplittingRuleConfigurationYamlSwapper().swapToYamlConfiguration((ReadwriteSplittingRuleConfiguration) ruleConfig))));
+        }
+    }
+    
+    private void getRulesConfigForDBDiscovery(final RuleConfiguration ruleConfig, final StringBuilder stringBuilder) {
+        if (matchFeature(ruleConfig, DB_DISCOVERY)) {
+            stringBuilder.append(
+                    YamlEngine.marshal(Collections.singleton(new DatabaseDiscoveryRuleConfigurationYamlSwapper().swapToYamlConfiguration((DatabaseDiscoveryRuleConfiguration) ruleConfig))));
+        }
+    }
+    
+    private void getRulesConfigForEncrypt(final RuleConfiguration ruleConfig, final StringBuilder stringBuilder) {
+        if (matchFeature(ruleConfig, ENCRYPT)) {
+            stringBuilder.append(YamlEngine.marshal(Collections.singleton(new EncryptRuleConfigurationYamlSwapper().swapToYamlConfiguration((EncryptRuleConfiguration) ruleConfig))));
+        }
+    }
+    
+    private void getRulesConfigForShadow(final RuleConfiguration ruleConfig, final StringBuilder stringBuilder) {
+        if (matchFeature(ruleConfig, SHADOW)) {
+            stringBuilder.append(YamlEngine.marshal(Collections.singleton(new ShadowRuleConfigurationYamlSwapper().swapToYamlConfiguration((ShadowRuleConfiguration) ruleConfig))));
+        }
     }
     
     private boolean matchFeature(final RuleConfiguration ruleConfig, final String feature) {
         return null != ruleConfig && ruleConfig.getClass().getCanonicalName().equalsIgnoreCase(FEATURE_MAP.get(feature).getCanonicalName());
-    }
-    
-    private void getRulesConfigForSharding(final RuleConfiguration ruleConfig, final StringBuilder result) {
-        if (matchFeature(ruleConfig, SHARDING)) {
-            result.append(YamlEngine.marshal(Collections.singletonList(new ShardingRuleConfigurationYamlSwapper().swapToYamlConfiguration((ShardingRuleConfiguration) ruleConfig))));
-        }
-    }
-    
-    private void getRulesConfigForReadwriteSplitting(final RuleConfiguration ruleConfig, final StringBuilder result) {
-        if (matchFeature(ruleConfig, READWRITE_SPLITTING)) {
-            result.append(YamlEngine.marshal(
-                    Collections.singletonList(new ReadwriteSplittingRuleConfigurationYamlSwapper().swapToYamlConfiguration((ReadwriteSplittingRuleConfiguration) ruleConfig))));
-        }
-    }
-    
-    private void getRulesConfigForDBDiscovery(final RuleConfiguration ruleConfig, final StringBuilder result) {
-        if (matchFeature(ruleConfig, DB_DISCOVERY)) {
-            result.append(YamlEngine.marshal(Collections.singletonList(new DatabaseDiscoveryRuleConfigurationYamlSwapper().swapToYamlConfiguration((DatabaseDiscoveryRuleConfiguration) ruleConfig))));
-        }
-    }
-    
-    private void getRulesConfigForEncrypt(final RuleConfiguration ruleConfig, final StringBuilder result) {
-        if (matchFeature(ruleConfig, ENCRYPT)) {
-            result.append(YamlEngine.marshal(Collections.singletonList(new EncryptRuleConfigurationYamlSwapper().swapToYamlConfiguration((EncryptRuleConfiguration) ruleConfig))));
-        }
-    }
-    
-    private void getRulesConfigForShadow(final RuleConfiguration ruleConfig, final StringBuilder result) {
-        if (matchFeature(ruleConfig, SHADOW)) {
-            result.append(YamlEngine.marshal(Collections.singletonList(new ShadowRuleConfigurationYamlSwapper().swapToYamlConfiguration((ShadowRuleConfiguration) ruleConfig))));
-        }
-    }
-    
-    private void configItem(final int indent, final Object key, final StringBuilder result) {
-        result.append(indent(indent)).append(key).append(COLON_NEWLINE);
-    }
-    
-    private void configItem(final int indent, final Object key, final Object value, final StringBuilder result) {
-        result.append(indent(indent)).append(key).append(COLON_SPACE).append(value).append(NEWLINE);
     }
     
     private String indent(final int count) {
@@ -208,16 +224,5 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
             result.append(INDENT);
         }
         return result.toString();
-    }
-    
-    private String getDatabaseName() {
-        String result = getSqlStatement().getDatabase().isPresent() ? getSqlStatement().getDatabase().get().getIdentifier().getValue() : getConnectionSession().getDatabaseName();
-        if (Strings.isNullOrEmpty(result)) {
-            throw new NoDatabaseSelectedException();
-        }
-        if (!ProxyContext.getInstance().getAllDatabaseNames().contains(result)) {
-            throw new DatabaseNotExistedException(result);
-        }
-        return result;
     }
 }
