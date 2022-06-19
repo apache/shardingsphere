@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.infra.federation.optimizer.context.parser.dialect;
 
 import java.util.Properties;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.context.parser.fixture.OptimizerSQLDialectBuilderFixture;
 import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import org.junit.Test;
 
@@ -28,9 +29,10 @@ public final class OptimizerSQLDialectBuilderFactoryTest {
     
     @Test
     public void assertCreateOptimizerSQLDialectBuilder() {
-        OptimizerSQLDialectBuilder optimizerSQLDialectBuilder = new OptimizerSQLDialectBuilderFixture();
-        assertThat(optimizerSQLDialectBuilder.getType(), is("FIXTURE"));
-        Properties properties = optimizerSQLDialectBuilder.build();
-        assertThat(properties, equalTo(new Properties()));
+        DatabaseType type = DatabaseTypeFactory.getInstance("FIXTURE");
+        Properties actual = OptimizerSQLDialectBuilderFactory.build(type);
+        OptimizerSQLDialectBuilder builder = new OptimizerSQLDialectBuilderFixture();
+        Properties excepted = builder.build();
+        assertThat(actual, equalTo(excepted));
     }
 }

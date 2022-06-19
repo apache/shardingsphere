@@ -24,7 +24,9 @@ public final class OptimizerSQLDialectBuilderFixture implements OptimizerSQLDial
     
     @Override
     public Properties build() {
-        return new Properties();
+        Properties properties = new Properties();
+        properties.setProperty("fixture", "fixture");
+        return properties;
     }
     
     @Override
