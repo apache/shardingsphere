@@ -187,7 +187,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         statementManager = new StatementManager();
     }
     
-    private boolean isStatementsCacheable(ShardingSphereRuleMetaData databaseRuleMetaData) {
+    private boolean isStatementsCacheable(final ShardingSphereRuleMetaData databaseRuleMetaData) {
         return databaseRuleMetaData.findRules(StorageConnectorReusableRule.class).size() == databaseRuleMetaData.getRules().size() && !HintManager.isInstantiated();
     }
     
