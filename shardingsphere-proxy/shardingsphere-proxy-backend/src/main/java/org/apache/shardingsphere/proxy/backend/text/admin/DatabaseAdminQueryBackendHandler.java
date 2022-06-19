@@ -18,12 +18,10 @@
 package org.apache.shardingsphere.proxy.backend.text.admin;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
@@ -66,21 +64,10 @@ public final class DatabaseAdminQueryBackendHandler implements TextProtocolBacke
         ShardingSphereDatabase database = null == connectionSession.getDatabaseName() ? null : ProxyContext.getInstance().getDatabase(connectionSession.getDatabaseName());
         DatabaseType databaseType = null == database ? connectionSession.getDatabaseType() : database.getProtocolType();
         QueryHeaderBuilderEngine queryHeaderBuilderEngine = new QueryHeaderBuilderEngine(databaseType);
-        LazyInitializer<DataNodeContainedRule> dataNodeContainedRule = getDataNodeContainedRuleLazyInitializer(database);
         for (int columnIndex = 1; columnIndex <= queryResultMetaData.getColumnCount(); columnIndex++) {
-            result.add(queryHeaderBuilderEngine.build(queryResultMetaData, database, columnIndex, dataNodeContainedRule));
+            result.add(queryHeaderBuilderEngine.build(queryResultMetaData, database, columnIndex));
         }
         return result;
-    }
-    
-    private LazyInitializer<DataNodeContainedRule> getDataNodeContainedRuleLazyInitializer(final ShardingSphereDatabase database) {
-        return new LazyInitializer<DataNodeContainedRule>() {
-            
-            @Override
-            protected DataNodeContainedRule initialize() {
-                return null == database ? null : database.getRuleMetaData().findSingleRule(DataNodeContainedRule.class).orElse(null);
-            }
-        };
     }
     
     @Override
