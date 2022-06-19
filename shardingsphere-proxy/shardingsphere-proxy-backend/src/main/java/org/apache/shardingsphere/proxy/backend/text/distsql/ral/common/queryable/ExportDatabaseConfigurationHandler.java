@@ -52,6 +52,7 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
         return Collections.singleton("result");
     }
     
+    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
         String exportedData = generateExportData(getDatabaseName());
