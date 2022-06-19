@@ -56,8 +56,9 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
     protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
         String exportedData = generateExportData(getDatabaseName());
         if (getSqlStatement().getFilePath().isPresent()) {
-            exportToFile(getSqlStatement().getFilePath().get(), exportedData);
-            return Collections.singleton(new LocalDataQueryResultRow(String.format("Successfully exported to：'%s'", getSqlStatement().getFilePath().get())));
+            String filePath = getSqlStatement().getFilePath().get();
+            exportToFile(filePath, exportedData);
+            return Collections.singleton(new LocalDataQueryResultRow(String.format("Successfully exported to：'%s'", filePath)));
         }
         return Collections.singleton(new LocalDataQueryResultRow(exportedData));
     }
