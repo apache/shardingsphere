@@ -52,24 +52,14 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
         return Collections.singleton("result");
     }
     
-    @SuppressWarnings("ResultOfMethodCallIgnored")
     @Override
     protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
         String exportedData = generateExportData(getDatabaseName());
-        if (!getSqlStatement().getFilePath().isPresent()) {
-            return Collections.singleton(new LocalDataQueryResultRow(exportedData));
+        if (getSqlStatement().getFilePath().isPresent()) {
+            exportToFile(getSqlStatement().getFilePath().get(), exportedData);
+            return Collections.singleton(new LocalDataQueryResultRow(String.format("Successfully exported to：'%s'", getSqlStatement().getFilePath().get())));
         }
-        File file = new File(getSqlStatement().getFilePath().get());
-        if (!file.exists()) {
-            file.getParentFile().mkdirs();
-        }
-        try (FileOutputStream output = new FileOutputStream(file)) {
-            output.write(exportedData.getBytes());
-            output.flush();
-        } catch (final IOException ex) {
-            throw new ShardingSphereException(ex);
-        }
-        return Collections.singleton(new LocalDataQueryResultRow(String.format("Successfully exported to：'%s'", getSqlStatement().getFilePath().get())));
+        return Collections.singleton(new LocalDataQueryResultRow(exportedData));
     }
     
     private String getDatabaseName() {
@@ -121,6 +111,20 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
         stringBuilder.append("rules").append(":\n");
         for (Entry<RuleConfiguration, YamlRuleConfigurationSwapper> entry : YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurations(ruleConfigs).entrySet()) {
             stringBuilder.append(YamlEngine.marshal(Collections.singleton(entry.getValue().swapToYamlConfiguration(entry.getKey()))));
+        }
+    }
+    
+    @SuppressWarnings("ResultOfMethodCallIgnored")
+    private void exportToFile(final String filePath, final String exportedData) {
+        File file = new File(filePath);
+        if (!file.exists()) {
+            file.getParentFile().mkdirs();
+        }
+        try (FileOutputStream output = new FileOutputStream(file)) {
+            output.write(exportedData.getBytes());
+            output.flush();
+        } catch (final IOException ex) {
+            throw new ShardingSphereException(ex);
         }
     }
 }
