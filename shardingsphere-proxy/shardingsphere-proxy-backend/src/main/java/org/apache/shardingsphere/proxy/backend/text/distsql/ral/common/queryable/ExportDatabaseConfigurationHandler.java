@@ -18,11 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.yaml.swapper.DatabaseDiscoveryRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ExportDatabaseConfigurationStatement;
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
@@ -30,17 +26,13 @@ import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperFactory;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
-import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.yaml.swapper.ReadwriteSplittingRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.yaml.swapper.ShadowRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -48,8 +40,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 
 /**
@@ -58,44 +48,6 @@ import java.util.Map.Entry;
 public final class ExportDatabaseConfigurationHandler extends QueryableRALBackendHandler<ExportDatabaseConfigurationStatement> {
     
     private static final String RESULT = "result";
-    
-    private static final String COLON = ":";
-    
-    private static final String SPACE = " ";
-    
-    private static final String NEWLINE = "\n";
-    
-    private static final String COLON_SPACE = COLON + SPACE;
-    
-    private static final String COLON_NEWLINE = COLON + NEWLINE;
-    
-    private static final String INDENT = SPACE + SPACE;
-    
-    private static final int ZERO = 0;
-    
-    private static final int ONE = 1;
-    
-    private static final int TWO = 2;
-    
-    private static final String SHARDING = "sharding";
-    
-    private static final String READWRITE_SPLITTING = "readwrite_splitting";
-    
-    private static final String DB_DISCOVERY = "db_discovery";
-    
-    private static final String ENCRYPT = "encrypt";
-    
-    private static final String SHADOW = "shadow";
-    
-    private static final Map<String, Class<? extends RuleConfiguration>> FEATURE_MAP = new HashMap<>(5, 1);
-    
-    static {
-        FEATURE_MAP.put(SHARDING, ShardingRuleConfiguration.class);
-        FEATURE_MAP.put(READWRITE_SPLITTING, ReadwriteSplittingRuleConfiguration.class);
-        FEATURE_MAP.put(DB_DISCOVERY, DatabaseDiscoveryRuleConfiguration.class);
-        FEATURE_MAP.put(ENCRYPT, EncryptRuleConfiguration.class);
-        FEATURE_MAP.put(SHADOW, ShadowRuleConfiguration.class);
-    }
     
     @Override
     protected Collection<String> getColumnNames() {
@@ -135,94 +87,41 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
     private String generateExportData(final String databaseName) {
         StringBuilder result = new StringBuilder();
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
-        appendConfigItem(ZERO, "databaseName", databaseName, result);
-        appendDataSourcesConfig(database, result);
+        appendDatabaseName(databaseName, result);
+        appendDataSourceConfigurations(database, result);
         appendRuleConfigurations(database.getRuleMetaData().getConfigurations(), result);
         return result.toString();
     }
     
-    private void appendDataSourcesConfig(final ShardingSphereDatabase database, final StringBuilder stringBuilder) {
-        if (null == database.getResource().getDataSources() || database.getResource().getDataSources().isEmpty()) {
+    private void appendDatabaseName(final String databaseName, final StringBuilder stringBuilder) {
+        stringBuilder.append("databaseName").append(": ").append(databaseName).append("\n");
+    }
+    
+    private void appendDataSourceConfigurations(final ShardingSphereDatabase database, final StringBuilder stringBuilder) {
+        if (database.getResource().getDataSources().isEmpty()) {
             return;
         }
-        appendConfigItem(ZERO, "dataSources", stringBuilder);
-        for (Entry<String, DataSource> each : database.getResource().getDataSources().entrySet()) {
-            appendConfigItem(ONE, each.getKey(), stringBuilder);
-            DataSourceProperties dataSourceProps = DataSourcePropertiesCreator.create(each.getValue());
-            dataSourceProps.getConnectionPropertySynonyms().getStandardProperties().forEach((key, value) -> appendConfigItem(TWO, key, value, stringBuilder));
-            dataSourceProps.getPoolPropertySynonyms().getStandardProperties().forEach((key, value) -> appendConfigItem(TWO, key, value, stringBuilder));
+        stringBuilder.append("dataSources").append(":\n");
+        for (Entry<String, DataSource> entry : database.getResource().getDataSources().entrySet()) {
+            appendDataSourceConfiguration(entry.getKey(), entry.getValue(), stringBuilder);
         }
     }
     
+    private void appendDataSourceConfiguration(final String name, final DataSource dataSource, final StringBuilder stringBuilder) {
+        stringBuilder.append("  ").append(name).append(":\n");
+        DataSourceProperties dataSourceProps = DataSourcePropertiesCreator.create(dataSource);
+        dataSourceProps.getConnectionPropertySynonyms().getStandardProperties().forEach((key, value) -> stringBuilder.append("    ").append(key).append(": ").append(value).append("\n"));
+        dataSourceProps.getPoolPropertySynonyms().getStandardProperties().forEach((key, value) -> stringBuilder.append("    ").append(key).append(": ").append(value).append("\n"));
+    }
+    
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private void appendRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs, final StringBuilder stringBuilder) {
-        if (null == ruleConfigs || ruleConfigs.isEmpty()) {
+        if (ruleConfigs.isEmpty()) {
             return;
         }
-        appendConfigItem(ZERO, "rules", stringBuilder);
-        ruleConfigs.forEach(each -> {
-            getRulesConfigForSharding(each, stringBuilder);
-            getRulesConfigForReadwriteSplitting(each, stringBuilder);
-            getRulesConfigForDBDiscovery(each, stringBuilder);
-            getRulesConfigForEncrypt(each, stringBuilder);
-            getRulesConfigForShadow(each, stringBuilder);
-        });
-    }
-    
-    private void appendConfigItem(final int indent, final Object key, final Object value, final StringBuilder stringBuilder) {
-        stringBuilder.append(indent(indent)).append(key).append(COLON_SPACE).append(value).append(NEWLINE);
-    }
-    
-    private void appendConfigItem(final int indent, final Object key, final StringBuilder stringBuilder) {
-        stringBuilder.append(indent(indent)).append(key).append(COLON_NEWLINE);
-    }
-    
-    private void getRulesConfigForSharding(final RuleConfiguration ruleConfig, final StringBuilder stringBuilder) {
-        if (matchFeature(ruleConfig, SHARDING)) {
-            stringBuilder.append(YamlEngine.marshal(Collections.singleton(new ShardingRuleConfigurationYamlSwapper().swapToYamlConfiguration((ShardingRuleConfiguration) ruleConfig))));
+        stringBuilder.append("rules").append(":\n");
+        for (Entry<RuleConfiguration, YamlRuleConfigurationSwapper> entry : YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurations(ruleConfigs).entrySet()) {
+            stringBuilder.append(YamlEngine.marshal(Collections.singleton(entry.getValue().swapToYamlConfiguration(entry.getKey()))));
         }
-    }
-    
-    private void getRulesConfigForReadwriteSplitting(final RuleConfiguration ruleConfig, final StringBuilder stringBuilder) {
-        if (matchFeature(ruleConfig, READWRITE_SPLITTING)) {
-            stringBuilder.append(YamlEngine.marshal(
-                    Collections.singleton(new ReadwriteSplittingRuleConfigurationYamlSwapper().swapToYamlConfiguration((ReadwriteSplittingRuleConfiguration) ruleConfig))));
-        }
-    }
-    
-    private void getRulesConfigForDBDiscovery(final RuleConfiguration ruleConfig, final StringBuilder stringBuilder) {
-        if (matchFeature(ruleConfig, DB_DISCOVERY)) {
-            stringBuilder.append(
-                    YamlEngine.marshal(Collections.singleton(new DatabaseDiscoveryRuleConfigurationYamlSwapper().swapToYamlConfiguration((DatabaseDiscoveryRuleConfiguration) ruleConfig))));
-        }
-    }
-    
-    private void getRulesConfigForEncrypt(final RuleConfiguration ruleConfig, final StringBuilder stringBuilder) {
-        if (matchFeature(ruleConfig, ENCRYPT)) {
-            stringBuilder.append(YamlEngine.marshal(Collections.singleton(new EncryptRuleConfigurationYamlSwapper().swapToYamlConfiguration((EncryptRuleConfiguration) ruleConfig))));
-        }
-    }
-    
-    private void getRulesConfigForShadow(final RuleConfiguration ruleConfig, final StringBuilder stringBuilder) {
-        if (matchFeature(ruleConfig, SHADOW)) {
-            stringBuilder.append(YamlEngine.marshal(Collections.singleton(new ShadowRuleConfigurationYamlSwapper().swapToYamlConfiguration((ShadowRuleConfiguration) ruleConfig))));
-        }
-    }
-    
-    private boolean matchFeature(final RuleConfiguration ruleConfig, final String feature) {
-        return null != ruleConfig && ruleConfig.getClass().getCanonicalName().equalsIgnoreCase(FEATURE_MAP.get(feature).getCanonicalName());
-    }
-    
-    private String indent(final int count) {
-        if (count <= 0) {
-            return "";
-        }
-        if (1 == count) {
-            return INDENT;
-        }
-        StringBuilder result = new StringBuilder();
-        for (int i = 0; i < count; i++) {
-            result.append(INDENT);
-        }
-        return result.toString();
     }
 }
