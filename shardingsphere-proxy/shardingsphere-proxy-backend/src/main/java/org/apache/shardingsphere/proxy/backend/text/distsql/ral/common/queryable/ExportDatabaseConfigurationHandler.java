@@ -47,11 +47,9 @@ import java.util.Map.Entry;
  */
 public final class ExportDatabaseConfigurationHandler extends QueryableRALBackendHandler<ExportDatabaseConfigurationStatement> {
     
-    private static final String RESULT = "result";
-    
     @Override
     protected Collection<String> getColumnNames() {
-        return Collections.singleton(RESULT);
+        return Collections.singleton("result");
     }
     
     @Override
