@@ -1808,10 +1808,8 @@ relationExprList
     ;
 
 relationExpr
-    : qualifiedName
-    | qualifiedName ASTERISK_
-    | ONLY qualifiedName
-    | ONLY LP_ qualifiedName RP_
+    : tableName (ASTERISK_)?
+    | ONLY LP_? tableName RP_?
     ;
 
 commonFuncOptItem
