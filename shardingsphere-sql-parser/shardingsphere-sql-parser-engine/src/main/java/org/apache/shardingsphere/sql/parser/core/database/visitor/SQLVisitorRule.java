@@ -481,7 +481,7 @@ public enum SQLVisitorRule {
     ALTER_DOMAIN("AlterDomain", SQLStatementType.DDL),
     
     ALTER_POLICY("AlterPolicy", SQLStatementType.DDL),
-
+    
     ALTER_CONVERSION("AlterConversion", SQLStatementType.DDL),
     
     CREATE_TEXT_SEARCH("CreateTextSearch", SQLStatementType.DDL),
@@ -569,11 +569,11 @@ public enum SQLVisitorRule {
     CHECKPOINT("Checkpoint", SQLStatementType.DML),
     
     CLUSTER("Cluster", SQLStatementType.DDL),
-
+    
     CREATE_ACCESS_METHOD("CreateAccessMethod", SQLStatementType.DDL),
-
+    
     DO("DoStatement", SQLStatementType.DML);
-
+    
     private final String name;
     
     @Getter

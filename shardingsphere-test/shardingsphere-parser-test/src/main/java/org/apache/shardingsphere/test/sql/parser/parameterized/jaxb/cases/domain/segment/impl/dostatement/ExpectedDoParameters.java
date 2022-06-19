@@ -15,17 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.statement.dml;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.dostatement;
 
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
+
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
- * Do statement context.
+ * Expected do parameters.
  */
-public final class DoStatementContext extends CommonSQLStatementContext<DoStatement> {
+@Getter
+@Setter
+public final class ExpectedDoParameters extends AbstractExpectedSQLSegment {
     
-    public DoStatementContext(final DoStatement sqlStatement) {
-        super(sqlStatement);
-    }
+    @XmlElement(name = "parameter")
+    private List<ExpectedDoParameter> parameters = new LinkedList<>();
 }

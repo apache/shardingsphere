@@ -15,17 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.statement.dml;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml;
 
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.dostatement.ExpectedDoParameters;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Do statement context.
+ * Do statement test case.
  */
-public final class DoStatementContext extends CommonSQLStatementContext<DoStatement> {
+@Getter
+@Setter
+public final class DoStatementTestCase extends SQLParserTestCase {
     
-    public DoStatementContext(final DoStatement sqlStatement) {
-        super(sqlStatement);
-    }
+    @XmlElement(name = "parameters")
+    private ExpectedDoParameters doParameters;
 }
