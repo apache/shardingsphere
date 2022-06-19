@@ -30,4 +30,10 @@ public final class DatabaseLockedException extends BackendException {
     private static final long serialVersionUID = -5409739222950362541L;
     
     private final String databaseName;
+    
+    private final String errorMessage;
+    
+    public DatabaseLockedException(final String databaseName) {
+        this(databaseName, String.format("The database %s is read-only", databaseName));
+    }
 }

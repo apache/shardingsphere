@@ -76,11 +76,17 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
     @Override
     public String toString(final RouteUnit routeUnit) {
         Map<String, String> logicAndActualTables = getLogicAndActualTables(routeUnit);
-        StringBuilder builder = lastColumn ? new StringBuilder(COLUMN_NAME_SPLITTER) : new StringBuilder();
+        StringBuilder result = new StringBuilder();
+        int count = 0;
         for (ColumnProjection each : projections) {
-            builder.append(getColumnName(each, logicAndActualTables)).append(COLUMN_NAME_SPLITTER);
+            if (0 == count && !lastColumn) {
+                result.append(getColumnName(each, logicAndActualTables));
+            } else {
+                result.append(COLUMN_NAME_SPLITTER).append(getColumnName(each, logicAndActualTables));
+            }
+            count++;
         }
-        return builder.substring(0, builder.length() - COLUMN_NAME_SPLITTER.length());
+        return result.toString();
     }
     
     private Map<String, String> getLogicAndActualTables(final RouteUnit routeUnit) {

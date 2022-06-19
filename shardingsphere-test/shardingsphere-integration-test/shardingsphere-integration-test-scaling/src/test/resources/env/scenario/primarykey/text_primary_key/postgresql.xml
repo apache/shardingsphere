@@ -24,4 +24,12 @@
         PRIMARY KEY (id)
         )
     </create-table-order>
+
+    <update-table-order-status>
+        UPDATE test.t_order SET status= 'unlock'
+    </update-table-order-status>
+
+    <create-index-status>
+        CREATE INDEX "idx_user_status" ON test.t_order ( status )
+    </create-index-status>
 </command>

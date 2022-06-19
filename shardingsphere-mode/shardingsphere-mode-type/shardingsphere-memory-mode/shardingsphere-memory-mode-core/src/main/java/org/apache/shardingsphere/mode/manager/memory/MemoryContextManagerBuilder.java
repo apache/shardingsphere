@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
@@ -29,8 +28,6 @@ import org.apache.shardingsphere.mode.manager.memory.lock.MemoryLockContext;
 import org.apache.shardingsphere.mode.manager.memory.workerid.generator.MemoryWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
-import org.apache.shardingsphere.transaction.context.TransactionContextsBuilder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGenerator;
 import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGeneratorFactory;
@@ -49,9 +46,7 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
                 parameter.getDatabaseConfigs(), parameter.getGlobalRuleConfigs(), new ConfigurationProperties(parameter.getProps())).build(null);
         InstanceContext instanceContext = buildInstanceContext(parameter);
         generateTransactionConfigurationFile(instanceContext, metaDataContexts);
-        TransactionContexts transactionContexts = new TransactionContextsBuilder(metaDataContexts.getDatabaseMap(), metaDataContexts.getGlobalRuleMetaData().getRules()).build();
-        ContextManager result = new ContextManager(metaDataContexts, transactionContexts, buildInstanceContext(parameter));
-        setInstanceContext(result);
+        ContextManager result = new ContextManager(metaDataContexts, instanceContext);
         return result;
     }
     
@@ -63,16 +58,11 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
     
     private void generateTransactionConfigurationFile(final InstanceContext instanceContext, final MetaDataContexts metaDataContexts) {
         Optional<TransactionRule> transactionRule =
-                metaDataContexts.getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
+                metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
         if (transactionRule.isPresent()) {
             Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.findInstance(transactionRule.get().getProviderType());
             fileGenerator.ifPresent(optional -> optional.generateFile(transactionRule.get().getProps(), instanceContext));
         }
-    }
-    
-    private void setInstanceContext(final ContextManager contextManager) {
-        contextManager.getMetaDataContexts().getDatabaseMap().forEach((key, value) -> value.getRuleMetaData().getRules().stream().filter(each -> each instanceof InstanceAwareRule)
-                .forEach(each -> ((InstanceAwareRule) each).setInstanceContext(contextManager.getInstanceContext())));
     }
     
     private ModeConfiguration buildMemoryModeConfiguration(final ModeConfiguration modeConfiguration) {

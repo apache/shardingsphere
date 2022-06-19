@@ -22,9 +22,9 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.sharding.merge.dql.ShardingDQLResultMerger;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
@@ -49,8 +49,6 @@ import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -189,22 +187,16 @@ public final class GroupByMemoryMergedResultTest {
         when(queryResult.getMetaData().getColumnLabel(1)).thenReturn("order_id");
         when(queryResult.getMetaData().getColumnLabel(2)).thenReturn("content");
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        TableMetaData tableMetaData = mock(TableMetaData.class);
-        when(schema.get("t_order")).thenReturn(tableMetaData);
-        when(tableMetaData.getColumns()).thenReturn(Collections.emptyMap());
+        ShardingSphereTable table = mock(ShardingSphereTable.class);
+        when(schema.get("t_order")).thenReturn(table);
+        when(table.getColumns()).thenReturn(Collections.emptyMap());
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchemas().get(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
-        when(database.getSchemas()).thenReturn(mockSchemas(schema));
+        when(database.getSchemas()).thenReturn(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema));
         when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         when(schema.getAllColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "content"));
         ShardingDQLResultMerger merger = new ShardingDQLResultMerger(DatabaseTypeFactory.getInstance("MySQL"));
         MergedResult actual = merger.merge(Arrays.asList(queryResult, queryResult, queryResult), createSelectStatementContext(database), database);
         assertFalse(actual.next());
-    }
-    
-    private Map<String, ShardingSphereSchema> mockSchemas(final ShardingSphereSchema schema) {
-        Map<String, ShardingSphereSchema> result = new LinkedHashMap<>();
-        result.put(DefaultDatabase.LOGIC_NAME, schema);
-        return result;
     }
 }

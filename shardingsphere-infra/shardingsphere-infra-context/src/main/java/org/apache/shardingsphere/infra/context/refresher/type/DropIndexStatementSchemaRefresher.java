@@ -19,14 +19,15 @@ package org.apache.shardingsphere.infra.context.refresher.type;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedTable;
-import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.util.IndexMetaDataUtil;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.DropIndexEvent;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
+import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
@@ -46,18 +47,22 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
     private static final String TYPE = DropIndexStatement.class.getName();
     
     @Override
-    public void refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData, final Map<String, OptimizerPlannerContext> optimizerPlanners,
-                        final Collection<String> logicDataSourceNames, final String schemaName, final DropIndexStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData,
+                                                    final Map<String, OptimizerPlannerContext> optimizerPlanners,
+                                                    final Collection<String> logicDataSourceNames, final String schemaName, final DropIndexStatement sqlStatement,
+                                                    final ConfigurationProperties props) throws SQLException {
+        DropIndexEvent event = new DropIndexEvent();
         for (IndexSegment each : sqlStatement.getIndexes()) {
             String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
             Optional<String> logicTableName = findLogicTableName(database, sqlStatement, Collections.singletonList(each));
             if (!logicTableName.isPresent()) {
                 continue;
             }
-            TableMetaData tableMetaData = database.getSchemas().get(actualSchemaName).get(logicTableName.get());
-            tableMetaData.getIndexes().remove(each.getIndexName().getIdentifier().getValue());
-            post(database.getName(), actualSchemaName, tableMetaData);
+            ShardingSphereTable table = database.getSchemas().get(actualSchemaName).get(logicTableName.get());
+            table.getIndexes().remove(each.getIndexName().getIdentifier().getValue());
+            event.getSchemaAlteredEvents().add(buildSchemaAlteredEvent(database.getName(), actualSchemaName, table));
         }
+        return Optional.of(event);
     }
     
     private Optional<String> findLogicTableName(final ShardingSphereDatabase database, final DropIndexStatement sqlStatement, final Collection<IndexSegment> indexSegments) {
@@ -69,10 +74,10 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
         return tableNames.isEmpty() ? Optional.empty() : Optional.of(tableNames.iterator().next().getTableName());
     }
     
-    private void post(final String databaseName, final String schemaName, final TableMetaData tableMetaData) {
-        SchemaAlteredEvent event = new SchemaAlteredEvent(databaseName, schemaName);
-        event.getAlteredTables().add(tableMetaData);
-        ShardingSphereEventBus.getInstance().post(event);
+    private SchemaAlteredEvent buildSchemaAlteredEvent(final String databaseName, final String schemaName, final ShardingSphereTable table) {
+        SchemaAlteredEvent result = new SchemaAlteredEvent(databaseName, schemaName);
+        result.getAlteredTables().add(table);
+        return result;
     }
     
     @Override

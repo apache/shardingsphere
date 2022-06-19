@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import lombok.Getter;
-import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
+import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.util.List;
 import java.util.Properties;
@@ -27,7 +28,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Round-robin replica load-balance algorithm.
  */
-public final class RoundRobinReplicaLoadBalanceAlgorithm implements ReplicaLoadBalanceAlgorithm {
+public final class RoundRobinReplicaLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
     
     private final AtomicInteger count = new AtomicInteger(0);
     
@@ -41,6 +42,9 @@ public final class RoundRobinReplicaLoadBalanceAlgorithm implements ReplicaLoadB
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
+        if (TransactionHolder.isTransaction()) {
+            return writeDataSourceName;
+        }
         return readDataSourceNames.get(Math.abs(count.getAndIncrement()) % readDataSourceNames.size());
     }
     

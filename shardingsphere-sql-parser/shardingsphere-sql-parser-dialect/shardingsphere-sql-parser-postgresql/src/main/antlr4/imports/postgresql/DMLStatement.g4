@@ -463,60 +463,38 @@ checkpoint
     ;
 
 copy
-    : COPY (BINARY)? qualifiedName (LP_ columnList RP_)? (FROM | TO) PROGRAM?
-      (STRING_ | STDIN | STDOUT) copyDelimiter? (WITH)? copyOptions whereClause?
-    | COPY LP_ preparableStmt RP_ TO PROGRAM? (STRING_ | STDIN | STDOUT) WITH? copyOptions
+    : copyWithTableOrQuery | copyWithTableOrQueryBinaryCsv | copyWithTableBinary
     ;
 
-copyOptions
-    : copyOptList | LP_ copyGenericOptList RP_
+copyWithTableOrQuery
+    : COPY (qualifiedName columnNames? | LP_ preparableStmt RP_) (FROM | TO) (fileName | PROGRAM STRING_ | STDIN | STDOUT) (WITH? LP_ copyOptionList RP_)? whereClause?
     ;
 
-copyGenericOptList
-    : copyGenericOptElem (COMMA_ copyGenericOptElem)*
+copyOptionList
+    : copyOption (COMMA_ copyOption)*
     ;
 
-copyGenericOptElem
-    : colLabel copyGenericOptArg
-    ;
-
-copyGenericOptArg
-    : booleanOrString
-    | numericOnly
-    | ASTERISK_
-    | LP_ copyGenericOptArgList RP_
-    ;
-
-copyGenericOptArgList
-    : copyGenericOptArgListItem (COMMA_ copyGenericOptArgListItem)*
-    ;
-
-copyGenericOptArgListItem
-    : booleanOrString
-    ;
-
-copyOptList
-    : copyOptItem*
-    ;
-
-copyOptItem
-    : BINARY
-    | FREEZE
-    | DELIMITER (AS)? STRING_
-    | NULL (AS)? STRING_
-    | CSV
-    | HEADER
-    | QUOTE (AS)? STRING_
-    | ESCAPE (AS)? STRING_
-    | FORCE QUOTE columnList
-    | FORCE QUOTE ASTERISK_
-    | FORCE NOT NULL columnList
-    | FORCE NULL columnList
+copyOption
+    : FORMAT identifier
+    | FREEZE booleanValue?
+    | DELIMITER STRING_
+    | NULL STRING_
+    | HEADER booleanValue?
+    | QUOTE STRING_
+    | ESCAPE STRING_
+    | FORCE_QUOTE (columnNames | ASTERISK_)
+    | FORCE_NOT_NULL columnNames
+    | FORCE_NULL columnNames
     | ENCODING STRING_
     ;
 
-copyDelimiter
-    : (USING)? DELIMITERS STRING_
+
+copyWithTableOrQueryBinaryCsv
+    : COPY (qualifiedName columnNames? | LP_ preparableStmt RP_) (FROM | TO) (fileName | STDIN | STDOUT) (WITH? BINARY? (DELIMITER AS? STRING_)? (NULL AS? STRING_)? (CSV HEADER? (QUOTE AS? STRING_)? (ESCAPE AS? STRING_)? (FORCE NOT NULL columnName (COMMA_ columnName)*)? (FORCE QUOTE (columnName (COMMA_ columnName)* | ASTERISK_))?)?)?
+    ;
+
+copyWithTableBinary
+    : COPY BINARY? qualifiedName (FROM | TO) (fileName | STDIN | STDOUT) (USING? DELIMITERS STRING_)? (WITH NULL AS STRING_)?
     ;
 
 fetch

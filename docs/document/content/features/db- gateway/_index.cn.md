@@ -24,3 +24,5 @@ chapter = true
 Apache ShardingSphere 的 SQL 方言翻译处于**实验阶段**。
 
 目前已支持 MySQL/PostgreSQL 的方言自动翻译，工程师可以使用 MySQL 的方言和协议，访问 PostgreSQL 数据库，反之亦然。
+
+**源码：https://github.com/apache/shardingsphere/tree/master/shardingsphere-kernel/shardingsphere-sql-translator**

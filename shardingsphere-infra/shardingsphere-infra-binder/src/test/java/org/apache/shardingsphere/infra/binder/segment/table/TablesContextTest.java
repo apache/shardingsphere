@@ -19,9 +19,9 @@ package org.apache.shardingsphere.infra.binder.segment.table;
 
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
@@ -109,9 +109,9 @@ public final class TablesContextTest {
     public void assertFindTableNameWhenColumnSegmentOwnerAbsentAndSchemaMetaDataContainsColumnInUpperCase() {
         SimpleTableSegment tableSegment1 = createTableSegment("TABLE_1", "TBL_1");
         SimpleTableSegment tableSegment2 = createTableSegment("TABLE_2", "TBL_2");
-        TableMetaData tableMetaData = new TableMetaData("TABLE_1",
-                Collections.singletonList(new ColumnMetaData("COL", 0, false, false, true)), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereSchema schema = new ShardingSphereSchema(Stream.of(tableMetaData).collect(Collectors.toMap(TableMetaData::getName, value -> value)));
+        ShardingSphereTable table = new ShardingSphereTable("TABLE_1",
+                Collections.singletonList(new ShardingSphereColumn("COL", 0, false, false, true)), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema(Stream.of(table).collect(Collectors.toMap(ShardingSphereTable::getName, value -> value)));
         ColumnSegment columnSegment = createColumnSegment(null, "COL");
         Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2),
                 DatabaseTypeEngine.getDatabaseType("MySQL")).findTableNamesByColumnSegment(Collections.singletonList(columnSegment), schema);
@@ -167,8 +167,9 @@ public final class TablesContextTest {
     public void assertFindTableNameWhenColumnProjectionOwnerAbsentAndSchemaMetaDataContainsColumnInUpperCase() {
         SimpleTableSegment tableSegment1 = createTableSegment("TABLE_1", "TBL_1");
         SimpleTableSegment tableSegment2 = createTableSegment("TABLE_2", "TBL_2");
-        TableMetaData tableMetaData = new TableMetaData("TABLE_1", Collections.singletonList(new ColumnMetaData("COL", 0, false, false, true)), Collections.emptyList(), Collections.emptyList());
-        ShardingSphereSchema schema = new ShardingSphereSchema(Stream.of(tableMetaData).collect(Collectors.toMap(TableMetaData::getName, value -> value)));
+        ShardingSphereTable table = new ShardingSphereTable("TABLE_1", Collections.singletonList(
+                new ShardingSphereColumn("COL", 0, false, false, true)), Collections.emptyList(), Collections.emptyList());
+        ShardingSphereSchema schema = new ShardingSphereSchema(Stream.of(table).collect(Collectors.toMap(ShardingSphereTable::getName, value -> value)));
         ColumnProjection columnProjection = new ColumnProjection(null, "COL", "CL");
         Map<String, String> actual = new TablesContext(Arrays.asList(tableSegment1, tableSegment2), DatabaseTypeEngine.getDatabaseType("MySQL"))
                 .findTableNamesByColumnProjection(Collections.singletonList(columnProjection), schema);

@@ -44,10 +44,11 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         YamlRootConfiguration rootConfig = (YamlRootConfiguration) pipelineDataSourceConfig;
         YamlShardingRuleConfiguration shardingRuleConfig = ShardingRuleConfigurationConverter.findYamlShardingRuleConfiguration(rootConfig.getRules());
         enableRangeQueryForInline(shardingRuleConfig);
-        Map<String, DataSource> dataSourceMap = new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources());
+        String databaseName = null;
+        Map<String, DataSource> dataSourceMap = new YamlDataSourceConfigurationSwapper().swapToDataSources(rootConfig.getDataSources(), false);
         Collection<RuleConfiguration> ruleConfigs = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(rootConfig.getRules());
         try {
-            return ShardingSphereDataSourceFactory.createDataSource(rootConfig.getDatabaseName(), dataSourceMap, ruleConfigs, null);
+            return ShardingSphereDataSourceFactory.createDataSource(databaseName, dataSourceMap, ruleConfigs, null);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
@@ -64,8 +65,8 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
         }
     }
     
-    private void closeDataSources(final Collection<DataSource> dataSourceMap) {
-        dataSourceMap.stream().map(DataSourcePoolDestroyer::new).forEach(DataSourcePoolDestroyer::asyncDestroy);
+    private void closeDataSources(final Collection<DataSource> dataSources) {
+        dataSources.stream().map(DataSourcePoolDestroyer::new).forEach(DataSourcePoolDestroyer::asyncDestroy);
     }
     
     @Override

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.type.broadcast;
 
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Before;

@@ -18,15 +18,16 @@
 package org.apache.shardingsphere.encrypt.rewrite.impl;
 
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.EncryptCreateTableTokenGenerator;
-import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptConfigDataTypeToken;
 import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.spi.context.EncryptColumnDataType;
+
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.RemoveToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.ColumnDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DataTypeSegment;
@@ -34,12 +35,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.junit.Before;
 import org.junit.Test;
 
-import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -65,18 +63,18 @@ public final class EncryptCreateTableTokenGeneratorTest {
         assertThat(sqlTokens.size(), is(4));
         Iterator<SQLToken> iterator = sqlTokens.iterator();
         assertThat(iterator.next(), instanceOf(RemoveToken.class));
-        EncryptConfigDataTypeToken cipherToken = (EncryptConfigDataTypeToken) iterator.next();
-        assertThat(cipherToken.toString(), is("cipher_certificate_number varchar(200) not null default ''"));
+        SubstitutableColumnNameToken cipherToken = (SubstitutableColumnNameToken) iterator.next();
+        assertThat(cipherToken.toString(mock(RouteUnit.class)), is("cipher_certificate_number"));
         assertThat(cipherToken.getStartIndex(), is(79));
-        assertThat(cipherToken.getStopIndex(), is(78));
-        EncryptConfigDataTypeToken assistedToken = (EncryptConfigDataTypeToken) iterator.next();
-        assertThat(assistedToken.toString(), is(", assisted_certificate_number varchar(200) not null"));
+        assertThat(cipherToken.getStopIndex(), is(42));
+        SubstitutableColumnNameToken assistedToken = (SubstitutableColumnNameToken) iterator.next();
+        assertThat(assistedToken.toString(mock(RouteUnit.class)), is(", assisted_certificate_number"));
         assertThat(assistedToken.getStartIndex(), is(79));
-        assertThat(assistedToken.getStopIndex(), is(78));
-        EncryptConfigDataTypeToken plainToken = (EncryptConfigDataTypeToken) iterator.next();
-        assertThat(plainToken.toString(), is(", certificate_number_plain int(20) unsigned not null default 0"));
+        assertThat(assistedToken.getStopIndex(), is(42));
+        SubstitutableColumnNameToken plainToken = (SubstitutableColumnNameToken) iterator.next();
+        assertThat(plainToken.toString(mock(RouteUnit.class)), is(", certificate_number_plain"));
         assertThat(plainToken.getStartIndex(), is(79));
-        assertThat(plainToken.getStopIndex(), is(78));
+        assertThat(plainToken.getStopIndex(), is(42));
     }
     
     private CreateTableStatementContext buildCreateTableStatementContext() {
@@ -95,19 +93,14 @@ public final class EncryptCreateTableTokenGeneratorTest {
         when(result.findEncryptor("t_encrypt", "certificate_number")).thenReturn(Optional.of(mock(EncryptAlgorithm.class)));
         when(result.findEncryptTable("t_encrypt")).thenReturn(Optional.of(encryptTable));
         EncryptColumn column = mockEncryptColumn();
+        when(result.getCipherColumn("t_encrypt", "certificate_number")).thenReturn(column.getCipherColumn());
+        when(result.findPlainColumn("t_encrypt", "certificate_number")).thenReturn(column.getPlainColumn());
+        when(result.findAssistedQueryColumn("t_encrypt", "certificate_number")).thenReturn(column.getAssistedQueryColumn());
         when(encryptTable.findEncryptColumn("certificate_number")).thenReturn(Optional.of(column));
         return result;
     }
     
     private EncryptColumn mockEncryptColumn() {
-        Map<String, Integer> dataTypes = new HashMap<>();
-        dataTypes.put("int", Types.INTEGER);
-        dataTypes.put("varchar", Types.VARCHAR);
-        EncryptColumnDataType logicDataType = new EncryptColumnDataType("int(20) unsigned not null default 0", dataTypes);
-        EncryptColumnDataType cipherDataType = new EncryptColumnDataType("varchar(200) not null default ''", dataTypes);
-        EncryptColumnDataType assistedQueryDataType = new EncryptColumnDataType("varchar(200) not null", dataTypes);
-        EncryptColumnDataType plainDataType = new EncryptColumnDataType("int(20) unsigned not null default 0", dataTypes);
-        return new EncryptColumn(logicDataType, "cipher_certificate_number", cipherDataType,
-                "assisted_certificate_number", assistedQueryDataType, "certificate_number_plain", plainDataType, "test");
+        return new EncryptColumn("cipher_certificate_number", "assisted_certificate_number", "certificate_number_plain", "test", null);
     }
 }

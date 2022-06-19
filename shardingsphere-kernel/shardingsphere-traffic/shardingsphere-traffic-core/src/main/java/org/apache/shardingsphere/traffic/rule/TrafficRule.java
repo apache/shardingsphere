@@ -56,12 +56,15 @@ import java.util.Properties;
 @Getter
 public final class TrafficRule implements GlobalRule {
     
+    private final TrafficRuleConfiguration configuration;
+    
     private final Collection<TrafficStrategyRule> strategyRules;
     
-    public TrafficRule(final TrafficRuleConfiguration config) {
-        Map<String, TrafficAlgorithm> trafficAlgorithms = createTrafficAlgorithms(config.getTrafficAlgorithms());
-        Map<String, TrafficLoadBalanceAlgorithm> loadBalancers = createTrafficLoadBalanceAlgorithms(config.getLoadBalancers());
-        strategyRules = createTrafficStrategyRules(config.getTrafficStrategies(), trafficAlgorithms, loadBalancers);
+    public TrafficRule(final TrafficRuleConfiguration ruleConfig) {
+        configuration = ruleConfig;
+        Map<String, TrafficAlgorithm> trafficAlgorithms = createTrafficAlgorithms(ruleConfig.getTrafficAlgorithms());
+        Map<String, TrafficLoadBalanceAlgorithm> loadBalancers = createTrafficLoadBalanceAlgorithms(ruleConfig.getLoadBalancers());
+        strategyRules = createTrafficStrategyRules(ruleConfig.getTrafficStrategies(), trafficAlgorithms, loadBalancers);
     }
     
     private Map<String, TrafficAlgorithm> createTrafficAlgorithms(final Map<String, ShardingSphereAlgorithmConfiguration> trafficAlgorithms) {

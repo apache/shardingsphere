@@ -17,7 +17,7 @@
   -->
 
 <sql-parser-test-cases>
-    <cursor sql-case-id="cursor">
+    <cursor sql-case-id="create_cursor">
         <cursor-name name="t_order_cursor" start-index="7" stop-index="20" />
         <select>
             <from>

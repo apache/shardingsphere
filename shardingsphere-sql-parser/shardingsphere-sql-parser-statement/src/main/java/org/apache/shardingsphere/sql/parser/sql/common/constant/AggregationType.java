@@ -28,6 +28,7 @@ public enum AggregationType {
     
     /**
      * Is aggregation type.
+     * 
      * @param aggregationType aggregation type
      * @return is aggregation type or not
      */

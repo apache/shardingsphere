@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingAlgorithmsStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.schema.SchemaAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.database.DatabaseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingAlgorithmsStatementTestCase;
 
 import static org.junit.Assert.assertFalse;
@@ -41,11 +41,11 @@ public final class ShowShardingAlgorithmsStatementAssert {
      * @param expected expected show sharding algorithms statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowShardingAlgorithmsStatement actual, final ShowShardingAlgorithmsStatementTestCase expected) {
-        if (null != expected.getSchema()) {
-            assertTrue(assertContext.getText("Actual schema should exist."), actual.getSchema().isPresent());
-            SchemaAssert.assertIs(assertContext, actual.getSchema().get(), expected.getSchema());
+        if (null != expected.getDatabase()) {
+            assertTrue(assertContext.getText("Actual database should exist."), actual.getDatabase().isPresent());
+            DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());
         } else {
-            assertFalse(assertContext.getText("Actual schema should not exist."), actual.getSchema().isPresent());
+            assertFalse(assertContext.getText("Actual database should not exist."), actual.getDatabase().isPresent());
         }
     }
 }

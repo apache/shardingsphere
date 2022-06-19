@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.state.StateType;
 
 import java.util.Collection;
-import java.util.LinkedHashSet;
-import java.util.Set;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Instance of compute node.
@@ -38,13 +38,13 @@ public final class ComputeNodeInstance {
     
     private final InstanceDefinition instanceDefinition;
     
-    private Set<String> labels;
+    private Collection<String> labels;
     
     private final StateContext state = new StateContext();
     
     private Long workerId;
     
-    private String xaRecoveryId;
+    private List<String> xaRecoveryIds = new LinkedList<>();
     
     /**
      * Set labels.
@@ -55,7 +55,7 @@ public final class ComputeNodeInstance {
         if (null == labels) {
             return;
         }
-        this.labels = new LinkedHashSet<>(labels);
+        this.labels = labels;
     }
     
     /**
@@ -73,6 +73,6 @@ public final class ComputeNodeInstance {
      * @return current instance id
      */
     public String getCurrentInstanceId() {
-        return instanceDefinition.getInstanceId().getId();
+        return instanceDefinition.getInstanceId();
     }
 }

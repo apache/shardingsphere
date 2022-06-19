@@ -18,9 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
@@ -28,7 +31,6 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.HintShardingType;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.result.ShowShardingHintStatusResult;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.ShowShardingHintStatusStatement;
-import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
 
 import java.sql.Types;
 import java.util.ArrayList;
@@ -37,6 +39,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Show sharding hint status executor.
@@ -63,7 +66,7 @@ public final class ShowShardingHintStatusExecutor extends AbstractHintQueryExecu
         if (!database.isComplete()) {
             throw new RuleNotExistedException();
         }
-        String schemaName = connectionSession.getDatabaseType().getDefaultSchema(connectionSession.getDatabaseName());
+        String schemaName = DatabaseTypeEngine.getDefaultSchemaName(connectionSession.getDatabaseType(), connectionSession.getDatabaseName());
         Collection<String> tableNames = database.getSchemas().get(schemaName).getAllTableNames();
         for (String each : tableNames) {
             if (HintManager.isDatabaseShardingOnly()) {
@@ -89,19 +92,12 @@ public final class ShowShardingHintStatusExecutor extends AbstractHintQueryExecu
     }
     
     private MergedResult convertToMergedResult(final Collection<ShowShardingHintStatusResult> showShardingHintStatusResults) {
-        Collection<List<Object>> values = new ArrayList<>(showShardingHintStatusResults.size());
-        for (ShowShardingHintStatusResult each : showShardingHintStatusResults) {
-            values.add(createRow(each));
-        }
-        return new MultipleLocalDataMergedResult(values);
+        return new LocalDataMergedResult(showShardingHintStatusResults.stream().map(this::createRow).collect(Collectors.toList()));
     }
     
-    private List<Object> createRow(final ShowShardingHintStatusResult showShardingHintStatusResult) {
-        List<Object> result = new ArrayList<>(3);
-        result.add(showShardingHintStatusResult.getLogicTable());
-        result.add(String.join(",", showShardingHintStatusResult.getDatabaseShardingValues()));
-        result.add(String.join(",", showShardingHintStatusResult.getTableShardingValues()));
-        result.add(String.valueOf(HintManager.isDatabaseShardingOnly() ? HintShardingType.DATABASES_ONLY : HintShardingType.DATABASES_TABLES).toLowerCase());
-        return result;
+    private LocalDataQueryResultRow createRow(final ShowShardingHintStatusResult showShardingHintStatusResult) {
+        return new LocalDataQueryResultRow(showShardingHintStatusResult.getLogicTable(),
+                String.join(",", showShardingHintStatusResult.getDatabaseShardingValues()), String.join(",", showShardingHintStatusResult.getTableShardingValues()),
+                String.valueOf(HintManager.isDatabaseShardingOnly() ? HintShardingType.DATABASES_ONLY : HintShardingType.DATABASES_TABLES).toLowerCase());
     }
 }

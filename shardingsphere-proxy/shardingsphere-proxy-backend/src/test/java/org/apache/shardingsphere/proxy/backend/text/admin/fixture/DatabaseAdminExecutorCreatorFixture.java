@@ -32,7 +32,7 @@ public final class DatabaseAdminExecutorCreatorFixture implements DatabaseAdminE
     }
     
     @Override
-    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext<?> sqlStatementContext, final String sql, final String schemaName) {
+    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext<?> sqlStatementContext, final String sql, final String databaseName) {
         return Optional.empty();
     }
     

@@ -31,6 +31,8 @@ ShardingSphere-JDBC 是 Apache ShardingSphere 的第一个产品，也是 Apache
 
 ShardingSphere-JDBC 的优势在于对 Java 应用的友好度。
 
+**源码：https://github.com/apache/shardingsphere/tree/master/shardingsphere-jdbc**
+
 ## ShardingSphere-Proxy
 
 ShardingSphere-Proxy 是 Apache ShardingSphere 的第二个产品。
@@ -52,6 +54,8 @@ ShardingSphere-Proxy 是 Apache ShardingSphere 的第二个产品。
 | 静态入口   | 无                    | `有`                     |
 
 ShardingSphere-Proxy 的优势在于对异构语言的支持，以及为 DBA 提供可操作入口。
+
+**源码：https://github.com/apache/shardingsphere/tree/master/shardingsphere-proxy**
 
 ## 混合架构
 

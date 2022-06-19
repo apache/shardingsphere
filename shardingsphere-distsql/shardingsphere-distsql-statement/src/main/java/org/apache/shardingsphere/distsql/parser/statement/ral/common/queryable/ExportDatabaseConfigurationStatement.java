@@ -19,8 +19,8 @@ package org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromSchemaAvailable;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromDatabaseAvailable;
 
 import java.util.Optional;
 
@@ -28,14 +28,14 @@ import java.util.Optional;
  * Export database configuration statement.
  */
 @RequiredArgsConstructor
-public final class ExportDatabaseConfigurationStatement extends QueryableRALStatement implements FromSchemaAvailable {
+public final class ExportDatabaseConfigurationStatement extends QueryableRALStatement implements FromDatabaseAvailable {
     
-    private final SchemaSegment database;
+    private final DatabaseSegment database;
     
     private final String filePath;
     
     @Override
-    public Optional<SchemaSegment> getSchema() {
+    public Optional<DatabaseSegment> getDatabase() {
         return Optional.ofNullable(database);
     }
     

@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.lock.LockState;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 
@@ -39,6 +39,8 @@ import java.util.concurrent.atomic.AtomicReference;
 public final class InterMutexLock implements MutexLock, LockAckAble {
     
     private final String lockName;
+    
+    private final MutexLock sequence;
     
     private final LockRegistryService lockService;
     
@@ -59,7 +61,18 @@ public final class InterMutexLock implements MutexLock, LockAckAble {
     
     @Override
     public boolean tryLock(final long timeoutMillis) {
-        return innerTryLock(lockName, Math.max(timeoutMillis, TimeoutMilliseconds.MIN_TRY_LOCK));
+        if (!sequence.tryLock(TimeoutMilliseconds.DEFAULT_REGISTRY)) {
+            log.debug("Inter mutex sequence lock acquire sequenced failed, lock name: {}", lockName);
+            return false;
+        }
+        try {
+            long timeoutMilliseconds = Math.max(timeoutMillis, TimeoutMilliseconds.MIN_TRY_LOCK);
+            log.debug("Inter mutex sequence lock acquire sequenced success, lock name: {}, timeout milliseconds: {}ms", lockName, timeoutMilliseconds);
+            return innerTryLock(lockName, timeoutMilliseconds);
+        } finally {
+            sequence.unlock();
+            log.debug("Inter mutex sequence lock release sequenced success, database name: {}", lockName);
+        }
     }
     
     private boolean innerTryLock(final String lockName, final long timeout) {
@@ -124,7 +137,7 @@ public final class InterMutexLock implements MutexLock, LockAckAble {
             return false;
         }
         for (ComputeNodeInstance each : computeNodeInstances) {
-            if (!lockedInstances.contains(each.getInstanceDefinition().getInstanceId().getId())) {
+            if (!lockedInstances.contains(each.getInstanceDefinition().getInstanceId())) {
                 return false;
             }
         }

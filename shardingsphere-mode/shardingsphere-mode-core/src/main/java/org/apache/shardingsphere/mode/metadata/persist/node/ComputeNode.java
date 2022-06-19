@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.node;
 
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,8 +32,6 @@ public final class ComputeNode {
     private static final String COMPUTE_NODE = "compute_nodes";
     
     private static final String ONLINE_NODE = "online";
-    
-    private static final String ATTRIBUTES_NODE = "attributes";
     
     private static final String LABELS_NODE = "labels";
     
@@ -90,12 +86,11 @@ public final class ComputeNode {
      * Get process trigger instance show process list id node path.
      *
      * @param instanceId instance id
-     * @param instanceType instance type
      * @param showProcessListId show process list id
      * @return path of process trigger instance node path
      */
-    public static String getProcessTriggerInstanceIdNodePath(final String instanceId, final InstanceType instanceType, final String showProcessListId) {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, PROCESS_TRIGGER, instanceType.name().toLowerCase(), instanceId, showProcessListId);
+    public static String getProcessTriggerInstanceIdNodePath(final String instanceId, final String showProcessListId) {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, PROCESS_TRIGGER, String.join(":", instanceId, showProcessListId));
     }
     
     /**
@@ -105,26 +100,27 @@ public final class ComputeNode {
      * @return path of compute node instance labels
      */
     public static String getInstanceLabelsNodePath(final String instanceId) {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ATTRIBUTES_NODE, instanceId, LABELS_NODE);
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, LABELS_NODE, instanceId);
+    }
+    
+    /**
+     * Get xa recovery id node path.
+     * 
+     * @return xa recovery id node path
+     */
+    public static String getXaRecoveryIdNodePath() {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, XA_RECOVERY_ID_NODE);
     }
     
     /**
      * Get compute node xa recovery id path.
      *
+     * @param xaRecoveryId recovery id
      * @param instanceId instance id
      * @return path of compute node xa recovery id
      */
-    public static String getInstanceXaRecoveryIdNodePath(final String instanceId) {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ATTRIBUTES_NODE, instanceId, XA_RECOVERY_ID_NODE);
-    }
-    
-    /**
-     * Get attributes node path.
-     * 
-     * @return attributes node path
-     */
-    public static String getAttributesNodePath() {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ATTRIBUTES_NODE);
+    public static String getInstanceXaRecoveryIdNodePath(final String xaRecoveryId, final String instanceId) {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, XA_RECOVERY_ID_NODE, xaRecoveryId, instanceId);
     }
     
     /**
@@ -143,19 +139,19 @@ public final class ComputeNode {
      * @return worker id path
      */
     public static String getInstanceWorkerIdNodePath(final String instanceId) {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ATTRIBUTES_NODE, instanceId, WORKER_ID);
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, WORKER_ID, instanceId);
     }
     
     /**
-     * Get instance id by status path.
+     * Get instance id by compute node path.
      * 
-     * @param attributesPath attributes path
+     * @param computeNodePath compute node path
      * @return instance id
      */
-    public static String getInstanceIdByAttributes(final String attributesPath) {
-        Pattern pattern = Pattern.compile(getAttributesNodePath() + "/([\\S]+)" + "(/status|/worker_id|/labels|/xa_recovery_id)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(attributesPath);
-        return matcher.find() ? matcher.group(1) : "";
+    public static String getInstanceIdByComputeNode(final String computeNodePath) {
+        Pattern pattern = Pattern.compile(getComputeNodePath() + "(/status|/worker_id|/labels)" + "/([\\S]+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(computeNodePath);
+        return matcher.find() ? matcher.group(2) : "";
     }
     
     /**
@@ -165,22 +161,6 @@ public final class ComputeNode {
      * @return instance status node path
      */
     public static String getInstanceStatusNodePath(final String instanceId) {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ATTRIBUTES_NODE, instanceId, STATUS_NODE);
-    }
-    
-    /**
-     * Get instance definition by instance online path.
-     *
-     * @param onlineInstancePath online instance path
-     * @return instance id
-     */
-    public static Optional<InstanceDefinition> getInstanceDefinitionByInstanceOnlinePath(final String onlineInstancePath) {
-        Pattern pattern = Pattern.compile(getOnlineInstanceNodePath() + "/" + "(proxy|jdbc)" + "/([\\S]+)$", Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(onlineInstancePath);
-        return matcher.find() ? Optional.of(new InstanceDefinition(getInstanceType(matcher.group(1)), matcher.group(2))) : Optional.empty();
-    }
-    
-    private static InstanceType getInstanceType(final String instanceType) {
-        return InstanceType.PROXY.name().equalsIgnoreCase(instanceType) ? InstanceType.PROXY : InstanceType.JDBC;
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, STATUS_NODE, instanceId);
     }
 }

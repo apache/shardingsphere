@@ -17,5 +17,5 @@
   -->
 
 <sql-cases>
-    <sql-case id="cursor" value="CURSOR t_order_cursor WITH HOLD FOR SELECT * FROM t_order;" db-types="openGauss" />
+    <sql-case id="create_cursor" value="CURSOR t_order_cursor WITH HOLD FOR SELECT * FROM t_order;" db-types="openGauss" />
 </sql-cases>

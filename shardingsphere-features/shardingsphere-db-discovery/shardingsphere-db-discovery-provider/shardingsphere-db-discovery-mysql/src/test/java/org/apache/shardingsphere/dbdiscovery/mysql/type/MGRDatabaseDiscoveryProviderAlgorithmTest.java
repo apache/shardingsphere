@@ -26,6 +26,7 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -44,7 +45,7 @@ public final class MGRDatabaseDiscoveryProviderAlgorithmTest {
         Properties props = new Properties();
         props.setProperty("group-name", "foo_group");
         DatabaseDiscoveryProviderAlgorithm actual = DatabaseDiscoveryProviderAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("MySQL.MGR", props));
-        actual.checkEnvironment("foo_db", mockEnvironmentAvailableDataSource());
+        actual.checkEnvironment("foo_db", Collections.singletonList(mockEnvironmentAvailableDataSource()));
     }
     
     private DataSource mockEnvironmentAvailableDataSource() throws SQLException {

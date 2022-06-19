@@ -22,8 +22,9 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -31,7 +32,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource.fix
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -66,16 +67,13 @@ public final class JDBCBackendDataSourceTest extends ProxyContextRestorer {
     @Before
     public void setUp() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), createDatabaseMap(), mock(ShardingSphereRuleMetaData.class),
-                mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
+                new ShardingSphereMetaData(createDatabases(), mockGlobalRuleMetaData(), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        TransactionContexts transactionContexts = createTransactionContexts();
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(contextManager.getTransactionContexts()).thenReturn(transactionContexts);
         ProxyContext.init(contextManager);
     }
     
-    private Map<String, ShardingSphereDatabase> createDatabaseMap() {
+    private Map<String, ShardingSphereDatabase> createDatabases() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn("schema");
         when(result.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
@@ -83,9 +81,11 @@ public final class JDBCBackendDataSourceTest extends ProxyContextRestorer {
         return Collections.singletonMap("schema", result);
     }
     
-    private TransactionContexts createTransactionContexts() {
-        TransactionContexts result = mock(TransactionContexts.class, RETURNS_DEEP_STUBS);
-        when(result.getEngines().get("schema")).thenReturn(mock(ShardingSphereTransactionManagerEngine.class));
+    private ShardingSphereRuleMetaData mockGlobalRuleMetaData() {
+        ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class);
+        TransactionRule transactionRule = mock(TransactionRule.class);
+        when(transactionRule.getResources()).thenReturn(Collections.singletonMap("schema", mock(ShardingSphereTransactionManagerEngine.class)));
+        when(result.getSingleRule(TransactionRule.class)).thenReturn(transactionRule);
         return result;
     }
     

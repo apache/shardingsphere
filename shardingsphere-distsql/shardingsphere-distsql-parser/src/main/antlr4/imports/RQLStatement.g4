@@ -20,27 +20,27 @@ grammar RQLStatement;
 import BaseRule;
 
 showResources
-    : SHOW SCHEMA RESOURCES (FROM schemaName)?
+    : SHOW DATABASE RESOURCES (FROM databaseName)?
     ;
 
 showUnusedResources
-    : SHOW UNUSED SCHEMA? RESOURCES (FROM schemaName)?
+    : SHOW UNUSED DATABASE? RESOURCES (FROM databaseName)?
     ;
 
 showSingleTableRules
-    : SHOW SINGLE TABLE RULES (FROM schemaName)?
+    : SHOW SINGLE TABLE RULES (FROM databaseName)?
     ;
 
 showSingleTable
-    : SHOW SINGLE (table | TABLES) (FROM schemaName)?
+    : SHOW SINGLE (table | TABLES) (FROM databaseName)?
     ;
 
-countSchemaRules
-    : COUNT SCHEMA RULES (FROM schemaName)?
+countDatabaseRules
+    : COUNT DATABASE RULES (FROM databaseName)?
     ;
 
 showRulesUsedResource
-    : SHOW RULES USED RESOURCE resourceName (FROM schemaName)?
+    : SHOW RULES USED RESOURCE resourceName (FROM databaseName)?
     ;
 
 table

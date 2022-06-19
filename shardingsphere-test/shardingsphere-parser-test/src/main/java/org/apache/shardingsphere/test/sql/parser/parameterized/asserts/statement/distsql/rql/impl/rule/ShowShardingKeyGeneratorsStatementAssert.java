@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingKeyGeneratorsStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.distsql.SchemaAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.distsql.DatabaseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingKeyGeneratorsStatementTestCase;
 
 import static org.junit.Assert.assertTrue;
@@ -40,7 +40,7 @@ public final class ShowShardingKeyGeneratorsStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowShardingKeyGeneratorsStatement actual,
                                 final ShowShardingKeyGeneratorsStatementTestCase expected) {
-        assertTrue(assertContext.getText("Actual schema should exist."), actual.getSchema().isPresent());
-        SchemaAssert.assertIs(assertContext, actual.getSchema().get(), expected.getSchema());
+        assertTrue(assertContext.getText("Actual database should exist."), actual.getDatabase().isPresent());
+        DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());
     }
 }

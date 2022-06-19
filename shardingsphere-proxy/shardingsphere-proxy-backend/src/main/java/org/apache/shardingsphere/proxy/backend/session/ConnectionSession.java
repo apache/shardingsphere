@@ -21,6 +21,7 @@ import io.netty.util.AttributeMap;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -37,6 +38,8 @@ import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionSt
 import org.apache.shardingsphere.sql.parser.sql.common.constant.TransactionIsolationLevel;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -73,6 +76,8 @@ public final class ConnectionSession {
     
     private final ExecutorStatementManager statementManager;
     
+    private final Map<String, CursorStatementContext> cursorDefinitions = new ConcurrentHashMap<>();
+    
     public ConnectionSession(final DatabaseType databaseType, final TransactionType initialTransactionType, final AttributeMap attributeMap) {
         this.databaseType = databaseType;
         transactionStatus = new TransactionStatus(initialTransactionType);
@@ -82,12 +87,12 @@ public final class ConnectionSession {
     }
     
     private BackendConnection determineBackendConnection() {
-        String proxyBackendDriverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
+        String proxyBackendDriverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
         return "ExperimentalVertx".equals(proxyBackendDriverType) ? new VertxBackendConnection(this) : new JDBCBackendConnection(this);
     }
     
     private ExecutorStatementManager determineStatementManager() {
-        String proxyBackendDriverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
+        String proxyBackendDriverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
         return "ExperimentalVertx".equals(proxyBackendDriverType) ? new VertxBackendStatement() : new JDBCBackendStatement();
     }
     

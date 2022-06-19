@@ -12,6 +12,7 @@ Compatible with all regular SQL when **routing to single data node**;
 
 Fully support DML, DDL, DCL, TCL and most regular DAL.
 Support complex query with pagination, DISTINCT, ORDER BY, GROUP BY, aggregation and table JOIN.
+Support PostgreSQL and openGauss database SCHEMA DDL and DML statements.
 
 #### Regular Query
 

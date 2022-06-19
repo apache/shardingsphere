@@ -21,18 +21,21 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.aware.CursorDefinitionAware;
 import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
@@ -50,6 +53,8 @@ import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParameters;
+import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
+import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -101,29 +106,37 @@ public abstract class AbstractSQLRewriterParameterizedTest {
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
         DatabaseType databaseType = DatabaseTypeFactory.getInstance(getTestParameters().getDatabaseType());
         when(resource.getDatabaseType()).thenReturn(databaseType);
-        String schemaName = databaseType.getDefaultSchema(DefaultDatabase.LOGIC_NAME);
+        String schemaName = DatabaseTypeEngine.getDefaultSchemaName(databaseType, DefaultDatabase.LOGIC_NAME);
         Map<String, ShardingSphereSchema> schemas = mockSchemas(schemaName);
         Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(DefaultDatabase.LOGIC_NAME, databaseConfig, new ConfigurationProperties(new Properties()));
         mockRules(databaseRules, schemaName);
         databaseRules.add(sqlParserRule);
-        ShardingSphereDatabase database = new ShardingSphereDatabase(schemaName, databaseType, resource, new ShardingSphereRuleMetaData(Collections.emptyList(), databaseRules), schemas);
-        Map<String, ShardingSphereDatabase> databaseMap = new HashMap<>(2, 1);
-        databaseMap.put(schemaName, database);
+        ShardingSphereDatabase database = new ShardingSphereDatabase(schemaName, databaseType, resource, new ShardingSphereRuleMetaData(databaseRules), schemas);
+        Map<String, ShardingSphereDatabase> databases = new HashMap<>(2, 1);
+        databases.put(schemaName, database);
         SQLStatementParserEngine sqlStatementParserEngine = new SQLStatementParserEngine(getTestParameters().getDatabaseType(),
                 sqlParserRule.getSqlStatementCache(), sqlParserRule.getParseTreeCache(), sqlParserRule.isSqlCommentParseEnabled());
-        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(databaseMap,
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(databases,
                 sqlStatementParserEngine.parse(getTestParameters().getInputSQL(), false), schemaName);
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).setUpParameters(getTestParameters().getInputParameters());
         }
+        if (sqlStatementContext instanceof CursorDefinitionAware) {
+            ((CursorDefinitionAware) sqlStatementContext).setUpCursorDefinition(createCursorDefinition(schemaName, databases, sqlStatementParserEngine));
+        }
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, getTestParameters().getInputSQL(), getTestParameters().getInputParameters());
         ConfigurationProperties props = new ConfigurationProperties(rootConfig.getProps());
         RouteContext routeContext = new SQLRouteEngine(databaseRules, props).route(logicSQL, database);
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(database, props);
+        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(database, new ShardingSphereRuleMetaData(Collections.singleton(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()))), props);
         SQLRewriteResult sqlRewriteResult = sqlRewriteEntry.rewrite(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), sqlStatementContext, routeContext);
         return sqlRewriteResult instanceof GenericSQLRewriteResult
                 ? Collections.singletonList(((GenericSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnit())
                 : (((RouteSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnits()).values();
+    }
+    
+    private CursorStatementContext createCursorDefinition(final String schemaName, final Map<String, ShardingSphereDatabase> databases, final SQLStatementParserEngine sqlStatementParserEngine) {
+        return (CursorStatementContext) SQLStatementContextFactory.newInstance(
+                databases, sqlStatementParserEngine.parse("CURSOR t_account_cursor FOR SELECT * FROM t_account WHERE account_id = 100", false), schemaName);
     }
     
     protected abstract void mockDataSource(Map<String, DataSource> dataSources) throws SQLException;

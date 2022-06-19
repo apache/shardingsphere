@@ -103,7 +103,8 @@ public final class PostgreSQLCommandExecuteEngine implements CommandExecuteEngin
     private long writeDataPackets(final ChannelHandlerContext context, final JDBCBackendConnection backendConnection, final QueryCommandExecutor queryCommandExecutor) throws SQLException {
         long dataRows = 0;
         int flushCount = 0;
-        int proxyFrontendFlushThreshold = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD);
+        int proxyFrontendFlushThreshold = ProxyContext.getInstance()
+                .getContextManager().getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD);
         while (queryCommandExecutor.next()) {
             flushCount++;
             while (!context.channel().isWritable() && context.channel().isActive()) {

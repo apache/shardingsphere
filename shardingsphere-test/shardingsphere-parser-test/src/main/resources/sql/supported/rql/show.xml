@@ -19,10 +19,10 @@
 <sql-cases>
     <distsql-case id="show-sharding-binding-table-rules" value="SHOW SHARDING BINDING TABLE RULES FROM sharding_db" />
     <distsql-case id="show-sharding-broadcast-table-rules" value="SHOW SHARDING BROADCAST TABLE RULES FROM sharding_db" />
-    <distsql-case id="show-sharding-table-rules" value="SHOW SHARDING TABLE RULES FROM schemaName" />
+    <distsql-case id="show-sharding-table-rules" value="SHOW SHARDING TABLE RULES FROM databaseName" />
     <distsql-case id="show-sharding-table-rule" value="SHOW SHARDING TABLE RULE t_order" />
-    <distsql-case id="show-sharding-table-rule-from" value="SHOW SHARDING TABLE RULE t_order FROM schemaName" />
-    <distsql-case id="show-sharding-algorithms-from" value="SHOW SHARDING ALGORITHMS FROM schemaName" />
+    <distsql-case id="show-sharding-table-rule-from" value="SHOW SHARDING TABLE RULE t_order FROM databaseName" />
+    <distsql-case id="show-sharding-algorithms-from" value="SHOW SHARDING ALGORITHMS FROM databaseName" />
     <distsql-case id="show-readwrite-splitting-rules" value="SHOW READWRITE_SPLITTING RULES FROM readwrite_splitting_db" />
     <distsql-case id="show-db-discovery-rules" value="SHOW DB_DISCOVERY RULES FROM db_discovery_db" />
     <distsql-case id="show-db-discovery-types" value="SHOW DB_DISCOVERY TYPES FROM db_discovery_db" />
@@ -37,11 +37,11 @@
     <distsql-case id="show-sharding-table-nodes" value="SHOW SHARDING TABLE NODES t_order FROM sharding_db" />
     <distsql-case id="show-sharding-key-generators" value="SHOW SHARDING KEY GENERATORS FROM sharding_db" />
     <distsql-case id="show-default-sharding-strategy" value="SHOW DEFAULT SHARDING STRATEGY FROM sharding_db" />
-    <distsql-case id="show-sharding-scaling-rules" value="SHOW SHARDING SCALING RULES FROM schemaName" />
-    <distsql-case id="show-unused-sharding-algorithms" value="SHOW UNUSED SHARDING ALGORITHMS FROM schemaName" />
-    <distsql-case id="show-unused-sharding-key-generators" value="SHOW UNUSED SHARDING KEY GENERATORS FROM schemaName" />
-    <distsql-case id="count-schema-rules" value="COUNT SCHEMA RULES FROM schemaName" />
-    <distsql-case id="show-rules-used-resource" value="SHOW RULES USED RESOURCE ds_0 FROM schemaName" />
+    <distsql-case id="show-sharding-scaling-rules" value="SHOW SHARDING SCALING RULES FROM databaseName" />
+    <distsql-case id="show-unused-sharding-algorithms" value="SHOW UNUSED SHARDING ALGORITHMS FROM databaseName" />
+    <distsql-case id="show-unused-sharding-key-generators" value="SHOW UNUSED SHARDING KEY GENERATORS FROM databaseName" />
+    <distsql-case id="count-database-rules" value="COUNT DATABASE RULES FROM databaseName" />
+    <distsql-case id="show-rules-used-resource" value="SHOW RULES USED RESOURCE ds_0 FROM databaseName" />
     <distsql-case id="show-sharding-table-rules-used-key-generator" value="SHOW SHARDING TABLE RULES USED KEY GENERATOR snowflake from sharding_db" />
     <distsql-case id="show-sharding-table-rules-used-algorithm" value="SHOW SHARDING TABLE RULES USED ALGORITHM t_order_inline FROM sharding_db" />
 </sql-cases>

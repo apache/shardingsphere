@@ -516,27 +516,3 @@ copyOptItem
 copyDelimiter
     : (USING)? DELIMITERS STRING_
     ;
-
-fetch
-    : FETCH fetchArgs
-    ;
-
-fetchArgs
-    : cursorName
-    | (FROM | IN) cursorName
-    | NEXT (FROM | IN)? cursorName
-    | PRIOR (FROM | IN)? cursorName
-    | FIRST (FROM | IN)? cursorName
-    | LAST (FROM | IN)? cursorName
-    | ABSOLUTE signedIconst (FROM | IN)? cursorName
-    | RELATIVE signedIconst (FROM | IN)? cursorName
-    | signedIconst (FROM | IN)? cursorName
-    | ALL (FROM | IN)? cursorName
-    | FORWARD (FROM | IN)? cursorName
-    | FORWARD signedIconst (FROM | IN)? cursorName
-    | FORWARD ALL (FROM | IN)? cursorName
-    | BACKWARD (FROM | IN)? cursorName
-    | BACKWARD signedIconst (FROM | IN)? cursorName
-    | BACKWARD ALL (FROM | IN)? cursorName
-    ;
-

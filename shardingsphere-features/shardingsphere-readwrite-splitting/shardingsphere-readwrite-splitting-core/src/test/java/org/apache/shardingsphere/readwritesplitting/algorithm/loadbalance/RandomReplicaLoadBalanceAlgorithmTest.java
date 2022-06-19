@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
+import org.apache.shardingsphere.transaction.TransactionHolder;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -29,7 +30,18 @@ public final class RandomReplicaLoadBalanceAlgorithmTest {
     private final RandomReplicaLoadBalanceAlgorithm randomReplicaLoadBalanceAlgorithm = new RandomReplicaLoadBalanceAlgorithm();
     
     @Test
-    public void assertGetDataSource() {
+    public void assertGetDataSourceInTransaction() {
+        String writeDataSourceName = "test_write_ds";
+        String readDataSourceName1 = "test_replica_ds_1";
+        String readDataSourceName2 = "test_replica_ds_2";
+        List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
+        TransactionHolder.setInTransaction();
+        assertTrue(writeDataSourceName.contains(randomReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames)));
+        TransactionHolder.clear();
+    }
+    
+    @Test
+    public void assertGetDataSourceNotInTransaction() {
         String writeDataSourceName = "test_write_ds";
         String readDataSourceName1 = "test_replica_ds_1";
         String readDataSourceName2 = "test_replica_ds_2";

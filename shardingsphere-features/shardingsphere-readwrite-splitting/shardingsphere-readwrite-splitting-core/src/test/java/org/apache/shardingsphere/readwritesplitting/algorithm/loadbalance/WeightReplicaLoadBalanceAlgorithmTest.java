@@ -19,15 +19,12 @@ package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.readwritesplitting.factory.ReplicaLoadBalanceAlgorithmFactory;
-import org.junit.After;
-import org.junit.Before;
+import org.apache.shardingsphere.transaction.TransactionHolder;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -35,15 +32,6 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 
 public final class WeightReplicaLoadBalanceAlgorithmTest {
-    
-    @SuppressWarnings("rawtypes")
-    @Before
-    @After
-    public void reset() throws NoSuchFieldException, IllegalAccessException {
-        Field accuracyThresholdField = WeightReplicaLoadBalanceAlgorithm.class.getDeclaredField("WEIGHT_MAP");
-        accuracyThresholdField.setAccessible(true);
-        ((Map) accuracyThresholdField.get(WeightReplicaLoadBalanceAlgorithm.class)).clear();
-    }
     
     @Test
     public void assertGetSingleReadDataSource() {
@@ -78,5 +66,17 @@ public final class WeightReplicaLoadBalanceAlgorithmTest {
     
     private WeightReplicaLoadBalanceAlgorithm createReplicaLoadBalanceAlgorithm(final Properties props) {
         return (WeightReplicaLoadBalanceAlgorithm) ReplicaLoadBalanceAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("WEIGHT", props));
+    }
+    
+    @Test
+    public void assertGetReadDataSourceInTransaction() {
+        WeightReplicaLoadBalanceAlgorithm weightReplicaLoadBalanceAlgorithm = createReplicaLoadBalanceAlgorithm(createMultipleDataSourcesProperties());
+        String writeDataSourceName = "test_write_ds";
+        String readDataSourceName1 = "test_read_ds_1";
+        String readDataSourceName2 = "test_read_ds_2";
+        List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
+        TransactionHolder.setInTransaction();
+        assertThat(weightReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(writeDataSourceName));
+        TransactionHolder.clear();
     }
 }

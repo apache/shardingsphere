@@ -19,7 +19,7 @@
 <sql-parser-test-cases>
     <comment sql-case-id="comment_on_policy" />
     <comment sql-case-id="comment_on_column">
-        <table name="employee" start-index="18" stop-index="26" />
+        <table name="employees" start-index="18" stop-index="26" />
         <column name="job_id" start-index="28" stop-index="33" />
     </comment>
     <comment sql-case-id="comment_on_edition" />
@@ -30,10 +30,31 @@
     <comment sql-case-id="comment_on_model" />
     <comment sql-case-id="comment_on_operator" />
     <comment sql-case-id="comment_on_table">
-        <table name="employee" start-index="17" stop-index="25" />
+        <table name="employees" start-index="17" stop-index="25" />
     </comment>
-    <comment sql-case-id="comment_on_constraint" />
+    <comment sql-case-id="comment_on_constraint" >
+        <table name="test" start-index="42" stop-index="45" />
+    </comment>
     <comment sql-case-id="comment_on_domain" />
     <comment sql-case-id="comment_on_event_trigger" />
     <comment sql-case-id="comment_on_index" />
+    <comment sql-case-id="comment_on_access_method" />
+    <comment sql-case-id="comment_on_aggregate" />
+    <comment sql-case-id="comment_on_cast" />
+    <comment sql-case-id="comment_on_policy_table" >
+        <table name="table1" start-index="31" stop-index="36" />
+    </comment>
+    <comment sql-case-id="comment_on_rule" >
+        <table name="table1" start-index="27" stop-index="32" />
+    </comment>
+    <comment sql-case-id="comment_on_trigger" >
+        <table name="table1" start-index="33" stop-index="38" />
+    </comment>
+    <comment sql-case-id="comment_on_operator_caret" />
+    <comment sql-case-id="comment_on_operator_class" />
+    <comment sql-case-id="comment_on_operator_family" />
+    <comment sql-case-id="comment_on_routine" />
+    <comment sql-case-id="comment_on_procedure" />
+    <comment sql-case-id="comment_on_tablespace" />
+    <comment sql-case-id="comment_on_text_search_template" />
 </sql-parser-test-cases>

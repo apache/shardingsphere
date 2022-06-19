@@ -46,7 +46,7 @@ public final class HintDistSQLBackendHandler implements TextProtocolBackendHandl
     
     @Override
     public ResponseHeader execute() throws SQLException {
-        if (!ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)) {
+        if (!ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)) {
             throw new UnsupportedOperationException(String.format("%s should be true, please check your config", ConfigurationPropertyKey.PROXY_HINT_ENABLED.getKey()));
         }
         hintStatementExecutor = HintStatementExecutorFactory.newInstance(sqlStatement, connectionSession);

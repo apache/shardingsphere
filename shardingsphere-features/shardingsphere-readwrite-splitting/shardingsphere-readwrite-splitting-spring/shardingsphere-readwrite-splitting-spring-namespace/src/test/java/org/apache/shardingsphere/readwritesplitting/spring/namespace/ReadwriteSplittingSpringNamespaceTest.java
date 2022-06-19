@@ -20,7 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.spring.namespace;
 import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 import org.junit.Test;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.AbstractJUnit4SpringContextTests;
@@ -36,7 +36,7 @@ import static org.junit.Assert.assertThat;
 public final class ReadwriteSplittingSpringNamespaceTest extends AbstractJUnit4SpringContextTests {
     
     @Resource
-    private ReplicaLoadBalanceAlgorithm randomLoadbalancer;
+    private ReadQueryLoadBalanceAlgorithm randomLoadbalancer;
     
     @Resource
     private AlgorithmProvidedReadwriteSplittingRuleConfiguration defaultRule;
@@ -56,7 +56,7 @@ public final class ReadwriteSplittingSpringNamespaceTest extends AbstractJUnit4S
         assertDefaultDataSourceRule(defaultRule.getDataSources().iterator().next());
     }
     
-    private void assertLoadBalancers(final Map<String, ReplicaLoadBalanceAlgorithm> loadBalances) {
+    private void assertLoadBalancers(final Map<String, ReadQueryLoadBalanceAlgorithm> loadBalances) {
         assertThat(loadBalances.size(), is(1));
         assertThat(loadBalances.get("randomLoadbalancer"), instanceOf(RandomReplicaLoadBalanceAlgorithm.class));
     }

@@ -25,9 +25,10 @@ import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedTable;
-import org.apache.shardingsphere.infra.metadata.schema.util.IndexMetaDataUtil;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
@@ -100,7 +101,7 @@ public final class SingleTableSQLRouter implements SQLRouter<SingleTableRule> {
     
     private static Collection<QualifiedTable> getQualifiedTables(final ShardingSphereDatabase database, final DatabaseType databaseType, final Collection<SimpleTableSegment> tableSegments) {
         Collection<QualifiedTable> result = new LinkedList<>();
-        String schemaName = databaseType.getDefaultSchema(database.getName());
+        String schemaName = DatabaseTypeEngine.getDefaultSchemaName(databaseType, database.getName());
         for (SimpleTableSegment each : tableSegments) {
             String actualSchemaName = each.getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
             result.add(new QualifiedTable(actualSchemaName, each.getTableName().getIdentifier().getValue()));

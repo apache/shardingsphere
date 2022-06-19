@@ -49,7 +49,7 @@ public final class RC4EncryptAlgorithmTest {
     
     @Test
     public void assertEncode() {
-        assertThat(encryptAlgorithm.encrypt("test", mock(EncryptContext.class)), is("qn36NQ=="));
+        assertThat(encryptAlgorithm.encrypt("test", mock(EncryptContext.class)), is("4Tn7lQ=="));
     }
     
     @Test
@@ -74,7 +74,7 @@ public final class RC4EncryptAlgorithmTest {
     
     @Test
     public void assertDecode() {
-        assertThat(encryptAlgorithm.decrypt("qn36NQ==", mock(EncryptContext.class)).toString(), is("test"));
+        assertThat(encryptAlgorithm.decrypt("4Tn7lQ==", mock(EncryptContext.class)).toString(), is("test"));
     }
     
     @Test

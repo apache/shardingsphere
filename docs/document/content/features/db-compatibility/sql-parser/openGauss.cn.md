@@ -22,3 +22,4 @@ openGauss 不支持的 SQL 清单如下：
 | ALTER TABLE alterlock SET (toast.autovacuum_enabled = off)                                                |
 | CREATE PUBLICATION pub1 FOR TABLE alter1.t1, ALL TABLES IN SCHEMA alter2                                  |
 
+**源码：https://github.com/apache/shardingsphere/tree/master/shardingsphere-sql-parser/shardingsphere-sql-parser-dialect/shardingsphere-sql-parser-opengauss**

@@ -17,47 +17,37 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
+import com.google.common.base.Splitter;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.AlterInstanceStatement;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdChangedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
 
-import java.util.Collection;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Alter instance handler.
  */
-public final class AlterInstanceHandler extends UpdatableRALBackendHandler<AlterInstanceStatement, AlterInstanceHandler> {
+public final class AlterInstanceHandler extends UpdatableRALBackendHandler<AlterInstanceStatement> {
     
     private static final String XA_RECOVERY_NODES = "xa_recovery_nodes";
     
     @Override
-    protected void update(final ContextManager contextManager, final AlterInstanceStatement sqlStatement) throws DistSQLException {
-        if (XA_RECOVERY_NODES.equalsIgnoreCase(sqlStatement.getKey())) {
-            setXaRecoveryId(contextManager, sqlStatement);
-        } else {
-            throw new UnsupportedOperationException(String.format("%s is not supported", sqlStatement.getKey()));
+    protected void update(final ContextManager contextManager) throws DistSQLException {
+        if (!XA_RECOVERY_NODES.equalsIgnoreCase(getSqlStatement().getKey())) {
+            throw new UnsupportedOperationException(String.format("%s is not supported", getSqlStatement().getKey()));
         }
-    }
-    
-    private void setXaRecoveryId(final ContextManager contextManager, final AlterInstanceStatement sqlStatement) {
         Optional<MetaDataPersistService> persistService = contextManager.getMetaDataContexts().getPersistService();
         if (!persistService.isPresent()) {
-            throw new UnsupportedOperationException(String.format("No persistence configuration found, unable to set '%s'", sqlStatement.getKey()));
+            throw new UnsupportedOperationException(String.format("No persistence configuration found, unable to set '%s'", getSqlStatement().getKey()));
         }
-        Collection<ComputeNodeInstance> instances = persistService.get().getComputeNodePersistService().loadAllComputeNodeInstances();
-        checkExisted(instances, sqlStatement);
-        persistService.get().getComputeNodePersistService().persistInstanceXaRecoveryId(sqlStatement.getInstanceId(), sqlStatement.getValue());
-    }
-    
-    private void checkExisted(final Collection<ComputeNodeInstance> instances, final AlterInstanceStatement sqlStatement) {
-        Collection<String> instanceIds = instances.stream().map(each -> each.getInstanceDefinition().getInstanceId().getId()).collect(Collectors.toSet());
-        if (!instanceIds.contains(sqlStatement.getInstanceId())) {
-            throw new UnsupportedOperationException(String.format("'%s' does not exist", sqlStatement.getInstanceId()));
+        if (!contextManager.getInstanceContext().getComputeNodeInstanceById(getSqlStatement().getInstanceId()).isPresent()) {
+            throw new UnsupportedOperationException(String.format("'%s' does not exist", getSqlStatement().getInstanceId()));
         }
+        // TODO need support standalone mode
+        ShardingSphereEventBus.getInstance().post(new XaRecoveryIdChangedEvent(getSqlStatement().getInstanceId(), Splitter.on(",").splitToList(getSqlStatement().getValue())));
     }
 }

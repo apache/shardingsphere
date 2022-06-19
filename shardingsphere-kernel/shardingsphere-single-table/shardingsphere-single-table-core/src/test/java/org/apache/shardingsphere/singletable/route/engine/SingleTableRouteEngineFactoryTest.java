@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.singletable.route.engine;
 
-import org.apache.shardingsphere.infra.metadata.schema.QualifiedTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateSchemaStatement;

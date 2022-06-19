@@ -19,7 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.spring.namespace.factorybea
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.readwritesplitting.factory.ReplicaLoadBalanceAlgorithmFactory;
-import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.spring.namespace.factorybean.ShardingSphereAlgorithmFactoryBean;
 
 import java.util.Properties;
@@ -27,14 +27,14 @@ import java.util.Properties;
 /**
  * Replica load balance algorithm factory bean.
  */
-public final class ReplicaLoadBalanceAlgorithmFactoryBean extends ShardingSphereAlgorithmFactoryBean<ReplicaLoadBalanceAlgorithm> {
+public final class ReplicaLoadBalanceAlgorithmFactoryBean extends ShardingSphereAlgorithmFactoryBean<ReadQueryLoadBalanceAlgorithm> {
     
     public ReplicaLoadBalanceAlgorithmFactoryBean(final String type, final Properties props) {
-        super(type, props, ReplicaLoadBalanceAlgorithm.class);
+        super(type, props, ReadQueryLoadBalanceAlgorithm.class);
     }
     
     @Override
-    public ReplicaLoadBalanceAlgorithm getObject() {
+    public ReadQueryLoadBalanceAlgorithm getObject() {
         return ReplicaLoadBalanceAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration(getType(), getProps()));
     }
 }

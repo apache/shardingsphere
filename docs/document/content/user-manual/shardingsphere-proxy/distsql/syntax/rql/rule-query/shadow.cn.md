@@ -6,11 +6,11 @@ weight = 6
 ## 语法说明
 
 ```sql
-SHOW SHADOW shadowRule | RULES [FROM schemaName]
+SHOW SHADOW shadowRule | RULES [FROM databaseName]
 
-SHOW SHADOW TABLE RULES [FROM schemaName]
+SHOW SHADOW TABLE RULES [FROM databaseName]
 
-SHOW SHADOW ALGORITHMS [FROM schemaName]
+SHOW SHADOW ALGORITHMS [FROM databaseName]
 
 shadowRule: 
     RULE ruleName
@@ -32,25 +32,25 @@ shadowRule:
 
 ### Shadow Table Rule
 
-| 列                     | 说明           |
-| ----------------------| ---------------|
-| shadow_table          | 影子表          |
-| shadow_algorithm_name | 影子算法名称     |
+| 列                     | 说明       |
+| --------------------- | ---------- |
+| shadow_table          | 影子表      |
+| shadow_algorithm_name | 影子算法名称 |
 
 ### Shadow Algorithms
 
-| 列                    | 说明          |
-| -------------------   | ------------ |
-| shadow_algorithm_name | 影子算法名称   |
-| type                  | 算法类型      |
-| props                 | 算法参数      |
-| is_default            | 是否默认      |
+| 列                    | 说明        |
+| -------------------   | ---------- |
+| shadow_algorithm_name | 影子算法名称 |
+| type                  | 算法类型    |
+| props                 | 算法参数    |
+| is_default            | 是否默认    |
 
 ### Shadow Rule status
 
-| 列                    | 说明          |
-| -------------------   | ------------ |
-| status                | 是否启用      |
+| 列                    | 说明     |
+| -------------------   | ------- |
+| status                | 是否启用 |
 
 ## 示例
 

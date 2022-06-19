@@ -69,7 +69,7 @@ import org.apache.shardingsphere.scaling.distsql.statement.segment.InputOrOutput
 import org.apache.shardingsphere.scaling.distsql.statement.segment.ShardingScalingRuleConfigurationSegment;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Properties;
@@ -246,7 +246,7 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     
     @Override
     public ASTNode visitShowShardingScalingRules(final ShowShardingScalingRulesContext ctx) {
-        return new ShowShardingScalingRulesStatement(null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
+        return new ShowShardingScalingRulesStatement(null == ctx.schemaName() ? null : (DatabaseSegment) visit(ctx.schemaName()));
     }
     
     @Override
@@ -267,7 +267,7 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     
     @Override
     public ASTNode visitSchemaName(final SchemaNameContext ctx) {
-        return new SchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
+        return new DatabaseSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
     }
     
     private String getIdentifierValue(final ParseTree context) {

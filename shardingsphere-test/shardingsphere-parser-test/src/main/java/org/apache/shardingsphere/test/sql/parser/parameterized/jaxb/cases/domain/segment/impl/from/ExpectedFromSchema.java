@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import lombok.Getter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedDatabase;
 
 /**
  * Expected from schema segment.
@@ -27,5 +27,5 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 @Getter
 public final class ExpectedFromSchema extends AbstractExpectedSQLSegment {
     
-    private ExpectedSchema schema;
+    private ExpectedDatabase schema;
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.authority.rule.builder;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
 import org.apache.shardingsphere.authority.constant.AuthorityOrder;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
 
 import java.util.Map;
@@ -31,8 +31,8 @@ import java.util.Map;
 public final class AuthorityRuleBuilder implements GlobalRuleBuilder<AuthorityRuleConfiguration> {
     
     @Override
-    public AuthorityRule build(final AuthorityRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databaseMap) {
-        return new AuthorityRule(ruleConfig, databaseMap);
+    public AuthorityRule build(final AuthorityRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
+        return new AuthorityRule(ruleConfig, databases);
     }
     
     @Override

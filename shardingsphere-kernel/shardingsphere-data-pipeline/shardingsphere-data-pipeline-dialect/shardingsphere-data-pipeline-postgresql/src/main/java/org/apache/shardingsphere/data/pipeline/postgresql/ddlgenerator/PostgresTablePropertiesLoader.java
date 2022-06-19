@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.ddlgenerator;
 
-import lombok.SneakyThrows;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -44,10 +42,10 @@ public final class PostgresTablePropertiesLoader extends AbstractPostgresDDLAdap
     /**
      * Load table properties.
      *
-     * @return table properties
+     * @return loaded table properties
+     * @throws SQLException SQL exception
      */
-    @SneakyThrows
-    public Map<String, Object> loadTableProperties() {
+    public Map<String, Object> load() throws SQLException {
         Map<String, Object> result = new LinkedHashMap<>();
         fetchDataBaseId(result);
         fetchSchemaId(result);

@@ -41,8 +41,9 @@ Release Note 需提供中文/英文两种版本，确认中文描述是否明确
 
 **5. 发送讨论邮件**
 
-1. 发送邮件至 [dev@shardingsphere.apache.org](mailto:dev@shardingsphere.apache.org)，在邮件正文中描述或链接 Release Note；
-2. 关注邮件列表，确认社区开发者对 Release Note 没有任何疑问。
+1. 创建 [GitHub Discussion](https://github.com/apache/shardingsphere/discussions) 并在讨论内容中列出 Release Note；
+2. 发送邮件至 [dev@shardingsphere.apache.org](mailto:dev@shardingsphere.apache.org)，在邮件正文中链接 GitHub Discussion；
+3. 关注邮件列表，确认社区开发者对 Release Note 没有任何疑问。
 
 ## GPG 设置
 
@@ -206,7 +207,7 @@ http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-${RELEA
 **5. 发布预校验**
 
 ```shell
-mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github用户名}
+mvn release:prepare -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=true" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github用户名}
 ```
 
 -Prelease：选择 release 的 profile，这个 profile 会打包所有源码、jar 文件以及 ShardingSphere-Proxy 的可执行二进制包。
@@ -224,7 +225,7 @@ mvn release:clean
 ```
 
 ```shell
-mvn release:prepare -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github 用户名}
+mvn release:prepare -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=true" -DautoVersionSubmodules=true -DpushChanges=false -Dusername=${Github 用户名}
 ```
 
 和上一步演练的命令基本相同，去掉了 -DdryRun=true 参数。
@@ -241,7 +242,7 @@ git push origin --tags
 **7. 部署发布**
 
 ```shell
-mvn release:perform -Prelease -Darguments="-DskipTests" -DautoVersionSubmodules=true -Dusername=${Github 用户名}
+mvn release:perform -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=true" -DautoVersionSubmodules=true -Dusername=${Github 用户名}
 ```
 
 执行完该命令后，待发布版本会自动上传到 Apache 的临时筹备仓库 (staging repository)。
@@ -305,7 +306,7 @@ svn --username=${APACHE LDAP 用户名} commit -m "release ${RELEASE.VERSION}"
 **检查 sha512 哈希**
 
 ```shell
-shasum -c apache-shardingsphere-${RELEASE.VERSION}-*.sha512
+shasum -c *.sha512
 ```
 
 **检查 gpg 签名**
@@ -346,6 +347,7 @@ gpg --verify apache-shardingsphere-${RELEASE.VERSION}-src.zip.asc apache-shardin
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-jdbc-bin.tar.gz
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz
 gpg --verify apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-agent-bin.tar.gz.asc apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-agent-bin.tar.gz
+gpg --verify apache-shardingsphere-proxy-chart-${CHART.RELEASE.VERSION}.tgz.asc apache-shardingsphere-proxy-chart-${CHART.RELEASE.VERSION}.tgz
 ```
 
 **检查发布文件内容**

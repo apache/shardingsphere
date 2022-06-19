@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.sharding.route.engine;
 
 import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
@@ -61,7 +62,7 @@ public final class ShardingSQLRouter implements SQLRouter<ShardingRule> {
     @SuppressWarnings({"rawtypes", "unchecked"})
     private ShardingConditions createShardingConditions(final LogicSQL logicSQL, final ShardingSphereDatabase database, final ShardingRule rule) {
         List<ShardingCondition> shardingConditions;
-        if (logicSQL.getSqlStatementContext().getSqlStatement() instanceof DMLStatement) {
+        if (logicSQL.getSqlStatementContext().getSqlStatement() instanceof DMLStatement || logicSQL.getSqlStatementContext() instanceof CursorAvailable) {
             ShardingConditionEngine shardingConditionEngine = ShardingConditionEngineFactory.createShardingConditionEngine(logicSQL, database, rule);
             shardingConditions = shardingConditionEngine.createShardingConditions(logicSQL.getSqlStatementContext(), logicSQL.getParameters());
         } else {

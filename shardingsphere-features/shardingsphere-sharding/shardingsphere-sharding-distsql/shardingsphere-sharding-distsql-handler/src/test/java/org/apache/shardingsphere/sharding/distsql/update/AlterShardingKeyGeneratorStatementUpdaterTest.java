@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.AlterShardingKeyGeneratorStatementUpdater;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingKeyGeneratorSegment;
@@ -74,9 +74,9 @@ public final class AlterShardingKeyGeneratorStatementUpdaterTest {
     @Test(expected = InvalidAlgorithmConfigurationException.class)
     public void assertExecuteWithInvalidAlgorithm() throws DistSQLException {
         Properties props = createProperties();
-        ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("exist_key_generator_name", new AlgorithmSegment("snowflake", props));
+        ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("exist_key_generator_name", new AlgorithmSegment("INVALID_TYPE", props));
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        ruleConfig.getKeyGenerators().put("exist_key_generator_name", new ShardingSphereAlgorithmConfiguration("invalid_type", props));
+        ruleConfig.getKeyGenerators().put("exist_key_generator_name", new ShardingSphereAlgorithmConfiguration("UUID", props));
         updater.checkSQLStatement(database, new AlterShardingKeyGeneratorStatement(Collections.singletonList(keyGeneratorSegment)), ruleConfig);
     }
     

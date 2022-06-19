@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.statement.ddl;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterViewStatement;
@@ -34,7 +35,7 @@ import java.util.Optional;
  * Alter view statement context.
  */
 @Getter
-public final class AlterViewStatementContext extends CommonSQLStatementContext<AlterViewStatement> {
+public final class AlterViewStatementContext extends CommonSQLStatementContext<AlterViewStatement> implements TableAvailable {
     
     private final TablesContext tablesContext;
     
@@ -49,5 +50,10 @@ public final class AlterViewStatementContext extends CommonSQLStatementContext<A
             tables.addAll(extractor.getRewriteTables());
         });
         tablesContext = new TablesContext(tables, getDatabaseType());
+    }
+    
+    @Override
+    public Collection<SimpleTableSegment> getAllTables() {
+        return tablesContext.getTables();
     }
 }

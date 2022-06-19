@@ -28,12 +28,12 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.swapper.ReadwriteSplittingRuleConfigurationYamlSwapper;
@@ -49,14 +49,13 @@ import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 /**
  * Export database configuration handler.
  */
-public final class ExportDatabaseConfigurationHandler extends QueryableRALBackendHandler<ExportDatabaseConfigurationStatement, ExportDatabaseConfigurationHandler> {
+public final class ExportDatabaseConfigurationHandler extends QueryableRALBackendHandler<ExportDatabaseConfigurationStatement> {
     
     private static final String RESULT = "result";
     
@@ -90,8 +89,6 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
     
     private static final Map<String, Class<? extends RuleConfiguration>> FEATURE_MAP = new HashMap<>(5, 1);
     
-    private ConnectionSession connectionSession;
-    
     static {
         FEATURE_MAP.put(SHARDING, ShardingRuleConfiguration.class);
         FEATURE_MAP.put(READWRITE_SPLITTING, ReadwriteSplittingRuleConfiguration.class);
@@ -101,28 +98,22 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
     }
     
     @Override
-    public ExportDatabaseConfigurationHandler init(final HandlerParameter<ExportDatabaseConfigurationStatement> parameter) {
-        connectionSession = parameter.getConnectionSession();
-        return super.init(parameter);
-    }
-    
-    @Override
     protected Collection<String> getColumnNames() {
         return Collections.singletonList(RESULT);
     }
     
     @Override
-    protected Collection<List<Object>> getRows(final ContextManager contextManager) {
+    protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
         String databaseName = getDatabaseName();
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
         StringBuilder result = new StringBuilder();
         configItem(ZERO, "databaseName", databaseName, result);
         getDataSourcesConfig(database, result);
         getRuleConfigurations(database.getRuleMetaData().getConfigurations(), result);
-        if (!sqlStatement.getFilePath().isPresent()) {
-            return Collections.singleton(Collections.singletonList(result.toString()));
+        if (!getSqlStatement().getFilePath().isPresent()) {
+            return Collections.singleton(new LocalDataQueryResultRow(result.toString()));
         }
-        File outFile = new File(sqlStatement.getFilePath().get());
+        File outFile = new File(getSqlStatement().getFilePath().get());
         if (!outFile.exists()) {
             outFile.getParentFile().mkdirs();
         }
@@ -132,7 +123,7 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
         } catch (final IOException ex) {
             throw new ShardingSphereException(ex);
         }
-        return Collections.singleton(Collections.singletonList(String.format("Successfully exported to：'%s'", sqlStatement.getFilePath().get())));
+        return Collections.singleton(new LocalDataQueryResultRow(String.format("Successfully exported to：'%s'", getSqlStatement().getFilePath().get())));
     }
     
     private void getDataSourcesConfig(final ShardingSphereDatabase database, final StringBuilder result) {
@@ -220,7 +211,7 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
     }
     
     private String getDatabaseName() {
-        String result = sqlStatement.getSchema().isPresent() ? sqlStatement.getSchema().get().getIdentifier().getValue() : connectionSession.getDatabaseName();
+        String result = getSqlStatement().getDatabase().isPresent() ? getSqlStatement().getDatabase().get().getIdentifier().getValue() : getConnectionSession().getDatabaseName();
         if (Strings.isNullOrEmpty(result)) {
             throw new NoDatabaseSelectedException();
         }

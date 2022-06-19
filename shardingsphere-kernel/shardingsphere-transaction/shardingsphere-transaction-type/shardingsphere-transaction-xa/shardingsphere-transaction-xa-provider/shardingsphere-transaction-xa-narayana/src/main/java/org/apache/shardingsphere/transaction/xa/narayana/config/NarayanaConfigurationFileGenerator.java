@@ -25,6 +25,7 @@ import com.arjuna.ats.internal.jta.recovery.arjunacore.JTAActionStatusServiceXAR
 import com.arjuna.ats.internal.jta.recovery.arjunacore.JTANodeNameXAResourceOrphanFilter;
 import com.arjuna.ats.internal.jta.recovery.arjunacore.JTATransactionLogXAResourceOrphanFilter;
 import com.arjuna.ats.internal.jta.recovery.arjunacore.XARecoveryModule;
+import com.google.common.base.Joiner;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
@@ -54,21 +55,21 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
     
     @Override
     public void generateFile(final Properties transactionProps, final InstanceContext instanceContext) {
-        String instanceId = instanceContext.getInstance().getInstanceDefinition().getInstanceId().getId();
-        String recoveryId = null == instanceContext.getInstance().getXaRecoveryId() ? instanceId : instanceContext.getInstance().getXaRecoveryId();
-        NarayanaConfiguration config = createDefaultConfiguration(instanceId, recoveryId);
+        String instanceId = instanceContext.getInstance().getInstanceDefinition().getInstanceId();
+        String recoveryId = instanceContext.getInstance().getXaRecoveryIds().isEmpty() ? instanceId : Joiner.on(",").join(instanceContext.getInstance().getXaRecoveryIds());
+        NarayanaConfiguration config = createDefaultConfiguration(instanceId, recoveryId, transactionProps);
         if (!transactionProps.isEmpty()) {
             appendUserDefinedJdbcStoreConfiguration(transactionProps, config);
         }
         JAXB.marshal(config, new File(ClassLoader.getSystemResource("").getPath(), "jbossts-properties.xml"));
     }
     
-    private NarayanaConfiguration createDefaultConfiguration(final String instanceId, final String recoveryId) {
+    private NarayanaConfiguration createDefaultConfiguration(final String instanceId, final String recoverId, final Properties transactionProps) {
         NarayanaConfiguration result = new NarayanaConfiguration();
-        result.getEntries().add(createEntry("CoordinatorEnvironmentBean.commitOnePhase", "YES"));
-        result.getEntries().add(createEntry("ObjectStoreEnvironmentBean.transactionSync", "NO"));
+        result.getEntries().add(createEntry("CoordinatorEnvironmentBean.commitOnePhase", transactionProps.getOrDefault("commitOnePhase", Boolean.TRUE).toString()));
+        result.getEntries().add(createEntry("ObjectStoreEnvironmentBean.transactionSync", transactionProps.getOrDefault("transactionSync", Boolean.FALSE).toString()));
         result.getEntries().add(createEntry("CoreEnvironmentBean.nodeIdentifier", instanceId));
-        result.getEntries().add(createEntry("JTAEnvironmentBean.xaRecoveryNodes", recoveryId));
+        result.getEntries().add(createEntry("JTAEnvironmentBean.xaRecoveryNodes", recoverId));
         result.getEntries().add(createEntry("JTAEnvironmentBean.xaResourceOrphanFilterClassNames", createXAResourceOrphanFilterClassNames()));
         result.getEntries().add(createEntry("CoreEnvironmentBean.socketProcessIdPort", "0"));
         result.getEntries().add(createEntry("RecoveryEnvironmentBean.recoveryModuleClassNames", getRecoveryModuleClassNames()));
@@ -77,9 +78,11 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
         result.getEntries().add(createEntry("RecoveryEnvironmentBean.recoveryAddress", ""));
         result.getEntries().add(createEntry("RecoveryEnvironmentBean.transactionStatusManagerPort", "0"));
         result.getEntries().add(createEntry("RecoveryEnvironmentBean.transactionStatusManagerAddress", ""));
-        result.getEntries().add(createEntry("RecoveryEnvironmentBean.recoveryListener", "NO"));
-        result.getEntries().add(createEntry("RecoveryEnvironmentBean.recoveryBackoffPeriod", "1"));
-        result.getEntries().add(createEntry("CoordinatorEnvironmentBean.defaultTimeout", "180"));
+        result.getEntries().add(createEntry("RecoveryEnvironmentBean.recoveryListener", Boolean.FALSE.toString()));
+        result.getEntries().add(createEntry("RecoveryEnvironmentBean.recoveryBackoffPeriod", transactionProps.getOrDefault("recoveryBackoffPeriod", "1").toString()));
+        result.getEntries().add(createEntry("CoordinatorEnvironmentBean.defaultTimeout", transactionProps.getOrDefault("defaultTimeout", "180").toString()));
+        result.getEntries().add(createEntry("RecoveryEnvironmentBean.expiryScanInterval", transactionProps.getOrDefault("expiryScanInterval", "12").toString()));
+        result.getEntries().add(createEntry("RecoveryEnvironmentBean.periodicRecoveryPeriod", transactionProps.getOrDefault("periodicRecoveryPeriod", "120").toString()));
         return result;
     }
     
@@ -118,25 +121,29 @@ public final class NarayanaConfigurationFileGenerator implements TransactionConf
         String password = String.valueOf(transactionProps.get("recoveryStorePassword"));
         String dataSourceClass = transactionProps.getProperty("recoveryStoreDataSource");
         if (null != url && null != user && null != password && null != dataSourceClass) {
-            appendJdbcStoreConfiguration(url, user, password, dataSourceClass, config);
+            appendJdbcStoreConfiguration(url, user, password, dataSourceClass, transactionProps, config);
         }
     }
     
-    private void appendJdbcStoreConfiguration(final String jdbcUrl, final String user, final String password, final String dataSourceClassName, final NarayanaConfiguration config) {
+    private void appendJdbcStoreConfiguration(final String jdbcUrl, final String user, final String password, final String dataSourceClassName,
+                                              final Properties transactionProps, final NarayanaConfiguration config) {
         String jdbcAccessPatten = DynamicDataSourceJDBCAccess.class.getName() + ";ClassName=%s;URL=%s;User=%s;Password=%s";
         String jdbcAccess = String.format(jdbcAccessPatten, dataSourceClassName, jdbcUrl, user, password);
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.objectStoreType", JDBCStore.class.getName()));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.jdbcAccess", jdbcAccess));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.tablePrefix", "Action"));
-        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.dropTable", Boolean.TRUE.toString()));
+        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.createTable", transactionProps.getProperty("createTable", Boolean.TRUE.toString())));
+        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.dropTable", Boolean.FALSE.toString()));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.objectStoreType", JDBCStore.class.getName()));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.jdbcAccess", jdbcAccess));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.tablePrefix", "stateStore"));
-        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.dropTable", Boolean.TRUE.toString()));
+        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.createTable", transactionProps.getProperty("stateStoreCreateTable", Boolean.TRUE.toString())));
+        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.stateStore.dropTable", Boolean.FALSE.toString()));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.objectStoreType", JDBCStore.class.getName()));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.jdbcAccess", jdbcAccess));
         config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.tablePrefix", "Communication"));
-        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.dropTable", Boolean.TRUE.toString()));
+        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.createTable", transactionProps.getProperty("communicationStoreCreateTable", Boolean.TRUE.toString())));
+        config.getEntries().add(createEntry("ObjectStoreEnvironmentBean.communicationStore.dropTable", Boolean.FALSE.toString()));
     }
     
     @Override

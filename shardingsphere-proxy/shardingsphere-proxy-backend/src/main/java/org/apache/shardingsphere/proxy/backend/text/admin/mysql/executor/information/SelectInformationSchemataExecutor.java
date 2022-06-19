@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.information;
 
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatabaseMetadataExecutor;
@@ -83,9 +83,9 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     
     @Override
     protected List<String> getDatabaseNames(final ConnectionSession connectionSession) {
-        Collection<String> schemaNames = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee())).collect(Collectors.toList());
-        SCHEMA_WITHOUT_DATA_SOURCE.addAll(schemaNames.stream().filter(each -> !AbstractDatabaseMetadataExecutor.hasDatasource(each)).collect(Collectors.toSet()));
-        List<String> result = schemaNames.stream().filter(AbstractDatabaseMetadataExecutor::hasDatasource).collect(Collectors.toList());
+        Collection<String> databaseNames = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee())).collect(Collectors.toList());
+        SCHEMA_WITHOUT_DATA_SOURCE.addAll(databaseNames.stream().filter(each -> !AbstractDatabaseMetadataExecutor.hasDatasource(each)).collect(Collectors.toSet()));
+        List<String> result = databaseNames.stream().filter(AbstractDatabaseMetadataExecutor::hasDatasource).collect(Collectors.toList());
         if (!SCHEMA_WITHOUT_DATA_SOURCE.isEmpty()) {
             fillSchemasWithoutDatasource();
         }
@@ -94,7 +94,7 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     
     @Override
     protected void rowPostProcessing(final String databaseName, final Map<String, Object> rowMap, final Map<String, String> aliasMap) {
-        ShardingSphereResource resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMetaData(databaseName).getResource();
+        ShardingSphereResource resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getResource();
         Set<String> catalogs = resource.getDataSources().keySet().stream().map(each -> resource.getDataSourceMetaData(each).getCatalog()).collect(Collectors.toSet());
         schemaNameAlias = aliasMap.getOrDefault(SCHEMA_NAME, "");
         String rowValue = rowMap.getOrDefault(schemaNameAlias, "").toString();

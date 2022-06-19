@@ -27,6 +27,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
+import org.apache.shardingsphere.traffic.rule.TrafficRule;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -36,27 +37,24 @@ import java.util.stream.Collectors;
 /**
  * Drop traffic rule statement handler.
  */
-public final class DropTrafficRuleHandler extends UpdatableRALBackendHandler<DropTrafficRuleStatement, DropTrafficRuleHandler> {
+public final class DropTrafficRuleHandler extends UpdatableRALBackendHandler<DropTrafficRuleStatement> {
     
     @Override
-    protected void update(final ContextManager contextManager, final DropTrafficRuleStatement sqlStatement) throws DistSQLException {
-        Optional<TrafficRuleConfiguration> config = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData()
-                .findRuleConfigurations(TrafficRuleConfiguration.class).stream().findAny();
-        if (!sqlStatement.isContainsIfExistClause()) {
-            DistSQLException.predictionThrow(config.isPresent(), () -> new RequiredRuleMissedException("Traffic"));
-            checkTrafficRuleConfiguration(sqlStatement, config.get());
+    protected void update(final ContextManager contextManager) throws DistSQLException {
+        TrafficRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
+        TrafficRuleConfiguration config = rule.getConfiguration();
+        if (!getSqlStatement().isContainsIfExistClause()) {
+            checkTrafficRuleConfiguration(config);
         }
-        if (config.isPresent()) {
-            config.get().getTrafficStrategies().removeIf(each -> sqlStatement.getRuleNames().contains(each.getName()));
-            getUnusedAlgorithm(config.get()).forEach(each -> config.get().getTrafficAlgorithms().remove(each));
-            getUnusedLoadBalancer(config.get()).forEach(each -> config.get().getLoadBalancers().remove(each));
-            updateToRepository(config.get());
-        }
+        config.getTrafficStrategies().removeIf(each -> getSqlStatement().getRuleNames().contains(each.getName()));
+        getUnusedAlgorithm(config).forEach(each -> config.getTrafficAlgorithms().remove(each));
+        getUnusedLoadBalancer(config).forEach(each -> config.getLoadBalancers().remove(each));
+        updateToRepository(config);
     }
     
-    private void checkTrafficRuleConfiguration(final DropTrafficRuleStatement sqlStatement, final TrafficRuleConfiguration config) throws DistSQLException {
+    private void checkTrafficRuleConfiguration(final TrafficRuleConfiguration config) throws DistSQLException {
         Set<String> currentTrafficStrategyNames = config.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getName).collect(Collectors.toSet());
-        Set<String> notExistRuleNames = sqlStatement.getRuleNames().stream().filter(each -> !currentTrafficStrategyNames.contains(each)).collect(Collectors.toSet());
+        Set<String> notExistRuleNames = getSqlStatement().getRuleNames().stream().filter(each -> !currentTrafficStrategyNames.contains(each)).collect(Collectors.toSet());
         DistSQLException.predictionThrow(notExistRuleNames.isEmpty(), () -> new RequiredRuleMissedException("Traffic"));
     }
     
@@ -74,6 +72,6 @@ public final class DropTrafficRuleHandler extends UpdatableRALBackendHandler<Dro
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getPersistService();
         getUnusedLoadBalancer(config).forEach(each -> config.getLoadBalancers().remove(each));
-        metaDataPersistService.ifPresent(optional -> optional.getGlobalRuleService().persist(metaDataContexts.getGlobalRuleMetaData().getConfigurations(), true));
+        metaDataPersistService.ifPresent(optional -> optional.getGlobalRuleService().persist(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), true));
     }
 }

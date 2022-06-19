@@ -1285,7 +1285,7 @@ conditionName
     : identifier
     ;
     
-unionOption
+combineOption
     : ALL | DISTINCT
     ;
     

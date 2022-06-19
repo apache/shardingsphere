@@ -39,6 +39,16 @@ public final class LockNodeUtil {
     }
     
     /**
+     * Generate Lock sequence node path.
+     *
+     * @param lockName lock name
+     * @return lock leases
+     */
+    public static String generateLockSequenceNodePath(final String lockName) {
+        return lockName + "/sequence";
+    }
+    
+    /**
      * generate ack path name.
      *
      * @param lockName lock name

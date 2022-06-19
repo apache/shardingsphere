@@ -37,7 +37,6 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -98,7 +97,7 @@ public final class CommandExecutorTaskTest extends ProxyContextRestorer {
     
     @Before
     public void setup() {
-        ProxyContext.init(new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class)), mock(TransactionContexts.class), mock(InstanceContext.class)));
+        ProxyContext.init(new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class)), mock(InstanceContext.class)));
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(handlerContext.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).get()).thenReturn(StandardCharsets.UTF_8);
     }
@@ -152,10 +151,13 @@ public final class CommandExecutorTaskTest extends ProxyContextRestorer {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertRunWithError() throws BackendConnectionException {
+    public void assertRunWithError() throws BackendConnectionException, SQLException {
         RuntimeException mockException = new RuntimeException("mock");
-        doThrow(mockException).when(backendConnection).prepareForTaskExecution();
+        doThrow(mockException).when(commandExecutor).execute();
         when(engine.getCodecEngine().createPacketPayload(message, StandardCharsets.UTF_8)).thenReturn(payload);
+        when(engine.getCommandExecuteEngine().getCommandPacket(payload, commandPacketType, connectionSession)).thenReturn(commandPacket);
+        when(engine.getCommandExecuteEngine().getCommandPacketType(payload)).thenReturn(commandPacketType);
+        when(engine.getCommandExecuteEngine().getCommandExecutor(commandPacketType, commandPacket, connectionSession)).thenReturn(commandExecutor);
         when(engine.getCommandExecuteEngine().getErrorPacket(mockException)).thenReturn(databasePacket);
         when(engine.getCommandExecuteEngine().getOtherPacket(connectionSession)).thenReturn(Optional.of(databasePacket));
         CommandExecutorTask actual = new CommandExecutorTask(engine, connectionSession, handlerContext, message);

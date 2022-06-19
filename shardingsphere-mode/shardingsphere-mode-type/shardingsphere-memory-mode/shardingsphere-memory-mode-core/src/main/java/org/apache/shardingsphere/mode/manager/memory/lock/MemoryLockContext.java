@@ -18,63 +18,38 @@
 package org.apache.shardingsphere.mode.manager.memory.lock;
 
 import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.infra.lock.LockMode;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-
-import java.util.Set;
 
 /**
  * Memory lock context.
  */
 public final class MemoryLockContext implements LockContext {
     
-    private final ShardingSphereLock mutexLock = new ShardingSphereMemoryMutexLock();
+    private final ShardingSphereLock memoryLock = new ShardingSphereMemoryLock();
     
     @Override
-    public ShardingSphereLock getMutexLock() {
-        return mutexLock;
+    public ShardingSphereLock getLock() {
+        return memoryLock;
     }
     
     @Override
-    public boolean lockWrite(final String databaseName) {
-        return mutexLock.tryLock(databaseName);
+    public boolean tryLock(final String databaseName, final LockMode lockMode) {
+        return memoryLock.tryLock(databaseName);
     }
     
     @Override
-    public boolean lockWrite(final String databaseName, final Set<String> schemaNames) {
-        // TODO when the lock structure adjustment is completed
-        throw new UnsupportedOperationException();
+    public boolean tryLock(final String databaseName, final LockMode lockMode, final long timeoutMilliseconds) {
+        return memoryLock.tryLock(databaseName, timeoutMilliseconds);
     }
     
     @Override
-    public boolean tryLockWrite(final String databaseName, final long timeoutMilliseconds) {
-        return mutexLock.tryLock(databaseName, timeoutMilliseconds);
-    }
-    
-    @Override
-    public boolean tryLockWrite(final String databaseName, final Set<String> schemaNames, final long timeoutMilliseconds) {
-        // TODO when the lock structure adjustment is completed
-        throw new UnsupportedOperationException();
-    }
-    
-    @Override
-    public void releaseLockWrite(final String databaseName) {
-        mutexLock.releaseLock(databaseName);
-    }
-    
-    @Override
-    public void releaseLockWrite(final String databaseName, final String schemaName) {
-        // TODO when the lock structure adjustment is completed
-        throw new UnsupportedOperationException();
+    public void releaseLock(final String databaseName) {
+        memoryLock.releaseLock(databaseName);
     }
     
     @Override
     public boolean isLocked(final String databaseName) {
-        return mutexLock.isLocked(databaseName);
-    }
-    
-    @Override
-    public boolean isLocked(final String databaseName, final String schemaName) {
-        // TODO when the lock structure adjustment is completed
-        throw new UnsupportedOperationException();
+        return memoryLock.isLocked(databaseName);
     }
 }

@@ -20,4 +20,5 @@
     <create-view sql-case-id="create_view" />
     <create-view sql-case-id="create_view_with_check_option" />
     <create-view sql-case-id="create_view_with_recursive" />
+    <create-view sql-case-id="create_view_with_option" />
 </sql-parser-test-cases>

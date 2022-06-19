@@ -103,7 +103,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     }
     
     private SQLStatementContext<?> createSQLStatementContext(final List<Object> parameters) {
-        return SQLStatementContextFactory.newInstance(metaDataContexts.getDatabaseMap(), parameters, preparedStatement.getSqlStatement(), connectionSession.getDatabaseName());
+        return SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), parameters, preparedStatement.getSqlStatement(), connectionSession.getDatabaseName());
     }
     
     private void prepareForRestOfParametersSet(final Iterator<List<Object>> parameterSetsIterator, final SQLStatementContext<?> sqlStatementContext) {
@@ -125,9 +125,10 @@ public final class PostgreSQLBatchedStatementsExecutor {
     
     private ExecutionContext createExecutionContext(final LogicSQL logicSQL) {
         SQLCheckEngine.check(logicSQL.getSqlStatementContext().getSqlStatement(), logicSQL.getParameters(),
-                metaDataContexts.getDatabaseMetaData(connectionSession.getDatabaseName()).getRuleMetaData().getRules(),
-                connectionSession.getDatabaseName(), metaDataContexts.getDatabaseMap(), null);
-        return kernelProcessor.generateExecutionContext(logicSQL, metaDataContexts.getDatabaseMetaData(connectionSession.getDatabaseName()), metaDataContexts.getProps());
+                metaDataContexts.getMetaData().getDatabases().get(connectionSession.getDatabaseName()).getRuleMetaData().getRules(),
+                connectionSession.getDatabaseName(), metaDataContexts.getMetaData().getDatabases(), null);
+        return kernelProcessor.generateExecutionContext(logicSQL, metaDataContexts.getMetaData().getDatabases().get(connectionSession.getDatabaseName()),
+                metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps());
     }
     
     /**
@@ -137,14 +138,15 @@ public final class PostgreSQLBatchedStatementsExecutor {
      * @throws SQLException SQL exception
      */
     public int executeBatch() throws SQLException {
+        connectionSession.getBackendConnection().handleAutoCommit();
         addBatchedParametersToPreparedStatements();
         return executeBatchedPreparedStatements();
     }
     
     private void addBatchedParametersToPreparedStatements() throws SQLException {
-        Collection<ShardingSphereRule> rules = metaDataContexts.getDatabaseMetaData(connectionSession.getDatabaseName()).getRuleMetaData().getRules();
+        Collection<ShardingSphereRule> rules = metaDataContexts.getMetaData().getDatabases().get(connectionSession.getDatabaseName()).getRuleMetaData().getRules();
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(
-                JDBCDriverType.PREPARED_STATEMENT, metaDataContexts.getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
+                JDBCDriverType.PREPARED_STATEMENT, metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
                 (JDBCBackendConnection) connectionSession.getBackendConnection(), (JDBCBackendStatement) connectionSession.getStatementManager(), new StatementOption(false), rules);
         executionGroupContext = prepareEngine.prepare(anyExecutionContext.getRouteContext(), executionUnitParameters.keySet());
         for (ExecutionGroup<JDBCExecutionUnit> eachGroup : executionGroupContext.getInputGroups()) {
@@ -172,7 +174,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     
     private int executeBatchedPreparedStatements() throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
-        DatabaseType databaseType = metaDataContexts.getDatabaseMetaData(connectionSession.getDatabaseName()).getResource().getDatabaseType();
+        DatabaseType databaseType = metaDataContexts.getMetaData().getDatabases().get(connectionSession.getDatabaseName()).getResource().getDatabaseType();
         JDBCExecutorCallback<int[]> callback = new BatchedStatementsJDBCExecutorCallback(databaseType, preparedStatement.getSqlStatement(), isExceptionThrown);
         List<int[]> executeResults = jdbcExecutor.execute(executionGroupContext, callback);
         int result = 0;
