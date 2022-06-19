@@ -227,12 +227,13 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
         if (tableShardings != null && tableShardings.size() > 0) {
             routedTables = new ArrayList<>(2);
             for (Comparable<?> tableSharding : tableShardings) {
-                routedTables.add((String)tableSharding);
+                routedTables.add((String) tableSharding);
             }
         } else {
             Collection<String> availableTargetTables = tableRule.getActualTableNames(routedDataSource);
             routedTables = new LinkedHashSet<>(tableShardingValues.isEmpty()
-                    ? availableTargetTables : tableShardingStrategy.doSharding(availableTargetTables, tableShardingValues, tableRule.getTableDataNode(),properties));
+                    ? availableTargetTables
+                    : tableShardingStrategy.doSharding(availableTargetTables, tableShardingValues, tableRule.getTableDataNode(), properties));
         }
         Collection<DataNode> result = new LinkedList<>();
         for (String each : routedTables) {
