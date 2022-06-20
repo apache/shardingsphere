@@ -15,26 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml;
+package org.apache.shardingsphere.infra.binder.statement.dml;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
-
-import java.util.List;
 
 /**
- * MySQL do statement.
+ * Do statement context.
  */
-@ToString
-@AllArgsConstructor
-@NoArgsConstructor
-@Getter
-public final class MySQLDoStatement extends DoStatement implements MySQLStatement {
+public final class DoStatementContext extends CommonSQLStatementContext<DoStatement> {
     
-    private List<ExpressionSegment> parameters;
+    public DoStatementContext(final DoStatement sqlStatement) {
+        super(sqlStatement);
+    }
 }

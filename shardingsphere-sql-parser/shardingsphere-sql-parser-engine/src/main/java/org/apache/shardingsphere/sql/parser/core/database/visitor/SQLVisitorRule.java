@@ -570,7 +570,9 @@ public enum SQLVisitorRule {
     
     CLUSTER("Cluster", SQLStatementType.DDL),
     
-    CREATE_ACCESS_METHOD("CreateAccessMethod", SQLStatementType.DDL);
+    CREATE_ACCESS_METHOD("CreateAccessMethod", SQLStatementType.DDL),
+    
+    DO("DoStatement", SQLStatementType.DML);
     
     private final String name;
     

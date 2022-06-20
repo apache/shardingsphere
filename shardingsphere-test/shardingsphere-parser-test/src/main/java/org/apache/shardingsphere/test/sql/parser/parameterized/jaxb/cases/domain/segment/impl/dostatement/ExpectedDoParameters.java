@@ -15,26 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.dostatement;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.AbstractExpectedSQLSegment;
 
+import javax.xml.bind.annotation.XmlElement;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
- * MySQL do statement.
+ * Expected do parameters.
  */
-@ToString
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
-public final class MySQLDoStatement extends DoStatement implements MySQLStatement {
+@Setter
+public final class ExpectedDoParameters extends AbstractExpectedSQLSegment {
     
-    private List<ExpressionSegment> parameters;
+    @XmlElement(name = "parameter")
+    private List<ExpectedDoParameter> parameters = new LinkedList<>();
 }

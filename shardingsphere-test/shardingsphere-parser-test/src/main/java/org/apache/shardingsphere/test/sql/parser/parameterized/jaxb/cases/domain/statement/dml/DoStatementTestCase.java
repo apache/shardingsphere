@@ -15,26 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.dostatement.ExpectedDoParameters;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import java.util.List;
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * MySQL do statement.
+ * Do statement test case.
  */
-@ToString
-@AllArgsConstructor
-@NoArgsConstructor
 @Getter
-public final class MySQLDoStatement extends DoStatement implements MySQLStatement {
+@Setter
+public final class DoStatementTestCase extends SQLParserTestCase {
     
-    private List<ExpressionSegment> parameters;
+    @XmlElement(name = "parameters")
+    private ExpectedDoParameters doParameters;
 }
