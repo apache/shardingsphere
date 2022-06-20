@@ -146,6 +146,7 @@ execute
     | dropServer
     | alterPolicy
     | checkpoint
+    | fetch 
     | close
     | cluster
     | alterOperator
