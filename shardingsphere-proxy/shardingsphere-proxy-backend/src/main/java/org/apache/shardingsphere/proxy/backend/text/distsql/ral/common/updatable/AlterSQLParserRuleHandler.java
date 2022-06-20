@@ -37,8 +37,17 @@ public final class AlterSQLParserRuleHandler extends UpdatableRALBackendHandler<
     
     @Override
     protected void update(final ContextManager contextManager) {
-        replaceSQLParserRule(createToBeAlteredRuleConfiguration());
+        replaceNewRule(contextManager, createToBeAlteredRuleConfiguration());
         persistNewRuleConfigurations();
+    }
+    
+    private void replaceNewRule(final ContextManager contextManager, final SQLParserRuleConfiguration toBeAlteredRuleConfig) {
+        Collection<ShardingSphereRule> globalRules = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules();
+        globalRules.removeIf(each -> each instanceof SQLParserRule);
+        globalRules.add(new SQLParserRule(toBeAlteredRuleConfig));
+        // TODO remove me after ShardingSphereRuleMetaData.configuration removed
+        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations().removeIf(each -> each instanceof SQLParserRuleConfiguration);
+        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations().add(toBeAlteredRuleConfig);
     }
     
     private SQLParserRuleConfiguration createToBeAlteredRuleConfiguration() {
@@ -57,12 +66,6 @@ public final class AlterSQLParserRuleHandler extends UpdatableRALBackendHandler<
         int initialCapacity = null == segment.getInitialCapacity() ? cacheOption.getInitialCapacity() : segment.getInitialCapacity();
         long maximumSize = null == segment.getMaximumSize() ? cacheOption.getMaximumSize() : segment.getMaximumSize();
         return new CacheOption(initialCapacity, maximumSize);
-    }
-    
-    private void replaceSQLParserRule(final SQLParserRuleConfiguration toBeAlteredRuleConfig) {
-        Collection<ShardingSphereRule> globalRules = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules();
-        globalRules.removeIf(each -> each instanceof SQLParserRule);
-        globalRules.add(new SQLParserRule(toBeAlteredRuleConfig));
     }
     
     private void persistNewRuleConfigurations() {
