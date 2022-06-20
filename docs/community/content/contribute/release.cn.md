@@ -202,6 +202,12 @@ http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-${PREVI
 http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-${RELEASE.VERSION}.xsd
 ```
 
+参考命令：
+```shell
+cd docs/document/content/user-manual/shardingsphere-jdbc/spring-namespace
+grep -l -r "${PREVIOUS.RELEASE.VERSION}" . | xargs sed -i -e "s/${PREVIOUS.RELEASE.VERSION}/${RELEASE.VERSION}/g"
+```
+
 在文档中指定 xsd 版本，而不是直接使用 `sharding.xsd`，是为了让历史版本的文档能够对应到正确版本的 xsd 文件。
 
 **5. 发布预校验**

@@ -204,6 +204,12 @@ to:
 http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-${RELEASE.VERSION}.xsd
 ```
 
+Sample commands:
+```shell
+cd docs/document/content/user-manual/shardingsphere-jdbc/spring-namespace
+grep -l -r "${PREVIOUS.RELEASE.VERSION}" . | xargs sed -i -e "s/${PREVIOUS.RELEASE.VERSION}/${RELEASE.VERSION}/g"
+```
+
 Specifying version of xsd instead of using `sharding.xsd`, is to make legacy documents can be mapped to corresponding version of xsd.
 
 **5. Pre-Release Check**
