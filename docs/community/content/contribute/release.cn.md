@@ -200,6 +200,11 @@ grep -l -r "${PREVIOUS.RELEASE.VERSION}" . | xargs sed -i -e "s/${PREVIOUS.RELEA
 
 将 `README.md` 和 `README_ZH.md` 里的 `${PREVIOUS.RELEASE.VERSION}` 修改为 `${RELEASE.VERSION}`。
 
+### 6. 更新 Helm Chart 版本
+
+Helm Chart 可以部署不同版本的 ShardingSphere-Proxy，版本号独立于 ShardingSphere 版本。
+修改文件 `shardingsphere-charts/apache-shardingsphere-proxy/Chart.yaml` 中的 `version`。
+
 ## 发布 Apache Maven 中央仓库
 
 ### 1. 设置 settings.xml 文件
@@ -270,6 +275,20 @@ mvn release:perform -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=tru
 点击 `Close` 来告诉 Nexus 这个构建已经完成，只有这样该版本才是可用的。
 如果电子签名等出现问题，`Close` 会失败，可以通过 `Activity` 查看失败信息。
 
+## 构建 Helm Chart
+
+```shell
+cd shardingsphere-charts/apache-shardingsphere-proxy/charts/governance
+helm dep build
+cd ../..
+helm dep build
+cd ..
+helm package apache-shardingsphere-proxy
+mv apache-shardingsphere-proxy-${CHART.RELEASE.VERSION}.tgz apache-shardingsphere-proxy-chart-${CHART.RELEASE.VERSION}.tgz
+gpg --armor --detach-sign apache-shardingsphere-proxy-chart-${CHART.RELEASE.VERSION}.tgz
+shasum -b -a 512 apache-shardingsphere-proxy-chart-${CHART.RELEASE.VERSION}.tgz > apache-shardingsphere-proxy-chart-${CHART.RELEASE.VERSION}.tgz.sha512
+```
+
 ## 发布 Apache SVN 仓库
 
 ### 1. 检出 ShardingSphere 发布目录
@@ -312,6 +331,7 @@ cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-src-distributi
 cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-jdbc-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cp -f ~/shardingsphere/shardingsphere-distribution/shardingsphere-proxy-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 cp -f ~/shardingsphere/shardingsphere-agent/shardingsphere-agent-distribution/target/*.tar.gz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
+cp -f ~/shardingsphere/shardingsphere-charts/*.tgz* ~/ss_svn/dev/shardingsphere/${RELEASE.VERSION}
 ```
 
 ### 4. 提交 Apache SVN
@@ -408,6 +428,19 @@ diff -r apache-shardingsphere-${RELEASE.VERSION}-src-release shardingsphere-${RE
   - 所有第三方依赖的许可证都在 `LICENSE` 文件中声明；
   - 依赖许可证的完整版全部在 `license` 目录；
   - 如果依赖的是 Apache 许可证并且存在 `NOTICE` 文件，那么这些 `NOTICE` 文件也需要加入到版本的 `NOTICE` 文件中。
+
+**3.4 检查 Helm Chart 制品包内容**
+
+解压缩 `apache-shardingsphere-proxy-chart-${CHART.RELEASE.VERSION}.tgz`
+
+进行如下检查：
+- 存在 `LICENSE` 和 `NOTICE` 文件；
+- `NOTICE` 文件中的年份正确；
+- 文本文件开头都有 ASF 许可证，以下文件或目录除外：
+  - 所有 Chart.yaml
+  - 所有 Chart.lock
+  - charts/governance/charts 目录
+  - charts/common 目录
 
 ## 发起投票
 
