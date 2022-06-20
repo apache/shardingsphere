@@ -644,3 +644,36 @@ ShardingSphere Resources:
 - Apache ShardingSphere Team
 
 ```
+
+## 附录：如何中止发布流程
+
+当发布过程中发现问题，需要中止发布流程并待问题修复后重新发布，可以参考以下流程进行。
+
+### 在投票邮件回复 -1 并说明中止原因
+
+在 `[VOTE]` 邮件回复 -1，并说明中止投票的原因。
+
+### 从 dev 区域移除 release candidates
+
+```shell
+svn del https://dist.apache.org/repos/dist/dev/shardingsphere/${RELEASE.VERSION} -m "Drop ${RELEASE.VERSION} release candidates"
+```
+
+### Drop Maven Staging Repository
+
+在 <https://repository.apache.org/#stagingRepositories> 勾选本次发布的 Staging Repository，点击 **Drop** 按钮。
+
+### Reset 发布分支并删除 tag
+
+Reset `${RELEASE.VERSION}-release` 分支到 `maven-release-plugin` 自动提交之前的 commit：
+```shell
+git checkout ${RELEASE.VERSION}-release
+git reset --hard ${COMMIT_ID_BEFORE_RELEASE}
+git push origin --force
+```
+
+删除 tag：
+```shell
+git tag -d ${RELEASE.VERSION}
+git push origin -d ${RELEASE.VERSION}
+```
