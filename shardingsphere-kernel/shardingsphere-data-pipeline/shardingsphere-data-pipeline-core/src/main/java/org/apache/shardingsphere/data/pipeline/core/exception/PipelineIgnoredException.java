@@ -32,4 +32,3 @@ public final class PipelineIgnoredException extends RuntimeException {
         super(message, cause);
     }
 }
-
