@@ -37,13 +37,14 @@ public final class AlterTransactionRuleHandler extends UpdatableRALBackendHandle
     
     @Override
     protected void update(final ContextManager contextManager) {
-        replaceNewRule(contextManager, createToBeAlteredRuleConfiguration());
+        replaceNewRule(contextManager);
         persistNewRuleConfigurations();
     }
     
-    private void replaceNewRule(final ContextManager contextManager, final TransactionRuleConfiguration toBeAlteredRuleConfig) {
+    private void replaceNewRule(final ContextManager contextManager) {
         Collection<ShardingSphereRule> globalRules = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules();
         globalRules.removeIf(each -> each instanceof TransactionRule);
+        TransactionRuleConfiguration toBeAlteredRuleConfig = createToBeAlteredRuleConfiguration();
         Map<String, ShardingSphereDatabase> databases = contextManager.getMetaDataContexts().getMetaData().getDatabases();
         TransactionRule transactionRule = new TransactionRule(toBeAlteredRuleConfig, databases);
         for (String each : transactionRule.getResources().keySet()) {
