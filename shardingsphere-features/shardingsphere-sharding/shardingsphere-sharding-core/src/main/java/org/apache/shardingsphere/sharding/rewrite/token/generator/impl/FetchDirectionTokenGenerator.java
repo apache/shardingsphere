@@ -45,8 +45,8 @@ public final class FetchDirectionTokenGenerator implements OptionalSQLTokenGener
         Preconditions.checkArgument(sqlStatementContext instanceof FetchStatementContext, "SQLStatementContext must be instance of FetchStatementContext.");
         OpenGaussFetchStatement fetchStatement = ((FetchStatementContext) sqlStatementContext).getSqlStatement();
         CursorNameSegment cursorName = fetchStatement.getCursorName();
-        int startIndex = fetchStatement.getDirection().map(DirectionSegment::getStartIndex).orElseGet(() -> cursorName.getStartIndex() - 1);
-        int stopIndex = fetchStatement.getDirection().map(DirectionSegment::getStopIndex).orElseGet(() -> cursorName.getStartIndex() - 1);
+        int startIndex = fetchStatement.getDirection().map(DirectionSegment::getStartIndex).orElseGet("FETCH"::length);
+        int stopIndex = fetchStatement.getDirection().map(DirectionSegment::getStopIndex).orElseGet("FETCH"::length);
         DirectionType directionType = fetchStatement.getDirection().flatMap(DirectionSegment::getDirectionType).orElse(DirectionType.NEXT);
         long fetchCount = fetchStatement.getDirection().flatMap(DirectionSegment::getCount).orElse(1L);
         return new FetchDirectionToken(startIndex, stopIndex, directionType, fetchCount, cursorName.getIdentifier().getValue().toLowerCase());
