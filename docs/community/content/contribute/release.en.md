@@ -242,7 +242,7 @@ It is basically the same as the previous rehearsal command, but deleting -DdryRu
 
 -DpushChanges=false: do not submit the edited version number and tag to Github automatically.
 
-After making sure there is no mistake in local files, submit them to GitHub.
+**Refer to [Check Release](#check-release), after making sure there is no mistake in local files**, submit them to GitHub.
 
 ```shell
 git push origin ${RELEASE.VERSION}-release

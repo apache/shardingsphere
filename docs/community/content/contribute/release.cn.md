@@ -238,7 +238,7 @@ mvn release:prepare -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=tru
 
 -DpushChanges=false：不要将修改后的版本号和 tag 自动提交至 Github。
 
-将本地文件检查无误后，提交至 Github。
+**按照 [检查发布结果](#检查发布结果) 步骤，将本地文件检查无误后**，提交至 Github。
 
 ```shell
 git push origin ${RELEASE.VERSION}-release
