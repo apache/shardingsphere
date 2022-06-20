@@ -175,7 +175,6 @@ public final class ExportDatabaseConfigurationHandlerTest extends ProxyContextRe
         assertFalse(actual.isAutoIncrement());
     }
     
-    
     private void assertRowData(final Collection<Object> actual) {
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(loadExpectedRow()));
