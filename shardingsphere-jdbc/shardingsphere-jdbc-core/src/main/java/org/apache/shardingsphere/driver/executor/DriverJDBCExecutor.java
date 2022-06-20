@@ -37,11 +37,9 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Driver JDBC executor.
@@ -162,8 +160,7 @@ public final class DriverJDBCExecutor {
     }
     
     private void refreshMetaData(final SQLStatementContext<?> sqlStatementContext, final Collection<RouteUnit> routeUnits) throws SQLException {
-        Optional<MetaDataRefreshedEvent> event = metadataRefreshEngine.refresh(sqlStatementContext, () -> routeUnits.stream()
-                .map(each -> each.getDataSourceMapper().getLogicName()).collect(Collectors.toCollection(() -> new ArrayList<>(routeUnits.size()))));
+        Optional<MetaDataRefreshedEvent> event = metadataRefreshEngine.refresh(sqlStatementContext, routeUnits);
         if (contextManager.getInstanceContext().isCluster() && event.isPresent()) {
             ShardingSphereEventBus.getInstance().post(event.get());
         }

@@ -18,20 +18,20 @@
 package org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.CacheOptionSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 
 /**
  * Alter SQL parser rule statement.
  */
-@Setter
+@RequiredArgsConstructor
 @Getter
 public final class AlterSQLParserRuleStatement extends UpdatableRALStatement {
     
-    private Boolean sqlCommentParseEnable;
+    private final Boolean sqlCommentParseEnable;
     
-    private CacheOptionSegment parseTreeCache;
+    private final CacheOptionSegment parseTreeCache;
     
-    private CacheOptionSegment sqlStatementCache;
+    private final CacheOptionSegment sqlStatementCache;
 }

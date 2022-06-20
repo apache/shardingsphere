@@ -19,14 +19,11 @@ package org.apache.shardingsphere.infra.instance.definition;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 
 import java.lang.management.ManagementFactory;
 import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -47,16 +44,16 @@ public final class InstanceDefinition {
     
     private String uniqueSign;
     
-    public InstanceDefinition(final InstanceType instanceType) {
+    public InstanceDefinition(final InstanceType instanceType, final String instanceId) {
         this.instanceType = instanceType;
-        instanceId = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString();
+        this.instanceId = instanceId;
         ip = IpUtils.getIp();
         uniqueSign = String.join("", ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0], String.valueOf(ATOMIC_LONG.incrementAndGet()));
     }
     
-    public InstanceDefinition(final InstanceType instanceType, final Integer port) {
+    public InstanceDefinition(final InstanceType instanceType, final Integer port, final String instanceId) {
         this.instanceType = instanceType;
-        instanceId = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString();
+        this.instanceId = instanceId;
         ip = IpUtils.getIp();
         uniqueSign = String.valueOf(port);
     }
@@ -69,11 +66,6 @@ public final class InstanceDefinition {
         uniqueSign = attributesList.get(1);
     }
     
-    public InstanceDefinition(final InstanceType instanceType, final String instanceId) {
-        this.instanceType = instanceType;
-        this.instanceId = instanceId;
-    }
-    
     /**
      * Get instance attributes.
      * 
@@ -81,18 +73,5 @@ public final class InstanceDefinition {
      */
     public String getAttributes() {
         return Joiner.on(DELIMITER).join(ip, uniqueSign);
-    }
-    
-    /**
-     * Set instance attributes.
-     *
-     * @param attributes attributes ip@uniqueSign
-     */
-    public void setAttributes(final String attributes) {
-        if (!Strings.isNullOrEmpty(attributes) && attributes.contains(DELIMITER)) {
-            List<String> attributesList = Splitter.on(DELIMITER).splitToList(attributes);
-            ip = attributesList.get(0);
-            uniqueSign = attributesList.get(1);
-        }
     }
 }

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="do_constant" value="DO 1" db-types="MySQL" />
+    <sql-case id="do_sleep" value="DO SLEEP(1)" db-types="MySQL" />
+    <sql-case id="do_multiple_sleep" value="DO SLEEP(1), SLEEP(2)" db-types="MySQL" />
+    <sql-case id="do_with_function_1" value="DO FROM_BASE64(CAST((MID(UUID(),20,64)) AS BINARY(55)))" db-types="MySQL" />
+    <sql-case id="do_with_function_2" value="DO FROM_BASE64(CAST(RIGHT(11,1)AS BINARY(24)))" db-types="MySQL" />
+    <sql-case id="do_with_function_3" value="DO COUNT(DISTINCT ROUND(CAST(SLEEP(0) AS DECIMAL), NULL))" db-types="MySQL" />
+    <sql-case id="do_with_crc32_function" value="DO CRC32(CHAR(1.134475E+308))" db-types="MySQL" />
+</sql-cases>

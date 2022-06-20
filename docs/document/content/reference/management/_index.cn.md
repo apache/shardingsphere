@@ -13,16 +13,20 @@ namespace
    ├──rules                                   # 全局规则配置
    ├──props                                   # 属性配置
    ├──metadata                                # Metadata 配置
-   ├     ├──${schema_1}                       # Schema 名称1
-   ├     ├     ├──dataSources                 # 数据源配置
-   ├     ├     ├──rules                       # 规则配置
-   ├     ├     ├──tables                      # 表结构配置
-   ├     ├     ├     ├──t_1 
-   ├     ├     ├     ├──t_2                       
-   ├     ├──${schema_2}                       # Schema 名称2
-   ├     ├     ├──dataSources                 # 数据源配置
-   ├     ├     ├──rules                       # 规则配置
-   ├     ├     ├──tables                      # 表结构配置
+   ├     ├──${databaseName}                   # 逻辑数据库名称
+   ├     ├     ├──schemas                     # Schema 列表   
+   ├     ├     ├     ├──${schemaName}         # 逻辑 Schema 名称
+   ├     ├     ├     ├     ├──tables          # 表结构配置
+   ├     ├     ├     ├     ├     ├──${tableName} 
+   ├     ├     ├     ├     ├     ├──...  
+   ├     ├     ├     ├──...    
+   ├     ├     ├──versions                    # 元数据版本列表      
+   ├     ├     ├     ├──${versionNumber}      # 元数据版本号
+   ├     ├     ├     ├     ├──dataSources     # 数据源配置
+   ├     ├     ├     ├     ├──rules           # 规则配置   
+   ├     ├     ├     ├──...
+   ├     ├     ├──active_version              # 激活的元数据版本号
+   ├     ├──...      
    ├──nodes
    ├    ├──compute_nodes
    ├    ├     ├──online
@@ -78,7 +82,7 @@ kernel-executor-size: 20
 sql-show: true
 ```
 
-### /metadata/${schemaName}/dataSources
+### /metadata/${databaseName}/versions/${versionNumber}/dataSources
 
 多个数据库连接池的集合，不同数据库连接池属性自适配（例如：DBCP，C3P0，Druid，HikariCP）。
 
@@ -113,7 +117,7 @@ ds_1:
   poolName: HikariPool-2
 ```
 
-### /metadata/${schemaName}/rules
+### /metadata/${databaseName}/versions/${versionNumber}/rules
 
 规则配置，可包括数据分片、读写分离、数据加密、影子库压测等配置。
 
@@ -128,7 +132,7 @@ ds_1:
   xxx
 ```
 
-### /metadata/${schemaName}/tables
+### /metadata/${databaseName}/schemas/${schemaName}/tables
 
 表结构配置，每个表使用单独节点存储，暂不支持动态修改。
 

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.transaction;
 
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -24,8 +25,8 @@ import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResp
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
-import org.apache.shardingsphere.transaction.context.TransactionContexts;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -44,8 +45,9 @@ public final class TransactionBackendHandlerTest extends ProxyContextRestorer {
     @Before
     public void setTransactionContexts() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        TransactionContexts transactionContexts = mock(TransactionContexts.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getTransactionContexts()).thenReturn(transactionContexts);
+        ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(globalRuleMetaData.getSingleRule(TransactionRule.class)).thenReturn(mock(TransactionRule.class));
         ProxyContext.init(contextManager);
     }
     

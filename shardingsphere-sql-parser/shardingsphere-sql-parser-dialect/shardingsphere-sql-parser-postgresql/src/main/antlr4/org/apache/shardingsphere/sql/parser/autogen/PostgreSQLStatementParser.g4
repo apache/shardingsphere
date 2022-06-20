@@ -144,8 +144,12 @@ execute
     | dropOperatorFamily
     | dropAccessMethod
     | dropServer
+    | alterPolicy
     | checkpoint
     | close
     | cluster
+    | alterOperator
+    | createAccessMethod
+    | alterPublication
     ) SEMI_? EOF
     ;

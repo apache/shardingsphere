@@ -37,13 +37,9 @@ public final class QueryOptimizePlannerFactory {
      * @return created instance
      */
     public static RelOptPlanner newInstance() {
-        RelOptPlanner result = createPlanner();
+        RelOptPlanner result = new VolcanoPlanner();
         setUpRules(result);
         return result;
-    }
-    
-    private static RelOptPlanner createPlanner() {
-        return new VolcanoPlanner();
     }
     
     private static void setUpRules(final RelOptPlanner planner) {

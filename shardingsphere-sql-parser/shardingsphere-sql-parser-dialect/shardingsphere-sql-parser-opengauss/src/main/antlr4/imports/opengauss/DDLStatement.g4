@@ -1278,7 +1278,7 @@ createAccessMethod
     ;
 
 createAggregate
-    : CREATE (OR REPLACE)? AGGREGATE funcName (aggrArgs definition | oldAggrDefinition)
+    : CREATE AGGREGATE funcName (aggrArgs definition | oldAggrDefinition)
     ;
 
 oldAggrDefinition
@@ -1785,7 +1785,7 @@ listen
     ;
 
 move
-    : MOVE (direction (FROM | IN)?)? cursorName
+    : MOVE direction? (FROM | IN)? cursorName
     ;
 
 prepare
@@ -1972,7 +1972,7 @@ dropSchema
     ;
 
 fetch
-    : FETCH (direction (FROM | IN))? cursorName
+    : FETCH direction? (FROM | IN)? cursorName
     ;
 
 direction

@@ -17,72 +17,80 @@
   -->
 
 <sql-parser-test-cases>
-    <move sql-case-id="move_next">
+    <move sql-case-id="move_cursor">
+        <cursor-name name="t_order_cursor" start-index="5" stop-index="18" />
+    </move>
+
+    <move sql-case-id="move_cursor_with_from">
+        <cursor-name name="t_order_cursor" start-index="10" stop-index="23" />
+    </move>
+    
+    <move sql-case-id="move_cursor_with_next">
         <cursor-name name="t_order_cursor" start-index="15" stop-index="28" />
         <direction direction-type="NEXT" start-index="5" stop-index="8" />
     </move>
 
-    <move sql-case-id="move_prior">
+    <move sql-case-id="move_cursor_with_prior">
         <cursor-name name="t_order_cursor" start-index="16" stop-index="29" />
         <direction direction-type="PRIOR" start-index="5" stop-index="9" />
     </move>
 
-    <move sql-case-id="move_first">
+    <move sql-case-id="move_cursor_with_first">
         <cursor-name name="t_order_cursor" start-index="16" stop-index="29" />
         <direction direction-type="FIRST" start-index="5" stop-index="9" />
     </move>
 
-    <move sql-case-id="move_last">
+    <move sql-case-id="move_cursor_with_last">
         <cursor-name name="t_order_cursor" start-index="15" stop-index="28" />
         <direction direction-type="LAST" start-index="5" stop-index="8" />
     </move>
 
-    <move sql-case-id="move_absolute_count">
+    <move sql-case-id="move_cursor_with_absolute_count">
         <cursor-name name="t_order_cursor" start-index="22" stop-index="35" />
         <direction direction-type="ABSOLUTE_COUNT" count="10" start-index="5" stop-index="15" />
     </move>
 
-    <move sql-case-id="move_relative_count">
+    <move sql-case-id="move_cursor_with_relative_count">
         <cursor-name name="t_order_cursor" start-index="22" stop-index="35" />
         <direction direction-type="RELATIVE_COUNT" count="10" start-index="5" stop-index="15" />
     </move>
 
-    <move sql-case-id="move_count">
+    <move sql-case-id="move_cursor_with_count">
         <cursor-name name="t_order_cursor" start-index="13" stop-index="26" />
         <direction direction-type="COUNT" count="10" start-index="5" stop-index="6" />
     </move>
 
-    <move sql-case-id="move_all">
+    <move sql-case-id="move_cursor_with_all">
         <cursor-name name="t_order_cursor" start-index="14" stop-index="27" />
         <direction direction-type="ALL" start-index="5" stop-index="7" />
     </move>
 
-    <move sql-case-id="move_forward">
+    <move sql-case-id="move_cursor_with_forward">
         <cursor-name name="t_order_cursor" start-index="18" stop-index="31" />
         <direction direction-type="FORWARD" start-index="5" stop-index="11" />
     </move>
 
-    <move sql-case-id="move_forward_count">
+    <move sql-case-id="move_cursor_with_forward_count">
         <cursor-name name="t_order_cursor" start-index="21" stop-index="34" />
         <direction direction-type="FORWARD_COUNT" count="10" start-index="5" stop-index="14" />
     </move>
 
-    <move sql-case-id="move_forward_all">
+    <move sql-case-id="move_cursor_with_forward_all">
         <cursor-name name="t_order_cursor" start-index="22" stop-index="35" />
         <direction direction-type="FORWARD_ALL" start-index="5" stop-index="15" />
     </move>
 
-    <move sql-case-id="move_backward">
+    <move sql-case-id="move_cursor_with_backward">
         <cursor-name name="t_order_cursor" start-index="19" stop-index="32" />
         <direction direction-type="BACKWARD" start-index="5" stop-index="12" />
     </move>
 
-    <move sql-case-id="move_backward_count">
+    <move sql-case-id="move_cursor_with_backward_count">
         <cursor-name name="t_order_cursor" start-index="22" stop-index="35" />
         <direction direction-type="BACKWARD_COUNT" count="10" start-index="5" stop-index="15" />
     </move>
 
-    <move sql-case-id="move_backward_all">
+    <move sql-case-id="move_cursor_with_backward_all">
         <cursor-name name="t_order_cursor" start-index="23" stop-index="36" />
         <direction direction-type="BACKWARD_ALL" start-index="5" stop-index="16" />
     </move>

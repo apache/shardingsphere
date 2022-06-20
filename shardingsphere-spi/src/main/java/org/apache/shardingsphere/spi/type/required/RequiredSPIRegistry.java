@@ -45,6 +45,11 @@ public final class RequiredSPIRegistry {
         if (1 == services.size()) {
             return services.iterator().next();
         }
-        return services.stream().filter(RequiredSPI::isDefault).findFirst().orElseGet(() -> services.iterator().next());
+        for (T each : services) {
+            if (each.isDefault()) {
+                return each;
+            }
+        }
+        return services.iterator().next();
     }
 }

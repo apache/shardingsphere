@@ -145,7 +145,7 @@ public final class MySQLAuthenticationHandlerTest extends ProxyContextRestorer {
         Map<String, ShardingSphereDatabase> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-            when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()));
+            when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
             result.put(String.format(SCHEMA_PATTERN, i), database);
         }
         return result;
@@ -161,6 +161,6 @@ public final class MySQLAuthenticationHandlerTest extends ProxyContextRestorer {
             authorityRegistryField.setAccessible(true);
             authorityRegistryField.set(rule, authorityRegistry);
         }
-        return new ShardingSphereRuleMetaData(Collections.singletonList(ruleConfig), Collections.singletonList(rule));
+        return new ShardingSphereRuleMetaData(Collections.singletonList(rule));
     }
 }

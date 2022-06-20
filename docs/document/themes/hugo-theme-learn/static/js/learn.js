@@ -26,8 +26,8 @@ function getScrollBarWidth() {
 };
 
 function setMenuHeight() {
-    $('#sidebar .highlightable').height($('#sidebar').innerHeight() - $('#header-wrapper').height() - 40);
-    $('#sidebar .highlightable').perfectScrollbar('update');
+    $('#sidebar .leftMenu').height($(window).innerHeight() - $('#header-wrapper').height() - 240);
+    $('#sidebar .leftMenu').perfectScrollbar('update');
 }
 
 function fallbackMessage(action) {
@@ -49,7 +49,7 @@ function fallbackMessage(action) {
 
 // for the window resize
 $(window).resize(function() {
-    // setMenuHeight();
+    setMenuHeight();
 });
 
 // debouncing function from John Hann
@@ -91,7 +91,7 @@ jQuery(document).ready(function() {
 
     var sidebarStatus = searchStatus = 'open';
     $('#sidebar .highlightable').perfectScrollbar();
-    // setMenuHeight();
+    setMenuHeight();
 
     jQuery('#overlay').on('click', function() {
         jQuery(document.body).toggleClass('sidebar-hidden');

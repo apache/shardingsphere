@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-shadow-distsql</artifactId>
-        <version>5.1.2-SNAPSHOT</version>
+        <version>5.1.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-shadow-distsql-handler</artifactId>
     <name>${project.artifactId}</name>
@@ -36,6 +36,11 @@
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-shadow-distsql-statement</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-shadow-distsql-parser</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

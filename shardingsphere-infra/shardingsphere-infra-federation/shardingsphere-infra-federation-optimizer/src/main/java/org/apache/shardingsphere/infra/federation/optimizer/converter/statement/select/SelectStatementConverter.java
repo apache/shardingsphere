@@ -64,8 +64,7 @@ public final class SelectStatementConverter implements SQLStatementConverter<Sel
         SqlNodeList orderBy = selectStatement.getOrderBy().flatMap(optional -> new OrderByConverter().convertToSQLNode(optional)).orElse(SqlNodeList.EMPTY);
         Optional<LimitSegment> limit = SelectStatementHandler.getLimitSegment(selectStatement);
         ConverterContext context = new ConverterContext();
-        SqlSelect sqlSelect = new SqlSelect(SqlParserPos.ZERO, distinct, projection, from,
-                where, groupBy, having, SqlNodeList.EMPTY, null, null, null, SqlNodeList.EMPTY);
+        SqlSelect sqlSelect = new SqlSelect(SqlParserPos.ZERO, distinct, projection, from, where, groupBy, having, SqlNodeList.EMPTY, null, null, null, SqlNodeList.EMPTY);
         if (limit.isPresent()) {
             SqlNode offset = limit.get().getOffset().flatMap(optional -> new PaginationValueSQLConverter(context).convertToSQLNode(optional)).orElse(null);
             SqlNode rowCount = limit.get().getRowCount().flatMap(optional -> new PaginationValueSQLConverter(context).convertToSQLNode(optional)).orElse(null);

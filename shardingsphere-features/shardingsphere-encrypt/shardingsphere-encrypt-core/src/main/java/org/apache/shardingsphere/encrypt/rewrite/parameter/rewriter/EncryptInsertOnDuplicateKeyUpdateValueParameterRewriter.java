@@ -24,7 +24,6 @@ import org.apache.shardingsphere.encrypt.rewrite.aware.DatabaseNameAware;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.OnDuplicateUpdateContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -77,10 +76,11 @@ public final class EncryptInsertOnDuplicateKeyUpdateValueParameterRewriter imple
                 Object cipherColumnValue = encryptor.get().encrypt(plainColumnValue, encryptContext);
                 groupedParameterBuilder.getGenericParameterBuilder().addReplacedParameters(columnIndex, cipherColumnValue);
                 Collection<Object> addedParameters = new LinkedList<>();
-                if (optional instanceof QueryAssistedEncryptAlgorithm) {
+                Optional<EncryptAlgorithm> assistedQueryEncryptor = encryptRule.findAssistedQueryEncryptor(tableName, encryptLogicColumnName);
+                if (assistedQueryEncryptor.isPresent()) {
                     Optional<String> assistedColumnName = encryptRule.findAssistedQueryColumn(tableName, encryptLogicColumnName);
                     Preconditions.checkArgument(assistedColumnName.isPresent(), "Can not find assisted query Column Name");
-                    addedParameters.add(((QueryAssistedEncryptAlgorithm) optional).queryAssistedEncrypt(plainColumnValue, encryptContext));
+                    addedParameters.add(assistedQueryEncryptor.get().encrypt(plainColumnValue, encryptContext));
                 }
                 if (encryptRule.findPlainColumn(tableName, encryptLogicColumnName).isPresent()) {
                     addedParameters.add(plainColumnValue);

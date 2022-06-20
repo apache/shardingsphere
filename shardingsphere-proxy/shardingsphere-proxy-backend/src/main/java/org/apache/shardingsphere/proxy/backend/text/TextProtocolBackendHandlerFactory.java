@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text;
 
-import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -89,9 +88,8 @@ public final class TextProtocolBackendHandlerFactory {
             return new SkipBackendHandler(new EmptyStatement());
         }
         SQLStatement sqlStatement = sqlStatementSupplier.get().orElseGet(() -> {
-            Optional<SQLParserRule> sqlParserRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
-            Preconditions.checkState(sqlParserRule.isPresent());
-            return sqlParserRule.get().getSQLParserEngine(getProtocolType(databaseType, connectionSession).getType()).parse(sql, false);
+            SQLParserRule sqlParserRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
+            return sqlParserRule.getSQLParserEngine(getProtocolType(databaseType, connectionSession).getType()).parse(sql, false);
         });
         databaseType.handleRollbackOnly(connectionSession.getTransactionStatus().isRollbackOnly(), sqlStatement);
         checkUnsupportedSQLStatement(sqlStatement);
@@ -99,7 +97,7 @@ public final class TextProtocolBackendHandlerFactory {
             if (connectionSession.getTransactionStatus().isInTransaction() && !(sqlStatement instanceof RQLStatement || sqlStatement instanceof QueryableRALStatement)) {
                 throw new UnsupportedOperationException("Non-query dist sql is not supported within a transaction");
             }
-            return DistSQLBackendHandlerFactory.newInstance(databaseType, (DistSQLStatement) sqlStatement, connectionSession);
+            return DistSQLBackendHandlerFactory.newInstance((DistSQLStatement) sqlStatement, connectionSession);
         }
         handleAutoCommit(sqlStatement, connectionSession);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(),

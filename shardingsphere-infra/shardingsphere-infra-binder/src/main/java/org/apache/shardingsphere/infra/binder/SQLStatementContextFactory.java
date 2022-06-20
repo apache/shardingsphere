@@ -56,6 +56,7 @@ import org.apache.shardingsphere.infra.binder.statement.ddl.TruncateStatementCon
 import org.apache.shardingsphere.infra.binder.statement.dml.CallStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.CopyStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.DoStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
@@ -90,6 +91,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStateme
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CopyStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
@@ -171,6 +173,9 @@ public final class SQLStatementContextFactory {
         }
         if (sqlStatement instanceof CopyStatement) {
             return new CopyStatementContext((CopyStatement) sqlStatement);
+        }
+        if (sqlStatement instanceof DoStatement) {
+            return new DoStatementContext((DoStatement) sqlStatement);
         }
         throw new UnsupportedOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
     }

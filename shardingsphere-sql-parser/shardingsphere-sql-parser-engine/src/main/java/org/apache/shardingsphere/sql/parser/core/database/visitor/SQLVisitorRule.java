@@ -46,6 +46,8 @@ public enum SQLVisitorRule {
     
     CREATE_TABLE("CreateTable", SQLStatementType.DDL),
     
+    CREATE_AGGREGATE("CreateAggregate", SQLStatementType.DDL),
+    
     RENAME_TABLE("RenameTable", SQLStatementType.DDL),
     
     ALTER_TABLE("AlterTable", SQLStatementType.DDL),
@@ -68,6 +70,8 @@ public enum SQLVisitorRule {
     
     ALTER_MATERIALIZED_VIEW("AlterMaterializedView", SQLStatementType.DDL),
     
+    ALTER_OPERATOR("AlterOperator", SQLStatementType.DDL),
+    
     DROP_TABLE("DropTable", SQLStatementType.DDL),
     
     TRUNCATE_TABLE("TruncateTable", SQLStatementType.DDL),
@@ -81,6 +85,8 @@ public enum SQLVisitorRule {
     CREATE_PROCEDURE("CreateProcedure", SQLStatementType.DDL),
     
     CREATE_PUBLICATION("CreatePublication", SQLStatementType.DDL),
+    
+    ALTER_PUBLICATION("AlterPublication", SQLStatementType.DDL),
     
     ALTER_PROCEDURE("AlterProcedure", SQLStatementType.DDL),
     
@@ -476,6 +482,8 @@ public enum SQLVisitorRule {
     
     ALTER_DOMAIN("AlterDomain", SQLStatementType.DDL),
     
+    ALTER_POLICY("AlterPolicy", SQLStatementType.DDL),
+    
     ALTER_CONVERSION("AlterConversion", SQLStatementType.DDL),
     
     CREATE_TEXT_SEARCH("CreateTextSearch", SQLStatementType.DDL),
@@ -546,9 +554,13 @@ public enum SQLVisitorRule {
     
     CREATE_INMEMORY_JOIN_GROUP("CreateInmemoryJoinGroup", SQLStatementType.DDL),
     
+    ALTER_INMEMORY_JOIN_GROUP("AlterInmemoryJoinGroup", SQLStatementType.DDL),
+    
     DROP_INMEMORY_JOIN_GROUP("DropInmemoryJoinGroup", SQLStatementType.DDL),
     
     CREATE_RESTORE_POINT("CreateRestorePoint", SQLStatementType.DDL),
+    
+    DROP_RESTORE_POINT("DropRestorePoint", SQLStatementType.DDL),
     
     CURSOR("Cursor", SQLStatementType.DDL),
     
@@ -560,7 +572,11 @@ public enum SQLVisitorRule {
     
     CHECKPOINT("Checkpoint", SQLStatementType.DML),
     
-    CLUSTER("Cluster", SQLStatementType.DDL);
+    CLUSTER("Cluster", SQLStatementType.DDL),
+    
+    CREATE_ACCESS_METHOD("CreateAccessMethod", SQLStatementType.DDL),
+    
+    DO("DoStatement", SQLStatementType.DML);
     
     private final String name;
     

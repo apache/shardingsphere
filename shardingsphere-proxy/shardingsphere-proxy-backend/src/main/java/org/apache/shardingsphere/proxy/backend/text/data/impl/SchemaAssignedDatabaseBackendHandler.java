@@ -36,7 +36,7 @@ import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler;
-import org.apache.shardingsphere.sharding.merge.ddl.fetch.FetchOrderByValueQueuesHolder;
+import org.apache.shardingsphere.sharding.merge.ddl.fetch.FetchOrderByValueGroupsHolder;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -95,13 +95,15 @@ public final class SchemaAssignedDatabaseBackendHandler implements DatabaseBacke
         if (statementContext instanceof CursorStatementContext) {
             connectionSession.getCursorDefinitions().put(cursorName, (CursorStatementContext) statementContext);
         }
-        if (statementContext instanceof CloseStatementContext) {
-            FetchOrderByValueQueuesHolder.get().remove(cursorName);
-        }
         if (statementContext instanceof CursorDefinitionAware) {
             CursorStatementContext cursorStatementContext = connectionSession.getCursorDefinitions().get(cursorName);
             Preconditions.checkArgument(null != cursorStatementContext, "Cursor %s does not exist.", cursorName);
             ((CursorDefinitionAware) statementContext).setUpCursorDefinition(cursorStatementContext);
+        }
+        if (statementContext instanceof CloseStatementContext) {
+            FetchOrderByValueGroupsHolder.getOrderByValueGroups().remove(cursorName);
+            FetchOrderByValueGroupsHolder.getMinGroupRowCounts().remove(cursorName);
+            connectionSession.getCursorDefinitions().remove(cursorName);
         }
     }
     

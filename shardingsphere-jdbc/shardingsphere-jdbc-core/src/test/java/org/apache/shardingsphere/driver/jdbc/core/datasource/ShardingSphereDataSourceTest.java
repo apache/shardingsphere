@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.After;
 import org.junit.Test;
 
@@ -55,10 +56,12 @@ public final class ShardingSphereDataSourceTest {
     @Test
     public void assertNewConstructorWithModeConfigurationOnly() throws SQLException {
         ShardingSphereDataSource actual = new ShardingSphereDataSource(DefaultDatabase.LOGIC_NAME, null);
-        assertTrue(getContextManager(actual).getMetaDataContexts().getMetaData().getDatabases().containsKey(DefaultDatabase.LOGIC_NAME));
-        assertTrue(getContextManager(actual).getTransactionContexts().getEngines().containsKey(DefaultDatabase.LOGIC_NAME));
-        assertThat(getContextManager(actual).getInstanceContext().getInstance().getState().getCurrentState(), is(StateType.OK));
-        assertTrue(getContextManager(actual).getDataSourceMap(DefaultDatabase.LOGIC_NAME).isEmpty());
+        ContextManager contextManager = getContextManager(actual);
+        assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabases().containsKey(DefaultDatabase.LOGIC_NAME));
+        TransactionRule transactionRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
+        assertTrue(transactionRule.getResources().containsKey(DefaultDatabase.LOGIC_NAME));
+        assertThat(contextManager.getInstanceContext().getInstance().getState().getCurrentState(), is(StateType.OK));
+        assertTrue(contextManager.getDataSourceMap(DefaultDatabase.LOGIC_NAME).isEmpty());
     }
     
     @Test
@@ -66,11 +69,13 @@ public final class ShardingSphereDataSourceTest {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/foo_ds");
         ShardingSphereDataSource actual = createShardingSphereDataSource(new MockedDataSource(connection));
-        assertTrue(getContextManager(actual).getMetaDataContexts().getMetaData().getDatabases().containsKey(DefaultDatabase.LOGIC_NAME));
-        assertTrue(getContextManager(actual).getTransactionContexts().getEngines().containsKey(DefaultDatabase.LOGIC_NAME));
-        assertThat(getContextManager(actual).getInstanceContext().getInstance().getState().getCurrentState(), is(StateType.OK));
-        assertThat(getContextManager(actual).getDataSourceMap(DefaultDatabase.LOGIC_NAME).size(), is(1));
-        assertThat(getContextManager(actual).getDataSourceMap(DefaultDatabase.LOGIC_NAME).get("ds").getConnection().getMetaData().getURL(), is("jdbc:mock://127.0.0.1/foo_ds"));
+        ContextManager contextManager = getContextManager(actual);
+        assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabases().containsKey(DefaultDatabase.LOGIC_NAME));
+        TransactionRule transactionRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
+        assertTrue(transactionRule.getResources().containsKey(DefaultDatabase.LOGIC_NAME));
+        assertThat(contextManager.getInstanceContext().getInstance().getState().getCurrentState(), is(StateType.OK));
+        assertThat(contextManager.getDataSourceMap(DefaultDatabase.LOGIC_NAME).size(), is(1));
+        assertThat(contextManager.getDataSourceMap(DefaultDatabase.LOGIC_NAME).get("ds").getConnection().getMetaData().getURL(), is("jdbc:mock://127.0.0.1/foo_ds"));
     }
     
     @Test

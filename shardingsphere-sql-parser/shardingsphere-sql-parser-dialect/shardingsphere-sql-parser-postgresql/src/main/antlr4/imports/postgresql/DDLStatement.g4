@@ -671,7 +671,7 @@ opclassPurpose
     ;
 
 alterOperatorClauses
-    : operatorWithArgtypes SET SCHEMA name
+    : operatorWithArgtypes SET SCHEMA schemaName
     | operatorWithArgtypes SET LP_ operatorDefList RP_
     | operatorWithArgtypes OWNER TO roleSpec
     ;
@@ -681,7 +681,7 @@ operatorDefList
     ;
 
 operatorDefElem
-    : colLabel EQ_ (NONE | operatorDefArg)
+    : (RESTRICT | JOIN) EQ_ (NONE | operatorDefArg)
     ;
 
 operatorDefArg
@@ -996,7 +996,7 @@ refreshMatViewStmt
     ;
 
 alterPolicy
-    : ALTER POLICY existClause? name ON qualifiedName alterPolicyClauses
+    : ALTER POLICY name ON tableName alterPolicyClauses
     ;
 
 alterPolicyClauses
@@ -1034,10 +1034,10 @@ alterFunctionClauses
 
 alterPublication
     : ALTER PUBLICATION name
-    (RENAME TO name
+    ( RENAME TO name
     | OWNER TO roleSpec
     | SET definition
-    | (ADD | SET | DROP)  TABLE relationExprList)
+    | (ADD | SET | DROP) TABLE relationExprList)
     ;
 
 alterRoutine
@@ -1211,10 +1211,6 @@ clusterVerboseOptionList
 
 clusterVerboseOption
     : VERBOSE booleanValue?
-    ;
-
-booleanValue
-    : TRUE | ON | FALSE | OFF | NUMBER_
     ;
 
 comment

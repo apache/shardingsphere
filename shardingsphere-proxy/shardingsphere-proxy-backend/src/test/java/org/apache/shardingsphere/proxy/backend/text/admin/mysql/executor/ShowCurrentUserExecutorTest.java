@@ -34,7 +34,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
@@ -64,7 +63,7 @@ public final class ShowCurrentUserExecutorTest extends ProxyContextRestorer {
         ShardingSphereUser shardingSphereUser = mock(ShardingSphereUser.class);
         when(shardingSphereUser.getGrantee()).thenReturn(new Grantee("root", "%"));
         when(authorityRule.findUser(GRANTEE)).thenReturn(Optional.of(shardingSphereUser));
-        return new ShardingSphereRuleMetaData(new ArrayList<>(), Collections.singletonList(authorityRule));
+        return new ShardingSphereRuleMetaData(Collections.singletonList(authorityRule));
     }
     
     @Test
