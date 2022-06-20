@@ -639,7 +639,19 @@ svn del -m "Archiving release ${PREVIOUS.RELEASE.VERSION}" https://dist.apache.o
 确认下载页面中的新发布版本的链接可用后，在 GitHub 页面创建 Pull Request 将分支 `${RELEASE.VERSION}-release` 合并到 `master`。
 如果代码存在冲突，可以先把 master 分支合并到 `${RELEASE.VERSION}-release`。
 
-### 9. 邮件通知版本发布完成
+### 9. 生成 Helm Chart 索引文件并上传
+
+```shell
+mkdir -p /tmp/charts
+cd /tmp/charts
+wget https://archive.apache.org/dist/shardingsphere/${RELEASE.VERSION}/apache-shardingsphere-proxy-chart-${CHART.RELEASE.VERSION}.tgz
+curl https://shardingsphere.apache.org/charts/index.yaml > previous_index.yaml
+helm repo index --url https://archive.apache.org/dist/shardingsphere/${RELEASE.VERSION} --merge previous_index.yaml .
+```
+
+检查生成的 `index.yaml` 文件，确认无误后更新 <https://github.com/apache/shardingsphere-doc/blob/asf-site/charts/index.yaml>。
+
+### 10. 邮件通知版本发布完成
 
 发送邮件到 `dev@shardingsphere.apache.org` 和 `announce@apache.org` 通知完成版本发布。
 

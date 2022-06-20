@@ -649,7 +649,19 @@ Refer to:
 After confirmed that download links of new release in download pages are available, create a Pull Request on GitHub to merge `${RELEASE.VERSION}-release` into `master.
 If code conflicted, you may merge `master` into `${RELEASE.VERSION}-release` before merging Pull Request.
 
-### 9. Announce release completed by email
+### 9. Generate Helm Chart index and upload
+
+```shell
+mkdir -p /tmp/charts
+cd /tmp/charts
+wget https://archive.apache.org/dist/shardingsphere/${RELEASE.VERSION}/apache-shardingsphere-proxy-chart-${CHART.RELEASE.VERSION}.tgz
+curl https://shardingsphere.apache.org/charts/index.yaml > previous_index.yaml
+helm repo index --url https://archive.apache.org/dist/shardingsphere/${RELEASE.VERSION} --merge previous_index.yaml .
+```
+
+Confirm that there is no error in the generated `index.yaml`, then update <https://github.com/apache/shardingsphere-doc/blob/asf-site/charts/index.yaml>.
+
+### 10. Announce release completed by email
 
 Send e-mail to `dev@shardingsphere.apache.org` and `announce@apache.org` to announce the release is finished
 
