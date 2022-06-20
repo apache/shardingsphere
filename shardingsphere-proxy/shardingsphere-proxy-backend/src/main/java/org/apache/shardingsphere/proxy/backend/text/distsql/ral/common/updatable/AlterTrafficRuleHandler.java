@@ -120,6 +120,7 @@ public final class AlterTrafficRuleHandler extends UpdatableRALBackendHandler<Al
     private Map<String, ShardingSphereAlgorithmConfiguration> createToBeAlteredTrafficAlgorithms(final TrafficRuleConfiguration currentConfig, final TrafficRuleConfiguration configFromSQLStatement) {
         Map<String, ShardingSphereAlgorithmConfiguration> result = new LinkedHashMap<>(currentConfig.getTrafficAlgorithms());
         result.putAll(configFromSQLStatement.getTrafficAlgorithms());
+        // TODO remove unused traffic algorithms
         return result;
     }
     

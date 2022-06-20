@@ -33,6 +33,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -81,11 +82,10 @@ public final class DropTrafficRuleHandlerTest extends ProxyContextRestorer {
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         TrafficRule rule = mock(TrafficRule.class);
         when(rule.getConfiguration()).thenReturn(createTrafficRuleConfiguration());
-        when(globalRuleMetaData.getSingleRule(TrafficRule.class)).thenReturn(rule);
+        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(new LinkedList<>(Collections.singleton(rule)));
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         ProxyContext.init(result);
         return result;
     }
