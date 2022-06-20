@@ -46,10 +46,10 @@ public final class AlterSQLParserRuleHandler extends UpdatableRALBackendHandler<
         SQLParserRuleConfiguration currentConfig = ProxyContext
                 .getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class).getConfiguration();
         boolean sqlCommentParseEnabled = null == sqlStatement.getSqlCommentParseEnable() ? currentConfig.isSqlCommentParseEnabled() : sqlStatement.getSqlCommentParseEnable();
-        CacheOption parseTreeCache
-                = null == sqlStatement.getParseTreeCache() ? currentConfig.getParseTreeCache() : createCacheOption(currentConfig.getParseTreeCache(), sqlStatement.getParseTreeCache());
-        CacheOption sqlStatementCache
-                = null == sqlStatement.getSqlStatementCache() ? currentConfig.getSqlStatementCache() : createCacheOption(currentConfig.getSqlStatementCache(), sqlStatement.getSqlStatementCache());
+        CacheOption parseTreeCache =
+                null == sqlStatement.getParseTreeCache() ? currentConfig.getParseTreeCache() : createCacheOption(currentConfig.getParseTreeCache(), sqlStatement.getParseTreeCache());
+        CacheOption sqlStatementCache =
+                null == sqlStatement.getSqlStatementCache() ? currentConfig.getSqlStatementCache() : createCacheOption(currentConfig.getSqlStatementCache(), sqlStatement.getSqlStatementCache());
         return new SQLParserRuleConfiguration(sqlCommentParseEnabled, parseTreeCache, sqlStatementCache);
     }
     
