@@ -4,7 +4,7 @@ weight = 8
 chapter = true
 +++
 
-## Prepare
+## Prepare before release procedure
 
 ### 1. Confirm release notes
 
@@ -142,6 +142,66 @@ gpg --keyserver hkp://keyserver.ubuntu.com --send-key 700E6065
 `keyserver.ubuntu.com` is randomly chosen from public key server. 
 Each server will automatically synchronize with one another, so it would be okay to choose any one.
 
+## Prepare Branch for Release
+
+### 1. Create Release Branch
+
+Suppose ShardingSphere source codes downloaded from github is under `~/shardingsphere/` directory and the version to be released is `4.0.0-RC`.
+Create `${RELEASE.VERSION}-release` branch, where all the following operations are performed.
+
+```shell
+## ${name} is the properly branch, e.g. master, dev-4.x
+git clone --branch ${name} https://github.com/apache/shardingsphere.git ~/shardingsphere
+cd ~/shardingsphere/
+git pull
+git checkout -b ${RELEASE.VERSION}-release
+git push origin ${RELEASE.VERSION}-release
+```
+
+### 2. Update Release Notes And Example Version
+
+Update the following file in release branch, and submit a PR to release branch:
+
+```
+https://github.com/apache/shardingsphere/blob/${RELEASE.VERSION}-release/RELEASE-NOTES.md
+```
+
+Update the POM of the module `examples`, changing the version from ${CURRENT.VERSION} to ${RELEASE.VERSION}, and submit a PR to release branch.
+
+### 3. Update the download page
+
+Update the following pages:
+* <https://shardingsphere.apache.org/document/current/en/downloads/>
+* <https://shardingsphere.apache.org/document/current/cn/downloads/>
+
+GPG signatures and hashes (SHA* etc) should be prefixed with `https://downloads.apache.org/shardingsphere/`
+
+### 4. Update links of Spring xsd in documents of ShardingSphere-JDBC
+
+Update all links of xsd in documents under `docs/document/content/user-manual/shardingsphere-jdbc/spring-namespace`.
+
+Update from:
+```
+http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-${PREVIOUS.RELEASE.VERSION}.xsd
+```
+
+to:
+```
+http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-${RELEASE.VERSION}.xsd
+```
+
+Sample commands:
+```shell
+cd docs/document/content/user-manual/shardingsphere-jdbc/spring-namespace
+grep -l -r "${PREVIOUS.RELEASE.VERSION}" . | xargs sed -i -e "s/${PREVIOUS.RELEASE.VERSION}/${RELEASE.VERSION}/g"
+```
+
+Specifying version of xsd instead of using `sharding.xsd`, is to make legacy documents can be mapped to corresponding version of xsd.
+
+### 5. Update README files
+
+Update `${PREVIOUS.RELEASE.VERSION}` to `${RELEASE.VERSION}` in README.md and README_ZH.md
+
 ## Apache Maven Central Repository Release
 
 ### 1. Set settings.xml
@@ -166,53 +226,7 @@ For encryption settings, please see [here](http://maven.apache.org/guides/mini/g
 </settings>
 ```
 
-### 2. Create Release Branch
-
-Suppose ShardingSphere source codes downloaded from github is under `~/shardingsphere/` directory and the version to be released is `4.0.0-RC`. 
-Create `${RELEASE.VERSION}-release` branch, where all the following operations are performed.
-
-```shell
-## ${name} is the properly branch, e.g. master, dev-4.x
-git clone --branch ${name} https://github.com/apache/shardingsphere.git ~/shardingsphere
-cd ~/shardingsphere/
-git pull
-git checkout -b ${RELEASE.VERSION}-release
-git push origin ${RELEASE.VERSION}-release
-```
-
-### 3. Update Release Notes And Example Version
-
-Update the following file in release branch, and submit a PR to release branch:
-
-```
-https://github.com/apache/shardingsphere/blob/${RELEASE.VERSION}-release/RELEASE-NOTES.md
-```
-
-Update the POM of the module `examples`, changing the version from ${CURRENT.VERSION} to ${RELEASE.VERSION}, and submit a PR to release branch.
-
-### 4. Update links of Spring xsd in documents of ShardingSphere-JDBC
-
-Update all links of xsd in documents under `docs/document/content/user-manual/shardingsphere-jdbc/spring-namespace`.
-
-Update from:
-```
-http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-${PREVIOUS.RELEASE.VERSION}.xsd
-```
-
-to:
-```
-http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-${RELEASE.VERSION}.xsd
-```
-
-Sample commands:
-```shell
-cd docs/document/content/user-manual/shardingsphere-jdbc/spring-namespace
-grep -l -r "${PREVIOUS.RELEASE.VERSION}" . | xargs sed -i -e "s/${PREVIOUS.RELEASE.VERSION}/${RELEASE.VERSION}/g"
-```
-
-Specifying version of xsd instead of using `sharding.xsd`, is to make legacy documents can be mapped to corresponding version of xsd.
-
-### 5. Pre-Release Check
+### 2. Pre-Release Check
 
 ```shell
 mvn release:prepare -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=true" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github username}
@@ -224,7 +238,7 @@ mvn release:prepare -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=tru
 
 -DdryRun=true: rehearsal, which means not to generate or submit new version number and new tag.
 
-### 6. Prepare for the Release
+### 3. Prepare for the Release
 
 First, clean local pre-release check information.
 
@@ -248,7 +262,7 @@ It is basically the same as the previous rehearsal command, but deleting -DdryRu
 git push origin ${RELEASE.VERSION}-release
 git push origin --tags
 ```
-### 7. Deploy the Release
+### 4. Deploy the Release
 
 ```shell
 mvn release:perform -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=true" -DautoVersionSubmodules=true -Dusername=${Github username}
@@ -514,24 +528,9 @@ svn cp https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS https://dist.a
 
 ### 2. Find ShardingSphere in staging repository and click `Release`
 
-### 3. (Optional) Merge release branch to `master` and delete release branch on Github
+### 3. Docker Release
 
-```shell
-git checkout master
-git merge origin/${RELEASE.VERSION}-release
-git pull
-git push origin master
-git push --delete origin ${RELEASE.VERSION}-release
-git branch -d ${RELEASE.VERSION}-release
-```
-
-### 4. Update README files
-
-Update `${PREVIOUS.RELEASE.VERSION}` to `${RELEASE.VERSION}` in README.md and README_ZH.md
-
-### 5. Docker Release
-
-5.1 Preparation
+3.1 Preparation
 
 Install and start docker service
 
@@ -542,39 +541,32 @@ docker run --privileged --rm tonistiigi/binfmt --install all
 
 Refer to: [Docker Buildx: Build multi-platform images](https://docs.docker.com/buildx/working-with-buildx/#build-multi-platform-images)
 
-5.2 Login Docker Registry
+3.2 Login Docker Registry
 
 ```shell
 docker login
 ```
 
-5.3 Build and push ShardingSphere-Proxy Docker image
+3.3 Build and push ShardingSphere-Proxy Docker image
 
 ```shell
 git checkout ${RELEASE.VERSION}
 ./mvnw -pl shardingsphere-distribution/shardingsphere-proxy-distribution -B -Prelease,docker.buildx.push clean package
 ```
 
-5.4 Confirm the successful release
+3.4 Confirm the successful release
 
 Go to [Docker Hub](https://hub.docker.com/r/apache/shardingsphere-proxy/) and check whether there is a published image. And make sure that the image supports both `linux/amd64` and `linux/arm64`.
 
-### 6. Publish release in GitHub
+### 4. Publish release in GitHub
 
 Click `Edit` in [GitHub Releases](https://github.com/apache/shardingsphere/releases)'s `${RELEASE.VERSION}` version
 
 Edit version number and release notes, click `Publish release`
 
-### 7. Update the download page
-
-https://shardingsphere.apache.org/document/current/en/downloads/
-
-https://shardingsphere.apache.org/document/current/cn/downloads/
-
-GPG signatures and hashes (SHA* etc) should use URL start with `https://downloads.apache.org/shardingsphere/`
+### 5. Remove previous release from Release Area
 
 Keep the latest version in [**Release Area**](https://dist.apache.org/repos/dist/release/shardingsphere/) only.
-
 
 Incubating stage versions will be archived automatically in [Archive repository](https://archive.apache.org/dist/incubator/shardingsphere/)
 
@@ -590,7 +582,7 @@ Incubating stage versions will be archived automatically in [Incubator Archive r
 
 Refer to [Release Download Pages for Projects](https://infra.apache.org/release-download-pages.html).
 
-### 8. Upload xsd files of Spring namespace to official website
+### 6. Upload xsd files of Spring namespace to official website
 
 Submit a pull request to upload the xsd files of Spring namespace to https://github.com/apache/shardingsphere-doc/tree/asf-site/schema/shardingsphere
 
@@ -613,13 +605,18 @@ The list of files to be uploaded is as follows:
 - database-discovery.xsd
 - database-discovery-${RELEASE.VERSION}.xsd
 
-### 9. Add entrance of documents of the new release into home page
+### 7. Add entrance of documents of the new release into home page
 
 Refer to:
 - [English home page](https://github.com/apache/shardingsphere-doc/blob/10fb1b5f610fe2cac00c66abe2df7a8cc30c2a18/index.html#L88-L126)
 - [Chinese home page](https://github.com/apache/shardingsphere-doc/blob/10fb1b5f610fe2cac00c66abe2df7a8cc30c2a18/index_zh.html#L88-L125)
 
-### 10. Announce release completed by email
+### 8. Merge release branch to `master` and delete release branch on GitHub
+
+After confirmed that download links of new release in download pages are available, create a Pull Request on GitHub to merge `${RELEASE.VERSION}-release` into `master.
+If code conflicted, you may merge `master` into `${RELEASE.VERSION}-release` before merging Pull Request.
+
+### 9. Announce release completed by email
 
 Send e-mail to `dev@shardingsphere.apache.org` and `announce@apache.org` to announce the release is finished
 
