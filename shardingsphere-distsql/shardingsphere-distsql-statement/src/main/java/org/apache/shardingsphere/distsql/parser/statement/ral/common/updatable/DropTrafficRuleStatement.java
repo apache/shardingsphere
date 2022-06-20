@@ -32,5 +32,5 @@ public final class DropTrafficRuleStatement extends UpdatableRALStatement {
     
     private final Collection<String> ruleNames;
     
-    private final boolean containsIfExistClause;
+    private final boolean ifExist;
 }
