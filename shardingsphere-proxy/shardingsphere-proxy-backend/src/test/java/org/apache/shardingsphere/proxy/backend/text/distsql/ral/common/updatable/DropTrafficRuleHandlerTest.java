@@ -33,6 +33,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -45,30 +46,15 @@ import static org.mockito.Mockito.when;
 public final class DropTrafficRuleHandlerTest extends ProxyContextRestorer {
     
     @Test(expected = RequiredRuleMissedException.class)
-    public void assertExecuteWithNotExistRule() throws SQLException {
+    public void assertExecuteForNotExistedRuleWithoutIfExists() throws SQLException {
         mockContextManager();
         DropTrafficRuleHandler handler = new DropTrafficRuleHandler();
-        handler.init(new DropTrafficRuleStatement(Collections.singleton("rule_name"), false), null);
+        handler.init(new DropTrafficRuleStatement(Collections.singleton("not_existed_rule"), false), null);
         handler.execute();
     }
     
     @Test
-    public void assertExecuteWithIfExists() throws SQLException {
-        ContextManager contextManager = mockContextManager();
-        DropTrafficRuleHandler handler = new DropTrafficRuleHandler();
-        handler.init(new DropTrafficRuleStatement(Collections.singleton("rule_name_1"), false), null);
-        handler.execute();
-        TrafficRuleConfiguration updatedConfig = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class).getConfiguration();
-        assertThat(updatedConfig.getTrafficStrategies().size(), is(1));
-        assertThat(updatedConfig.getLoadBalancers().size(), is(1));
-        assertThat(updatedConfig.getTrafficAlgorithms().size(), is(1));
-        assertThat(new ArrayList<>(updatedConfig.getTrafficStrategies()).get(0).getName(), is("rule_name_2"));
-        assertNotNull(updatedConfig.getTrafficAlgorithms().get("algorithm_2"));
-        assertNotNull(updatedConfig.getLoadBalancers().get("load_balancer_2"));
-    }
-    
-    @Test
-    public void assertExecuteWithNotExistRuleAndIfExists() throws SQLException {
+    public void assertExecuteForNotExistedRuleWithIfExists() throws SQLException {
         ContextManager contextManager = mockContextManager();
         DropTrafficRuleHandler handler = new DropTrafficRuleHandler();
         handler.init(new DropTrafficRuleStatement(Collections.singleton("rule_name_3"), true), null);
@@ -96,11 +82,10 @@ public final class DropTrafficRuleHandlerTest extends ProxyContextRestorer {
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         TrafficRule rule = mock(TrafficRule.class);
         when(rule.getConfiguration()).thenReturn(createTrafficRuleConfiguration());
-        when(globalRuleMetaData.getSingleRule(TrafficRule.class)).thenReturn(rule);
+        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(new LinkedList<>(Collections.singleton(rule)));
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         ProxyContext.init(result);
         return result;
     }
@@ -112,7 +97,7 @@ public final class DropTrafficRuleHandlerTest extends ProxyContextRestorer {
         result.getTrafficAlgorithms().put("algorithm_1", new ShardingSphereAlgorithmConfiguration("SQL_MATCH", createProperties()));
         result.getTrafficAlgorithms().put("algorithm_2", new ShardingSphereAlgorithmConfiguration("SQL_HINT", new Properties()));
         result.getLoadBalancers().put("load_balancer_1", new ShardingSphereAlgorithmConfiguration("RANDOM", new Properties()));
-        result.getLoadBalancers().put("load_balancer_2", new ShardingSphereAlgorithmConfiguration("ROBIN", new Properties()));
+        result.getLoadBalancers().put("load_balancer_2", new ShardingSphereAlgorithmConfiguration("ROUND_ROBIN", new Properties()));
         return result;
     }
     

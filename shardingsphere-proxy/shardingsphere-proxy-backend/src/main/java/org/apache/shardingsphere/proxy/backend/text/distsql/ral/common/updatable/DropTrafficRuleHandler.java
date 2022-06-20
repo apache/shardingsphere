@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.DropTrafficRuleStatement;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
@@ -30,8 +31,8 @@ import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 
 import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -41,37 +42,77 @@ public final class DropTrafficRuleHandler extends UpdatableRALBackendHandler<Dro
     
     @Override
     protected void update(final ContextManager contextManager) throws DistSQLException {
-        TrafficRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
-        TrafficRuleConfiguration config = rule.getConfiguration();
-        if (!getSqlStatement().isIfExist()) {
-            checkTrafficRuleConfiguration(config);
-        }
-        config.getTrafficStrategies().removeIf(each -> getSqlStatement().getRuleNames().contains(each.getName()));
-        getUnusedAlgorithm(config).forEach(each -> config.getTrafficAlgorithms().remove(each));
-        getUnusedLoadBalancer(config).forEach(each -> config.getLoadBalancers().remove(each));
-        updateToRepository(config);
+        check();
+        replaceNewRule(contextManager);
+        persistNewRuleConfigurations();
     }
     
-    private void checkTrafficRuleConfiguration(final TrafficRuleConfiguration config) throws DistSQLException {
-        Set<String> currentTrafficStrategyNames = config.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getName).collect(Collectors.toSet());
-        Set<String> notExistRuleNames = getSqlStatement().getRuleNames().stream().filter(each -> !currentTrafficStrategyNames.contains(each)).collect(Collectors.toSet());
+    private void check() throws DistSQLException {
+        checkRuleNames();
+    }
+    
+    private void checkRuleNames() throws DistSQLException {
+        if (getSqlStatement().isIfExist()) {
+            return;
+        }
+        TrafficRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
+        TrafficRuleConfiguration config = rule.getConfiguration();
+        Collection<String> currentRuleNames = config.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getName).collect(Collectors.toSet());
+        Collection<String> notExistRuleNames = getSqlStatement().getRuleNames().stream().filter(each -> !currentRuleNames.contains(each)).collect(Collectors.toSet());
         DistSQLException.predictionThrow(notExistRuleNames.isEmpty(), () -> new RequiredRuleMissedException("Traffic"));
     }
     
-    private Collection<String> getUnusedAlgorithm(final TrafficRuleConfiguration config) {
-        Collection<String> currentlyInUse = config.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getAlgorithmName).collect(Collectors.toSet());
-        return config.getTrafficAlgorithms().keySet().stream().filter(each -> !currentlyInUse.contains(each)).collect(Collectors.toSet());
+    private void replaceNewRule(final ContextManager contextManager) {
+        TrafficRuleConfiguration toBeAlteredRuleConfig = createToBeAlteredRuleConfiguration();
+        Collection<ShardingSphereRule> globalRules = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules();
+        globalRules.removeIf(each -> each instanceof TrafficRule);
+        globalRules.add(new TrafficRule(toBeAlteredRuleConfig));
+        // TODO remove me after ShardingSphereRuleMetaData.configuration removed
+        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations().removeIf(each -> each instanceof TrafficRuleConfiguration);
+        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations().add(toBeAlteredRuleConfig);
     }
     
-    private Collection<String> getUnusedLoadBalancer(final TrafficRuleConfiguration config) {
-        Collection<String> currentlyInUse = config.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getLoadBalancerName).collect(Collectors.toSet());
-        return config.getLoadBalancers().keySet().stream().filter(each -> !currentlyInUse.contains(each)).collect(Collectors.toSet());
+    private TrafficRuleConfiguration createToBeAlteredRuleConfiguration() {
+        TrafficRuleConfiguration result = new TrafficRuleConfiguration();
+        DropTrafficRuleStatement statement = getSqlStatement();
+        TrafficRuleConfiguration currentConfig = ProxyContext
+                .getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class).getConfiguration();
+        result.getTrafficStrategies().addAll(createToBeAlteredStrategyConfigurations(currentConfig, statement));
+        result.getTrafficAlgorithms().putAll(createToBeAlteredTrafficAlgorithm(currentConfig, getInUsedTrafficAlgorithm(result)));
+        result.getLoadBalancers().putAll(createToBeAlteredLoadBalancers(currentConfig, getInUsedLoadBalancer(result)));
+        return result;
     }
     
-    private void updateToRepository(final TrafficRuleConfiguration config) {
+    private Collection<TrafficStrategyConfiguration> createToBeAlteredStrategyConfigurations(final TrafficRuleConfiguration currentConfig, final DropTrafficRuleStatement statement) {
+        return currentConfig.getTrafficStrategies().stream().filter(each -> !statement.getRuleNames().contains(each.getName())).collect(Collectors.toList());
+    }
+    
+    private Collection<String> getInUsedTrafficAlgorithm(final TrafficRuleConfiguration config) {
+        return config.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getAlgorithmName).collect(Collectors.toSet());
+    }
+    
+    private Map<String, ShardingSphereAlgorithmConfiguration> createToBeAlteredTrafficAlgorithm(final TrafficRuleConfiguration currentConfig, final Collection<String> inUsedTrafficAlgorithm) {
+        Map<String, ShardingSphereAlgorithmConfiguration> result = new LinkedHashMap<>(currentConfig.getTrafficAlgorithms());
+        for (String each : result.keySet().stream().filter(each -> !inUsedTrafficAlgorithm.contains(each)).collect(Collectors.toSet())) {
+            result.remove(each);
+        }
+        return result;
+    }
+    
+    private Collection<String> getInUsedLoadBalancer(final TrafficRuleConfiguration config) {
+        return config.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getLoadBalancerName).collect(Collectors.toSet());
+    }
+    
+    private Map<String, ShardingSphereAlgorithmConfiguration> createToBeAlteredLoadBalancers(final TrafficRuleConfiguration currentConfig, final Collection<String> inUsedLoadBalancer) {
+        Map<String, ShardingSphereAlgorithmConfiguration> result = new LinkedHashMap<>(currentConfig.getLoadBalancers());
+        for (String each : result.keySet().stream().filter(each -> !inUsedLoadBalancer.contains(each)).collect(Collectors.toSet())) {
+            result.remove(each);
+        }
+        return result;
+    }
+    
+    private void persistNewRuleConfigurations() {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getPersistService();
-        getUnusedLoadBalancer(config).forEach(each -> config.getLoadBalancers().remove(each));
-        metaDataPersistService.ifPresent(optional -> optional.getGlobalRuleService().persist(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), true));
+        metaDataContexts.getPersistService().ifPresent(optional -> optional.getGlobalRuleService().persist(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), true));
     }
 }
