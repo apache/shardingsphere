@@ -88,7 +88,7 @@ public final class StandardJdbcUrlParser {
         }
         Properties result = new Properties();
         for (String each : Splitter.on("&").split(query)) {
-            String[] property = each.split("\\=", 2);
+            String[] property = each.split("=", 2);
             result.setProperty(property[0], property[1]);
         }
         return result;
