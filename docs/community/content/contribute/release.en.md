@@ -653,3 +653,36 @@ ShardingSphere Resources:
 - Apache ShardingSphere Team
 
 ```
+
+## Appendix: How to abort release procedure
+
+You may refer to the following steps to abort current release procedure if you found any problem which blocks the release procedure.
+
+### Vote down the release and describe the reason
+
+Reply -1 to voting e-mail and describe the reason.
+
+### Remove release candidates from dev area
+
+```shell
+svn del https://dist.apache.org/repos/dist/dev/shardingsphere/${RELEASE.VERSION} -m "Drop ${RELEASE.VERSION} release candidates"
+```
+
+### Drop Maven Staging Repository
+
+Check the Staging Repository in <https://repository.apache.org/#stagingRepositories> and **Drop** it。
+
+### Reset release branch and delete tag
+
+Reset branch `${RELEASE.VERSION}-release` to the commit before the commits made by `maven-release-plugin`:
+```shell
+git checkout ${RELEASE.VERSION}-release
+git reset --hard ${COMMIT_ID_BEFORE_RELEASE}
+git push origin --force
+```
+
+Delete tag：
+```shell
+git tag -d ${RELEASE.VERSION}
+git push origin -d ${RELEASE.VERSION}
+```
