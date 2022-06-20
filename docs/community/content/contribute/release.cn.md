@@ -4,7 +4,7 @@ weight = 8
 chapter = true
 +++
 
-## 准备工作
+## 发布前准备工作
 
 ### 1. 确认 Release Note
 
@@ -140,6 +140,66 @@ gpg --keyserver hkp://keyserver.ubuntu.com --send-key 700E6065
 
 `keyserver.ubuntu.com` 为随意挑选的公钥服务器，每个服务器之间是自动同步的，选任意一个即可。
 
+## 准备发布分支
+
+### 1. 创建发布分支
+
+假设从 Github 下载的 ShardingSphere 源代码在 `~/shardingsphere/` 目录；假设即将发布的版本为 `${RELEASE.VERSION}`。
+创建 `${RELEASE.VERSION}-release` 分支，接下来的操作都在该分支进行。
+
+```shell
+## ${name} 为源码所在分支，如：master，dev-4.x
+git clone --branch ${name} https://github.com/apache/shardingsphere.git ~/shardingsphere
+cd ~/shardingsphere/
+git pull
+git checkout -b ${RELEASE.VERSION}-release
+git push origin ${RELEASE.VERSION}-release
+```
+
+### 2. 更新版本说明和示例版本
+
+在发布分支上更新如下文件，并提交 PR 到发布分支：
+
+```
+https://github.com/apache/shardingsphere/blob/${RELEASE.VERSION}-release/RELEASE-NOTES.md
+```
+
+更新 `examples` 模块的 pom，将版本由 `${CURRENT.VERSION}` 替换为 `${RELEASE.VERSION}`，并提交 PR 到发布分支。
+
+### 3. 更新下载页面
+
+更新如下页面：
+* <https://shardingsphere.apache.org/document/current/en/downloads/>
+* <https://shardingsphere.apache.org/document/current/cn/downloads/>
+
+GPG 签名文件和哈希校验文件的下载连接应该使用这个前缀：`https://downloads.apache.org/shardingsphere/`。
+
+### 4. 更新 ShardingSphere-JDBC Spring 文档中 xsd 文件链接
+
+更新目录 `docs/document/content/user-manual/shardingsphere-jdbc/spring-namespace` 下文档内的所有 xsd 链接。
+
+将：
+```
+http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-${PREVIOUS.RELEASE.VERSION}.xsd
+```
+
+更新为：
+```
+http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-${RELEASE.VERSION}.xsd
+```
+
+参考命令：
+```shell
+cd docs/document/content/user-manual/shardingsphere-jdbc/spring-namespace
+grep -l -r "${PREVIOUS.RELEASE.VERSION}" . | xargs sed -i -e "s/${PREVIOUS.RELEASE.VERSION}/${RELEASE.VERSION}/g"
+```
+
+在文档中指定 xsd 版本，而不是直接使用 `sharding.xsd`，是为了让历史版本的文档能够对应到正确版本的 xsd 文件。
+
+### 5. 修改 README 文件
+
+将 `README.md` 和 `README_ZH.md` 里的 `${PREVIOUS.RELEASE.VERSION}` 修改为 `${RELEASE.VERSION}`。
+
 ## 发布 Apache Maven 中央仓库
 
 ### 1. 设置 settings.xml 文件
@@ -164,53 +224,7 @@ gpg --keyserver hkp://keyserver.ubuntu.com --send-key 700E6065
 </settings>
 ```
 
-### 2. 创建发布分支
-
-假设从 Github 下载的 ShardingSphere 源代码在 `~/shardingsphere/` 目录；假设即将发布的版本为 `${RELEASE.VERSION}`。
-创建 `${RELEASE.VERSION}-release` 分支，接下来的操作都在该分支进行。
-
-```shell
-## ${name} 为源码所在分支，如：master，dev-4.x
-git clone --branch ${name} https://github.com/apache/shardingsphere.git ~/shardingsphere
-cd ~/shardingsphere/
-git pull
-git checkout -b ${RELEASE.VERSION}-release
-git push origin ${RELEASE.VERSION}-release
-```
-
-### 3. 更新版本说明和示例版本
-
-在发布分支上更新如下文件，并提交 PR 到发布分支：
-
-```
-https://github.com/apache/shardingsphere/blob/${RELEASE.VERSION}-release/RELEASE-NOTES.md
-```
-
-更新 `examples` 模块的 pom，将版本由 `${CURRENT.VERSION}` 替换为 `${RELEASE.VERSION}`，并提交 PR 到发布分支。
-
-### 4. 更新 ShardingSphere-JDBC Spring 文档中 xsd 文件链接
-
-更新目录 `docs/document/content/user-manual/shardingsphere-jdbc/spring-namespace` 下文档内的所有 xsd 链接。
-
-将：
-```
-http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-${PREVIOUS.RELEASE.VERSION}.xsd
-```
-
-更新为：
-```
-http://shardingsphere.apache.org/schema/shardingsphere/sharding/sharding-${RELEASE.VERSION}.xsd
-```
-
-参考命令：
-```shell
-cd docs/document/content/user-manual/shardingsphere-jdbc/spring-namespace
-grep -l -r "${PREVIOUS.RELEASE.VERSION}" . | xargs sed -i -e "s/${PREVIOUS.RELEASE.VERSION}/${RELEASE.VERSION}/g"
-```
-
-在文档中指定 xsd 版本，而不是直接使用 `sharding.xsd`，是为了让历史版本的文档能够对应到正确版本的 xsd 文件。
-
-### 5. 发布预校验
+### 2. 发布预校验
 
 ```shell
 mvn release:prepare -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=true" -DautoVersionSubmodules=true -DdryRun=true -Dusername=${Github用户名}
@@ -222,7 +236,7 @@ mvn release:prepare -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=tru
 
 -DdryRun=true：演练，即不产生版本号提交，不生成新的 tag。
 
-### 6. 准备发布
+### 3. 准备发布
 
 首先清理发布预校验本地信息。
 
@@ -245,7 +259,7 @@ git push origin ${RELEASE.VERSION}-release
 git push origin --tags
 ```
 
-### 7. 部署发布
+### 4. 部署发布
 
 ```shell
 mvn release:perform -Prelease -Darguments="-DskipTests -Dspotless.apply.skip=true" -DautoVersionSubmodules=true -Dusername=${Github 用户名}
@@ -507,24 +521,9 @@ svn cp https://dist.apache.org/repos/dist/dev/shardingsphere/KEYS https://dist.a
 
 ### 2. 在 Apache Staging 仓库找到 ShardingSphere 并点击 `Release`
 
-### 3. （可选）合并 Github 的 release 分支到 `master`，合并完成后删除 release 分支
+### 3. 发布 Docker
 
-```shell
-git checkout master
-git merge origin/${RELEASE.VERSION}-release
-git pull
-git push origin master
-git push --delete origin ${RELEASE.VERSION}-release
-git branch -d ${RELEASE.VERSION}-release
-```
-
-### 4. 修改 README 文件
-
-将 `README.md` 和 `README_ZH.md` 里的 `${PREVIOUS.RELEASE.VERSION}` 修改为 `${RELEASE.VERSION}`。
-
-### 5. 发布 Docker
-
-5.1 准备工作
+3.1 准备工作
 
 本地安装 Docker，并启动服务。
 
@@ -535,38 +534,30 @@ docker run --privileged --rm tonistiigi/binfmt --install all
 
 参考文档：[Docker Buildx: Build multi-platform images](https://docs.docker.com/buildx/working-with-buildx/#build-multi-platform-images)
 
-5.2 登录 Docker Registry
+3.2 登录 Docker Registry
 
 ```shell
 docker login
 ```
 
-5.3 构建并推送 ShardingSphere-Proxy Docker image
+3.3 构建并推送 ShardingSphere-Proxy Docker image
 
 ```shell
 git checkout ${RELEASE.VERSION}
 ./mvnw -pl shardingsphere-distribution/shardingsphere-proxy-distribution -B -Prelease,docker.buildx.push clean package
 ```
 
-5.4 确认发布成功
+3.4 确认发布成功
 
 查看 [Docker Hub](https://hub.docker.com/r/apache/shardingsphere-proxy/) 是否有发布的镜像，确保镜像同时支持 `linux/amd64` 和 `linux/arm64`。
 
-### 6. GitHub版本发布
+### 4. GitHub版本发布
 
 在 [GitHub Releases](https://github.com/apache/shardingsphere/releases) 页面的 `${RELEASE.VERSION}` 版本上点击 `Edit`。
 
 编辑版本号及版本说明，并点击 `Publish release`。
 
-### 7. 更新下载页面
-
-等待并确认新的发布版本同步至 Apache 镜像后，更新如下页面：
-
-https://shardingsphere.apache.org/document/current/en/downloads/
-
-https://shardingsphere.apache.org/document/current/cn/downloads/
-
-GPG 签名文件和哈希校验文件的下载连接应该使用这个前缀：`https://downloads.apache.org/shardingsphere/`。
+### 5. 从发布区移除上一版本内容
 
 [**发布区**](https://dist.apache.org/repos/dist/release/shardingsphere/) 中仅保留一个最新的版本。
 确认 [Archive repository](https://archive.apache.org/dist/shardingsphere/) 中存在上一版本后，从 [**发布区**](https://dist.apache.org/repos/dist/release/shardingsphere/) 删除上一版本：
@@ -581,7 +572,7 @@ svn del -m "Archiving release ${PREVIOUS.RELEASE.VERSION}" https://dist.apache.o
 
 参考：[Release Download Pages for Projects](https://infra.apache.org/release-download-pages.html)。
 
-### 8. 上传 Spring namespace xsd 文件至官方网站
+### 6. 上传 Spring namespace xsd 文件至官方网站
 
 提交 pull request 将源码中的 xsd 文件以及发布版本的 xsd 文件上传至 https://github.com/apache/shardingsphere-doc/tree/asf-site/schema/shardingsphere
 
@@ -604,13 +595,18 @@ svn del -m "Archiving release ${PREVIOUS.RELEASE.VERSION}" https://dist.apache.o
 - database-discovery.xsd
 - database-discovery-${RELEASE.VERSION}.xsd
 
-### 9. 官网首页增加发布版本文档入口
+### 7. 官网首页增加发布版本文档入口
 
 参考以下代码：
 - [英文首页](https://github.com/apache/shardingsphere-doc/blob/10fb1b5f610fe2cac00c66abe2df7a8cc30c2a18/index.html#L88-L126)
 - [中文首页](https://github.com/apache/shardingsphere-doc/blob/10fb1b5f610fe2cac00c66abe2df7a8cc30c2a18/index_zh.html#L88-L125)
 
-### 10. 邮件通知版本发布完成
+### 8. 合并 GitHub 的 release 分支到 `master`，合并完成后删除 release 分支
+
+确认下载页面中的新发布版本的链接可用后，在 GitHub 页面创建 Pull Request 将分支 `${RELEASE.VERSION}-release` 合并到 `master`。
+如果代码存在冲突，可以先把 master 分支合并到 `${RELEASE.VERSION}-release`。
+
+### 9. 邮件通知版本发布完成
 
 发送邮件到 `dev@shardingsphere.apache.org` 和 `announce@apache.org` 通知完成版本发布。
 
