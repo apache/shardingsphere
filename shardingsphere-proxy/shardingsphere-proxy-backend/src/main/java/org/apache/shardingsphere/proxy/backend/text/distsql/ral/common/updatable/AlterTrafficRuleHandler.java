@@ -83,9 +83,9 @@ public final class AlterTrafficRuleHandler extends UpdatableRALBackendHandler<Al
     }
     
     private void replaceNewRule(final ContextManager contextManager) {
+        TrafficRuleConfiguration toBeAlteredRuleConfig = createToBeAlteredRuleConfiguration();
         Collection<ShardingSphereRule> globalRules = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules();
         globalRules.removeIf(each -> each instanceof TrafficRule);
-        TrafficRuleConfiguration toBeAlteredRuleConfig = createToBeAlteredRuleConfiguration();
         globalRules.add(new TrafficRule(toBeAlteredRuleConfig));
         // TODO remove me after ShardingSphereRuleMetaData.configuration removed
         contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations().removeIf(each -> each instanceof TrafficRuleConfiguration);
