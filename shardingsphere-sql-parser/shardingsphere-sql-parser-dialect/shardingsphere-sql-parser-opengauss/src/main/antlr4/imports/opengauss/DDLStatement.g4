@@ -1785,7 +1785,7 @@ listen
     ;
 
 move
-    : MOVE (direction (FROM | IN)?)? cursorName
+    : MOVE direction? (FROM | IN)? cursorName
     ;
 
 prepare
@@ -1972,7 +1972,7 @@ dropSchema
     ;
 
 fetch
-    : FETCH (direction (FROM | IN)?)? cursorName
+    : FETCH direction? (FROM | IN)? cursorName
     ;
 
 direction

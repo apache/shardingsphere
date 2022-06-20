@@ -47,7 +47,7 @@ public final class FetchDirectionTokenGenerator implements OptionalSQLTokenGener
         CursorNameSegment cursorName = fetchStatement.getCursorName();
         int startIndex = fetchStatement.getDirection().map(DirectionSegment::getStartIndex).orElseGet(() -> cursorName.getStartIndex() - 1);
         int stopIndex = fetchStatement.getDirection().map(DirectionSegment::getStopIndex).orElseGet(() -> cursorName.getStartIndex() - 1);
-        DirectionType directionType = fetchStatement.getDirection().map(DirectionSegment::getDirectionType).orElse(DirectionType.NEXT);
+        DirectionType directionType = fetchStatement.getDirection().flatMap(DirectionSegment::getDirectionType).orElse(DirectionType.NEXT);
         long fetchCount = fetchStatement.getDirection().flatMap(DirectionSegment::getCount).orElse(1L);
         return new FetchDirectionToken(startIndex, stopIndex, directionType, fetchCount, cursorName.getIdentifier().getValue().toLowerCase());
     }
