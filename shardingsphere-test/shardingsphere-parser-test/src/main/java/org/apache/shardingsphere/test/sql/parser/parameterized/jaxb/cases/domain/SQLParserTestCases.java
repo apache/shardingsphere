@@ -129,6 +129,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTriggerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTypeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterViewStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterInmemoryJoinGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AnalyzeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AssociateStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AuditStatementTestCase;
@@ -1434,6 +1435,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "create-inmemory-join-group")
     private final List<CreateInmemoryJoinGroupStatementTestCase> createInmemoryJoinGroupTestCases = new LinkedList<>();
     
+    @XmlElement(name = "alter-inmemory-join-group")
+    private final List<AlterInmemoryJoinGroupStatementTestCase> alterInmemoryJoinGroupTestCases = new LinkedList<>();
+    
     @XmlElement(name = "drop-inmemory-join-group")
     private final List<DropInmemoryJoinGroupStatementTestCase> dropInmemoryJoinGroupTestCases = new LinkedList<>();
     
@@ -1819,6 +1823,7 @@ public final class SQLParserTestCases {
         putAll(createLockdownProfileTestCases, result);
         putAll(dropLockdownProfileTestCases, result);
         putAll(createInmemoryJoinGroupTestCases, result);
+        putAll(alterInmemoryJoinGroupTestCases, result);
         putAll(dropInmemoryJoinGroupTestCases, result);
         putAll(createRestorePointTestCases, result);
         putAll(dropRestorePointTestCases, result);

@@ -2488,6 +2488,10 @@ tableColumnClause
     : (schemaName DOT_)? tableName LP_ columnName RP_
     ;
 
+alterInmemoryJoinGroup
+    : ALTER INMEMORY JOIN GROUP (schemaName DOT_)? joinGroupName (ADD | REMOVE) LP_ tableName LP_ columnName RP_ RP_
+    ;
+
 dropInmemoryJoinGroup
     : DROP INMEMORY JOIN GROUP (schemaName DOT_)? joinGroupName
     ;
