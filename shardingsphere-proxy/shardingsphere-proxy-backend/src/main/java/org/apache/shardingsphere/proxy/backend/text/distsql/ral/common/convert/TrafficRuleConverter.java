@@ -60,11 +60,11 @@ public final class TrafficRuleConverter {
         return null == segment ? null : new ShardingSphereAlgorithmConfiguration(segment.getName(), segment.getProps());
     }
     
-    private static TrafficStrategyConfiguration createTrafficStrategy(final TrafficRuleSegment trafficRuleSegment, final String trafficAlgorithmName, final String loadBalancerName) {
-        return new TrafficStrategyConfiguration(trafficRuleSegment.getName(), trafficRuleSegment.getLabels(), trafficAlgorithmName, loadBalancerName);
-    }
-    
     private static String createAlgorithmName(final String ruleName, final ShardingSphereAlgorithmConfiguration algorithm) {
         return null == algorithm ? null : String.format("%s_%s", ruleName, algorithm.getType()).toLowerCase();
+    }
+    
+    private static TrafficStrategyConfiguration createTrafficStrategy(final TrafficRuleSegment trafficRuleSegment, final String trafficAlgorithmName, final String loadBalancerName) {
+        return new TrafficStrategyConfiguration(trafficRuleSegment.getName(), trafficRuleSegment.getLabels(), trafficAlgorithmName, loadBalancerName);
     }
 }
