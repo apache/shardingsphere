@@ -3403,54 +3403,6 @@
     <sql-case id="alter_by_postgresql_source_test_case214" value="ALTER OPERATOR FAMILY alt_opf7 USING btree DROP OPERATOR 1 (int4, int2, int8);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case215" value="ALTER OPERATOR FAMILY alt_opf8 USING btree ADD OPERATOR 1 &lt; (int4, int4);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case216" value="ALTER OPERATOR FAMILY alt_opf9 USING gist ADD OPERATOR 1 &lt; (int4, int4) FOR ORDER BY float_ops;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case234" value="ALTER PUBLICATION testpib_ins_trunct ADD TABLE pub_test.testpub_nopk, testpub_tbl1;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case235" value="ALTER PUBLICATION testpub1_forschema ADD ALL TABLES IN SCHEMA non_existent_schema;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case236" value="ALTER PUBLICATION testpub1_forschema ADD ALL TABLES IN SCHEMA pub_test1;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case237" value="ALTER PUBLICATION testpub1_forschema ADD ALL TABLES IN SCHEMA pub_test2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case238" value="ALTER PUBLICATION testpub1_forschema DROP ALL TABLES IN SCHEMA non_existent_schema;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case239" value="ALTER PUBLICATION testpub1_forschema DROP ALL TABLES IN SCHEMA pub_test1;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case240" value="ALTER PUBLICATION testpub1_forschema DROP ALL TABLES IN SCHEMA pub_test1;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case241" value="ALTER PUBLICATION testpub1_forschema DROP ALL TABLES IN SCHEMA pub_test2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case242" value="ALTER PUBLICATION testpub1_forschema DROP ALL TABLES IN SCHEMA pub_test2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case243" value="ALTER PUBLICATION testpub1_forschema SET ALL TABLES IN SCHEMA non_existent_schema;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case244" value="ALTER PUBLICATION testpub1_forschema SET ALL TABLES IN SCHEMA pub_test1, pub_test1;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case245" value="ALTER PUBLICATION testpub1_forschema SET ALL TABLES IN SCHEMA pub_test1, pub_test2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case246" value="ALTER PUBLICATION testpub1_forschema SET ALL TABLES IN SCHEMA pub_test1;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case247" value="ALTER PUBLICATION testpub2 ADD TABLE testpub_tbl1;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case248" value="ALTER PUBLICATION testpub2 ADD TABLE testpub_tbl1;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case249" value="ALTER PUBLICATION testpub2_forschema DROP ALL TABLES IN SCHEMA pub_test1;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case250" value="ALTER PUBLICATION testpub3 ADD ALL TABLES IN SCHEMA pub_test;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case251" value="ALTER PUBLICATION testpub3_forschema SET ALL TABLES IN SCHEMA pub_test1;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case252" value="ALTER PUBLICATION testpub_default ADD TABLE pub_test.testpub_nopk;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case253" value="ALTER PUBLICATION testpub_default ADD TABLE testpub_tbl1;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case254" value="ALTER PUBLICATION testpub_default ADD TABLE testpub_view;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case255" value="ALTER PUBLICATION testpub_default DROP TABLE pub_test.testpub_nopk;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case256" value="ALTER PUBLICATION testpub_default DROP TABLE testpub_tbl1, pub_test.testpub_nopk;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case257" value="ALTER PUBLICATION testpub_default OWNER TO regress_publication_user2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case258" value="ALTER PUBLICATION testpub_default RENAME TO testpub_dummy;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case259" value="ALTER PUBLICATION testpub_default RENAME TO testpub_foo;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case260" value="ALTER PUBLICATION testpub_default SET (publish = &apos;insert, update, delete&apos;);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case261" value="ALTER PUBLICATION testpub_default SET (publish = update);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case262" value="ALTER PUBLICATION testpub_default SET TABLE testpub_tbl1;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case263" value="ALTER PUBLICATION testpub_foo RENAME TO testpub_default;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case264" value="ALTER PUBLICATION testpub_foralltables ADD ALL TABLES IN SCHEMA pub_test;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case265" value="ALTER PUBLICATION testpub_foralltables ADD TABLE testpub_tbl2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case266" value="ALTER PUBLICATION testpub_foralltables DROP ALL TABLES IN SCHEMA pub_test;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case267" value="ALTER PUBLICATION testpub_foralltables DROP TABLE testpub_tbl2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case268" value="ALTER PUBLICATION testpub_foralltables SET (publish = &apos;insert, update&apos;);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case269" value="ALTER PUBLICATION testpub_foralltables SET ALL TABLES IN SCHEMA pub_test;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case270" value="ALTER PUBLICATION testpub_foralltables SET TABLE pub_test.testpub_nopk;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case271" value="ALTER PUBLICATION testpub_forparted ADD TABLE testpub_parted;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case272" value="ALTER PUBLICATION testpub_forparted DROP TABLE testpub_parted;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case273" value="ALTER PUBLICATION testpub_forparted SET (publish_via_partition_root = true);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case274" value="ALTER PUBLICATION testpub_forparted1 SET (publish=&apos;insert&apos;);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case275" value="ALTER PUBLICATION testpub_forschema ADD TABLE pub_test.testpub_nopk;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case276" value="ALTER PUBLICATION testpub_forschema DROP TABLE pub_test.testpub_nopk;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case277" value="ALTER PUBLICATION testpub_forschema SET TABLE pub_test.testpub_nopk;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case278" value="ALTER PUBLICATION testpub_fortable ADD ALL TABLES IN SCHEMA pub_test;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case279" value="ALTER PUBLICATION testpub_fortable DROP ALL TABLES IN SCHEMA pub_test;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case280" value="ALTER PUBLICATION testpub_fortable SET ALL TABLES IN SCHEMA pub_test;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case281" value="ALTER PUBLICATION testpub_fortbl ADD TABLE testpub_tbl1;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case282" value="ALTER ROUTINE cp_testfunc1(int) RENAME TO cp_testfunc1a;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case283" value="ALTER ROUTINE cp_testfunc1a RENAME TO cp_testfunc1;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case284" value="ALTER ROUTINE ptest1(text) RENAME TO ptest1a;" db-types="PostgreSQL" />

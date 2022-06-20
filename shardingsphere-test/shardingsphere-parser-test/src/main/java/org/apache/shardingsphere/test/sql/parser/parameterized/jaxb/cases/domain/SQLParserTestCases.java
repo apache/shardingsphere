@@ -115,6 +115,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterOutlineStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterPackageStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterProcedureStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterPublicationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterPolicyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSchemaStatementTestCase;
@@ -591,6 +592,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "alter-procedure")
     private final List<AlterProcedureStatementTestCase> alterProcedureTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-publication")
+    private final List<AlterPublicationStatementTestCase> alterPublicationTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-policy")
     private final List<AlterPolicyStatementTestCase> alterPolicyTestCases = new LinkedList<>();
@@ -1542,6 +1546,7 @@ public final class SQLParserTestCases {
         putAll(alterDirectoryTestCases, result);
         putAll(alterSystemTestCases, result);
         putAll(alterProcedureTestCases, result);
+        putAll(alterPublicationTestCases, result);
         putAll(alterPolicyTestCases, result);
         putAll(alterDatabaseTestCases, result);
         putAll(alterDimensionTestCases, result);

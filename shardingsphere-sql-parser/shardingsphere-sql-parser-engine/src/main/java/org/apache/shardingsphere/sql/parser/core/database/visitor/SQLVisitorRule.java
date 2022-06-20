@@ -86,6 +86,8 @@ public enum SQLVisitorRule {
     
     CREATE_PUBLICATION("CreatePublication", SQLStatementType.DDL),
     
+    ALTER_PUBLICATION("AlterPublication", SQLStatementType.DDL),
+    
     ALTER_PROCEDURE("AlterProcedure", SQLStatementType.DDL),
     
     ALTER_STATEMENT("AlterStatement", SQLStatementType.DDL),

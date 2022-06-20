@@ -150,5 +150,6 @@ execute
     | cluster
     | alterOperator
     | createAccessMethod
+    | alterPublication
     ) SEMI_? EOF
     ;
