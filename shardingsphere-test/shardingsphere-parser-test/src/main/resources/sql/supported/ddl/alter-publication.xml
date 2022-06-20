@@ -23,6 +23,4 @@
     <sql-case id="alter_publication_add_table" value="ALTER PUBLICATION mypublication ADD TABLE stores, cities;" db-types="PostgreSQL" />
     <sql-case id="alter_publication_drop_table" value="ALTER PUBLICATION mypublication DROP TABLE users;" db-types="PostgreSQL" />
     <sql-case id="alter_publication_set_definition" value="ALTER PUBLICATION noinsert SET (publish = 'update, delete');" db-types="PostgreSQL" />
-
-
 </sql-cases>
