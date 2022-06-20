@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatabl
 
 import org.apache.shardingsphere.distsql.parser.segment.TrafficRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.AlterTrafficRuleStatement;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
@@ -35,7 +36,9 @@ import org.apache.shardingsphere.traffic.factory.TrafficLoadBalanceAlgorithmFact
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -93,21 +96,42 @@ public final class AlterTrafficRuleHandler extends UpdatableRALBackendHandler<Al
     }
     
     private TrafficRuleConfiguration createToBeAlteredRuleConfiguration() {
-        TrafficRuleConfiguration newConfig = TrafficRuleConverter.convert(getSqlStatement().getSegments());
-        Collection<String> toBeAlteredConfigNames = newConfig.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getName).collect(Collectors.toSet());
-        TrafficRuleConfiguration result = ProxyContext
+        TrafficRuleConfiguration result = new TrafficRuleConfiguration();
+        TrafficRuleConfiguration configFromSQLStatement = TrafficRuleConverter.convert(getSqlStatement().getSegments());
+        TrafficRuleConfiguration currentConfig = ProxyContext
                 .getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class).getConfiguration();
-        result.getTrafficStrategies().removeIf(each -> toBeAlteredConfigNames.contains(each.getName()));
-        result.getTrafficStrategies().addAll(newConfig.getTrafficStrategies());
-        result.getTrafficAlgorithms().putAll(newConfig.getTrafficAlgorithms());
-        result.getLoadBalancers().putAll(newConfig.getLoadBalancers());
-        getUnusedLoadBalancer(result).forEach(each -> result.getLoadBalancers().remove(each));
+        result.getTrafficStrategies().addAll(createToBeAlteredStrategyConfigurations(currentConfig, configFromSQLStatement));
+        result.getTrafficAlgorithms().putAll(createToBeAlteredTrafficAlgorithms(currentConfig, configFromSQLStatement));
+        result.getLoadBalancers().putAll(createToBeAlteredLoadBalancers(currentConfig, configFromSQLStatement, getInUsedLoadBalancer(result)));
         return result;
     }
     
-    private Collection<String> getUnusedLoadBalancer(final TrafficRuleConfiguration currentConfig) {
-        Collection<String> currentlyInUse = currentConfig.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getLoadBalancerName).collect(Collectors.toSet());
-        return currentConfig.getLoadBalancers().keySet().stream().filter(each -> !currentlyInUse.contains(each)).collect(Collectors.toSet());
+    private Collection<TrafficStrategyConfiguration> createToBeAlteredStrategyConfigurations(final TrafficRuleConfiguration currentConfig, final TrafficRuleConfiguration configFromSQLStatement) {
+        Collection<TrafficStrategyConfiguration> result = new LinkedList<>(currentConfig.getTrafficStrategies());
+        Collection<String> toBeAlteredConfigNames = configFromSQLStatement.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getName).collect(Collectors.toSet());
+        result.removeIf(each -> toBeAlteredConfigNames.contains(each.getName()));
+        result.addAll(configFromSQLStatement.getTrafficStrategies());
+        return result;
+    }
+    
+    private Map<String, ShardingSphereAlgorithmConfiguration> createToBeAlteredTrafficAlgorithms(final TrafficRuleConfiguration currentConfig, final TrafficRuleConfiguration configFromSQLStatement) {
+        Map<String, ShardingSphereAlgorithmConfiguration> result = new LinkedHashMap<>(currentConfig.getTrafficAlgorithms());
+        result.putAll(configFromSQLStatement.getTrafficAlgorithms());
+        return result;
+    }
+    
+    private Collection<String> getInUsedLoadBalancer(final TrafficRuleConfiguration config) {
+        return config.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getLoadBalancerName).collect(Collectors.toSet());
+    }
+    
+    private Map<String, ShardingSphereAlgorithmConfiguration> createToBeAlteredLoadBalancers(final TrafficRuleConfiguration currentConfig,
+                                                                                             final TrafficRuleConfiguration configFromSQLStatement, final Collection<String> inUsedLoadBalancer) {
+        Map<String, ShardingSphereAlgorithmConfiguration> result = new LinkedHashMap<>(currentConfig.getLoadBalancers());
+        result.putAll(configFromSQLStatement.getLoadBalancers());
+        for (String each : result.keySet().stream().filter(each -> !inUsedLoadBalancer.contains(each)).collect(Collectors.toSet())) {
+            result.remove(each);
+        }
+        return result;
     }
     
     private void persistNewRuleConfigurations() {
