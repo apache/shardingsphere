@@ -68,8 +68,8 @@ public final class AlterTrafficRuleHandlerTest extends ProxyContextRestorer {
         mockContextManager();
         TrafficRuleSegment trafficRuleSegment1 = new TrafficRuleSegment(
                 "rule_name_1", Arrays.asList("olap", "order_by"), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
-        TrafficRuleSegment trafficRuleSegment2 = new TrafficRuleSegment("rule_name_2", Collections.emptyList(),
-                new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), null);
+        TrafficRuleSegment trafficRuleSegment2 = new TrafficRuleSegment(
+                "rule_name_2", Collections.emptyList(), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
         AlterTrafficRuleHandler handler = new AlterTrafficRuleHandler();
         handler.init(getSQLStatement(trafficRuleSegment1, trafficRuleSegment2), null);
         handler.execute();
