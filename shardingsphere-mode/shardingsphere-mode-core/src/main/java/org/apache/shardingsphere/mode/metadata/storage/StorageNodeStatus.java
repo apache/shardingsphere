@@ -43,5 +43,4 @@ public enum StorageNodeStatus {
     public static boolean isEnable(final String status) {
         return ENABLED.name().toLowerCase().equals(status);
     }
-    
 }
