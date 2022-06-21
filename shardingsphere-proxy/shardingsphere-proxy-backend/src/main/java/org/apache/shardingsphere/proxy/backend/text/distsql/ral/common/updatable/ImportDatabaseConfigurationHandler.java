@@ -88,10 +88,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
     
     @Override
     protected void update(final ContextManager contextManager) throws DistSQLException {
-        if (!getSqlStatement().getFilePath().isPresent()) {
-            return;
-        }
-        File yamlFile = new File(getSqlStatement().getFilePath().get());
+        File yamlFile = new File(getSqlStatement().getFilePath());
         YamlProxyDatabaseConfiguration yamlConfig;
         try {
             yamlConfig = YamlEngine.unmarshal(yamlFile, YamlProxyDatabaseConfiguration.class);
