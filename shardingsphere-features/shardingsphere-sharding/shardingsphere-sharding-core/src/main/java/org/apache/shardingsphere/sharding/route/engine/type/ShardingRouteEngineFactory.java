@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.type;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CloseStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
@@ -128,6 +129,9 @@ public final class ShardingRouteEngineFactory {
     
     private static ShardingRouteEngine getCursorRouteEngine(final ShardingRule shardingRule, final ShardingSphereDatabase database, final SQLStatementContext<?> sqlStatementContext,
                                                             final ShardingConditions shardingConditions, final ConfigurationProperties props, final Collection<String> tableNames) {
+        if (sqlStatementContext instanceof CloseStatementContext && ((CloseStatementContext) sqlStatementContext).getSqlStatement().isCloseAll()) {
+            return new ShardingDatabaseBroadcastRoutingEngine();
+        }
         if (shardingRule.isAllBroadcastTables(tableNames)) {
             return new ShardingUnicastRoutingEngine(sqlStatementContext, tableNames);
         }

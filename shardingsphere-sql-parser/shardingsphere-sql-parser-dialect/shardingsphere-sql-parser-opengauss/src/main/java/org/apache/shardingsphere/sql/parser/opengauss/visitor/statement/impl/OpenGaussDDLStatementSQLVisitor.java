@@ -994,6 +994,7 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
         if (null != ctx.cursorName()) {
             result.setCursorName((CursorNameSegment) visit(ctx.cursorName()));
         }
+        result.setCloseAll(null != ctx.ALL());
         return result;
     }
     
