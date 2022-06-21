@@ -303,9 +303,8 @@ public final class ContextManager implements AutoCloseable {
         try {
             MetaDataContexts changedMetaDataContexts = buildChangedMetaDataContext(metaDataContexts.getMetaData().getDatabases().get(databaseName), ruleConfigs);
             metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().putAll(changedMetaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases());
-            MetaDataContexts newMetaDataContexts = rebuildMetaDataContexts(changedMetaDataContexts.getMetaData());
             metaDataContexts.getMetaData().getDatabases().get(databaseName).getRuleMetaData().findRules(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResources);
-            renewMetaDataContexts(newMetaDataContexts);
+            metaDataContexts.getMetaData().getDatabases().putAll(changedMetaDataContexts.getMetaData().getDatabases());
             setInstanceContext();
         } catch (final SQLException ex) {
             log.error("Alter database:{} rule configuration failed", databaseName, ex);
