@@ -42,10 +42,19 @@ public final class CursorTokenGeneratorTest {
     public void assertIsGenerateSQLToken() {
         CursorTokenGenerator generator = new CursorTokenGenerator();
         assertFalse(generator.isGenerateSQLToken(mock(SelectStatementContext.class)));
-        assertTrue(generator.isGenerateSQLToken(mock(CursorStatementContext.class)));
-        assertTrue(generator.isGenerateSQLToken(mock(CloseStatementContext.class)));
-        assertTrue(generator.isGenerateSQLToken(mock(MoveStatementContext.class)));
-        assertTrue(generator.isGenerateSQLToken(mock(FetchStatementContext.class)));
+        Optional<CursorNameSegment> cursorName = Optional.of(new CursorNameSegment(0, 0, new IdentifierValue("t_order_cursor")));
+        CursorStatementContext cursorStatementContext = mock(CursorStatementContext.class);
+        when(cursorStatementContext.getCursorName()).thenReturn(cursorName);
+        assertTrue(generator.isGenerateSQLToken(cursorStatementContext));
+        CloseStatementContext closeStatementContext = mock(CloseStatementContext.class);
+        when(closeStatementContext.getCursorName()).thenReturn(cursorName);
+        assertTrue(generator.isGenerateSQLToken(closeStatementContext));
+        MoveStatementContext moveStatementContext = mock(MoveStatementContext.class);
+        when(moveStatementContext.getCursorName()).thenReturn(cursorName);
+        assertTrue(generator.isGenerateSQLToken(moveStatementContext));
+        FetchStatementContext fetchStatementContext = mock(FetchStatementContext.class);
+        when(fetchStatementContext.getCursorName()).thenReturn(cursorName);
+        assertTrue(generator.isGenerateSQLToken(fetchStatementContext));
     }
     
     @Test

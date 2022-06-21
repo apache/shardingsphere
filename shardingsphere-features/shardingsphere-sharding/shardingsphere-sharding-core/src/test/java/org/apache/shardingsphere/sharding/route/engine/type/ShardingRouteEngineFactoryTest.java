@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.type;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dcl.GrantStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CloseStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -57,6 +58,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowDatabasesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLGrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCloseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dcl.OracleGrantStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLSetStatement;
@@ -408,6 +410,19 @@ public final class ShardingRouteEngineFactoryTest {
         when(cursorStatementContext.getAllTables()).thenReturn(tableSegments);
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, cursorStatementContext, shardingConditions, props);
         assertThat(actual, instanceOf(ShardingIgnoreRoutingEngine.class));
+    }
+    
+    @Test
+    public void assertNewInstanceForCloseAllStatement() {
+        CloseStatementContext closeStatementContext = mock(CloseStatementContext.class, RETURNS_DEEP_STUBS);
+        OpenGaussCloseStatement closeStatement = mock(OpenGaussCloseStatement.class);
+        when(closeStatement.isCloseAll()).thenReturn(true);
+        tableNames.add("t_order");
+        when(closeStatementContext.getTablesContext().getTableNames()).thenReturn(tableNames);
+        when(closeStatementContext.getSqlStatement()).thenReturn(closeStatement);
+        when(shardingRule.getShardingRuleTableNames(tableNames)).thenReturn(tableNames);
+        ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, closeStatementContext, shardingConditions, props);
+        assertThat(actual, instanceOf(ShardingDatabaseBroadcastRoutingEngine.class));
     }
     
     private Collection<SimpleTableSegment> createSimpleTableSegments() {
