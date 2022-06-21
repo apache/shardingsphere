@@ -19,13 +19,11 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.lock.LockLevel;
-import org.apache.shardingsphere.infra.lock.LockNameDefinition;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.ShardingSphereLockManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.ShardingSphereInterMutexLockHolder;
-import org.apache.shardingsphere.mode.manager.lock.DatabaseLockNameDefinition;
+import org.apache.shardingsphere.mode.manager.lock.AbstractLockContext;
+import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDefinition;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
@@ -34,7 +32,7 @@ import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
  * Distributed lock context.
  */
 @RequiredArgsConstructor
-public final class DistributedLockContext implements LockContext {
+public final class DistributedLockContext extends AbstractLockContext {
     
     static {
         ShardingSphereServiceLoader.register(ShardingSphereLockManager.class);
@@ -60,59 +58,22 @@ public final class DistributedLockContext implements LockContext {
     }
     
     @Override
-    public boolean tryLock(final LockNameDefinition lockNameDefinition) {
-        LockLevel lockLevel = lockNameDefinition.getLockLevel();
-        switch (lockLevel) {
-            case DATABASE:
-                DatabaseLockNameDefinition lockDefinition = (DatabaseLockNameDefinition) lockNameDefinition;
-                return lockManager.tryLock(lockDefinition.getDatabaseName(), lockDefinition.getLockMode());
-            case SCHEMA:
-            case TABLE:
-            default:
-                throw new UnsupportedOperationException();
-        }
+    protected boolean tryLock(final DatabaseLockNameDefinition lockNameDefinition) {
+        return lockManager.tryLock(lockNameDefinition.getDatabaseName(), lockNameDefinition.getLockMode());
     }
     
     @Override
-    public boolean tryLock(final LockNameDefinition lockNameDefinition, final long timeoutMilliseconds) {
-        LockLevel lockLevel = lockNameDefinition.getLockLevel();
-        switch (lockLevel) {
-            case DATABASE:
-                DatabaseLockNameDefinition lockDefinition = (DatabaseLockNameDefinition) lockNameDefinition;
-                return lockManager.tryLock(lockDefinition.getDatabaseName(), lockDefinition.getLockMode(), timeoutMilliseconds);
-            case SCHEMA:
-            case TABLE:
-            default:
-                throw new UnsupportedOperationException();
-        }
+    protected boolean tryLock(final DatabaseLockNameDefinition lockNameDefinition, final long timeoutMilliseconds) {
+        return lockManager.tryLock(lockNameDefinition.getDatabaseName(), lockNameDefinition.getLockMode(), timeoutMilliseconds);
     }
     
     @Override
-    public void releaseLock(final LockNameDefinition lockNameDefinition) {
-        LockLevel lockLevel = lockNameDefinition.getLockLevel();
-        switch (lockLevel) {
-            case DATABASE:
-                DatabaseLockNameDefinition lockDefinition = (DatabaseLockNameDefinition) lockNameDefinition;
-                lockManager.releaseLock(lockDefinition.getDatabaseName());
-                break;
-            case SCHEMA:
-            case TABLE:
-            default:
-                throw new UnsupportedOperationException();
-        }
+    protected void releaseLock(final DatabaseLockNameDefinition lockNameDefinition) {
+        lockManager.releaseLock(lockNameDefinition.getDatabaseName());
     }
     
     @Override
-    public boolean isLocked(final LockNameDefinition lockNameDefinition) {
-        LockLevel lockLevel = lockNameDefinition.getLockLevel();
-        switch (lockLevel) {
-            case DATABASE:
-                DatabaseLockNameDefinition lockDefinition = (DatabaseLockNameDefinition) lockNameDefinition;
-                return lockManager.isLocked(lockDefinition.getDatabaseName());
-            case SCHEMA:
-            case TABLE:
-            default:
-                throw new UnsupportedOperationException();
-        }
+    protected boolean isLocked(final DatabaseLockNameDefinition lockNameDefinition) {
+        return lockManager.isLocked(lockNameDefinition.getDatabaseName());
     }
 }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.manager.lock;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.mode.manager.lock.definition.LockNameDefinitionFactory;
 
 /**
  * Lock judge engine for ShardingSphere.
