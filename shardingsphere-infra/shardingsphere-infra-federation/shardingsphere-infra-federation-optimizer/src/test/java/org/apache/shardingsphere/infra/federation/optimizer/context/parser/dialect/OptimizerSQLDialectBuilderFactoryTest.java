@@ -17,22 +17,25 @@
 
 package org.apache.shardingsphere.infra.federation.optimizer.context.parser.dialect;
 
-import java.util.Properties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.federation.optimizer.context.parser.fixture.OptimizerSQLDialectBuilderFixture;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertThat;
+import org.apache.shardingsphere.infra.federation.optimizer.context.parser.dialect.impl.H2OptimizerBuilder;
+import org.apache.shardingsphere.infra.federation.optimizer.context.parser.dialect.impl.MySQLOptimizerBuilder;
 import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 public final class OptimizerSQLDialectBuilderFactoryTest {
     
     @Test
-    public void assertCreateOptimizerSQLDialectBuilder() {
-        DatabaseType type = DatabaseTypeFactory.getInstance("FIXTURE");
-        Properties actual = OptimizerSQLDialectBuilderFactory.build(type);
-        OptimizerSQLDialectBuilder builder = new OptimizerSQLDialectBuilderFixture();
-        Properties excepted = builder.build();
-        assertThat(actual, equalTo(excepted));
+    public void assertBuildWithDatabaseType() {
+        DatabaseType databaseType = DatabaseTypeFactory.getInstance("H2");
+        assertThat(OptimizerSQLDialectBuilderFactory.build(databaseType), is(new H2OptimizerBuilder().build()));
+    }
+    
+    @Test
+    public void assertBuildWithoutDatabaseType() {
+        assertThat(OptimizerSQLDialectBuilderFactory.build(null), is(new MySQLOptimizerBuilder().build()));
     }
 }
