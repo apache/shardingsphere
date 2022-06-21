@@ -151,5 +151,6 @@ execute
     | alterOperator
     | createAccessMethod
     | alterPublication
+    | createAggregate
     ) SEMI_? EOF
     ;
