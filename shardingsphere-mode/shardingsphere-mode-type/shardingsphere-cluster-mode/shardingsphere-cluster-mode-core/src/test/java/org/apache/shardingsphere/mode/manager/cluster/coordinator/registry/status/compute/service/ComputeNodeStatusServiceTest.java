@@ -72,15 +72,6 @@ public final class ComputeNodeStatusServiceTest {
     }
     
     @Test
-    public void assertPersistInstanceXaRecoveryId() {
-        InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.PROXY, 3307, "foo_instance_id");
-        final String instanceId = instanceDefinition.getInstanceId();
-        new ComputeNodeStatusService(repository).persistInstanceXaRecoveryId(instanceId, Collections.singleton(instanceId));
-        verify(repository).getChildrenKeys(ComputeNode.getXaRecoveryIdNodePath());
-        verify(repository).persistEphemeral(ComputeNode.getInstanceXaRecoveryIdNodePath(instanceId, instanceId), "");
-    }
-    
-    @Test
     public void assertLoadInstanceLabels() {
         InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.PROXY, 3307, "foo_instance_id");
         final String instanceId = instanceDefinition.getInstanceId();
@@ -102,15 +93,6 @@ public final class ComputeNodeStatusServiceTest {
         final String instanceId = instanceDefinition.getInstanceId();
         new ComputeNodeStatusService(repository).loadInstanceWorkerId(instanceId);
         verify(repository).get(ComputeNode.getInstanceWorkerIdNodePath(instanceId));
-    }
-    
-    @Test
-    public void assertLoadInstanceXaRecoveryId() {
-        InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.PROXY, 3307, "foo_instance_id");
-        final String instanceId = instanceDefinition.getInstanceId();
-        new ComputeNodeStatusService(repository).loadXaRecoveryIds(instanceId);
-        verify(repository).getChildrenKeys(ComputeNode.getXaRecoveryIdNodePath());
-        
     }
     
     @Test

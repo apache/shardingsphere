@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGeneratorFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -69,7 +68,6 @@ public final class TransactionRule implements GlobalRule, InstanceAwareRule, Res
     
     private Map<String, ShardingSphereTransactionManagerEngine> createTransactionManagerEngines(final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext) {
         Map<String, ShardingSphereTransactionManagerEngine> result = new HashMap<>(databases.keySet().size(), 1);
-        TransactionConfigurationFileGeneratorFactory.findInstance(providerType).ifPresent(optional -> optional.generateFile(props, instanceContext));
         for (Entry<String, ShardingSphereDatabase> entry : databases.entrySet()) {
             result.put(entry.getKey(), createTransactionManagerEngine(entry.getValue()));
         }

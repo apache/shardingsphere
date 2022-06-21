@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
-import com.google.common.base.Joiner;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowInstanceStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
@@ -48,11 +47,9 @@ public final class ShowInstanceHandler extends QueryableRALBackendHandler<ShowIn
     
     private static final String LABELS = "labels";
     
-    private static final String XA_RECOVERY_NODES = "xa_recovery_nodes";
-    
     @Override
     protected Collection<String> getColumnNames() {
-        return Arrays.asList(ID, HOST, PORT, STATUS, MODE_TYPE, LABELS, XA_RECOVERY_NODES);
+        return Arrays.asList(ID, HOST, PORT, STATUS, MODE_TYPE, LABELS);
     }
     
     @Override
@@ -68,8 +65,7 @@ public final class ShowInstanceHandler extends QueryableRALBackendHandler<ShowIn
     
     private LocalDataQueryResultRow buildRow(final ComputeNodeInstance instance, final String modeType) {
         String labels = null == instance.getLabels() ? "" : String.join(",", instance.getLabels());
-        String xaRecoveryIds = Joiner.on(",").join(instance.getXaRecoveryIds());
         return new LocalDataQueryResultRow(instance.getInstanceDefinition().getInstanceId(),
-                instance.getInstanceDefinition().getIp(), instance.getInstanceDefinition().getUniqueSign(), instance.getState().getCurrentState().name(), modeType, labels, xaRecoveryIds);
+                instance.getInstanceDefinition().getIp(), instance.getInstanceDefinition().getUniqueSign(), instance.getState().getCurrentState().name(), modeType, labels);
     }
 }

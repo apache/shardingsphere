@@ -73,16 +73,6 @@ public final class ComputeNodeTest {
     }
     
     @Test
-    public void assertGetInstanceXaRecoveryIdNodePath() {
-        assertThat(ComputeNode.getInstanceXaRecoveryIdNodePath("foo_xa_recovery_id", "foo_instance"), is("/nodes/compute_nodes/xa_recovery_id/foo_xa_recovery_id/foo_instance"));
-    }
-    
-    @Test
-    public void assertGetXaRecoveryIdNodePath() {
-        assertThat(ComputeNode.getXaRecoveryIdNodePath(), is("/nodes/compute_nodes/xa_recovery_id"));
-    }
-    
-    @Test
     public void assertGetComputeNodePath() {
         assertThat(ComputeNode.getComputeNodePath(), is("/nodes/compute_nodes"));
     }

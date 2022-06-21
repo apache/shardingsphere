@@ -211,3 +211,60 @@
 #        type: DATA_MATCH
 #        props:
 #          chunk-size: 1000
+
+schemaName: sharding_db
+
+dataSources:
+  ds_0:
+    url: jdbc:mysql://127.0.0.1:3306/test?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: 12345678
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+  ds_1:
+    url: jdbc:mysql://127.0.0.1:3307/test?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
+    username: root
+    password: 12345678
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+
+rules:
+  - !SHARDING
+    tables:
+      account:
+        actualDataNodes: ds_${0..1}.account${0..1}
+        tableStrategy:
+          standard:
+            shardingColumn: id
+            shardingAlgorithmName: account_inline
+        keyGenerateStrategy:
+          column: id
+          keyGeneratorName: snowflake
+    defaultDatabaseStrategy:
+      standard:
+        shardingColumn: id
+        shardingAlgorithmName: database_inline
+    defaultTableStrategy:
+      none:
+
+    shardingAlgorithms:
+      database_inline:
+        type: INLINE
+        props:
+          algorithm-expression: ds_${id % 2}
+      account_inline:
+        type: INLINE
+        props:
+          algorithm-expression: account${id % 2}
+
+    keyGenerators:
+      snowflake:
+        type: SNOWFLAKE
+        props:
+          worker-id: 123
