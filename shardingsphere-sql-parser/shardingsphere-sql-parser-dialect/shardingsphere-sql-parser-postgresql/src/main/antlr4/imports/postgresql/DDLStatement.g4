@@ -1787,12 +1787,12 @@ listen
     ;
 
 move
-    : MOVE (direction (FROM | IN)? )? cursorName
+    : MOVE direction? (FROM | IN)? cursorName
     ;
 
 fetch
-   :FETCH (direction (FROM | IN)? )? cursorName
-   ;
+    : FETCH direction? (FROM | IN)? cursorName
+    ;
 
 direction
     : NEXT

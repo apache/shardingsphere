@@ -18,7 +18,7 @@
 
 <sql-cases>
     <sql-case id="fetch_cursor" value="FETCH t_order_cursor;" db-types="openGauss,PostgreSQL" />
-    <sql-case id="fetch_cursor_with_from" value="FETCH FROM t_order_cursor;" db-types="openGauss" />
+    <sql-case id="fetch_cursor_with_from" value="FETCH FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
     <sql-case id="fetch_cursor_with_next" value="FETCH NEXT FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
     <sql-case id="fetch_cursor_with_prior" value="FETCH PRIOR FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
     <sql-case id="fetch_cursor_with_first" value="FETCH FIRST FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
