@@ -68,7 +68,6 @@ public final class DatabaseRulesCountResultSet implements DistSQLResultSet {
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         Map<String, Collection<Object>> dataMap = new LinkedHashMap<>();
-        initData(dataMap);
         addSingleTableData(database, dataMap);
         addShardingData(database, dataMap);
         addReadwriteSplittingData(database, dataMap);
@@ -78,10 +77,6 @@ public final class DatabaseRulesCountResultSet implements DistSQLResultSet {
         data = dataMap.values().iterator();
     }
     
-    private void initData(final Map<String, Collection<Object>> dataMap) {
-        addDefaultData(dataMap, SINGLE_TABLE, SHARDING_TABLE, SHARDING_BINDING_TABLE, SHARDING_BROADCAST_TABLE, SHARDING_SCALING, READWRITE_SPLITTING, DB_DISCOVERY, ENCRYPT, SHADOW);
-    }
-    
     private void addSingleTableData(final ShardingSphereDatabase database, final Map<String, Collection<Object>> dataMap) {
         SingleTableRule rule = database.getRuleMetaData().getSingleRule(SingleTableRule.class);
         dataMap.put(SINGLE_TABLE, Arrays.asList(SINGLE_TABLE, rule.getAllTables().size()));
@@ -89,71 +84,61 @@ public final class DatabaseRulesCountResultSet implements DistSQLResultSet {
     
     private void addShardingData(final ShardingSphereDatabase database, final Map<String, Collection<Object>> dataMap) {
         Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
+        int shardingTableCount = 0;
+        int shardingBindingTableCount = 0;
+        int shardingBroadcastTableCount = 0;
+        int shardingScalingCount = 0;
         if (rule.isPresent()) {
-            addShardingData(dataMap, (ShardingRuleConfiguration) rule.get().getConfiguration());
-        } else {
-            addDefaultShardingData(dataMap);
+            ShardingRuleConfiguration config = (ShardingRuleConfiguration) rule.get().getConfiguration();
+            shardingTableCount = config.getTables().size() + config.getAutoTables().size();
+            shardingBindingTableCount = config.getBindingTableGroups().size();
+            shardingBroadcastTableCount = config.getBroadcastTables().size();
+            shardingScalingCount = config.getScaling().size();
         }
-    }
-    
-    private void addShardingData(final Map<String, Collection<Object>> dataMap, final ShardingRuleConfiguration config) {
-        addData(dataMap, SHARDING_TABLE, config.getTables().size() + config.getAutoTables().size());
-        addData(dataMap, SHARDING_BINDING_TABLE, config.getBindingTableGroups().size());
-        addData(dataMap, SHARDING_BROADCAST_TABLE, config.getBroadcastTables().size());
-        addData(dataMap, SHARDING_SCALING, config.getScaling().size());
-    }
-    
-    private void addDefaultShardingData(final Map<String, Collection<Object>> dataMap) {
-        addData(dataMap, SHARDING_TABLE, 0);
-        addData(dataMap, SHARDING_BINDING_TABLE, 0);
-        addData(dataMap, SHARDING_BROADCAST_TABLE, 0);
-        addData(dataMap, SHARDING_SCALING, 0);
+        addData(dataMap, SHARDING_TABLE, shardingTableCount);
+        addData(dataMap, SHARDING_BINDING_TABLE, shardingBindingTableCount);
+        addData(dataMap, SHARDING_BROADCAST_TABLE, shardingBroadcastTableCount);
+        addData(dataMap, SHARDING_SCALING, shardingScalingCount);
     }
     
     private void addReadwriteSplittingData(final ShardingSphereDatabase database, final Map<String, Collection<Object>> dataMap) {
         Optional<ReadwriteSplittingRule> rule = database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
+        int dataSourceCount = 0;
         if (rule.isPresent()) {
-            addData(dataMap, READWRITE_SPLITTING, ((ReadwriteSplittingRuleConfiguration) rule.get().getConfiguration()).getDataSources().size());
-        } else {
-            addData(dataMap, READWRITE_SPLITTING, 0);
+            dataSourceCount = ((ReadwriteSplittingRuleConfiguration) rule.get().getConfiguration()).getDataSources().size();
         }
+        addData(dataMap, READWRITE_SPLITTING, dataSourceCount);
     }
     
     private void addDatabaseDiscoveryData(final ShardingSphereDatabase database, final Map<String, Collection<Object>> dataMap) {
         Optional<DatabaseDiscoveryRule> rule = database.getRuleMetaData().findSingleRule(DatabaseDiscoveryRule.class);
+        int dataSourceCount = 0;
         if (rule.isPresent()) {
-            addData(dataMap, DB_DISCOVERY, ((DatabaseDiscoveryRuleConfiguration) rule.get().getConfiguration()).getDataSources().size());
-        } else {
-            addData(dataMap, DB_DISCOVERY, 0);
+            dataSourceCount = ((DatabaseDiscoveryRuleConfiguration) rule.get().getConfiguration()).getDataSources().size();
         }
+        addData(dataMap, DB_DISCOVERY, dataSourceCount);
     }
     
     private void addEncryptData(final ShardingSphereDatabase database, final Map<String, Collection<Object>> dataMap) {
         Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
+        int tableCount = 0;
         if (rule.isPresent()) {
-            addData(dataMap, ENCRYPT, ((EncryptRuleConfiguration) rule.get().getConfiguration()).getTables().size());
-        } else {
-            addData(dataMap, ENCRYPT, 0);
+            tableCount = ((EncryptRuleConfiguration) rule.get().getConfiguration()).getTables().size();
         }
+        addData(dataMap, ENCRYPT, tableCount);
     }
     
     private void addShadowData(final ShardingSphereDatabase database, final Map<String, Collection<Object>> dataMap) {
         Optional<ShadowRule> rule = database.getRuleMetaData().findSingleRule(ShadowRule.class);
+        int dataSourceCount = 0;
         if (rule.isPresent()) {
-            addData(dataMap, SHADOW, ((ShadowRuleConfiguration) rule.get().getConfiguration()).getDataSources().size());
-        } else {
-            addData(dataMap, SHADOW, 0);
+            dataSourceCount = ((ShadowRuleConfiguration) rule.get().getConfiguration()).getDataSources().size();
         }
+        addData(dataMap, SHADOW, dataSourceCount);
     }
     
     private void addData(final Map<String, Collection<Object>> dataMap, final String dataKey, final int count) {
         dataMap.put(dataKey, Arrays.asList(dataKey, count));
-    }
-    
-    private void addDefaultData(final Map<String, Collection<Object>> dataMap, final String... dataKey) {
-        for (String each : dataKey) {
-            dataMap.putIfAbsent(each, Arrays.asList(each, 0));
-        }
     }
     
     @Override
