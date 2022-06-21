@@ -1787,7 +1787,7 @@ listen
     ;
 
 move
-    : MOVE direction
+    : MOVE (direction (FROM | IN)? )? cursorName
     ;
 
 fetch

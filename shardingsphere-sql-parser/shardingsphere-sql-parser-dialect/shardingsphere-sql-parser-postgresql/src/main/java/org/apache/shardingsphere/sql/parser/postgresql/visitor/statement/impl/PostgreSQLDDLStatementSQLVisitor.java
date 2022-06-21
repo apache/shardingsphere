@@ -52,6 +52,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Al
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTextSearchTemplateContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.FetchContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.MoveContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CloseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ClusterContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ColumnConstraintContext;
@@ -190,6 +191,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCloseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLFetchStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLMoveStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLClusterStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCommentStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateAccessMethodStatement;
@@ -1067,11 +1069,21 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     
     @Override
     public ASTNode visitFetch(final FetchContext ctx) {
-         PostgreSQLFetchStatement result = new PostgreSQLFetchStatement();
-         result.setCursorName((CursorNameSegment) visit(ctx.cursorName()));
-         if (null != ctx.direction()) {
-         result.setDirection((DirectionSegment) visit(ctx.direction()));
-         }
+        PostgreSQLFetchStatement result = new PostgreSQLFetchStatement();
+        result.setCursorName((CursorNameSegment) visit(ctx.cursorName()));
+        if (null != ctx.direction()) {
+            result.setDirection((DirectionSegment) visit(ctx.direction()));
+        }
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitMove(final MoveContext ctx) {
+        PostgreSQLMoveStatement result = new PostgreSQLMoveStatement();
+        result.setCursorName((CursorNameSegment) visit(ctx.cursorName()));
+        if (null != ctx.direction()) {
+            result.setDirection((DirectionSegment) visit(ctx.direction()));
+        }
         return result;
     }
     
