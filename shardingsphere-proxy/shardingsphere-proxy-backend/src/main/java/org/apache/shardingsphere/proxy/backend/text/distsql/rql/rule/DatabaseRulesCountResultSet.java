@@ -35,7 +35,6 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -69,19 +68,17 @@ public final class DatabaseRulesCountResultSet implements DistSQLResultSet {
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         Map<String, Collection<Object>> dataMap = new LinkedHashMap<>();
         initData(dataMap);
-        Collection<SingleTableRule> singleTableRules = database.getRuleMetaData().findRules(SingleTableRule.class);
-        if (!singleTableRules.isEmpty()) {
-            addSingleTableData(dataMap, singleTableRules);
-        }
+        SingleTableRule singleTableRule = database.getRuleMetaData().getSingleRule(SingleTableRule.class);
+        addSingleTableData(dataMap, singleTableRule);
         if (hasRuleConfiguration(database)) {
             addConfigurationData(dataMap, database.getRuleMetaData().getConfigurations());
         }
         data = dataMap.values().iterator();
     }
     
-    private void addSingleTableData(final Map<String, Collection<Object>> dataMap, final Collection<SingleTableRule> rules) {
-        Optional<Integer> count = rules.stream().map(each -> each.getAllTables().size()).reduce(Integer::sum);
-        dataMap.compute(SINGLE_TABLE, (key, value) -> buildRow(value, SINGLE_TABLE, count.orElse(DEFAULT_COUNT)));
+    private void addSingleTableData(final Map<String, Collection<Object>> dataMap, final SingleTableRule rule) {
+        int count = rule.getAllTables().size();
+        dataMap.compute(SINGLE_TABLE, (key, value) -> buildRow(value, SINGLE_TABLE, count));
     }
     
     private boolean hasRuleConfiguration(final ShardingSphereDatabase database) {

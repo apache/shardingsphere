@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule.DatabaseRulesCountResultSet;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -47,7 +46,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -59,10 +57,9 @@ public final class DatabaseRulesCountResultSetTest {
     
     @Before
     public void before() {
-        Collection<ShardingSphereRule> rules = new LinkedList<>();
-        rules.add(mockSingleTableRule());
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(ruleMetaData.findRules(any())).thenReturn(rules);
+        SingleTableRule singleTableRule = mockSingleTableRule();
+        when(ruleMetaData.getSingleRule(SingleTableRule.class)).thenReturn(singleTableRule);
         Collection<RuleConfiguration> ruleConfigs = new LinkedList<>();
         ruleConfigs.add(mockShardingTableRule());
         ruleConfigs.add(mockReadwriteSplittingRule());
