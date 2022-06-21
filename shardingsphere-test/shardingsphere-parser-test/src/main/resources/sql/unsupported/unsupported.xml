@@ -4527,168 +4527,6 @@
     <sql-case id="explain_by_postgresql_source_test_case118" value="EXPLAIN (costs off)   CREATE MATERIALIZED VIEW mvtest_tm AS SELECT type, sum(amt) AS totamt FROM mvtest_t GROUP BY type WITH NO DATA;" db-types="PostgreSQL" />
     <sql-case id="explain_by_postgresql_source_test_case119" value="EXPLAIN (costs off)   CREATE MATERIALIZED VIEW mvtest_tvm AS SELECT * FROM mvtest_tv ORDER BY type;" db-types="PostgreSQL" />
     <sql-case id="explain_by_postgresql_source_test_case120" value="EXPLAIN (costs off)   CREATE MATERIALIZED VIEW mvtest_tvvm AS SELECT * FROM mvtest_tvv;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case1" value="FETCH 1 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case2" value="FETCH 1 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case3" value="FETCH 1 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case4" value="FETCH 1 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case5" value="FETCH 1 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case6" value="FETCH 1 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case7" value="FETCH 1 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case8" value="FETCH 1 FROM foo24;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case9" value="FETCH 1 FROM foo24;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case10" value="FETCH 1 FROM foo;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case11" value="FETCH 1 FROM foo;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case12" value="FETCH 1 in foo1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case13" value="FETCH 10 in foo10;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case14" value="FETCH 11 in foo11;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case15" value="FETCH 12 in foo12;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case16" value="FETCH 13 in foo13;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case17" value="FETCH 14 in foo14;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case18" value="FETCH 15 in foo15;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case19" value="FETCH 16 in foo16;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case20" value="FETCH 17 in foo17;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case21" value="FETCH 18 in foo18;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case22" value="FETCH 19 in foo19;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case23" value="FETCH 2 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case24" value="FETCH 2 in foo2;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case25" value="FETCH 20 in foo20;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case26" value="FETCH 21 in foo21;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case27" value="FETCH 22 in foo22;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case28" value="FETCH 23 in foo23;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case29" value="FETCH 3 in foo3;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case30" value="FETCH 4 in foo4;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case31" value="FETCH 5 in foo5;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case32" value="FETCH 6 in foo6;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case33" value="FETCH 7 in foo7;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case34" value="FETCH 8 in foo8;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case35" value="FETCH 9 in foo9;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case36" value="FETCH ABSOLUTE -1 FROM foo25;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case37" value="FETCH ABSOLUTE 1 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case38" value="FETCH ABSOLUTE 1 FROM current_check_cursor;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case39" value="FETCH ABSOLUTE 1 FROM current_check_cursor;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case40" value="FETCH ABSOLUTE 1 FROM foo24;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case41" value="FETCH ABSOLUTE 12 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case42" value="FETCH ABSOLUTE 13 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case43" value="FETCH ABSOLUTE 2 FROM foo24;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case44" value="FETCH ABSOLUTE 4 FROM foo25ns;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case45" value="FETCH ABSOLUTE 4 FROM foo25ns;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case46" value="FETCH ABSOLUTE 8 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case47" value="FETCH ALL FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case48" value="FETCH ALL FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case49" value="FETCH ALL FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case50" value="FETCH ALL FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case51" value="FETCH ALL FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case52" value="FETCH ALL FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case53" value="FETCH BACKWARD 1 FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case54" value="FETCH BACKWARD 1 FROM foo24;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case55" value="FETCH BACKWARD FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case56" value="FETCH BACKWARD FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case57" value="FETCH BACKWARD FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case58" value="FETCH BACKWARD FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case59" value="FETCH BACKWARD FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case60" value="FETCH BACKWARD FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case61" value="FETCH BACKWARD FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case62" value="FETCH BACKWARD FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case63" value="FETCH BACKWARD FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case64" value="FETCH BACKWARD FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case65" value="FETCH BACKWARD FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case66" value="FETCH BACKWARD FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case67" value="FETCH BACKWARD FROM foo25;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case68" value="FETCH FIRST FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case69" value="FETCH FIRST FROM tablesample_cur;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case70" value="FETCH FIRST FROM tablesample_cur;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case71" value="FETCH FIRST c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case72" value="FETCH FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case73" value="FETCH FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case74" value="FETCH FROM foo25;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case75" value="FETCH FROM foo25;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case76" value="FETCH FROM foo25;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case77" value="FETCH FROM foo25ns;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case78" value="FETCH FROM foo25ns;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case79" value="FETCH FROM foo25ns;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case80" value="FETCH FROM foo26;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case81" value="FETCH LAST FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case82" value="FETCH LAST FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case83" value="FETCH LAST c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case84" value="FETCH NEXT FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case85" value="FETCH NEXT FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case86" value="FETCH NEXT FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case87" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case88" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case89" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case90" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case91" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case92" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case93" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case94" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case95" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case96" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case97" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case98" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case99" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case100" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case101" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case102" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case103" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case104" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case105" value="FETCH NEXT FROM tablesample_cur;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case106" value="FETCH NEXT FROM tablesample_cur;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case107" value="FETCH NEXT FROM tablesample_cur;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case108" value="FETCH NEXT FROM tablesample_cur;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case109" value="FETCH NEXT FROM tablesample_cur;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case110" value="FETCH NEXT FROM tablesample_cur;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case111" value="FETCH NEXT FROM tablesample_cur;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case112" value="FETCH NEXT FROM tablesample_cur;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case113" value="FETCH NEXT FROM tablesample_cur;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case114" value="FETCH NEXT FROM tablesample_cur;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case115" value="FETCH NEXT c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case116" value="FETCH NEXT c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case117" value="FETCH PRIOR c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case118" value="FETCH RELATIVE 0 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case119" value="FETCH RELATIVE 0 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case120" value="FETCH RELATIVE 0 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case121" value="FETCH RELATIVE 1 FROM current_check_cursor;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case122" value="FETCH RELATIVE 1 FROM current_check_cursor;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case123" value="FETCH all in foo13;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case124" value="FETCH all in foo14;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case125" value="FETCH all in foo15;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case126" value="FETCH all in foo16;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case127" value="FETCH all in foo17;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case128" value="FETCH all in foo18;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case129" value="FETCH all in foo19;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case130" value="FETCH all in foo20;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case131" value="FETCH all in foo21;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case132" value="FETCH all in foo22;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case133" value="FETCH all in foo23;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case134" value="FETCH all in foo24;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case135" value="FETCH all in foo25;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case136" value="FETCH backward 1 in foo23;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case137" value="FETCH backward 10 in foo14;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case138" value="FETCH backward 11 in foo13;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case139" value="FETCH backward 12 in foo12;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case140" value="FETCH backward 13 in foo11;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case141" value="FETCH backward 14 in foo10;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case142" value="FETCH backward 15 in foo9;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case143" value="FETCH backward 16 in foo8;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case144" value="FETCH backward 17 in foo7;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case145" value="FETCH backward 18 in foo6;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case146" value="FETCH backward 19 in foo5;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case147" value="FETCH backward 2 in foo22;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case148" value="FETCH backward 20 in foo4;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case149" value="FETCH backward 21 in foo3;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case150" value="FETCH backward 22 in foo2;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case151" value="FETCH backward 23 in foo1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case152" value="FETCH backward 3 in foo21;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case153" value="FETCH backward 4 in foo20;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case154" value="FETCH backward 5 in foo19;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case155" value="FETCH backward 6 in foo18;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case156" value="FETCH backward 7 in foo17;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case157" value="FETCH backward 8 in foo16;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case158" value="FETCH backward 9 in foo15;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case159" value="FETCH c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case160" value="FETCH c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case161" value="FETCH c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case162" value="FETCH next from hsc;" db-types="PostgreSQL" />
     <sql-case id="import_by_postgresql_source_test_case1" value="IMPORT FOREIGN SCHEMA s1 EXCEPT (t1) FROM SERVER s9 INTO public;" db-types="PostgreSQL" />
     <sql-case id="import_by_postgresql_source_test_case2" value="IMPORT FOREIGN SCHEMA s1 EXCEPT (t1, t2) FROM SERVER s9 INTO public OPTIONS (option1 &apos;value1&apos;, option2 &apos;value2&apos;);" db-types="PostgreSQL" />
     <sql-case id="import_by_postgresql_source_test_case3" value="IMPORT FOREIGN SCHEMA s1 FROM SERVER s9 INTO public;" db-types="PostgreSQL" />
@@ -4914,11 +4752,6 @@
     <sql-case id="lock_by_postgresql_source_test_case39" value="LOCK hs1;" db-types="PostgreSQL" />
     <sql-case id="lock_by_postgresql_source_test_case40" value="LOCK lock_tbl1 IN ROW SHARE MODE;" db-types="PostgreSQL" />
     <sql-case id="lock_by_postgresql_source_test_case41" value="LOCK lock_tbl1 IN SHARE ROW EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="move_by_postgresql_source_test_case1" value="MOVE BACKWARD 10000 FROM c;" db-types="PostgreSQL" />
-    <sql-case id="move_by_postgresql_source_test_case2" value="MOVE BACKWARD ALL FROM c;" db-types="PostgreSQL" />
-    <sql-case id="move_by_postgresql_source_test_case3" value="MOVE BACKWARD ALL IN c1;" db-types="PostgreSQL" />
-    <sql-case id="move_by_postgresql_source_test_case4" value="MOVE BACKWARD ALL IN xc;" db-types="PostgreSQL" />
-    <sql-case id="move_by_postgresql_source_test_case5" value="MOVE FORWARD ALL FROM c;" db-types="PostgreSQL" />
     <sql-case id="notify_by_postgresql_source_test_case1" value="NOTIFY notify_async2;" db-types="PostgreSQL" />
     <sql-case id="prepare_by_postgresql_source_test_case1" value="PREPARE TRANSACTION &apos;foo1&apos;;" db-types="PostgreSQL" />
     <sql-case id="prepare_by_postgresql_source_test_case2" value="PREPARE TRANSACTION &apos;foo2&apos;;" db-types="PostgreSQL" />
@@ -7116,67 +6949,6 @@
     <sql-case id="low_explain_by_postgresql_source_test_case21" value="explain (verbose, costs off) with recursive search_graph(f, t, label) as ( 	select * from graph g 	union all 	select g.* 	from graph g, search_graph sg 	where g.f = sg.t ) cycle f, t set is_cycle using path select * from search_graph;" db-types="PostgreSQL" />
     <sql-case id="low_explain_by_postgresql_source_test_case22" value="explain (verbose, costs off) with recursive search_graph(f, t, label) as ( 	select * from graph0 g 	union all 	select g.* 	from graph0 g, search_graph sg 	where g.f = sg.t ) search breadth first by f, t set seq select * from search_graph order by seq;" db-types="PostgreSQL" />
     <sql-case id="low_explain_by_postgresql_source_test_case23" value="explain (verbose, costs off) with recursive search_graph(f, t, label) as ( 	select * from graph0 g 	union all 	select g.* 	from graph0 g, search_graph sg 	where g.f = sg.t ) search depth first by f, t set seq select * from search_graph order by seq;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case1" value="fetch 1 from hsc;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case2" value="fetch 1 in c1;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case3" value="fetch 1 in c2;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case4" value="fetch 1 in c3;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case5" value="fetch 1 in c4;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case6" value="fetch 1 in c5;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case7" value="fetch absolute 1 from rf_cur;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case8" value="fetch all from c1;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case9" value="fetch all from c2;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case10" value="fetch all from c;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case11" value="fetch all from c;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case12" value="fetch all from rf_cur;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case13" value="fetch all from rf_cur;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case14" value="fetch all from test2;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case15" value="fetch all in c1;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case16" value="fetch all in c1;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case17" value="fetch all in c1;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case18" value="fetch all in c2;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case19" value="fetch all in c2;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case20" value="fetch all in c2;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case21" value="fetch all in c3;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case22" value="fetch all in c3;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case23" value="fetch all in c4;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case24" value="fetch all in c4;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case25" value="fetch all in c5;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case26" value="fetch all in c5;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case27" value="fetch all in c5;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case28" value="fetch backward 1 in c1;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case29" value="fetch backward 1 in c1;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case30" value="fetch backward 1 in c2;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case31" value="fetch backward 1 in c2;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case32" value="fetch backward 1 in c3;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case33" value="fetch backward 1 in c3;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case34" value="fetch backward 1 in c4;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case35" value="fetch backward 1 in c4;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case36" value="fetch backward 1 in c5;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case37" value="fetch backward 1 in c5;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case38" value="fetch backward all from cur;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case39" value="fetch backward all from rf_cur;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case40" value="fetch backward all in c1;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case41" value="fetch backward all in c1;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case42" value="fetch backward all in c1;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case43" value="fetch backward all in c2;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case44" value="fetch backward all in c2;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case45" value="fetch backward all in c3;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case46" value="fetch backward all in c4;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case47" value="fetch backward all in c5;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case48" value="fetch backward all in c5;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case49" value="fetch first from hsc;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case50" value="fetch last from hsc;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case51" value="fetch next from rf_cur;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case52" value="fetch next from rf_cur;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case53" value="fetch next from rf_cur;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case54" value="fetch next from rf_cur;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case55" value="fetch next from rf_cur;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case56" value="fetch next from test1;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case57" value="fetch next in test1;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case58" value="fetch prior from rf_cur;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case59" value="fetch prior from rf_cur;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case60" value="fetch prior from rf_cur;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case61" value="fetch prior from rf_cur;" db-types="PostgreSQL" />
     <sql-case id="low_insert_by_postgresql_source_test_case1" value="insert into arr_pk_tbl values (1, &apos;{3,4,5}&apos;) on conflict (pk)   do update set f1[1] = excluded.f1[1], f1[3] = excluded.f1[3]   returning pk, f1;" db-types="PostgreSQL" />
     <sql-case id="low_insert_by_postgresql_source_test_case2" value="insert into arr_pk_tbl(pk, f1[1:2]) values (1, &apos;{6,7,8}&apos;) on conflict (pk)   do update set f1[1] = excluded.f1[1],     f1[2] = excluded.f1[2],     f1[3] = excluded.f1[3]   returning pk, f1;" db-types="PostgreSQL" />
     <sql-case id="low_insert_by_postgresql_source_test_case7" value="insert into capitals values (&apos;Sacramento&apos;, 4664.E+5, 30, &apos;CA&apos;) on conflict (name) do update set population = excluded.population;" db-types="PostgreSQL" />
@@ -7245,9 +7017,6 @@
     <sql-case id="low_lock_by_postgresql_source_test_case1" value="lock table pxtest3 in access share mode nowait;" db-types="PostgreSQL" />
     <sql-case id="low_lock_by_postgresql_source_test_case2" value="lock table pxtest3 in access share mode nowait;" db-types="PostgreSQL" />
     <sql-case id="low_lock_by_postgresql_source_test_case3" value="lock twophase_tab in access exclusive mode;" db-types="PostgreSQL" />
-    <sql-case id="low_move_by_postgresql_source_test_case1" value="move 3 from cur;" db-types="PostgreSQL" />
-    <sql-case id="low_move_by_postgresql_source_test_case2" value="move backward all in c;" db-types="PostgreSQL" />
-    <sql-case id="low_move_by_postgresql_source_test_case3" value="move forward all in c1;" db-types="PostgreSQL" />
     <sql-case id="low_notify_by_postgresql_source_test_case1" value="notify a;" db-types="PostgreSQL" />
     <sql-case id="low_prepare_by_postgresql_source_test_case1" value="prepare q as   select &apos;some&quot;text&apos; as &quot;a&amp;title&quot;, E&apos;  &lt;foo&gt;\n&lt;bar&gt;&apos; as &quot;junk&quot;,          &apos;   &apos; as &quot;empty&quot;, n as int   from generate_series(1,2) as n;" db-types="PostgreSQL" />
     <sql-case id="low_prepare_by_postgresql_source_test_case2" value="prepare q as   select &apos;some\more_text&apos; as &quot;a$title&quot;, E&apos;  #&lt;foo&gt;%&amp;^~|\n{bar}&apos; as &quot;junk&quot;,          &apos;   &apos; as &quot;empty&quot;, n as int   from generate_series(1,2) as n;" db-types="PostgreSQL" />

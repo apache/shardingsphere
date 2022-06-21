@@ -1787,7 +1787,28 @@ listen
     ;
 
 move
-    : MOVE fetchArgs
+    : MOVE direction? (FROM | IN)? cursorName
+    ;
+
+fetch
+    : FETCH direction? (FROM | IN)? cursorName
+    ;
+
+direction
+    : NEXT
+    | PRIOR
+    | FIRST
+    | LAST
+    | ABSOLUTE signedIconst
+    | RELATIVE signedIconst
+    | signedIconst
+    | ALL
+    | FORWARD
+    | FORWARD signedIconst
+    | FORWARD ALL
+    | BACKWARD
+    | BACKWARD signedIconst
+    | BACKWARD ALL
     ;
 
 prepare
