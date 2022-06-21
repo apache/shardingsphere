@@ -41,7 +41,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -80,7 +79,12 @@ public final class ShowDatabasesExecutorTest extends ProxyContextRestorer {
     public void assertExecute() throws SQLException {
         showDatabasesExecutor.execute(mockConnectionSession());
         assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
-        assertThat(getActualDatabases(), is(getExpectedDatabases()));
+        int count = 0;
+        while (showDatabasesExecutor.getMergedResult().next()) {
+            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is(String.format(DATABASE_PATTERN, count)));
+            count++;
+        }
+        assertThat(count, is(10));
     }
     
     @Test
@@ -92,25 +96,12 @@ public final class ShowDatabasesExecutorTest extends ProxyContextRestorer {
         showDatabasesStatement.setFilter(showFilterSegment);
         showDatabasesExecutor = new ShowDatabasesExecutor(showDatabasesStatement);
         showDatabasesExecutor.execute(mockConnectionSession());
-        assertThat(getActualDatabases(), is(getExpectedDatabases()));
-    }
-    
-    private Map<String, String> getActualDatabases() throws SQLException {
-        Map<String, String> result = new ConcurrentHashMap<>(10, 1);
+        int count = 0;
         while (showDatabasesExecutor.getMergedResult().next()) {
-            String schema = showDatabasesExecutor.getMergedResult().getValue(1, Object.class).toString();
-            result.put(schema, schema);
+            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is(String.format(DATABASE_PATTERN, count)));
+            count++;
         }
-        return result;
-    }
-    
-    private Map<String, String> getExpectedDatabases() {
-        Map<String, String> result = new ConcurrentHashMap<>(10, 1);
-        for (int i = 0; i < 10; i++) {
-            String schema = String.format(DATABASE_PATTERN, i);
-            result.put(schema, schema);
-        }
-        return result;
+        assertThat(count, is(10));
     }
     
     @Test
