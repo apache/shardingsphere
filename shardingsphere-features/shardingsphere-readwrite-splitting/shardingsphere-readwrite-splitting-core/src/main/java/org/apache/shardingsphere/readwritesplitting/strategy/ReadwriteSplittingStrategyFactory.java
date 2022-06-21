@@ -61,6 +61,8 @@ public final class ReadwriteSplittingStrategyFactory {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(autoAwareDataSourceName), "Auto aware data source name is required.");
         Optional<DynamicDataSourceStrategy> dynamicDataSourceStrategy = DynamicDataSourceStrategyFactory.findInstance();
         Preconditions.checkArgument(dynamicDataSourceStrategy.isPresent(), "Dynamic data source strategy is required.");
-        return new DynamicReadwriteSplittingStrategy(autoAwareDataSourceName, dynamicDataSourceStrategy.get());
+        boolean allowWriteDataSourceQuery = Strings.isNullOrEmpty(props.getProperty("allow-write-data-source-query")) ? Boolean.TRUE
+                : Boolean.parseBoolean(props.getProperty("allow-write-data-source-query"));
+        return new DynamicReadwriteSplittingStrategy(autoAwareDataSourceName, allowWriteDataSourceQuery, dynamicDataSourceStrategy.get());
     }
 }
