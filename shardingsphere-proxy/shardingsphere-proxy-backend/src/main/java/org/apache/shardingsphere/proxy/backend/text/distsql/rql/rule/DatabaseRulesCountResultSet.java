@@ -67,7 +67,9 @@ public final class DatabaseRulesCountResultSet implements DistSQLResultSet {
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+        // TODO Use LocalDataQueryResultRow to refactor Map<String, Collection<Object>> to Collection<LocalDataQueryResultRow>
         Map<String, Collection<Object>> dataMap = new LinkedHashMap<>();
+        // TODO use ExportRule to export config
         addSingleTableData(database, dataMap);
         addShardingData(database, dataMap);
         addReadwriteSplittingData(database, dataMap);
