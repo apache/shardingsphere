@@ -35,7 +35,7 @@ import java.util.Optional;
 @Setter
 @ToString
 public final class PostgreSQLFetchStatement extends AbstractSQLStatement implements DDLStatement, PostgreSQLStatement {
-
+    
     private CursorNameSegment cursorName;
     
     private DirectionSegment direction;
