@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Move statement context.
@@ -48,8 +49,8 @@ public final class MoveStatementContext extends CommonSQLStatementContext<OpenGa
     }
     
     @Override
-    public CursorNameSegment getCursorName() {
-        return getSqlStatement().getCursorName();
+    public Optional<CursorNameSegment> getCursorName() {
+        return Optional.of(getSqlStatement().getCursorName());
     }
     
     @Override
