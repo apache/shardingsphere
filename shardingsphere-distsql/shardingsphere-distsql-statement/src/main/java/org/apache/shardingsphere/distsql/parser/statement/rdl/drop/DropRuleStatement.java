@@ -18,15 +18,19 @@
 package org.apache.shardingsphere.distsql.parser.statement.rdl.drop;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
 
 /**
  * Drop rule statement.
  */
+@Getter
+@RequiredArgsConstructor
 public abstract class DropRuleStatement extends RuleDefinitionStatement {
     
-    @Getter
-    @Setter
-    private boolean containsExistClause;
+    private final boolean containsExistClause;
+    
+    public DropRuleStatement() {
+        this.containsExistClause = false;
+    }
 }

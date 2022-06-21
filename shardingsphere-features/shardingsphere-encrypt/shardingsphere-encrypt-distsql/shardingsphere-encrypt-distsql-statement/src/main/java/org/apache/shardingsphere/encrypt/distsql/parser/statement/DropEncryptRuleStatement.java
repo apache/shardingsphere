@@ -33,7 +33,7 @@ public final class DropEncryptRuleStatement extends DropRuleStatement {
     private final Collection<String> tables;
     
     public DropEncryptRuleStatement(final boolean containsExistClause, final Collection<String> tables) {
-        setContainsExistClause(containsExistClause);
+        super(containsExistClause);
         this.tables = tables;
     }
 }

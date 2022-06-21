@@ -31,7 +31,7 @@ public final class DropShardingScalingRuleStatement extends DropRuleStatement {
     private final String scalingName;
     
     public DropShardingScalingRuleStatement(final boolean containsExistClause, final String scalingName) {
-        setContainsExistClause(containsExistClause);
+        super(containsExistClause);
         this.scalingName = scalingName;
     }
 }

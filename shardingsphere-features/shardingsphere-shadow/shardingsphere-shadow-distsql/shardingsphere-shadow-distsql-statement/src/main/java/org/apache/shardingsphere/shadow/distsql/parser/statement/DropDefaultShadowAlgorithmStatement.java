@@ -29,6 +29,6 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleState
 public final class DropDefaultShadowAlgorithmStatement extends DropRuleStatement {
     
     public DropDefaultShadowAlgorithmStatement(final boolean containsExistClause) {
-        setContainsExistClause(containsExistClause);
+        super(containsExistClause);
     }
 }
