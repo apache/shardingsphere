@@ -70,20 +70,13 @@ public final class DatabaseRulesCountResultSet implements DistSQLResultSet {
         initData(dataMap);
         SingleTableRule singleTableRule = database.getRuleMetaData().getSingleRule(SingleTableRule.class);
         addSingleTableData(dataMap, singleTableRule);
-        if (hasRuleConfiguration(database)) {
-            addConfigurationData(dataMap, database.getRuleMetaData().getConfigurations());
-        }
+        addConfigurationData(dataMap, database.getRuleMetaData().getConfigurations());
         data = dataMap.values().iterator();
     }
     
     private void addSingleTableData(final Map<String, Collection<Object>> dataMap, final SingleTableRule rule) {
         int count = rule.getAllTables().size();
         dataMap.compute(SINGLE_TABLE, (key, value) -> buildRow(value, SINGLE_TABLE, count));
-    }
-    
-    private boolean hasRuleConfiguration(final ShardingSphereDatabase database) {
-        Collection<RuleConfiguration> configs = database.getRuleMetaData().getConfigurations();
-        return null != configs && !configs.isEmpty();
     }
     
     private void initData(final Map<String, Collection<Object>> dataMap) {
