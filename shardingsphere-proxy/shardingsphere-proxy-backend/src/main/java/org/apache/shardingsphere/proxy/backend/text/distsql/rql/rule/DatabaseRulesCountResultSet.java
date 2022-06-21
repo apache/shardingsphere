@@ -18,14 +18,18 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountDatabaseRulesStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -34,6 +38,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Result set for count database rules.
@@ -65,7 +70,11 @@ public final class DatabaseRulesCountResultSet implements DistSQLResultSet {
         Map<String, Collection<Object>> dataMap = new LinkedHashMap<>();
         initData(dataMap);
         addSingleTableData(dataMap, database.getRuleMetaData().getSingleRule(SingleTableRule.class));
-        addConfigurationData(dataMap, database.getRuleMetaData().getConfigurations());
+        addShardingData(database, dataMap);
+        addReadwriteSplittingData(database, dataMap);
+        addDatabaseDiscoveryData(database, dataMap);
+        addEncryptData(database, dataMap);
+        addShadowData(database, dataMap);
         data = dataMap.values().iterator();
     }
     
@@ -77,52 +86,63 @@ public final class DatabaseRulesCountResultSet implements DistSQLResultSet {
         dataMap.put(SINGLE_TABLE, Arrays.asList(SINGLE_TABLE, rule.getAllTables().size()));
     }
     
-    private void addConfigurationData(final Map<String, Collection<Object>> dataMap, final Collection<RuleConfiguration> ruleConfigs) {
-        ruleConfigs.forEach(each -> {
-            addShardingData(dataMap, each);
-            addReadwriteSplittingData(dataMap, each);
-            addDBDiscoveryData(dataMap, each);
-            addEncryptData(dataMap, each);
-            addShadowData(dataMap, each);
-        });
+    private void addShardingData(final ShardingSphereDatabase database, final Map<String, Collection<Object>> dataMap) {
+        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
+        if (rule.isPresent()) {
+            addShardingData(dataMap, (ShardingRuleConfiguration) rule.get().getConfiguration());
+        } else {
+            addDefaultShardingData(dataMap);
+        }
     }
     
-    private void addShardingData(final Map<String, Collection<Object>> dataMap, final RuleConfiguration ruleConfig) {
-        if (!(ruleConfig instanceof ShardingRuleConfiguration)) {
-            return;
-        }
-        addData(dataMap, SHARDING_TABLE, ((ShardingRuleConfiguration) ruleConfig).getTables().size() + ((ShardingRuleConfiguration) ruleConfig).getAutoTables().size());
-        addData(dataMap, SHARDING_BINDING_TABLE, ((ShardingRuleConfiguration) ruleConfig).getBindingTableGroups().size());
-        addData(dataMap, SHARDING_BROADCAST_TABLE, ((ShardingRuleConfiguration) ruleConfig).getBroadcastTables().size());
-        addData(dataMap, SHARDING_SCALING, ((ShardingRuleConfiguration) ruleConfig).getScaling().size());
+    private void addShardingData(final Map<String, Collection<Object>> dataMap, final ShardingRuleConfiguration config) {
+        addData(dataMap, SHARDING_TABLE, config.getTables().size() + config.getAutoTables().size());
+        addData(dataMap, SHARDING_BINDING_TABLE, config.getBindingTableGroups().size());
+        addData(dataMap, SHARDING_BROADCAST_TABLE, config.getBroadcastTables().size());
+        addData(dataMap, SHARDING_SCALING, config.getScaling().size());
     }
     
-    private void addReadwriteSplittingData(final Map<String, Collection<Object>> dataMap, final RuleConfiguration ruleConfig) {
-        if (!(ruleConfig instanceof ReadwriteSplittingRuleConfiguration)) {
-            return;
-        }
-        addData(dataMap, READWRITE_SPLITTING, ((ReadwriteSplittingRuleConfiguration) ruleConfig).getDataSources().size());
+    private void addDefaultShardingData(final Map<String, Collection<Object>> dataMap) {
+        addData(dataMap, SHARDING_TABLE, 0);
+        addData(dataMap, SHARDING_BINDING_TABLE, 0);
+        addData(dataMap, SHARDING_BROADCAST_TABLE, 0);
+        addData(dataMap, SHARDING_SCALING, 0);
     }
     
-    private void addDBDiscoveryData(final Map<String, Collection<Object>> dataMap, final RuleConfiguration ruleConfig) {
-        if (!(ruleConfig instanceof DatabaseDiscoveryRuleConfiguration)) {
-            return;
+    private void addReadwriteSplittingData(final ShardingSphereDatabase database, final Map<String, Collection<Object>> dataMap) {
+        Optional<ReadwriteSplittingRule> rule = database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
+        if (rule.isPresent()) {
+            addData(dataMap, READWRITE_SPLITTING, ((ReadwriteSplittingRuleConfiguration) rule.get().getConfiguration()).getDataSources().size());
+        } else {
+            addData(dataMap, READWRITE_SPLITTING, 0);
         }
-        addData(dataMap, DB_DISCOVERY, ((DatabaseDiscoveryRuleConfiguration) ruleConfig).getDataSources().size());
     }
     
-    private void addEncryptData(final Map<String, Collection<Object>> dataMap, final RuleConfiguration ruleConfig) {
-        if (!(ruleConfig instanceof EncryptRuleConfiguration)) {
-            return;
+    private void addDatabaseDiscoveryData(final ShardingSphereDatabase database, final Map<String, Collection<Object>> dataMap) {
+        Optional<DatabaseDiscoveryRule> rule = database.getRuleMetaData().findSingleRule(DatabaseDiscoveryRule.class);
+        if (rule.isPresent()) {
+            addData(dataMap, DB_DISCOVERY, ((DatabaseDiscoveryRuleConfiguration) rule.get().getConfiguration()).getDataSources().size());
+        } else {
+            addData(dataMap, DB_DISCOVERY, 0);
         }
-        addData(dataMap, ENCRYPT, ((EncryptRuleConfiguration) ruleConfig).getTables().size());
     }
     
-    private void addShadowData(final Map<String, Collection<Object>> dataMap, final RuleConfiguration ruleConfig) {
-        if (!(ruleConfig instanceof ShadowRuleConfiguration)) {
-            return;
+    private void addEncryptData(final ShardingSphereDatabase database, final Map<String, Collection<Object>> dataMap) {
+        Optional<EncryptRule> rule = database.getRuleMetaData().findSingleRule(EncryptRule.class);
+        if (rule.isPresent()) {
+            addData(dataMap, ENCRYPT, ((EncryptRuleConfiguration) rule.get().getConfiguration()).getTables().size());
+        } else {
+            addData(dataMap, ENCRYPT, 0);
         }
-        addData(dataMap, SHADOW, ((ShadowRuleConfiguration) ruleConfig).getDataSources().size());
+    }
+    
+    private void addShadowData(final ShardingSphereDatabase database, final Map<String, Collection<Object>> dataMap) {
+        Optional<ShadowRule> rule = database.getRuleMetaData().findSingleRule(ShadowRule.class);
+        if (rule.isPresent()) {
+            addData(dataMap, SHADOW, ((ShadowRuleConfiguration) rule.get().getConfiguration()).getDataSources().size());
+        } else {
+            addData(dataMap, SHADOW, 0);
+        }
     }
     
     private void addData(final Map<String, Collection<Object>> dataMap, final String dataKey, final int count) {
