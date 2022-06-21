@@ -43,7 +43,7 @@ public final class ReadWriteSplittingDataSourceRuleConfigurationTest {
     public void assertDynamicReadWriteSplittingConfig() {
         assertNotNull(readwriteSplittingDataSourceRuleConfigDynamic.getProps());
         assertThat(readwriteSplittingDataSourceRuleConfigDynamic.getProps().getProperty("auto-aware-data-source-name"), is("readwrite_ds"));
-        assertThat(readwriteSplittingDataSourceRuleConfigDynamic.getProps().getProperty("allow-write-data-source-query"), is("true"));
+        assertThat(readwriteSplittingDataSourceRuleConfigDynamic.getProps().getProperty("allow-write-data-source-query"), is("false"));
     }
     
     @Test
@@ -66,7 +66,7 @@ public final class ReadWriteSplittingDataSourceRuleConfigurationTest {
     private Properties getDynamicReadwriteSplittingProperties() {
         Properties result = new Properties();
         result.setProperty("auto-aware-data-source-name", "readwrite_ds");
-        result.setProperty("allow-write-data-source-query", "true");
+        result.setProperty("allow-write-data-source-query", "false");
         return result;
     }
 }
