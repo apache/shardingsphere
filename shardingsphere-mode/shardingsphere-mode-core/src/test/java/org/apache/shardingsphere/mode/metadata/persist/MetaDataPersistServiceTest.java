@@ -26,11 +26,10 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.mode.metadata.persist.service.ComputeNodePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.DataSourcePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.impl.DatabaseRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.GlobalRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.PropertiesPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.impl.DatabaseRulePersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
@@ -52,9 +51,9 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
-import java.util.Properties;
 import java.util.Optional;
+import java.util.Properties;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -66,7 +65,7 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class MetaDataPersistServiceTest {
     
-    private static final String SCHEMA_RULE_YAML = "yaml/persist/data-schema-rule.yaml";
+    private static final String SCHEMA_RULE_YAML = "yaml/persist/data-database-rule.yaml";
     
     @Mock
     private DataSourcePersistService dataSourceService;
@@ -80,9 +79,6 @@ public final class MetaDataPersistServiceTest {
     @Mock
     private PropertiesPersistService propsService;
     
-    @Mock
-    private ComputeNodePersistService computeNodePersistService;
-    
     private MetaDataPersistService metaDataPersistService;
     
     @Before
@@ -92,7 +88,6 @@ public final class MetaDataPersistServiceTest {
         setField("databaseRulePersistService", databaseRulePersistService);
         setField("globalRuleService", globalRuleService);
         setField("propsService", propsService);
-        setField("computeNodePersistService", computeNodePersistService);
     }
     
     private void setField(final String name, final Object value) throws ReflectiveOperationException {
@@ -118,12 +113,6 @@ public final class MetaDataPersistServiceTest {
     private Map<String, DataSourceProperties> createDataSourcePropertiesMap(final Map<String, DataSource> dataSourceMap) {
         return dataSourceMap.entrySet().stream().collect(
                 Collectors.toMap(Entry::getKey, entry -> DataSourcePropertiesCreator.create(entry.getValue()), (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
-    }
-    
-    @Test
-    public void assertPersistInstanceLabels() {
-        metaDataPersistService.persistInstanceLabels("127.0.0.1@3307", Collections.singletonList("foo_label"), false);
-        verify(computeNodePersistService).persistInstanceLabels("127.0.0.1@3307", Collections.singletonList("foo_label"), false);
     }
     
     private Map<String, DataSource> createDataSourceMap() {

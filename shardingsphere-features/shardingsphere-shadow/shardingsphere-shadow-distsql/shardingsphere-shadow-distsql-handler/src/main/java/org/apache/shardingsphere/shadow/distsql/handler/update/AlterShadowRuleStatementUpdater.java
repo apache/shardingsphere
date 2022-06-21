@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.shadow.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
+import org.apache.shardingsphere.infra.config.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -76,7 +76,7 @@ public final class AlterShadowRuleStatementUpdater implements RuleDefinitionAlte
         checkAlgorithms(databaseName, rules);
     }
     
-    private void checkConfigurationExist(final String databaseName, final SchemaRuleConfiguration currentRuleConfig) throws DistSQLException {
+    private void checkConfigurationExist(final String databaseName, final DatabaseRuleConfiguration currentRuleConfig) throws DistSQLException {
         ShadowRuleStatementChecker.checkConfigurationExist(databaseName, currentRuleConfig);
     }
     

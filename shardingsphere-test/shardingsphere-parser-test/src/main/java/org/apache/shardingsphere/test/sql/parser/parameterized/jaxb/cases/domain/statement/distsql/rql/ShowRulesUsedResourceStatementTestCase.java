@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedSchema;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedDatabase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 import javax.xml.bind.annotation.XmlAttribute;
@@ -36,5 +36,5 @@ public final class ShowRulesUsedResourceStatementTestCase extends SQLParserTestC
     private String resourceName;
     
     @XmlElement
-    private ExpectedSchema schema;
+    private ExpectedDatabase database;
 }

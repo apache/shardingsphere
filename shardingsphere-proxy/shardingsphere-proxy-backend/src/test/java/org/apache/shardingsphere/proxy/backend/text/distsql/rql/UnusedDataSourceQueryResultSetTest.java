@@ -19,9 +19,9 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql;
 
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowUnusedResourcesStatement;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.resource.UnusedDataSourceQueryResultSet;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -57,7 +57,7 @@ public final class UnusedDataSourceQueryResultSetTest {
     @Before
     public void before() {
         ShardingSphereResource resource = new ShardingSphereResource(createDataSources());
-        ShardingSphereRuleMetaData metaData = new ShardingSphereRuleMetaData(null, Collections.singleton(createShardingRule()));
+        ShardingSphereRuleMetaData metaData = new ShardingSphereRuleMetaData(Collections.singleton(createShardingRule()));
         when(database.getResource()).thenReturn(resource);
         when(database.getRuleMetaData()).thenReturn(metaData);
     }

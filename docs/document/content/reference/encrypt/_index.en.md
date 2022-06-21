@@ -35,22 +35,24 @@ The encryption configuration is mainly divided into four parts: data source conf
 **Datasource Configuration**：The configuration of DataSource.
 
 **Encrypt Algorithm Configuration**：What kind of encryption strategy to use for encryption and decryption. 
-Currently ShardingSphere has three built-in encryption/decryption strategies: AES, MD5, RC4. 
+Currently ShardingSphere has five built-in encryption/decryption strategies: AES, MD5, RC4, SM3, SM4. 
 Users can also implement a set of encryption/decryption algorithms by implementing the interface provided by Apache ShardingSphere.
 
 **Encryption Table Configuration**：Show the ShardingSphere data table which column is used to store cipher column data (cipherColumn), 
-which column is used to store plain text data (plainColumn), and which column users want to use for SQL writing (logicColumn)
+what algorithm is used to encryption/decryption (encryptorName), which column is used to store assisted query data (assistedQueryColumn),
+what algorithm is used to encrypt/decrypt assisted query data (assistedQueryEncryptorName),  which column is used to store plain text data (plainColumn), 
+and which column users want to use for SQL writing (logicColumn)
 
 > How to understand `Which column do users want to use to write SQL (logicColumn)`?
 >
 > We can understand according to the meaning of Apache ShardingSphere. 
 The ultimate goal of Apache ShardingSphere is to shield the encryption of the underlying data, that is, we do not want users to know how the data is encrypted/decrypted, 
-how to store plaintext data in plainColumn, and ciphertext data in cipherColumn. 
-In other words, we do not even want users to know the existence and use of plainColumn and cipherColumn.
+how to store plaintext data in plainColumn, ciphertext data in cipherColumn, and store assisted query data to the assistedQueryColumn. 
+In other words, we do not even want users to know the existence and use of plainColumn, cipherColumn and assistedQueryColumn.
 Therefore, we need to provide users with a column in conceptual. This column can be separated from the real column of the underlying database. 
-It can be a real column in the database table or not, so that the user can freely change the plainColumn and The column name of cipherColumn. 
+It can be a real column in the database table or not, so that the user can freely change the plainColumn and The column name of cipherColumn, assistedQueryColumn. 
 Or delete plainColumn and choose to never store plain text and only store cipher text. 
-As long as the user's SQL is written according to this logical column, and the correct mapping relationship between logicColumn and plainColumn, cipherColumn is given in the encryption rule.
+As long as the user's SQL is written according to this logical column, and the correct mapping relationship between logicColumn and plainColumn, cipherColumn, assistedQueryColumn is given in the encryption rule.
 >
 > Why do you do this? The answer is at the end of the article, that is, to enable the online services to seamlessly, transparently, and safely carry out data encryption migration.
 
@@ -60,7 +62,7 @@ or to query the ciphertext data and decrypt it through Apache ShardingSphere to 
 
 ### Encryption Process
 
-For example, if there is a table in the database called t_user, there are actually two fields pwd_plain in this table, used to store plain text data, pwd_cipher, used to store cipher text data, and define logicColumn as pwd. 
+For example, if there is a table in the database called t_user, there are actually two fields pwd_plain in this table, used to store plain text data, pwd_cipher, used to store cipher text data, pwd_assisted_query, used to store the auxiliary query data, and define logicColumn as pwd. 
 Then, when writing SQL, users should write to logicColumn, that is, `INSERT INTO t_user SET pwd = '123'`. 
 Apache ShardingSphere receives the SQL, and through the encryption configuration provided by the user, finds that pwd is a logicColumn, so it decrypt the logical column and its corresponding plaintext data. 
 As can be seen that ** Apache ShardingSphere has carried out the column-sensitive and data-sensitive mapping conversion of the logical column facing the user and the plaintext and ciphertext columns facing the underlying database.
@@ -95,20 +97,23 @@ It can also be different **. The recommended configuration is as follows (shown 
 
 ```yaml
 -!ENCRYPT
-  encryptors:
-    aes_encryptor:
-      type: AES
-      props:
-        aes-key-value: 123456abc
-  tables:
-    t_user:
-      columns:
-        pwd:
-          cipherColumn: pwd
-          encryptorName: aes_encryptor
+ encryptors:
+  aes_encryptor:
+   type: AES
+   props:
+    aes-key-value: 123456abc
+ tables:
+  t_user:
+   columns:
+    pwd:
+     cipherColumn: pwd_cipher
+     encryptorName: aes_encryptor
+     assistedQueryColumn: pwd_assisted_query
+     assistedQueryEncryptorName: pwd_assisted_query_cipher
+     queryWithCipherColumn: true
 ```
 
-With this configuration, Apache ShardingSphere only needs to convert logicColumn and cipherColumn. 
+With this configuration, Apache ShardingSphere only needs to convert logicColumn and cipherColumn, assistedQueryColumn. 
 The underlying data table does not store plain text, only cipher text. 
 This is also a requirement of the security audit part. If users want to store plain text and cipher text together in the database, 
 they just need to add plainColumn configuration. The overall processing flow is shown below:
@@ -163,7 +168,9 @@ In addition, demonstrate a set of encryption configuration rules, as follows:
           plainColumn: pwd
           cipherColumn: pwd_cipher
           encryptorName: aes_encryptor
-  queryWithCipherColumn: false
+          assistedQueryColumn: pwd_assisted_query
+          assistedQueryEncryptorName: pwd_assisted_query_cipher
+          queryWithCipherColumn: false
 ```
 
 According to the above encryption rules, we need to add a column called pwd_cipher in the t_user table, that is, cipherColumn, which is used to store ciphertext data. 
@@ -228,11 +235,23 @@ So the encryption configuration after migration is:
         pwd: # pwd与pwd_cipher的转换映射
           cipherColumn: pwd_cipher
           encryptorName: aes_encryptor
+          assistedQueryColumn: pwd_assisted_query
+          assistedQueryEncryptorName: pwd_assisted_query_cipher
+          queryWithCipherColumn: true
 ```
 
 The processing flow is as follows:
 
 ![8](https://shardingsphere.apache.org/document/current/img/encrypt/8_en.png)
+
+4. System migration completed
+
+Security audit department then requested, the business system needs to modify the key periodically or certain emergency security events trigger, 
+we need to migrate the number of wash again, that is, use the old key decryption and then use the new key encryption. 
+Both to and also to the problem came, the plaintext column data has been deleted, the amount of data in the database table tens of millions, 
+the migration shuffle takes a certain amount of time, the migration shuffle process in the cipher column changes, the system also needs to provide services correctly. 
+What to do? The answer is: auxiliary query column.
+**Because auxiliary query columns generally use algorithms such as irreversible MD5 and SM3, queries based on auxiliary columns are served correctly by the system even during the migration shuffle.**
 
 So far, the online service encryption and rectification solutions have all been demonstrated. 
 We provide Java, YAML, Spring Boot Starter, Spring Namespace multiple ways for users to choose to use, and strive to fulfill business requirements. 
@@ -249,7 +268,7 @@ Without changing the business query SQL, the on-line system can safely and trans
 
 ## Solution
 
-Apache ShardingSphere has provided two data encryption solutions, corresponding to two ShardingSphere encryption and decryption interfaces, i.e., `EncryptAlgorithm` and `QueryAssistedEncryptAlgorithm`.
+Apache ShardingSphere has provided the encryption solution for data encryption, the `EncryptAlgorithm`.
 
 On the one hand, Apache ShardingSphere has provided internal encryption and decryption implementations for users, which can be used by them only after configuration. 
 On the other hand, to satisfy users' requirements for different scenarios, we have also opened relevant encryption and decryption interfaces, according to which, users can provide specific implementation types. 
@@ -263,29 +282,3 @@ When users `INSERT`, `DELETE` and `UPDATE`, ShardingSphere will parse, rewrite a
 they will decrypt sensitive data from the database with `decrypt()` reversely and return them to users at last.
 
 Currently, Apache ShardingSphere has provided five types of implementations for this kind of encrypt solution, MD5 (irreversible), AES (reversible), RC4 (reversible), SM3 (irreversible) and SM4 (reversible), which can be used after configuration.
-
-### QueryAssistedEncryptAlgorithm
-
-Compared with the first encrypt scheme, this one is more secure and complex. 
-Its concept is: even the same data, two same user passwords for example, should not be stored as the same desensitized form in the database. 
-It can help to protect user information and avoid credential stuffing.
-
-This scheme provides three functions to implement, `encrypt()`, `decrypt()` and `queryAssistedEncrypt()`. 
-In `encrypt()` phase, users can set some variable, timestamp for example, and encrypt a combination of original data + variable. 
-This method can make sure the encrypted data of the same original data are different, due to the existence of variables. 
-In `decrypt()` phase, users can use variable data to decrypt according to the encryption algorithms set formerly.
-
-Though this method can indeed increase data security, another problem can appear with it: as the same data is stored in the database in different content, 
-users may not be able to find out all the same original data with equivalent query (`SELECT FROM table WHERE encryptedColumnn = ?`) according to this encryption column.
-Because of it, we have brought out assistant query column, which is generated by `queryAssistedEncrypt()`. 
-Different from `decrypt()`, this method uses another way to encrypt the original data; 
-but for the same original data, it can generate consistent encryption data. Users can store data processed by `queryAssistedEncrypt()` to assist the query of original data. 
-So there may be one more assistant query column in the table.
-
-`queryAssistedEncrypt()` and `encrypt()` can generate and store different encryption data; `decrypt()` is reversible and `queryAssistedEncrypt()` is irreversible. 
-So when querying the original data, we will parse, rewrite and route SQL automatically. 
-We will also use assistant query column to do `WHERE` queries and use `decrypt()` to decrypt `encrypt()` data and return them to users. 
-All these can not be felt by users.
-
-For now, ShardingSphere has abstracted the concept to be an interface for users to develop rather than providing accurate implementation for this kind of encrypt solution. 
-ShardingSphere will use the accurate implementation of this solution provided by users to desensitize data.

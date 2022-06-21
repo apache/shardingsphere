@@ -104,7 +104,7 @@ property
     ;
 
 discoveryTypeName
-    : IDENTIFIER
+    : IDENTIFIER | STRING
     ;
 
 discoveryHeartbeatName

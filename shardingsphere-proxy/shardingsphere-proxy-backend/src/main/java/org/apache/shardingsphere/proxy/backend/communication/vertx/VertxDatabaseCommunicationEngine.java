@@ -22,7 +22,8 @@ import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.ReactiveProxySQLExecutor;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -53,8 +54,9 @@ public final class VertxDatabaseCommunicationEngine extends DatabaseCommunicatio
     @Override
     public Future<ResponseHeader> execute() {
         try {
+            ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
             ExecutionContext executionContext = getKernelProcessor()
-                    .generateExecutionContext(getLogicSQL(), getDatabase(), ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps());
+                    .generateExecutionContext(getLogicSQL(), getDatabase(), metaData.getGlobalRuleMetaData(), metaData.getProps());
             if (executionContext.getRouteContext().isFederated()) {
                 return Future.failedFuture(new UnsupportedOperationException("Executing federated query by Vert.x is not supported yet."));
             }

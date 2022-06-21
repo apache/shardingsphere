@@ -34,13 +34,15 @@ public final class RefreshTableMetadataStatement extends UpdatableRALStatement {
     
     private final String resourceName;
     
+    private final String schemaName;
+    
     public RefreshTableMetadataStatement() {
-        this(null, null);
+        this(null, null, null);
     }
     
     /**
      * Get table name.
-     * 
+     *
      * @return table name
      */
     public Optional<String> getTableName() {
@@ -54,5 +56,14 @@ public final class RefreshTableMetadataStatement extends UpdatableRALStatement {
      */
     public Optional<String> getResourceName() {
         return Optional.ofNullable(resourceName);
+    }
+    
+    /**
+     * Get schema name.
+     *
+     * @return schema name
+     */
+    public Optional<String> getSchemaName() {
+        return Optional.ofNullable(schemaName);
     }
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.spring.boot.algorithm;
 
-import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.spring.boot.registry.AbstractAlgorithmProvidedBeanRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.core.env.Environment;
@@ -25,7 +25,7 @@ import org.springframework.core.env.Environment;
 /**
  * Readwrite-splitting algorithm provided bean registry.
  */
-public final class ReadwriteSplittingAlgorithmProvidedBeanRegistry extends AbstractAlgorithmProvidedBeanRegistry<ReplicaLoadBalanceAlgorithm> {
+public final class ReadwriteSplittingAlgorithmProvidedBeanRegistry extends AbstractAlgorithmProvidedBeanRegistry<ReadQueryLoadBalanceAlgorithm> {
     
     private static final String ALGORITHMS = "spring.shardingsphere.rules.readwrite-splitting.load-balancers.";
     
@@ -40,6 +40,6 @@ public final class ReadwriteSplittingAlgorithmProvidedBeanRegistry extends Abstr
     
     @Override
     public void postProcessBeanDefinitionRegistry(final BeanDefinitionRegistry registry) {
-        registerBean(ALGORITHMS, ReplicaLoadBalanceAlgorithm.class, registry);
+        registerBean(ALGORITHMS, ReadQueryLoadBalanceAlgorithm.class, registry);
     }
 }

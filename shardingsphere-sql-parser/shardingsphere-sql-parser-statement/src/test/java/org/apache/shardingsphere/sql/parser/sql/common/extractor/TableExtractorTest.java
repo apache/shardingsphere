@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.extractor;
 
+import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -46,10 +49,19 @@ public final class TableExtractorTest {
     private final TableExtractor tableExtractor = new TableExtractor();
     
     @Test
-    public void assertExtractTablesFromSelectLockWithEmptyValue() {
+    public void assertExtractTablesFromSelectProjects() {
+        AggregationProjectionSegment aggregationProjection = new AggregationProjectionSegment(10, 20, AggregationType.SUM, "t_order.id");
+        ColumnSegment columnSegment = new ColumnSegment(133, 136, new IdentifierValue("id"));
+        columnSegment.setOwner(new OwnerSegment(130, 132, new IdentifierValue("t_order")));
+        aggregationProjection.getParameters().add(columnSegment);
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(10, 20);
+        projectionsSegment.getProjections().add(aggregationProjection);
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
+        selectStatement.setProjections(projectionsSegment);
         tableExtractor.extractTablesFromSelect(selectStatement);
-        assertTrue(tableExtractor.getRewriteTables().isEmpty());
+        assertThat(tableExtractor.getRewriteTables().size(), is(1));
+        Iterator<SimpleTableSegment> tableSegmentIterator = tableExtractor.getRewriteTables().iterator();
+        assertTableSegment(tableSegmentIterator.next(), 130, 132, "t_order");
     }
     
     @Test

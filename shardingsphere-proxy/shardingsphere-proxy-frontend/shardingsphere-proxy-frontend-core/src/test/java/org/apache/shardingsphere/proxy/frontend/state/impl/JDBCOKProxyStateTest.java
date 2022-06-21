@@ -68,7 +68,7 @@ public final class JDBCOKProxyStateTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecuteWithProxyHintEnabled() {
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(true);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(true);
         ExecutorService executorService = registerMockExecutorService(1);
         new JDBCOKProxyState().execute(context, null, frontendEngine, connectionSession);
         verify(executorService).execute(any(CommandExecutorTask.class));
@@ -77,7 +77,7 @@ public final class JDBCOKProxyStateTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecuteWithDistributedTransaction() {
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
         when(connectionSession.getTransactionStatus().getTransactionType()).thenReturn(TransactionType.XA);
         ExecutorService executorService = registerMockExecutorService(1);
         new JDBCOKProxyState().execute(context, null, frontendEngine, connectionSession);
@@ -87,8 +87,9 @@ public final class JDBCOKProxyStateTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecuteWithProxyBackendExecutorSuitableForOLTP() {
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)).thenReturn("OLTP");
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
+        when(ProxyContext.getInstance().getContextManager()
+                .getMetaDataContexts().getMetaData().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)).thenReturn("OLTP");
         EventExecutor eventExecutor = mock(EventExecutor.class);
         when(context.executor()).thenReturn(eventExecutor);
         new JDBCOKProxyState().execute(context, null, frontendEngine, connectionSession);
@@ -97,8 +98,9 @@ public final class JDBCOKProxyStateTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecuteWithProxyBackendExecutorSuitableForOLAPAndRequiredSameThreadForConnection() {
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)).thenReturn("OLAP");
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
+        when(ProxyContext.getInstance().getContextManager()
+                .getMetaDataContexts().getMetaData().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)).thenReturn("OLAP");
         when(frontendEngine.getFrontendContext().isRequiredSameThreadForConnection()).thenReturn(true);
         ExecutorService executorService = registerMockExecutorService(1);
         new JDBCOKProxyState().execute(context, null, frontendEngine, connectionSession);
@@ -108,8 +110,9 @@ public final class JDBCOKProxyStateTest extends ProxyContextRestorer {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertExecuteWithProxyBackendExecutorSuitableForInvalidValue() {
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)).thenReturn("invalid value");
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)).thenReturn(false);
+        when(ProxyContext.getInstance().getContextManager()
+                .getMetaDataContexts().getMetaData().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_BACKEND_EXECUTOR_SUITABLE)).thenReturn("invalid value");
         new JDBCOKProxyState().execute(context, null, frontendEngine, connectionSession);
     }
     

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sqltranslator.rule;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
@@ -31,11 +32,15 @@ import org.apache.shardingsphere.sqltranslator.factory.SQLTranslatorFactory;
  */
 public final class SQLTranslatorRule implements GlobalRule {
     
+    @Getter
+    private final SQLTranslatorRuleConfiguration configuration;
+    
     private final SQLTranslator translator;
     
     private final boolean useOriginalSQLWhenTranslatingFailed;
     
     public SQLTranslatorRule(final SQLTranslatorRuleConfiguration ruleConfig) {
+        configuration = ruleConfig;
         translator = SQLTranslatorFactory.getInstance(ruleConfig.getType());
         useOriginalSQLWhenTranslatingFailed = ruleConfig.isUseOriginalSQLWhenTranslatingFailed();
     }

@@ -8,17 +8,19 @@ weight = 1
 ### Sharding Table Rule
 
 ```sql
-SHOW SHARDING TABLE tableRule | RULES [FROM schemaName]
+SHOW SHARDING TABLE tableRule | RULES [FROM databaseName]
 
-SHOW SHARDING ALGORITHMS [FROM schemaName]
+SHOW SHARDING ALGORITHMS [FROM databaseName]
 
-SHOW UNUSED SHARDING ALGORITHMS [FROM schemaName]
+SHOW UNUSED SHARDING ALGORITHMS [FROM databaseName]
 
-SHOW SHARDING KEY GENERATORS [FROM schemaName]
+SHOW SHARDING TABLE RULES USED ALGORITHM algorithmName [FROM databaseName]
 
-SHOW UNUSED SHARDING KEY GENERATORS [FROM schemaName]
+SHOW SHARDING KEY GENERATORS [FROM databaseName]
 
-SHOW SHARDING TABLE RULES USED KEY GENERATOR keyGeneratorName [FROM schemaName]
+SHOW UNUSED SHARDING KEY GENERATORS [FROM databaseName]
+
+SHOW SHARDING TABLE RULES USED KEY GENERATOR keyGeneratorName [FROM databaseName]
 
 SHOW DEFAULT SHARDING STRATEGY 
 
@@ -33,18 +35,18 @@ tableRule:
 ### Sharding Binding Table Rule
 
 ```sql
-SHOW SHARDING BINDING TABLE RULES [FROM schemaName]
+SHOW SHARDING BINDING TABLE RULES [FROM databaseName]
 ```
 
 ### Sharding Broadcast Table Rule
 
 ```sql
-SHOW SHARDING BROADCAST TABLE RULES [FROM schemaName]
+SHOW SHARDING BROADCAST TABLE RULES [FROM databaseName]
 ```
 
 ### Sharding Scaling Rule
 ```sql
-SHOW SHARDING SCALING RULES [FROM schemaName]
+SHOW SHARDING SCALING RULES [FROM databaseName]
 ```
 
 ## Return Value Description
@@ -192,6 +194,17 @@ mysql> SHOW UNUSED SHARDING ALGORITHMS;
 1 row in set (0.01 sec)
 ```
 
+*SHOW SHARDING TABLE RULES USED ALGORITHM algorithmName*
+```sql
+mysql> SHOW SHARDING TABLE RULES USED ALGORITHM t_order_inline;
++-------+---------+
+| type  | name    |
++-------+---------+
+| table | t_order |
++-------+---------+
+1 row in set (0.01 sec)
+```
+
 *SHOW SHARDING KEY GENERATORS*
 ```sql
 mysql> SHOW SHARDING KEY GENERATORS;
@@ -219,11 +232,11 @@ mysql> SHOW UNUSED SHARDING KEY GENERATORS;
 *SHOW SHARDING TABLE RULES USED KEY GENERATOR keyGeneratorName*
 ```sql
 mysql> SHOW SHARDING TABLE RULES USED KEY GENERATOR keyGeneratorName;
-+------------------------+-----------+-----------------+
-| schema                 | type      | name            |
-+------------------------+-----------+-----------------+
-| sharding_db            | table     | t_order         |
-+------------------------+-----------+-----------------+
++-------+---------+
+| type  | name    |
++-------+---------+
+| table | t_order |
++-------+---------+
 1 row in set (0.01 sec)
 ```
 

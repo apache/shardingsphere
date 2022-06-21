@@ -19,77 +19,47 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatabl
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.SetInstanceStatusStatement;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ComputeNodeStatusChangedEvent;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
-
-import java.util.Collection;
-import java.util.Optional;
 
 /**
  * Set instance status handler.
  */
-public final class SetInstanceStatusHandler extends UpdatableRALBackendHandler<SetInstanceStatusStatement, SetInstanceStatusHandler> {
+public final class SetInstanceStatusHandler extends UpdatableRALBackendHandler<SetInstanceStatusStatement> {
     
     @Override
-    protected void update(final ContextManager contextManager, final SetInstanceStatusStatement sqlStatement) {
-        if (!"Cluster".equals(contextManager.getInstanceContext().getModeConfiguration().getType())) {
+    protected void update(final ContextManager contextManager) {
+        if (!contextManager.getInstanceContext().isCluster()) {
             throw new UnsupportedOperationException("Only allowed in cluster mode");
         }
-        InstanceId operationInstanceId = new InstanceId(sqlStatement.getIp(), String.valueOf(sqlStatement.getPort()));
-        boolean isDisable = "DISABLE".equals(sqlStatement.getStatus());
+        String instanceId = getSqlStatement().getInstanceId();
+        boolean isDisable = "DISABLE".equals(getSqlStatement().getStatus());
         if (isDisable) {
-            checkDisablingIsValid(operationInstanceId);
+            checkDisablingIsValid(contextManager, instanceId);
         } else {
-            checkEnablingIsValid(operationInstanceId);
+            checkEnablingIsValid(contextManager, instanceId);
         }
-        ShardingSphereEventBus.getInstance().post(new ComputeNodeStatusChangedEvent(isDisable ? ComputeNodeStatus.CIRCUIT_BREAK : ComputeNodeStatus.ONLINE,
-                sqlStatement.getIp(), sqlStatement.getPort()));
+        ShardingSphereEventBus.getInstance().post(new ComputeNodeStatusChangedEvent(isDisable ? ComputeNodeStatus.CIRCUIT_BREAK : ComputeNodeStatus.ONLINE, instanceId));
     }
     
-    private void checkEnablingIsValid(final InstanceId operationInstanceId) {
-        checkExist(operationInstanceId);
-    }
-    
-    private void checkDisablingIsValid(final InstanceId operationInstanceId) {
-        InstanceContext instanceContext = ProxyContext.getInstance().getContextManager().getInstanceContext();
-        if (isIdenticalInstance(instanceContext.getInstance().getInstanceDefinition(), operationInstanceId)) {
-            throw new UnsupportedOperationException(String.format("`%s` is the currently in use instance and cannot be disabled", operationInstanceId.getId()));
-        }
-        checkExist(operationInstanceId);
-        checkExistDisabled(operationInstanceId);
-    }
-    
-    private void checkExistDisabled(final InstanceId operationInstanceId) {
-        Optional<MetaDataPersistService> metaDataPersistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService();
-        if (metaDataPersistService.isPresent()) {
-            metaDataPersistService.get().getComputeNodePersistService().loadAllComputeNodeInstances().forEach(each -> {
-                if (StateType.CIRCUIT_BREAK == each.getState().getCurrentState() && isIdenticalInstance(each.getInstanceDefinition(), operationInstanceId)) {
-                    throw new UnsupportedOperationException(String.format("`%s` compute node has been disabled", operationInstanceId.getId()));
-                }
-            });
+    private void checkEnablingIsValid(final ContextManager contextManager, final String instanceId) {
+        if (!contextManager.getInstanceContext().getComputeNodeInstanceById(instanceId).isPresent()) {
+            throw new UnsupportedOperationException(String.format("`%s` does not exist", instanceId));
         }
     }
     
-    private void checkExist(final InstanceId operationInstanceId) {
-        Optional<MetaDataPersistService> metaDataPersistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService();
-        metaDataPersistService.ifPresent(optional -> {
-            Collection<ComputeNodeInstance> computeNodeInstances = optional.getComputeNodePersistService().loadAllComputeNodeInstances();
-            if (computeNodeInstances.stream().noneMatch(each -> isIdenticalInstance(each.getInstanceDefinition(), operationInstanceId))) {
-                throw new UnsupportedOperationException(String.format("`%s` does not exist", operationInstanceId.getId()));
-            }
-        });
-    }
-    
-    private boolean isIdenticalInstance(final InstanceDefinition definition, final InstanceId instanceId) {
-        return definition.getInstanceId().getId().equals(instanceId.getId());
+    private void checkDisablingIsValid(final ContextManager contextManager, final String instanceId) {
+        if (contextManager.getInstanceContext().getInstance().getCurrentInstanceId().equals(instanceId)) {
+            throw new UnsupportedOperationException(String.format("`%s` is the currently in use instance and cannot be disabled", instanceId));
+        }
+        if (!contextManager.getInstanceContext().getComputeNodeInstanceById(instanceId).isPresent()) {
+            throw new UnsupportedOperationException(String.format("`%s` does not exist", instanceId));
+        }
+        if (contextManager.getInstanceContext().getComputeNodeInstanceById(instanceId).get().getState().getCurrentState() == StateType.CIRCUIT_BREAK) {
+            throw new UnsupportedOperationException(String.format("`%s` compute node has been disabled", instanceId));
+        }
     }
 }

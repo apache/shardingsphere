@@ -18,9 +18,10 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -41,13 +42,13 @@ import static org.mockito.Mockito.when;
 
 public final class ShowAuthorityRuleHandlerTest extends ProxyContextRestorer {
     
-    private final ShowAuthorityRuleHandler handler = new ShowAuthorityRuleHandler().initStatement(new ShowAuthorityRuleStatement());
-    
     @Test
     public void assertAuthorityRule() throws SQLException {
+        ShowAuthorityRuleHandler handler = new ShowAuthorityRuleHandler();
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData());
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(createGlobalRuleMetaData());
         ProxyContext.init(contextManager);
+        handler.init(new ShowAuthorityRuleStatement(), null);
         handler.execute();
         handler.next();
         List<Object> data = new ArrayList<>(handler.getRowData());
@@ -57,10 +58,9 @@ public final class ShowAuthorityRuleHandlerTest extends ProxyContextRestorer {
         assertThat(data.get(2), is(""));
     }
     
-    private ShardingSphereRuleMetaData getGlobalRuleMetaData() {
+    private ShardingSphereRuleMetaData createGlobalRuleMetaData() {
         ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
-        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(
-                Collections.singletonList(root), new ShardingSphereAlgorithmConfiguration("ALL_PERMITTED", new Properties()));
-        return new ShardingSphereRuleMetaData(Collections.singleton(ruleConfig), Collections.emptyList());
+        AuthorityRuleConfiguration ruleConfig = new AuthorityRuleConfiguration(Collections.singleton(root), new ShardingSphereAlgorithmConfiguration("ALL_PERMITTED", new Properties()));
+        return new ShardingSphereRuleMetaData(Collections.singleton(new AuthorityRule(ruleConfig, Collections.emptyMap())));
     }
 }

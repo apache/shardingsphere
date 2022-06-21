@@ -29,3 +29,5 @@ DistSQL is divided into RDL, RQL and RAL.
 ## Notice
 
 DistSQL can use for ShardingSphere-Proxy only, not for ShardingSphere-JDBC now.
+
+**Source Codes: https://github.com/apache/shardingsphere/tree/master/shardingsphere-distsql**

@@ -12,6 +12,7 @@ weight = 1
 
 全面支持 DML、DDL、DCL、TCL 和常用 DAL。
 支持分页、去重、排序、分组、聚合、表关联等复杂查询。
+支持 PostgreSQL 和 openGauss 数据库 SCHEMA DDL 和 DML 语句。 
 
 #### 常规查询
 

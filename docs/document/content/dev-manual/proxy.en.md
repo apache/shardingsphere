@@ -17,14 +17,14 @@ chapter = true
 | PostgreSQLFrontendEngine | Base on PostgreSQL database protocol |
 | OpenGaussFrontendEngine  | Base on openGauss database protocol  |
 
-## AuthorityProvideAlgorithm
+## AuthorityProviderAlgorithm
 
-| *SPI Name*                       | *Description*                 |
-| ------------------------------- | ------------------------------ |
-| AuthorityProvideAlgorithm       | User authority loading logic   |
+| *SPI Name*                       | *Description*                  |
+| -------------------------------  | ------------------------------ |
+| AuthorityProviderAlgorithm       | User authority loading logic   |
 
 | *Implementation Class*                              | *Type*           | *Description*                                                                                                         |
 |-----------------------------------------------------| ---------------- | --------------------------------------------------------------------------------------------------------------------- |
 | NativeAuthorityProviderAlgorithm (Deprecated)       | NATIVE           | Persist user authority defined in server.yaml into the backend database. An admin user will be created if not existed |
-| AllPrivilegesPermittedAuthorityProviderAlgorithm    | ALL_PERMITTED    | All privileges granted to user by default (No authentication). Will not interact with the actual database             |
-| SchemaPrivilegesPermittedAuthorityProviderAlgorithm | SCHEMA_PERMITTED | Permissions configured through the attribute user-schema-mappings                                                     |
+| AllPermittedPrivilegesProviderAlgorithm             | ALL_PERMITTED    | All privileges granted to user by default (No authentication). Will not interact with the actual database             |
+| SchemaPermittedPrivilegesProviderAlgorithm          | DATABASE_PERMITTED | Permissions configured through the attribute user-database-mappings                                                     |

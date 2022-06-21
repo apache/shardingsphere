@@ -29,6 +29,6 @@ import java.util.List;
 public final class RawMemoryQueryResult extends AbstractMemoryQueryResult {
     
     public RawMemoryQueryResult(final QueryResultMetaData metaData, final List<MemoryQueryResultDataRow> rows) {
-        super(metaData, rows.iterator());
+        super(metaData, rows);
     }
 }

@@ -300,9 +300,9 @@ CREATE DATABASE scaling_ds_1 DEFAULT CHARSET utf8;
 mysql -h127.0.0.1 -P3307 -uroot -proot
 ```
 
-#### 创建并配置 schema
+#### 创建并配置逻辑库
 
-创建 schema：
+创建逻辑库：
 ```sql
 CREATE DATABASE scaling_db;
 

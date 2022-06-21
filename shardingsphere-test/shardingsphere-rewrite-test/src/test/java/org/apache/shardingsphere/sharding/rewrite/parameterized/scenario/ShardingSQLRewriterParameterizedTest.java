@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.sharding.rewrite.parameterized.scenario;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereIndex;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -81,13 +81,13 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
     protected Map<String, ShardingSphereSchema> mockSchemas(final String schemaName) {
         ShardingSphereSchema result = mock(ShardingSphereSchema.class);
         when(result.getAllTableNames()).thenReturn(Arrays.asList("t_account", "t_account_detail"));
-        TableMetaData accountTableMetaData = mock(TableMetaData.class);
+        ShardingSphereTable accountTableMetaData = mock(ShardingSphereTable.class);
         when(accountTableMetaData.getColumns()).thenReturn(createColumnMetaDataMap());
-        when(accountTableMetaData.getIndexes()).thenReturn(Collections.singletonMap("status_idx_exist", new IndexMetaData("status_idx_exist")));
+        when(accountTableMetaData.getIndexes()).thenReturn(Collections.singletonMap("status_idx_exist", new ShardingSphereIndex("status_idx_exist")));
         when(accountTableMetaData.getPrimaryKeyColumns()).thenReturn(Collections.singletonList("account_id"));
         when(result.containsTable("t_account")).thenReturn(true);
         when(result.get("t_account")).thenReturn(accountTableMetaData);
-        when(result.get("t_account_detail")).thenReturn(mock(TableMetaData.class));
+        when(result.get("t_account_detail")).thenReturn(mock(ShardingSphereTable.class));
         when(result.getAllColumnNames("t_account")).thenReturn(new ArrayList<>(Arrays.asList("account_id", "amount", "status")));
         when(result.getAllColumnNames("t_user")).thenReturn(new ArrayList<>(Arrays.asList("id", "content")));
         when(result.getAllColumnNames("t_user_extend")).thenReturn(new ArrayList<>(Arrays.asList("user_id", "content")));
@@ -95,11 +95,11 @@ public final class ShardingSQLRewriterParameterizedTest extends AbstractSQLRewri
         return Collections.singletonMap(schemaName, result);
     }
     
-    private Map<String, ColumnMetaData> createColumnMetaDataMap() {
-        Map<String, ColumnMetaData> result = new LinkedHashMap<>(3, 1);
-        result.put("account_id", new ColumnMetaData("account_id", Types.INTEGER, true, true, false));
-        result.put("amount", mock(ColumnMetaData.class));
-        result.put("status", mock(ColumnMetaData.class));
+    private Map<String, ShardingSphereColumn> createColumnMetaDataMap() {
+        Map<String, ShardingSphereColumn> result = new LinkedHashMap<>(3, 1);
+        result.put("account_id", new ShardingSphereColumn("account_id", Types.INTEGER, true, true, false));
+        result.put("amount", mock(ShardingSphereColumn.class));
+        result.put("status", mock(ShardingSphereColumn.class));
         return result;
     }
     

@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.checker;
 
-import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
+import org.apache.shardingsphere.infra.config.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.distsql.parser.segment.ShadowAlgorithmSegment;
 
 import java.util.Collection;
@@ -45,7 +45,7 @@ public class ShadowRuleStatementChecker {
      * @param config configuration
      * @throws DistSQLException DistSQL exception
      */
-    public static void checkConfigurationExist(final String databaseName, final SchemaRuleConfiguration config) throws DistSQLException {
+    public static void checkConfigurationExist(final String databaseName, final DatabaseRuleConfiguration config) throws DistSQLException {
         DistSQLException.predictionThrow(null != config, () -> new RequiredRuleMissedException(SHADOW, databaseName));
     }
     

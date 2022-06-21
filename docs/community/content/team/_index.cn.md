@@ -364,6 +364,21 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/66914151?v=4" style="border-radius:50%; overflow:hidden">
             </a>
          </td>
+        <td>
+            <a href="https://github.com/cheese8" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/25882819?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/soulasuna" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/33794770?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+        <td>
+            <a href="https://github.com/galaxylqx" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/9473278?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
         <td>
@@ -377,6 +392,15 @@ chapter = true
         </td>
         <td>
             <b>汪亮达</b>
+        </td>
+        <td>
+            <b>尹伟红</b>
+        </td>
+        <td>
+            <b>侯阳</b>
+        </td>
+        <td>
+            <b>雷群星</b>
         </td>
     </tr>
 </table>

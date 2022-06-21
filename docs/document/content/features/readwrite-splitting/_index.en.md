@@ -34,3 +34,5 @@ The following diagram has shown the complex topological relations between applic
 ## Goal
 
 **The main design goal of readwrite-splitting of Apache ShardingSphere is to try to reduce the influence of readwrite-splitting, in order to let users use primary-replica database group like one database.**
+
+**Source Codes: https://github.com/apache/shardingsphere/tree/master/shardingsphere-features/shardingsphere-readwrite-splitting**

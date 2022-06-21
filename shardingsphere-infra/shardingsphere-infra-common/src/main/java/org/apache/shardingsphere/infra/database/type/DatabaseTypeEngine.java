@@ -53,7 +53,7 @@ public final class DatabaseTypeEngine {
             return configuredDatabaseType.get();
         }
         Collection<DataSource> dataSources = databaseConfigs.values().stream()
-                .filter(DatabaseTypeEngine::isComplete).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList);
+                .filter(DatabaseTypeEngine::hasDataSource).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList);
         return getDatabaseType(dataSources);
     }
     
@@ -65,7 +65,7 @@ public final class DatabaseTypeEngine {
      */
     public static DatabaseType getStorageType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
         return getDatabaseType(
-                databaseConfigs.values().stream().filter(DatabaseTypeEngine::isComplete).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList));
+                databaseConfigs.values().stream().filter(DatabaseTypeEngine::hasDataSource).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList));
     }
     
     /**
@@ -107,8 +107,8 @@ public final class DatabaseTypeEngine {
         return configuredDatabaseType.isEmpty() ? Optional.empty() : Optional.of(DatabaseTypeEngine.getTrunkDatabaseType(configuredDatabaseType));
     }
     
-    private static boolean isComplete(final DatabaseConfiguration databaseConfig) {
-        return !databaseConfig.getRuleConfigurations().isEmpty() && !databaseConfig.getDataSources().isEmpty();
+    private static boolean hasDataSource(final DatabaseConfiguration databaseConfig) {
+        return !databaseConfig.getDataSources().isEmpty();
     }
     
     private static boolean matchURLs(final String url, final DatabaseType databaseType) {
@@ -134,5 +134,16 @@ public final class DatabaseTypeEngine {
      */
     public static String getTrunkDatabaseTypeName(final DatabaseType databaseType) {
         return databaseType instanceof BranchDatabaseType ? ((BranchDatabaseType) databaseType).getTrunkDatabaseType().getType() : databaseType.getType();
+    }
+    
+    /**
+     * Get default schema name.
+     * 
+     * @param databaseType database type
+     * @param databaseName database name
+     * @return default schema name
+     */
+    public static String getDefaultSchemaName(final DatabaseType databaseType, final String databaseName) {
+        return databaseType instanceof SchemaSupportedDatabaseType ? ((SchemaSupportedDatabaseType) databaseType).getDefaultSchema() : databaseName;
     }
 }

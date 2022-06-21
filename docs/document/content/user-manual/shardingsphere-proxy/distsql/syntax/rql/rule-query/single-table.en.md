@@ -6,7 +6,7 @@ weight = 2
 ## Syntax
 
 ```sql
-SHOW SINGLE TABLE (tableRule | RULES) [FROM schemaName]
+SHOW SINGLE TABLE (tableRule | RULES) [FROM databaseName]
 
 SHOW SINGLE TABLES 
 

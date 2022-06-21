@@ -57,7 +57,7 @@ public final class MySQLDataSourceMetaData implements DataSourceMetaData {
     private void buildDefaultQueryProperties() {
         defaultQueryProperties.setProperty("useServerPrepStmts", Boolean.TRUE.toString());
         defaultQueryProperties.setProperty("cachePrepStmts", Boolean.TRUE.toString());
-        defaultQueryProperties.setProperty("prepStmtCacheSize", "200000");
+        defaultQueryProperties.setProperty("prepStmtCacheSize", "8192");
         defaultQueryProperties.setProperty("prepStmtCacheSqlLimit", "2048");
         defaultQueryProperties.setProperty("useLocalSessionState", Boolean.TRUE.toString());
         defaultQueryProperties.setProperty("rewriteBatchedStatements", Boolean.TRUE.toString());

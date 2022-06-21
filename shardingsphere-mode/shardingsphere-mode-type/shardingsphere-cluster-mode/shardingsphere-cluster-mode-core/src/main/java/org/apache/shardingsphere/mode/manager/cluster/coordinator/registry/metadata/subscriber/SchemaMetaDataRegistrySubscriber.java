@@ -19,10 +19,11 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.meta
 
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.metadata.schema.event.AddSchemaEvent;
-import org.apache.shardingsphere.infra.metadata.schema.event.AlterSchemaEvent;
-import org.apache.shardingsphere.infra.metadata.schema.event.DropSchemaEvent;
-import org.apache.shardingsphere.infra.metadata.schema.event.SchemaAlteredEvent;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.AddSchemaEvent;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.AlterSchemaEvent;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.DropIndexEvent;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.DropSchemaEvent;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
 import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -66,11 +67,7 @@ public final class SchemaMetaDataRegistrySubscriber {
      */
     @Subscribe
     public void alterSchema(final AlterSchemaEvent event) {
-        if (event.getSchema().getTables().isEmpty()) {
-            persistService.persistSchema(event.getDatabaseName(), event.getRenameSchemaName());
-        } else {
-            persistService.persistTables(event.getDatabaseName(), event.getRenameSchemaName(), event.getSchema());
-        }
+        persistService.persistMetaData(event.getDatabaseName(), event.getRenameSchemaName(), event.getSchema());
         persistService.deleteSchema(event.getDatabaseName(), event.getSchemaName());
     }
     
@@ -82,5 +79,14 @@ public final class SchemaMetaDataRegistrySubscriber {
     @Subscribe
     public void dropSchema(final DropSchemaEvent event) {
         event.getSchemaNames().forEach(each -> persistService.deleteSchema(event.getDatabaseName(), each));
+    }
+    
+    /**
+     * Drop index.
+     * @param event drop index event
+     */
+    @Subscribe
+    public void dropIndex(final DropIndexEvent event) {
+        event.getSchemaAlteredEvents().forEach(this::update);
     }
 }

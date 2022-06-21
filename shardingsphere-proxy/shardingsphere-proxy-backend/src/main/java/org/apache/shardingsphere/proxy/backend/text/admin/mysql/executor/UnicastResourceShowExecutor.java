@@ -78,7 +78,7 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
         }
         try {
             connectionSession.setCurrentDatabase(databaseName);
-            SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMap(),
+            SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(),
                     sqlStatement, connectionSession.getDefaultDatabaseName());
             databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection());
             responseHeader = databaseCommunicationEngine.execute();

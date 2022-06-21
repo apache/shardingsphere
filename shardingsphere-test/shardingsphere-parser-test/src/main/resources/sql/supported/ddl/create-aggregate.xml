@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one or more
+  ~ contributor license agreements.  See the NOTICE file distributed with
+  ~ this work for additional information regarding copyright ownership.
+  ~ The ASF licenses this file to You under the Apache License, Version 2.0
+  ~ (the "License"); you may not use this file except in compliance with
+  ~ the License.  You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<sql-cases>
+    <sql-case id="create_aggregate" value="CREATE AGGREGATE sum (complex) (sfunc = complex_add, stype = complex, initcond = '(0,0)');" db-types="openGauss, PostgreSQL" />
+    <sql-case id="create_aggregate_with_stype" value="CREATE AGGREGATE my_avg(int4) (STYPE = avg_state, SFUNC = avg_transfn, FINALFUNC = avg_finalfn)" db-types="PostgreSQL" />
+    <sql-case id="create_aggregate_with_sfunc" value="CREATE AGGREGATE addr_nsp.genaggr(int4) (SFUNC = int4pl, STYPE = int4);" db-types="PostgreSQL" />
+    <sql-case id="create_aggregate_with_basetype" value="CREATE AGGREGATE alt_agg1 (SFUNC = int4pl, BASETYPE = int4, STYPE = int4, INITCOND = 0 );" db-types="PostgreSQL" />
+    <sql-case id="create_aggregate_with_init_cond" value="CREATE AGGREGATE array_larger_accum (anyarray) (SFUNC = array_larger, STYPE = anyarray, INITCOND = &apos;{}&apos; );" db-types="PostgreSQL" />
+    <sql-case id="create_aggregate_with_parallel" value="CREATE AGGREGATE balk(int4) (SFUNC = balkifnull(int8, int4), STYPE = int8, PARALLEL = SAFE, INITCOND = &apos;0&apos; );" db-types="PostgreSQL" />
+    <sql-case id="create_aggregate_with_combinefunc" value="CREATE AGGREGATE balk(int4) (SFUNC = int4_sum(int8, int4), STYPE = int8, COMBINEFUNC = balkifnull(int8, int8), PARALLEL = SAFE, INITCOND = &apos;0&apos; );" db-types="PostgreSQL" />
+    <sql-case id="create_aggregate_with_mstype" value="CREATE AGGREGATE invalidsumdouble (float8) (STYPE = float8, SFUNC = float8pl, MSTYPE = float8, MSFUNC = float8pl, MINVFUNC = float8mi_n );" db-types="PostgreSQL" />
+    <sql-case id="create_aggregate_with_finalfunc" value="CREATE AGGREGATE myaggn01a(*) (SFUNC = stfnp, STYPE = int4[], FINALFUNC = ffnp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
+    <sql-case id="create_aggregate_with_basetype_finalfunc" value="CREATE AGGREGATE myaggn05a(BASETYPE = int, SFUNC = tfnp, STYPE = int[], FINALFUNC = ffnp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
+    <sql-case id="create_or_replace_aggregate" value="CREATE OR REPLACE AGGREGATE myavg (numeric) (STYPE = internal, SFUNC = numeric_avg_accum, FINALFUNC = numeric_avg, SERIALFUNC = numeric_avg_serialize, DESERIALFUNC = numeric_avg_deserialize, COMBINEFUNC = numeric_avg_combine, FINALFUNC_MODIFY = shareable );" db-types="PostgreSQL" />
+    <sql-case id="create_or_replace_aggregate_sfunc" value="CREATE OR REPLACE AGGREGATE myavg (numeric) (STYPE = numeric, SFUNC = numeric_add );" db-types="PostgreSQL" />
+    <sql-case id="create_or_replace_aggregate_stype_sfunc" value="CREATE OR REPLACE AGGREGATE myavg (numeric) (STYPE = numeric, SFUNC = numeric_add, FINALFUNC = numeric_out );" db-types="PostgreSQL" />
+</sql-cases>

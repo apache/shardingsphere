@@ -128,6 +128,10 @@ dropDatabase
     : DROP DATABASE existClause? name
     ;
 
+dropDirectory
+    : DROP DIRECTORY existClause? directoryName
+    ;
+
 createDatabaseSpecification
     :  createdbOptName EQ_? (signedIconst | booleanOrString | DEFAULT)
     ;
@@ -728,6 +732,10 @@ alterSynonym
     : ALTER SYNONYM synonymName OWNER TO owner
     ;
 
+alterDirectory
+    : ALTER DIRECTORY directoryName OWNER TO owner
+    ;
+
 alterConversion
     : ALTER CONVERSION anyName alterConversionClause
     ;
@@ -1043,7 +1051,7 @@ alterRoutine
     ;
 
 alterRule
-    : ALTER RULE ON qualifiedName RENAME TO name
+    : ALTER RULE name ON tableName RENAME TO name
     ;
 
 alterSequence
@@ -1153,7 +1161,6 @@ alterTypeClauses
     | RENAME TO name
     | RENAME ATTRIBUTE name TO name dropBehavior?
     | SET SCHEMA name
-    | SET LP_ operatorDefList RP_
     | OWNER TO roleSpec
     ;
 
@@ -1163,8 +1170,7 @@ alterTypeCmds
 
 alterTypeCmd
     : ADD ATTRIBUTE tableFuncElement dropBehavior?
-    | DROP ATTRIBUTE existClause colId dropBehavior?
-    | DROP ATTRIBUTE colId dropBehavior?
+    | DROP ATTRIBUTE existClause? colId dropBehavior?
     | ALTER ATTRIBUTE colId setData? TYPE typeName collateClause? dropBehavior?
     ;
 
@@ -1272,7 +1278,7 @@ createAccessMethod
     ;
 
 createAggregate
-    : CREATE (OR REPLACE)? AGGREGATE funcName (aggrArgs definition | oldAggrDefinition)
+    : CREATE AGGREGATE funcName (aggrArgs definition | oldAggrDefinition)
     ;
 
 oldAggrDefinition
@@ -1288,14 +1294,15 @@ oldAggrElem
     ;
 
 createCast
-    : CREATE CAST LP_ typeName AS typeName RP_
-    ( WITH FUNCTION functionWithArgtypes castContext?
-    | WITHOUT FUNCTION castContext?
-    | WITH INOUT castContext?)
+    : CREATE CAST LP_ typeName AS typeName RP_ (
+    | WITH FUNCTION (funcName | dataTypeName) funcArgs
+    | WITHOUT FUNCTION
+    | WITH INOUT 
+    ) castContext?
     ;
 
 castContext
-    : AS IMPLICIT | AS ASSIGNMENT
+    : AS (ASSIGNMENT | IMPLICIT)
     ;
 
 createCollation
@@ -1702,7 +1709,7 @@ dropProcedure
     ;
 
 dropPublication
-    : DROP PUBLICATION existClause? anyNameList dropBehavior?
+    : DROP PUBLICATION existClause? name dropBehavior?
     ;
 
 dropRoutine
@@ -1778,7 +1785,7 @@ listen
     ;
 
 move
-    : MOVE fetchArgs
+    : MOVE direction? (FROM | IN)? cursorName
     ;
 
 prepare
@@ -1962,4 +1969,25 @@ alterSchema
 
 dropSchema
     : DROP SCHEMA existClause? nameList dropBehavior?
+    ;
+
+fetch
+    : FETCH direction? (FROM | IN)? cursorName
+    ;
+
+direction
+    : NEXT #next
+    | PRIOR #prior
+    | FIRST #first
+    | LAST #last
+    | ABSOLUTE signedIconst #absoluteCount
+    | RELATIVE signedIconst #relativeCount
+    | signedIconst #count
+    | ALL #all
+    | FORWARD #forward
+    | FORWARD signedIconst #forwardCount
+    | FORWARD ALL #forwardAll
+    | BACKWARD #backward
+    | BACKWARD signedIconst #backwardCount
+    | BACKWARD ALL #backwardAll
     ;

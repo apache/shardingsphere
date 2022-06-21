@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidRuleConfigurationException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
@@ -58,14 +58,16 @@ public final class CreateEncryptRuleStatementUpdaterTest {
     @Test(expected = InvalidRuleConfigurationException.class)
     public void assertCheckSQLStatementWithIncompleteDataType() throws DistSQLException {
         EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column",
-                "int varchar(10)", null, null, null, new AlgorithmSegment("test", new Properties()));
+                "int varchar(10)", null, null, null, new AlgorithmSegment("test", new Properties()),
+                new AlgorithmSegment("test", new Properties()));
         EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment), null);
         CreateEncryptRuleStatement statement = new CreateEncryptRuleStatement(Collections.singleton(ruleSegment));
         updater.checkSQLStatement(database, statement, null);
     }
     
     private CreateEncryptRuleStatement createSQLStatement(final String encryptorName) {
-        EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column", new AlgorithmSegment(encryptorName, new Properties()));
+        EncryptColumnSegment columnSegment = new EncryptColumnSegment("user_id", "user_cipher", "user_plain", "assisted_column",
+                new AlgorithmSegment(encryptorName, new Properties()), new AlgorithmSegment(encryptorName, new Properties()));
         EncryptRuleSegment ruleSegment = new EncryptRuleSegment("t_encrypt", Collections.singleton(columnSegment), null);
         return new CreateEncryptRuleStatement(Collections.singleton(ruleSegment));
     }

@@ -20,8 +20,10 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.RuleAlteredJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 
@@ -34,6 +36,8 @@ public final class RuleAlteredJob implements SimpleJob {
     private final GovernanceRepositoryAPI governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
     
     private volatile String jobId;
+    
+    private final PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
     
     // Shared by all sharding items
     private final RuleAlteredJobPreparer jobPreparer = new RuleAlteredJobPreparer();
@@ -49,10 +53,8 @@ public final class RuleAlteredJob implements SimpleJob {
         }
         jobId = shardingContext.getJobName();
         RuleAlteredJobConfiguration jobConfig = RuleAlteredJobConfigurationSwapper.swapToObject(shardingContext.getJobParameter());
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, shardingContext.getShardingItem());
-        // TODO use final for initProgress and jobPreparer
-        jobContext.setInitProgress(governanceRepositoryAPI.getJobProgress(jobContext.getJobId(), jobContext.getShardingItem()));
-        jobContext.setJobPreparer(jobPreparer);
+        JobProgress initProgress = governanceRepositoryAPI.getJobProgress(shardingContext.getJobName(), shardingContext.getShardingItem());
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, shardingContext.getShardingItem(), initProgress, dataSourceManager, jobPreparer);
         RuleAlteredJobSchedulerCenter.start(jobContext);
     }
     
@@ -61,6 +63,7 @@ public final class RuleAlteredJob implements SimpleJob {
      */
     public void stop() {
         stopping = true;
+        dataSourceManager.close();
         if (null == jobId) {
             log.info("stop, jobId is null, ignore");
             return;

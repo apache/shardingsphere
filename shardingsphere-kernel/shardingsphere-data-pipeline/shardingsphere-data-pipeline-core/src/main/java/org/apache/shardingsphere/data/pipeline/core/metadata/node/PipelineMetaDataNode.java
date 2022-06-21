@@ -19,14 +19,13 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.node;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 
 /**
  * Scaling meta data node.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class PipelineMetaDataNode {
-    
-    public static final String ROOT_NODE = "scaling";
     
     /**
      * Get job config path.
@@ -35,16 +34,17 @@ public final class PipelineMetaDataNode {
      * @return job config path.
      */
     public static String getJobConfigPath(final String jobId) {
-        return String.join("/", getScalingRootPath(), jobId, "config");
+        return String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId, "config");
     }
     
     /**
      * Get scaling root path.
      *
+     * @param jobId job id.
      * @return root path
      */
-    public static String getScalingRootPath() {
-        return "/" + ROOT_NODE;
+    public static String getScalingJobPath(final String jobId) {
+        return String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId);
     }
     
     /**
@@ -65,6 +65,26 @@ public final class PipelineMetaDataNode {
      * @return job offset path.
      */
     public static String getScalingJobOffsetPath(final String jobId) {
-        return String.join("/", getScalingRootPath(), jobId, "offset");
+        return String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId, "offset");
+    }
+    
+    /**
+     * Get scaling job config path.
+     *
+     * @param jobId job id.
+     * @return job config path.
+     */
+    public static String getScalingJobConfigPath(final String jobId) {
+        return String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId, "config");
+    }
+    
+    /**
+     * Get scaling job config path.
+     *
+     * @param jobId job id.
+     * @return job config path.
+     */
+    public static String getScalingCheckResultPath(final String jobId) {
+        return String.join("/", DataPipelineConstants.DATA_PIPELINE_ROOT, jobId, "check", "result");
     }
 }

@@ -69,13 +69,13 @@ property:
 ```sql
 CREATE DB_DISCOVERY RULE db_discovery_group_0 (
 RESOURCES(ds_0, ds_1, ds_2),
-TYPE(NAME=MySQL.MGR,PROPERTIES('group-name'='92504d5b-6dec')),
+TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='92504d5b-6dec')),
 HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
 
 ALTER DB_DISCOVERY RULE db_discovery_group_0 (
 RESOURCES(ds_0, ds_1, ds_2),
-TYPE(NAME=MySQL.MGR,PROPERTIES('group-name'='246e9612-aaf1')),
+TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='246e9612-aaf1')),
 HEARTBEAT(PROPERTIES('keep-alive-cron'='0/5 * * * * ?'))
 );
 
@@ -91,7 +91,7 @@ DROP DB_DISCOVERY HEARTBEAT db_discovery_group_0_heartbeat;
 
 ```sql
 CREATE DB_DISCOVERY TYPE db_discovery_group_1_mgr(
-  TYPE(NAME=MySQL.MGR,PROPERTIES('group-name'='92504d5b-6dec'))
+  TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='92504d5b-6dec'))
 );
 
 CREATE DB_DISCOVERY HEARTBEAT db_discovery_group_1_heartbeat(
@@ -105,7 +105,7 @@ HEARTBEAT=db_discovery_group_1_heartbeat
 );
 
 ALTER DB_DISCOVERY TYPE db_discovery_group_1_mgr(
-  TYPE(NAME=MySQL.MGR,PROPERTIES('group-name'='246e9612-aaf1'))
+  TYPE(NAME='MySQL.MGR',PROPERTIES('group-name'='246e9612-aaf1'))
 );
 
 ALTER DB_DISCOVERY HEARTBEAT db_discovery_group_1_heartbeat(

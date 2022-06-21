@@ -17,16 +17,8 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.rdl;
 
-import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectTypeEnum;
-import org.apache.shardingsphere.distsql.parser.subject.impl.ResourceSubjectSupplier;
-
 /**
  * Resource definition statement.
  */
-public abstract class ResourceDefinitionStatement extends RDLStatement implements ResourceSubjectSupplier {
-    
-    @Override
-    public DistSQLSubjectTypeEnum getSubjectType() {
-        return DistSQLSubjectTypeEnum.RESOURCE;
-    }
+public abstract class ResourceDefinitionStatement extends RDLStatement {
 }

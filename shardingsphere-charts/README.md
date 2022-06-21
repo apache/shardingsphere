@@ -6,7 +6,7 @@ Use [Helm](https://helm.sh/) to provide guidance for the installation of Shardin
 
 ```shell
 helm repo add shardingsphere https://shardingsphere.apache.org/charts
-helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
+helm install shardingsphere-proxy shardingsphere/apache-shardingsphere-proxy
 ```
 
 ## Step By Step
@@ -19,7 +19,7 @@ kubectl
 
 Helm 3.2.0+
 
-Use StorageClass to allow dynamic provisioning of Persistent Volumes (PV) for data persistent.
+Use StorageClass to allow dynamic provisioning of Persistent Volumes (PV) for data persistent (optional).
 
 ### Install
 
@@ -33,15 +33,17 @@ helm repo add shardingsphere https://shardingsphere.apache.org/charts
 Install ShardingSphere-Proxy charts:
 
 ```shell
-helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
+helm install shardingsphere-proxy shardingsphere/apache-shardingsphere-proxy
 ```
 
 #### Source installation
 ```shell
-cd shardingsphere-proxy
+cd apache-shardingsphere-proxy/charts/governance
+helm dependency build 
+cd ../..
 helm dependency build 
 cd ..
-helm install shardingsphere-proxy shardingsphere-proxy
+helm install shardingsphere-proxy apache-shardingsphere-proxy
 ```
 
 Charts will be installed with default configuration if above commands executed.
@@ -89,7 +91,7 @@ Delete all release records by default, add `--keep-history` to keep them.
 | `compute.image.tag`                 | ShardingSphere-Proxy image tag                               | `5.1.2`                       |
 | `compute.imagePullSecrets`          | Specify docker-registry secret names as an array             | `[]`                          |
 | `compute.resources.limits`          | The resources limits for the ShardingSphere-Proxy containers | `{}`                          |
-| `compute.resources.requests.memory` | The requested memory for the ShardingSphere-Proxy containers | `1.6Gi`                       |
+| `compute.resources.requests.memory` | The requested memory for the ShardingSphere-Proxy containers | `2Gi`                         |
 | `compute.resources.requests.cpu`    | The requested cpu for the ShardingSphere-Proxy containers    | `200m`                        |
 | `compute.replicas`                  | Number of cluster replicas                                   | `3`                           |
 | `compute.service.type`              | ShardingSphere-Proxy network mode                            | `ClusterIP`                   |

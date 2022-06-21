@@ -32,15 +32,15 @@ clearReadwriteSplittingHint
     ;
 
 enableReadDataSource
-    : ENABLE READWRITE_SPLITTING (READ)? resourceName (FROM schemaName)?
+    : ENABLE READWRITE_SPLITTING (READ)? resourceName (FROM databaseName)?
     ;
 
 disableReadDataSource
-    : DISABLE READWRITE_SPLITTING (READ)? resourceName (FROM schemaName)?
+    : DISABLE READWRITE_SPLITTING (READ)? resourceName (FROM databaseName)?
     ;
 
 showReadwriteSplittingReadResources
-    : SHOW READWRITE_SPLITTING READ RESOURCES (FROM schemaName)?
+    : SHOW READWRITE_SPLITTING READ RESOURCES (FROM databaseName)?
     ;
 
 sourceValue

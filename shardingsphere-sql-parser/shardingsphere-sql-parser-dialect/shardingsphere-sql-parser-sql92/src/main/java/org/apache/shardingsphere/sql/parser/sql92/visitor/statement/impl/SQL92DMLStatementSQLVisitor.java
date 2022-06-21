@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.Assignm
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AssignmentValueContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.AssignmentValuesContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.ColumnNamesContext;
+import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.CombineClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.DeleteContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.DuplicateSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.EscapedTableReferenceContext;
@@ -51,7 +52,6 @@ import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.Subquer
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.TableFactorContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.TableReferenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.TableReferencesContext;
-import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.UnionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.UpdateContext;
 import org.apache.shardingsphere.sql.parser.autogen.SQL92StatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
@@ -218,14 +218,14 @@ public final class SQL92DMLStatementSQLVisitor extends SQL92StatementSQLVisitor 
     @Override
     public ASTNode visitSelect(final SelectContext ctx) {
         // TODO :Unsupported for withClause.
-        SQL92SelectStatement result = (SQL92SelectStatement) visit(ctx.unionClause());
+        SQL92SelectStatement result = (SQL92SelectStatement) visit(ctx.combineClause());
         result.setParameterCount(getCurrentParameterIndex());
         result.getParameterMarkerSegments().addAll(getParameterMarkerSegments());
         return result;
     }
     
     @Override
-    public ASTNode visitUnionClause(final UnionClauseContext ctx) {
+    public ASTNode visitCombineClause(final CombineClauseContext ctx) {
         // TODO :Unsupported for union SQL.
         return visit(ctx.selectClause(0));
     }
@@ -473,6 +473,6 @@ public final class SQL92DMLStatementSQLVisitor extends SQL92StatementSQLVisitor 
     
     @Override
     public ASTNode visitSubquery(final SubqueryContext ctx) {
-        return visit(ctx.unionClause());
+        return visit(ctx.combineClause());
     }
 }

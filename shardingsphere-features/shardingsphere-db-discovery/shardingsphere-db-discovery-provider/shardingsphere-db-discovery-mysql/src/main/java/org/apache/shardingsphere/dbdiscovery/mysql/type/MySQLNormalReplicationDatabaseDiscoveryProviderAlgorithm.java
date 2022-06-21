@@ -22,7 +22,8 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
-import org.apache.shardingsphere.infra.database.metadata.dialect.MySQLDataSourceMetaData;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -30,6 +31,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Properties;
+import java.util.LinkedList;
+import java.util.Iterator;
+import java.util.Collection;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
 
 /**
  * Normal replication database discovery provider algorithm for MySQL.
@@ -40,6 +46,8 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm impl
     
     private static final String SHOW_SLAVE_STATUS = "SHOW SLAVE STATUS";
     
+    private static final String SHOW_SLAVE_HOSTS = "SHOW SLAVE HOSTS";
+    
     private Properties props;
     
     @Override
@@ -48,19 +56,49 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm impl
     }
     
     @Override
-    public void checkEnvironment(final String databaseName, final DataSource dataSource) throws SQLException {
+    public void checkEnvironment(final String databaseName, final Collection<DataSource> dataSources) {
+        ExecutorService executorService = ExecutorEngine.createExecutorEngineWithCPUAndResources(dataSources.size()).getExecutorServiceManager().getExecutorService();
+        Collection<CompletableFuture<Collection<String>>> completableFutures = new LinkedList<>();
+        for (DataSource dataSource : dataSources) {
+            completableFutures.add(supplyAsyncCheckEnvironment(dataSource, executorService));
+        }
+        CompletableFuture.allOf(completableFutures.toArray(new CompletableFuture[0]));
+        Iterator<CompletableFuture<Collection<String>>> replicationInstancesFuture = completableFutures.stream().iterator();
+        int replicationGroupCount = 0;
+        while (replicationInstancesFuture.hasNext()) {
+            if (!replicationInstancesFuture.next().join().isEmpty()) {
+                replicationGroupCount++;
+            }
+        }
+        Preconditions.checkState(1 == replicationGroupCount, "Check Environment are failed in database `%s`.", databaseName);
+    }
+    
+    private CompletableFuture<Collection<String>> supplyAsyncCheckEnvironment(final DataSource dataSource, final ExecutorService executorService) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return getReplicationInstances(dataSource);
+            } catch (SQLException ex) {
+                throw new ShardingSphereException(ex);
+            }
+        }, executorService);
+    }
+    
+    private Collection<String> getReplicationInstances(final DataSource dataSource) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
-            checkMasterInstance(databaseName, statement);
+            return getReplicationInstances(statement);
         }
     }
     
-    private void checkMasterInstance(final String databaseName, final Statement statement) throws SQLException {
-        try (ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
-            Preconditions.checkState(resultSet.next() && null != resultSet.getString("Master_Host") && null != resultSet.getString("Master_Port"),
-                    "Can not load primary data source URL in database `%s`.", databaseName);
+    private Collection<String> getReplicationInstances(final Statement statement) throws SQLException {
+        Collection<String> result = new LinkedList<>();
+        try (ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_HOSTS)) {
+            while (resultSet.next()) {
+                result.add(String.join(":", resultSet.getString("HOST"), resultSet.getString("PORT")));
+            }
         }
+        return result;
     }
     
     @Override
@@ -69,11 +107,7 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm impl
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
-            if (resultSet.next()) {
-                MySQLDataSourceMetaData metaData = new MySQLDataSourceMetaData(connection.getMetaData().getURL());
-                return metaData.getHostname().equals(resultSet.getString("Master_Host")) && Integer.toString(metaData.getPort()).equals(resultSet.getString("Master_Port"));
-            }
-            return false;
+            return !resultSet.next();
         }
     }
     
@@ -90,7 +124,11 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm impl
     
     private long queryReplicationDelayMilliseconds(final Statement statement) throws SQLException {
         try (ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
-            return resultSet.next() ? resultSet.getLong("Seconds_Behind_Master") * 1000L : 0L;
+            if (resultSet.next()) {
+                long delay = resultSet.getLong("Seconds_Behind_Master") * 1000;
+                return resultSet.wasNull() ? Long.MAX_VALUE : delay;
+            }
+            return Long.MAX_VALUE;
         }
     }
     

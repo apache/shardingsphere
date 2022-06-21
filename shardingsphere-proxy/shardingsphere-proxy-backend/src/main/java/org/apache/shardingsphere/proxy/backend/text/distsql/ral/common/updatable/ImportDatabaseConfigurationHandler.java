@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
-import com.google.common.base.Strings;
+import com.google.common.base.Preconditions;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
@@ -31,17 +31,14 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.distsql.exception.resource.ImportResourceNotExistedException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
-import org.apache.shardingsphere.infra.exception.ImportDatabaseNotExistedException;
 import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyDataSourceConfigurationSwapper;
@@ -68,13 +65,12 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * Import database configuration handler.
  */
-public final class ImportDatabaseConfigurationHandler extends UpdatableRALBackendHandler<ImportDatabaseConfigurationStatement, ImportDatabaseConfigurationHandler> {
+public final class ImportDatabaseConfigurationHandler extends UpdatableRALBackendHandler<ImportDatabaseConfigurationStatement> {
     
     private final DataSourcePropertiesValidator validator = new DataSourcePropertiesValidator();
     
@@ -86,11 +82,37 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
     
     private final YamlProxyDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlProxyDataSourceConfigurationSwapper();
     
-    private void alterResourcesConfig(final String databaseName, final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceMap) throws DistSQLException {
+    @Override
+    protected void update(final ContextManager contextManager) throws DistSQLException {
+        File file = new File(getSqlStatement().getFilePath());
+        YamlProxyDatabaseConfiguration yamlConfig;
+        try {
+            yamlConfig = YamlEngine.unmarshal(file, YamlProxyDatabaseConfiguration.class);
+        } catch (final IOException ex) {
+            throw new ShardingSphereException(ex);
+        }
+        String databaseName = yamlConfig.getDatabaseName();
+        checkDatabaseName(databaseName, file);
+        checkDataSource(yamlConfig.getDataSources(), file);
+        updateResources(databaseName, yamlConfig.getDataSources());
+        updateRules(databaseName, yamlConfig.getRules());
+    }
+    
+    private void checkDatabaseName(final String databaseName, final File file) {
+        Preconditions.checkNotNull(databaseName, String.format("Property `databaseName` in file `%s` is required.", file.getName()));
+        if (!ProxyContext.getInstance().getAllDatabaseNames().contains(databaseName)) {
+            throw new DatabaseNotExistedException(databaseName);
+        }
+    }
+    
+    private void checkDataSource(final Map<String, YamlProxyDataSourceConfiguration> dataSources, final File file) {
+        Preconditions.checkState(!dataSources.isEmpty(), "Data sources configuration in file `%s` is required.", file.getName());
+    }
+    
+    private void updateResources(final String databaseName, final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceMap) throws DistSQLException {
         Map<String, DataSourceProperties> toBeUpdatedResourcePropsMap = new LinkedHashMap<>(yamlDataSourceMap.size(), 1);
-        for (Entry<String, YamlProxyDataSourceConfiguration> each : yamlDataSourceMap.entrySet()) {
-            DataSourceProperties dataSourceProps = DataSourcePropertiesCreator.create(HikariDataSource.class.getName(), dataSourceConfigSwapper.swap(each.getValue()));
-            toBeUpdatedResourcePropsMap.put(each.getKey(), dataSourceProps);
+        for (Entry<String, YamlProxyDataSourceConfiguration> entry : yamlDataSourceMap.entrySet()) {
+            toBeUpdatedResourcePropsMap.put(entry.getKey(), DataSourcePropertiesCreator.create(HikariDataSource.class.getName(), dataSourceConfigSwapper.swap(entry.getValue())));
         }
         try {
             validator.validate(toBeUpdatedResourcePropsMap);
@@ -105,13 +127,13 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         }
     }
     
-    private void alterRulesConfig(final String databaseName, final Collection<YamlRuleConfiguration> yamlRuleConfigs) throws DistSQLException {
-        if (null == yamlRuleConfigs || yamlRuleConfigs.isEmpty()) {
+    private void updateRules(final String databaseName, final Collection<YamlRuleConfiguration> yamlRuleConfigs) throws DistSQLException {
+        if (yamlRuleConfigs.isEmpty()) {
             return;
         }
         Collection<RuleConfiguration> toBeUpdatedRuleConfigs = new LinkedList<>();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        ShardingSphereDatabase database = metaDataContexts.getDatabaseMetaData(databaseName);
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(databaseName);
         for (YamlRuleConfiguration each : yamlRuleConfigs) {
             if (each instanceof YamlShardingRuleConfiguration) {
                 ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfigurationYamlSwapper().swapToObject((YamlShardingRuleConfiguration) each);
@@ -139,36 +161,6 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         database.getRuleMetaData().getConfigurations().clear();
         database.getRuleMetaData().getConfigurations().addAll(toBeUpdatedRuleConfigs);
         ProxyContext.getInstance().getContextManager().renewMetaDataContexts(metaDataContexts);
-        Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getPersistService();
-        metaDataPersistService.ifPresent(optional -> optional.getDatabaseRulePersistService().persist(databaseName, toBeUpdatedRuleConfigs));
-    }
-    
-    private void checkDatabaseName(final String databaseName) {
-        if (!ProxyContext.getInstance().getAllDatabaseNames().contains(databaseName)) {
-            throw new DatabaseNotExistedException(databaseName);
-        }
-    }
-    
-    @Override
-    protected void update(final ContextManager contextManager, final ImportDatabaseConfigurationStatement sqlStatement) throws DistSQLException {
-        if (!sqlStatement.getFilePath().isPresent()) {
-            return;
-        }
-        File yamlFile = new File(sqlStatement.getFilePath().get());
-        YamlProxyDatabaseConfiguration yamlConfig;
-        try {
-            yamlConfig = YamlEngine.unmarshal(yamlFile, YamlProxyDatabaseConfiguration.class);
-            if (null == yamlConfig) {
-                return;
-            }
-        } catch (final IOException ex) {
-            throw new ShardingSphereException(ex);
-        }
-        String databaseName = yamlConfig.getDatabaseName();
-        DistSQLException.predictionThrow(!Strings.isNullOrEmpty(databaseName), () -> new ImportDatabaseNotExistedException(yamlFile.getName()));
-        checkDatabaseName(databaseName);
-        DistSQLException.predictionThrow(null != yamlConfig.getDataSources() && !yamlConfig.getDataSources().isEmpty(), () -> new ImportResourceNotExistedException(yamlFile.getName()));
-        alterResourcesConfig(databaseName, yamlConfig.getDataSources());
-        alterRulesConfig(databaseName, yamlConfig.getRules());
+        metaDataContexts.getPersistService().ifPresent(optional -> optional.getDatabaseRulePersistService().persist(databaseName, toBeUpdatedRuleConfigs));
     }
 }

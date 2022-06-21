@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.merge;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.engine.ResultProcessEngine;
 import org.apache.shardingsphere.infra.merge.engine.ResultProcessEngineFactory;
@@ -29,11 +28,10 @@ import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMergerEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -44,10 +42,6 @@ import java.util.Optional;
  */
 public final class MergeEngine {
     
-    private final String databaseName;
-    
-    private final DatabaseType databaseType;
-    
     private final ShardingSphereDatabase database;
     
     private final ConfigurationProperties props;
@@ -55,13 +49,10 @@ public final class MergeEngine {
     @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, ResultProcessEngine> engines;
     
-    public MergeEngine(final String databaseName, final DatabaseType databaseType, final ShardingSphereDatabase database,
-                       final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
-        this.databaseName = databaseName;
-        this.databaseType = databaseType;
+    public MergeEngine(final ShardingSphereDatabase database, final ConfigurationProperties props) {
         this.database = database;
         this.props = props;
-        engines = ResultProcessEngineFactory.getInstances(rules);
+        engines = ResultProcessEngineFactory.getInstances(database.getRuleMetaData().getRules());
     }
     
     /**
@@ -82,7 +73,8 @@ public final class MergeEngine {
     private Optional<MergedResult> executeMerge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext) throws SQLException {
         for (Entry<ShardingSphereRule, ResultProcessEngine> entry : engines.entrySet()) {
             if (entry.getValue() instanceof ResultMergerEngine) {
-                ResultMerger resultMerger = ((ResultMergerEngine) entry.getValue()).newInstance(databaseName, databaseType, entry.getKey(), props, sqlStatementContext);
+                ResultMerger resultMerger = ((ResultMergerEngine) entry.getValue()).newInstance(
+                        database.getName(), database.getResource().getDatabaseType(), entry.getKey(), props, sqlStatementContext);
                 return Optional.of(resultMerger.merge(queryResults, sqlStatementContext, database));
             }
         }
@@ -94,7 +86,7 @@ public final class MergeEngine {
         MergedResult result = null;
         for (Entry<ShardingSphereRule, ResultProcessEngine> entry : engines.entrySet()) {
             if (entry.getValue() instanceof ResultDecoratorEngine) {
-                ResultDecorator resultDecorator = ((ResultDecoratorEngine) entry.getValue()).newInstance(databaseType, databaseName, database, entry.getKey(), props, sqlStatementContext);
+                ResultDecorator resultDecorator = ((ResultDecoratorEngine) entry.getValue()).newInstance(database, entry.getKey(), props, sqlStatementContext);
                 result = null == result ? resultDecorator.decorate(mergedResult, sqlStatementContext, entry.getKey()) : resultDecorator.decorate(result, sqlStatementContext, entry.getKey());
             }
         }
@@ -106,7 +98,7 @@ public final class MergeEngine {
         MergedResult result = null;
         for (Entry<ShardingSphereRule, ResultProcessEngine> entry : engines.entrySet()) {
             if (entry.getValue() instanceof ResultDecoratorEngine) {
-                ResultDecorator resultDecorator = ((ResultDecoratorEngine) entry.getValue()).newInstance(databaseType, databaseName, database, entry.getKey(), props, sqlStatementContext);
+                ResultDecorator resultDecorator = ((ResultDecoratorEngine) entry.getValue()).newInstance(database, entry.getKey(), props, sqlStatementContext);
                 result = null == result ? resultDecorator.decorate(queryResult, sqlStatementContext, entry.getKey()) : resultDecorator.decorate(result, sqlStatementContext, entry.getKey());
             }
         }

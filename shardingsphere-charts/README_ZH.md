@@ -6,7 +6,7 @@
 
 ```shell
 helm repo add shardingsphere https://shardingsphere.apache.org/charts
-helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
+helm install shardingsphere-proxy shardingsphere/apache-shardingsphere-proxy
 ```
 
 ## 操作步骤
@@ -19,7 +19,7 @@ kubectl
 
 helm 3.2.0+
 
-可以动态申请 PV(Persistent Volumes) 的 StorageClass 已持久化数据。
+可以动态申请 PV(Persistent Volumes) 的 StorageClass (可选)。
 
 ### 安装
 
@@ -34,15 +34,17 @@ helm repo add shardingsphere https://shardingsphere.apache.org/charts
 以 ShardingSphere-Proxy 命名安装 charts：
 
 ```shell
-helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
+helm install shardingsphere-proxy shardingsphere/apache-shardingsphere-proxy
 ```
 
 #### 源码安装
 ```shell
-cd shardingsphere-proxy                                 
-helm dependency build                                   
-cd ..                                                   
-helm install shardingsphere-proxy shardingsphere-proxy  
+cd apache-shardingsphere-proxy/charts/governance
+helm dependency build 
+cd ../..
+helm dependency build 
+cd ..
+helm install shardingsphere-proxy apache-shardingsphere-proxy 
 ```
 
 执行上述命令以执行默认配置进行安装。
@@ -83,14 +85,14 @@ helm uninstall shardingsphere-proxy
 
 ### 计算节点--ShardingSphere-Proxy 配置项
 
-| 配置项                                 | 描述                                | 值                         |
-| ------------------------------------ |-----------------------------------| ----------------------------- |
+| 配置项                                | 描述                                | 值                             |
+|------------------------------------|-----------------------------------|-------------------------------|
 | `compute.image.repository`         | ShardingSphere-Proxy 的镜像名         | `apache/shardingsphere-proxy` |
 | `compute.image.pullPolicy`         | ShardingSphere-Proxy 镜像拉取策略       | `IfNotPresent`                |
 | `compute.image.tag`                | ShardingSphere-Proxy 镜像标签         | `5.1.2`                       |
 | `compute.imagePullSecrets`         | 拉取私有仓库的凭证                         | `[]`                          |
 | `compute.resources.limits`         | ShardingSphere-Proxy 容器的资源限制      | `{}`                          |
-| `compute.resources.requests.memory | ShardingSphere-Proxy 容器申请的内存      | `1.6Gi`                       |
+| `compute.resources.requests.memory` | ShardingSphere-Proxy 容器申请的内存      | `2Gi`                         |
 | `compute.resources.requests.cpu`   | ShardingSphere-Proxy 容器申请的 cpu 核数 | `200m`                        |
 | `compute.replicas`                 | ShardingSphere-Proxy 节点个数         | `3`                           |
 | `compute.service.type`             | ShardingSphere-Proxy 网络模式         | `ClusterIP`                   |

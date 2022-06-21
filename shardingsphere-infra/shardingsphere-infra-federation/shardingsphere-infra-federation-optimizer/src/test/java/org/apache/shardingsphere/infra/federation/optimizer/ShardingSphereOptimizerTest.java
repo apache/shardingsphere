@@ -20,13 +20,12 @@ package org.apache.shardingsphere.infra.federation.optimizer;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
-import org.apache.shardingsphere.infra.parser.ParserConfiguration;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
@@ -52,64 +51,54 @@ import static org.mockito.Mockito.when;
 
 public final class ShardingSphereOptimizerTest {
     
-    private static final String SELECT_CROSS_JOIN_CONDITION =
-            "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id "
-                    + "FROM t_order_federate JOIN t_user_info ON t_order_federate.user_id = t_user_info.user_id "
-                    + "WHERE t_user_info.user_id = 13";
+    private static final String SELECT_CROSS_JOIN_CONDITION = "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id "
+            + "FROM t_order_federate JOIN t_user_info ON t_order_federate.user_id = t_user_info.user_id "
+            + "WHERE t_user_info.user_id = 13";
     
-    private static final String SELECT_WHERE_ALL_FIELDS =
-            "SELECT user_id, information FROM t_user_info WHERE user_id = 12";
+    private static final String SELECT_WHERE_ALL_FIELDS = "SELECT user_id, information FROM t_user_info WHERE user_id = 12";
     
-    private static final String SELECT_WHERE_SINGLE_FIELD =
-            "SELECT user_id FROM t_user_info WHERE user_id = 12";
+    private static final String SELECT_WHERE_SINGLE_FIELD = "SELECT user_id FROM t_user_info WHERE user_id = 12";
     
-    private static final String SELECT_CROSS_WHERE =
-            "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id "
-                    + "FROM t_order_federate , t_user_info "
-                    + "WHERE t_order_federate.user_id = t_user_info.user_id";
+    private static final String SELECT_CROSS_WHERE = "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id "
+            + "FROM t_order_federate , t_user_info "
+            + "WHERE t_order_federate.user_id = t_user_info.user_id";
     
-    private static final String SELECT_CROSS_JOIN =
-            "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id "
-                    + "FROM t_order_federate JOIN t_user_info "
-                    + "ON t_order_federate.user_id = t_user_info.user_id";
+    private static final String SELECT_CROSS_JOIN = "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id "
+            + "FROM t_order_federate JOIN t_user_info "
+            + "ON t_order_federate.user_id = t_user_info.user_id";
     
-    private static final String SELECT_CROSS_WHERE_CONDITION =
-            "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id "
-                    + "FROM t_order_federate ,t_user_info "
-                    + "WHERE t_order_federate.user_id = t_user_info.user_id AND t_user_info.user_id = 13";
+    private static final String SELECT_CROSS_WHERE_CONDITION = "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id "
+            + "FROM t_order_federate ,t_user_info "
+            + "WHERE t_order_federate.user_id = t_user_info.user_id AND t_user_info.user_id = 13";
     
-    private static final String SELECT_SUBQUERY_FROM =
-            "SELECT user.user_id, user.information "
-                    + "FROM (SELECT * FROM t_user_info WHERE user_id > 1) as user ";
+    private static final String SELECT_SUBQUERY_FROM = "SELECT user.user_id, user.information "
+            + "FROM (SELECT * FROM t_user_info WHERE user_id > 1) as user ";
     
-    private static final String SELECT_SUBQUERY_WHERE_EXIST =
-            "SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate "
-                    + "WHERE EXISTS (SELECT * FROM t_user_info WHERE t_order_federate.user_id = t_user_info.user_id)";
+    private static final String SELECT_SUBQUERY_WHERE_EXIST = "SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate "
+            + "WHERE EXISTS (SELECT * FROM t_user_info WHERE t_order_federate.user_id = t_user_info.user_id)";
     
-    private static final String SELECT_SUBQUERY_WHERE_IN =
-            "SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate "
-                    + "WHERE t_order_federate.user_id IN (SELECT t_user_info.user_id FROM t_user_info)";
+    private static final String SELECT_SUBQUERY_WHERE_IN = "SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate "
+            + "WHERE t_order_federate.user_id IN (SELECT t_user_info.user_id FROM t_user_info)";
     
-    private static final String SELECT_SUBQUERY_WHERE_BETWEEN =
-            "SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate "
-                    + "WHERE user_id BETWEEN (SELECT user_id FROM t_user_info WHERE information = 'before') "
-                    + "AND (SELECT user_id FROM t_user_info WHERE information = 'after')";
+    private static final String SELECT_SUBQUERY_WHERE_BETWEEN = "SELECT t_order_federate.order_id, t_order_federate.user_id FROM t_order_federate "
+            + "WHERE user_id BETWEEN (SELECT user_id FROM t_user_info WHERE information = 'before') "
+            + "AND (SELECT user_id FROM t_user_info WHERE information = 'after')";
     
     private final String databaseName = "sharding_db";
     
     private final String schemaName = "federate_jdbc";
     
-    private final ParserConfiguration parserConfig = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()).toParserConfiguration();
+    private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
     
     private ShardingSphereOptimizer optimizer;
     
     @Before
     public void init() throws Exception {
-        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(2, 1);
-        tableMetaDataMap.put("t_order_federate", createOrderTableMetaData());
-        tableMetaDataMap.put("t_user_info", createUserInfoTableMetaData());
+        Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1);
+        tables.put("t_order_federate", createOrderTableMetaData());
+        tables.put("t_user_info", createUserInfoTableMetaData());
         ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName,
-                new H2DatabaseType(), mockResource(), null, Collections.singletonMap(schemaName, new ShardingSphereSchema(tableMetaDataMap)));
+                new H2DatabaseType(), mockResource(), null, Collections.singletonMap(schemaName, new ShardingSphereSchema(tables)));
         optimizer = new ShardingSphereOptimizer(OptimizerContextFactory.create(Collections.singletonMap(databaseName, database), createGlobalRuleMetaData()));
     }
     
@@ -117,7 +106,7 @@ public final class ShardingSphereOptimizerTest {
         Collection<ShardingSphereRule> rules = new LinkedList<>();
         CacheOption cacheOption = new CacheOption(128, 1024L);
         rules.add(new SQLParserRule(new SQLParserRuleConfiguration(false, cacheOption, cacheOption)));
-        return new ShardingSphereRuleMetaData(Collections.emptyList(), rules);
+        return new ShardingSphereRuleMetaData(rules);
     }
     
     private ShardingSphereResource mockResource() {
@@ -126,37 +115,40 @@ public final class ShardingSphereOptimizerTest {
         return result;
     }
     
-    private TableMetaData createOrderTableMetaData() {
-        ColumnMetaData orderIdColumn = new ColumnMetaData("order_id", Types.VARCHAR, true, false, false);
-        ColumnMetaData userIdColumn = new ColumnMetaData("user_id", Types.VARCHAR, false, false, false);
-        ColumnMetaData statusColumn = new ColumnMetaData("status", Types.VARCHAR, false, false, false);
-        return new TableMetaData("t_order_federate", Arrays.asList(orderIdColumn, userIdColumn, statusColumn), Collections.emptyList(), Collections.emptyList());
+    private ShardingSphereTable createOrderTableMetaData() {
+        ShardingSphereColumn orderIdColumn = new ShardingSphereColumn("order_id", Types.VARCHAR, true, false, false);
+        ShardingSphereColumn userIdColumn = new ShardingSphereColumn("user_id", Types.VARCHAR, false, false, false);
+        ShardingSphereColumn statusColumn = new ShardingSphereColumn("status", Types.VARCHAR, false, false, false);
+        return new ShardingSphereTable("t_order_federate", Arrays.asList(orderIdColumn, userIdColumn, statusColumn), Collections.emptyList(), Collections.emptyList());
     }
     
-    private TableMetaData createUserInfoTableMetaData() {
-        ColumnMetaData userIdColumn = new ColumnMetaData("user_id", Types.VARCHAR, true, false, false);
-        ColumnMetaData informationColumn = new ColumnMetaData("information", Types.VARCHAR, false, false, false);
-        return new TableMetaData("t_user_info", Arrays.asList(userIdColumn, informationColumn), Collections.emptyList(), Collections.emptyList());
+    private ShardingSphereTable createUserInfoTableMetaData() {
+        ShardingSphereColumn userIdColumn = new ShardingSphereColumn("user_id", Types.VARCHAR, true, false, false);
+        ShardingSphereColumn informationColumn = new ShardingSphereColumn("information", Types.VARCHAR, false, false, false);
+        return new ShardingSphereTable("t_user_info", Arrays.asList(userIdColumn, informationColumn), Collections.emptyList(), Collections.emptyList());
     }
     
     @Test
     public void assertSelectCrossJoinCondition() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_CROSS_JOIN_CONDITION, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
-                "EnumerableCalc(expr#0..6=[{inputs}],order_id=[$t3],user_id=[$t4],user_id0=[$t0])"
-                        + "  EnumerableHashJoin(condition=[=($2,$6)],joinType=[inner])"
-                        + "    EnumerableCalc(expr#0..1=[{inputs}],expr#2=[CAST($t0):VARCHAR],proj#0..2=[{exprs}])"
-                        + "      EnumerableInterpreterBindableTableScan(table=[[federate_jdbc,t_user_info]],filters=[[=(CAST($0):INTEGER,13)]])"
-                        + "    EnumerableCalc(expr#0..2=[{inputs}],expr#3=[CAST($t1):VARCHAR],proj#0..3=[{exprs}])"
-                        + "      EnumerableTableScan(table=[[federate_jdbc,t_order_federate]])";
+                "EnumerableCalc(expr#0..4=[{inputs}],proj#0..1=[{exprs}],user_id1=[$t3])"
+                        + "EnumerableInterpreter"
+                        + " BindableJoin(condition=[=($2,$4)],joinType=[inner])"
+                        + "    BindableProject(order_id=[$0],user_id=[$1],user_id0=[CAST($1):VARCHAR])"
+                        + "        BindableTableScan(table=[[federate_jdbc,t_order_federate]],projects=[[0,1]])"
+                        + "    EnumerableBindable"
+                        + "        EnumerableCalc(expr#0=[{inputs}],expr#1=[CAST($t0):VARCHAR],proj#0..1=[{exprs}])"
+                        + "            EnumerableInterpreter"
+                        + "                BindableTableScan(table=[[federate_jdbc,t_user_info]],filters=[[=(CAST($0):INTEGER,13)]],projects=[[0]])";
         assertThat(actual.replaceAll("\\s*", ""), is(expected.replaceAll("\\s*", "")));
     }
     
     @Test
     public void assertSelectWhereAllFields() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_WHERE_ALL_FIELDS, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
@@ -167,7 +159,7 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectWhereSingleField() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_WHERE_SINGLE_FIELD, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
@@ -178,54 +170,52 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectCrossWhere() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_CROSS_WHERE, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
-                "EnumerableCalc(expr#0..6=[{inputs}],order_id=[$t3],user_id=[$t4],user_id0=[$t0])"
-                        + "  EnumerableMergeJoin(condition=[=($2,$6)],joinType=[inner])"
-                        + "    EnumerableSort(sort0=[$2],dir0=[ASC])"
-                        + "      EnumerableCalc(expr#0..1=[{inputs}],expr#2=[CAST($t0):VARCHAR],proj#0..2=[{exprs}])"
-                        + "        EnumerableTableScan(table=[[federate_jdbc,t_user_info]])"
-                        + "    EnumerableSort(sort0=[$3],dir0=[ASC])"
-                        + "      EnumerableCalc(expr#0..2=[{inputs}],expr#3=[CAST($t1):VARCHAR],proj#0..3=[{exprs}])"
-                        + "        EnumerableTableScan(table=[[federate_jdbc,t_order_federate]])";
+                "EnumerableInterpreter"
+                        + "BindableJoin(condition=[=(CAST($1):VARCHAR,CAST($2):VARCHAR)],joinType=[inner])"
+                        + "     BindableTableScan(table=[[federate_jdbc,t_order_federate]],projects=[[0,1]])"
+                        + "     BindableTableScan(table=[[federate_jdbc,t_user_info]],projects=[[0]])";
         assertThat(actual.replaceAll("\\s*", ""), is(expected.replaceAll("\\s*", "")));
     }
     
     @Test
     public void assertSelectCrossJoin() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_CROSS_JOIN, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
-                "EnumerableCalc(expr#0..6=[{inputs}],proj#0..1=[{exprs}],user_id0=[$t4])"
-                        + "  EnumerableMergeJoin(condition=[=($3,$6)],joinType=[inner])"
-                        + "    EnumerableSort(sort0=[$3],dir0=[ASC])"
-                        + "      EnumerableCalc(expr#0..2=[{inputs}],expr#3=[CAST($t1):VARCHAR],proj#0..3=[{exprs}])"
-                        + "        EnumerableTableScan(table=[[federate_jdbc,t_order_federate]])"
-                        + "    EnumerableSort(sort0=[$2],dir0=[ASC])"
-                        + "      EnumerableCalc(expr#0..1=[{inputs}],expr#2=[CAST($t0):VARCHAR],proj#0..2=[{exprs}])"
-                        + "        EnumerableTableScan(table=[[federate_jdbc,t_user_info]])";
+                "EnumerableCalc(expr#0..4=[{inputs}],proj#0..1=[{exprs}],user_id0=[$t3])"
+                        + "EnumerableMergeJoin(condition=[=($2,$4)],joinType=[inner])"
+                        + "     EnumerableSort(sort0=[$2],dir0=[ASC])"
+                        + "         EnumerableInterpreter"
+                        + "             BindableProject(order_id=[$0],user_id=[$1],user_id0=[CAST($1):VARCHAR])"
+                        + "                 BindableTableScan(table=[[federate_jdbc,t_order_federate]],projects=[[0,1]])"
+                        + "     EnumerableSort(sort0=[$1],dir0=[ASC])"
+                        + "         EnumerableInterpreter"
+                        + "             BindableProject(user_id=[$0],user_id0=[CAST($0):VARCHAR])"
+                        + "                 BindableTableScan(table=[[federate_jdbc,t_user_info]],projects=[[0]])";
         assertThat(actual.replaceAll("\\s*", ""), is(expected.replaceAll("\\s*", "")));
     }
     
     @Test
     public void assertSelectJoinWhere() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_CROSS_WHERE_CONDITION, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
-                "EnumerableCalc(expr#0..4=[{inputs}],proj#0..1=[{exprs}],user_id0=[$t3])"
-                        + "  EnumerableInterpreterBindableJoin(condition=[=(CAST($1):VARCHAR,CAST($3):VARCHAR)],joinType=[inner])"
-                        + "    BindableTableScan(table=[[federate_jdbc,t_order_federate]])"
-                        + "    BindableTableScan(table=[[federate_jdbc,t_user_info]],filters=[[=(CAST($0):INTEGER,13)]])";
+                "EnumerableInterpreter"
+                        + " BindableJoin(condition=[=(CAST($1):VARCHAR,CAST($2):VARCHAR)],joinType=[inner])"
+                        + "     BindableTableScan(table=[[federate_jdbc,t_order_federate]],projects=[[0,1]])"
+                        + "     BindableTableScan(table=[[federate_jdbc,t_user_info]],filters=[[=(CAST($0):INTEGER,13)]],projects=[[0]])";
         assertThat(actual.replaceAll("\\s*", ""), is(expected.replaceAll("\\s*", "")));
     }
     
     @Test
     public void assertSelectSubQueryFrom() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_SUBQUERY_FROM, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
@@ -236,48 +226,49 @@ public final class ShardingSphereOptimizerTest {
     
     @Test
     public void assertSelectSubQueryWhereExist() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_SUBQUERY_WHERE_EXIST, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
-                "EnumerableCalc(expr#0..3=[{inputs}],expr#4=[ISNOTNULL($t3)],proj#0..1=[{exprs}],$condition=[$t4])"
-                        + "  EnumerableCorrelate(correlation=[$cor0],joinType=[left],requiredColumns=[{1}]) "
-                        + "    EnumerableTableScan(table=[[federate_jdbc,t_order_federate]]) "
-                        + "    EnumerableInterpreterBindableAggregate(group=[{}],agg#0=[MIN($0)]) "
-                        + "      BindableProject($f0=[true]) "
-                        + "        BindableTableScan(table=[[federate_jdbc,t_user_info]],filters=[[=(CAST($cor0.user_id):VARCHAR,CAST($0):VARCHAR)]],projects=[[0]]) ";
+                "EnumerableInterpreter"
+                        + "BindableProject(order_id=[$0],user_id=[$1])"
+                        + "     BindableJoin(condition=[=($2,$3)],joinType=[semi])"
+                        + "         BindableProject(order_id=[$0],user_id=[$1],user_id0=[CAST($1):VARCHAR])"
+                        + "             BindableTableScan(table=[[federate_jdbc,t_order_federate]],projects=[[0,1]])"
+                        + "         BindableProject(user_id0=[CAST($0):VARCHAR],$f0=[true])"
+                        + "             BindableTableScan(table=[[federate_jdbc,t_user_info]],filters=[[ISNOTNULL(CAST($0):VARCHAR)]],projects=[[0]])";
         assertThat(actual.replaceAll("\\s*", ""), is(expected.replaceAll("\\s*", "")));
     }
     
     @Test
     public void assertSelectSubQueryWhereIn() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_SUBQUERY_WHERE_IN, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
                 "EnumerableInterpreter"
-                        + "  BindableProject(order_id=[$0],user_id=[$1])"
-                        + "    BindableJoin(condition=[=($1,$3)],joinType=[semi])"
-                        + "      BindableTableScan(table=[[federate_jdbc,t_order_federate]])"
-                        + "      BindableTableScan(table=[[federate_jdbc,t_user_info]],projects=[[0]])";
+                        + " BindableJoin(condition=[=($1,$2)],joinType=[semi])"
+                        + "     BindableTableScan(table=[[federate_jdbc,t_order_federate]],projects=[[0,1]])"
+                        + "     BindableTableScan(table=[[federate_jdbc,t_user_info]],projects=[[0]])";
         assertThat(actual.replaceAll("\\s*", ""), is(expected.replaceAll("\\s*", "")));
     }
     
     @Test
     public void assertSelectSubQueryWhereBetween() {
-        ShardingSphereSQLParserEngine sqlParserEngine = new ShardingSphereSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()), parserConfig);
+        ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_SUBQUERY_WHERE_BETWEEN, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected =
-                "EnumerableCalc(expr#0..4=[{inputs}],proj#0..1=[{exprs}])"
-                        + "  EnumerableInterpreterBindableFilter(condition=[AND(>=($1,$3),<=($1,$4))])"
+                "EnumerableCalc(expr#0..3=[{inputs}],proj#0..1=[{exprs}])"
+                        + "EnumerableInterpreter"
+                        + " BindableFilter(condition=[AND(>=($1,$2),<=($1,$3))])"
                         + "    BindableJoin(condition=[true],joinType=[left])"
-                        + "      BindableJoin(condition=[true],joinType=[left])"
-                        + "        BindableTableScan(table=[[federate_jdbc,t_order_federate]])"
-                        + "        BindableAggregate(group=[{}],agg#0=[SINGLE_VALUE($0)])"
-                        + "          BindableTableScan(table=[[federate_jdbc,t_user_info]],filters=[[=(CAST($1):VARCHAR,'before')]],projects=[[0]])"
-                        + "        BindableAggregate(group=[{}],agg#0=[SINGLE_VALUE($0)])"
-                        + "          BindableTableScan(table=[[federate_jdbc,t_user_info]],filters=[[=(CAST($1):VARCHAR,'after')]],projects=[[0]])";
+                        + "        BindableJoin(condition=[true],joinType=[left])"
+                        + "            BindableTableScan(table=[[federate_jdbc,t_order_federate]],projects=[[0,1]])"
+                        + "                BindableAggregate(group=[{}],agg#0=[SINGLE_VALUE($0)])"
+                        + "            BindableTableScan(table=[[federate_jdbc,t_user_info]],filters=[[=(CAST($1):VARCHAR,'before')]],projects=[[0]])"
+                        + "                BindableAggregate(group=[{}],agg#0=[SINGLE_VALUE($0)])"
+                        + "        BindableTableScan(table=[[federate_jdbc,t_user_info]],filters=[[=(CAST($1):VARCHAR,'after')]],projects=[[0]])";
         assertThat(actual.replaceAll("\\s*", ""), is(expected.replaceAll("\\s*", "")));
     }
 }

@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableNodesStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.schema.SchemaAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.database.DatabaseAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingTableNodesStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -44,12 +44,12 @@ public final class ShowShardingTableNodesStatementAssert {
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ShowShardingTableNodesStatement actual,
                                 final ShowShardingTableNodesStatementTestCase expected) {
-        if (null != expected.getSchema()) {
-            assertTrue(assertContext.getText("Actual schema should exist."), actual.getSchema().isPresent());
+        if (null != expected.getDatabase()) {
+            assertTrue(assertContext.getText("Actual database should exist."), actual.getDatabase().isPresent());
             assertThat(assertContext.getText("Table assertion error:"), actual.getTableName(), is(expected.getTable()));
-            SchemaAssert.assertIs(assertContext, actual.getSchema().get(), expected.getSchema());
+            DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());
         } else {
-            assertFalse(assertContext.getText("Actual schema should not exist."), actual.getSchema().isPresent());
+            assertFalse(assertContext.getText("Actual database should not exist."), actual.getDatabase().isPresent());
         }
     }
 }

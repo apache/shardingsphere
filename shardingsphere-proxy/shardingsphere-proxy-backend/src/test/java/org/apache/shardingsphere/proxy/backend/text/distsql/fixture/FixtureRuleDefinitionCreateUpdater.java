@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.fixture;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 public final class FixtureRuleDefinitionCreateUpdater implements RuleDefinitionCreateUpdater<CreateFixtureRuleStatement, FixtureRuleConfiguration> {
     

@@ -671,7 +671,7 @@ opclassPurpose
     ;
 
 alterOperatorClauses
-    : operatorWithArgtypes SET SCHEMA name
+    : operatorWithArgtypes SET SCHEMA schemaName
     | operatorWithArgtypes SET LP_ operatorDefList RP_
     | operatorWithArgtypes OWNER TO roleSpec
     ;
@@ -681,7 +681,7 @@ operatorDefList
     ;
 
 operatorDefElem
-    : colLabel EQ_ (NONE | operatorDefArg)
+    : (RESTRICT | JOIN) EQ_ (NONE | operatorDefArg)
     ;
 
 operatorDefArg
@@ -996,7 +996,7 @@ refreshMatViewStmt
     ;
 
 alterPolicy
-    : ALTER POLICY existClause? name ON qualifiedName alterPolicyClauses
+    : ALTER POLICY name ON tableName alterPolicyClauses
     ;
 
 alterPolicyClauses
@@ -1034,10 +1034,10 @@ alterFunctionClauses
 
 alterPublication
     : ALTER PUBLICATION name
-    (RENAME TO name
+    ( RENAME TO name
     | OWNER TO roleSpec
     | SET definition
-    | (ADD | SET | DROP)  TABLE relationExprList)
+    | (ADD | SET | DROP) TABLE relationExprList)
     ;
 
 alterRoutine
@@ -1194,11 +1194,23 @@ close
     ;
 
 cluster
-    : CLUSTER VERBOSE? (qualifiedName clusterIndexSpecification? | name ON qualifiedName)?
+    : CLUSTER clusterVerboseSpecification? tableName? clusterIndexSpecification?
+    ;
+
+clusterVerboseSpecification
+    : VERBOSE | clusterVerboseOptionList
     ;
 
 clusterIndexSpecification
-    : USING name
+    : USING indexName
+    ;
+
+clusterVerboseOptionList
+    : LP_ clusterVerboseOption (COMMA_ clusterVerboseOption)* RP_
+    ;
+
+clusterVerboseOption
+    : VERBOSE booleanValue?
     ;
 
 comment
@@ -1214,9 +1226,8 @@ commentClauses
     | AGGREGATE aggregateWithArgtypes IS commentText
     | FUNCTION functionWithArgtypes IS commentText
     | OPERATOR operatorWithArgtypes IS commentText
-    | CONSTRAINT name ON anyName IS commentText
     | CONSTRAINT name ON DOMAIN anyName IS commentText
-    | objectTypeNameOnAnyName name ON anyName IS commentText
+    | objectTypeNameOnAnyName name ON tableName IS commentText
     | PROCEDURE functionWithArgtypes IS commentText
     | ROUTINE functionWithArgtypes IS commentText
     | TRANSFORM FOR typeName LANGUAGE name IS commentText
@@ -1227,7 +1238,7 @@ commentClauses
     ;
 
 objectTypeNameOnAnyName
-    : POLICY | RULE	| TRIGGER
+    : POLICY | RULE	| TRIGGER | CONSTRAINT
     ;
 
 objectTypeName
@@ -1776,7 +1787,28 @@ listen
     ;
 
 move
-    : MOVE fetchArgs
+    : MOVE direction? (FROM | IN)? cursorName
+    ;
+
+fetch
+    : FETCH direction? (FROM | IN)? cursorName
+    ;
+
+direction
+    : NEXT
+    | PRIOR
+    | FIRST
+    | LAST
+    | ABSOLUTE signedIconst
+    | RELATIVE signedIconst
+    | signedIconst
+    | ALL
+    | FORWARD
+    | FORWARD signedIconst
+    | FORWARD ALL
+    | BACKWARD
+    | BACKWARD signedIconst
+    | BACKWARD ALL
     ;
 
 prepare

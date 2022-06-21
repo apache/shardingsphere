@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.parser.spring.namespace.parser;
 
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.spring.namespace.tag.SQLParserRuleBeanDefinitionTag;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -25,8 +24,6 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.xml.AbstractBeanDefinitionParser;
 import org.springframework.beans.factory.xml.ParserContext;
 import org.w3c.dom.Element;
-
-import java.util.Optional;
 
 /**
  * SQL parser bean parser for spring namespace.
@@ -36,29 +33,9 @@ public final class SQLParserRuleBeanDefinitionParser extends AbstractBeanDefinit
     @Override
     protected AbstractBeanDefinition parseInternal(final Element element, final ParserContext parserContext) {
         BeanDefinitionBuilder factory = BeanDefinitionBuilder.rootBeanDefinition(SQLParserRuleConfiguration.class);
-        factory.addPropertyValue("sqlCommentParseEnabled", parseSQLCommentParserEnableConfiguration(element));
-        setSQLStatementCacheOption(element, factory);
-        setParseTreeCacheOption(element, factory);
+        factory.addConstructorArgValue(Boolean.parseBoolean(element.getAttribute(SQLParserRuleBeanDefinitionTag.SQL_COMMENT_PARSER_ENABLE)));
+        factory.addConstructorArgReference(element.getAttribute(SQLParserRuleBeanDefinitionTag.PARSE_TREE_CACHE_REF));
+        factory.addConstructorArgReference(element.getAttribute(SQLParserRuleBeanDefinitionTag.SQL_STATEMENT_CACHE_REF));
         return factory.getBeanDefinition();
-    }
-    
-    private void setSQLStatementCacheOption(final Element element, final BeanDefinitionBuilder factory) {
-        Optional<String> cacheRef = parseCacheRef(element, SQLParserRuleBeanDefinitionTag.SQL_STATEMENT_CACHE_REF);
-        cacheRef.ifPresent(optional -> factory.addPropertyReference("sqlStatementCache", optional));
-    }
-    
-    private void setParseTreeCacheOption(final Element element, final BeanDefinitionBuilder factory) {
-        Optional<String> cacheRef = parseCacheRef(element, SQLParserRuleBeanDefinitionTag.PARSE_TREE_CACHE_REF);
-        cacheRef.ifPresent(optional -> factory.addPropertyReference("parseTreeCache", optional));
-    }
-    
-    private boolean parseSQLCommentParserEnableConfiguration(final Element element) {
-        String sqlCommentParserEnable = element.getAttribute(SQLParserRuleBeanDefinitionTag.SQL_COMMENT_PARSER_ENABLE);
-        return Boolean.parseBoolean(sqlCommentParserEnable);
-    }
-    
-    private Optional<String> parseCacheRef(final Element element, final String tagName) {
-        String result = element.getAttribute(tagName);
-        return Strings.isNullOrEmpty(result) ? Optional.empty() : Optional.of(result);
     }
 }

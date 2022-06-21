@@ -115,6 +115,11 @@ public final class VertxBackendConnection implements BackendConnection<Future<Vo
     
     @Override
     public Future<Void> prepareForTaskExecution() {
+        return Future.succeededFuture();
+    }
+    
+    @Override
+    public Future<Void> handleAutoCommit() {
         if (!connectionSession.isAutoCommit() && !connectionSession.getTransactionStatus().isInTransaction()) {
             VertxLocalTransactionManager transactionManager = new VertxLocalTransactionManager(this);
             return transactionManager.begin();

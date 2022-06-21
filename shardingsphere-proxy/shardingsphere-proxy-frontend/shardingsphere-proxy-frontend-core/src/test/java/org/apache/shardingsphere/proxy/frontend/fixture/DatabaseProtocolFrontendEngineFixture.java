@@ -51,7 +51,7 @@ public final class DatabaseProtocolFrontendEngineFixture implements DatabaseProt
     }
     
     @Override
-    public void handleException(final ConnectionSession connectionSession) {
+    public void handleException(final ConnectionSession connectionSession, final Exception exception) {
     }
     
     @Override

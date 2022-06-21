@@ -40,6 +40,7 @@ public final class EncryptTableRuleConfigurationYamlSwapper implements YamlConfi
         for (EncryptColumnRuleConfiguration each : data.getColumns()) {
             result.getColumns().put(each.getLogicColumn(), columnYamlSwapper.swapToYamlConfiguration(each));
         }
+        result.setName(data.getName());
         result.setQueryWithCipherColumn(data.getQueryWithCipherColumn());
         return result;
     }

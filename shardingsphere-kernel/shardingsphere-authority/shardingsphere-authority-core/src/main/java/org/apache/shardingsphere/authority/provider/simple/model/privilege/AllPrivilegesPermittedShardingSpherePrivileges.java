@@ -33,7 +33,7 @@ public final class AllPrivilegesPermittedShardingSpherePrivileges implements Sha
     }
     
     @Override
-    public boolean hasPrivileges(final String schema) {
+    public boolean hasPrivileges(final String database) {
         return true;
     }
     

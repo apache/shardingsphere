@@ -25,15 +25,20 @@ import static org.junit.Assert.assertThat;
 public final class PipelineMetaDataNodeTest {
     
     @Test
-    public void assertGetScalingRootPath() {
-        assertThat(PipelineMetaDataNode.getScalingRootPath(), is("/scaling"));
-    }
-    
-    @Test
     public void assertGetJobConfigPath() {
         String actualOffsetPath = PipelineMetaDataNode.getScalingJobOffsetPath("0130317c30317c3054317c7368617264696e675f6462");
         assertThat(actualOffsetPath, is("/scaling/0130317c30317c3054317c7368617264696e675f6462/offset"));
         actualOffsetPath = PipelineMetaDataNode.getScalingJobOffsetPath("0130317c30317c3054317c7368617264696e675f6462", 1);
         assertThat(actualOffsetPath, is("/scaling/0130317c30317c3054317c7368617264696e675f6462/offset/1"));
+    }
+    
+    @Test
+    public void assertGetScalingJobConfigPath() {
+        assertThat(PipelineMetaDataNode.getScalingJobConfigPath("0130317c30317c3054317c7368617264696e675f6462"), is("/scaling/0130317c30317c3054317c7368617264696e675f6462/config"));
+    }
+    
+    @Test
+    public void assertGetScalingCheckResultPath() {
+        assertThat(PipelineMetaDataNode.getScalingCheckResultPath("0130317c30317c3054317c7368617264696e675f6462"), is("/scaling/0130317c30317c3054317c7368617264696e675f6462/check/result"));
     }
 }

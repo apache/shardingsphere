@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.config.function.DistributedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.function.ResourceRequiredRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
-import org.apache.shardingsphere.infra.config.scope.SchemaRuleConfiguration;
+import org.apache.shardingsphere.infra.config.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
  */
 @Getter
 @Setter
-public final class ShardingRuleConfiguration implements SchemaRuleConfiguration, DistributedRuleConfiguration, ResourceRequiredRuleConfiguration {
+public final class ShardingRuleConfiguration implements DatabaseRuleConfiguration, DistributedRuleConfiguration, ResourceRequiredRuleConfiguration {
     
     private Collection<ShardingTableRuleConfiguration> tables = new LinkedList<>();
     

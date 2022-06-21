@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-cluster-mode-repository-provider</artifactId>
-        <version>5.1.2-SNAPSHOT</version>
+        <version>5.1.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-cluster-mode-repository-etcd</artifactId>
     <name>${project.artifactId}</name>

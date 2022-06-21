@@ -29,7 +29,6 @@ import io.etcd.jetcd.options.GetOption;
 import io.etcd.jetcd.options.PutOption;
 import io.etcd.jetcd.options.WatchOption;
 import io.etcd.jetcd.watch.WatchEvent;
-import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -44,7 +43,6 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
@@ -56,9 +54,6 @@ import java.util.stream.Collectors;
 public final class EtcdRepository implements ClusterPersistRepository {
     
     private Client client;
-    
-    @Getter
-    private Properties props = new Properties();
     
     private EtcdProperties etcdProps;
     

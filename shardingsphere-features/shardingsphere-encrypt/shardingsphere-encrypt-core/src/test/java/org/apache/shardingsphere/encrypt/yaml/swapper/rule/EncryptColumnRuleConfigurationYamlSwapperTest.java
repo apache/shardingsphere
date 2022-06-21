@@ -29,12 +29,14 @@ public final class EncryptColumnRuleConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYamlConfiguration() {
         EncryptColumnRuleConfigurationYamlSwapper swapper = new EncryptColumnRuleConfigurationYamlSwapper();
-        EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "plainColumn", "encryptorName");
+        EncryptColumnRuleConfiguration encryptColumnRuleConfig = new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "plainColumn", "encryptorName", true);
         YamlEncryptColumnRuleConfiguration actual = swapper.swapToYamlConfiguration(encryptColumnRuleConfig);
+        assertThat(actual.getLogicColumn(), is("logicColumn"));
         assertThat(actual.getCipherColumn(), is("cipherColumn"));
         assertThat(actual.getAssistedQueryColumn(), is("assistedQueryColumn"));
         assertThat(actual.getPlainColumn(), is("plainColumn"));
         assertThat(actual.getEncryptorName(), is("encryptorName"));
+        assertThat(actual.getQueryWithCipherColumn(), is(true));
     }
     
     @Test
@@ -46,11 +48,13 @@ public final class EncryptColumnRuleConfigurationYamlSwapperTest {
         yamlEncryptColumnRuleConfig.setAssistedQueryColumn("assistedQueryColumn");
         yamlEncryptColumnRuleConfig.setPlainColumn("plainColumn");
         yamlEncryptColumnRuleConfig.setEncryptorName("encryptorName");
+        yamlEncryptColumnRuleConfig.setQueryWithCipherColumn(true);
         EncryptColumnRuleConfiguration actual = swapper.swapToObject(yamlEncryptColumnRuleConfig);
         assertThat(actual.getLogicColumn(), is("logicColumn"));
         assertThat(actual.getCipherColumn(), is("cipherColumn"));
         assertThat(actual.getAssistedQueryColumn(), is("assistedQueryColumn"));
         assertThat(actual.getPlainColumn(), is("plainColumn"));
         assertThat(actual.getEncryptorName(), is("encryptorName"));
+        assertThat(actual.getQueryWithCipherColumn(), is(true));
     }
 }

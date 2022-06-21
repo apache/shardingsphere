@@ -254,7 +254,7 @@ public final class SQLUtil {
     /**
      * Create literal expression.
      * 
-     * @param astNode ast node
+     * @param astNode AST node
      * @param startIndex start index
      * @param stopIndex stop index
      * @param text text
@@ -277,17 +277,17 @@ public final class SQLUtil {
     }
     
     /**
-     * Trim the semicolon of sql.
+     * Trim the semicolon of SQL.
      *
      * @param sql SQL to be trim
-     * @return sql without semicolon
+     * @return SQL without semicolon
      */
     public static String trimSemicolon(final String sql) {
         return sql.endsWith(SQL_END) ? sql.substring(0, sql.length() - 1) : sql;
     }
     
     /**
-     * Trim the comment of sql.
+     * Trim the comment of SQL.
      *
      * @param sql SQL to be trim
      * @return remove comment from SQL

@@ -42,12 +42,9 @@ import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetect
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparerFactory;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
-import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.infra.lock.LockNameDefinition;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
@@ -55,6 +52,7 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseDatabaseLevelLockEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
+import org.apache.shardingsphere.mode.manager.lock.definition.LockNameDefinitionFactory;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -63,7 +61,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -246,30 +243,10 @@ public final class RuleAlteredJobWorker {
         YamlRootConfiguration result = new YamlRootConfiguration();
         result.setDatabaseName(databaseName);
         Map<String, Map<String, Object>> yamlDataSources = YamlEngine.unmarshal(dataSources, Map.class);
-        disableSSLForMySQL(yamlDataSources);
         result.setDataSources(yamlDataSources);
         Collection<YamlRuleConfiguration> yamlRuleConfigs = YamlEngine.unmarshal(rules, Collection.class, true);
         result.setRules(yamlRuleConfigs);
         return result;
-    }
-    
-    private void disableSSLForMySQL(final Map<String, Map<String, Object>> yamlDataSources) {
-        Map<String, Object> firstDataSourceProps = yamlDataSources.entrySet().iterator().next().getValue();
-        String jdbcUrlKey = firstDataSourceProps.containsKey("url") ? "url" : "jdbcUrl";
-        String jdbcUrl = (String) firstDataSourceProps.get(jdbcUrlKey);
-        if (null == jdbcUrl) {
-            log.warn("disableSSLForMySQL, could not get jdbcUrl, jdbcUrlKey={}", jdbcUrlKey);
-            return;
-        }
-        DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(jdbcUrl);
-        if (!(databaseType instanceof MySQLDatabaseType)) {
-            return;
-        }
-        Properties queryProps = new Properties();
-        queryProps.setProperty("useSSL", Boolean.FALSE.toString());
-        for (Entry<String, Map<String, Object>> entry : yamlDataSources.entrySet()) {
-            entry.getValue().put(jdbcUrlKey, new JdbcUrlAppender().appendQueryProperties((String) entry.getValue().get(jdbcUrlKey), queryProps));
-        }
     }
     
     /**
@@ -321,9 +298,10 @@ public final class RuleAlteredJobWorker {
     private void restoreSourceWriting(final String databaseName) {
         log.info("restoreSourceWriting, databaseName={}", databaseName);
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        if (lockContext.isLocked(databaseName)) {
+        LockNameDefinition lockNameDefinition = LockNameDefinitionFactory.newDatabaseDefinition(databaseName);
+        if (lockContext.isLocked(lockNameDefinition)) {
             log.info("Source writing is still stopped on database '{}', restore it now", databaseName);
-            lockContext.releaseLockWrite(databaseName);
+            lockContext.releaseLock(lockNameDefinition);
         }
     }
 }

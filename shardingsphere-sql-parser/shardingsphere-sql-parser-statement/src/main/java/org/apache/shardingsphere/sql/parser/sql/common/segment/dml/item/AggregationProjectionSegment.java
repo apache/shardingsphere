@@ -24,6 +24,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -39,6 +41,8 @@ public class AggregationProjectionSegment implements ProjectionSegment, AliasAva
     private final AggregationType type;
     
     private final String innerExpression;
+    
+    private final Collection<ExpressionSegment> parameters = new LinkedList<>();
     
     @Setter
     private AliasSegment alias;
