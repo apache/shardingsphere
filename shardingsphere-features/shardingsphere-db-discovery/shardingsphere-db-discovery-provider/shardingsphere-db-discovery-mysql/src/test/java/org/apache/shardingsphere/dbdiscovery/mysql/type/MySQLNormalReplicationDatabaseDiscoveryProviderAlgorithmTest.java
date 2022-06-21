@@ -53,11 +53,9 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithmTest 
         when(slaveHostsResultSet.next()).thenReturn(true, false);
         when(slaveHostsResultSet.getString("Host")).thenReturn("127.0.0.1");
         when(slaveHostsResultSet.getString("Port")).thenReturn("3306");
-        
         ResultSet readonlyResultSet = mock(ResultSet.class);
         when(readonlyResultSet.next()).thenReturn(true, false);
         when(readonlyResultSet.getString("Value")).thenReturn("OFF");
-        
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.createStatement().executeQuery("SHOW SLAVE HOSTS")).thenReturn(slaveHostsResultSet);
         when(connection.getMetaData().getURL()).thenReturn("jdbc:mysql://127.0.0.1:3306/foo_ds");
