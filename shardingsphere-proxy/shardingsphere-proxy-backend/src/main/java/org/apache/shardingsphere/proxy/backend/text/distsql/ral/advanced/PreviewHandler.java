@@ -117,7 +117,10 @@ public final class PreviewHandler extends QueryableRALBackendHandler<PreviewStat
     }
     
     private void setUpCursorDefinition(final SQLStatementContext<?> sqlStatementContext) {
-        String cursorName = ((CursorAvailable) sqlStatementContext).getCursorName().getIdentifier().getValue().toLowerCase();
+        if (!((CursorAvailable) sqlStatementContext).getCursorName().isPresent()) {
+            return;
+        }
+        String cursorName = ((CursorAvailable) sqlStatementContext).getCursorName().get().getIdentifier().getValue().toLowerCase();
         CursorStatementContext cursorStatementContext = getConnectionSession().getCursorDefinitions().get(cursorName);
         Preconditions.checkArgument(null != cursorStatementContext, "Cursor %s does not exist.", cursorName);
         ((CursorDefinitionAware) sqlStatementContext).setUpCursorDefinition(cursorStatementContext);

@@ -1095,6 +1095,7 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
         if (null != ctx.cursorName()) {
             result.setCursorName((CursorNameSegment) visit(ctx.cursorName()));
         }
+        result.setCloseAll(null != ctx.ALL());
         return result;
     }
     

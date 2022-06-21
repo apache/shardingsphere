@@ -29,6 +29,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.Cursor
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
 
+import java.util.Optional;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -50,7 +52,7 @@ public final class CursorTokenGeneratorTest {
     public void assertGenerateSQLToken() {
         CursorTokenGenerator generator = new CursorTokenGenerator();
         CursorStatementContext statementContext = mock(CursorStatementContext.class);
-        when(statementContext.getCursorName()).thenReturn(new CursorNameSegment(0, 0, new IdentifierValue("t_order_cursor")));
+        when(statementContext.getCursorName()).thenReturn(Optional.of(new CursorNameSegment(0, 0, new IdentifierValue("t_order_cursor"))));
         SQLToken actual = generator.generateSQLToken(statementContext);
         assertTrue(actual instanceof CursorToken);
     }
