@@ -150,5 +150,6 @@ execute
     | cluster
     | alterOperator
     | createAccessMethod
+    | createAggregate
     ) SEMI_? EOF
     ;

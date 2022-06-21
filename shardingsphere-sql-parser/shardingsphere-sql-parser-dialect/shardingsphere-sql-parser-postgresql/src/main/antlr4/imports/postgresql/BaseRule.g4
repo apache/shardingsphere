@@ -1384,6 +1384,7 @@ defArg
     | NUMBER_
     | STRING_
     | NONE
+    | funcName (LP_ funcArgsList RP_ | LP_ RP_)
     ;
 
 funcType
