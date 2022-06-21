@@ -44,6 +44,7 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.infra.lock.LockNameDefinition;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
@@ -51,6 +52,7 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseDatabaseLevelLockEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
+import org.apache.shardingsphere.mode.manager.lock.definition.LockNameDefinitionFactory;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -296,9 +298,10 @@ public final class RuleAlteredJobWorker {
     private void restoreSourceWriting(final String databaseName) {
         log.info("restoreSourceWriting, databaseName={}", databaseName);
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        if (lockContext.isLocked(databaseName)) {
+        LockNameDefinition lockNameDefinition = LockNameDefinitionFactory.newDatabaseDefinition(databaseName);
+        if (lockContext.isLocked(lockNameDefinition)) {
             log.info("Source writing is still stopped on database '{}', restore it now", databaseName);
-            lockContext.releaseLock(databaseName);
+            lockContext.releaseLock(lockNameDefinition);
         }
     }
 }

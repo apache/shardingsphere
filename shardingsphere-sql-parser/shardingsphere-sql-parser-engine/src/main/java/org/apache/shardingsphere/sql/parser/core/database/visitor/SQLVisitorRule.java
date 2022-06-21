@@ -86,6 +86,8 @@ public enum SQLVisitorRule {
     
     CREATE_PUBLICATION("CreatePublication", SQLStatementType.DDL),
     
+    ALTER_PUBLICATION("AlterPublication", SQLStatementType.DDL),
+    
     ALTER_PROCEDURE("AlterProcedure", SQLStatementType.DDL),
     
     ALTER_STATEMENT("AlterStatement", SQLStatementType.DDL),
@@ -552,6 +554,8 @@ public enum SQLVisitorRule {
     
     CREATE_INMEMORY_JOIN_GROUP("CreateInmemoryJoinGroup", SQLStatementType.DDL),
     
+    ALTER_INMEMORY_JOIN_GROUP("AlterInmemoryJoinGroup", SQLStatementType.DDL),
+    
     DROP_INMEMORY_JOIN_GROUP("DropInmemoryJoinGroup", SQLStatementType.DDL),
     
     CREATE_RESTORE_POINT("CreateRestorePoint", SQLStatementType.DDL),
@@ -570,7 +574,9 @@ public enum SQLVisitorRule {
     
     CLUSTER("Cluster", SQLStatementType.DDL),
     
-    CREATE_ACCESS_METHOD("CreateAccessMethod", SQLStatementType.DDL);
+    CREATE_ACCESS_METHOD("CreateAccessMethod", SQLStatementType.DDL),
+    
+    DO("DoStatement", SQLStatementType.DML);
     
     private final String name;
     

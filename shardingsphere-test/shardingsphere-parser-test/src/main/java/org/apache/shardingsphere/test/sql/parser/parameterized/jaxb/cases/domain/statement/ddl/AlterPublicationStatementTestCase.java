@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
+
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Lock type.
+ * Alter publication statement test case.
  */
-public enum LockType {
-    
-    STANDARD, GENERAL, DATABASE, SCHEMA
+public final class AlterPublicationStatementTestCase extends SQLParserTestCase {
 }

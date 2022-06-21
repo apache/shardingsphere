@@ -1034,10 +1034,10 @@ alterFunctionClauses
 
 alterPublication
     : ALTER PUBLICATION name
-    (RENAME TO name
+    ( RENAME TO name
     | OWNER TO roleSpec
     | SET definition
-    | (ADD | SET | DROP)  TABLE relationExprList)
+    | (ADD | SET | DROP) TABLE relationExprList)
     ;
 
 alterRoutine
