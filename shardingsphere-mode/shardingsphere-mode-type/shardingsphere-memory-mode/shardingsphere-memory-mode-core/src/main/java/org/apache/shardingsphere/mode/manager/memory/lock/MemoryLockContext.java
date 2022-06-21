@@ -17,14 +17,14 @@
 
 package org.apache.shardingsphere.mode.manager.memory.lock;
 
-import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.lock.LockMode;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
+import org.apache.shardingsphere.mode.manager.lock.AbstractLockContext;
+import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDefinition;
 
 /**
  * Memory lock context.
  */
-public final class MemoryLockContext implements LockContext {
+public final class MemoryLockContext extends AbstractLockContext {
     
     private final ShardingSphereLock memoryLock = new ShardingSphereMemoryLock();
     
@@ -34,22 +34,22 @@ public final class MemoryLockContext implements LockContext {
     }
     
     @Override
-    public boolean tryLock(final String databaseName, final LockMode lockMode) {
-        return memoryLock.tryLock(databaseName);
+    protected boolean tryLock(final DatabaseLockNameDefinition lockNameDefinition) {
+        return memoryLock.tryLock(lockNameDefinition.getDatabaseName());
     }
     
     @Override
-    public boolean tryLock(final String databaseName, final LockMode lockMode, final long timeoutMilliseconds) {
-        return memoryLock.tryLock(databaseName, timeoutMilliseconds);
+    protected boolean tryLock(final DatabaseLockNameDefinition lockNameDefinition, final long timeoutMilliseconds) {
+        return memoryLock.tryLock(lockNameDefinition.getDatabaseName(), timeoutMilliseconds);
     }
     
     @Override
-    public void releaseLock(final String databaseName) {
-        memoryLock.releaseLock(databaseName);
+    protected void releaseLock(final DatabaseLockNameDefinition lockNameDefinition) {
+        memoryLock.releaseLock(lockNameDefinition.getDatabaseName());
     }
     
     @Override
-    public boolean isLocked(final String databaseName) {
-        return memoryLock.isLocked(databaseName);
+    protected boolean isLocked(final DatabaseLockNameDefinition lockNameDefinition) {
+        return memoryLock.isLocked(lockNameDefinition.getDatabaseName());
     }
 }

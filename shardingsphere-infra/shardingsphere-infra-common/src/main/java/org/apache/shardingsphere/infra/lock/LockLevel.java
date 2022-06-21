@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util;
+package org.apache.shardingsphere.infra.lock;
 
 /**
- * Lock node type.
+ * Lock level.
  */
-public enum LockNodeType {
+public enum LockLevel {
     
-    DISTRIBUTED, DATABASE, SCHEMA, TABLE
+    DATABASE, SCHEMA, TABLE
 }
