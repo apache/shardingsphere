@@ -24,7 +24,7 @@ Attributes:
 | -------------------------- | -------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------|
 | name                       | String               | Readwrite-splitting data source name                                                                                                                                | -               |
 | type                       | String               | Readwrite-splitting type, such as: Static, Dynamic                                                                                                                  | -               |
-| props                      | Properties           | Readwrite-splitting required properties. Static: write-data-source-name, read-data-source-names, Dynamic: auto-aware-data-source-name, allow-write-data-source-query| -               |
+| props                      | Properties           | Readwrite-splitting required properties. Static: write-data-source-name, read-data-source-names, Dynamic: auto-aware-data-source-name, write-data-source-query-enabled| -               |
 | loadBalancerName (?)       | String               | Load balance algorithm name of replica sources                                                                                                                      | Round robin load balance algorithm |
 
 Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/load-balance) for more details about type of algorithm.

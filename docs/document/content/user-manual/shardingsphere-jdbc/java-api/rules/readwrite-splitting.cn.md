@@ -24,7 +24,7 @@ weight = 2
 | -------------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------| ---------------|
 | name                       | String               | 读写分离数据源名称                                                                                                                       | -             |
 | type                       | String               | 读写分离类型，分为静态和动态。如 Static、Dynamic                                                                                           | -             |
-| props                      | Properties           | 读写分离所需属性，如静态：write-data-source-name、read-data-source-names，动态：auto-aware-data-source-name、allow-write-data-source-query  | -             |
+| props                      | Properties           | 读写分离所需属性，如静态：write-data-source-name、read-data-source-names，动态：auto-aware-data-source-name、write-data-source-query-enabled  | -             |
 | loadBalancerName (?)       | String               | 读库负载均衡算法名称                                                                                                                     | 轮询负载均衡算法 |
 
 算法类型的详情，请参见[内置负载均衡算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/load-balance)。
