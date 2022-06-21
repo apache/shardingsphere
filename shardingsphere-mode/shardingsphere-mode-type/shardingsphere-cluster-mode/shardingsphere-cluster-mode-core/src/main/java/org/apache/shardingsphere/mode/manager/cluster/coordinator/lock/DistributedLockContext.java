@@ -20,15 +20,15 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.lock.LockMode;
+import org.apache.shardingsphere.infra.lock.LockLevel;
+import org.apache.shardingsphere.infra.lock.LockNameDefinition;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.ShardingSphereLockManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.ShardingSphereInterMutexLockHolder;
+import org.apache.shardingsphere.mode.manager.lock.DatabaseLockNameDefinition;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
-
-import java.util.Set;
 
 /**
  * Distributed lock context.
@@ -60,42 +60,59 @@ public final class DistributedLockContext implements LockContext {
     }
     
     @Override
-    public boolean tryLock(final String databaseName, final LockMode lockMode) {
-        return lockManager.tryLock(databaseName, lockMode);
+    public boolean tryLock(final LockNameDefinition lockNameDefinition) {
+        LockLevel lockLevel = lockNameDefinition.getLockLevel();
+        switch (lockLevel) {
+            case DATABASE:
+                DatabaseLockNameDefinition lockDefinition = (DatabaseLockNameDefinition) lockNameDefinition;
+                return lockManager.tryLock(lockDefinition.getDatabaseName(), lockDefinition.getLockMode());
+            case SCHEMA:
+            case TABLE:
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
     
     @Override
-    public boolean tryLock(final String databaseName, final Set<String> schemaNames, final LockMode lockMode) {
-        return lockManager.tryLock(databaseName, schemaNames, lockMode);
+    public boolean tryLock(final LockNameDefinition lockNameDefinition, final long timeoutMilliseconds) {
+        LockLevel lockLevel = lockNameDefinition.getLockLevel();
+        switch (lockLevel) {
+            case DATABASE:
+                DatabaseLockNameDefinition lockDefinition = (DatabaseLockNameDefinition) lockNameDefinition;
+                return lockManager.tryLock(lockDefinition.getDatabaseName(), lockDefinition.getLockMode(), timeoutMilliseconds);
+            case SCHEMA:
+            case TABLE:
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
     
     @Override
-    public boolean tryLock(final String databaseName, final LockMode lockMode, final long timeoutMilliseconds) {
-        return lockManager.tryLock(databaseName, lockMode, timeoutMilliseconds);
+    public void releaseLock(final LockNameDefinition lockNameDefinition) {
+        LockLevel lockLevel = lockNameDefinition.getLockLevel();
+        switch (lockLevel) {
+            case DATABASE:
+                DatabaseLockNameDefinition lockDefinition = (DatabaseLockNameDefinition) lockNameDefinition;
+                lockManager.releaseLock(lockDefinition.getDatabaseName());
+                break;
+            case SCHEMA:
+            case TABLE:
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
     
     @Override
-    public boolean tryLock(final String databaseName, final Set<String> schemaNames, final LockMode lockMode, final long timeoutMilliseconds) {
-        return lockManager.tryLock(databaseName, schemaNames, lockMode, timeoutMilliseconds);
-    }
-    
-    @Override
-    public void releaseLock(final String databaseName) {
-        lockManager.releaseLock(databaseName);
-    }
-    
-    @Override
-    public void releaseLock(final String databaseName, final String schemaName) {
-        lockManager.releaseLock(databaseName, schemaName);
-    }
-    
-    @Override
-    public boolean isLocked(final String databaseName) {
-        return lockManager.isLocked(databaseName);
-    }
-    
-    @Override
-    public boolean isLocked(final String databaseName, final String schemaName) {
-        return lockManager.isLocked(databaseName, schemaName);
+    public boolean isLocked(final LockNameDefinition lockNameDefinition) {
+        LockLevel lockLevel = lockNameDefinition.getLockLevel();
+        switch (lockLevel) {
+            case DATABASE:
+                DatabaseLockNameDefinition lockDefinition = (DatabaseLockNameDefinition) lockNameDefinition;
+                return lockManager.isLocked(lockDefinition.getDatabaseName());
+            case SCHEMA:
+            case TABLE:
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
 }

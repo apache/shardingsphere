@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.lock;
 
 /**
- * Lock type.
+ * Lock level.
  */
-public enum LockType {
+public enum LockLevel {
     
-    STANDARD, GENERAL, DATABASE, SCHEMA
+    DATABASE, SCHEMA, TABLE
 }
