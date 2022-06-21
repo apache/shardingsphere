@@ -30,8 +30,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListUnitCompleteEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
-//import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdAddedEvent;
-//import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdDeletedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
@@ -76,9 +74,6 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
         } else if (event.getKey().startsWith(ComputeNode.getProcessTriggerNodePatch())) {
             return createShowProcessListTriggerEvent(event);
         }
-        // else if (event.getKey().startsWith(ComputeNode.getXaRecoveryIdNodePath())) {
-        // return createXaRecoveryIdEvent(event);
-        // }
         return Optional.empty();
     }
     
@@ -121,16 +116,4 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
     private InstanceType getInstanceType(final String instanceType) {
         return InstanceType.PROXY.name().equalsIgnoreCase(instanceType) ? InstanceType.PROXY : InstanceType.JDBC;
     }
-    
-    // private Optional<GovernanceEvent> createXaRecoveryIdEvent(final DataChangedEvent event) {
-    // Matcher matcher = Pattern.compile(ComputeNode.getXaRecoveryIdNodePath() + "/([\\S]+)/([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(event.getKey());
-    // if (matcher.find()) {
-    // if (Type.ADDED == event.getType()) {
-    // return Optional.of(new XaRecoveryIdAddedEvent(matcher.group(2), matcher.group(1)));
-    // } else if (Type.DELETED == event.getType()) {
-    // return Optional.of(new XaRecoveryIdDeletedEvent(matcher.group(2), matcher.group(1)));
-    // }
-    // }
-    // return Optional.empty();
-    // }
 }
