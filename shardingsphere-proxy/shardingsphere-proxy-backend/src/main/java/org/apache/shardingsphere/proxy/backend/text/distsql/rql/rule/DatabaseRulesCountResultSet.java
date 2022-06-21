@@ -69,7 +69,7 @@ public final class DatabaseRulesCountResultSet implements DistSQLResultSet {
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         Map<String, Collection<Object>> dataMap = new LinkedHashMap<>();
         initData(dataMap);
-        addSingleTableData(dataMap, database.getRuleMetaData().getSingleRule(SingleTableRule.class));
+        addSingleTableData(database, dataMap);
         addShardingData(database, dataMap);
         addReadwriteSplittingData(database, dataMap);
         addDatabaseDiscoveryData(database, dataMap);
@@ -82,7 +82,8 @@ public final class DatabaseRulesCountResultSet implements DistSQLResultSet {
         addDefaultData(dataMap, SINGLE_TABLE, SHARDING_TABLE, SHARDING_BINDING_TABLE, SHARDING_BROADCAST_TABLE, SHARDING_SCALING, READWRITE_SPLITTING, DB_DISCOVERY, ENCRYPT, SHADOW);
     }
     
-    private void addSingleTableData(final Map<String, Collection<Object>> dataMap, final SingleTableRule rule) {
+    private void addSingleTableData(final ShardingSphereDatabase database, final Map<String, Collection<Object>> dataMap) {
+        SingleTableRule rule = database.getRuleMetaData().getSingleRule(SingleTableRule.class);
         dataMap.put(SINGLE_TABLE, Arrays.asList(SINGLE_TABLE, rule.getAllTables().size()));
     }
     
