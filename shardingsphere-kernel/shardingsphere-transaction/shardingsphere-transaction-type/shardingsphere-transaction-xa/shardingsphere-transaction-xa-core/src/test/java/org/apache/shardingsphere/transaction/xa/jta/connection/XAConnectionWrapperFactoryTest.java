@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
 import org.apache.shardingsphere.transaction.xa.fixture.XAConnectionWrapperFixture;
 import org.apache.shardingsphere.transaction.xa.fixture.XADataSourceDefinitionFixture;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper;
 import org.junit.Test;
 
@@ -48,10 +49,10 @@ public final class XAConnectionWrapperFactoryTest {
     }
     
     private XADataSource createXADataSource() {
-        DatabaseType databaseType = DatabaseTypeFactory.getInstance("FIXTURE");
+        DatabaseType databaseType = DatabaseTypeFactory.getInstance("MySQL");
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, databaseType, "foo_ds");
-        XADataSourceDefinitionFixture xaDataSourceDefinitionFixTure = new XADataSourceDefinitionFixture();
-        return new DataSourceSwapper(xaDataSourceDefinitionFixTure).swap(dataSource);
+        XADataSourceDefinition xaDataSourceDefinitionFixture = new XADataSourceDefinitionFixture();
+        return new DataSourceSwapper(xaDataSourceDefinitionFixture).swap(dataSource);
     }
     
     private Connection mockConnection() throws SQLException {
