@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
@@ -39,7 +40,7 @@ public final class ShardingSphereRuleMetaData {
     private final Collection<RuleConfiguration> configurations;
     
     public ShardingSphereRuleMetaData(final Collection<ShardingSphereRule> rules) {
-        this.rules = rules;
+        this.rules = new CopyOnWriteArrayList<>(rules);
         configurations = rules.stream().map(ShardingSphereRule::getConfiguration).collect(Collectors.toList());
     }
     

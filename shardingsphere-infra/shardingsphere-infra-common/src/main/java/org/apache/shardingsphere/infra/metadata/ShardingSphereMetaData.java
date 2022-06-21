@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.metadata;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -27,11 +26,11 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Meta data contexts.
  */
-@RequiredArgsConstructor
 @Getter
 public final class ShardingSphereMetaData {
     
@@ -43,5 +42,11 @@ public final class ShardingSphereMetaData {
     
     public ShardingSphereMetaData() {
         this(new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
+    }
+    
+    public ShardingSphereMetaData(final Map<String, ShardingSphereDatabase> databases, final ShardingSphereRuleMetaData globalRuleMetaData, final ConfigurationProperties props) {
+        this.databases = new ConcurrentHashMap<>(databases);
+        this.globalRuleMetaData = globalRuleMetaData;
+        this.props = props;
     }
 }
