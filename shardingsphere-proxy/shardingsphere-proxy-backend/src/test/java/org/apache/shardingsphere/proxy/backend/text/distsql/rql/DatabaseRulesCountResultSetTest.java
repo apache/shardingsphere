@@ -35,11 +35,7 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleC
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -53,19 +49,7 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class DatabaseRulesCountResultSetTest {
-    
-    @Mock
-    private ShardingSphereDatabase database;
-    
-    @Before
-    public void before() {
-        ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
-        SingleTableRule singleTableRule = mockSingleTableRule();
-        when(ruleMetaData.getSingleRule(SingleTableRule.class)).thenReturn(singleTableRule);
-        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
-    }
     
     @Test
     public void assertGetRowData() {
@@ -166,12 +150,7 @@ public final class DatabaseRulesCountResultSetTest {
     @Test
     public void assertGetRowDataWithoutConfiguration() {
         DistSQLResultSet resultSet = new DatabaseRulesCountResultSet();
-        when(database.getRuleMetaData().findSingleRule(ShardingRule.class)).thenReturn(Optional.empty());
-        when(database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class)).thenReturn(Optional.empty());
-        when(database.getRuleMetaData().findSingleRule(DatabaseDiscoveryRule.class)).thenReturn(Optional.empty());
-        when(database.getRuleMetaData().findSingleRule(EncryptRule.class)).thenReturn(Optional.empty());
-        when(database.getRuleMetaData().findSingleRule(ShadowRule.class)).thenReturn(Optional.empty());
-        resultSet.init(database, mock(CountDatabaseRulesStatement.class));
+        resultSet.init(mockEmptyDatabase(), mock(CountDatabaseRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(2));
         Iterator<Object> rowData = actual.iterator();
@@ -212,5 +191,12 @@ public final class DatabaseRulesCountResultSetTest {
         rowData = actual.iterator();
         assertThat(rowData.next(), is("encrypt"));
         assertThat(rowData.next(), is(0));
+    }
+    
+    private ShardingSphereDatabase mockEmptyDatabase() {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
+        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(mockSingleTableRule()));
+        when(result.getRuleMetaData()).thenReturn(ruleMetaData);
+        return result;
     }
 }
