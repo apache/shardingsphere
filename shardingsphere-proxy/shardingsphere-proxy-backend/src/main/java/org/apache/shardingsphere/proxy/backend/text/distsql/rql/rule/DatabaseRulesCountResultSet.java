@@ -40,8 +40,6 @@ import java.util.Map;
  */
 public final class DatabaseRulesCountResultSet implements DistSQLResultSet {
     
-    private static final int DEFAULT_COUNT = 0;
-    
     private static final String SINGLE_TABLE = "single_table";
     
     private static final String SHARDING_TABLE = "sharding_table";
@@ -133,7 +131,7 @@ public final class DatabaseRulesCountResultSet implements DistSQLResultSet {
     
     private void addDefaultData(final Map<String, Collection<Object>> dataMap, final String... dataKey) {
         for (String each : dataKey) {
-            dataMap.putIfAbsent(each, Arrays.asList(each, DEFAULT_COUNT));
+            dataMap.putIfAbsent(each, Arrays.asList(each, 0));
         }
     }
     
