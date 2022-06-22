@@ -87,13 +87,4 @@ public final class ResponsePacketBuilder {
     public static Collection<DatabasePacket<?>> buildUpdateResponsePackets(final UpdateResponseHeader updateResponseHeader) {
         return Collections.singletonList(new MySQLOKPacket(1, updateResponseHeader.getUpdateCount(), updateResponseHeader.getLastInsertId()));
     }
-    
-    /**
-     * Build client encoding response packets.
-     *
-     * @return client encoding response packets
-     */
-    public static Collection<DatabasePacket<?>> buildClientEncodingResponsePackets() {
-        return Collections.singletonList(new MySQLOKPacket(1, 0, 0));
-    }
 }
