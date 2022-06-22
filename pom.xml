@@ -60,7 +60,6 @@
         <shade.package>org.apache.shardingsphere.dependencies</shade.package>
         
         <guava.version>30.0-jre</guava.version>
-        <guava-listenablefuture.version>1.0</guava-listenablefuture.version>
         <commons-lang3.version>3.8</commons-lang3.version>
         <commons-collections4.version>4.4</commons-collections4.version>
         <commons-codec.version>1.15</commons-codec.version>
@@ -167,6 +166,10 @@
                     <exclusion>
                         <groupId>com.google.j2objc</groupId>
                         <artifactId>j2objc-annotations</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.google.guava</groupId>
+                        <artifactId>listenablefuture</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>
@@ -689,12 +692,6 @@
                 <groupId>com.github.ben-manes.caffeine</groupId>
                 <artifactId>caffeine</artifactId>
                 <version>${caffeine.version}</version>
-            </dependency>
-            
-            <dependency>
-                <groupId>com.google.guava</groupId>
-                <artifactId>listenablefuture</artifactId>
-                <version>${guava-listenablefuture.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

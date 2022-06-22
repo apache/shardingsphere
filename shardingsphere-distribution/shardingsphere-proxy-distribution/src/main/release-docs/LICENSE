@@ -265,7 +265,6 @@ The text of each license is the standard Apache 2.0 license.
     json-path 2.4.0: https://github.com/jayway/JsonPath, Apache 2.0
     json-smart 2.3: https://www.minidev.net/, Apache 2.0
     jsr305 3.0.2: http://findbugs.sourceforge.net/, Apache 2.0
-    listenablefuture 1.0:https://github.com/google/guava, Apache 2.0
     log4j 1.2.17: http://logging.apache.org/log4j/1.2/, Apache 2.0
     memory 0.9.0, Apache 2.0
     netty-buffer 4.1.73.Final: https://github.com/netty, Apache 2.0
