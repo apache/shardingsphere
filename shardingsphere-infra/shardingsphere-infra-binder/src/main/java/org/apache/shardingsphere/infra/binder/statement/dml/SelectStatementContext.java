@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.binder.statement.dml;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.GroupByContext;
 import org.apache.shardingsphere.infra.binder.segment.select.groupby.engine.GroupByContextEngine;
@@ -80,6 +81,7 @@ import java.util.stream.Collectors;
  */
 @Getter
 @Setter
+@Slf4j
 public final class SelectStatementContext extends CommonSQLStatementContext<SelectStatement> implements TableAvailable, WhereAvailable, ParameterAware {
     
     private final TablesContext tablesContext;
@@ -128,6 +130,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     }
     
     private Map<String, ShardingSphereSchema> getSchemas(final Map<String, ShardingSphereDatabase> databases, final String databaseName) {
+        log.error("databases-------------databases-------------:" + databases);
+        log.error("databases-------------databaseName-------------:" + databaseName);
         ShardingSphereDatabase database = databases.get(databaseName);
         if (null == database) {
             if (tablesContext.getTables().isEmpty()) {
