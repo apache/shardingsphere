@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -87,10 +88,13 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest exte
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(globalRuleMetaData.getSingleRule(SQLTranslatorRule.class)).thenReturn(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()));
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases())
+                .thenReturn(Collections.singletonMap("foo_db", mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS)));
         PostgreSQLPreparedStatementRegistry.getInstance().register(CONNECTION_ID);
-        PostgreSQLPreparedStatementRegistry.getInstance().register(CONNECTION_ID, STATEMENT_ID, SQL, SQL_PARSER_ENGINE.parse(SQL, false),
-                Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4));
+        PostgreSQLPreparedStatementRegistry.getInstance().register(
+                CONNECTION_ID, STATEMENT_ID, SQL, SQL_PARSER_ENGINE.parse(SQL, false), Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4));
         ConnectionSession connectionSession = mock(ConnectionSession.class);
+        when(connectionSession.getDatabaseName()).thenReturn("foo_db");
         when(connectionSession.getConnectionId()).thenReturn(CONNECTION_ID);
         JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
