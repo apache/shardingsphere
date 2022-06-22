@@ -72,7 +72,9 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
     
     private final PipelineChannel channel;
     
-    private MySQLClient client;
+    private final MySQLClient client;
+    
+    private final String catalog;
     
     public MySQLIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<BinlogPosition> binlogPosition,
                                   final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
@@ -82,6 +84,11 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
         Preconditions.checkArgument(dumperConfig.getDataSourceConfig() instanceof StandardPipelineDataSourceConfiguration, "MySQLBinlogDumper only support StandardPipelineDataSourceConfiguration");
         this.channel = channel;
         this.metaDataLoader = metaDataLoader;
+        YamlJdbcConfiguration jdbcConfig = ((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig()).getJdbcConfig();
+        log.info("incremental dump, jdbcUrl={}", jdbcConfig.getJdbcUrl());
+        DataSourceMetaData metaData = DatabaseTypeFactory.getInstance("MySQL").getDataSourceMetaData(jdbcConfig.getJdbcUrl(), null);
+        client = new MySQLClient(new ConnectInfo(random.nextInt(), metaData.getHostname(), metaData.getPort(), jdbcConfig.getUsername(), jdbcConfig.getPassword()));
+        catalog = metaData.getCatalog();
     }
     
     @Override
@@ -90,17 +97,13 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
     }
     
     private void dump() {
-        YamlJdbcConfiguration jdbcConfig = ((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig()).getJdbcConfig();
-        log.info("incremental dump, jdbcUrl={}", jdbcConfig.getJdbcUrl());
-        DataSourceMetaData metaData = DatabaseTypeFactory.getInstance("MySQL").getDataSourceMetaData(jdbcConfig.getJdbcUrl(), null);
-        client = new MySQLClient(new ConnectInfo(random.nextInt(), metaData.getHostname(), metaData.getPort(), jdbcConfig.getUsername(), jdbcConfig.getPassword()));
         client.connect();
         client.subscribe(binlogPosition.getFilename(), binlogPosition.getPosition());
         int eventCount = 0;
         while (isRunning()) {
             AbstractBinlogEvent event = client.poll();
             if (null != event) {
-                handleEvent(metaData.getCatalog(), event);
+                handleEvent(catalog, event);
                 eventCount++;
             }
         }

@@ -73,7 +73,7 @@ public final class MySQLClient {
     
     private volatile boolean running = true;
     
-    private int reconnectTimes;
+    private volatile int reconnectTimes;
     
     /**
      * Connect to MySQL.
@@ -236,7 +236,13 @@ public final class MySQLClient {
         if (null == channel || !channel.isOpen()) {
             return;
         }
-        channel.close();
+        try {
+            channel.close();
+            // CHECKSTYLE:OFF
+        } catch (final RuntimeException ex) {
+            // CHECKSTYLE:ON
+            log.error("close channel error", ex);
+        }
     }
     
     private final class MySQLCommandResponseHandler extends ChannelInboundHandlerAdapter {
