@@ -22,8 +22,8 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
-import org.apache.shardingsphere.transaction.xa.fixture.XADataSourceDefinitionFixture;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
+import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinitionFactory;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper;
 import org.junit.Test;
 
@@ -50,7 +50,7 @@ public final class XAConnectionWrapperFactoryTest {
     
     private XADataSource createXADataSource(final DatabaseType databaseType) {
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, databaseType, "foo_ds");
-        XADataSourceDefinition xaDataSourceDefinitionFixture = new XADataSourceDefinitionFixture();
+        XADataSourceDefinition xaDataSourceDefinitionFixture = XADataSourceDefinitionFactory.getInstance(databaseType);
         return new DataSourceSwapper(xaDataSourceDefinitionFixture).swap(dataSource);
     }
 
