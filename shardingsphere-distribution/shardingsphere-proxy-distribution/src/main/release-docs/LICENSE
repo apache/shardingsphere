@@ -322,7 +322,8 @@ The text of each license is also included at licenses/LICENSE-[project].txt.
     asm 5.0.4: https://github.com/llbit/ow2-asm, BSD-3-Clause
     commons-compiler 3.0.11: https://github.com/janino-compiler/janino, New BSD License
     janino 3.0.11: https://github.com/janino-compiler/janino, New BSD License
-    postgresql 42.3.3: https://github.com/pgjdbc/pgjdbc, BSD 2-Clause
+    opengauss-jdbc 3.0.0: https://gitee.com/opengauss/openGauss-connector-jdbc, BSD-2-Clause
+    postgresql 42.3.3: https://github.com/pgjdbc/pgjdbc, BSD-2-Clause
     protobuf-java 3.11.0: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause
     protobuf-java-util 3.11.0: https://github.com/protocolbuffers/protobuf/blob/master/java, BSD-3-Clause 
 
