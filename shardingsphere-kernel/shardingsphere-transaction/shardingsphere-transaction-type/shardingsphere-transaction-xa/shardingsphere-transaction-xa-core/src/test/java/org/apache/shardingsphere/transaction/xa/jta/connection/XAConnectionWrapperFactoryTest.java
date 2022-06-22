@@ -22,7 +22,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.transaction.xa.fixture.DataSourceUtils;
-import org.apache.shardingsphere.transaction.xa.fixture.XAConnectionWrapperFixture;
 import org.apache.shardingsphere.transaction.xa.fixture.XADataSourceDefinitionFixture;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.properties.XADataSourceDefinition;
 import org.apache.shardingsphere.transaction.xa.jta.datasource.swapper.DataSourceSwapper;
@@ -40,21 +39,22 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class XAConnectionWrapperFactoryTest {
-    
+
+    private final DatabaseType databaseType = DatabaseTypeFactory.getInstance("MySQL");
+
     @Test
     public void assertGetInstance() throws SQLException {
-        XAConnectionWrapper xaConnectionWrapperFixTrue = new XAConnectionWrapperFixture();
+        XAConnectionWrapper xaConnectionWrapperFixTrue = XAConnectionWrapperFactory.getInstance(databaseType);
         XAConnection actual = xaConnectionWrapperFixTrue.wrap(createXADataSource(), mockConnection());
         assertThat(actual.getXAResource(), instanceOf(JDBC4MysqlXAConnection.class));
     }
     
     private XADataSource createXADataSource() {
-        DatabaseType databaseType = DatabaseTypeFactory.getInstance("MySQL");
         DataSource dataSource = DataSourceUtils.build(HikariDataSource.class, databaseType, "foo_ds");
         XADataSourceDefinition xaDataSourceDefinitionFixture = new XADataSourceDefinitionFixture();
         return new DataSourceSwapper(xaDataSourceDefinitionFixture).swap(dataSource);
     }
-    
+
     private Connection mockConnection() throws SQLException {
         Connection result = mock(Connection.class);
         when(result.unwrap(com.mysql.jdbc.Connection.class)).thenReturn(mock(com.mysql.jdbc.Connection.class));
