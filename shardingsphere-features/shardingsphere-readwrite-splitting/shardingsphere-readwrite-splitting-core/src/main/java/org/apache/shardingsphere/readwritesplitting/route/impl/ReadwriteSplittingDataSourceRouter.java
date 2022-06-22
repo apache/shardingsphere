@@ -50,7 +50,7 @@ public final class ReadwriteSplittingDataSourceRouter {
     }
     
     private boolean isPrimaryRoute(final SQLStatementContext<?> sqlStatementContext) {
-        return isWriteRouteStatement(sqlStatementContext) || isHintWriteRouteOnly(sqlStatementContext) || isAllowWriteDatasourceQuery();
+        return isWriteRouteStatement(sqlStatementContext) || isHintWriteRouteOnly(sqlStatementContext) || isAllowWriteDataSourceQuery();
     }
     
     private boolean isWriteRouteStatement(final SQLStatementContext<?> sqlStatementContext) {
@@ -70,7 +70,7 @@ public final class ReadwriteSplittingDataSourceRouter {
         return HintManager.isWriteRouteOnly() || (sqlStatementContext instanceof CommonSQLStatementContext && ((CommonSQLStatementContext<?>) sqlStatementContext).isHintWriteRouteOnly());
     }
     
-    private boolean isAllowWriteDatasourceQuery() {
+    private boolean isAllowWriteDataSourceQuery() {
         return rule.getEnabledReplicaDataSources().isEmpty() && (rule.getReadwriteSplittingStrategy() instanceof DynamicReadwriteSplittingStrategy)
                 && ((DynamicReadwriteSplittingStrategy) rule.getReadwriteSplittingStrategy()).isAllowWriteDataSourceQuery();
     }
