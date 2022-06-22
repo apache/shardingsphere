@@ -29,10 +29,10 @@ import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEng
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Transaction rule.
@@ -51,7 +51,7 @@ public final class TransactionRule implements GlobalRule, InstanceAwareRule, Res
     
     private final Map<String, ShardingSphereDatabase> databases;
     
-    private volatile Map<String, ShardingSphereTransactionManagerEngine> resources;
+    private Map<String, ShardingSphereTransactionManagerEngine> resources;
     
     public TransactionRule(final TransactionRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
         configuration = ruleConfig;
@@ -67,7 +67,7 @@ public final class TransactionRule implements GlobalRule, InstanceAwareRule, Res
     }
     
     private Map<String, ShardingSphereTransactionManagerEngine> createTransactionManagerEngines(final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext) {
-        Map<String, ShardingSphereTransactionManagerEngine> result = new HashMap<>(databases.keySet().size(), 1);
+        Map<String, ShardingSphereTransactionManagerEngine> result = new ConcurrentHashMap<>(databases.keySet().size(), 1);
         for (Entry<String, ShardingSphereDatabase> entry : databases.entrySet()) {
             result.put(entry.getKey(), createTransactionManagerEngine(entry.getValue()));
         }

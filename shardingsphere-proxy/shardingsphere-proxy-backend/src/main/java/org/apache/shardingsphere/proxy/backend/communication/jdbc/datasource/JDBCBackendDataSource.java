@@ -111,7 +111,6 @@ public final class JDBCBackendDataSource implements BackendDataSource {
         log.error("===databaseName==========" + databaseName);
         log.error("===transactionRule.getResources().get(databaseName)==========" + transactionRule.getResources().get(databaseName));
         log.error("===transactionType==========" + transactionType);
-        log.error("===transactionRule.getResources().get(databaseName).getTransactionManager==========" + transactionRule.getResources().get(databaseName).getTransactionManager(transactionType));
         ShardingSphereTransactionManager transactionManager = transactionRule.getResources().get(databaseName).getTransactionManager(transactionType);
         log.error("===transactionManager==========" + transactionManager);
         Connection result = isInTransaction(transactionManager) ? transactionManager.getConnection(dataSourceName) : dataSource.getConnection();
