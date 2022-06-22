@@ -29,9 +29,9 @@ import java.util.Optional;
 /**
  * Move statement.
  */
-@ToString
 @Getter
 @Setter
+@ToString
 public abstract class MoveStatement extends AbstractSQLStatement implements DDLStatement {
     
     private CursorNameSegment cursorName;

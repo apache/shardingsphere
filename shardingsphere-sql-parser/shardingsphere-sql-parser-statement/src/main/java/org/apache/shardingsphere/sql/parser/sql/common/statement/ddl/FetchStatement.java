@@ -29,9 +29,9 @@ import java.util.Optional;
 /**
  * Fetch statement.
  */
-@ToString
 @Getter
 @Setter
+@ToString
 public abstract class FetchStatement extends AbstractSQLStatement implements DDLStatement {
     
     private CursorNameSegment cursorName;
