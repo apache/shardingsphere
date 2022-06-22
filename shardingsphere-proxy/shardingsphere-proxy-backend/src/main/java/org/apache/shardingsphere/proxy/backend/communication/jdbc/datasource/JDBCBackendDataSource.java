@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource;
 
 import com.google.common.base.Preconditions;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.datasource.registry.GlobalDataSourceRegistry;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.proxy.backend.communication.BackendDataSource;
@@ -36,6 +37,7 @@ import java.util.List;
 /**
  * Backend data source of JDBC.
  */
+@Slf4j
 public final class JDBCBackendDataSource implements BackendDataSource {
     
     /**
@@ -105,7 +107,14 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     
     private Connection createConnection(final String databaseName, final String dataSourceName, final DataSource dataSource, final TransactionType transactionType) throws SQLException {
         TransactionRule transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
+        log.error("===transactionRule==========" + transactionRule);
+        log.error("===transactionRule.getResources()==========" + transactionRule.getResources());
+        log.error("===databaseName==========" + databaseName);
+        log.error("===transactionRule.getResources().get(databaseName)==========" + transactionRule.getResources().get(databaseName));
+        log.error("===transactionType==========" + transactionType);
+        log.error("===transactionRule.getResources().get(databaseName).getTransactionManager==========" + transactionRule.getResources().get(databaseName).getTransactionManager(transactionType));
         ShardingSphereTransactionManager transactionManager = transactionRule.getResources().get(databaseName).getTransactionManager(transactionType);
+        log.error("===transactionManager==========" + transactionManager);
         Connection result = isInTransaction(transactionManager) ? transactionManager.getConnection(dataSourceName) : dataSource.getConnection();
         if (dataSourceName.contains(".")) {
             String catalog = dataSourceName.split("\\.")[1];
