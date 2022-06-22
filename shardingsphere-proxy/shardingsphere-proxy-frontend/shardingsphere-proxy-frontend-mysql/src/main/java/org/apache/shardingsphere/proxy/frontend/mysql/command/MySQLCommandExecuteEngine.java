@@ -94,6 +94,6 @@ public final class MySQLCommandExecuteEngine implements CommandExecuteEngine {
             }
             currentSequenceId++;
         }
-        context.write(new MySQLEofPacket(++currentSequenceId + headerPackagesCount));
+        context.write(new MySQLEofPacket(++currentSequenceId + headerPackagesCount, ServerStatusFlagCalculator.calculateFor(backendConnection.getConnectionSession())));
     }
 }

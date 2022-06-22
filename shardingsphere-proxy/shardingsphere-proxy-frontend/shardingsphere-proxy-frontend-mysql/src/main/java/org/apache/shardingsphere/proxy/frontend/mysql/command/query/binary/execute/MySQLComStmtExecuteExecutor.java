@@ -52,6 +52,7 @@ import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.builder.ResponsePacketBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
@@ -131,14 +132,14 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     
     private Collection<DatabasePacket<?>> processQuery(final QueryResponseHeader queryResponseHeader, final int characterSet) {
         responseType = ResponseType.QUERY;
-        Collection<DatabasePacket<?>> result = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, characterSet);
+        Collection<DatabasePacket<?>> result = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, characterSet, ServerStatusFlagCalculator.calculateFor(connectionSession));
         currentSequenceId = result.size();
         return result;
     }
     
     private Collection<DatabasePacket<?>> processUpdate(final UpdateResponseHeader updateResponseHeader) {
         responseType = ResponseType.UPDATE;
-        return ResponsePacketBuilder.buildUpdateResponsePackets(updateResponseHeader);
+        return ResponsePacketBuilder.buildUpdateResponsePackets(updateResponseHeader, ServerStatusFlagCalculator.calculateFor(connectionSession));
     }
     
     @Override

@@ -41,6 +41,7 @@ import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.builder.ResponsePacketBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
@@ -57,6 +58,8 @@ import java.util.Optional;
  */
 public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     
+    private final ConnectionSession connectionSession;
+    
     private final TextProtocolBackendHandler textProtocolBackendHandler;
     
     private final int characterSet;
@@ -67,6 +70,7 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     private int currentSequenceId;
     
     public MySQLComQueryPacketExecutor(final MySQLComQueryPacket packet, final ConnectionSession connectionSession) throws SQLException {
+        this.connectionSession = connectionSession;
         DatabaseType databaseType = DatabaseTypeFactory.getInstance("MySQL");
         SQLStatement sqlStatement = parseSql(packet.getSql(), databaseType);
         textProtocolBackendHandler = areMultiStatements(connectionSession, sqlStatement, packet.getSql()) ? new MySQLMultiStatementsHandler(connectionSession, sqlStatement, packet.getSql())
@@ -102,19 +106,19 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     
     private Collection<DatabasePacket<?>> processQuery(final QueryResponseHeader queryResponseHeader) {
         responseType = ResponseType.QUERY;
-        Collection<DatabasePacket<?>> result = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, characterSet);
+        Collection<DatabasePacket<?>> result = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, characterSet, ServerStatusFlagCalculator.calculateFor(connectionSession));
         currentSequenceId = result.size();
         return result;
     }
     
     private Collection<DatabasePacket<?>> processUpdate(final UpdateResponseHeader updateResponseHeader) {
-        return ResponsePacketBuilder.buildUpdateResponsePackets(updateResponseHeader);
+        return ResponsePacketBuilder.buildUpdateResponsePackets(updateResponseHeader, ServerStatusFlagCalculator.calculateFor(connectionSession));
     }
     
     private Collection<DatabasePacket<?>> processClientEncoding(final ClientEncodingResponseHeader clientEncodingResponseHeader) {
         Optional<String> currentCharsetValue = clientEncodingResponseHeader.getCurrentCharsetValue();
         if (currentCharsetValue.isPresent()) {
-            return Collections.singletonList(new MySQLOKPacket(1, 0, 0));
+            return Collections.singletonList(new MySQLOKPacket(1, 0, 0, ServerStatusFlagCalculator.calculateFor(connectionSession)));
         }
         return Collections.singletonList(new MySQLErrPacket(1, MySQLServerErrorCode.ER_UNKNOWN_CHARACTER_SET, clientEncodingResponseHeader.getInputValue()));
     }

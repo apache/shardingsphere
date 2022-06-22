@@ -30,6 +30,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.builder.ResponsePacketBuilder;
 import org.apache.shardingsphere.proxy.frontend.reactive.command.executor.ReactiveCommandExecutor;
 
@@ -44,6 +45,8 @@ import java.util.Optional;
  */
 public final class ReactiveMySQLComQueryPacketExecutor implements ReactiveCommandExecutor {
     
+    private final ConnectionSession connectionSession;
+    
     private final TextProtocolBackendHandler textProtocolBackendHandler;
     
     private final int characterSet;
@@ -53,6 +56,7 @@ public final class ReactiveMySQLComQueryPacketExecutor implements ReactiveComman
     private int currentSequenceId;
     
     public ReactiveMySQLComQueryPacketExecutor(final MySQLComQueryPacket packet, final ConnectionSession connectionSession) throws SQLException {
+        this.connectionSession = connectionSession;
         textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("MySQL"), packet.getSql(), Optional::empty, connectionSession);
         characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
     }
@@ -85,7 +89,7 @@ public final class ReactiveMySQLComQueryPacketExecutor implements ReactiveComman
     
     private Collection<DatabasePacket<?>> processUpdate(final UpdateResponseHeader updateResponseHeader) {
         responseType = ResponseType.UPDATE;
-        return ResponsePacketBuilder.buildUpdateResponsePackets(updateResponseHeader);
+        return ResponsePacketBuilder.buildUpdateResponsePackets(updateResponseHeader, ServerStatusFlagCalculator.calculateFor(connectionSession));
     }
     
     @Override
