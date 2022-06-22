@@ -82,7 +82,7 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
         Optional<ShardingSphereAlgorithmConfiguration> loadBalancer = Optional.ofNullable(loadBalancers.get(dataSourceRuleConfig.getLoadBalancerName()));
         return Arrays.asList(name,
                 dataSourceRuleConfig.getAutoAwareDataSourceName().orElse(""),
-                dataSourceRuleConfig.getWriteDataSourceQueryEnabled().orElse(""),
+                DYNAMIC.equalsIgnoreCase(dataSourceRuleConfig.getType()) ? dataSourceRuleConfig.getWriteDataSourceQueryEnabled().orElse("") : "",
                 getWriteDataSourceName(dataSourceRuleConfig, exportDataSources),
                 getReadDataSourceNames(dataSourceRuleConfig, exportDataSources),
                 loadBalancer.map(ShardingSphereAlgorithmConfiguration::getType).orElse(""),

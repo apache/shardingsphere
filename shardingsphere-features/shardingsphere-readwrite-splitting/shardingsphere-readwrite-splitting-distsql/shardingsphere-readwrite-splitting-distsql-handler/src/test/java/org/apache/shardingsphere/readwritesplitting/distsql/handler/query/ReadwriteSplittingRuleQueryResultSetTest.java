@@ -57,7 +57,6 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
         Collection<Object> actual = resultSet.getRowData();
         assertThat(actual.size(), is(7));
         assertTrue(actual.contains("readwrite_ds"));
-        assertTrue(actual.contains("true"));
         assertTrue(actual.contains("ds_primary"));
         assertTrue(actual.contains("ds_slave_0,ds_slave_1"));
         assertTrue(actual.contains("random"));
