@@ -105,7 +105,7 @@
         <lombok.version>1.18.20</lombok.version>
         
         <postgresql.version>42.3.3</postgresql.version>
-        <opengauss.version>2.0.1-compatibility</opengauss.version>
+        <opengauss.version>3.0.0</opengauss.version>
         <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
         <h2.version>1.4.196</h2.version>
