@@ -117,11 +117,14 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
             return;
         }
         if (event instanceof WriteRowsEvent) {
-            handleWriteRowsEvent((WriteRowsEvent) event);
+            PipelineTableMetaData tableMetaData = getPipelineTableMetaData(((WriteRowsEvent) event).getTableName());
+            handleWriteRowsEvent((WriteRowsEvent) event, tableMetaData);
         } else if (event instanceof UpdateRowsEvent) {
-            handleUpdateRowsEvent((UpdateRowsEvent) event);
+            PipelineTableMetaData tableMetaData = getPipelineTableMetaData(((UpdateRowsEvent) event).getTableName());
+            handleUpdateRowsEvent((UpdateRowsEvent) event, tableMetaData);
         } else if (event instanceof DeleteRowsEvent) {
-            handleDeleteRowsEvent((DeleteRowsEvent) event);
+            PipelineTableMetaData tableMetaData = getPipelineTableMetaData(((DeleteRowsEvent) event).getTableName());
+            handleDeleteRowsEvent((DeleteRowsEvent) event, tableMetaData);
         }
     }
     
@@ -129,8 +132,7 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
         return !event.getDatabaseName().equals(database) || !dumperConfig.containsTable(event.getTableName());
     }
     
-    private void handleWriteRowsEvent(final WriteRowsEvent event) {
-        PipelineTableMetaData tableMetaData = getPipelineTableMetaData(event.getTableName());
+    private void handleWriteRowsEvent(final WriteRowsEvent event, final PipelineTableMetaData tableMetaData) {
         for (Serializable[] each : event.getAfterRows()) {
             DataRecord record = createDataRecord(event, each.length);
             record.setType(IngestDataChangeType.INSERT);
@@ -146,8 +148,7 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
         return metaDataLoader.getTableMetaData(dumperConfig.getSchemaName(new ActualTableName(actualTableName)), actualTableName);
     }
     
-    private void handleUpdateRowsEvent(final UpdateRowsEvent event) {
-        PipelineTableMetaData tableMetaData = getPipelineTableMetaData(event.getTableName());
+    private void handleUpdateRowsEvent(final UpdateRowsEvent event, final PipelineTableMetaData tableMetaData) {
         for (int i = 0; i < event.getBeforeRows().size(); i++) {
             Serializable[] beforeValues = event.getBeforeRows().get(i);
             Serializable[] afterValues = event.getAfterRows().get(i);
@@ -166,8 +167,7 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
         }
     }
     
-    private void handleDeleteRowsEvent(final DeleteRowsEvent event) {
-        PipelineTableMetaData tableMetaData = getPipelineTableMetaData(event.getTableName());
+    private void handleDeleteRowsEvent(final DeleteRowsEvent event, final PipelineTableMetaData tableMetaData) {
         for (Serializable[] each : event.getBeforeRows()) {
             DataRecord record = createDataRecord(event, each.length);
             record.setType(IngestDataChangeType.DELETE);
