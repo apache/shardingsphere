@@ -28,6 +28,6 @@ import lombok.NoArgsConstructor;
 public final class DropDefaultSingleTableRuleStatement extends DropRuleStatement {
     
     public DropDefaultSingleTableRuleStatement(final boolean containsExistClause) {
-        setContainsExistClause(containsExistClause);
+        super(containsExistClause);
     }
 }

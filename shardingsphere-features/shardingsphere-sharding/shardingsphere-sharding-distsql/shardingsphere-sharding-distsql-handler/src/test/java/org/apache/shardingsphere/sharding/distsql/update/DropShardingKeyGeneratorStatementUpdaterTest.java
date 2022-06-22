@@ -61,8 +61,7 @@ public final class DropShardingKeyGeneratorStatementUpdaterTest {
     
     @Test
     public void assertExecuteWithNotExistWithIfExists() throws DistSQLException {
-        DropShardingKeyGeneratorStatement sqlStatement = new DropShardingKeyGeneratorStatement(Collections.singletonList("uuid_key_generator"));
-        sqlStatement.setContainsExistClause(true);
+        DropShardingKeyGeneratorStatement sqlStatement = new DropShardingKeyGeneratorStatement(true, Collections.singletonList("uuid_key_generator"));
         updater.checkSQLStatement(database, sqlStatement, new ShardingRuleConfiguration());
     }
     
