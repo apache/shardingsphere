@@ -15,15 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.FetchStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.DirectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+
+import java.util.Optional;
 
 /**
- * PostgreSQL fetch statement.
+ * Move statement.
  */
+@Getter
+@Setter
 @ToString
-public final class PostgreSQLFetchStatement extends FetchStatement implements PostgreSQLStatement {
+public abstract class MoveStatement extends AbstractSQLStatement implements DDLStatement {
+    
+    private CursorNameSegment cursorName;
+    
+    private DirectionSegment direction;
+    
+    /**
+     * Get direction.
+     *
+     * @return direction
+     */
+    public Optional<DirectionSegment> getDirection() {
+        return Optional.ofNullable(direction);
+    }
 }

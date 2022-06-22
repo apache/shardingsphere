@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussMoveStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.MoveStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -37,13 +37,13 @@ import java.util.Optional;
  * Move statement context.
  */
 @Getter
-public final class MoveStatementContext extends CommonSQLStatementContext<OpenGaussMoveStatement> implements CursorAvailable, WhereAvailable, CursorDefinitionAware {
+public final class MoveStatementContext extends CommonSQLStatementContext<MoveStatement> implements CursorAvailable, WhereAvailable, CursorDefinitionAware {
     
     private CursorStatementContext cursorStatementContext;
     
     private TablesContext tablesContext;
     
-    public MoveStatementContext(final OpenGaussMoveStatement sqlStatement) {
+    public MoveStatementContext(final MoveStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(Collections.emptyList(), getDatabaseType());
     }
