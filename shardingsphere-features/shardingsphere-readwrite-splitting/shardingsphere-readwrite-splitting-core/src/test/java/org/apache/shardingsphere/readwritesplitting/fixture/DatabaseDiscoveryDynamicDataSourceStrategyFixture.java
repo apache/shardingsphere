@@ -26,7 +26,8 @@ import java.util.Collections;
 public class DatabaseDiscoveryDynamicDataSourceStrategyFixture implements DynamicDataSourceStrategy {
     
     @Override
-    public void init(final ShardingSphereRule rule) { }
+    public void init(final ShardingSphereRule rule) {
+    }
     
     @Override
     public String getPrimaryDataSourceName(final String dataSourceName) {
