@@ -48,6 +48,15 @@ public final class ReadwriteSplittingDataSourceRuleConfiguration {
     }
     
     /**
+     * Get write data source query enabled.
+     *
+     * @return write data source query enabled
+     */
+    public Optional<String> getWriteDataSourceQueryEnabled() {
+        return Optional.ofNullable(String.valueOf(props.getOrDefault("write-data-source-query-enabled", Boolean.TRUE)));
+    }
+    
+    /**
      * Get write data source name.
      *
      * @return write data source name

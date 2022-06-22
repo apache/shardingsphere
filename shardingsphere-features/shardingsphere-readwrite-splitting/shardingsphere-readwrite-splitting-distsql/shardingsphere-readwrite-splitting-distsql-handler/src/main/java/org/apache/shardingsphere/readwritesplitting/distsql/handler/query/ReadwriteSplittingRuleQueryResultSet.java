@@ -82,6 +82,7 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
         Optional<ShardingSphereAlgorithmConfiguration> loadBalancer = Optional.ofNullable(loadBalancers.get(dataSourceRuleConfig.getLoadBalancerName()));
         return Arrays.asList(name,
                 dataSourceRuleConfig.getAutoAwareDataSourceName().orElse(""),
+                dataSourceRuleConfig.getWriteDataSourceQueryEnabled().orElse(""),
                 getWriteDataSourceName(dataSourceRuleConfig, exportDataSources),
                 getReadDataSourceNames(dataSourceRuleConfig, exportDataSources),
                 loadBalancer.map(ShardingSphereAlgorithmConfiguration::getType).orElse(""),
@@ -109,7 +110,7 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList("name", "auto_aware_data_source_name", "write_data_source_name", "read_data_source_names", "load_balancer_type", "load_balancer_props");
+        return Arrays.asList("name", "auto_aware_data_source_name", "write-data-source-query-enabled", "write_data_source_name", "read_data_source_names", "load_balancer_type", "load_balancer_props");
     }
     
     @Override

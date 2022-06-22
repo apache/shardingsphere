@@ -139,6 +139,7 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
             if (each.getReadwriteSplittingStrategy() instanceof DynamicReadwriteSplittingStrategy) {
                 Map<String, String> exportedDataSources = new LinkedHashMap<>(2, 1);
                 exportedDataSources.put(ExportableItemConstants.AUTO_AWARE_DATA_SOURCE_NAME, ((DynamicReadwriteSplittingStrategy) each.getReadwriteSplittingStrategy()).getAutoAwareDataSourceName());
+                exportedDataSources.put(ExportableItemConstants.WRITE_DATA_SOURCE_QUERY_ENABLED, String.valueOf(((DynamicReadwriteSplittingStrategy) each.getReadwriteSplittingStrategy()).isAllowWriteDataSourceQuery()));
                 exportedDataSources.put(ExportableItemConstants.PRIMARY_DATA_SOURCE_NAME, each.getWriteDataSource());
                 exportedDataSources.put(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES, String.join(",", each.getReadwriteSplittingStrategy().getReadDataSources()));
                 result.put(each.getName(), exportedDataSources);
