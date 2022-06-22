@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sharding.rewrite.token.pojo.FetchDirectionToken
 import org.apache.shardingsphere.sql.parser.sql.common.constant.DirectionType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.DirectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussFetchStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.FetchStatement;
 
 /**
  * Fetch direction token generator.
@@ -43,7 +43,7 @@ public final class FetchDirectionTokenGenerator implements OptionalSQLTokenGener
     @Override
     public SQLToken generateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
         Preconditions.checkArgument(sqlStatementContext instanceof FetchStatementContext, "SQLStatementContext must be instance of FetchStatementContext.");
-        OpenGaussFetchStatement fetchStatement = ((FetchStatementContext) sqlStatementContext).getSqlStatement();
+        FetchStatement fetchStatement = ((FetchStatementContext) sqlStatementContext).getSqlStatement();
         CursorNameSegment cursorName = fetchStatement.getCursorName();
         int startIndex = fetchStatement.getDirection().map(DirectionSegment::getStartIndex).orElseGet("FETCH"::length);
         int stopIndex = fetchStatement.getDirection().map(DirectionSegment::getStopIndex).orElseGet("FETCH"::length);
