@@ -31,6 +31,7 @@ import io.netty.util.concurrent.DefaultPromise;
 import io.netty.util.concurrent.Promise;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.netty.MySQLBinlogEventPacketDecoder;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.netty.MySQLCommandPacketDecoder;
@@ -70,6 +71,10 @@ public final class MySQLClient {
     
     private ServerInfo serverInfo;
     
+    private volatile boolean running = true;
+    
+    private volatile int reconnectTimes;
+    
     /**
      * Connect to MySQL.
      */
@@ -80,6 +85,7 @@ public final class MySQLClient {
                 .group(eventLoopGroup)
                 .channel(NioSocketChannel.class)
                 .option(ChannelOption.AUTO_READ, true)
+                .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 5000)
                 .handler(new ChannelInitializer<SocketChannel>() {
                     
                     @Override
@@ -193,6 +199,9 @@ public final class MySQLClient {
      * @return binlog event
      */
     public synchronized AbstractBinlogEvent poll() {
+        if (!running) {
+            throw new PipelineJobExecutionException("binlog sync channel already closed, can't poll event");
+        }
         try {
             return blockingEventQueue.poll(100, TimeUnit.MILLISECONDS);
         } catch (final InterruptedException ignored) {
@@ -216,6 +225,23 @@ public final class MySQLClient {
             throw new RuntimeException("unexpected response type");
         } catch (final InterruptedException | ExecutionException ex) {
             throw new RuntimeException(ex);
+        }
+    }
+    
+    
+    /**
+     * Close netty channel.
+     */
+    public void closeChannel() {
+        if (null == channel || !channel.isOpen()) {
+            return;
+        }
+        try {
+            channel.close();
+            // CHECKSTYLE:OFF
+        } catch (final RuntimeException ex) {
+            // CHECKSTYLE:ON
+            log.error("close channel error", ex);
         }
     }
     
@@ -243,6 +269,9 @@ public final class MySQLClient {
         
         @Override
         public void channelRead(final ChannelHandlerContext ctx, final Object msg) throws Exception {
+            if (!running) {
+                return;
+            }
             if (msg instanceof AbstractBinlogEvent) {
                 lastBinlogEvent = (AbstractBinlogEvent) msg;
                 blockingEventQueue.put(lastBinlogEvent);
@@ -252,27 +281,29 @@ public final class MySQLClient {
         @Override
         public void channelInactive(final ChannelHandlerContext ctx) {
             log.warn("channel inactive");
+            if (!running) {
+                return;
+            }
+            if (reconnectTimes > 3) {
+                log.warn("exceeds the maximum number of retry times, lastBinlogEvent={}", lastBinlogEvent);
+                running = false;
+                return;
+            }
             reconnect();
         }
         
         @Override
         public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
+            running = false;
             log.error("protocol resolution error", cause);
-            reconnect();
         }
         
         private void reconnect() {
-            log.info("reconnect mysql client.");
-            closeOldChannel();
+            reconnectTimes++;
+            log.info("reconnect mysql client, retryTimes={}", reconnectTimes);
+            closeChannel();
             connect();
             subscribe(lastBinlogEvent.getFileName(), lastBinlogEvent.getPosition());
-        }
-        
-        private void closeOldChannel() {
-            try {
-                channel.closeFuture().sync();
-            } catch (final InterruptedException ignored) {
-            }
         }
     }
 }
