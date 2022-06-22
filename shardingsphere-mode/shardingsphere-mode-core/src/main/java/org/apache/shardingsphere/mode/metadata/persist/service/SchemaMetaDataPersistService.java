@@ -115,6 +115,15 @@ public final class SchemaMetaDataPersistService {
     }
     
     /**
+     * Persist database name.
+     * 
+     * @param databaseName database name
+     */
+    public void persistDatabase(final String databaseName) {
+        repository.persist(DatabaseMetaDataNode.getDatabaseNamePath(databaseName), "");
+    }
+    
+    /**
      * Delete schema.
      *
      * @param databaseName database name
