@@ -964,21 +964,6 @@ alterMaterializedViewClauses
     | ALL IN TABLESPACE name (OWNED BY roleList) SET TABLESPACE name NOWAIT?
     ;
 
-declare
-    : DECLARE name cursorOptions CURSOR (WITH HOLD | WITHOUT HOLD)? FOR select
-    ;
-
-cursorOptions
-    : cursorOption*
-    ;
-
-cursorOption
-    : NO SCROLL
-    | SCROLL
-    | BINARY
-    | INSENSITIVE
-    ;
-
 executeStmt
     : EXECUTE name executeParamClause
     ;
@@ -1784,6 +1769,21 @@ importQualificationType
 
 listen
     : LISTEN colId
+    ;
+
+declare
+    : DECLARE cursorName cursorOptions CURSOR (WITH HOLD | WITHOUT HOLD)? FOR select
+    ;
+
+cursorOptions
+    : cursorOption*
+    ;
+
+cursorOption
+    : NO SCROLL
+    | SCROLL
+    | BINARY
+    | INSENSITIVE
     ;
 
 move

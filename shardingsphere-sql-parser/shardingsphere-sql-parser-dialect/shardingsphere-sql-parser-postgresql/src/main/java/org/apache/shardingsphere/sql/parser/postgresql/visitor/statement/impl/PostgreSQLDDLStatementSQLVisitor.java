@@ -965,11 +965,6 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     }
     
     @Override
-    public ASTNode visitDeclare(final DeclareContext ctx) {
-        return new PostgreSQLDeclareStatement();
-    }
-    
-    @Override
     public ASTNode visitDiscard(final DiscardContext ctx) {
         return new PostgreSQLDiscardStatement();
     }
@@ -1083,6 +1078,14 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     @Override
     public ASTNode visitDropServer(final DropServerContext ctx) {
         return new PostgreSQLDropServerStatement();
+    }
+    
+    @Override
+    public ASTNode visitDeclare(final DeclareContext ctx) {
+        PostgreSQLDeclareStatement result = new PostgreSQLDeclareStatement();
+        result.setCursorName((CursorNameSegment) visit(ctx.cursorName()));
+        result.setSelect((SelectStatement) visit(ctx.select()));
+        return result;
     }
     
     @Override
