@@ -31,4 +31,9 @@ import java.util.Collection;
 public final class DropShardingKeyGeneratorStatement extends DropRuleStatement {
     
     private final Collection<String> keyGeneratorNames;
+    
+    public DropShardingKeyGeneratorStatement(final boolean containsExistClause, final Collection<String> keyGeneratorNames) {
+        super(containsExistClause);
+        this.keyGeneratorNames = keyGeneratorNames;
+    }
 }

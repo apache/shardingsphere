@@ -15,28 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.mysql.command.admin.ping;
+package org.apache.shardingsphere.proxy.frontend.mysql.command;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLStatusFlag;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
- * COM_PING executor for MySQL.
+ * MySQL server status flag calculator.
  */
-@RequiredArgsConstructor
-public final class MySQLComPingExecutor implements CommandExecutor {
+public final class ServerStatusFlagCalculator {
     
-    private final ConnectionSession connectionSession;
-    
-    @Override
-    public Collection<DatabasePacket<?>> execute() {
-        return Collections.singletonList(new MySQLOKPacket(1, ServerStatusFlagCalculator.calculateFor(connectionSession)));
+    /**
+     * Calculate server status flag for specified connection.
+     *
+     * @param connectionSession connection session
+     * @return server status flag
+     */
+    public static int calculateFor(final ConnectionSession connectionSession) {
+        int result = 0;
+        result |= connectionSession.isAutoCommit() ? MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue() : 0;
+        result |= connectionSession.getTransactionStatus().isInTransaction() ? MySQLStatusFlag.SERVER_STATUS_IN_TRANS.getValue() : 0;
+        return result;
     }
 }

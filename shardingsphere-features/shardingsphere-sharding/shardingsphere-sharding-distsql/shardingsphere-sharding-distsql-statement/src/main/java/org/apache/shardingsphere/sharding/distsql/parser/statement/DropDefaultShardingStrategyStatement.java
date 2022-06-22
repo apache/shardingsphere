@@ -31,7 +31,7 @@ public final class DropDefaultShardingStrategyStatement extends DropRuleStatemen
     private final String defaultType;
     
     public DropDefaultShardingStrategyStatement(final boolean containsExistClause, final String defaultType) {
-        setContainsExistClause(containsExistClause);
+        super(containsExistClause);
         this.defaultType = defaultType;
     }
 }

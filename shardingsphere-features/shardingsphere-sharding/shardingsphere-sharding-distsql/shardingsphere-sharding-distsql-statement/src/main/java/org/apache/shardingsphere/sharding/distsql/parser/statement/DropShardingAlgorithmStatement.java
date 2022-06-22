@@ -31,4 +31,9 @@ import java.util.Collection;
 public final class DropShardingAlgorithmStatement extends DropRuleStatement {
     
     private final Collection<String> algorithmNames;
+    
+    public DropShardingAlgorithmStatement(final boolean containsExistClause, final Collection<String> algorithmNames) {
+        super(containsExistClause);
+        this.algorithmNames = algorithmNames;
+    }
 }

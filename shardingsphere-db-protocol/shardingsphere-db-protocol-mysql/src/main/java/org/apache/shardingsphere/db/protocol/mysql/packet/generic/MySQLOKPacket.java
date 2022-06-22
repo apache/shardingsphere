@@ -20,7 +20,6 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.generic;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLStatusFlag;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
@@ -38,8 +37,6 @@ public final class MySQLOKPacket implements MySQLPacket {
      */
     public static final int HEADER = 0x00;
     
-    private static final int DEFAULT_STATUS_FLAG = MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue();
-    
     private final int sequenceId;
     
     private final long affectedRows;
@@ -52,12 +49,12 @@ public final class MySQLOKPacket implements MySQLPacket {
     
     private final String info;
     
-    public MySQLOKPacket(final int sequenceId) {
-        this(sequenceId, 0L, 0L, DEFAULT_STATUS_FLAG, 0, "");
+    public MySQLOKPacket(final int sequenceId, final int statusFlag) {
+        this(sequenceId, 0L, 0L, statusFlag, 0, "");
     }
     
-    public MySQLOKPacket(final int sequenceId, final long affectedRows, final long lastInsertId) {
-        this(sequenceId, affectedRows, lastInsertId, DEFAULT_STATUS_FLAG, 0, "");
+    public MySQLOKPacket(final int sequenceId, final long affectedRows, final long lastInsertId, final int statusFlag) {
+        this(sequenceId, affectedRows, lastInsertId, statusFlag, 0, "");
     }
     
     public MySQLOKPacket(final MySQLPacketPayload payload) {

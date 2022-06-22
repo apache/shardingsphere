@@ -275,8 +275,8 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitDropShardingAlgorithm(final DropShardingAlgorithmContext ctx) {
-        DropShardingAlgorithmStatement result = new DropShardingAlgorithmStatement(ctx.algorithmName().stream().map(this::getIdentifierValue).collect(Collectors.toList()));
-        result.setContainsExistClause(null != ctx.existsClause());
+        DropShardingAlgorithmStatement result = new DropShardingAlgorithmStatement(null != ctx.existsClause(),
+                ctx.algorithmName().stream().map(this::getIdentifierValue).collect(Collectors.toList()));
         return result;
     }
     
@@ -449,8 +449,8 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitDropShardingKeyGenerator(final DropShardingKeyGeneratorContext ctx) {
-        DropShardingKeyGeneratorStatement result = new DropShardingKeyGeneratorStatement(ctx.keyGeneratorName().stream().map(this::getIdentifierValue).collect(Collectors.toList()));
-        result.setContainsExistClause(null != ctx.existsClause());
+        DropShardingKeyGeneratorStatement result = new DropShardingKeyGeneratorStatement(null != ctx.existsClause(),
+                ctx.keyGeneratorName().stream().map(this::getIdentifierValue).collect(Collectors.toList()));
         return result;
     }
     

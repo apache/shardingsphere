@@ -33,7 +33,7 @@ public final class DropShadowRuleStatement extends DropRuleStatement {
     private final Collection<String> ruleNames;
     
     public DropShadowRuleStatement(final boolean containsExistClause, final Collection<String> ruleNames) {
-        setContainsExistClause(containsExistClause);
+        super(containsExistClause);
         this.ruleNames = ruleNames;
     }
 }
