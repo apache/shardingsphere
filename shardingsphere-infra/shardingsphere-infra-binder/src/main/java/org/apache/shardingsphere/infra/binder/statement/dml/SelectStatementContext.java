@@ -130,9 +130,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     }
     
     private Map<String, ShardingSphereSchema> getSchemas(final Map<String, ShardingSphereDatabase> databases, final String databaseName) {
-        log.error("databases-------------databases-------------:" + databases);
-        log.error("databases-------------databaseName-------------:" + databaseName);
-        ShardingSphereDatabase database = databases.get(databaseName);
+        ShardingSphereDatabase database = null == databaseName ? null : databases.get(databaseName);
         if (null == database) {
             if (tablesContext.getTables().isEmpty()) {
                 return Collections.emptyMap();
