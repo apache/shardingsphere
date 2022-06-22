@@ -20,7 +20,7 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/readwrite-spl
 | -------------------------- | ---------- | ----------------------------------------------------------------------- |
 | id                         | Attribute  | Readwrite-splitting data source rule name                               |
 | type                       | Attribute  | Readwrite-splitting type, such as: Static, Dynamic                      |
-| props                      | Tag        | Readwrite-splitting required properties. Static: write-data-source-name, read-data-source-names, Dynamic: auto-aware-data-source-name |
+| props                      | Tag        | Readwrite-splitting required properties. Static: write-data-source-name, read-data-source-names, Dynamic: auto-aware-data-source-name, write-data-source-query-enabled |
 | load-balance-algorithm-ref | Attribute  | Load balance algorithm name                                             |
 
 \<readwrite-splitting:load-balance-algorithm />

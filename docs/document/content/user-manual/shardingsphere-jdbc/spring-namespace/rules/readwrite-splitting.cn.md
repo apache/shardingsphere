@@ -20,7 +20,7 @@ weight = 2
 | -------------------------- | ----- | -------------------------------------------- |
 | id                         | 属性  | 读写分离数据源规则名称                           |
 | type                       | 属性  | 读写分离类型，分为静态和动态。如 Static、Dynamic  |
-| props                      | 标签  | 读写分离所需属性，如静态：write-data-source-name、read-data-source-names，动态：auto-aware-data-source-name  |
+| props                      | 标签  | 读写分离所需属性，如静态：write-data-source-name、read-data-source-names，动态：auto-aware-data-source-name、write-data-source-query-enabled  |
 | load-balance-algorithm-ref | 属性  | 负载均衡算法名称                               |
 
 
