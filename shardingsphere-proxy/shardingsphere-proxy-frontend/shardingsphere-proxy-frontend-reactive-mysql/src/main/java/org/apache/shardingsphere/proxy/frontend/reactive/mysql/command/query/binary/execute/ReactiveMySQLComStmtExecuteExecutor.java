@@ -121,7 +121,7 @@ public final class ReactiveMySQLComStmtExecuteExecutor implements ReactiveComman
                 while (next()) {
                     result.add(getQueryRowPacket());
                 }
-                result.add(new MySQLEofPacket(++currentSequenceId));
+                result.add(new MySQLEofPacket(++currentSequenceId, ServerStatusFlagCalculator.calculateFor(connectionSession)));
                 return Future.succeededFuture(result);
             } catch (SQLException ex) {
                 return Future.failedFuture(ex);
@@ -146,7 +146,7 @@ public final class ReactiveMySQLComStmtExecuteExecutor implements ReactiveComman
     
     private Collection<DatabasePacket<?>> processQuery(final QueryResponseHeader queryResponseHeader, final int characterSet) {
         responseType = ResponseType.QUERY;
-        Collection<DatabasePacket<?>> result = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, characterSet);
+        Collection<DatabasePacket<?>> result = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, characterSet, ServerStatusFlagCalculator.calculateFor(connectionSession));
         currentSequenceId = result.size();
         return result;
     }

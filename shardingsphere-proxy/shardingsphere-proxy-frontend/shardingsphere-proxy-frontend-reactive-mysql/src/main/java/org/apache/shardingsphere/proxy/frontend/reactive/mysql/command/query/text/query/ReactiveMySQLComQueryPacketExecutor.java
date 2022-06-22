@@ -71,7 +71,7 @@ public final class ReactiveMySQLComQueryPacketExecutor implements ReactiveComman
                     while (textProtocolBackendHandler.next()) {
                         result.add(new MySQLTextResultSetRowPacket(++currentSequenceId, textProtocolBackendHandler.getRowData()));
                     }
-                    result.add(new MySQLEofPacket(++currentSequenceId));
+                    result.add(new MySQLEofPacket(++currentSequenceId, ServerStatusFlagCalculator.calculateFor(connectionSession)));
                 }
                 return Future.succeededFuture(result);
             } catch (final SQLException ex) {
@@ -82,7 +82,7 @@ public final class ReactiveMySQLComQueryPacketExecutor implements ReactiveComman
     
     private Collection<DatabasePacket<?>> processQuery(final QueryResponseHeader queryResponseHeader) {
         responseType = ResponseType.QUERY;
-        Collection<DatabasePacket<?>> result = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, characterSet);
+        Collection<DatabasePacket<?>> result = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, characterSet, ServerStatusFlagCalculator.calculateFor(connectionSession));
         currentSequenceId = result.size();
         return result;
     }

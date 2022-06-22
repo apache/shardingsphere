@@ -33,6 +33,7 @@ import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicati
 import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
 import org.apache.shardingsphere.proxy.frontend.reactive.command.executor.ReactiveCommandExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -49,6 +50,8 @@ public final class ReactiveMySQLComFieldListPacketExecutor implements ReactiveCo
     
     private final MySQLComFieldListPacket packet;
     
+    private final ConnectionSession connectionSession;
+    
     private final String databaseName;
     
     private final VertxDatabaseCommunicationEngine databaseCommunicationEngine;
@@ -59,6 +62,7 @@ public final class ReactiveMySQLComFieldListPacketExecutor implements ReactiveCo
     
     public ReactiveMySQLComFieldListPacketExecutor(final MySQLComFieldListPacket packet, final ConnectionSession connectionSession) {
         this.packet = packet;
+        this.connectionSession = connectionSession;
         databaseName = connectionSession.getDefaultDatabaseName();
         String sql = String.format(SQL, packet.getTable(), databaseName);
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
@@ -88,7 +92,7 @@ public final class ReactiveMySQLComFieldListPacketExecutor implements ReactiveCo
             result.add(new MySQLColumnDefinition41Packet(
                     ++currentSequenceId, characterSet, databaseName, packet.getTable(), packet.getTable(), columnName, columnName, 100, MySQLBinaryColumnType.MYSQL_TYPE_VARCHAR, 0, true));
         }
-        result.add(new MySQLEofPacket(++currentSequenceId));
+        result.add(new MySQLEofPacket(++currentSequenceId, ServerStatusFlagCalculator.calculateFor(connectionSession)));
         return result;
     }
 }
