@@ -51,7 +51,7 @@ import java.util.Optional;
  */
 public final class MySQLAuthenticationEngine implements AuthenticationEngine {
     
-    private static final int DEFAULT_STATUS_FLAG = MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue();    
+    private static final int DEFAULT_STATUS_FLAG = MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue();
     
     private final MySQLAuthenticationHandler authenticationHandler = new MySQLAuthenticationHandler();
     
