@@ -84,6 +84,7 @@ public final class TransactionRule implements GlobalRule, InstanceAwareRule, Res
     @Override
     public synchronized void addResource(final ShardingSphereDatabase database) {
         // TODO process null when for information_schema
+        log.error("=========database=========" + database);
         if (null == database) {
             return;
         }
