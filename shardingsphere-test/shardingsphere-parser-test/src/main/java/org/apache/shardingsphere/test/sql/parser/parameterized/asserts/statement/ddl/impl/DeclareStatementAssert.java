@@ -39,8 +39,8 @@ public final class DeclareStatementAssert {
      * Assert declare statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual declare statement
-     * @param expected      expected declare statement test case
+     * @param actual actual declare statement
+     * @param expected expected declare statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final DeclareStatement actual, final DeclareStatementTestCase expected) {
         assertCursorName(assertContext, actual, expected);
