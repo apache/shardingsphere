@@ -72,6 +72,8 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
     
     private final PipelineChannel channel;
     
+    private MySQLClient client;
+    
     public MySQLIncrementalDumper(final DumperConfiguration dumperConfig, final IngestPosition<BinlogPosition> binlogPosition,
                                   final PipelineChannel channel, final PipelineTableMetaDataLoader metaDataLoader) {
         super(dumperConfig, binlogPosition, channel, metaDataLoader);
@@ -91,7 +93,7 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
         YamlJdbcConfiguration jdbcConfig = ((StandardPipelineDataSourceConfiguration) dumperConfig.getDataSourceConfig()).getJdbcConfig();
         log.info("incremental dump, jdbcUrl={}", jdbcConfig.getJdbcUrl());
         DataSourceMetaData metaData = DatabaseTypeFactory.getInstance("MySQL").getDataSourceMetaData(jdbcConfig.getJdbcUrl(), null);
-        MySQLClient client = new MySQLClient(new ConnectInfo(random.nextInt(), metaData.getHostname(), metaData.getPort(), jdbcConfig.getUsername(), jdbcConfig.getPassword()));
+        client = new MySQLClient(new ConnectInfo(random.nextInt(), metaData.getHostname(), metaData.getPort(), jdbcConfig.getUsername(), jdbcConfig.getPassword()));
         client.connect();
         client.subscribe(binlogPosition.getFilename(), binlogPosition.getPosition());
         int eventCount = 0;
@@ -198,5 +200,8 @@ public final class MySQLIncrementalDumper extends AbstractIncrementalDumper<Binl
     
     @Override
     protected void doStop() {
+        if (null != client) {
+            client.closeChannel();
+        }
     }
 }
