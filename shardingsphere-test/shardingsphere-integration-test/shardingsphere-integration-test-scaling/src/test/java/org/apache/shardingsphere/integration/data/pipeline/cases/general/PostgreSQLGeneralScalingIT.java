@@ -19,6 +19,7 @@ package org.apache.shardingsphere.integration.data.pipeline.cases.general;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.tuple.Pair;
+import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseExtraSQLITCase;
@@ -36,6 +37,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertTrue;
 
@@ -87,6 +90,11 @@ public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
         addTargetResource();
         executeWithLog(getCommonSQLCommand().getAutoAlterOrderWithItemShardingTableRule());
         String jobId = getScalingJobId();
+        Executors.newFixedThreadPool(1).execute(() -> {
+            ThreadUtil.sleep(8, TimeUnit.SECONDS);
+            executeWithLog(String.format("STOP SCALING %s", jobId));
+            executeWithLog(String.format("START SCALING %s", jobId));
+        });
         waitScalingFinished(jobId);
         assertCheckScalingSuccess(jobId);
         applyScaling(jobId);
