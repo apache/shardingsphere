@@ -11,14 +11,15 @@ SHOW READWRITE_SPLITTING RULES [FROM databaseName]
 
 ## Return Value Description
 
-| Column                      | Description                          |
-| --------------------------- | ------------------------------------ |
-| name                        | Rule name                            |
-| auto_aware_data_source_name | Auto-Aware discovery data source name (Display configuration dynamic readwrite splitting rules) |
-| write_data_source_name      | Write data source name                |
-| read_data_source_names      | Read data source name list            |
-| load_balancer_type          | Load balance algorithm type           |
-| load_balancer_props         | Load balance algorithm parameter      |
+| Column                          | Description                          |
+| ------------------------------- | ------------------------------------ |
+| name                            | Rule name                            |
+| auto_aware_data_source_name     | Auto-Aware discovery data source name (Display configuration dynamic readwrite splitting rules) |
+| write_data_source_query_enabled | all replicas offline, primary data source whether provide query (Display configuration dynamic readwrite splitting rules)|
+| write_data_source_name          | Write data source name                |
+| read_data_source_names          | Read data source name list            |
+| load_balancer_type              | Load balance algorithm type           |
+| load_balancer_props             | Load balance algorithm parameter      |
 
 ## Example
 
