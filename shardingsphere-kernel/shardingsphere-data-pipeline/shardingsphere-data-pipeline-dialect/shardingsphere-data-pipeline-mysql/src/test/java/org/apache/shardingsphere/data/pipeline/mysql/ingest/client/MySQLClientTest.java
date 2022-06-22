@@ -70,7 +70,7 @@ public final class MySQLClientTest {
     
     @Test
     public void assertExecute() throws NoSuchFieldException, IllegalAccessException {
-        mockChannelResponse(new MySQLOKPacket(0));
+        mockChannelResponse(new MySQLOKPacket(0, 0));
         ReflectionUtil.setFieldValue(mysqlClient, "channel", channel);
         ReflectionUtil.setFieldValue(mysqlClient, "eventLoopGroup", new NioEventLoopGroup(1));
         assertTrue(mysqlClient.execute(""));
@@ -79,7 +79,7 @@ public final class MySQLClientTest {
     
     @Test
     public void assertExecuteUpdate() throws NoSuchFieldException, IllegalAccessException {
-        MySQLOKPacket expected = new MySQLOKPacket(0, 10, 0);
+        MySQLOKPacket expected = new MySQLOKPacket(0, 10, 0, 0);
         ReflectionUtil.setFieldValue(expected, "affectedRows", 10);
         mockChannelResponse(expected);
         ReflectionUtil.setFieldValue(mysqlClient, "channel", channel);
@@ -105,7 +105,7 @@ public final class MySQLClientTest {
         ReflectionUtil.setFieldValue(mysqlClient, "serverInfo", serverInfo);
         ReflectionUtil.setFieldValue(mysqlClient, "channel", channel);
         ReflectionUtil.setFieldValue(mysqlClient, "eventLoopGroup", new NioEventLoopGroup(1));
-        mockChannelResponse(new MySQLOKPacket(0));
+        mockChannelResponse(new MySQLOKPacket(0, 0));
         mysqlClient.subscribe("", 4L);
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComRegisterSlaveCommandPacket.class));
         verify(channel).writeAndFlush(ArgumentMatchers.any(MySQLComBinlogDumpCommandPacket.class));
