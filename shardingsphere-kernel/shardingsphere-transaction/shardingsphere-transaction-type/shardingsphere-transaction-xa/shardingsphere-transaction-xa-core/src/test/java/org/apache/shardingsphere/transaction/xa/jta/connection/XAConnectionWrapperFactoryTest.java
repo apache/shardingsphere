@@ -43,8 +43,8 @@ public final class XAConnectionWrapperFactoryTest {
     @Test
     public void assertGetInstance() throws SQLException {
         DatabaseType databaseType = DatabaseTypeFactory.getInstance("MySQL");
-        XAConnectionWrapper xaConnectionWrapperFixTrue = XAConnectionWrapperFactory.getInstance(databaseType);
-        XAConnection actual = xaConnectionWrapperFixTrue.wrap(createXADataSource(databaseType), mockConnection());
+        XAConnectionWrapper xaConnectionWrapper = XAConnectionWrapperFactory.getInstance(databaseType);
+        XAConnection actual = xaConnectionWrapper.wrap(createXADataSource(databaseType), mockConnection());
         assertThat(actual.getXAResource(), instanceOf(JDBC4MysqlXAConnection.class));
     }
     
