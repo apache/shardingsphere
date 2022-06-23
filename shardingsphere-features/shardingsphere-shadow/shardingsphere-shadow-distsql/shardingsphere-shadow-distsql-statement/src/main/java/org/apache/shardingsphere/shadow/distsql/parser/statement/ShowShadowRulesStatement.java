@@ -29,8 +29,8 @@ public final class ShowShadowRulesStatement extends ShowRulesStatement {
     
     private final String ruleName;
     
-    public ShowShadowRulesStatement(final String tableName, final DatabaseSegment database) {
+    public ShowShadowRulesStatement(final String ruleName, final DatabaseSegment database) {
         super(database);
-        this.ruleName = tableName;
+        this.ruleName = ruleName;
     }
 }
