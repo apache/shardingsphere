@@ -6,22 +6,22 @@ weight = 3
 
 ### Description
 
-The `SHOW SHARDING TABLE RULE` syntax is used to query the sharding table rule in the specified schema.
+The `SHOW SHARDING TABLE RULE` syntax is used to query the sharding table rule in the specified database.
 
 ### Syntax
 ```
 ShowShardingTableRule ::=
-  'SHOW' 'SHARDING' 'TABLE' ('RULE' tableName | 'RULES') ('FROM' schemaName)?
+  'SHOW' 'SHARDING' 'TABLE' ('RULE' tableName | 'RULES') ('FROM' databaseName)?
 
 tableName ::=
   identifier
 
-schemaName ::=
+databaseName ::=
   identifier
 ```
 
 ### Supplement
-- When `schemaName` is not specified, the default is the currently used `SCHEMA`. If `SCHEMA` is not used, `No database selected` will be prompted.
+- When `databaseName` is not specified, the default is the currently used `DATABASE`. If `DATABASE` is not used, `No database selected` will be prompted.
 
  ### Return value description
 
@@ -43,7 +43,7 @@ schemaName ::=
 | key_generator_props               | Sharding key generator properties                         |
 
  ### Example
-- Query the sharding table rules of the specified logical schema
+- Query the sharding table rules of the specified logical database
 ```sql
 SHOW SHARDING TABLE RULES FROM sharding_db;
 ```
@@ -57,7 +57,7 @@ SHOW SHARDING TABLE RULES FROM sharding_db;
 2 rows in set (0.12 sec)
 ```
 
-- Query the sharding table rules of the current logic schema
+- Query the sharding table rules of the current logic database
 ```sql
 SHOW SHARDING TABLE RULES;
 ```
