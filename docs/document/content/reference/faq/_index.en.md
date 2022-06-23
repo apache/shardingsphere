@@ -40,16 +40,16 @@ Open cmd.exe and execute the following command:
 tar zxvf apache-shardingsphere-${RELEASE.VERSION}-shardingsphere-proxy-bin.tar.gz
 ```
 
-## [Proxy] How to add a new logic schema dynamically when use ShardingSphere-Proxy?
+## [Proxy] How to add a new logic database dynamically when use ShardingSphere-Proxy?
 
 Answer:
 
-When using ShardingSphere-Proxy, users can dynamically create or drop logic schema through `DistSQL`, the syntax is as follows:
+When using ShardingSphere-Proxy, users can dynamically create or drop logic database through `DistSQL`, the syntax is as follows:
 
 ```sql
-CREATE (DATABASE | SCHEMA) [IF NOT EXISTS] schemaName;
+CREATE DATABASE [IF NOT EXISTS] databaseName;
     
-DROP (DATABASE | SCHEMA) [IF EXISTS] schemaName;
+DROP DATABASE [IF EXISTS] databaseName;
 ```
 
 Example:
@@ -57,7 +57,7 @@ Example:
 ```sql
 CREATE DATABASE sharding_db;
 
-DROP SCHEMA sharding_db;
+DROP DATABASE sharding_db;
 ```
 
 ## [Proxy] How to use a suitable database tools connecting ShardingSphere-Proxy?
@@ -71,12 +71,12 @@ Answer:
    - DataGrip：2020.1, 2021.1 (turn on "introspect using jdbc metadata" in idea or datagrip).
    - WorkBench：8.0.25.
 
-## [Proxy] When using a client such as Navicat to connect to ShardingSphere-Proxy, if ShardingSphere-Proxy does not create a Schema or does not add a Resource, the client connection will fail?
+## [Proxy] When using a client such as Navicat to connect to ShardingSphere-Proxy, if ShardingSphere-Proxy does not create a database or does not add a resource, the client connection will fail?
 
 Answer:
 
-1. Third-party database tools will send some SQL query metadata when connecting to ShardingSphere-Proxy. When ShardingSphere-Proxy does not create a `schema` or does not add a `resource`, ShardingSphere-Proxy cannot execute SQL.
-2. It is recommended to create `schema` and `resource` first, and then use third-party database tools to connect.
+1. Third-party database tools will send some SQL query metadata when connecting to ShardingSphere-Proxy. When ShardingSphere-Proxy does not create a `database` or does not add a `resource`, ShardingSphere-Proxy cannot execute SQL.
+2. It is recommended to create `database` and `resource` first, and then use third-party database tools to connect.
 3. Please refer to [Related introduction](/en/user-manual/shardingsphere-proxy/distsql/syntax/rdl/resource-definition/) the details about `resource`.
 
 ## [Sharding] How to solve `Cloud not resolve placeholder … in string value …` error?
