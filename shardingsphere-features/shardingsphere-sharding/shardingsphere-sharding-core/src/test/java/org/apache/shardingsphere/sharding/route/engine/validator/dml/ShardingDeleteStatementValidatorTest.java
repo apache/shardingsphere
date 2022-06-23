@@ -86,6 +86,6 @@ public final class ShardingDeleteStatementValidatorTest {
         Collection<String> tableNames = new HashSet<>(Arrays.asList("user", "order", "order_item"));
         when(shardingRule.isAllShardingTables(tableNames)).thenReturn(false);
         when(shardingRule.tableRuleExists(tableNames)).thenReturn(true);
-        new ShardingDeleteStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class));
+        new ShardingDeleteStatementValidator(null).preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class));
     }
 }

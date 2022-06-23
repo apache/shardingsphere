@@ -64,6 +64,8 @@ public final class YamlShardingRuleConfiguration implements YamlRuleConfiguratio
     
     private Map<String, YamlOnRuleAlteredActionConfiguration> scaling = new LinkedHashMap<>();
     
+    private boolean allowDMLWithoutShardingKey = true;
+    
     @Override
     public Class<ShardingRuleConfiguration> getRuleConfigurationType() {
         return ShardingRuleConfiguration.class;

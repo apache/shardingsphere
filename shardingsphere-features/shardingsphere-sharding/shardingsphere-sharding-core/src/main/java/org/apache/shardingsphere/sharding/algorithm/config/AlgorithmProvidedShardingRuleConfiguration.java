@@ -59,4 +59,6 @@ public final class AlgorithmProvidedShardingRuleConfiguration implements Databas
     private Map<String, ShardingAlgorithm> shardingAlgorithms = new LinkedHashMap<>();
     
     private Map<String, KeyGenerateAlgorithm> keyGenerators = new LinkedHashMap<>();
+    
+    private boolean allowDMLWithoutShardingKey = true;
 }

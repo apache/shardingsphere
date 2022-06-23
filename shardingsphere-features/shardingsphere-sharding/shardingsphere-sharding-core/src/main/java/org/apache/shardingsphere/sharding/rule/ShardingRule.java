@@ -110,6 +110,8 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     private final Map<String, Collection<DataNode>> shardingTableDataNodes;
     
+    private final boolean allowDMLWithoutShardingKey;
+    
     public ShardingRule(final ShardingRuleConfiguration config, final Collection<String> dataSourceNames) {
         configuration = config;
         this.dataSourceNames = getDataSourceNames(config.getTables(), config.getAutoTables(), dataSourceNames);
@@ -126,6 +128,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
                 : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
         defaultShardingColumn = config.getDefaultShardingColumn();
         shardingTableDataNodes = createShardingTableDataNodes(tableRules);
+        allowDMLWithoutShardingKey = config.isAllowDMLWithoutShardingKey();
         Preconditions.checkArgument(isValidBindingTableConfiguration(tableRules, new BindingTableCheckedConfiguration(this.dataSourceNames, shardingAlgorithms, config.getBindingTableGroups(),
                 broadcastTables, defaultDatabaseShardingStrategyConfig, defaultTableShardingStrategyConfig, defaultShardingColumn)),
                 "Invalid binding table configuration in ShardingRuleConfiguration.");
@@ -147,6 +150,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
                 : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
         defaultShardingColumn = config.getDefaultShardingColumn();
         shardingTableDataNodes = createShardingTableDataNodes(tableRules);
+        allowDMLWithoutShardingKey = config.isAllowDMLWithoutShardingKey();
         Preconditions.checkArgument(isValidBindingTableConfiguration(tableRules, new BindingTableCheckedConfiguration(this.dataSourceNames, shardingAlgorithms, config.getBindingTableGroups(),
                 broadcastTables, defaultDatabaseShardingStrategyConfig, defaultTableShardingStrategyConfig, defaultShardingColumn)),
                 "Invalid binding table configuration in ShardingRuleConfiguration.");

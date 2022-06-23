@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.dml.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.ShardingDMLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
@@ -32,7 +34,10 @@ import java.util.List;
 /**
  * Sharding delete statement validator.
  */
+@RequiredArgsConstructor
 public final class ShardingDeleteStatementValidator extends ShardingDMLStatementValidator<DeleteStatement> {
+    
+    private final ShardingConditions shardingConditions;
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<DeleteStatement> sqlStatementContext,
@@ -46,5 +51,6 @@ public final class ShardingDeleteStatementValidator extends ShardingDMLStatement
         if (DeleteStatementHandler.getLimitSegment(sqlStatementContext.getSqlStatement()).isPresent() && routeContext.getRouteUnits().size() > 1) {
             throw new ShardingSphereException("DELETE ... LIMIT can not support sharding route to multiple data nodes.");
         }
+        validateShardingConditions(shardingRule, routeContext, shardingConditions);
     }
 }

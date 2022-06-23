@@ -70,6 +70,8 @@ public final class ShardingRuleConfiguration implements DatabaseRuleConfiguratio
     
     private Map<String, OnRuleAlteredActionConfiguration> scaling = new LinkedHashMap<>();
     
+    private boolean allowDMLWithoutShardingKey = true;
+    
     @Override
     public Collection<String> getRequiredResource() {
         Collection<String> result = new LinkedHashSet<>();

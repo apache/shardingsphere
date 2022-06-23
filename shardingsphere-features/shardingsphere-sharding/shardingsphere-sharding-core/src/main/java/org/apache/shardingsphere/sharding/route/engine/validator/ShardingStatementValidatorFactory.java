@@ -128,13 +128,13 @@ public final class ShardingStatementValidatorFactory {
             return Optional.of(new ShardingInsertStatementValidator(shardingConditions));
         }
         if (sqlStatement instanceof UpdateStatement) {
-            return Optional.of(new ShardingUpdateStatementValidator());
+            return Optional.of(new ShardingUpdateStatementValidator(shardingConditions));
         }
         if (sqlStatement instanceof DeleteStatement) {
-            return Optional.of(new ShardingDeleteStatementValidator());
+            return Optional.of(new ShardingDeleteStatementValidator(shardingConditions));
         }
         if (sqlStatement instanceof SelectStatement) {
-            return Optional.of(new ShardingSelectStatementValidator());
+            return Optional.of(new ShardingSelectStatementValidator(shardingConditions));
         }
         if (sqlStatement instanceof CopyStatement) {
             return Optional.of(new ShardingCopyStatementValidator());

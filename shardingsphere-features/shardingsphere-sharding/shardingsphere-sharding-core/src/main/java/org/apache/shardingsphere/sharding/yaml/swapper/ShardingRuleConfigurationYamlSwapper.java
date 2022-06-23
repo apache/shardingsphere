@@ -60,6 +60,7 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
         setYamlAlgorithms(data, result);
         result.setDefaultShardingColumn(data.getDefaultShardingColumn());
         result.setScalingName(data.getScalingName());
+        result.setAllowDMLWithoutShardingKey(data.isAllowDMLWithoutShardingKey());
         return result;
     }
     
@@ -106,6 +107,7 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
         setAlgorithms(yamlConfig, result);
         result.setDefaultShardingColumn(yamlConfig.getDefaultShardingColumn());
         result.setScalingName(yamlConfig.getScalingName());
+        result.setAllowDMLWithoutShardingKey(yamlConfig.isAllowDMLWithoutShardingKey());
         return result;
     }
     

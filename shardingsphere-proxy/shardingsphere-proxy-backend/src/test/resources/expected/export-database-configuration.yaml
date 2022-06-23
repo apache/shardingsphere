@@ -32,6 +32,7 @@ dataSources:
 rules:
 !!set
 ? !SHARDING
+  allowDMLWithoutShardingKey: true
   defaultDatabaseStrategy:
     standard:
       shardingAlgorithmName: ds_inline

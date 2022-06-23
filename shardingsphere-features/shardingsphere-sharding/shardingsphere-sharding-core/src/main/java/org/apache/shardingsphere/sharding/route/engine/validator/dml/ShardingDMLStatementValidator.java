@@ -62,6 +62,12 @@ public abstract class ShardingDMLStatementValidator<T extends SQLStatement> impl
         }
     }
     
+    protected void validateShardingConditions(final ShardingRule shardingRule, final RouteContext routeContext, final ShardingConditions shardingConditions) {
+        if (!shardingRule.isAllowDMLWithoutShardingKey() && routeContext.getRouteUnits().size() > 1 && shardingConditions.getConditions().isEmpty()) {
+            throw new ShardingSphereException("Cannot support sharding route to multiple data nodes without sharding key.");
+        }
+    }
+    
     /**
      * Judge whether is same route context or not.
      * 

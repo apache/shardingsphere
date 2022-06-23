@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.route.engine.validator.dml.impl;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -35,7 +36,10 @@ import java.util.Optional;
 /**
  * Sharding update statement validator.
  */
+@RequiredArgsConstructor
 public final class ShardingUpdateStatementValidator extends ShardingDMLStatementValidator<UpdateStatement> {
+    
+    private final ShardingConditions shardingConditions;
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<UpdateStatement> sqlStatementContext,
@@ -47,14 +51,15 @@ public final class ShardingUpdateStatementValidator extends ShardingDMLStatement
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<UpdateStatement> sqlStatementContext, final List<Object> parameters,
                              final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
         String tableName = sqlStatementContext.getTablesContext().getTableNames().iterator().next();
-        Optional<ShardingConditions> shardingConditions = createShardingConditions(sqlStatementContext, shardingRule,
+        Optional<ShardingConditions> conditions = createShardingConditions(sqlStatementContext, shardingRule,
                 sqlStatementContext.getSqlStatement().getSetAssignment().getAssignments(), parameters);
-        Optional<RouteContext> setAssignmentRouteContext = shardingConditions.map(optional -> new ShardingStandardRoutingEngine(tableName, optional, props).route(shardingRule));
+        Optional<RouteContext> setAssignmentRouteContext = conditions.map(optional -> new ShardingStandardRoutingEngine(tableName, optional, props).route(shardingRule));
         if (setAssignmentRouteContext.isPresent() && !isSameRouteContext(routeContext, setAssignmentRouteContext.get())) {
             throw new ShardingSphereException("Can not update sharding key since the updated value will change %s's data nodes.", tableName);
         }
         if (UpdateStatementHandler.getLimitSegment(sqlStatementContext.getSqlStatement()).isPresent() && routeContext.getRouteUnits().size() > 1) {
             throw new ShardingSphereException("UPDATE ... LIMIT can not support sharding route to multiple data nodes.");
         }
+        validateShardingConditions(shardingRule, routeContext, shardingConditions);
     }
 }
