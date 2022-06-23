@@ -934,7 +934,10 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     
     @Override
     public ASTNode visitDeclare(final DeclareContext ctx) {
-        return new OpenGaussDeclareStatement();
+        OpenGaussDeclareStatement result = new OpenGaussDeclareStatement();
+        result.setCursorName((CursorNameSegment) visit(ctx.cursorName()));
+        result.setSelect((SelectStatement) visit(ctx.select()));
+        return result;
     }
     
     @Override
