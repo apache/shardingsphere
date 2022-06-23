@@ -25,11 +25,13 @@ import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionCon
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingAlgorithmsStatement;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.containsString;
@@ -43,10 +45,8 @@ public final class ShardingScalingRulesQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
         ShardingScalingRulesQueryResultSet resultSet = new ShardingScalingRulesQueryResultSet();
-        resultSet.init(database, mock(ShowShardingAlgorithmsStatement.class));
+        resultSet.init(mockDatabase(), mock(ShowShardingAlgorithmsStatement.class));
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(actual.size(), is(6));
         assertThat(actual.get(0), is("scaling_name"));
@@ -61,6 +61,14 @@ public final class ShardingScalingRulesQueryResultSetTest {
         assertThat(actual.get(5).toString(), containsString("\"type\":\"DATA_MATCH\",\"props\":{\"chunk-size\":\"1000\"}"));
     }
     
+    private ShardingSphereDatabase mockDatabase() {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
+        when(result.getRuleMetaData().findSingleRule(ShardingRule.class)).thenReturn(Optional.of(rule));
+        return result;
+    }
+    
     private RuleConfiguration createRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.setScaling(Collections.singletonMap("scaling_name", buildCompleteConfiguration()));
@@ -68,23 +76,15 @@ public final class ShardingScalingRulesQueryResultSetTest {
     }
     
     private OnRuleAlteredActionConfiguration buildCompleteConfiguration() {
-        InputConfiguration inputConfig = createInputConfiguration("QPS", newProperties("qps", "50"));
-        OutputConfiguration outputConfig = createOutputConfiguration("TPS", newProperties("tps", "2000"));
-        ShardingSphereAlgorithmConfiguration streamChannel = new ShardingSphereAlgorithmConfiguration("MEMORY", newProperties("block-queue-size", "10000"));
-        ShardingSphereAlgorithmConfiguration completionDetector = new ShardingSphereAlgorithmConfiguration("IDLE", newProperties("incremental-task-idle-seconds-threshold", "1800"));
-        ShardingSphereAlgorithmConfiguration dataConsistencyChecker = new ShardingSphereAlgorithmConfiguration("DATA_MATCH", newProperties("chunk-size", "1000"));
+        InputConfiguration inputConfig = new InputConfiguration(10, 100, 10, new ShardingSphereAlgorithmConfiguration("QPS", createProperties("qps", "50")));
+        OutputConfiguration outputConfig = new OutputConfiguration(10, 100, new ShardingSphereAlgorithmConfiguration("TPS", createProperties("tps", "2000")));
+        ShardingSphereAlgorithmConfiguration streamChannel = new ShardingSphereAlgorithmConfiguration("MEMORY", createProperties("block-queue-size", "10000"));
+        ShardingSphereAlgorithmConfiguration completionDetector = new ShardingSphereAlgorithmConfiguration("IDLE", createProperties("incremental-task-idle-seconds-threshold", "1800"));
+        ShardingSphereAlgorithmConfiguration dataConsistencyChecker = new ShardingSphereAlgorithmConfiguration("DATA_MATCH", createProperties("chunk-size", "1000"));
         return new OnRuleAlteredActionConfiguration(inputConfig, outputConfig, streamChannel, completionDetector, dataConsistencyChecker);
     }
     
-    private InputConfiguration createInputConfiguration(final String type, final Properties props) {
-        return new InputConfiguration(10, 100, 10, new ShardingSphereAlgorithmConfiguration(type, props));
-    }
-    
-    private OutputConfiguration createOutputConfiguration(final String type, final Properties props) {
-        return new OutputConfiguration(10, 100, new ShardingSphereAlgorithmConfiguration(type, props));
-    }
-    
-    private Properties newProperties(final String key, final String value) {
+    private Properties createProperties(final String key, final String value) {
         Properties result = new Properties();
         result.setProperty(key, value);
         return result;
