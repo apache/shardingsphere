@@ -15,11 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary;
+package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementParameterType;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.proxy.backend.session.PreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collections;
@@ -31,11 +34,13 @@ import java.util.List;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class MySQLPreparedStatement {
+public final class MySQLPreparedStatement implements PreparedStatement {
     
     private final String sql;
     
     private final SQLStatement sqlStatement;
+    
+    private final SQLStatementContext<?> sqlStatementContext;
     
     private List<MySQLPreparedStatementParameterType> parameterTypes = Collections.emptyList();
 }
