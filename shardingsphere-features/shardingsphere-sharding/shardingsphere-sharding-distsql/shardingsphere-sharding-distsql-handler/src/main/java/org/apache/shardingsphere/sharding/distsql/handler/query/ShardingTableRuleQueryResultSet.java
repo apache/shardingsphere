@@ -55,12 +55,12 @@ public final class ShardingTableRuleQueryResultSet implements DistSQLResultSet {
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        String tableName = ((ShowShardingTableRulesStatement) sqlStatement).getTableName();
         Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
         if (!rule.isPresent()) {
             return;
         }
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) rule.get().getConfiguration();
+        String tableName = ((ShowShardingTableRulesStatement) sqlStatement).getTableName();
         if (Objects.isNull(tableName)) {
             tables =  config.getTables().iterator();
             autoTables = config.getAutoTables().iterator();
