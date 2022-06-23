@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionCon
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration.OutputConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.distsql.handler.query.ShardingAlgorithmsQueryResultSet;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingAlgorithmsStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
@@ -36,7 +37,9 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -47,6 +50,7 @@ public final class ShardingScalingRulesQueryResultSetTest {
     public void assertGetRowData() {
         ShardingScalingRulesQueryResultSet resultSet = new ShardingScalingRulesQueryResultSet();
         resultSet.init(mockDatabase(), mock(ShowShardingAlgorithmsStatement.class));
+        assertTrue(resultSet.next());
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(actual.size(), is(6));
         assertThat(actual.get(0), is("scaling_name"));
@@ -59,6 +63,7 @@ public final class ShardingScalingRulesQueryResultSetTest {
         assertThat(actual.get(3).toString(), containsString("\"type\":\"MEMORY\",\"props\":{\"block-queue-size\":\"10000\"}"));
         assertThat(actual.get(4).toString(), containsString("\"type\":\"IDLE\",\"props\":{\"incremental-task-idle-seconds-threshold\":\"1800\"}"));
         assertThat(actual.get(5).toString(), containsString("\"type\":\"DATA_MATCH\",\"props\":{\"chunk-size\":\"1000\"}"));
+        assertFalse(resultSet.next());
     }
     
     private ShardingSphereDatabase mockDatabase() {
@@ -88,5 +93,14 @@ public final class ShardingScalingRulesQueryResultSetTest {
         Properties result = new Properties();
         result.setProperty(key, value);
         return result;
+    }
+    
+    @Test
+    public void assertGetRowDataWithoutShardingRule() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getRuleMetaData().findSingleRule(ShardingRule.class)).thenReturn(Optional.empty());
+        ShardingAlgorithmsQueryResultSet resultSet = new ShardingAlgorithmsQueryResultSet();
+        resultSet.init(database, mock(ShowShardingAlgorithmsStatement.class));
+        assertFalse(resultSet.next());
     }
 }
