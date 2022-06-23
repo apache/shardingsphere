@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShard
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesStatement;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
@@ -46,27 +47,28 @@ import java.util.stream.Collectors;
  */
 public final class ShardingTableRuleQueryResultSet implements DistSQLResultSet {
     
-    private Iterator<ShardingTableRuleConfiguration> tables;
+    private Iterator<ShardingTableRuleConfiguration> tables = Collections.emptyIterator();
     
-    private Iterator<ShardingAutoTableRuleConfiguration> autoTables;
+    private Iterator<ShardingAutoTableRuleConfiguration> autoTables = Collections.emptyIterator();
     
     private ShardingRuleConfiguration shardingRuleConfig;
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        String tableName = ((ShowShardingTableRulesStatement) sqlStatement).getTableName();
-        Optional<ShardingRuleConfiguration> ruleConfig = database.getRuleMetaData().getConfigurations()
-                .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findAny();
-        if (Objects.isNull(tableName)) {
-            tables = ruleConfig.map(optional -> optional.getTables().iterator()).orElseGet(Collections::emptyIterator);
-            autoTables = ruleConfig.map(optional -> optional.getAutoTables().iterator()).orElseGet(Collections::emptyIterator);
-        } else {
-            tables = ruleConfig.map(optional -> optional.getTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()).iterator())
-                    .orElseGet(Collections::emptyIterator);
-            autoTables = ruleConfig.map(optional -> optional.getAutoTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()).iterator())
-                    .orElseGet(Collections::emptyIterator);
+        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
+        if (!rule.isPresent()) {
+            return;
         }
-        shardingRuleConfig = ruleConfig.orElse(null);
+        ShardingRuleConfiguration config = (ShardingRuleConfiguration) rule.get().getConfiguration();
+        String tableName = ((ShowShardingTableRulesStatement) sqlStatement).getTableName();
+        if (Objects.isNull(tableName)) {
+            tables =  config.getTables().iterator();
+            autoTables = config.getAutoTables().iterator();
+        } else {
+            tables = config.getTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()).iterator();
+            autoTables = config.getAutoTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()).iterator();
+        }
+        shardingRuleConfig = config;
     }
     
     @Override

@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingS
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableNodesStatement;
 import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -41,6 +42,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -56,10 +58,8 @@ public final class ShardingTableNodesQueryResultSet implements DistSQLResultSet 
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        database.getRuleMetaData().getConfigurations().stream()
-                .filter(each -> each instanceof ShardingRuleConfiguration)
-                .map(each -> (ShardingRuleConfiguration) each)
-                .forEach(each -> data = getData(each, (ShowShardingTableNodesStatement) sqlStatement).entrySet().iterator());
+        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
+        rule.ifPresent(optional -> data = getData((ShardingRuleConfiguration) optional.getConfiguration(), (ShowShardingTableNodesStatement) sqlStatement).entrySet().iterator());
     }
     
     private Map<String, String> getData(final ShardingRuleConfiguration config, final ShowShardingTableNodesStatement sqlStatement) {
