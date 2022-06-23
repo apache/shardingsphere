@@ -84,7 +84,7 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm impl
             }
         }, executorService);
     }
-
+    
     @Override
     public boolean isPrimaryInstance(final DataSource dataSource) throws SQLException {
         return !getReplicationInstances(dataSource).isEmpty() && isNotReadonlyInstance(dataSource);
