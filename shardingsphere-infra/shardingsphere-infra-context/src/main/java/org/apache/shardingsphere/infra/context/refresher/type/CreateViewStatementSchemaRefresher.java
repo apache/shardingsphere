@@ -44,8 +44,6 @@ import java.util.Optional;
  */
 public final class CreateViewStatementSchemaRefresher implements MetaDataRefresher<CreateViewStatement> {
     
-    private static final String TYPE = CreateViewStatement.class.getName();
-    
     @Override
     public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData,
                                                     final Map<String, OptimizerPlannerContext> optimizerPlanners,
@@ -77,6 +75,6 @@ public final class CreateViewStatementSchemaRefresher implements MetaDataRefresh
     
     @Override
     public String getType() {
-        return TYPE;
+        return CreateViewStatement.class.getName();
     }
 }

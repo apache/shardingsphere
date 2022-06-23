@@ -62,7 +62,7 @@ public final class ShardingTableRuleQueryResultSet implements DistSQLResultSet {
         ShardingRuleConfiguration config = (ShardingRuleConfiguration) rule.get().getConfiguration();
         String tableName = ((ShowShardingTableRulesStatement) sqlStatement).getTableName();
         if (Objects.isNull(tableName)) {
-            tables =  config.getTables().iterator();
+            tables = config.getTables().iterator();
             autoTables = config.getAutoTables().iterator();
         } else {
             tables = config.getTables().stream().filter(each -> tableName.equalsIgnoreCase(each.getLogicTable())).collect(Collectors.toList()).iterator();
