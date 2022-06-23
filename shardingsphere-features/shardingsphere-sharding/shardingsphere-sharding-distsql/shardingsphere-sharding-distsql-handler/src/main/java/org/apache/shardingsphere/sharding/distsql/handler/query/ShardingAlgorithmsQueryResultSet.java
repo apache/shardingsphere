@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingAlgorithmsStatement;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
@@ -44,9 +45,8 @@ public final class ShardingAlgorithmsQueryResultSet implements DistSQLResultSet 
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        Optional<ShardingRuleConfiguration> ruleConfig = database.getRuleMetaData().getConfigurations()
-                .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findAny();
-        data = ruleConfig.map(ShardingRuleConfiguration::getShardingAlgorithms).orElseGet(Collections::emptyMap).entrySet().iterator();
+        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
+        data = rule.map(optional -> ((ShardingRuleConfiguration) optional.getConfiguration()).getShardingAlgorithms().entrySet().iterator()).orElse(Collections.emptyIterator());
     }
     
     @Override
