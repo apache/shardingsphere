@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.properties.PropertiesConverter;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowUnusedShardingKeyGeneratorsStatement;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
@@ -57,9 +58,8 @@ public final class UnusedShardingKeyGeneratorsQueryResultSet implements DistSQLR
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        Optional<ShardingRuleConfiguration> ruleConfig = database.getRuleMetaData().getConfigurations()
-                .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findAny();
-        ruleConfig.ifPresent(this::getUnusedKeyGenerators);
+        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
+        rule.ifPresent(optional -> getUnusedKeyGenerators((ShardingRuleConfiguration) optional.getConfiguration()));
     }
     
     @Override
