@@ -22,5 +22,15 @@ package org.apache.shardingsphere.mode.metadata.storage;
  */
 public enum StorageNodeStatus {
     
-    DISABLED, ENABLED
+    DISABLED, ENABLED;
+    
+    /**
+     * Storage node disable or enable.
+     *
+     * @param status storage node status
+     * @return disable or enable
+     */
+    public static boolean isDisable(final String status) {
+        return DISABLED.name().toLowerCase().equals(status);
+    }
 }

@@ -247,6 +247,10 @@ FORCE
     : F O R C E
     ;
 
+NOFORCE
+    : N O F O R C E
+    ;
+
 GLOBAL
     : G L O B A L
     ;
@@ -2777,4 +2781,56 @@ OPTIMIZE
 
 QUOTA
     : Q U O T A
+    ;
+
+DISKGROUP
+    : D I S K G R O U P
+    ;
+
+NORMAL
+    : N O R M A L
+    ;
+
+FLEX
+    : F L E X
+    ;
+
+SITE
+    : S I T E
+    ;
+
+QUORUM
+    : Q U O R U M
+    ;
+
+REGULAR
+    : R E G U L A R
+    ;
+
+FAILGROUP
+    : F A I L G R O U P
+    ;
+
+DISK
+    : D I S K
+    ;
+
+EXCLUDING
+    : E X C L U D I N G
+    ;
+
+CONTENTS
+    : C O N T E N T S
+    ;
+
+LOCKDOWN
+    : L O C K D O W N
+    ;
+
+CLEAN
+    : C L E A N
+    ;
+
+GUARANTEE
+    : G U A R A N T E E
     ;

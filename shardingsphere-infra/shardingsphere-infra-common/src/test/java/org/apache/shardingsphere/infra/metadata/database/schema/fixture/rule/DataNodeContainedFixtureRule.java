@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.fixture.rule;
 
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
@@ -27,6 +28,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
+
+import static org.mockito.Mockito.mock;
 
 public final class DataNodeContainedFixtureRule implements DataNodeContainedRule, TableContainedRule {
     
@@ -77,6 +80,11 @@ public final class DataNodeContainedFixtureRule implements DataNodeContainedRule
     @Override
     public Collection<String> getAllTables() {
         return Collections.emptyList();
+    }
+    
+    @Override
+    public RuleConfiguration getConfiguration() {
+        return mock(RuleConfiguration.class);
     }
     
     @Override

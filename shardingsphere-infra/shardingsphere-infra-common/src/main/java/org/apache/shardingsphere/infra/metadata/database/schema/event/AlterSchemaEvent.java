@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterSchemaEvent {
+public final class AlterSchemaEvent implements MetaDataRefreshedEvent {
     
     private final String databaseName;
     

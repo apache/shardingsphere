@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContextBuilder;
 import org.apache.shardingsphere.infra.executor.sql.log.SQLLogger;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -39,12 +40,14 @@ public final class KernelProcessor {
      *
      * @param logicSQL logic SQL
      * @param database database
+     * @param globalRuleMetaData global rule meta data
      * @param props configuration properties
      * @return execution context
      */
-    public ExecutionContext generateExecutionContext(final LogicSQL logicSQL, final ShardingSphereDatabase database, final ConfigurationProperties props) {
+    public ExecutionContext generateExecutionContext(final LogicSQL logicSQL,
+                                                     final ShardingSphereDatabase database, final ShardingSphereRuleMetaData globalRuleMetaData, final ConfigurationProperties props) {
         RouteContext routeContext = route(logicSQL, database, props);
-        SQLRewriteResult rewriteResult = rewrite(logicSQL, database, props, routeContext);
+        SQLRewriteResult rewriteResult = rewrite(logicSQL, database, globalRuleMetaData, props, routeContext);
         ExecutionContext result = createExecutionContext(logicSQL, database, routeContext, rewriteResult);
         logSQL(logicSQL, props, result);
         return result;
@@ -54,8 +57,9 @@ public final class KernelProcessor {
         return new SQLRouteEngine(database.getRuleMetaData().getRules(), props).route(logicSQL, database);
     }
     
-    private SQLRewriteResult rewrite(final LogicSQL logicSQL, final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
-        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(database, props);
+    private SQLRewriteResult rewrite(final LogicSQL logicSQL, final ShardingSphereDatabase database,
+                                     final ShardingSphereRuleMetaData globalRuleMetaData, final ConfigurationProperties props, final RouteContext routeContext) {
+        SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(database, globalRuleMetaData, props);
         return sqlRewriteEntry.rewrite(logicSQL.getSql(), logicSQL.getParameters(), logicSQL.getSqlStatementContext(), routeContext);
     }
     

@@ -20,12 +20,10 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.datasource;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.datasource.registry.GlobalDataSourceRegistry;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.proxy.backend.communication.BackendDataSource;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.apache.shardingsphere.transaction.rule.builder.DefaultTransactionRuleConfigurationBuilder;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 
 import javax.sql.DataSource;
@@ -51,7 +49,8 @@ public final class JDBCBackendDataSource implements BackendDataSource {
      * @throws SQLException SQL exception
      */
     public List<Connection> getConnections(final String databaseName, final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        return getConnections(databaseName, dataSourceName, connectionSize, connectionMode, getTransactionRule().getDefaultType());
+        return getConnections(databaseName, dataSourceName, connectionSize, connectionMode,
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType());
     }
     
     /**
@@ -105,8 +104,8 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     }
     
     private Connection createConnection(final String databaseName, final String dataSourceName, final DataSource dataSource, final TransactionType transactionType) throws SQLException {
-        ShardingSphereTransactionManager transactionManager =
-                ProxyContext.getInstance().getContextManager().getTransactionContexts().getEngines().get(databaseName).getTransactionManager(transactionType);
+        TransactionRule transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
+        ShardingSphereTransactionManager transactionManager = transactionRule.getResources().get(databaseName).getTransactionManager(transactionType);
         Connection result = isInTransaction(transactionManager) ? transactionManager.getConnection(dataSourceName) : dataSource.getConnection();
         if (dataSourceName.contains(".")) {
             String catalog = dataSourceName.split("\\.")[1];
@@ -117,14 +116,5 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     
     private boolean isInTransaction(final ShardingSphereTransactionManager transactionManager) {
         return null != transactionManager && transactionManager.isInTransaction();
-    }
-    
-    private TransactionRule getTransactionRule() {
-        for (ShardingSphereRule each : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules()) {
-            if (each instanceof TransactionRule) {
-                return (TransactionRule) each;
-            }
-        }
-        return new TransactionRule(new DefaultTransactionRuleConfigurationBuilder().build());
     }
 }

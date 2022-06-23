@@ -86,8 +86,14 @@ public final class MetaDataPersistService {
         propsService.persist(props, isOverwrite);
         for (Entry<String, ? extends DatabaseConfiguration> entry : schemaConfigs.entrySet()) {
             String databaseName = entry.getKey();
-            dataSourceService.persist(databaseName, getDataSourcePropertiesMap(entry.getValue().getDataSources()), isOverwrite);
-            databaseRulePersistService.persist(databaseName, entry.getValue().getRuleConfigurations(), isOverwrite);
+            Map<String, DataSourceProperties> dataSourcePropertiesMap = getDataSourcePropertiesMap(entry.getValue().getDataSources());
+            Collection<RuleConfiguration> ruleConfigurations = entry.getValue().getRuleConfigurations();
+            if (dataSourcePropertiesMap.isEmpty() && ruleConfigurations.isEmpty()) {
+                schemaMetaDataService.persistDatabase(databaseName);
+            } else {
+                dataSourceService.persist(databaseName, getDataSourcePropertiesMap(entry.getValue().getDataSources()), isOverwrite);
+                databaseRulePersistService.persist(databaseName, entry.getValue().getRuleConfigurations(), isOverwrite);
+            }
         }
     }
     

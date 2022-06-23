@@ -76,18 +76,21 @@ public final class DropEncryptRuleStatementUpdaterTest {
         assertThat(ruleConfig.getEncryptors().size(), is(1));
     }
     
+    @Test
+    public void assertUpdateCurrentRuleConfigurationWithIfExists() throws DistSQLException {
+        EncryptRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
+        DropEncryptRuleStatement statement = createSQLStatement(true, "t_encrypt_1");
+        updater.checkSQLStatement(database, statement, mock(EncryptRuleConfiguration.class));
+        assertFalse(updater.updateCurrentRuleConfiguration(statement, ruleConfig));
+        assertThat(ruleConfig.getEncryptors().size(), is(1));
+    }
+    
     private DropEncryptRuleStatement createSQLStatement(final String tableName) {
         return new DropEncryptRuleStatement(Collections.singleton(tableName));
     }
     
-    @Test
-    public void assertUpdateCurrentRuleConfigurationWithIfExists() throws DistSQLException {
-        EncryptRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
-        DropEncryptRuleStatement statement = createSQLStatement("t_encrypt_1");
-        statement.setContainsExistClause(true);
-        updater.checkSQLStatement(database, statement, mock(EncryptRuleConfiguration.class));
-        assertFalse(updater.updateCurrentRuleConfiguration(statement, ruleConfig));
-        assertThat(ruleConfig.getEncryptors().size(), is(1));
+    private DropEncryptRuleStatement createSQLStatement(final boolean containsExistClause, final String tableName) {
+        return new DropEncryptRuleStatement(containsExistClause, Collections.singleton(tableName));
     }
     
     private EncryptRuleConfiguration createCurrentRuleConfiguration() {

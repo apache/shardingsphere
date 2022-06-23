@@ -58,26 +58,26 @@ public final class ReadwriteSplittingDataSourceRuleTest {
     
     @Test
     public void assertGetReadDataSourceNamesWithoutDisabledDataSourceNames() {
-        assertThat(readwriteSplittingDataSourceRule.getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
+        assertThat(readwriteSplittingDataSourceRule.getEnabledReplicaDataSources(), is(Arrays.asList("read_ds_0", "read_ds_1")));
     }
     
     @Test
     public void assertGetReadDataSourceNamesWithDisabledDataSourceNames() {
         readwriteSplittingDataSourceRule.updateDisabledDataSourceNames("read_ds_0", true);
-        assertThat(readwriteSplittingDataSourceRule.getReadDataSourceNames(), is(Collections.singletonList("read_ds_1")));
+        assertThat(readwriteSplittingDataSourceRule.getEnabledReplicaDataSources(), is(Collections.singletonList("read_ds_1")));
     }
     
     @Test
     public void assertUpdateDisabledDataSourceNamesForDisabled() {
         readwriteSplittingDataSourceRule.updateDisabledDataSourceNames("read_ds_0", true);
-        assertThat(readwriteSplittingDataSourceRule.getReadDataSourceNames(), is(Collections.singletonList("read_ds_1")));
+        assertThat(readwriteSplittingDataSourceRule.getEnabledReplicaDataSources(), is(Collections.singletonList("read_ds_1")));
     }
     
     @Test
     public void assertUpdateDisabledDataSourceNamesForEnabled() {
         readwriteSplittingDataSourceRule.updateDisabledDataSourceNames("read_ds_0", true);
         readwriteSplittingDataSourceRule.updateDisabledDataSourceNames("read_ds_0", false);
-        assertThat(readwriteSplittingDataSourceRule.getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
+        assertThat(readwriteSplittingDataSourceRule.getEnabledReplicaDataSources(), is(Arrays.asList("read_ds_0", "read_ds_1")));
     }
     
     @Test

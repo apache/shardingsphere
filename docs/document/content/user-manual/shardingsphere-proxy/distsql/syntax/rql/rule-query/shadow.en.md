@@ -24,7 +24,7 @@ shadowRule:
 ### Shadow Rule
 
 | Column       | Description     |
-| ------------ | -----------     |
+| ------------ | --------------- |
 | rule_name    | Rule name       |
 | source_name  | Source database |
 | shadow_name  | Shadow database |
@@ -48,9 +48,9 @@ shadowRule:
 
 ### Shadow Rule status
 
-| Column                | Description  |
-| -------------------   | ------------ |
-| status                | Enable       |
+| Column                | Description |
+| --------------------- | ----------- |
+| status                | Enable      |
 
 ## Example
 

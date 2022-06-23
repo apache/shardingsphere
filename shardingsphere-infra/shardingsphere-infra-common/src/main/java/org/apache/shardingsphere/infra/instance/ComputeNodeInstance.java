@@ -42,8 +42,6 @@ public final class ComputeNodeInstance {
     
     private Long workerId;
     
-    private String xaRecoveryId;
-    
     /**
      * Set labels.
      *
@@ -71,6 +69,6 @@ public final class ComputeNodeInstance {
      * @return current instance id
      */
     public String getCurrentInstanceId() {
-        return instanceDefinition.getInstanceId().getId();
+        return instanceDefinition.getInstanceId();
     }
 }

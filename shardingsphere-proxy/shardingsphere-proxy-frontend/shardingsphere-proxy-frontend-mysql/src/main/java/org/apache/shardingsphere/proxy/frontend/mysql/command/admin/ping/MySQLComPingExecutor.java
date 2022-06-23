@@ -17,9 +17,12 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.admin.ping;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -27,10 +30,13 @@ import java.util.Collections;
 /**
  * COM_PING executor for MySQL.
  */
+@RequiredArgsConstructor
 public final class MySQLComPingExecutor implements CommandExecutor {
+    
+    private final ConnectionSession connectionSession;
     
     @Override
     public Collection<DatabasePacket<?>> execute() {
-        return Collections.singletonList(new MySQLOKPacket(1));
+        return Collections.singletonList(new MySQLOKPacket(1, ServerStatusFlagCalculator.calculateFor(connectionSession)));
     }
 }

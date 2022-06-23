@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.metadata.database.rule;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
@@ -26,17 +26,23 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 /**
  * ShardingSphere rule meta data.
  */
-@RequiredArgsConstructor
 @Getter
 public final class ShardingSphereRuleMetaData {
     
+    private final Collection<ShardingSphereRule> rules;
+    
     private final Collection<RuleConfiguration> configurations;
     
-    private final Collection<ShardingSphereRule> rules;
+    public ShardingSphereRuleMetaData(final Collection<ShardingSphereRule> rules) {
+        this.rules = new CopyOnWriteArrayList<>(rules);
+        configurations = rules.stream().map(ShardingSphereRule::getConfiguration).collect(Collectors.toList());
+    }
     
     /**
      * Find rules by class.
@@ -48,23 +54,6 @@ public final class ShardingSphereRuleMetaData {
     public <T extends ShardingSphereRule> Collection<T> findRules(final Class<T> clazz) {
         List<T> result = new LinkedList<>();
         for (ShardingSphereRule each : rules) {
-            if (clazz.isAssignableFrom(each.getClass())) {
-                result.add(clazz.cast(each));
-            }
-        }
-        return result;
-    }
-    
-    /**
-     * Find rule configuration by class.
-     *
-     * @param clazz target class
-     * @param <T> type of rule configuration
-     * @return found rule configurations
-     */
-    public <T extends RuleConfiguration> Collection<T> findRuleConfigurations(final Class<T> clazz) {
-        Collection<T> result = new LinkedList<>();
-        for (RuleConfiguration each : configurations) {
             if (clazz.isAssignableFrom(each.getClass())) {
                 result.add(clazz.cast(each));
             }
@@ -85,14 +74,32 @@ public final class ShardingSphereRuleMetaData {
     }
     
     /**
-     * Find single rule configuration by class.
+     * Find single rule by class.
+     *
+     * @param clazz target class
+     * @param <T> type of rule
+     * @return found single rule
+     */
+    public <T extends ShardingSphereRule> T getSingleRule(final Class<T> clazz) {
+        Collection<T> foundRules = findRules(clazz);
+        Preconditions.checkState(1 == foundRules.size(), "Rule `%s` should have and only have one instance.", clazz.getSimpleName());
+        return foundRules.iterator().next();
+    }
+    
+    /**
+     * Find rule configuration by class.
      *
      * @param clazz target class
      * @param <T> type of rule configuration
-     * @return found rule configuration
+     * @return found rule configurations
      */
-    public <T extends RuleConfiguration> Optional<T> findSingleRuleConfiguration(final Class<T> clazz) {
-        Collection<T> foundRuleConfig = findRuleConfigurations(clazz);
-        return foundRuleConfig.isEmpty() ? Optional.empty() : Optional.of(foundRuleConfig.iterator().next());
+    public <T extends RuleConfiguration> Collection<T> findRuleConfigurations(final Class<T> clazz) {
+        Collection<T> result = new LinkedList<>();
+        for (ShardingSphereRule each : rules) {
+            if (clazz.isAssignableFrom(each.getConfiguration().getClass())) {
+                result.add(clazz.cast(each.getConfiguration()));
+            }
+        }
+        return result;
     }
 }

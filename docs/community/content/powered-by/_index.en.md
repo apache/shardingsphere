@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 206 companies.
+Total: 209 companies.
 
 ### Infra Software
 <ul>
@@ -35,6 +35,7 @@ Total: 206 companies.
 <ul>
     <li><a href="https://www.bestpay.com.cn/" rel="nofollow">China Telecom Best Pay(Orange Finance)</a></li>
     <li><a href="https://www.kjtpay.com/" rel="nofollow">KJT pay</a></li>
+    <li><a href="https://www.baofu.com/" rel="nofollow">BAO FU</a></li>
 </ul>
 
 ### Telecommunications
@@ -73,6 +74,7 @@ Total: 206 companies.
     <li><a href="https://www.jd.ru/" rel="nofollow">JD.ru</a></li>
     <li><a href="https://www.wandougongzhu.cn" rel="nofollow">WanDouGongZhu</a></li>
     <li><a href="https://www.missfresh.cn/" rel="nofollow">MissFresh</a></li>
+    <li><a href="http://www.ucreater.com/" rel="nofollow">UCREATER</a></li>
 </ul>
 
 ### E-Commerce
@@ -103,7 +105,6 @@ Total: 206 companies.
     <li>JD’s Big Data and Intelligent Supply Chain Department
     <li><a href="https://aifanfan.baidu.com/" rel="nofollow">Baidu aifanfan</a></li>
     <li><a href="https://www.tuya.com/" rel="nofollow">tuya</a></li>
-    <li><a href="https://www.itrus.com.cn/" rel="nofollow">ITrusChina</a></li>
     <li><a href="https://www.advancegroup.com/" rel="nofollow">Advance Intelligence Group</a></li>
     <li><a href="http://www.zhenxinsafe.com/" rel="nofollow">ZhenXin Safe</a></li>
     <li><a href="http://www.cloudansys.com/" rel="nofollow">YUNLU</a></li>
@@ -113,7 +114,7 @@ Total: 206 companies.
     <li><a href="https://www.shebaotong.com/" rel="nofollow">SheBaoTong</a></li>
     <li><a href="http://www.dtchuxing.com/" rel="nofollow">Bus Cloud</a></li>
     <li><a href="http://www.ushareit.com/" rel="nofollow">Shareit</a></li>
-    <li><a href="https://www.xforceplus.com/" rel="nofollow">Xforceplus</a></li>
+    <li><a href="https://www.xforceplus.com/" rel="nofollow">XForcePlus</a></li>
     <li><a href="http://www.meicloud.com/" rel="nofollow">Midea Cloud</a></li>
     <li><a href="http://www.shangquanquan.com/" rel="nofollow">shangquanquan</a></li>
     <li><a href="https://www.glodon.com/" rel="nofollow">Glodon</a></li>
@@ -196,6 +197,12 @@ Total: 206 companies.
     <li><a href="https://www.codemao.cn/" rel="nofollow">Dianmao</a></li>
     <li><a href="https://www.yxt.com/" rel="nofollow">YunXueTang</a></li>
     <li><a href="https://www.weixiaotong.com.cn/" rel="nofollow">Wei Xiao Tong</a></li>
+</ul>
+
+### E-Security
+<ul>
+    <li><a href="https://www.itrus.com.cn/" rel="nofollow">ITrusChina</a></li>
+    <li><a href="http://www.ncs-cyber.com.cn" rel="nofollow">EncryptCyber</a></li>
 </ul>
 
 ### News

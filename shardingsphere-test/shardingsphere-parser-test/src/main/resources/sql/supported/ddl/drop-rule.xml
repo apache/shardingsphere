@@ -17,6 +17,6 @@
   -->
 
 <sql-cases>
-    <sql-case id="drop_rule_if_exists" value="DROP RULE IF EXISTS foo ON no_such_schema.bar;" db-types="PostgreSQL" />
-    <sql-case id="drop_rule" value="drop rule def_view_test_ins on def_view_test;" db-types="PostgreSQL" />
+    <sql-case id="drop_rule_if_exists" value="DROP RULE IF EXISTS foo ON no_such_schema.bar;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="drop_rule" value="drop rule def_view_test_ins on def_view_test;" db-types="PostgreSQL,openGauss" />
 </sql-cases>

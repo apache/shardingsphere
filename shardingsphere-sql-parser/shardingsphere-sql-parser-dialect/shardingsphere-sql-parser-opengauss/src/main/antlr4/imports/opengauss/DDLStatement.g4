@@ -1051,7 +1051,7 @@ alterRoutine
     ;
 
 alterRule
-    : ALTER RULE ON qualifiedName RENAME TO name
+    : ALTER RULE name ON tableName RENAME TO name
     ;
 
 alterSequence
@@ -1161,7 +1161,6 @@ alterTypeClauses
     | RENAME TO name
     | RENAME ATTRIBUTE name TO name dropBehavior?
     | SET SCHEMA name
-    | SET LP_ operatorDefList RP_
     | OWNER TO roleSpec
     ;
 
@@ -1171,8 +1170,7 @@ alterTypeCmds
 
 alterTypeCmd
     : ADD ATTRIBUTE tableFuncElement dropBehavior?
-    | DROP ATTRIBUTE existClause colId dropBehavior?
-    | DROP ATTRIBUTE colId dropBehavior?
+    | DROP ATTRIBUTE existClause? colId dropBehavior?
     | ALTER ATTRIBUTE colId setData? TYPE typeName collateClause? dropBehavior?
     ;
 
@@ -1280,7 +1278,7 @@ createAccessMethod
     ;
 
 createAggregate
-    : CREATE (OR REPLACE)? AGGREGATE funcName (aggrArgs definition | oldAggrDefinition)
+    : CREATE AGGREGATE funcName (aggrArgs definition | oldAggrDefinition)
     ;
 
 oldAggrDefinition
@@ -1711,7 +1709,7 @@ dropProcedure
     ;
 
 dropPublication
-    : DROP PUBLICATION existClause? anyNameList dropBehavior?
+    : DROP PUBLICATION existClause? name dropBehavior?
     ;
 
 dropRoutine
@@ -1787,7 +1785,7 @@ listen
     ;
 
 move
-    : MOVE (direction (FROM | IN)?)? cursorName
+    : MOVE direction? (FROM | IN)? cursorName
     ;
 
 prepare
@@ -1974,22 +1972,22 @@ dropSchema
     ;
 
 fetch
-    : FETCH (direction (FROM | IN))? cursorName
+    : FETCH direction? (FROM | IN)? cursorName
     ;
 
 direction
-    : NEXT
-    | PRIOR
-    | FIRST
-    | LAST
-    | ABSOLUTE signedIconst
-    | RELATIVE signedIconst
-    | signedIconst
-    | ALL
-    | FORWARD
-    | FORWARD signedIconst
-    | FORWARD ALL
-    | BACKWARD
-    | BACKWARD signedIconst
-    | BACKWARD ALL
+    : NEXT #next
+    | PRIOR #prior
+    | FIRST #first
+    | LAST #last
+    | ABSOLUTE signedIconst #absoluteCount
+    | RELATIVE signedIconst #relativeCount
+    | signedIconst #count
+    | ALL #all
+    | FORWARD #forward
+    | FORWARD signedIconst #forwardCount
+    | FORWARD ALL #forwardAll
+    | BACKWARD #backward
+    | BACKWARD signedIconst #backwardCount
+    | BACKWARD ALL #backwardAll
     ;

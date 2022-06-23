@@ -47,7 +47,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ExportDatabaseConfigurationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.FromSegmentContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.ImportDatabaseConfigurationContext;
-import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.InstanceDefinationContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.InstanceIdContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.LabelDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser.LabelInstanceContext;
@@ -187,55 +186,28 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitEnableInstance(final EnableInstanceContext ctx) {
-        return buildSetInstanceStatusStatement(ctx.ENABLE().getText().toUpperCase(), ctx.instanceDefination(), ctx.instanceId());
+        return buildSetInstanceStatusStatement(ctx.ENABLE().getText().toUpperCase(), ctx.instanceId());
     }
     
     @Override
     public ASTNode visitDisableInstance(final DisableInstanceContext ctx) {
-        return buildSetInstanceStatusStatement(ctx.DISABLE().getText().toUpperCase(), ctx.instanceDefination(), ctx.instanceId());
+        return buildSetInstanceStatusStatement(ctx.DISABLE().getText().toUpperCase(), ctx.instanceId());
     }
     
     @Override
     public ASTNode visitLabelInstance(final LabelInstanceContext ctx) {
-        String ip;
-        String port;
-        if (null != ctx.instanceDefination()) {
-            ip = getIdentifierValue(ctx.instanceDefination().ip());
-            port = getIdentifierValue(ctx.instanceDefination().port());
-        } else {
-            ip = getIdentifierValue(ctx.instanceId().ip());
-            port = getIdentifierValue(ctx.instanceId().port());
-        }
         Collection<String> labels = ctx.label().stream().map(this::getIdentifierValue).collect(Collectors.toList());
-        return new LabelInstanceStatement(ctx.RELABEL() != null, ip, port, labels);
+        return new LabelInstanceStatement(ctx.RELABEL() != null, getIdentifierValue(ctx.instanceId()), labels);
     }
     
     @Override
     public ASTNode visitUnlabelInstance(final UnlabelInstanceContext ctx) {
-        String ip;
-        String port;
-        if (null != ctx.instanceDefination()) {
-            ip = getIdentifierValue(ctx.instanceDefination().ip());
-            port = getIdentifierValue(ctx.instanceDefination().port());
-        } else {
-            ip = getIdentifierValue(ctx.instanceId().ip());
-            port = getIdentifierValue(ctx.instanceId().port());
-        }
         Collection<String> labels = ctx.label().stream().map(this::getIdentifierValue).collect(Collectors.toList());
-        return new UnlabelInstanceStatement(ip, port, labels);
+        return new UnlabelInstanceStatement(getIdentifierValue(ctx.instanceId()), labels);
     }
     
-    private SetInstanceStatusStatement buildSetInstanceStatusStatement(final String status, final InstanceDefinationContext instanceDefinationContext, final InstanceIdContext instanceIdContext) {
-        String ip;
-        String port;
-        if (null != instanceDefinationContext) {
-            ip = getIdentifierValue(instanceDefinationContext.ip());
-            port = getIdentifierValue(instanceDefinationContext.port());
-        } else {
-            ip = getIdentifierValue(instanceIdContext.ip());
-            port = getIdentifierValue(instanceIdContext.port());
-        }
-        return new SetInstanceStatusStatement(status, ip, port);
+    private SetInstanceStatusStatement buildSetInstanceStatusStatement(final String status, final InstanceIdContext instanceIdContext) {
+        return new SetInstanceStatusStatement(status, getIdentifierValue(instanceIdContext));
     }
     
     @Override
@@ -336,9 +308,9 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
         if (null == ctx.refreshScope()) {
             return new RefreshTableMetadataStatement();
         }
-        String tableName = getIdentifierValue(ctx.refreshScope().tableName());
         String resourceName = null;
         String schemaName = null;
+        String tableName = getIdentifierValue(ctx.refreshScope().tableName());
         if (null != ctx.refreshScope().fromSegment()) {
             FromSegmentContext fromSegment = ctx.refreshScope().fromSegment();
             resourceName = getIdentifierValue(fromSegment.resourceName());
@@ -392,11 +364,10 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitSqlParserRuleDefinition(final SqlParserRuleDefinitionContext ctx) {
-        AlterSQLParserRuleStatement result = new AlterSQLParserRuleStatement();
-        result.setSqlCommentParseEnable(null == ctx.sqlCommentParseEnable() ? null : Boolean.parseBoolean(getIdentifierValue(ctx.sqlCommentParseEnable())));
-        result.setParseTreeCache(null == ctx.parseTreeCache() ? null : visitCacheOption(ctx.parseTreeCache().cacheOption()));
-        result.setSqlStatementCache(null == ctx.sqlStatementCache() ? null : visitCacheOption(ctx.sqlStatementCache().cacheOption()));
-        return result;
+        Boolean sqlCommentParseEnable = null == ctx.sqlCommentParseEnable() ? null : Boolean.parseBoolean(getIdentifierValue(ctx.sqlCommentParseEnable()));
+        CacheOptionSegment parseTreeCache = null == ctx.parseTreeCache() ? null : visitCacheOption(ctx.parseTreeCache().cacheOption());
+        CacheOptionSegment sqlStatementCache = null == ctx.sqlStatementCache() ? null : visitCacheOption(ctx.sqlStatementCache().cacheOption());
+        return new AlterSQLParserRuleStatement(sqlCommentParseEnable, parseTreeCache, sqlStatementCache);
     }
     
     @Override
@@ -418,11 +389,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitShowTrafficRules(final ShowTrafficRulesContext ctx) {
-        ShowTrafficRulesStatement result = new ShowTrafficRulesStatement();
-        if (null != ctx.ruleName()) {
-            result.setRuleName(getIdentifierValue(ctx.ruleName()));
-        }
-        return result;
+        return new ShowTrafficRulesStatement(null == ctx.ruleName() ? null : getIdentifierValue(ctx.ruleName()));
     }
     
     @Override

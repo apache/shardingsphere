@@ -69,6 +69,12 @@ public final class SchemaMetaDataPersistServiceTest {
     }
     
     @Test
+    public void assertPersistDatabase() {
+        new SchemaMetaDataPersistService(repository).persistDatabase("foo_db");
+        verify(repository).persist("/metadata/foo_db", "");
+    }
+    
+    @Test
     public void assertLoad() {
         SchemaMetaDataPersistService schemaMetaDataPersistService = new SchemaMetaDataPersistService(repository);
         when(repository.getChildrenKeys("/metadata/foo_db/schemas/foo_schema/tables")).thenReturn(Collections.singletonList("t_order"));

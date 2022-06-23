@@ -24,7 +24,7 @@ import org.junit.Test;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class ReadWriteSplittingDataSourceRuleConfigurationTest {
@@ -35,13 +35,15 @@ public final class ReadWriteSplittingDataSourceRuleConfigurationTest {
     
     @Before
     public void setup() {
-        readwriteSplittingDataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("ds", "Static", getProperties("write_ds", "read_ds_0,read_ds_1"), "");
-        readwriteSplittingDataSourceRuleConfigDynamic = new ReadwriteSplittingDataSourceRuleConfiguration("ds", "Dynamic", getProperties("write_ds", "read_ds_0,read_ds_1"), "");
+        readwriteSplittingDataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("ds", "Static", getStaticReadwriteSplittingProperties(), "");
+        readwriteSplittingDataSourceRuleConfigDynamic = new ReadwriteSplittingDataSourceRuleConfiguration("ds", "Dynamic", getDynamicReadwriteSplittingProperties(), "");
     }
     
     @Test
-    public void assertGetAutoAwareDataSourceName() {
-        assertNull(readwriteSplittingDataSourceRuleConfigDynamic.getProps().getProperty("auto-aware-data-source-name"));
+    public void assertDynamicReadWriteSplittingConfig() {
+        assertNotNull(readwriteSplittingDataSourceRuleConfigDynamic.getProps());
+        assertThat(readwriteSplittingDataSourceRuleConfigDynamic.getProps().getProperty("auto-aware-data-source-name"), is("readwrite_ds"));
+        assertThat(readwriteSplittingDataSourceRuleConfigDynamic.getProps().getProperty("write-data-source-query-enabled"), is("false"));
     }
     
     @Test
@@ -54,10 +56,17 @@ public final class ReadWriteSplittingDataSourceRuleConfigurationTest {
         assertThat(readwriteSplittingDataSourceRuleConfig.getProps().getProperty("read-data-source-names"), is("read_ds_0,read_ds_1"));
     }
     
-    private Properties getProperties(final String writeDataSource, final String readDataSources) {
+    private Properties getStaticReadwriteSplittingProperties() {
         Properties result = new Properties();
-        result.setProperty("write-data-source-name", writeDataSource);
-        result.setProperty("read-data-source-names", readDataSources);
+        result.setProperty("write-data-source-name", "write_ds");
+        result.setProperty("read-data-source-names", "read_ds_0,read_ds_1");
+        return result;
+    }
+    
+    private Properties getDynamicReadwriteSplittingProperties() {
+        Properties result = new Properties();
+        result.setProperty("auto-aware-data-source-name", "readwrite_ds");
+        result.setProperty("write-data-source-query-enabled", "false");
         return result;
     }
 }

@@ -13,6 +13,7 @@ rules:
       type: # Readwrite-splitting type, such as: Static, Dynamic
       props:
         auto-aware-data-source-name: # Auto aware data source name(Use with database discovery)
+        write-data-source-query-enabled: # replicas all offline, primary data source whether provide query(Use with database discovery)
         write-data-source-name: # Write data source name
         read-data-source-names: # Read data source names, multiple data source names separated with comma
       loadBalancerName: # Load balance algorithm name

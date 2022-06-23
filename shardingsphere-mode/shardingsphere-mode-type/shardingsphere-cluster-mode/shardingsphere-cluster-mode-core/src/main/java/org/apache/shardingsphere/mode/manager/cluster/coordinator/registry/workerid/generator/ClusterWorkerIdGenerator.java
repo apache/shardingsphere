@@ -40,12 +40,12 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     
     @Override
     public long generate() {
-        return registryCenter.getComputeNodeStatusService().loadInstanceWorkerId(instanceDefinition.getInstanceId().getId()).orElseGet(this::reGenerate);
+        return registryCenter.getComputeNodeStatusService().loadInstanceWorkerId(instanceDefinition.getInstanceId()).orElseGet(this::reGenerate);
     }
     
     private Long reGenerate() {
-        Long result = Long.valueOf(Optional.ofNullable(repository.getSequentialId(WorkerIdNode.getWorkerIdGeneratorPath(instanceDefinition.getInstanceId().getId()), "")).orElse("0"));
-        registryCenter.getComputeNodeStatusService().persistInstanceWorkerId(instanceDefinition.getInstanceId().getId(), result);
+        Long result = Long.valueOf(Optional.ofNullable(repository.getSequentialId(WorkerIdNode.getWorkerIdGeneratorPath(instanceDefinition.getInstanceId()), "")).orElse("0"));
+        registryCenter.getComputeNodeStatusService().persistInstanceWorkerId(instanceDefinition.getInstanceId(), result);
         return result;
     }
 }

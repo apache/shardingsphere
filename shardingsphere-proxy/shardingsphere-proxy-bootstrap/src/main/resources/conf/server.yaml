@@ -44,12 +44,6 @@
 #  - !TRANSACTION
 #    defaultType: XA
 #    providerType: Atomikos
-#    # When the provider type is Narayana, the following properties can be configured or not
-#    props:
-#      recoveryStoreUrl: jdbc:mysql://127.0.0.1:3306/jbossts
-#      recoveryStoreDataSource: com.mysql.jdbc.jdbc2.optional.MysqlDataSource
-#      recoveryStoreUser: root
-#      recoveryStorePassword: 12345678
 #  - !SQL_PARSER
 #    sqlCommentParseEnabled: true
 #    sqlStatementCache:

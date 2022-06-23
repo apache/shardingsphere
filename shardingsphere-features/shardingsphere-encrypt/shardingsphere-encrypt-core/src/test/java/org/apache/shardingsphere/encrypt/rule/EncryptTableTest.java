@@ -39,7 +39,7 @@ public final class EncryptTableTest {
     @Before
     public void setUp() {
         encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("t_encrypt",
-                Collections.singleton(new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "plainColumn", "myEncryptor", null)), null), Collections.emptyMap());
+                Collections.singleton(new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "plainColumn", "myEncryptor", null)), null));
     }
     
     @Test
@@ -127,13 +127,13 @@ public final class EncryptTableTest {
         assertFalse(actual.isPresent());
         
         encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("t_encrypt",
-                Collections.singleton(new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "plainColumn", "myEncryptor", null)), true), Collections.emptyMap());
+                Collections.singleton(new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "plainColumn", "myEncryptor", null)), true));
         actual = encryptTable.getQueryWithCipherColumn("logicColumn");
         assertTrue(actual.isPresent());
         assertTrue(actual.get());
         
         encryptTable = new EncryptTable(new EncryptTableRuleConfiguration("t_encrypt",
-                Collections.singleton(new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "plainColumn", "myEncryptor", false)), true), Collections.emptyMap());
+                Collections.singleton(new EncryptColumnRuleConfiguration("logicColumn", "cipherColumn", "assistedQueryColumn", "plainColumn", "myEncryptor", false)), true));
         actual = encryptTable.getQueryWithCipherColumn("logicColumn");
         assertTrue(actual.isPresent());
         assertFalse(actual.get());

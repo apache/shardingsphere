@@ -6,7 +6,7 @@
 
 ```shell
 helm repo add shardingsphere https://shardingsphere.apache.org/charts
-helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
+helm install shardingsphere-proxy shardingsphere/apache-shardingsphere-proxy
 ```
 
 ## 操作步骤
@@ -19,7 +19,7 @@ kubectl
 
 helm 3.2.0+
 
-可以动态申请 PV(Persistent Volumes) 的 StorageClass 已持久化数据。
+可以动态申请 PV(Persistent Volumes) 的 StorageClass (可选)。
 
 ### 安装
 
@@ -34,17 +34,17 @@ helm repo add shardingsphere https://shardingsphere.apache.org/charts
 以 ShardingSphere-Proxy 命名安装 charts：
 
 ```shell
-helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
+helm install shardingsphere-proxy shardingsphere/apache-shardingsphere-proxy
 ```
 
 #### 源码安装
 ```shell
-cd shardingsphere-proxy/charts/governance
+cd apache-shardingsphere-proxy/charts/governance
 helm dependency build 
 cd ../..
 helm dependency build 
 cd ..
-helm install shardingsphere-proxy shardingsphere-proxy 
+helm install shardingsphere-proxy apache-shardingsphere-proxy 
 ```
 
 执行上述命令以执行默认配置进行安装。

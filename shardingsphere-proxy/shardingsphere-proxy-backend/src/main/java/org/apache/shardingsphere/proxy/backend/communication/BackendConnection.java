@@ -45,6 +45,14 @@ public interface BackendConnection<T> {
     T prepareForTaskExecution() throws SQLException;
     
     /**
+     * Handle auto commit.
+     *
+     * @return can be Void or Future
+     * @throws SQLException SQL exception
+     */
+    T handleAutoCommit() throws SQLException;
+    
+    /**
      * Close resources used in execution.
      *
      * @return can be Void or Future

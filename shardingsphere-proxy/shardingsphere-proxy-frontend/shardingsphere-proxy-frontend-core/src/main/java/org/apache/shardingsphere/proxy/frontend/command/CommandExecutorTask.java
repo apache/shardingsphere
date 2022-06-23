@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.communication.SQLStatementDatabaseHolder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
+import org.apache.shardingsphere.proxy.backend.exception.BackendException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
@@ -73,6 +74,7 @@ public final class CommandExecutorTask implements Runnable {
             if (sqlShowEnabled) {
                 fillLogMDC();
             }
+            connectionSession.getBackendConnection().prepareForTaskExecution();
             isNeedFlush = executeCommand(context, payload);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
@@ -112,8 +114,8 @@ public final class CommandExecutorTask implements Runnable {
                 commandExecuteEngine.writeQueryData(context, connectionSession.getBackendConnection(), (QueryCommandExecutor) commandExecutor, responsePackets.size());
             }
             return true;
-        } catch (final SQLException ex) {
-            databaseProtocolFrontendEngine.handleException(connectionSession);
+        } catch (final SQLException | BackendException ex) {
+            databaseProtocolFrontendEngine.handleException(connectionSession, ex);
             throw ex;
         } finally {
             commandExecutor.close();

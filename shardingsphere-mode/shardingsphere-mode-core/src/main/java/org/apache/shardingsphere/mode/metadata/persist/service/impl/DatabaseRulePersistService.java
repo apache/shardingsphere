@@ -31,7 +31,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * Schema rule persist service.
+ * Database rule persist service.
  */
 @RequiredArgsConstructor
 public final class DatabaseRulePersistService implements DatabaseBasedPersistService<Collection<RuleConfiguration>> {

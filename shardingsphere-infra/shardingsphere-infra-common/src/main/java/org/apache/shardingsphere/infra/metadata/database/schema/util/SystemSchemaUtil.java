@@ -35,11 +35,11 @@ public class SystemSchemaUtil {
      *
      * @param databaseType databaseType
      * @param schemaNames schema names
-     * @param databaseMetaData database meta data
+     * @param database database
      * @return whether sql statement contains system schema or not
      */
-    public static boolean containsSystemSchema(final DatabaseType databaseType, final Collection<String> schemaNames, final ShardingSphereDatabase databaseMetaData) {
-        if (databaseMetaData.isComplete()) {
+    public static boolean containsSystemSchema(final DatabaseType databaseType, final Collection<String> schemaNames, final ShardingSphereDatabase database) {
+        if (database.isComplete()) {
             return false;
         }
         for (String each : schemaNames) {
@@ -47,6 +47,6 @@ public class SystemSchemaUtil {
                 return true;
             }
         }
-        return databaseType.getSystemSchemas().contains(databaseMetaData.getName());
+        return databaseType.getSystemSchemas().contains(database.getName());
     }
 }

@@ -46,9 +46,13 @@ public enum SQLVisitorRule {
     
     CREATE_TABLE("CreateTable", SQLStatementType.DDL),
     
+    CREATE_AGGREGATE("CreateAggregate", SQLStatementType.DDL),
+    
     RENAME_TABLE("RenameTable", SQLStatementType.DDL),
     
     ALTER_TABLE("AlterTable", SQLStatementType.DDL),
+    
+    ALTER_TYPE("AlterType", SQLStatementType.DDL),
     
     ALTER_AGGREGATE("AlterAggregate", SQLStatementType.DDL),
     
@@ -66,6 +70,8 @@ public enum SQLVisitorRule {
     
     ALTER_MATERIALIZED_VIEW("AlterMaterializedView", SQLStatementType.DDL),
     
+    ALTER_OPERATOR("AlterOperator", SQLStatementType.DDL),
+    
     DROP_TABLE("DropTable", SQLStatementType.DDL),
     
     TRUNCATE_TABLE("TruncateTable", SQLStatementType.DDL),
@@ -77,6 +83,10 @@ public enum SQLVisitorRule {
     DROP_INDEX("DropIndex", SQLStatementType.DDL),
     
     CREATE_PROCEDURE("CreateProcedure", SQLStatementType.DDL),
+    
+    CREATE_PUBLICATION("CreatePublication", SQLStatementType.DDL),
+    
+    ALTER_PUBLICATION("AlterPublication", SQLStatementType.DDL),
     
     ALTER_PROCEDURE("AlterProcedure", SQLStatementType.DDL),
     
@@ -225,6 +235,8 @@ public enum SQLVisitorRule {
     ALTER_EXTENSION("AlterExtension", SQLStatementType.DDL),
     
     DROP_EXTENSION("DropExtension", SQLStatementType.DDL),
+    
+    ALTER_RULE("AlterRule", SQLStatementType.DDL),
     
     DECLARE("Declare", SQLStatementType.DDL),
     
@@ -470,6 +482,8 @@ public enum SQLVisitorRule {
     
     ALTER_DOMAIN("AlterDomain", SQLStatementType.DDL),
     
+    ALTER_POLICY("AlterPolicy", SQLStatementType.DDL),
+    
     ALTER_CONVERSION("AlterConversion", SQLStatementType.DDL),
     
     CREATE_TEXT_SEARCH("CreateTextSearch", SQLStatementType.DDL),
@@ -522,6 +536,32 @@ public enum SQLVisitorRule {
     
     CREATE_FLASHBACK_ARCHIVE("CreateFlashbackArchive", SQLStatementType.DDL),
     
+    ALTER_FLASHBACK_ARCHIVE("AlterFlashbackArchive", SQLStatementType.DDL),
+    
+    DROP_FLASHBACK_ARCHIVE("DropFlashbackArchive", SQLStatementType.DDL),
+    
+    CREATE_DISKGROUP("CreateDiskgroup", SQLStatementType.DDL),
+    
+    DROP_DISKGROUP("DropDiskgroup", SQLStatementType.DDL),
+    
+    CREATE_ROLLBACK_SEGMENT("CreateRollbackSegment", SQLStatementType.DDL),
+    
+    DROP_ROLLBACK_SEGMENT("DropRollbackSegment", SQLStatementType.DDL),
+    
+    CREATE_LOCKDOWN_PROFILE("CreateLockdownProfile", SQLStatementType.DDL),
+    
+    DROP_LOCKDOWN_PROFILE("DropLockdownProfile", SQLStatementType.DDL),
+    
+    CREATE_INMEMORY_JOIN_GROUP("CreateInmemoryJoinGroup", SQLStatementType.DDL),
+    
+    ALTER_INMEMORY_JOIN_GROUP("AlterInmemoryJoinGroup", SQLStatementType.DDL),
+    
+    DROP_INMEMORY_JOIN_GROUP("DropInmemoryJoinGroup", SQLStatementType.DDL),
+    
+    CREATE_RESTORE_POINT("CreateRestorePoint", SQLStatementType.DDL),
+    
+    DROP_RESTORE_POINT("DropRestorePoint", SQLStatementType.DDL),
+    
     CURSOR("Cursor", SQLStatementType.DDL),
     
     CLOSE("Close", SQLStatementType.DDL),
@@ -530,7 +570,13 @@ public enum SQLVisitorRule {
     
     FETCH("Fetch", SQLStatementType.DDL),
     
-    CHECKPOINT("Checkpoint", SQLStatementType.DML);
+    CHECKPOINT("Checkpoint", SQLStatementType.DML),
+    
+    CLUSTER("Cluster", SQLStatementType.DDL),
+    
+    CREATE_ACCESS_METHOD("CreateAccessMethod", SQLStatementType.DDL),
+    
+    DO("DoStatement", SQLStatementType.DML);
     
     private final String name;
     

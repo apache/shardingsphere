@@ -39,30 +39,32 @@ public final class TrafficRuleConverter {
      */
     public static TrafficRuleConfiguration convert(final Collection<TrafficRuleSegment> segments) {
         TrafficRuleConfiguration result = new TrafficRuleConfiguration();
-        segments.forEach(each -> setConfigurationData(result, each));
+        for (TrafficRuleSegment each : segments) {
+            setConfigurationData(result, each);
+        }
         return result;
     }
     
-    private static void setConfigurationData(final TrafficRuleConfiguration result, final TrafficRuleSegment segment) {
+    private static void setConfigurationData(final TrafficRuleConfiguration trafficRuleConfig, final TrafficRuleSegment segment) {
         ShardingSphereAlgorithmConfiguration trafficAlgorithm = createAlgorithmConfiguration(segment.getAlgorithm());
         ShardingSphereAlgorithmConfiguration loadBalancer = createAlgorithmConfiguration(segment.getLoadBalancer());
         String trafficAlgorithmName = createAlgorithmName(segment.getName(), trafficAlgorithm);
         String loadBalancerName = createAlgorithmName(segment.getName(), loadBalancer);
         TrafficStrategyConfiguration trafficStrategy = createTrafficStrategy(segment, trafficAlgorithmName, loadBalancerName);
-        result.getTrafficStrategies().add(trafficStrategy);
-        result.getTrafficAlgorithms().put(trafficAlgorithmName, trafficAlgorithm);
-        Optional.ofNullable(loadBalancerName).ifPresent(optional -> result.getLoadBalancers().put(loadBalancerName, loadBalancer));
+        trafficRuleConfig.getTrafficStrategies().add(trafficStrategy);
+        trafficRuleConfig.getTrafficAlgorithms().put(trafficAlgorithmName, trafficAlgorithm);
+        Optional.ofNullable(loadBalancerName).ifPresent(optional -> trafficRuleConfig.getLoadBalancers().put(loadBalancerName, loadBalancer));
     }
     
     private static ShardingSphereAlgorithmConfiguration createAlgorithmConfiguration(final AlgorithmSegment segment) {
         return null == segment ? null : new ShardingSphereAlgorithmConfiguration(segment.getName(), segment.getProps());
     }
     
-    private static TrafficStrategyConfiguration createTrafficStrategy(final TrafficRuleSegment trafficRuleSegment, final String trafficAlgorithmName, final String loadBalancerName) {
-        return new TrafficStrategyConfiguration(trafficRuleSegment.getName(), trafficRuleSegment.getLabels(), trafficAlgorithmName, loadBalancerName);
-    }
-    
     private static String createAlgorithmName(final String ruleName, final ShardingSphereAlgorithmConfiguration algorithm) {
         return null == algorithm ? null : String.format("%s_%s", ruleName, algorithm.getType()).toLowerCase();
+    }
+    
+    private static TrafficStrategyConfiguration createTrafficStrategy(final TrafficRuleSegment trafficRuleSegment, final String trafficAlgorithmName, final String loadBalancerName) {
+        return new TrafficStrategyConfiguration(trafficRuleSegment.getName(), trafficRuleSegment.getLabels(), trafficAlgorithmName, loadBalancerName);
     }
 }

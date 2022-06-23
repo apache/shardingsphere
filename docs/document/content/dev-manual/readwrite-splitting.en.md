@@ -7,11 +7,11 @@ chapter = true
 
 ## ReadwriteSplittingType
 
-| *SPI 名称*                                 | *详细说明*                 |
+| *SPI Name*                                 | *Description*                 |
 | ----------------------------------------- | ------------------------- |
 | ReadwriteSplittingType                    | Readwrite-splitting type  |
 
-| *已知实现类*                               | *详细说明*                         |
+| *Implementation Class*                               | *Description*                         |
 | ----------------------------------------- | -------------------------------- |
 | StaticReadwriteSplittingType              | Static readwrite-splitting type  |
 | DynamicReadwriteSplittingType             | Dynamic readwrite-splitting type |

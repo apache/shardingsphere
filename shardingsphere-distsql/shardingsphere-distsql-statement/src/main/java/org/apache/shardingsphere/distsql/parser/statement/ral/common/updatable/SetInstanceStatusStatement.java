@@ -30,7 +30,5 @@ public class SetInstanceStatusStatement extends UpdatableRALStatement {
     
     private final String status;
     
-    private final String ip;
-    
-    private final String port;
+    private final String instanceId;
 }

@@ -2389,13 +2389,123 @@ characterSetClause
 
 createFlashbackArchive
    : CREATE FLASHBACK ARCHIVE DEFAULT? flashbackArchiveName tablespaceClause
-     flashArchiveQuota? (NO? OPTIMIZE DATA)? flashbackArchiveRetention
+     flashbackArchiveQuota? (NO? OPTIMIZE DATA)? flashbackArchiveRetention
    ;
 
-flashArchiveQuota
+flashbackArchiveQuota
     : QUOTA INTEGER_ quotaUnit
     ;
 
 flashbackArchiveRetention
     : RETENTION INTEGER_ (YEAR | MONTH | DAY)
+    ;
+
+alterFlashbackArchive
+    : ALTER FLASHBACK ARCHIVE flashbackArchiveName
+    ( SET DEFAULT
+    | (ADD | MODIFY) TABLESPACE tablespaceName flashbackArchiveQuota?
+    | REMOVE TABLESPACE tablespaceName
+    | MODIFY RETENTION flashbackArchiveRetention
+    | PURGE purgeClause
+    | NO? OPTIMIZE DATA)
+    ;
+
+purgeClause
+    : ALL
+    | BEFORE (SCN expr | TIMESTAMP expr)
+    ;
+
+dropFlashbackArchive
+    : DROP FLASHBACK ARCHIVE flashbackArchiveName
+    ;
+
+createDiskgroup
+    : CREATE DISKGROUP diskgroupName (redundancyClause REDUNDANCY)? diskClause+ attribute?
+    ;
+
+redundancyClause
+    : HIGH
+    | NORMAL
+    | FLEX
+    | EXTENDED (SITE siteName)?
+    | EXTERNAL
+    ;
+
+diskClause
+    : (QUORUM | REGULAR)? (FAILGROUP diskgroupName)? DISK qualifieDiskClause (COMMA_ qualifieDiskClause)*
+    ;
+
+qualifieDiskClause
+    : searchString (NAME diskName)? (SIZE sizeClause)? (FORCE | NOFORCE)?
+    ;
+
+attribute
+    : ATTRIBUTE attributeNameAndValue (COMMA_ attributeNameAndValue)*
+    ;
+
+attributeNameAndValue
+    : SQ_ attributeName SQ_ EQ_ SQ_ attributeValue SQ_
+    ;
+
+dropDiskgroup
+    : DROP DISKGROUP diskgroupName contentsClause?
+    ;
+
+contentsClause
+    : ((FORCE? INCLUDING) | EXCLUDING) CONTENTS
+    ;
+
+createRollbackSegment
+    : CREATE PUBLIC? ROLLBACK SEGMENT rollbackSegment ((TABLESPACE tablespaceName) | storageClause)*
+    ;
+
+dropRollbackSegment
+    : DROP ROLLBACK SEGMENT rollbackSegment
+    ;
+
+createLockdownProfile
+    : CREATE LOCKDOWN PROFILE profileName (staticBaseProfile | dynamicBaseProfile)?
+    ;
+
+staticBaseProfile
+    : FROM profileName
+    ;
+
+dynamicBaseProfile
+    : INCLUDING profileName
+    ;
+
+dropLockdownProfile
+    : DROP LOCKDOWN PROFILE profileName
+    ;
+
+createInmemoryJoinGroup
+    : CREATE INMEMORY JOIN GROUP (schemaName DOT_)? joinGroupName
+     LP_ tableColumnClause COMMA_ tableColumnClause (COMMA_ tableColumnClause)* RP_
+    ;
+
+tableColumnClause
+    : (schemaName DOT_)? tableName LP_ columnName RP_
+    ;
+
+alterInmemoryJoinGroup
+    : ALTER INMEMORY JOIN GROUP (schemaName DOT_)? joinGroupName (ADD | REMOVE) LP_ tableName LP_ columnName RP_ RP_
+    ;
+
+dropInmemoryJoinGroup
+    : DROP INMEMORY JOIN GROUP (schemaName DOT_)? joinGroupName
+    ;
+
+createRestorePoint
+    : CREATE CLEAN? RESTORE POINT restorePointName (FOR PLUGGABLE DATABASE pdbName)?
+      (AS OF (TIMESTAMP | SCN) expr)?
+      (PRESERVE | GUARANTEE FLASHBACK DATABASE)?
+    ;
+
+dropRestorePoint
+    : DROP RESTORE POINT restorePointName (FOR PLUGGABLE DATABASE pdbName)?
+    ;
+    
+dropOperator
+    : DROP OPERATOR (schemaName DOT_)? operatorName FORCE?
     ;

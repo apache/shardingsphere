@@ -364,6 +364,16 @@ public final class JDBCMemoryQueryResultTest {
         assertTrue(queryResult.wasNull());
     }
     
+    @Test
+    public void assertGetRowCount() throws SQLException {
+        JDBCMemoryQueryResult queryResult = new JDBCMemoryQueryResult(mockResultSet(), databaseType);
+        assertThat(queryResult.getRowCount(), is(1L));
+        queryResult.next();
+        assertThat(queryResult.getRowCount(), is(0L));
+        queryResult.next();
+        assertThat(queryResult.getRowCount(), is(0L));
+    }
+    
     private ResultSet mockResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true).thenReturn(false);

@@ -32,10 +32,10 @@ public interface ShardingSpherePrivileges {
     /**
      * Has privileges.
      *
-     * @param schema schema
+     * @param database schema
      * @return has privileges or not
      */
-    boolean hasPrivileges(String schema);
+    boolean hasPrivileges(String database);
     
     /**
      * Has privileges.

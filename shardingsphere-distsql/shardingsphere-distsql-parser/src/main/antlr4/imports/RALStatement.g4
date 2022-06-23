@@ -36,11 +36,11 @@ alterInstance
     ;
 
 enableInstance
-    : ENABLE INSTANCE (instanceId | instanceDefination)
+    : ENABLE INSTANCE instanceId
     ;
 
 disableInstance
-    : DISABLE INSTANCE (instanceId | instanceDefination)
+    : DISABLE INSTANCE instanceId
     ;
 
 showInstance
@@ -100,11 +100,11 @@ dropTrafficRule
     ;
 
 labelInstance
-    : (LABEL | RELABEL) INSTANCE (instanceDefination | instanceId) WITH label (COMMA label)*
+    : (LABEL | RELABEL) INSTANCE instanceId WITH label (COMMA label)*
     ;
 
 unlabelInstance
-    : UNLABEL INSTANCE (instanceDefination | instanceId) (WITH label (COMMA label)*)?
+    : UNLABEL INSTANCE instanceId (WITH label (COMMA label)*)?
     ;
 
 countInstanceRules
@@ -176,19 +176,15 @@ variableValues
     ;
 
 variableValue
-    : IDENTIFIER | STRING | (MINUS)? INT | TRUE | FALSE | instanceId
-    ;
-
-instanceDefination
-    : IP EQ ip COMMA PORT EQ port
+    : IDENTIFIER | STRING | (MINUS)? INT | TRUE | FALSE
     ;
 
 instanceId
-    : ip AT port
+    : IDENTIFIER | STRING
     ;
 
 refreshScope
-    : tableName fromSegment?
+    : tableName? fromSegment?
     ;
 
 fromSegment

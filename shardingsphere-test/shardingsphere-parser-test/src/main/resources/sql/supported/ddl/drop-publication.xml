@@ -17,8 +17,8 @@
   -->
 
 <sql-cases>
-    <sql-case id="drop_publication_if_exists" value="DROP PUBLICATION IF EXISTS s10;" db-types="PostgreSQL" />
-    <sql-case id="drop_publication" value="DROP PUBLICATION mypublication;" db-types="PostgreSQL" />
+    <sql-case id="drop_publication_if_exists" value="DROP PUBLICATION IF EXISTS s10;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="drop_publication" value="DROP PUBLICATION mypublication;" db-types="PostgreSQL,openGauss" />
     <sql-case id="drop_publication_s11_and_s22" value="DROP PUBLICATION s11,s22;" db-types="PostgreSQL" />
     <sql-case id="drop_publication_cascade" value="DROP PUBLICATION s11,s22 CASCADE;" db-types="PostgreSQL" />
     <sql-case id="drop_publication_restrict" value="DROP PUBLICATION s11,s22 RESTRICT;" db-types="PostgreSQL" />

@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
@@ -90,8 +91,8 @@ public final class TableExtractor {
         if (SelectStatementHandler.getLockSegment(selectStatement).isPresent()) {
             extractTablesFromLock(SelectStatementHandler.getLockSegment(selectStatement).get());
         }
-        if (!selectStatement.getUnionSegments().isEmpty()) {
-            selectStatement.getUnionSegments().forEach(each -> extractTablesFromSelect(each.getSelectStatement()));
+        if (!selectStatement.getCombines().isEmpty()) {
+            selectStatement.getCombines().forEach(each -> extractTablesFromSelect(each.getSelectStatement()));
         }
     }
     
@@ -169,6 +170,8 @@ public final class TableExtractor {
                     OwnerSegment ownerSegment = ((ColumnProjectionSegment) each).getColumn().getOwner().get();
                     rewriteTables.add(createSimpleTableSegment(ownerSegment));
                 }
+            } else if (each instanceof AggregationProjectionSegment) {
+                ((AggregationProjectionSegment) each).getParameters().forEach(this::extractTablesFromExpression);
             }
         }
     }

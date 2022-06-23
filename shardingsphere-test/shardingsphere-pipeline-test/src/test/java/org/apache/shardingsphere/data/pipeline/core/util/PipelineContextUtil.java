@@ -98,7 +98,7 @@ public final class PipelineContextUtil {
         ContextManager contextManager = getContextManager(dataSource);
         MetaDataPersistService metaDataPersistService = new MetaDataPersistService(getClusterPersistRepository());
         MetaDataContexts metaDataContexts = renewMetaDataContexts(contextManager.getMetaDataContexts(), metaDataPersistService);
-        PipelineContext.initContextManager(new ContextManager(metaDataContexts, contextManager.getTransactionContexts(), contextManager.getInstanceContext()));
+        PipelineContext.initContextManager(new ContextManager(metaDataContexts, contextManager.getInstanceContext()));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

@@ -27,7 +27,8 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableS
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.mode.manager.lock.definition.LockNameDefinitionFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DatabaseLockedException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -47,13 +48,12 @@ public final class DistSQLBackendHandlerFactory {
     /**
      * Create new instance of DistSQL backend handler.
      *
-     * @param databaseType database type
      * @param sqlStatement dist SQL statement
      * @param connectionSession connection session
      * @return text protocol backend handler
      * @throws SQLException SQL exception
      */
-    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final DistSQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
+    public static TextProtocolBackendHandler newInstance(final DistSQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
         if (sqlStatement instanceof RQLStatement) {
             return RQLBackendHandlerFactory.newInstance((RQLStatement) sqlStatement, connectionSession);
         }
@@ -64,10 +64,10 @@ public final class DistSQLBackendHandlerFactory {
         if (sqlStatement instanceof RALStatement) {
             if (sqlStatement instanceof CommonDistSQLStatement || sqlStatement instanceof QueryableRALStatement || sqlStatement instanceof QueryableScalingRALStatement
                     || sqlStatement instanceof UpdatableScalingRALStatement) {
-                return RALBackendHandlerFactory.newInstance(databaseType, (RALStatement) sqlStatement, connectionSession);
+                return RALBackendHandlerFactory.newInstance((RALStatement) sqlStatement, connectionSession);
             }
             checkLockedDatabase(connectionSession);
-            return RALBackendHandlerFactory.newInstance(databaseType, (RALStatement) sqlStatement, connectionSession);
+            return RALBackendHandlerFactory.newInstance((RALStatement) sqlStatement, connectionSession);
         }
         throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
     }
@@ -77,7 +77,8 @@ public final class DistSQLBackendHandlerFactory {
         if (null == databaseName) {
             return;
         }
-        if (ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext().isLocked(databaseName)) {
+        LockContext lockContext = ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext();
+        if (lockContext.isLocked(LockNameDefinitionFactory.newDatabaseDefinition(databaseName))) {
             throw new DatabaseLockedException(databaseName);
         }
     }

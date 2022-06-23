@@ -74,13 +74,13 @@ public final class MySQLCommandExecutorFactory {
             case COM_QUERY:
                 return new MySQLComQueryPacketExecutor((MySQLComQueryPacket) commandPacket, connectionSession);
             case COM_PING:
-                return new MySQLComPingExecutor();
+                return new MySQLComPingExecutor(connectionSession);
             case COM_STMT_PREPARE:
                 return new MySQLComStmtPrepareExecutor((MySQLComStmtPreparePacket) commandPacket, connectionSession);
             case COM_STMT_EXECUTE:
                 return new MySQLComStmtExecuteExecutor((MySQLComStmtExecutePacket) commandPacket, connectionSession);
             case COM_STMT_RESET:
-                return new MySQLComStmtResetExecutor((MySQLComStmtResetPacket) commandPacket);
+                return new MySQLComStmtResetExecutor((MySQLComStmtResetPacket) commandPacket, connectionSession);
             case COM_STMT_CLOSE:
                 return new MySQLComStmtCloseExecutor((MySQLComStmtClosePacket) commandPacket, connectionSession.getConnectionId());
             case COM_SET_OPTION:

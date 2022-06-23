@@ -30,6 +30,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineIgnoredException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializerFactory;
@@ -75,15 +76,13 @@ public final class RuleAlteredJobPreparer {
      * @param jobContext job context
      */
     public void prepare(final RuleAlteredJobContext jobContext) {
-        // TODO Initialize source and target data source after tasks initialization, since dumper and importer constructor might call appendJDBCQueryProperties.
-        // But InventoryTaskSplitter need to check target tables. It need to do some refactoring for appendJDBCQueryProperties vocations.
         checkSourceDataSource(jobContext);
         if (jobContext.isStopping()) {
-            throw new PipelineJobPrepareFailedException("Job stopping, jobId=" + jobContext.getJobId());
+            throw new PipelineIgnoredException("Job stopping, jobId=" + jobContext.getJobId());
         }
         prepareAndCheckTargetWithLock(jobContext);
         if (jobContext.isStopping()) {
-            throw new PipelineJobPrepareFailedException("Job stopping, jobId=" + jobContext.getJobId());
+            throw new PipelineIgnoredException("Job stopping, jobId=" + jobContext.getJobId());
         }
         // TODO check metadata
         try {
@@ -104,7 +103,7 @@ public final class RuleAlteredJobPreparer {
         RuleAlteredJobConfiguration jobConfig = jobContext.getJobConfig();
         // TODO the lock will be replaced
         String lockName = "prepare-" + jobConfig.getJobId();
-        ShardingSphereLock lock = PipelineContext.getContextManager().getInstanceContext().getLockContext().getMutexLock();
+        ShardingSphereLock lock = PipelineContext.getContextManager().getInstanceContext().getLockContext().getLock();
         if (lock.tryLock(lockName, 3000)) {
             try {
                 prepareAndCheckTarget(jobContext);

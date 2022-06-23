@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatabl
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.LabelInstanceStatement;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.definition.InstanceId;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsChangedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -36,19 +35,19 @@ import java.util.Optional;
 /**
  * Label instance handler.
  */
-public final class LabelInstanceHandler extends UpdatableRALBackendHandler<LabelInstanceStatement, LabelInstanceHandler> {
+public final class LabelInstanceHandler extends UpdatableRALBackendHandler<LabelInstanceStatement> {
     
     @Override
-    public void update(final ContextManager contextManager, final LabelInstanceStatement sqlStatement) {
+    public void update(final ContextManager contextManager) {
         MetaDataPersistService persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService().orElse(null);
         if (null == persistService || null == persistService.getRepository() || persistService.getRepository() instanceof StandalonePersistRepository) {
             throw new UnsupportedOperationException("Labels can only be added in cluster mode");
         }
-        String instanceId = new InstanceId(sqlStatement.getIp(), String.valueOf(sqlStatement.getPort())).getId();
+        String instanceId = getSqlStatement().getInstanceId();
         Optional<ComputeNodeInstance> computeNodeInstance = contextManager.getInstanceContext().getComputeNodeInstanceById(instanceId);
         if (computeNodeInstance.isPresent()) {
-            Collection<String> labels = new LinkedHashSet<>(sqlStatement.getLabels());
-            if (!sqlStatement.isOverwrite() && null != computeNodeInstance.get().getLabels()) {
+            Collection<String> labels = new LinkedHashSet<>(getSqlStatement().getLabels());
+            if (!getSqlStatement().isOverwrite() && null != computeNodeInstance.get().getLabels()) {
                 labels.addAll(computeNodeInstance.get().getLabels());
             }
             ShardingSphereEventBus.getInstance().post(new LabelsChangedEvent(instanceId, new LinkedList<>(labels)));

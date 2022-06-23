@@ -23,6 +23,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.codec.PostgreSQLPacketCo
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatementRegistry;
+import org.apache.shardingsphere.proxy.backend.exception.InTransactionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
@@ -47,7 +48,7 @@ public final class PostgreSQLFrontendEngine implements DatabaseProtocolFrontendE
     private final DatabasePacketCodecEngine<PostgreSQLPacket> codecEngine = new PostgreSQLPacketCodecEngine();
     
     @Override
-    public void setDatabaseVersion(final String schemaName, final String databaseVersion) {
+    public void setDatabaseVersion(final String databaseName, final String databaseVersion) {
         PostgreSQLServerInfo.setServerVersion(databaseVersion);
     }
     
@@ -58,8 +59,8 @@ public final class PostgreSQLFrontendEngine implements DatabaseProtocolFrontendE
     }
     
     @Override
-    public void handleException(final ConnectionSession connectionSession) {
-        if (connectionSession.getTransactionStatus().isInTransaction() && !connectionSession.getTransactionStatus().isRollbackOnly()) {
+    public void handleException(final ConnectionSession connectionSession, final Exception exception) {
+        if (connectionSession.getTransactionStatus().isInTransaction() && !connectionSession.getTransactionStatus().isRollbackOnly() && !(exception instanceof InTransactionException)) {
             connectionSession.getTransactionStatus().setRollbackOnly(true);
         }
     }

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.distsql.parser.statement;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
-import org.apache.shardingsphere.distsql.parser.subject.impl.ShardingSubjectSupplier;
 import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRuleSegment;
 
 import java.util.Collection;
@@ -31,12 +30,12 @@ import java.util.LinkedList;
  */
 @RequiredArgsConstructor
 @Getter
-public final class DropShardingBindingTableRulesStatement extends DropRuleStatement implements ShardingSubjectSupplier {
+public final class DropShardingBindingTableRulesStatement extends DropRuleStatement {
     
     private final Collection<BindingTableRuleSegment> rules;
     
     public DropShardingBindingTableRulesStatement(final boolean containsExistClause, final Collection<BindingTableRuleSegment> rules) {
-        setContainsExistClause(containsExistClause);
+        super(containsExistClause);
         this.rules = rules;
     }
     

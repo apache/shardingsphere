@@ -19,6 +19,7 @@ package org.apache.shardingsphere.dbdiscovery.distsql.handler.query;
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryTypesStatement;
+import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -29,7 +30,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 /**
  * Result set for show database discovery type.
@@ -40,9 +40,8 @@ public final class DatabaseDiscoveryTypeQueryResultSet implements DistSQLResultS
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
-        Collection<DatabaseDiscoveryRuleConfiguration> ruleConfig = database.getRuleMetaData().findRuleConfigurations(DatabaseDiscoveryRuleConfiguration.class);
-        data = ruleConfig.stream().map(DatabaseDiscoveryRuleConfiguration::getDiscoveryTypes)
-                .flatMap(each -> each.entrySet().stream()).collect(Collectors.toMap(Entry::getKey, Entry::getValue)).entrySet().iterator();
+        DatabaseDiscoveryRule rule = database.getRuleMetaData().getSingleRule(DatabaseDiscoveryRule.class);
+        data = ((DatabaseDiscoveryRuleConfiguration) rule.getConfiguration()).getDiscoveryTypes().entrySet().iterator();
     }
     
     @Override

@@ -35,11 +35,8 @@ public final class LabelInstanceStatementTestCase extends SQLParserTestCase {
     @XmlAttribute(name = "overwrite")
     private boolean overwrite;
     
-    @XmlAttribute(name = "ip")
-    private String ip;
-    
-    @XmlAttribute(name = "port")
-    private String port;
+    @XmlAttribute(name = "instance-id")
+    private String instanceId;
     
     @XmlElement(name = "label")
     private Collection<String> labels;
