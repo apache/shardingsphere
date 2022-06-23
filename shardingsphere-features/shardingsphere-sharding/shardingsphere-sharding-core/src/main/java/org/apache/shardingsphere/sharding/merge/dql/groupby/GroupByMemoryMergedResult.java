@@ -126,7 +126,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
         }
         return result;
     }
-    
+
     private boolean getValueCaseSensitiveFromTables(final QueryResult queryResult,
                                                     final SelectStatementContext selectStatementContext, final ShardingSphereSchema schema, final int columnIndex) throws SQLException {
         for (SimpleTableSegment each : selectStatementContext.getAllTables()) {
@@ -140,7 +140,7 @@ public final class GroupByMemoryMergedResult extends MemoryMergedResult<Sharding
         }
         return false;
     }
-    
+
     private List<MemoryQueryResultRow> getMemoryResultSetRows(final SelectStatementContext selectStatementContext,
                                                               final Map<GroupByValue, MemoryQueryResultRow> dataMap, final List<Boolean> valueCaseSensitive) {
         if (dataMap.isEmpty()) {
