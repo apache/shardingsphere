@@ -1309,3 +1309,7 @@ joinGroupName
 restorePointName
     : identifier
     ;
+
+libraryName
+    : identifier
+    ;

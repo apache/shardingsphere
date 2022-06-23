@@ -2509,3 +2509,11 @@ dropRestorePoint
 dropOperator
     : DROP OPERATOR (schemaName DOT_)? operatorName FORCE?
     ;
+
+alterLibrary
+    : ALTER LIBRARY (schemaName DOT_)? libraryName (libraryCompileClause | EDITIONABLE | NONEDITIONABLE)
+    ;
+
+libraryCompileClause
+    : COMPILE DEBUG? compilerParametersClause* (REUSE SETTINGS)?
+    ;
