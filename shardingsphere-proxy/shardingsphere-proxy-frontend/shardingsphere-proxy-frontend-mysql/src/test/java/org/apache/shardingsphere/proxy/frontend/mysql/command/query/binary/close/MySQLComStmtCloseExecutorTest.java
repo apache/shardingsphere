@@ -17,28 +17,28 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.close;
 
-import lombok.RequiredArgsConstructor;
+import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.close.MySQLComStmtClosePacket;
-import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.junit.Test;
 
-import java.util.Collection;
+import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 
-/**
- * COM_STMT_CLOSE command executor for MySQL.
- */
-@RequiredArgsConstructor
-public final class MySQLComStmtCloseExecutor implements CommandExecutor {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+
+public final class MySQLComStmtCloseExecutorTest {
     
-    private final MySQLComStmtClosePacket packet;
-    
-    private final ConnectionSession connectionSession;
-    
-    @Override
-    public Collection<DatabasePacket<?>> execute() {
-        connectionSession.getPreparedStatementRegistry().removePreparedStatement(packet.getStatementId());
-        return Collections.emptyList();
+    @Test
+    public void assertExecute() {
+        MySQLComStmtClosePacket packet = new MySQLComStmtClosePacket(new MySQLPacketPayload(Unpooled.wrappedBuffer(new byte[]{0x01, 0x00, 0x00, 0x00}), StandardCharsets.UTF_8));
+        ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
+        assertThat(new MySQLComStmtCloseExecutor(packet, connectionSession).execute(), is(Collections.emptyList()));
+        verify(connectionSession.getPreparedStatementRegistry()).removePreparedStatement(1);
     }
 }
