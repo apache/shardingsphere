@@ -27,10 +27,10 @@ ShardingSphere-JDBC spring boot properties consists of database name, mode confi
 ```properties
 # JDBC logic database name. Through this parameter to connect ShardingSphere-JDBC and ShardingSphere-Proxy.
 spring.shardingsphere.database.name= # logic database name, default value: logic_db
-spring.shardingsphere.mode.xxx= mode configuration
-spring.shardingsphere.dataSource.xxx= data source map
-spring.shardingsphere.rules.xxx= rule configurations
-spring.shardingsphere.props= properties
+spring.shardingsphere.mode.xxx= # mode configuration
+spring.shardingsphere.dataSource.xxx= # data source map
+spring.shardingsphere.rules.xxx= # rule configurations
+spring.shardingsphere.props= # properties
 ```
 
 Please refer to [Mode Confiugration](/en/user-manual/shardingsphere-jdbc/spring-boot-starter/mode) for more mode details.

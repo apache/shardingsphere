@@ -27,10 +27,10 @@ ShardingSphere-JDBC 的 Spring Boot 属性配置由 Database 名称、运行模�
 ```properties
 # JDBC 逻辑库名称。在集群模式中，使用该参数来联通 ShardingSphere-JDBC 与 ShardingSphere-Proxy。
 spring.shardingsphere.database.name= # 逻辑库名称，默认值：logic_db
-spring.shardingsphere.mode.xxx= 运行模式
-spring.shardingsphere.dataSource.xxx= 数据源集合
-spring.shardingsphere.rules.xxx= 规则集合
-spring.shardingsphere.props= 属性配置
+spring.shardingsphere.mode.xxx= # 运行模式
+spring.shardingsphere.dataSource.xxx= # 数据源集合
+spring.shardingsphere.rules.xxx= # 规则集合
+spring.shardingsphere.props= # 属性配置
 ```
 
 模式详情请参见[模式配置](/cn/user-manual/shardingsphere-jdbc/spring-boot-starter/mode)。
