@@ -4709,8 +4709,6 @@
     <sql-case id="insert_by_postgresql_source_test_case395" value="INSERT INTO truncate_b DEFAULT VALUES;" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case396" value="INSERT INTO truncate_b DEFAULT VALUES;" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case428" value="INSERT INTO y2 (SELECT x, md5(x::text) FROM generate_series(0,20) x);" db-types="PostgreSQL" />
-    <sql-case id="listen_by_postgresql_source_test_case1" value="LISTEN foo_event;" db-types="PostgreSQL" />
-    <sql-case id="listen_by_postgresql_source_test_case2" value="LISTEN notify_async2;" db-types="PostgreSQL" />
     <sql-case id="lock_by_postgresql_source_test_case1" value="LOCK TABLE ONLY lock_tbl1;" db-types="PostgreSQL" />
     <sql-case id="lock_by_postgresql_source_test_case2" value="LOCK TABLE fast_emp4000;" db-types="PostgreSQL" />
     <sql-case id="lock_by_postgresql_source_test_case3" value="LOCK TABLE lock_tbl1 * IN ACCESS EXCLUSIVE MODE;" db-types="PostgreSQL" />

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ListenStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.CommonStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.AlterResourceGroupStatementTestCase;
@@ -378,6 +379,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SetTransactionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.UnlockStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.XATestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.ListenStatementTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -1322,6 +1324,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-binlog-events")
     private final List<ShowBinlogEventsStatementTestCase> showBinlogEventsTestCases = new LinkedList<>();
     
+    @XmlElement(name = "listen")
+    private final List<ListenStatementTestCase> listenTestCases = new LinkedList<>();
+
     @XmlElement(name = "lock")
     private final List<LockStatementTestCase> lockTestCases = new LinkedList<>();
     
@@ -1825,6 +1830,7 @@ public final class SQLParserTestCases {
         putAll(dropDiskgroupTestCases, result);
         putAll(createRollbackSegmentTestCases, result);
         putAll(dropRollbackSegmentTestCases, result);
+        putAll(listenTestCases, result);
         putAll(createLockdownProfileTestCases, result);
         putAll(dropLockdownProfileTestCases, result);
         putAll(createInmemoryJoinGroupTestCases, result);

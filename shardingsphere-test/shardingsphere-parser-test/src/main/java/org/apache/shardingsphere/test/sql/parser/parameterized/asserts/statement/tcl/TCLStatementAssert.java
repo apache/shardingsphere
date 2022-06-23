@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoComm
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetConstraintsStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ListenStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.UnlockStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.tcl.impl.BeginTransactionStatementAssert;
@@ -39,6 +40,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.tcl.impl.SetConstraintsStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.tcl.impl.SetTransactionStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.tcl.impl.UnlockStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.tcl.impl.ListenStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.BeginTransactionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.CommitStatementTestCase;
@@ -49,6 +51,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SetConstraintsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SetTransactionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.UnlockStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.ListenStatementTestCase;
 
 /**
  * TCL statement assert.
@@ -82,6 +85,8 @@ public final class TCLStatementAssert {
             UnlockStatementAssert.assertIs(assertContext, (UnlockStatement) actual, (UnlockStatementTestCase) expected);
         } else if (actual instanceof LockStatement) {
             LockStatementAssert.assertIs(assertContext, (LockStatement) actual, (LockStatementTestCase) expected);
+        } else if (actual instanceof ListenStatement) {
+            ListenStatementAssert.assertIs(assertContext, (ListenStatement) actual, (ListenStatementTestCase) expected);
         }
     }
 }

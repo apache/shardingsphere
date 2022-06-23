@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Sa
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetConstraintsContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.StartTransactionContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ListenContext;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLBeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLCommitPreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLCommitStatement;
@@ -44,6 +45,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLSetConstraintsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLSetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLStartTransactionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLListenStatement;
 
 import java.util.Properties;
 
@@ -129,4 +131,10 @@ public final class PostgreSQLTCLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitRollbackPrepared(final RollbackPreparedContext ctx) {
         return new PostgreSQLRollbackPreparedStatement();
     }
+    
+    @Override
+    public ASTNode visitListen(final ListenContext ctx) {
+        return new PostgreSQLListenStatement();
+    }
+    
 }

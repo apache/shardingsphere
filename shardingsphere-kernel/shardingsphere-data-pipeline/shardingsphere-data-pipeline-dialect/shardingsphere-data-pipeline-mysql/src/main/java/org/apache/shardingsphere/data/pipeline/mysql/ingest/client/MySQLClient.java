@@ -228,7 +228,6 @@ public final class MySQLClient {
         }
     }
     
-    
     /**
      * Close netty channel.
      */
