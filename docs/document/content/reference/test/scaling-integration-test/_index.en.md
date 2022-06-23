@@ -35,7 +35,7 @@ Primary Key Case：
 ### Configuration File
 
 Catalog：`resources/env/`
-- /common: The Dist SQL used in the scaling process.
+- /common: The Dist SQL used in the Scaling process.
 - /{SQL-TYPE}: database-level configuration files.
 - /scenario: The configuration file for the test scenario, mainly SQL, may be written differently for different databases.
 
@@ -91,4 +91,4 @@ You can run the use case using the same IDE as Native, or you can run it using m
 
 #### Attentions
 
-The commands in the Scaling integration test are basically executed in the ShardingSphere-Proxy, so if they fail, most of them require a debug of the ShardingSphere-Proxy, and the logs with the `:Scaling-Proxy ` prefix are from the The logs with the prefix `:Scaling-Proxy` are the logs output from the ShardingSphere-Proxy container.
+The commands in the Scaling integration test are basically executed in the ShardingSphere-Proxy, so if they fail, most of them require a debug of the ShardingSphere-Proxy, and the logs prefixed with `:Scaling-Proxy` are output from the ShardingSphere-Proxy container.
