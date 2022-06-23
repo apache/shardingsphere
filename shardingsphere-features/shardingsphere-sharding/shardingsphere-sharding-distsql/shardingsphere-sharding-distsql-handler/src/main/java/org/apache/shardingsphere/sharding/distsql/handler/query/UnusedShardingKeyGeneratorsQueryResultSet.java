@@ -46,14 +46,6 @@ import java.util.Properties;
  */
 public final class UnusedShardingKeyGeneratorsQueryResultSet implements DistSQLResultSet {
     
-    private static final String TYPE = ShowUnusedShardingKeyGeneratorsStatement.class.getName();
-    
-    private static final String NAME = "name";
-    
-    private static final String COLUMN_TYPE = "type";
-    
-    private static final String PROPS = "props";
-    
     private Iterator<Entry<String, ShardingSphereAlgorithmConfiguration>> data = Collections.emptyIterator();
     
     @Override
@@ -62,9 +54,31 @@ public final class UnusedShardingKeyGeneratorsQueryResultSet implements DistSQLR
         rule.ifPresent(optional -> getUnusedKeyGenerators((ShardingRuleConfiguration) optional.getConfiguration()));
     }
     
+    private void getUnusedKeyGenerators(final ShardingRuleConfiguration shardingRuleConfig) {
+        Collection<String> inUsedKeyGenerators = getUsedKeyGenerators(shardingRuleConfig);
+        Map<String, ShardingSphereAlgorithmConfiguration> map = new HashMap<>();
+        for (Entry<String, ShardingSphereAlgorithmConfiguration> each : shardingRuleConfig.getKeyGenerators().entrySet()) {
+            if (!inUsedKeyGenerators.contains(each.getKey())) {
+                map.put(each.getKey(), each.getValue());
+            }
+        }
+        data = map.entrySet().iterator();
+    }
+    
+    private Collection<String> getUsedKeyGenerators(final ShardingRuleConfiguration shardingRuleConfig) {
+        Collection<String> result = new LinkedHashSet<>();
+        shardingRuleConfig.getTables().stream().filter(each -> Objects.nonNull(each.getKeyGenerateStrategy())).forEach(each -> result.add(each.getKeyGenerateStrategy().getKeyGeneratorName()));
+        shardingRuleConfig.getAutoTables().stream().filter(each -> Objects.nonNull(each.getKeyGenerateStrategy())).forEach(each -> result.add(each.getKeyGenerateStrategy().getKeyGeneratorName()));
+        KeyGenerateStrategyConfiguration keyGenerateStrategy = shardingRuleConfig.getDefaultKeyGenerateStrategy();
+        if (Objects.nonNull(keyGenerateStrategy) && !Strings.isNullOrEmpty(keyGenerateStrategy.getKeyGeneratorName())) {
+            result.add(keyGenerateStrategy.getKeyGeneratorName());
+        }
+        return result;
+    }
+    
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList(NAME, COLUMN_TYPE, PROPS);
+        return Arrays.asList("name", "type", "props");
     }
     
     @Override
@@ -91,28 +105,6 @@ public final class UnusedShardingKeyGeneratorsQueryResultSet implements DistSQLR
     
     @Override
     public String getType() {
-        return TYPE;
-    }
-    
-    private void getUnusedKeyGenerators(final ShardingRuleConfiguration shardingRuleConfig) {
-        Collection<String> inUsedKeyGenerators = getUsedKeyGenerators(shardingRuleConfig);
-        Map<String, ShardingSphereAlgorithmConfiguration> map = new HashMap<>();
-        for (Entry<String, ShardingSphereAlgorithmConfiguration> each : shardingRuleConfig.getKeyGenerators().entrySet()) {
-            if (!inUsedKeyGenerators.contains(each.getKey())) {
-                map.put(each.getKey(), each.getValue());
-            }
-        }
-        data = map.entrySet().iterator();
-    }
-    
-    private Collection<String> getUsedKeyGenerators(final ShardingRuleConfiguration shardingRuleConfig) {
-        Collection<String> result = new LinkedHashSet<>();
-        shardingRuleConfig.getTables().stream().filter(each -> Objects.nonNull(each.getKeyGenerateStrategy())).forEach(each -> result.add(each.getKeyGenerateStrategy().getKeyGeneratorName()));
-        shardingRuleConfig.getAutoTables().stream().filter(each -> Objects.nonNull(each.getKeyGenerateStrategy())).forEach(each -> result.add(each.getKeyGenerateStrategy().getKeyGeneratorName()));
-        KeyGenerateStrategyConfiguration keyGenerateStrategy = shardingRuleConfig.getDefaultKeyGenerateStrategy();
-        if (Objects.nonNull(keyGenerateStrategy) && !Strings.isNullOrEmpty(keyGenerateStrategy.getKeyGeneratorName())) {
-            result.add(keyGenerateStrategy.getKeyGeneratorName());
-        }
-        return result;
+        return ShowUnusedShardingKeyGeneratorsStatement.class.getName();
     }
 }
