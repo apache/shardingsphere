@@ -44,7 +44,7 @@ public final class ShardingScalingRulesQueryResultSet implements DistSQLResultSe
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        data = rule.map(shardingRule -> ((ShardingRuleConfiguration) shardingRule.getConfiguration()).getScaling().entrySet().iterator()).orElse(Collections.emptyIterator());
+        data = rule.map(optional -> ((ShardingRuleConfiguration) optional.getConfiguration()).getScaling().entrySet().iterator()).orElse(Collections.emptyIterator());
     }
     
     @Override
