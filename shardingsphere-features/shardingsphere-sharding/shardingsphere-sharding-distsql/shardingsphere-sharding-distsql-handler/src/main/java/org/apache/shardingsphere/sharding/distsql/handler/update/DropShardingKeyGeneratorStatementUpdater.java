@@ -38,8 +38,6 @@ import java.util.stream.Collectors;
  */
 public final class DropShardingKeyGeneratorStatementUpdater implements RuleDefinitionDropUpdater<DropShardingKeyGeneratorStatement, ShardingRuleConfiguration> {
     
-    private static final String TYPE = DropShardingKeyGeneratorStatement.class.getName();
-    
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database,
                                   final DropShardingKeyGeneratorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
@@ -67,22 +65,6 @@ public final class DropShardingKeyGeneratorStatementUpdater implements RuleDefin
         DistSQLException.predictionThrow(inUsedNames.isEmpty(), () -> new KeyGeneratorInUsedException("Sharding", databaseName, inUsedNames));
     }
     
-    @Override
-    public boolean updateCurrentRuleConfiguration(final DropShardingKeyGeneratorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
-        currentRuleConfig.getKeyGenerators().keySet().removeIf(sqlStatement.getKeyGeneratorNames()::contains);
-        return false;
-    }
-    
-    @Override
-    public Class<ShardingRuleConfiguration> getRuleConfigurationClass() {
-        return ShardingRuleConfiguration.class;
-    }
-    
-    @Override
-    public String getType() {
-        return TYPE;
-    }
-    
     private Collection<String> getUsedKeyGenerators(final ShardingRuleConfiguration shardingRuleConfig) {
         Collection<String> result = new LinkedHashSet<>();
         shardingRuleConfig.getTables().stream().filter(each -> Objects.nonNull(each.getKeyGenerateStrategy())).forEach(each -> result.add(each.getKeyGenerateStrategy().getKeyGeneratorName()));
@@ -95,7 +77,23 @@ public final class DropShardingKeyGeneratorStatementUpdater implements RuleDefin
     }
     
     @Override
+    public boolean updateCurrentRuleConfiguration(final DropShardingKeyGeneratorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
+        currentRuleConfig.getKeyGenerators().keySet().removeIf(sqlStatement.getKeyGeneratorNames()::contains);
+        return false;
+    }
+    
+    @Override
     public boolean hasAnyOneToBeDropped(final DropShardingKeyGeneratorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) {
         return null != currentRuleConfig && !getIdenticalData(currentRuleConfig.getKeyGenerators().keySet(), sqlStatement.getKeyGeneratorNames()).isEmpty();
+    }
+    
+    @Override
+    public Class<ShardingRuleConfiguration> getRuleConfigurationClass() {
+        return ShardingRuleConfiguration.class;
+    }
+    
+    @Override
+    public String getType() {
+        return DropShardingKeyGeneratorStatement.class.getName();
     }
 }

@@ -41,8 +41,6 @@ import java.util.Optional;
  */
 public final class DropSchemaStatementSchemaRefresher implements MetaDataRefresher<DropSchemaStatement> {
     
-    private static final String TYPE = DropSchemaStatement.class.getName();
-    
     @Override
     public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData,
                                                     final Map<String, OptimizerPlannerContext> optimizerPlanners,
@@ -80,6 +78,6 @@ public final class DropSchemaStatementSchemaRefresher implements MetaDataRefresh
     
     @Override
     public String getType() {
-        return TYPE;
+        return DropSchemaStatement.class.getName();
     }
 }

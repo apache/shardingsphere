@@ -46,52 +46,12 @@ import java.util.Properties;
  */
 public final class UnusedShardingAlgorithmsQueryResultSet implements DistSQLResultSet {
     
-    private static final String TYPE = ShowUnusedShardingAlgorithmsStatement.class.getName();
-    
-    private static final String NAME = "name";
-    
-    private static final String COLUMN_TYPE = "type";
-    
-    private static final String PROPS = "props";
-    
     private Iterator<Entry<String, ShardingSphereAlgorithmConfiguration>> data = Collections.emptyIterator();
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
         rule.ifPresent(optional -> getUnusedShardingAlgorithms((ShardingRuleConfiguration) optional.getConfiguration()));
-    }
-    
-    @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList(NAME, COLUMN_TYPE, PROPS);
-    }
-    
-    @Override
-    public boolean next() {
-        return data.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return buildTableRowData(data.next());
-    }
-    
-    private Collection<Object> buildTableRowData(final Entry<String, ShardingSphereAlgorithmConfiguration> data) {
-        Collection<Object> result = new LinkedList<>();
-        result.add(data.getKey());
-        result.add(data.getValue().getType());
-        result.add(buildProps(data.getValue().getProps()));
-        return result;
-    }
-    
-    private Object buildProps(final Properties props) {
-        return Objects.nonNull(props) ? PropertiesConverter.convert(props) : "";
-    }
-    
-    @Override
-    public String getType() {
-        return TYPE;
     }
     
     private void getUnusedShardingAlgorithms(final ShardingRuleConfiguration shardingRuleConfig) {
@@ -125,5 +85,37 @@ public final class UnusedShardingAlgorithmsQueryResultSet implements DistSQLResu
             result.add(databaseShardingStrategy.getShardingAlgorithmName());
         }
         return result;
+    }
+    
+    @Override
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("name", "type", "props");
+    }
+    
+    @Override
+    public boolean next() {
+        return data.hasNext();
+    }
+    
+    @Override
+    public Collection<Object> getRowData() {
+        return buildTableRowData(data.next());
+    }
+    
+    private Collection<Object> buildTableRowData(final Entry<String, ShardingSphereAlgorithmConfiguration> data) {
+        Collection<Object> result = new LinkedList<>();
+        result.add(data.getKey());
+        result.add(data.getValue().getType());
+        result.add(buildProps(data.getValue().getProps()));
+        return result;
+    }
+    
+    private Object buildProps(final Properties props) {
+        return Objects.nonNull(props) ? PropertiesConverter.convert(props) : "";
+    }
+    
+    @Override
+    public String getType() {
+        return ShowUnusedShardingAlgorithmsStatement.class.getName();
     }
 }

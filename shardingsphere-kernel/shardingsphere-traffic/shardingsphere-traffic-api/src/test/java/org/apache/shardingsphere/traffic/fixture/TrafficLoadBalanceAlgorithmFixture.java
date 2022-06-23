@@ -25,7 +25,9 @@ import java.util.Properties;
 
 public final class TrafficLoadBalanceAlgorithmFixture implements TrafficLoadBalanceAlgorithm {
     
-    public static final String TYPE = "FIXTURE";
+    @Override
+    public void init(final Properties props) {
+    }
     
     @Override
     public Properties getProps() {
@@ -38,11 +40,7 @@ public final class TrafficLoadBalanceAlgorithmFixture implements TrafficLoadBala
     }
     
     @Override
-    public void init(final Properties props) {
-    }
-    
-    @Override
     public String getType() {
-        return TYPE;
+        return "FIXTURE";
     }
 }
