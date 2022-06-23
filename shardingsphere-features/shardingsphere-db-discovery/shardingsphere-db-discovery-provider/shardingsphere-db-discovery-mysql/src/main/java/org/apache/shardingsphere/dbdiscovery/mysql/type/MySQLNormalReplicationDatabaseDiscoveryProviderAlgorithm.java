@@ -84,6 +84,11 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm impl
             }
         }, executorService);
     }
+
+    @Override
+    public boolean isPrimaryInstance(final DataSource dataSource) throws SQLException {
+        return !getReplicationInstances(dataSource).isEmpty() && isNotReadonlyInstance(dataSource);
+    }
     
     private Collection<String> getReplicationInstances(final DataSource dataSource) throws SQLException {
         try (
@@ -110,11 +115,6 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm impl
                 ResultSet resultSet = statement.executeQuery(SHOW_VARIABLES_READ_ONLY)) {
             return resultSet.next() && resultSet.getString("Value").equals("OFF");
         }
-    }
-    
-    @Override
-    public boolean isPrimaryInstance(final DataSource dataSource) throws SQLException {
-        return !getReplicationInstances(dataSource).isEmpty() && isNotReadonlyInstance(dataSource);
     }
     
     @Override
