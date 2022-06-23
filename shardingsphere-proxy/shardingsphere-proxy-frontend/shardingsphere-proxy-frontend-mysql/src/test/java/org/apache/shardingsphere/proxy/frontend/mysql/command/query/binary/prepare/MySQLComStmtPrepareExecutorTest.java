@@ -117,7 +117,7 @@ public final class MySQLComStmtPrepareExecutorTest extends ProxyContextRestorer 
     
     @Test
     public void assertPrepareUpdateStatement() throws SQLException {
-        String sql= "update t set v = ?";
+        String sql = "update t set v = ?";
         when(packet.getSql()).thenReturn(sql);
         when(connectionSession.getConnectionId()).thenReturn(1);
         MySQLStatementIDGenerator.getInstance().registerConnection(1);
