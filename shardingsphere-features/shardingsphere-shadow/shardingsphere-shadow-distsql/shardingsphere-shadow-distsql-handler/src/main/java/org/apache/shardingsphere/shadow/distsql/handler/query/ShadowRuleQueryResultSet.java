@@ -37,7 +37,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Result set for show shadow rules.
+ * Query result set for show shadow rules.
  */
 public final class ShadowRuleQueryResultSet implements DistSQLResultSet {
     

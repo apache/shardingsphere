@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
- * Check scaling query result set.
+ * Query result set for check scaling.
  */
 public final class CheckScalingQueryResultSet implements DistSQLResultSet {
     

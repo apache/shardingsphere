@@ -36,7 +36,7 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Query result set for shadow algorithm.
+ * Query result set for show shadow algorithm.
  */
 public final class ShadowAlgorithmQueryResultSet implements DistSQLResultSet {
     

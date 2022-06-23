@@ -32,7 +32,7 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Result set for show sharding table rules used algorithm.
+ * Query result set for show sharding table rules used algorithm.
  */
 public final class ShardingTableRulesUsedAlgorithmQueryResultSet implements DistSQLResultSet {
     

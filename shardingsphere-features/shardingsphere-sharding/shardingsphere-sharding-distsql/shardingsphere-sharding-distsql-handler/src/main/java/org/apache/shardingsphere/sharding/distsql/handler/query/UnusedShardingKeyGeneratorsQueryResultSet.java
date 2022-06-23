@@ -41,7 +41,7 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Result set for show unused sharding key generators.
+ * Query result set for show unused sharding key generators.
  */
 public final class UnusedShardingKeyGeneratorsQueryResultSet implements DistSQLResultSet {
     

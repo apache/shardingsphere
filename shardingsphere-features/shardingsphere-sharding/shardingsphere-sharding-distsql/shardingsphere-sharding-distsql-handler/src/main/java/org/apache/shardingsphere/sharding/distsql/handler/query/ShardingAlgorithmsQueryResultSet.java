@@ -37,7 +37,7 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Result set for show sharding algorithms.
+ * Query result set for show sharding algorithms.
  */
 public final class ShardingAlgorithmsQueryResultSet implements DistSQLResultSet {
     

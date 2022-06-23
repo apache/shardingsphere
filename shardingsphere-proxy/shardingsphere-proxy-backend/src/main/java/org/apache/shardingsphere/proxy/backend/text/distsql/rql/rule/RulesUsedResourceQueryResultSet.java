@@ -45,7 +45,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Result set for show rules used resource.
+ * Query result set for show rules used resource.
  */
 public final class RulesUsedResourceQueryResultSet implements DistSQLResultSet {
     
