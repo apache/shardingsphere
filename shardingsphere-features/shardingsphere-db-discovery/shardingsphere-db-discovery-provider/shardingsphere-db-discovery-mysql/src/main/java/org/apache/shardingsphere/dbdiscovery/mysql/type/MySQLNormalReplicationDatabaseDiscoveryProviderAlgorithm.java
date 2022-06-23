@@ -48,6 +48,8 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm impl
     
     private static final String SHOW_SLAVE_HOSTS = "SHOW SLAVE HOSTS";
     
+    private static final String SHOW_VARIABLES_READ_ONLY = "SHOW VARIABLES LIKE 'read_only'";
+    
     private Properties props;
     
     @Override
@@ -58,25 +60,25 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm impl
     @Override
     public void checkEnvironment(final String databaseName, final Collection<DataSource> dataSources) {
         ExecutorService executorService = ExecutorEngine.createExecutorEngineWithCPUAndResources(dataSources.size()).getExecutorServiceManager().getExecutorService();
-        Collection<CompletableFuture<Collection<String>>> completableFutures = new LinkedList<>();
+        Collection<CompletableFuture<Boolean>> completableFutures = new LinkedList<>();
         for (DataSource dataSource : dataSources) {
             completableFutures.add(supplyAsyncCheckEnvironment(dataSource, executorService));
         }
         CompletableFuture.allOf(completableFutures.toArray(new CompletableFuture[0]));
-        Iterator<CompletableFuture<Collection<String>>> replicationInstancesFuture = completableFutures.stream().iterator();
-        int replicationGroupCount = 0;
-        while (replicationInstancesFuture.hasNext()) {
-            if (!replicationInstancesFuture.next().join().isEmpty()) {
-                replicationGroupCount++;
+        Iterator<CompletableFuture<Boolean>> primaryInstancesFuture = completableFutures.stream().iterator();
+        int primaryCount = 0;
+        while (primaryInstancesFuture.hasNext()) {
+            if (primaryInstancesFuture.next().join()) {
+                primaryCount++;
             }
         }
-        Preconditions.checkState(1 == replicationGroupCount, "Check Environment are failed in database `%s`.", databaseName);
+        Preconditions.checkState(1 == primaryCount, "Check Environment are failed in database `%s`.", databaseName);
     }
     
-    private CompletableFuture<Collection<String>> supplyAsyncCheckEnvironment(final DataSource dataSource, final ExecutorService executorService) {
+    private CompletableFuture<Boolean> supplyAsyncCheckEnvironment(final DataSource dataSource, final ExecutorService executorService) {
         return CompletableFuture.supplyAsync(() -> {
             try {
-                return getReplicationInstances(dataSource);
+                return isPrimaryInstance(dataSource);
             } catch (SQLException ex) {
                 throw new ShardingSphereException(ex);
             }
@@ -101,14 +103,18 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm impl
         return result;
     }
     
-    @Override
-    public boolean isPrimaryInstance(final DataSource dataSource) throws SQLException {
+    private boolean isNotReadonlyInstance(final DataSource dataSource) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(SHOW_SLAVE_STATUS)) {
-            return !resultSet.next();
+                ResultSet resultSet = statement.executeQuery(SHOW_VARIABLES_READ_ONLY)) {
+            return resultSet.next() && resultSet.getString("Value").equals("OFF");
         }
+    }
+    
+    @Override
+    public boolean isPrimaryInstance(final DataSource dataSource) throws SQLException {
+        return !getReplicationInstances(dataSource).isEmpty() && isNotReadonlyInstance(dataSource);
     }
     
     @Override
