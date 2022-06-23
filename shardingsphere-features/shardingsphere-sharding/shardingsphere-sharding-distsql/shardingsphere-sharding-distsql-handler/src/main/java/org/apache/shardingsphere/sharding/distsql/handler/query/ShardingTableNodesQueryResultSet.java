@@ -44,7 +44,7 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 /**
- * Result set for show sharding table nodes.
+ * Query result set for show sharding table nodes.
  */
 public final class ShardingTableNodesQueryResultSet implements DistSQLResultSet {
     

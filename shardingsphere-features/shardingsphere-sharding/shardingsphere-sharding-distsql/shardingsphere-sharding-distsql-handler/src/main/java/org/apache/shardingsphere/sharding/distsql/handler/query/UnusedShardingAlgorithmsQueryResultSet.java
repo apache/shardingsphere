@@ -41,7 +41,7 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Result set for show unused sharding algorithms.
+ * Query result set for show unused sharding algorithms.
  */
 public final class UnusedShardingAlgorithmsQueryResultSet implements DistSQLResultSet {
     

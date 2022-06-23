@@ -34,7 +34,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Result set for shadow table rule.
+ * Query result set for show shadow table rule.
  */
 public final class ShadowTableRuleQueryResultSet implements DistSQLResultSet {
     

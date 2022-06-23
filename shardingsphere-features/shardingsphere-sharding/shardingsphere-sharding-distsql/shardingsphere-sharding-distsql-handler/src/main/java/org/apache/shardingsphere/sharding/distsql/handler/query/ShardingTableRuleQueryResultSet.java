@@ -42,7 +42,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Result set for show sharding table rules.
+ * Query result set for show sharding table rules.
  */
 public final class ShardingTableRuleQueryResultSet implements DistSQLResultSet {
     

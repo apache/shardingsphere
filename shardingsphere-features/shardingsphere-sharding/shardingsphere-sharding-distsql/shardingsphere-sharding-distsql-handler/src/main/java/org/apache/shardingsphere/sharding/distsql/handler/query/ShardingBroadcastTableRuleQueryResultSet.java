@@ -29,7 +29,7 @@ import java.util.Iterator;
 import java.util.Optional;
 
 /**
- * Result set for show sharding broadcast table rules.
+ * Query result set for show sharding broadcast table rules.
  */
 public final class ShardingBroadcastTableRuleQueryResultSet implements DistSQLResultSet {
     

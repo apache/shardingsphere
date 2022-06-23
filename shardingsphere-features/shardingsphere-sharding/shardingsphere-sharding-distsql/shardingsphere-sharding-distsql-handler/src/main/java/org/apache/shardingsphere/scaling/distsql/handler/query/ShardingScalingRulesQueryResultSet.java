@@ -35,7 +35,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Result set for show sharding scaling rules.
+ * Query result set for show sharding scaling rules.
  */
 public final class ShardingScalingRulesQueryResultSet implements DistSQLResultSet {
     

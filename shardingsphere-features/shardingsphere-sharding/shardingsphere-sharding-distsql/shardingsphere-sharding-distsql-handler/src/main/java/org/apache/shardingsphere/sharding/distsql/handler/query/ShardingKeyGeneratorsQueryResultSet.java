@@ -33,7 +33,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Result set for show sharding key generators.
+ * Query result set for show sharding key generators.
  */
 public final class ShardingKeyGeneratorsQueryResultSet implements DistSQLResultSet {
     
