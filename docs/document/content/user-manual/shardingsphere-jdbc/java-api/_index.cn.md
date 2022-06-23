@@ -24,7 +24,7 @@ Java API 是最繁琐也是最灵活的配置方式，适合需要通过编程�
 
 ### 构建数据源
 
-ShardingSphere-JDBC 的 Java API 通过 Database 名称、运行模式、数据源集合、规则集合以及属性配置组成。
+ShardingSphere-JDBC 的 Java API 由 Database 名称、运行模式、数据源集合、规则集合以及属性配置组成。
 
 通过 ShardingSphereDataSourceFactory 工厂创建的 ShardingSphereDataSource 实现自 JDBC 的标准接口 DataSource。
 

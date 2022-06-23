@@ -30,8 +30,7 @@ ShardingSphere-JDBC YAML file consists of database name, mode configuration, dat
 Note: The example connection pool is HikariCP, which can be replaced with other connection pools according to business scenarios.
 
 ```yaml
-# Alias of the datasource in JDBC.
-# Through this parameter to connect, ShardingSphere-JDBC and ShardingSphere-Proxy.
+# JDBC logic database name. Through this parameter to connect ShardingSphere-JDBC and ShardingSphere-Proxy.
 # Default value: logic_db
 databaseName (?):
 
