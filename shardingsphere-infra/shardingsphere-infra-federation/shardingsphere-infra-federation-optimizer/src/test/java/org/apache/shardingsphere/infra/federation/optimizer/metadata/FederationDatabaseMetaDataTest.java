@@ -17,77 +17,74 @@
 
 package org.apache.shardingsphere.infra.federation.optimizer.metadata;
 
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.junit.Test;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
-import org.junit.Test;
-
 public final class FederationDatabaseMetaDataTest {
     
     @Test
     public void assertPutSchemaMetadata() {
-        FederationDatabaseMetaData federationDatabaseMetaData = new FederationDatabaseMetaData("foo",
-                Collections.emptyMap());
+        FederationDatabaseMetaData databaseMetaData = new FederationDatabaseMetaData("foo_db", Collections.emptyMap());
         FederationSchemaMetaData schemaMetaData = mock(FederationSchemaMetaData.class);
-        federationDatabaseMetaData.putSchemaMetadata("foo_db", schemaMetaData);
-        assertThat(federationDatabaseMetaData.getSchemas().get("foo_db"), is(schemaMetaData));
+        databaseMetaData.putSchemaMetadata("foo_schema", schemaMetaData);
+        assertThat(databaseMetaData.getSchemas().get("foo_schema"), is(schemaMetaData));
     }
     
     @Test
     public void assertRemoveSchemaMetadata() {
-        Map<String, ShardingSphereSchema> map = new HashMap<>();
-        map.put("foo_db_1", mock(ShardingSphereSchema.class));
-        map.put("foo_db_2", mock(ShardingSphereSchema.class));
-        FederationDatabaseMetaData federationDatabaseMetaData = new FederationDatabaseMetaData("foo", map);
-        assertTrue(federationDatabaseMetaData.getSchemas().containsKey("foo_db_1"));
-        federationDatabaseMetaData.removeSchemaMetadata("foo_db_1");
-        assertFalse(federationDatabaseMetaData.getSchemas().containsKey("foo_db_1"));
-        assertTrue(federationDatabaseMetaData.getSchemas().containsKey("foo_db_2"));
+        Map<String, ShardingSphereSchema> schemas = new HashMap<>(2, 1);
+        schemas.put("foo_schema_1", mock(ShardingSphereSchema.class));
+        schemas.put("foo_schema_2", mock(ShardingSphereSchema.class));
+        FederationDatabaseMetaData databaseMetaData = new FederationDatabaseMetaData("foo_db", schemas);
+        assertTrue(databaseMetaData.getSchemas().containsKey("foo_schema_1"));
+        databaseMetaData.removeSchemaMetadata("foo_schema_1");
+        assertFalse(databaseMetaData.getSchemas().containsKey("foo_schema_1"));
+        assertTrue(databaseMetaData.getSchemas().containsKey("foo_schema_2"));
     }
     
     @Test
     public void assertGetSchemaMetadata() {
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        Map<String, ShardingSphereSchema> map = new HashMap<>();
-        map.put("foo_db", schema);
-        FederationDatabaseMetaData federationDatabaseMetaData = new FederationDatabaseMetaData("foo", map);
-        assertTrue(federationDatabaseMetaData.getSchemaMetadata("foo_db").isPresent());
+        Map<String, ShardingSphereSchema> schemas = new HashMap<>(1, 1);
+        schemas.put("foo_schema", mock(ShardingSphereSchema.class));
+        FederationDatabaseMetaData federationDatabaseMetaData = new FederationDatabaseMetaData("foo_db", schemas);
+        assertTrue(federationDatabaseMetaData.getSchemaMetadata("foo_schema").isPresent());
     }
     
     @Test
-    public void assertGetSchemaMetadataByNonexistentKey() {
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        Map<String, ShardingSphereSchema> map = new HashMap<>();
-        map.put("foo_db", schema);
-        FederationDatabaseMetaData federationDatabaseMetaData = new FederationDatabaseMetaData("foo", map);
-        assertFalse(federationDatabaseMetaData.getSchemaMetadata("foo_db_2").isPresent());
+    public void assertGetSchemaMetadataWhenNotContainsKey() {
+        Map<String, ShardingSphereSchema> schemas = new HashMap<>(1, 1);
+        schemas.put("foo_schema", mock(ShardingSphereSchema.class));
+        FederationDatabaseMetaData federationDatabaseMetaData = new FederationDatabaseMetaData("foo_db", schemas);
+        assertFalse(federationDatabaseMetaData.getSchemaMetadata("foo_schema_2").isPresent());
     }
     
     @Test
     public void assertPutTable() {
-        FederationDatabaseMetaData federationDatabaseMetaData = new FederationDatabaseMetaData("foo", Collections.emptyMap());
-        ShardingSphereTable fooTable = new ShardingSphereTable("foo_table", Collections.emptyList(),
-                Collections.emptyList(), Collections.emptyList());
-        federationDatabaseMetaData.putTable("foo_db", fooTable);
-        assertTrue(federationDatabaseMetaData.getSchemaMetadata("foo_db").isPresent());
-        assertTrue(federationDatabaseMetaData.getSchemaMetadata("foo_db").map(FederationSchemaMetaData::getTables).map(e -> e.get("foo_table")).isPresent());
+        FederationDatabaseMetaData databaseMetaData = new FederationDatabaseMetaData("foo_db", Collections.emptyMap());
+        ShardingSphereTable table = new ShardingSphereTable("foo_table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        databaseMetaData.putTable("foo_schema", table);
+        assertTrue(databaseMetaData.getSchemaMetadata("foo_schema").isPresent());
+        assertTrue(databaseMetaData.getSchemaMetadata("foo_schema").get().getTables().containsKey("foo_table"));
     }
     
     @Test
     public void assertRemoveTableMetadata() {
-        FederationDatabaseMetaData federationDatabaseMetaData = new FederationDatabaseMetaData("foo", Collections.emptyMap());
-        ShardingSphereTable fooTable = new ShardingSphereTable("foo_table", Collections.emptyList(),
-                Collections.emptyList(), Collections.emptyList());
-        federationDatabaseMetaData.putTable("foo_db", fooTable);
-        federationDatabaseMetaData.removeTableMetadata("foo_db", "foo_table");
-        assertFalse(federationDatabaseMetaData.getSchemaMetadata("foo_db").map(s -> s.getTables().get("foo_table")).isPresent());
+        FederationDatabaseMetaData databaseMetaData = new FederationDatabaseMetaData("foo_db", Collections.emptyMap());
+        ShardingSphereTable table = new ShardingSphereTable("foo_table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
+        databaseMetaData.putTable("foo_schema", table);
+        databaseMetaData.removeTableMetadata("foo_schema", "foo_table");
+        assertTrue(databaseMetaData.getSchemaMetadata("foo_schema").isPresent());
+        assertFalse(databaseMetaData.getSchemaMetadata("foo_schema").get().getTables().containsKey("foo_table"));
     }
 }
