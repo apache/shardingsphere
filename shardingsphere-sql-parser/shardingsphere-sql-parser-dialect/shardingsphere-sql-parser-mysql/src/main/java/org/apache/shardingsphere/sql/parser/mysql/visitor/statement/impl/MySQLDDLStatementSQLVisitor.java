@@ -45,7 +45,6 @@ import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.BeginSt
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CaseStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ChangeColumnContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CharsetNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnAttributeContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.ColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CompoundStatementContext;
 import org.apache.shardingsphere.sql.parser.autogen.MySQLStatementParser.CreateDatabaseContext;
@@ -303,8 +302,9 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     private ColumnDefinitionSegment generateColumnDefinitionSegment(final ColumnSegment column, final FieldDefinitionContext ctx) {
         DataTypeSegment dataTypeSegment = (DataTypeSegment) visit(ctx.dataType());
-        boolean isPrimaryKey = isPrimaryKey(ctx);
-        return new ColumnDefinitionSegment(column.getStartIndex(), ctx.getStop().getStopIndex(), column, dataTypeSegment, isPrimaryKey);
+        boolean isPrimaryKey = ctx.columnAttribute().stream().anyMatch(each -> null != each.KEY() && null == each.UNIQUE());
+        // TODO parse not null
+        return new ColumnDefinitionSegment(column.getStartIndex(), ctx.getStop().getStopIndex(), column, dataTypeSegment, isPrimaryKey, false);
     }
     
     @Override
@@ -457,9 +457,9 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = new ColumnSegment(ctx.column_name.start.getStartIndex(), ctx.column_name.stop.getStopIndex(), (IdentifierValue) visit(ctx.column_name));
         DataTypeSegment dataTypeSegment = (DataTypeSegment) visit(ctx.fieldDefinition().dataType());
-        boolean isPrimaryKey = isPrimaryKey(ctx.fieldDefinition());
-        ColumnDefinitionSegment result = new ColumnDefinitionSegment(
-                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataTypeSegment, isPrimaryKey);
+        boolean isPrimaryKey = ctx.fieldDefinition().columnAttribute().stream().anyMatch(each -> null != each.KEY() && null == each.UNIQUE());
+        // TODO parse not null
+        ColumnDefinitionSegment result = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataTypeSegment, isPrimaryKey, false);
         result.getReferencedTables().addAll(getReferencedTables(ctx));
         return result;
     }
@@ -470,15 +470,6 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
             result.add((SimpleTableSegment) visit(ctx.referenceDefinition()));
         }
         return result;
-    }
-    
-    private boolean isPrimaryKey(final FieldDefinitionContext ctx) {
-        for (ColumnAttributeContext each : ctx.columnAttribute()) {
-            if (null != each.KEY() && null == each.UNIQUE()) {
-                return true;
-            }
-        }
-        return false;
     }
     
     @Override

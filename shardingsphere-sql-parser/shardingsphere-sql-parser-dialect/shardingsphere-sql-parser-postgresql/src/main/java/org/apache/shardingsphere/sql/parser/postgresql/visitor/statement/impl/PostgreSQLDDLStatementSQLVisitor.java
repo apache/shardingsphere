@@ -490,24 +490,15 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
         DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataType());
-        boolean isPrimaryKey = isPrimaryKey(ctx);
-        ColumnDefinitionSegment result = new ColumnDefinitionSegment(
-                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey);
+        boolean isPrimaryKey = ctx.columnConstraint().stream().anyMatch(each -> null != each.columnConstraintOption() && null != each.columnConstraintOption().primaryKey());
+        // TODO parse not null
+        ColumnDefinitionSegment result = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey, false);
         for (ColumnConstraintContext each : ctx.columnConstraint()) {
             if (null != each.columnConstraintOption().tableName()) {
                 result.getReferencedTables().add((SimpleTableSegment) visit(each.columnConstraintOption().tableName()));
             }
         }
         return result;
-    }
-    
-    private boolean isPrimaryKey(final ColumnDefinitionContext ctx) {
-        for (ColumnConstraintContext each : ctx.columnConstraint()) {
-            if (null != each.columnConstraintOption() && null != each.columnConstraintOption().primaryKey()) {
-                return true;
-            }
-        }
-        return false;
     }
     
     @Override
@@ -543,7 +534,7 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
         // TODO visit pk and table ref
         ColumnSegment column = (ColumnSegment) visit(ctx.modifyColumn().columnName());
         DataTypeSegment dataType = null == ctx.dataType() ? null : (DataTypeSegment) visit(ctx.dataType());
-        ColumnDefinitionSegment columnDefinition = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, false);
+        ColumnDefinitionSegment columnDefinition = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, false, false);
         return new ModifyColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnDefinition);
     }
     
