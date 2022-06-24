@@ -102,7 +102,8 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     }
     
     @SuppressWarnings("rawtypes")
-    private Collection<RuleConfiguration> processSQLStatement(final ShardingSphereDatabase database, final T sqlStatement, final RuleDefinitionUpdater updater, final RuleConfiguration currentRuleConfig) {
+    private Collection<RuleConfiguration> processSQLStatement(final ShardingSphereDatabase database,
+                                                              final T sqlStatement, final RuleDefinitionUpdater updater, final RuleConfiguration currentRuleConfig) {
         Collection<RuleConfiguration> result = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         if (updater instanceof RuleDefinitionCreateUpdater) {
             if (null != currentRuleConfig) {
