@@ -60,7 +60,7 @@ public final class GeneralDMLIT extends BaseDMLIT {
         int actualUpdateCount;
         try (Connection connection = getTargetDataSource().getConnection()) {
             actualUpdateCount = SQLExecuteType.Literal == getSqlExecuteType() ? executeUpdateForStatement(connection) : executeUpdateForPreparedStatement(connection);
-            log.error("=========sql===========" + getSQL());
+            log.error("========Thread Name:" + Thread.currentThread().getName() + "=========sql===========" + getSQL());
             try (Statement statement = connection.createStatement()) {
                 ResultSet resultSet = statement.executeQuery("SELECT * FROM t_order");
                 while (resultSet.next()) {
