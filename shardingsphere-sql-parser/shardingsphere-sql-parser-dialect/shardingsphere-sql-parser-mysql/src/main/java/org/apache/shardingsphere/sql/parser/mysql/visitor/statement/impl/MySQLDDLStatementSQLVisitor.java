@@ -214,7 +214,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
         MySQLCreateDatabaseStatement result = new MySQLCreateDatabaseStatement();
         result.setDatabaseName(new IdentifierValue(ctx.schemaName().getText()).getValue());
-        result.setContainsNotExistClause(null != ctx.notExistClause());
+        result.setIfNotExist(null != ctx.notExistClause());
         return result;
     }
     
@@ -227,16 +227,15 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
         MySQLDropDatabaseStatement result = new MySQLDropDatabaseStatement();
         result.setDatabaseName(new IdentifierValue(ctx.schemaName().getText()).getValue());
-        result.setContainsExistClause(null != ctx.existClause());
+        result.setIfExist(null != ctx.existClause());
         return result;
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        MySQLCreateTableStatement result = new MySQLCreateTableStatement();
+        MySQLCreateTableStatement result = new MySQLCreateTableStatement(null != ctx.notExistClause());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setContainsNotExistClause(null != ctx.notExistClause());
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
@@ -532,9 +531,8 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        MySQLDropTableStatement result = new MySQLDropTableStatement();
+        MySQLDropTableStatement result = new MySQLDropTableStatement(null != ctx.existClause());
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
-        result.setContainsExistClause(null != ctx.existClause());
         return result;
     }
     

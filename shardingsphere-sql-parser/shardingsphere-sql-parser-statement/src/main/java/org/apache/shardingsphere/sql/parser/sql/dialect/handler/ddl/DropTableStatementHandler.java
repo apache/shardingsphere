@@ -44,16 +44,16 @@ public final class DropTableStatementHandler implements SQLStatementHandler {
      */
     public static boolean containsExistClause(final DropTableStatement dropTableStatement) {
         if (dropTableStatement instanceof MySQLStatement) {
-            return ((MySQLDropTableStatement) dropTableStatement).isContainsExistClause();
+            return ((MySQLDropTableStatement) dropTableStatement).isIfExist();
         }
         if (dropTableStatement instanceof PostgreSQLStatement) {
-            return ((PostgreSQLDropTableStatement) dropTableStatement).isContainsExistClause();
+            return ((PostgreSQLDropTableStatement) dropTableStatement).isIfExist();
         }
         if (dropTableStatement instanceof SQLServerStatement) {
-            return ((SQLServerDropTableStatement) dropTableStatement).isContainsExistClause();
+            return ((SQLServerDropTableStatement) dropTableStatement).isIfExist();
         }
         if (dropTableStatement instanceof OpenGaussStatement) {
-            return ((OpenGaussDropTableStatement) dropTableStatement).isContainsExistClause();
+            return ((OpenGaussDropTableStatement) dropTableStatement).isIfExist();
         }
         return false;
     }

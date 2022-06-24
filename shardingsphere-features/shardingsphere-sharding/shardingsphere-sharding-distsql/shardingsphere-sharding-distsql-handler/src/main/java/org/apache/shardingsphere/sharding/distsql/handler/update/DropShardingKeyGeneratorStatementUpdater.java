@@ -41,7 +41,7 @@ public final class DropShardingKeyGeneratorStatementUpdater implements RuleDefin
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database,
                                   final DropShardingKeyGeneratorStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        if (null == currentRuleConfig && sqlStatement.isContainsExistClause()) {
+        if (null == currentRuleConfig && sqlStatement.isIfExist()) {
             return;
         }
         String databaseName = database.getName();
@@ -52,7 +52,7 @@ public final class DropShardingKeyGeneratorStatementUpdater implements RuleDefin
     
     private void checkExist(final String databaseName, final Collection<String> keyGeneratorNames, final ShardingRuleConfiguration currentRuleConfig,
                             final DropShardingKeyGeneratorStatement sqlStatement) throws DistSQLException {
-        if (sqlStatement.isContainsExistClause()) {
+        if (sqlStatement.isIfExist()) {
             return;
         }
         Collection<String> notExistKeyGenerators = keyGeneratorNames.stream().filter(each -> !currentRuleConfig.getKeyGenerators().containsKey(each)).collect(Collectors.toList());

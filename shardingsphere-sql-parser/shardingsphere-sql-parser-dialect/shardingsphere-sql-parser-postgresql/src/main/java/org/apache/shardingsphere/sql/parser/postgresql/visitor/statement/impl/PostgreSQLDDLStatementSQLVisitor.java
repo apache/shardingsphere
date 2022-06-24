@@ -291,9 +291,8 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        PostgreSQLCreateTableStatement result = new PostgreSQLCreateTableStatement();
+        PostgreSQLCreateTableStatement result = new PostgreSQLCreateTableStatement(null != ctx.notExistClause());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setContainsNotExistClause(null != ctx.notExistClause());
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
@@ -551,9 +550,8 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        PostgreSQLDropTableStatement result = new PostgreSQLDropTableStatement();
+        PostgreSQLDropTableStatement result = new PostgreSQLDropTableStatement(null != ctx.existClause());
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
-        result.setContainsExistClause(null != ctx.existClause());
         return result;
     }
     
@@ -635,9 +633,8 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
-        PostgreSQLDropIndexStatement result = new PostgreSQLDropIndexStatement();
+        PostgreSQLDropIndexStatement result = new PostgreSQLDropIndexStatement(null != ctx.existClause());
         result.getIndexes().addAll(createIndexSegments(((CollectionValue<SimpleTableSegment>) visit(ctx.qualifiedNameList())).getValue()));
-        result.setContainsExistClause(null != ctx.existClause());
         return result;
     }
     
@@ -736,7 +733,7 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
         PostgreSQLDropDatabaseStatement result = new PostgreSQLDropDatabaseStatement();
         result.setDatabaseName(((IdentifierValue) visit(ctx.name())).getValue());
-        result.setContainsExistClause(null != ctx.existClause());
+        result.setIfExist(null != ctx.existClause());
         return result;
     }
     

@@ -94,12 +94,12 @@ public final class DropShardingBroadcastTableRuleStatementUpdaterTest {
     }
     
     private DropShardingBroadcastTableRulesStatement createSQLStatement(final String tableName) {
-        return null == tableName ? new DropShardingBroadcastTableRulesStatement(Collections.emptyList())
-                : new DropShardingBroadcastTableRulesStatement(Collections.singleton(tableName));
+        return null == tableName ? new DropShardingBroadcastTableRulesStatement(false, Collections.emptyList())
+                : new DropShardingBroadcastTableRulesStatement(false, Collections.singleton(tableName));
     }
     
     private DropShardingBroadcastTableRulesStatement createSQLStatement(final boolean containsExistClause, final String tableName) {
-        return null == tableName ? new DropShardingBroadcastTableRulesStatement(Collections.emptyList())
+        return null == tableName ? new DropShardingBroadcastTableRulesStatement(false, Collections.emptyList())
                 : new DropShardingBroadcastTableRulesStatement(containsExistClause, Collections.singleton(tableName));
     }
     

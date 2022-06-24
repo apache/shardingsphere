@@ -100,7 +100,7 @@ public final class DropReadwriteSplittingRuleStatementUpdaterTest {
     }
     
     private DropReadwriteSplittingRuleStatement createSQLStatement() {
-        return new DropReadwriteSplittingRuleStatement(Collections.singleton("readwrite_ds"));
+        return new DropReadwriteSplittingRuleStatement(false, Collections.singleton("readwrite_ds"));
     }
     
     private ReadwriteSplittingRuleConfiguration createCurrentRuleConfiguration() {

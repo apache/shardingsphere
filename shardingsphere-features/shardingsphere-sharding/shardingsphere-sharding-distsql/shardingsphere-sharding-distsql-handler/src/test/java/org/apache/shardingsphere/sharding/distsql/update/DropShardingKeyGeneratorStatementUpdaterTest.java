@@ -88,6 +88,6 @@ public final class DropShardingKeyGeneratorStatementUpdaterTest {
     }
     
     private DropShardingKeyGeneratorStatement createSQLStatement(final String... keyGeneratorNames) {
-        return new DropShardingKeyGeneratorStatement(Arrays.asList(keyGeneratorNames));
+        return new DropShardingKeyGeneratorStatement(false, Arrays.asList(keyGeneratorNames));
     }
 }

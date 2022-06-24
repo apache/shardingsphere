@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.encrypt.distsql.parser.statement;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 
 import java.util.Collection;
@@ -26,14 +25,13 @@ import java.util.Collection;
 /**
  * Drop encrypt rule statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class DropEncryptRuleStatement extends DropRuleStatement {
     
     private final Collection<String> tables;
     
-    public DropEncryptRuleStatement(final boolean containsExistClause, final Collection<String> tables) {
-        super(containsExistClause);
+    public DropEncryptRuleStatement(final boolean ifExist, final Collection<String> tables) {
+        super(ifExist);
         this.tables = tables;
     }
 }

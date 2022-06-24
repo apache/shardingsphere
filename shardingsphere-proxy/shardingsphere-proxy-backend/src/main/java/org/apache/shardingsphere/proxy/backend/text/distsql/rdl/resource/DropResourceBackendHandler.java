@@ -52,7 +52,7 @@ public final class DropResourceBackendHandler extends DatabaseRequiredBackendHan
     @Override
     public ResponseHeader execute(final String databaseName, final DropResourceStatement sqlStatement) throws DistSQLException {
         Collection<String> toBeDroppedResourceNames = sqlStatement.getNames();
-        check(databaseName, toBeDroppedResourceNames, sqlStatement.isIgnoreSingleTables(), sqlStatement.isContainsExistClause());
+        check(databaseName, toBeDroppedResourceNames, sqlStatement.isIgnoreSingleTables(), sqlStatement.isIfExist());
         ProxyContext.getInstance().getContextManager().dropResource(databaseName, toBeDroppedResourceNames);
         return new UpdateResponseHeader(sqlStatement);
     }

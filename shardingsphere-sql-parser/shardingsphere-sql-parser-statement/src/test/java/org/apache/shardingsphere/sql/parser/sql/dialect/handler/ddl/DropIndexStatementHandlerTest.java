@@ -48,7 +48,7 @@ public final class DropIndexStatementHandlerTest {
     
     @Test
     public void assertGetSimpleTableSegmentWithSimpleTableSegmentForSQLServer() {
-        SQLServerDropIndexStatement dropIndexStatement = new SQLServerDropIndexStatement();
+        SQLServerDropIndexStatement dropIndexStatement = new SQLServerDropIndexStatement(false);
         dropIndexStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(""))));
         Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(dropIndexStatement);
         assertTrue(simpleTableSegment.isPresent());
@@ -56,7 +56,7 @@ public final class DropIndexStatementHandlerTest {
     
     @Test
     public void assertGetSimpleTableSegmentWithoutSimpleTableSegmentForSQLServer() {
-        SQLServerDropIndexStatement dropIndexStatement = new SQLServerDropIndexStatement();
+        SQLServerDropIndexStatement dropIndexStatement = new SQLServerDropIndexStatement(false);
         Optional<SimpleTableSegment> simpleTableSegment = DropIndexStatementHandler.getSimpleTableSegment(dropIndexStatement);
         assertFalse(simpleTableSegment.isPresent());
     }

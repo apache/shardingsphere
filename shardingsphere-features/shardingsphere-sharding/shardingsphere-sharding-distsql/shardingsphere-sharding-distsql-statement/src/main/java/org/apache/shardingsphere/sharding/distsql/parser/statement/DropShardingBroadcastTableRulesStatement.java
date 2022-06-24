@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 
 import java.util.Collection;
@@ -27,13 +26,12 @@ import java.util.Collection;
  * Drop sharding broadcast table rules statement.
  */
 @Getter
-@RequiredArgsConstructor
 public final class DropShardingBroadcastTableRulesStatement extends DropRuleStatement {
     
     private final Collection<String> rules;
     
-    public DropShardingBroadcastTableRulesStatement(final boolean containsExistClause, final Collection<String> rules) {
-        super(containsExistClause);
+    public DropShardingBroadcastTableRulesStatement(final boolean ifExist, final Collection<String> rules) {
+        super(ifExist);
         this.rules = rules;
     }
 }

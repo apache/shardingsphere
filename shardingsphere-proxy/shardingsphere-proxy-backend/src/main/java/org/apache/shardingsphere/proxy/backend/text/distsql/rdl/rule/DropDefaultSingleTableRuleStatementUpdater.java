@@ -37,7 +37,7 @@ public final class DropDefaultSingleTableRuleStatementUpdater implements RuleDef
     
     private void checkCurrentRuleConfiguration(final String databaseName,
                                                final DropDefaultSingleTableRuleStatement sqlStatement, final SingleTableRuleConfiguration currentRuleConfig) throws DistSQLException {
-        if (!sqlStatement.isContainsExistClause()) {
+        if (!sqlStatement.isIfExist()) {
             DistSQLException.predictionThrow(null != currentRuleConfig && currentRuleConfig.getDefaultDataSource().isPresent(), () -> new RequiredRuleMissedException("single table", databaseName));
         }
     }

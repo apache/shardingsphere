@@ -76,7 +76,7 @@ public final class CreateDatabaseBackendHandlerTest extends ProxyContextRestorer
     @Test
     public void assertExecuteCreateExistDatabaseWithIfNotExists() {
         when(statement.getDatabaseName()).thenReturn("test_db");
-        when(statement.isContainsNotExistClause()).thenReturn(true);
+        when(statement.isIfNotExist()).thenReturn(true);
         assertThat(handler.execute(), instanceOf(UpdateResponseHeader.class));
     }
 }

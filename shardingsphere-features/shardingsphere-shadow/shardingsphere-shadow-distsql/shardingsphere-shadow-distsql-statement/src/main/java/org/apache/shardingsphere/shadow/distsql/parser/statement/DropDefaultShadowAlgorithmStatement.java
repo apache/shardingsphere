@@ -17,18 +17,14 @@
 
 package org.apache.shardingsphere.shadow.distsql.parser.statement;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 
 /**
  * Drop default shadow algorithm statement.
  */
-@RequiredArgsConstructor
-@Getter
 public final class DropDefaultShadowAlgorithmStatement extends DropRuleStatement {
     
-    public DropDefaultShadowAlgorithmStatement(final boolean containsExistClause) {
-        super(containsExistClause);
+    public DropDefaultShadowAlgorithmStatement(final boolean ifExist) {
+        super(ifExist);
     }
 }
