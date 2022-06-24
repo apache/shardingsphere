@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database.rule;
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
 /**
  * ShardingSphere rule meta data.
  */
+@Slf4j
 public final class ShardingSphereRuleMetaData {
     
     private final Map<Class<? extends ShardingSphereRule>, ShardingSphereRule> rules;
@@ -86,6 +88,8 @@ public final class ShardingSphereRuleMetaData {
                 result.add(clazz.cast(each));
             }
         }
+        log.error("===========findRules=========" + result);
+        log.error("===========findRules class=========" + clazz);
         return result;
     }
     
@@ -98,6 +102,9 @@ public final class ShardingSphereRuleMetaData {
      */
     @SuppressWarnings("unchecked")
     public <T extends ShardingSphereRule> Optional<T> findSingleRule(final Class<T> clazz) {
+        log.error("===========findSingleRule rules=========" + rules);
+        log.error("===========findSingleRule class=========" + clazz);
+        log.error("===========findSingleRule result=========" + Optional.ofNullable((T) rules.get(clazz)));
         return Optional.ofNullable((T) rules.get(clazz));
     }
     
