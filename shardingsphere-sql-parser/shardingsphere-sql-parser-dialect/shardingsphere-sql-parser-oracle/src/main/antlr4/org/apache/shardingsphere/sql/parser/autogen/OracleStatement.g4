@@ -107,5 +107,6 @@ execute
     | createRestorePoint
     | dropRestorePoint
     | dropOperator
+    | alterLibrary
     ) SEMI_?
     ;

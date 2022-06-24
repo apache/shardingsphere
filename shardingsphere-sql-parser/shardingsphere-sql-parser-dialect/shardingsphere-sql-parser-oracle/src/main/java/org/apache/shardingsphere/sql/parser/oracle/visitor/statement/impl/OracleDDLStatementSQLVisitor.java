@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterD
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterDimensionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterFlashbackArchiveContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterLibraryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterOutlineContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterPackageContext;
@@ -142,6 +143,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterDimensionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterFlashbackArchiveStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterLibraryStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterOutlineStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterPackageStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterSequenceStatement;
@@ -877,5 +879,10 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitDropOperator(final DropOperatorContext ctx) {
         return new OracleDropOperatorStatement();
+    }
+
+    @Override
+    public ASTNode visitAlterLibrary(final AlterLibraryContext ctx) {
+        return new OracleAlterLibraryStatement();
     }
 }
