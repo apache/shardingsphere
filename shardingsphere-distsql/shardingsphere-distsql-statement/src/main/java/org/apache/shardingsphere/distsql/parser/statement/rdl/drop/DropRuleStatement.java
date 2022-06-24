@@ -24,13 +24,13 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStat
 /**
  * Drop rule statement.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public abstract class DropRuleStatement extends RuleDefinitionStatement {
     
-    private final boolean containsExistClause;
+    private final boolean ifExist;
     
     public DropRuleStatement() {
-        this.containsExistClause = false;
+        this(false);
     }
 }

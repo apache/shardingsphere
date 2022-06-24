@@ -50,13 +50,13 @@ public final class CreateTableStatementHandler implements SQLStatementHandler {
      */
     public static boolean containsNotExistClause(final CreateTableStatement createTableStatement) {
         if (createTableStatement instanceof MySQLStatement) {
-            return ((MySQLCreateTableStatement) createTableStatement).isContainsNotExistClause();
+            return ((MySQLCreateTableStatement) createTableStatement).isIfNotExist();
         }
         if (createTableStatement instanceof PostgreSQLStatement) {
-            return ((PostgreSQLCreateTableStatement) createTableStatement).isContainsNotExistClause();
+            return ((PostgreSQLCreateTableStatement) createTableStatement).isIfNotExist();
         }
         if (createTableStatement instanceof OpenGaussStatement) {
-            return ((OpenGaussCreateTableStatement) createTableStatement).isContainsNotExistClause();
+            return ((OpenGaussCreateTableStatement) createTableStatement).isIfNotExist();
         }
         return false;
     }

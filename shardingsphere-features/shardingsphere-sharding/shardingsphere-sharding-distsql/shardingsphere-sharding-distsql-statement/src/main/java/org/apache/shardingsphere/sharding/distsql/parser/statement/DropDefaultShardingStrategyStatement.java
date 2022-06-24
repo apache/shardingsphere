@@ -18,20 +18,18 @@
 package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 
 /**
  * Drop default sharding strategy statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class DropDefaultShardingStrategyStatement extends DropRuleStatement {
     
     private final String defaultType;
     
-    public DropDefaultShardingStrategyStatement(final boolean containsExistClause, final String defaultType) {
-        super(containsExistClause);
+    public DropDefaultShardingStrategyStatement(final boolean ifExist, final String defaultType) {
+        super(ifExist);
         this.defaultType = defaultType;
     }
 }

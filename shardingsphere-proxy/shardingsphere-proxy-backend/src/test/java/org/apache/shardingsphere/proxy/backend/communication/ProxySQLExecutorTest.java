@@ -139,7 +139,7 @@ public final class ProxySQLExecutorTest extends ProxyContextRestorer {
     }
     
     private CreateTableStatementContext createMySQLCreateTableStatementContext() {
-        MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement();
+        MySQLCreateTableStatement sqlStatement = new MySQLCreateTableStatement(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         return new CreateTableStatementContext(sqlStatement);
     }
@@ -153,7 +153,7 @@ public final class ProxySQLExecutorTest extends ProxyContextRestorer {
     }
     
     private CreateTableStatementContext createPostgreSQLCreateTableStatementContext() {
-        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement();
+        PostgreSQLCreateTableStatement sqlStatement = new PostgreSQLCreateTableStatement(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         return new CreateTableStatementContext(sqlStatement);
     }

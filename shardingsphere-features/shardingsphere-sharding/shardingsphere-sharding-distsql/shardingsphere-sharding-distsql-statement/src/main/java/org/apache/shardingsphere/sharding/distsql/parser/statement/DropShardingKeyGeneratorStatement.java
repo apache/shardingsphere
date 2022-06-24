@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 
 import java.util.Collection;
@@ -26,14 +25,13 @@ import java.util.Collection;
 /**
  * Drop sharding key generator statement.
  */
-@RequiredArgsConstructor
 @Getter
 public final class DropShardingKeyGeneratorStatement extends DropRuleStatement {
     
     private final Collection<String> keyGeneratorNames;
     
-    public DropShardingKeyGeneratorStatement(final boolean containsExistClause, final Collection<String> keyGeneratorNames) {
-        super(containsExistClause);
+    public DropShardingKeyGeneratorStatement(final boolean ifExist, final Collection<String> keyGeneratorNames) {
+        super(ifExist);
         this.keyGeneratorNames = keyGeneratorNames;
     }
 }

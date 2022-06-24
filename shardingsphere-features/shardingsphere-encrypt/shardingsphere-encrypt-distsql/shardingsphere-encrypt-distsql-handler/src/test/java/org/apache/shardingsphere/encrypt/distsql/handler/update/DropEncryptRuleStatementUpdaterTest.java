@@ -86,7 +86,7 @@ public final class DropEncryptRuleStatementUpdaterTest {
     }
     
     private DropEncryptRuleStatement createSQLStatement(final String tableName) {
-        return new DropEncryptRuleStatement(Collections.singleton(tableName));
+        return new DropEncryptRuleStatement(false, Collections.singleton(tableName));
     }
     
     private DropEncryptRuleStatement createSQLStatement(final boolean containsExistClause, final String tableName) {

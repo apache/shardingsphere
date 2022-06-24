@@ -147,7 +147,7 @@ public final class SingleTableSQLRouterTest {
     }
     
     private LogicSQL createLogicSQL() {
-        CreateTableStatement createTableStatement = new MySQLCreateTableStatement();
+        CreateTableStatement createTableStatement = new MySQLCreateTableStatement(false);
         createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(1, 2, new IdentifierValue("t_order"))));
         return new LogicSQL(new CreateTableStatementContext(createTableStatement), "CREATE TABLE", new LinkedList<>());
     }

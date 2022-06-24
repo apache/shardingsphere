@@ -354,14 +354,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitResetPersist(final ResetPersistContext ctx) {
-        MySQLResetPersistStatement result = new MySQLResetPersistStatement();
-        if (null != ctx.existClause()) {
-            result.setContainsExistClause(true);
-        }
-        if (null != ctx.identifier()) {
-            result.setIdentifier(new IdentifierValue(ctx.identifier().getText()));
-        }
-        return result;
+        return new MySQLResetPersistStatement(null != ctx.existClause(), null == ctx.identifier() ? null : new IdentifierValue(ctx.identifier().getText()));
     }
     
     @Override

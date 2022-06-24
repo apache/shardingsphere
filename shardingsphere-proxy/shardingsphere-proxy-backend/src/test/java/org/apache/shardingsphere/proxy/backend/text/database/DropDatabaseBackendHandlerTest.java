@@ -84,7 +84,7 @@ public final class DropDatabaseBackendHandlerTest extends ProxyContextRestorer {
     @Test
     public void assertExecuteDropNotExistDatabaseWithIfExists() {
         when(sqlStatement.getDatabaseName()).thenReturn("test_not_exist_db");
-        when(sqlStatement.isContainsExistClause()).thenReturn(true);
+        when(sqlStatement.isIfExist()).thenReturn(true);
         handler.execute();
     }
     

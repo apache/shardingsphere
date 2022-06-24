@@ -82,10 +82,10 @@ public final class DropShadowRuleStatementUpdaterTest {
     }
     
     private DropShadowRuleStatement createSQLStatement(final String... ruleName) {
-        return new DropShadowRuleStatement(Arrays.asList(ruleName));
+        return new DropShadowRuleStatement(false, Arrays.asList(ruleName));
     }
     
-    private DropShadowRuleStatement createSQLStatement(final boolean containsExistClause, final String... ruleName) {
-        return new DropShadowRuleStatement(containsExistClause, Arrays.asList(ruleName));
+    private DropShadowRuleStatement createSQLStatement(final boolean ifExist, final String... ruleName) {
+        return new DropShadowRuleStatement(ifExist, Arrays.asList(ruleName));
     }
 }

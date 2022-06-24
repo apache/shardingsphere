@@ -43,7 +43,7 @@ public final class CreateDatabaseBackendHandler implements TextProtocolBackendHa
     }
     
     private void check(final CreateDatabaseStatement sqlStatement) {
-        if (!sqlStatement.isContainsNotExistClause() && ProxyContext.getInstance().getAllDatabaseNames().contains(sqlStatement.getDatabaseName())) {
+        if (!sqlStatement.isIfNotExist() && ProxyContext.getInstance().getAllDatabaseNames().contains(sqlStatement.getDatabaseName())) {
             throw new DBCreateExistsException(sqlStatement.getDatabaseName());
         }
     }
