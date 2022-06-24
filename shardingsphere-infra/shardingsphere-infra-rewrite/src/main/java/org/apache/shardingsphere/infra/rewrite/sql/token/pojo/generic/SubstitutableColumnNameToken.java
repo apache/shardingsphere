@@ -95,7 +95,7 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
     }
     
     private Map<String, String> getLogicAndActualTables(final RouteUnit routeUnit) {
-        if (null != routeUnit) {
+        if (null == routeUnit) {
             return Collections.emptyMap();
         }
         Map<String, String> result = new LinkedHashMap<>();

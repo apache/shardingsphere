@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.ComposableSQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 
 import java.util.Collections;
 
@@ -35,8 +36,10 @@ public abstract class AbstractSQLBuilder implements SQLBuilder {
     
     private final SQLRewriteContext context;
     
+    private final RouteUnit routeUnit;
+    
     @Override
-    public final String toSQL() {
+    public String toSQL() {
         if (context.getSqlTokens().isEmpty()) {
             return context.getSql();
         }
@@ -47,7 +50,7 @@ public abstract class AbstractSQLBuilder implements SQLBuilder {
             if (each instanceof ComposableSQLToken) {
                 result.append(getComposableSQLTokenText((ComposableSQLToken) each));
             } else if (each instanceof SubstitutableColumnNameToken) {
-                result.append(((SubstitutableColumnNameToken) each).toString(null));
+                result.append(((SubstitutableColumnNameToken) each).toString(routeUnit));
             } else {
                 result.append(getSQLTokenText(each));
             }
