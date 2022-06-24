@@ -98,8 +98,8 @@ jobs:
     strategy:
       matrix:
         env: [ docker ]
-        adapter: [ proxy, jdbc ]
-        database: [ MySQL, PostgreSQL ]
+        adapter: [ proxy ]
+        database: [ MySQL ]
         scenario: [ empty_rules ]
     steps:
       - uses: actions/checkout@v2
@@ -133,9 +133,9 @@ jobs:
     strategy:
       matrix:
         env: [ docker ]
-        adapter: [ proxy, jdbc ]
-        database: [ MySQL, PostgreSQL ]
-        scenario: [ db, tbl, encrypt, readwrite_splitting, shadow ]
+        adapter: [ proxy ]
+        database: [ MySQL ]
+        scenario: [tbl ]
     steps:
       - uses: actions/checkout@v2
       - name: Cache Maven Repos
