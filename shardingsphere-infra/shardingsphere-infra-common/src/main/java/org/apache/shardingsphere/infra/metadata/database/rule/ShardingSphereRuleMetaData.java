@@ -40,7 +40,7 @@ public final class ShardingSphereRuleMetaData {
     private final Collection<RuleConfiguration> configurations;
     
     public ShardingSphereRuleMetaData(final Collection<ShardingSphereRule> rules) {
-        this.rules = rules.stream().collect(Collectors.toMap(ShardingSphereRule::getClass, each -> each));
+        this.rules = rules.stream().collect(Collectors.toConcurrentMap(ShardingSphereRule::getClass, each -> each));
         configurations = rules.stream().map(ShardingSphereRule::getConfiguration).collect(Collectors.toList());
     }
     
