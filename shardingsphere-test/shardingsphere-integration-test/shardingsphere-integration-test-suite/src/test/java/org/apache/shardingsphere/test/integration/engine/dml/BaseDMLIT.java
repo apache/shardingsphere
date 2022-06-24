@@ -69,7 +69,7 @@ public abstract class BaseDMLIT extends SingleITCase {
     }
     
     protected final void assertDataSet(final int actualUpdateCount) throws SQLException {
-        assertThat("Only support single table for DML.", getDataSet().getMetaDataList().size(), is(1));
+        assertThat("Only support single table for DML. ", getDataSet().getMetaDataList().size(), is(1));
         try {
             assertThat(actualUpdateCount, is(getDataSet().getUpdateCount()));
         } catch (AssertionError error) {
