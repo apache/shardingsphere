@@ -30,6 +30,7 @@ import org.junit.runners.Parameterized.Parameters;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.text.ParseException;
@@ -62,7 +63,17 @@ public final class GeneralDMLIT extends BaseDMLIT {
         try (Connection connection = getTargetDataSource().getConnection()) {
             actualUpdateCount = SQLExecuteType.Literal == getSqlExecuteType() ? executeUpdateForStatement(connection) : executeUpdateForPreparedStatement(connection);
             log.error("=========sql===========" + getSQL());
+            try (Statement statement = connection.createStatement()) {
+                ResultSet resultSet = statement.executeQuery("SELECT * FROM t_order");
+                while (resultSet.next()) {
+                    log.error(getSQL() + ":=================resultSet.getObject(1)====================" + resultSet.getObject(1));
+                    log.error(getSQL() + ":=================resultSet.getObject(2)====================" + resultSet.getObject(2));
+                    log.error(getSQL() + ":=================resultSet.getObject(3)====================" + resultSet.getObject(3));
+                    log.error(getSQL() + ":=================resultSet=================================");
+                }
+            }
             log.error("=========actualUpdateCount===========" + actualUpdateCount);
+            
         }
         assertDataSet(actualUpdateCount);
     }

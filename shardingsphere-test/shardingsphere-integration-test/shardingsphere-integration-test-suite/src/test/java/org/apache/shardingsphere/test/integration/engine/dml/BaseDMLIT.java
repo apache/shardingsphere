@@ -73,21 +73,7 @@ public abstract class BaseDMLIT extends SingleITCase {
     @SneakyThrows(ParseException.class)
     protected final void assertDataSet(final int actualUpdateCount) throws SQLException {
         assertThat("Only support single table for DML. ", getDataSet().getMetaDataList().size(), is(1));
-        try {
-            assertThat(actualUpdateCount, is(getDataSet().getUpdateCount()));
-        } catch (AssertionError error) {
-            try (
-                    Connection connection = getTargetDataSource().getConnection();
-                    PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM t_order")) {
-                ResultSet resultSet = preparedStatement.executeQuery();
-                while (resultSet.next()) {
-                    log.error(getSQL() + ":=================resultSet.getObject(1)====================" + resultSet.getObject(1));
-                    log.error(getSQL() + ":=================resultSet.getObject(2)====================" + resultSet.getObject(2));
-                    log.error(getSQL() + ":=================resultSet.getObject(3)====================" + resultSet.getObject(3));
-                    log.error(getSQL() + ":=================resultSet=================================");
-                }
-            }
-        }
+        assertThat(actualUpdateCount, is(getDataSet().getUpdateCount()));
         assertThat(actualUpdateCount, is(getDataSet().getUpdateCount()));
         DataSetMetaData expectedDataSetMetaData = getDataSet().getMetaDataList().get(0);
         for (String each : new InlineExpressionParser(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
