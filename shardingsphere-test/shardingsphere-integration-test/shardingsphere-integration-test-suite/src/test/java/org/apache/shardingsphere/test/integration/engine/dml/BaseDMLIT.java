@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.engine.dml;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
@@ -40,6 +41,7 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.List;
@@ -68,6 +70,7 @@ public abstract class BaseDMLIT extends SingleITCase {
         dataSetEnvironmentManager.cleanData();
     }
     
+    @SneakyThrows(ParseException.class)
     protected final void assertDataSet(final int actualUpdateCount) throws SQLException {
         assertThat("Only support single table for DML. ", getDataSet().getMetaDataList().size(), is(1));
         try {
@@ -78,10 +81,10 @@ public abstract class BaseDMLIT extends SingleITCase {
                     PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM t_order")) {
                 ResultSet resultSet = preparedStatement.executeQuery();
                 while (resultSet.next()) {
-                    log.error("=================resultSet.getObject(1)====================" + resultSet.getObject(1));
-                    log.error("=================resultSet.getObject(2)====================" + resultSet.getObject(2));
-                    log.error("=================resultSet.getObject(3)====================" + resultSet.getObject(3));
-                    log.error("=================resultSet=================================");
+                    log.error(getSQL() + ":=================resultSet.getObject(1)====================" + resultSet.getObject(1));
+                    log.error(getSQL() + ":=================resultSet.getObject(2)====================" + resultSet.getObject(2));
+                    log.error(getSQL() + ":=================resultSet.getObject(3)====================" + resultSet.getObject(3));
+                    log.error(getSQL() + ":=================resultSet=================================");
                 }
             }
         }
