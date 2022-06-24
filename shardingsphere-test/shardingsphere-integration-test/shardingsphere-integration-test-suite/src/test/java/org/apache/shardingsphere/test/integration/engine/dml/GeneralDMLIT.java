@@ -61,7 +61,6 @@ public final class GeneralDMLIT extends BaseDMLIT {
         }
         int actualUpdateCount;
         try (Connection connection = getTargetDataSource().getConnection()) {
-            actualUpdateCount = SQLExecuteType.Literal == getSqlExecuteType() ? executeUpdateForStatement(connection) : executeUpdateForPreparedStatement(connection);
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
                 log.error("========Thread Name:" + Thread.currentThread().getName() + "=========sql===========" + getSQL());
             }
@@ -78,11 +77,10 @@ public final class GeneralDMLIT extends BaseDMLIT {
                     log.error("=========resultSet size===========" + count);
                 }
             }
+            actualUpdateCount = SQLExecuteType.Literal == getSqlExecuteType() ? executeUpdateForStatement(connection) : executeUpdateForPreparedStatement(connection);
             if (SQLExecuteType.Literal == getSqlExecuteType()) {
                 log.error("=========actualUpdateCount===========" + actualUpdateCount);
             }
-            
-            
         }
         assertDataSet(actualUpdateCount);
     }
