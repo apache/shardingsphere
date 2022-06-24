@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.engine.dml;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
@@ -47,6 +48,7 @@ import java.util.Optional;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+@Slf4j
 public abstract class BaseDMLIT extends SingleITCase {
     
     private DataSetEnvironmentManager dataSetEnvironmentManager;
@@ -68,6 +70,21 @@ public abstract class BaseDMLIT extends SingleITCase {
     
     protected final void assertDataSet(final int actualUpdateCount) throws SQLException {
         assertThat("Only support single table for DML.", getDataSet().getMetaDataList().size(), is(1));
+        try {
+            assertThat(actualUpdateCount, is(getDataSet().getUpdateCount()));
+        } catch (AssertionError error) {
+            try (
+                    Connection connection = getTargetDataSource().getConnection();
+                    PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM t_order")) {
+                ResultSet resultSet = preparedStatement.executeQuery();
+                while (resultSet.next()) {
+                    log.error("=================resultSet.getObject(0)====================" + resultSet.getObject(0));
+                    log.error("=================resultSet.getObject(1)====================" + resultSet.getObject(1));
+                    log.error("=================resultSet.getObject(2)====================" + resultSet.getObject(2));
+                    log.error("=================resultSet=================================");
+                }
+            }
+        }
         assertThat(actualUpdateCount, is(getDataSet().getUpdateCount()));
         DataSetMetaData expectedDataSetMetaData = getDataSet().getMetaDataList().get(0);
         for (String each : new InlineExpressionParser(expectedDataSetMetaData.getDataNodes()).splitAndEvaluate()) {
