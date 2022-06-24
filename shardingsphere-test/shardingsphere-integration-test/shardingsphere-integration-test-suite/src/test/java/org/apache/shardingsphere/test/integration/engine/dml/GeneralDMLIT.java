@@ -69,7 +69,7 @@ public final class GeneralDMLIT extends BaseDMLIT {
                     ResultSet resultSet = statement.executeQuery("SELECT * FROM t_order WHERE status= 'init'");
                     int count = 0;
                     while (resultSet.next()) {
-                        log.error(getSQL() + ":=================resultSet====================" + resultSet.getObject(1) + "," + resultSet.getObject(2) + "," + resultSet.getObject(3));
+                        log.error("=================resultSet====================" + resultSet.getObject(1) + "," + resultSet.getObject(2) + "," + resultSet.getObject(3));
                         count++;
                     }
                     log.error("=========resultSet size===========" + count);
