@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -90,9 +89,7 @@ public final class AlterTrafficRuleHandler extends UpdatableRALBackendHandler<Al
     
     private void replaceNewRule(final ContextManager contextManager) {
         TrafficRuleConfiguration toBeAlteredRuleConfig = createToBeAlteredRuleConfiguration();
-        Collection<ShardingSphereRule> globalRules = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules();
-        globalRules.removeIf(each -> each instanceof TrafficRule);
-        globalRules.add(new TrafficRule(toBeAlteredRuleConfig));
+        ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().updateRule(new TrafficRule(toBeAlteredRuleConfig));
         // TODO remove me after ShardingSphereRuleMetaData.configuration removed
         contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations().removeIf(each -> each instanceof TrafficRuleConfiguration);
         contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations().add(toBeAlteredRuleConfig);
