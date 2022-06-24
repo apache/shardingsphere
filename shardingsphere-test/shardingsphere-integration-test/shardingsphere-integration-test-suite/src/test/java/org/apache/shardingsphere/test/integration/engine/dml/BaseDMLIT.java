@@ -78,9 +78,9 @@ public abstract class BaseDMLIT extends SingleITCase {
                     PreparedStatement preparedStatement = connection.prepareStatement("SELECT * FROM t_order")) {
                 ResultSet resultSet = preparedStatement.executeQuery();
                 while (resultSet.next()) {
-                    log.error("=================resultSet.getObject(0)====================" + resultSet.getObject(1));
-                    log.error("=================resultSet.getObject(1)====================" + resultSet.getObject(2));
-                    log.error("=================resultSet.getObject(2)====================" + resultSet.getObject(3));
+                    log.error("=================resultSet.getObject(1)====================" + resultSet.getObject(1));
+                    log.error("=================resultSet.getObject(2)====================" + resultSet.getObject(2));
+                    log.error("=================resultSet.getObject(3)====================" + resultSet.getObject(3));
                     log.error("=================resultSet=================================");
                 }
             }
