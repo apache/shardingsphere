@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.engine.dml;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
 import org.apache.shardingsphere.test.integration.cases.SQLExecuteType;
 import org.apache.shardingsphere.test.integration.cases.value.SQLValue;
@@ -37,6 +38,7 @@ import java.util.Collection;
 import static org.junit.Assert.assertFalse;
 
 @ParallelRuntimeStrategy(ParallelLevel.SCENARIO)
+@Slf4j
 public final class GeneralDMLIT extends BaseDMLIT {
     
     public GeneralDMLIT(final AssertionParameterizedArray parameterizedArray) {
@@ -59,6 +61,8 @@ public final class GeneralDMLIT extends BaseDMLIT {
         int actualUpdateCount;
         try (Connection connection = getTargetDataSource().getConnection()) {
             actualUpdateCount = SQLExecuteType.Literal == getSqlExecuteType() ? executeUpdateForStatement(connection) : executeUpdateForPreparedStatement(connection);
+            log.error("=========sql===========" + getSQL());
+            log.error("=========actualUpdateCount===========" + actualUpdateCount);
         }
         assertDataSet(actualUpdateCount);
     }
