@@ -880,7 +880,7 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     public ASTNode visitDropOperator(final DropOperatorContext ctx) {
         return new OracleDropOperatorStatement();
     }
-
+    
     @Override
     public ASTNode visitAlterLibrary(final AlterLibraryContext ctx) {
         return new OracleAlterLibraryStatement();
