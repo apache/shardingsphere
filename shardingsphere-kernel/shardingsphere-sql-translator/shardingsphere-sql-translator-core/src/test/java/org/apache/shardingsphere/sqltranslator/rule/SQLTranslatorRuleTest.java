@@ -34,21 +34,21 @@ public final class SQLTranslatorRuleTest {
     public void assertTranslateWhenProtocolSameAsStorage() {
         String expected = "select 1";
         PostgreSQLDatabaseType databaseType = new PostgreSQLDatabaseType();
-        String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()).translate(expected, null, databaseType, databaseType);
+        String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false)).translate(expected, null, databaseType, databaseType);
         assertThat(actual, is(expected));
     }
     
     @Test
     public void assertTranslateWhenNoStorage() {
         String expected = "select 1";
-        String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()).translate(expected, null, new PostgreSQLDatabaseType(), null);
+        String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false)).translate(expected, null, new PostgreSQLDatabaseType(), null);
         assertThat(actual, is(expected));
     }
     
     @Test
     public void assertTranslateWithProtocolDifferentWithStorage() {
         String input = "select 1";
-        String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()).translate(input, null, new PostgreSQLDatabaseType(), new MySQLDatabaseType());
+        String actual = new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false)).translate(input, null, new PostgreSQLDatabaseType(), new MySQLDatabaseType());
         assertThat(actual, is(input.toUpperCase(Locale.ROOT)));
     }
     
@@ -66,12 +66,12 @@ public final class SQLTranslatorRuleTest {
     
     @Test
     public void assertGetConfiguration() {
-        SQLTranslatorRuleConfiguration expected = new SQLTranslatorRuleConfiguration();
+        SQLTranslatorRuleConfiguration expected = new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false);
         assertThat(new SQLTranslatorRule(expected).getConfiguration(), is(expected));
     }
     
     @Test
     public void assertGetType() {
-        assertThat(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()).getType(), is(SQLTranslatorRule.class.getSimpleName()));
+        assertThat(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration("CONVERT_TO_UPPER_CASE", false)).getType(), is(SQLTranslatorRule.class.getSimpleName()));
     }
 }

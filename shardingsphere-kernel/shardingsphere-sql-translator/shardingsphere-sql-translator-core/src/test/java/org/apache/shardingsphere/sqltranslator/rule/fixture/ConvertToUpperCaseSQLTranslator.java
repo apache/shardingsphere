@@ -34,9 +34,4 @@ public final class ConvertToUpperCaseSQLTranslator implements SQLTranslator {
     public String getType() {
         return "CONVERT_TO_UPPER_CASE";
     }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
-    }
 }
