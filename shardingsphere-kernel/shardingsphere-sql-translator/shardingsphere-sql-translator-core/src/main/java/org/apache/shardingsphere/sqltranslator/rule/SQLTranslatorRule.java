@@ -55,7 +55,7 @@ public final class SQLTranslatorRule implements GlobalRule {
      * @return translated SQL
      */
     public String translate(final String sql, final SQLStatement sqlStatement, final DatabaseType protocolType, final DatabaseType storageType) {
-        if (protocolType.equals(storageType)) {
+        if (protocolType.equals(storageType) || null == storageType) {
             return sql;
         }
         try {
