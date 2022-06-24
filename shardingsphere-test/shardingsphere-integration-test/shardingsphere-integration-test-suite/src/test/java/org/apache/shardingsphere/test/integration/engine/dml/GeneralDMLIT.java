@@ -62,19 +62,26 @@ public final class GeneralDMLIT extends BaseDMLIT {
         int actualUpdateCount;
         try (Connection connection = getTargetDataSource().getConnection()) {
             actualUpdateCount = SQLExecuteType.Literal == getSqlExecuteType() ? executeUpdateForStatement(connection) : executeUpdateForPreparedStatement(connection);
-            log.error("========Thread Name:" + Thread.currentThread().getName() + "=========sql===========" + getSQL());
-            try (Statement statement = connection.createStatement()) {
-                ResultSet resultSet = statement.executeQuery("SELECT * FROM t_order WHERE status= 'init'");
-                int count = 0;
-                while (resultSet.next()) {
-                    log.error(getSQL() + ":=================resultSet.getObject(1)====================" + resultSet.getObject(1));
-                    log.error(getSQL() + ":=================resultSet.getObject(2)====================" + resultSet.getObject(2));
-                    log.error(getSQL() + ":=================resultSet.getObject(3)====================" + resultSet.getObject(3));
-                    count++;
-                }
-                log.error("=========resultSet size===========" + count);
+            if (SQLExecuteType.Literal == getSqlExecuteType()) {
+                log.error("========Thread Name:" + Thread.currentThread().getName() + "=========sql===========" + getSQL());
             }
-            log.error("=========actualUpdateCount===========" + actualUpdateCount);
+            if (SQLExecuteType.Literal == getSqlExecuteType()) {
+                try (Statement statement = connection.createStatement()) {
+                    ResultSet resultSet = statement.executeQuery("SELECT * FROM t_order WHERE status= 'init'");
+                    int count = 0;
+                    while (resultSet.next()) {
+                        log.error(getSQL() + ":=================resultSet.getObject(1)====================" + resultSet.getObject(1));
+                        log.error(getSQL() + ":=================resultSet.getObject(2)====================" + resultSet.getObject(2));
+                        log.error(getSQL() + ":=================resultSet.getObject(3)====================" + resultSet.getObject(3));
+                        count++;
+                    }
+                    log.error("=========resultSet size===========" + count);
+                }
+            }
+            if (SQLExecuteType.Literal == getSqlExecuteType()) {
+                log.error("=========actualUpdateCount===========" + actualUpdateCount);
+            }
+            
             
         }
         assertDataSet(actualUpdateCount);
