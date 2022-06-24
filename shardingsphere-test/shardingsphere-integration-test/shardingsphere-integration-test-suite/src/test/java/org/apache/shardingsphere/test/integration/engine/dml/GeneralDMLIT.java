@@ -64,13 +64,15 @@ public final class GeneralDMLIT extends BaseDMLIT {
             actualUpdateCount = SQLExecuteType.Literal == getSqlExecuteType() ? executeUpdateForStatement(connection) : executeUpdateForPreparedStatement(connection);
             log.error("========Thread Name:" + Thread.currentThread().getName() + "=========sql===========" + getSQL());
             try (Statement statement = connection.createStatement()) {
-                ResultSet resultSet = statement.executeQuery("SELECT * FROM t_order");
+                ResultSet resultSet = statement.executeQuery("SELECT * FROM t_order WHERE status= 'init'");
+                int count = 0;
                 while (resultSet.next()) {
                     log.error(getSQL() + ":=================resultSet.getObject(1)====================" + resultSet.getObject(1));
                     log.error(getSQL() + ":=================resultSet.getObject(2)====================" + resultSet.getObject(2));
                     log.error(getSQL() + ":=================resultSet.getObject(3)====================" + resultSet.getObject(3));
-                    log.error(getSQL() + ":=================resultSet=================================");
+                    count++;
                 }
+                log.error("=========resultSet size===========" + count);
             }
             log.error("=========actualUpdateCount===========" + actualUpdateCount);
             
