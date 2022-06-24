@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.engine.dml;
 
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
@@ -25,9 +24,9 @@ import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSet
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetaData;
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.engine.SingleITCase;
+import org.apache.shardingsphere.test.integration.env.scenario.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath.Type;
-import org.apache.shardingsphere.test.integration.env.scenario.dataset.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.database.DatabaseAssertionMetaData;
 import org.apache.shardingsphere.test.integration.framework.database.DatabaseAssertionMetaDataFactory;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
@@ -41,7 +40,6 @@ import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.List;
@@ -70,7 +68,6 @@ public abstract class BaseDMLIT extends SingleITCase {
         dataSetEnvironmentManager.cleanData();
     }
     
-    @SneakyThrows(ParseException.class)
     protected final void assertDataSet(final int actualUpdateCount) throws SQLException {
         assertThat("Only support single table for DML. ", getDataSet().getMetaDataList().size(), is(1));
         assertThat(actualUpdateCount, is(getDataSet().getUpdateCount()));
