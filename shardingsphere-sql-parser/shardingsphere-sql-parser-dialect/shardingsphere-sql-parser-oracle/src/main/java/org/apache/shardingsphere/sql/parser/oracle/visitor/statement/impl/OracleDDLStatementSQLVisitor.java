@@ -260,8 +260,10 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
         DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataType());
         boolean isPrimaryKey = isPrimaryKey(ctx);
+        boolean isNotNull = isNotNull(ctx);
         ColumnDefinitionSegment result = new ColumnDefinitionSegment(
                 ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey);
+        result.setNotNull(isNotNull);
         for (InlineConstraintContext each : ctx.inlineConstraint()) {
             if (null != each.referencesClause()) {
                 result.getReferencedTables().add((SimpleTableSegment) visit(each.referencesClause().tableName()));
@@ -276,6 +278,15 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     private boolean isPrimaryKey(final ColumnDefinitionContext ctx) {
         for (InlineConstraintContext each : ctx.inlineConstraint()) {
             if (null != each.primaryKey()) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isNotNull(final ColumnDefinitionContext ctx) {
+        for (InlineConstraintContext each : ctx.inlineConstraint()) {
+            if (null != each.NOT() && null != each.NULL()) {
                 return true;
             }
         }
