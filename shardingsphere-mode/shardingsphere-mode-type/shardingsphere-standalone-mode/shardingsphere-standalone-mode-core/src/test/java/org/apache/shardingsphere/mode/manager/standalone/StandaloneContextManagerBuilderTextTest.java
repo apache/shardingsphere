@@ -62,7 +62,7 @@ public final class StandaloneContextManagerBuilderTextTest {
         Map<String, DatabaseConfiguration> databaseConfigs = Collections.singletonMap(
                 "foo_db", new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singleton(mock(RuleConfiguration.class))));
         Collection<RuleConfiguration> globalRuleConfigs = Collections.singleton(mock(RuleConfiguration.class));
-        InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.PROXY, 3307, InstanceIdGeneratorFactory.getInstance(null).generate(InstanceType.PROXY));
+        InstanceDefinition instanceDefinition = new InstanceDefinition(3307, InstanceIdGeneratorFactory.getInstance(null).generate(InstanceType.PROXY));
         return new ContextManagerBuilderParameter(modeConfig, databaseConfigs, globalRuleConfigs, new Properties(), Collections.emptyList(), instanceDefinition);
     }
 }

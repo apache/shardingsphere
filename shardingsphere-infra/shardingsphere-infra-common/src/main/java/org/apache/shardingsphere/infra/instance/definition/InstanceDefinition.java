@@ -44,15 +44,15 @@ public final class InstanceDefinition {
     
     private final String uniqueSign;
     
-    public InstanceDefinition(final InstanceType instanceType, final String instanceId) {
-        this.instanceType = instanceType;
+    public InstanceDefinition(final String instanceId) {
+        instanceType = InstanceType.JDBC;
         this.instanceId = instanceId;
         ip = IpUtils.getIp();
         uniqueSign = String.join("", ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0], String.valueOf(COUNTER.incrementAndGet()));
     }
     
-    public InstanceDefinition(final InstanceType instanceType, final Integer port, final String instanceId) {
-        this.instanceType = instanceType;
+    public InstanceDefinition(final int port, final String instanceId) {
+        instanceType = InstanceType.PROXY;
         this.instanceId = instanceId;
         ip = IpUtils.getIp();
         uniqueSign = String.valueOf(port);
