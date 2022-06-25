@@ -112,7 +112,7 @@ public final class SingleTableStandardRouteEngineTest {
     
     @Test
     public void assertRouteWithoutSingleTableRule() throws SQLException {
-        SingleTableStandardRouteEngine engine = new SingleTableStandardRouteEngine(mockQualifiedTables(), new MySQLCreateTableStatement());
+        SingleTableStandardRouteEngine engine = new SingleTableStandardRouteEngine(mockQualifiedTables(), new MySQLCreateTableStatement(false));
         SingleTableRule singleTableRule = new SingleTableRule(
                 new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         RouteContext routeContext = new RouteContext();
@@ -128,7 +128,7 @@ public final class SingleTableStandardRouteEngineTest {
     
     @Test
     public void assertRouteWithDefaultSingleTableRule() throws SQLException {
-        SingleTableStandardRouteEngine engine = new SingleTableStandardRouteEngine(mockQualifiedTables(), new MySQLCreateTableStatement());
+        SingleTableStandardRouteEngine engine = new SingleTableStandardRouteEngine(mockQualifiedTables(), new MySQLCreateTableStatement(false));
         SingleTableRule singleTableRule = new SingleTableRule(
                 new SingleTableRuleConfiguration("ds_0"), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
         RouteContext routeContext = new RouteContext();

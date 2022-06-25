@@ -135,15 +135,18 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Before
     public void setUp() throws SQLException {
-        ModeConfiguration modeConfig = new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("FIXTURE", "", "", new Properties()), false);
-        contextManager = new ClusterContextManagerBuilder().build(ContextManagerBuilderParameter.builder().modeConfig(modeConfig).databaseConfigs(Collections.emptyMap())
-                .globalRuleConfigs(Collections.emptyList()).props(new Properties()).instanceDefinition(new InstanceDefinition(InstanceType.PROXY, 3307, "foo_instance_id")).build());
+        contextManager = new ClusterContextManagerBuilder().build(createContextManagerBuilderParameter());
         assertTrue(contextManager.getMetaDataContexts().getPersistService().isPresent());
         contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getPersistService().get(),
-                new ShardingSphereMetaData(createDatabases(), contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(),
-                        new ConfigurationProperties(new Properties())),
+                new ShardingSphereMetaData(createDatabases(), contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(new Properties())),
                 createOptimizerContext()));
         coordinator = new ClusterContextManagerCoordinator(metaDataPersistService, contextManager, new RegistryCenter(mock(ClusterPersistRepository.class)));
+    }
+    
+    private ContextManagerBuilderParameter createContextManagerBuilderParameter() {
+        ModeConfiguration modeConfig = new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("FIXTURE", "", "", new Properties()), false);
+        InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.PROXY, 3307, "foo_instance_id");
+        return new ContextManagerBuilderParameter(modeConfig, Collections.emptyMap(), Collections.emptyList(), new Properties(), Collections.emptyList(), instanceDefinition);
     }
     
     private Map<String, ShardingSphereDatabase> createDatabases() {

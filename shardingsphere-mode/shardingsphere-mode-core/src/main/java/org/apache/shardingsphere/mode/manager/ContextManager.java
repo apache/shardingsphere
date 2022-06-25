@@ -86,6 +86,11 @@ public final class ContextManager implements AutoCloseable {
         setInstanceContext();
     }
     
+    private void setInstanceContext() {
+        metaDataContexts.getMetaData().getGlobalRuleMetaData().findRules(InstanceAwareRule.class).forEach(each -> each.setInstanceContext(instanceContext));
+        metaDataContexts.getMetaData().getDatabases().forEach((key, value) -> value.getRuleMetaData().findRules(InstanceAwareRule.class).forEach(each -> each.setInstanceContext(instanceContext)));
+    }
+    
     /**
      * Renew meta data contexts.
      *
@@ -633,11 +638,6 @@ public final class ContextManager implements AutoCloseable {
                 .filter(each -> each instanceof ResourceHeldRule).map(each -> (ResourceHeldRule<?>) each).forEach(each -> each.closeStaleResource(databaseName));
         removeMetaData.getRuleMetaData().getRules().stream()
                 .filter(each -> each instanceof ResourceHeldRule).map(each -> (ResourceHeldRule<?>) each).forEach(each -> each.closeStaleResource(databaseName));
-    }
-    
-    private void setInstanceContext() {
-        metaDataContexts.getMetaData().getGlobalRuleMetaData().findRules(InstanceAwareRule.class).forEach(each -> each.setInstanceContext(instanceContext));
-        metaDataContexts.getMetaData().getDatabases().forEach((key, value) -> value.getRuleMetaData().findRules(InstanceAwareRule.class).forEach(each -> each.setInstanceContext(instanceContext)));
     }
     
     @Override

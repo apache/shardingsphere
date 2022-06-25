@@ -80,6 +80,6 @@ public final class DropShardingScalingRuleStatementUpdaterTest {
     }
     
     private DropShardingScalingRuleStatement createSQLStatement(final String scalingName) {
-        return new DropShardingScalingRuleStatement(scalingName);
+        return new DropShardingScalingRuleStatement(false, scalingName);
     }
 }

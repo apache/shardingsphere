@@ -37,8 +37,8 @@ public final class DropShardingTableRuleStatement extends DropRuleStatement {
     @Setter
     private boolean dropUnusedAlgorithms;
     
-    public DropShardingTableRuleStatement(final boolean containsExistsClause, final Collection<TableNameSegment> tableNames) {
-        super(containsExistsClause);
+    public DropShardingTableRuleStatement(final boolean ifExists, final Collection<TableNameSegment> tableNames) {
+        super(ifExists);
         this.tableNames = tableNames;
     }
 }

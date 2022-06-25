@@ -82,8 +82,6 @@ import java.util.stream.Collectors;
 @Getter
 public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, TableContainedRule, InstanceAwareRule {
     
-    private static final String EQUAL = "=";
-    
     private static final String ALGORITHM_EXPRESSION_KEY = "algorithm-expression";
     
     private final RuleConfiguration configuration;
@@ -760,7 +758,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
             return false;
         }
         BinaryOperationExpression binaryExpression = (BinaryOperationExpression) expression;
-        return binaryExpression.getLeft() instanceof ColumnSegment && binaryExpression.getRight() instanceof ColumnSegment && EQUAL.equals(binaryExpression.getOperator());
+        return binaryExpression.getLeft() instanceof ColumnSegment && binaryExpression.getRight() instanceof ColumnSegment && "=".equals(binaryExpression.getOperator());
     }
     
     @Override

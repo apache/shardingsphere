@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended;
+package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -23,6 +23,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLParameterDescriptionPacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.proxy.backend.session.PreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.List;
@@ -34,11 +37,13 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class PostgreSQLPreparedStatement {
+public final class PostgreSQLPreparedStatement implements PreparedStatement {
     
     private final String sql;
     
     private final SQLStatement sqlStatement;
+    
+    private final SQLStatementContext<?> sqlStatementContext;
     
     private final List<PostgreSQLColumnType> parameterTypes;
     

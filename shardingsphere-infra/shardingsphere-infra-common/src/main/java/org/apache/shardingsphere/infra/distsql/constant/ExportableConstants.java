@@ -31,6 +31,4 @@ public final class ExportableConstants {
     public static final String EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE = "dynamic_readwrite_splitting_rules";
     
     public static final String EXPORT_STATIC_READWRITE_SPLITTING_RULE = "static_readwrite_splitting_rules";
-    
-    public static final String EXPORT_SINGLE_TABLES = "single_tables";
 }

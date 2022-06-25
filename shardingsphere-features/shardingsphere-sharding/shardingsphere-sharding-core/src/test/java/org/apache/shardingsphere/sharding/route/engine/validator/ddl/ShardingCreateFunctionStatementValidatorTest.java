@@ -56,7 +56,7 @@ public final class ShardingCreateFunctionStatementValidatorTest {
     public void assertPreValidateCreateFunctionForMySQL() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
-        MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement();
+        MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement(false);
         createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);
         validStatementSegment.setSqlStatement(createTableStatement);
@@ -104,7 +104,7 @@ public final class ShardingCreateFunctionStatementValidatorTest {
     
     @Test(expected = TableExistsException.class)
     public void assertPreValidateCreateFunctionWithTableExistsForMySQL() {
-        MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement();
+        MySQLCreateTableStatement createTableStatement = new MySQLCreateTableStatement(false);
         createTableStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         ValidStatementSegment validStatementSegment = new ValidStatementSegment(0, 0);
         validStatementSegment.setSqlStatement(createTableStatement);

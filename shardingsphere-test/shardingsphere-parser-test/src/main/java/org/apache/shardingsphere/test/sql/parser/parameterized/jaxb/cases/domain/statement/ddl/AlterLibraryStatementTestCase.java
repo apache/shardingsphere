@@ -15,20 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.function;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-
-import java.util.Collection;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Resource Required rule configuration.
+ * Alter library statement test case.
  */
-public interface ResourceRequiredRuleConfiguration extends RuleConfiguration {
-    
-    /**
-     * Get Required Resource.
-     * @return required resource names
-     */
-    Collection<String> getRequiredResource();
+public final class AlterLibraryStatementTestCase extends SQLParserTestCase {
 }

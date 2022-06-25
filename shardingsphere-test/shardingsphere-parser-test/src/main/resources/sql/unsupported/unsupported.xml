@@ -3578,10 +3578,6 @@
     <sql-case id="alter_by_postgresql_source_test_case459" value="ALTER TYPE test_typex DROP ATTRIBUTE a;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case460" value="ALTER TYPE tt_t0 DROP ATTRIBUTE z;" db-types="PostgreSQL" />
     <sql-case id="analyze_by_postgresql_source_test_case1" value="ANALYZE (nonexistent-arg) does_not_exist;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case100" value="CREATE CAST (int4 AS casttesttype) WITH FUNCTION int4_casttesttype(int4) AS IMPLICIT;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case101" value="CREATE CAST (int4 AS casttesttype) WITH INOUT;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case102" value="CREATE CAST (text AS casttesttype) WITHOUT FUNCTION AS IMPLICIT;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case103" value="CREATE CAST (text AS casttesttype) WITHOUT FUNCTION;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case104" value="CREATE COLLATION case_insensitive (provider = icu, locale = &apos;@colStrength=secondary&apos;, deterministic = false);" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case105" value="CREATE COLLATION case_sensitive (provider = icu, locale = &apos;&apos;);" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case106" value="CREATE COLLATION coll_icu_upgrade FROM &quot;und-x-icu&quot;;" db-types="PostgreSQL" />
@@ -6226,21 +6222,6 @@
     <sql-case id="low_alter_by_postgresql_source_test_case105" value="alter type rewritetype alter attribute a type varchar cascade;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case106" value="alter type testdomain2 rename to testdomain3;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case107" value="alter type two_ints add attribute c two_ints_range;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case25" value="create cast (bigint as xfloat8) without function;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case26" value="create cast (float4 as xfloat4) without function;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case27" value="create cast (float8 as xfloat8) without function;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case28" value="create cast (int4 as myint) without function;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case29" value="create cast (int8 as int8alias1) without function;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case30" value="create cast (int8 as int8alias2) without function;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case31" value="create cast (int8alias1 as int8) without function;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case32" value="create cast (int8alias2 as int8) without function;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case33" value="create cast (integer as date) with function sql_to_date(integer) as assignment;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case34" value="create cast (integer as xfloat4) without function;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case35" value="create cast (myint as int4) without function;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case36" value="create cast (xfloat4 as float4) without function;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case37" value="create cast (xfloat4 as integer) without function;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case38" value="create cast (xfloat8 as bigint) without function;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case39" value="create cast (xfloat8 as float8) without function;" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case40" value="create constraint trigger parted_trig after insert on parted_constr_ancestor   deferrable   for each row execute procedure trigger_notice_ab();" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case41" value="create constraint trigger parted_trig_two after insert on parted_constr   deferrable initially deferred   for each row when (bark(new.b) AND new.a % 2 = 1)   execute procedure trigger_notice_ab();" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case42" value="create constraint trigger parted_trigger after update on parted_trigger   from parted_referenced   for each row execute procedure trigger_notice_ab();" db-types="PostgreSQL" />

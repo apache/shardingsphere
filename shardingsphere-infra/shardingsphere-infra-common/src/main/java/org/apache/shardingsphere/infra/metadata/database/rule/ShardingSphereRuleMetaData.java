@@ -37,11 +37,17 @@ public final class ShardingSphereRuleMetaData {
     
     private final Collection<ShardingSphereRule> rules;
     
-    private final Collection<RuleConfiguration> configurations;
-    
     public ShardingSphereRuleMetaData(final Collection<ShardingSphereRule> rules) {
         this.rules = new CopyOnWriteArrayList<>(rules);
-        configurations = rules.stream().map(ShardingSphereRule::getConfiguration).collect(Collectors.toList());
+    }
+    
+    /**
+     * Get rule configurations.
+     * 
+     * @return got rule configurations
+     */
+    public Collection<RuleConfiguration> getConfigurations() {
+        return rules.stream().map(ShardingSphereRule::getConfiguration).collect(Collectors.toList());
     }
     
     /**

@@ -41,7 +41,10 @@ import java.util.function.Supplier;
 
 /**
  * Count instance rules handler.
+ * 
+ * @deprecated This class breaks the pluggable design, nobody need to know all dynamic plugins. We should split the count logic push down to concrete rule. 
  */
+@Deprecated
 public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<CountInstanceRulesStatement> {
     
     private static final String SINGLE_TABLE = "single_table";
