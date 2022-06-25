@@ -57,6 +57,7 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
         return Arrays.asList(Type.ADDED, Type.UPDATED, Type.DELETED);
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
         String instanceId = ComputeNode.getInstanceIdByComputeNode(event.getKey());
@@ -98,7 +99,7 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
     private Optional<GovernanceEvent> createInstanceEvent(final DataChangedEvent event) {
         Matcher matcher = matchInstanceOnlinePath(event.getKey());
         if (matcher.find()) {
-            InstanceDefinition instanceDefinition = new InstanceDefinition(getInstanceType(matcher.group(1)), matcher.group(2), event.getValue());
+            InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.valueOf(matcher.group(1).toUpperCase()), matcher.group(2), event.getValue());
             if (Type.ADDED == event.getType()) {
                 return Optional.of(new InstanceOnlineEvent(instanceDefinition));
             } else if (Type.DELETED == event.getType()) {
@@ -111,9 +112,5 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
     private Matcher matchInstanceOnlinePath(final String onlineInstancePath) {
         Pattern pattern = Pattern.compile(ComputeNode.getOnlineInstanceNodePath() + "/" + "(proxy|jdbc)" + "/([\\S]+)$", Pattern.CASE_INSENSITIVE);
         return pattern.matcher(onlineInstancePath);
-    }
-    
-    private InstanceType getInstanceType(final String instanceType) {
-        return InstanceType.PROXY.name().equalsIgnoreCase(instanceType) ? InstanceType.PROXY : InstanceType.JDBC;
     }
 }
