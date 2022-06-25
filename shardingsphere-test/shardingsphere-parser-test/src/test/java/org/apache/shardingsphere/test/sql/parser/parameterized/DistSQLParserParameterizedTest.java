@@ -30,9 +30,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
-import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
-import org.junit.Rule;
-import org.junit.rules.ExpectedException;
 
 import java.util.Collection;
 
@@ -44,9 +41,6 @@ public final class DistSQLParserParameterizedTest {
     private static final SQLParserTestCasesRegistry SQL_PARSER_TEST_CASES_REGISTRY = SQLParserTestCasesRegistryFactory.getInstance().getRegistry();
     
     private static final DistSQLStatementParserEngine ENGINE = new DistSQLStatementParserEngine();
-    
-    @Rule
-    public ExpectedException thrown = ExpectedException.none();
     
     private final String sqlCaseId;
     
@@ -65,15 +59,5 @@ public final class DistSQLParserParameterizedTest {
         String sql = DIST_SQL_CASES_LOADER.getCaseValue(sqlCaseId, null, SQL_PARSER_TEST_CASES_REGISTRY.get(sqlCaseId).getParameters(), null);
         SQLStatement actual = ENGINE.parse(sql);
         AbstractSQLStatementAssert.assertIs(new SQLCaseAssertContext(DIST_SQL_CASES_LOADER, sqlCaseId, null, null), actual, expected);
-    }
-    
-    @Test
-    public void distSQLInvalidSqlThrowsSqlParseExceptionWithStatement() {
-        String invalidSql = "INVALID_SQL";
-        
-        thrown.expect(SQLParsingException.class);
-        thrown.expectMessage(invalidSql);
-        
-        SQLStatement actual = ENGINE.parse(invalidSql);
     }
 }
