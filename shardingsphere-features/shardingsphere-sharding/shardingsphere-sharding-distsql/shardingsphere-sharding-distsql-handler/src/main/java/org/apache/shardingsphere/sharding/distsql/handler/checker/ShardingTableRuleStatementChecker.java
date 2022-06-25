@@ -327,10 +327,19 @@ public final class ShardingTableRuleStatementChecker {
         toBeCheckedRuleConfig.setScaling(currentRuleConfig.getScaling());
         removeRuleConfiguration(toBeCheckedRuleConfig, toBeAlteredRuleConfig);
         addRuleConfiguration(toBeCheckedRuleConfig, toBeAlteredRuleConfig);
-        Collection<String> dataSourceNames = toBeCheckedRuleConfig.getRequiredResource();
-        dataSourceNames.addAll(toBeAlteredRuleConfig.getRequiredResource());
+        Collection<String> dataSourceNames = getRequiredResource(toBeCheckedRuleConfig);
+        dataSourceNames.addAll(getRequiredResource(toBeAlteredRuleConfig));
         DistSQLException.predictionThrow(check(toBeCheckedRuleConfig, dataSourceNames),
                 () -> new InvalidRuleConfigurationException("sharding table", toBeAlteredLogicTableNames, Collections.singleton("invalid binding table configuration")));
+    }
+    
+    private static Collection<String> getRequiredResource(final ShardingRuleConfiguration config) {
+        Collection<String> result = new LinkedHashSet<>();
+        result.addAll(config.getAutoTables().stream().map(ShardingAutoTableRuleConfiguration::getActualDataSources)
+                .map(each -> Splitter.on(",").trimResults().splitToList(each)).flatMap(Collection::stream).collect(Collectors.toSet()));
+        result.addAll(config.getTables().stream().map(each -> new InlineExpressionParser(each.getActualDataNodes()).splitAndEvaluate())
+                .flatMap(Collection::stream).distinct().map(each -> new DataNode(each).getDataSourceName()).collect(Collectors.toSet()));
+        return result;
     }
     
     private static boolean isValidBindingTableConfiguration(final Map<String, TableRule> tableRules, final BindingTableCheckedConfiguration checkedConfig) {
