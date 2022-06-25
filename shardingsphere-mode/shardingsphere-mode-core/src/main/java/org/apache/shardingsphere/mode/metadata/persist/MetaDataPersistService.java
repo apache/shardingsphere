@@ -25,13 +25,12 @@ import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCre
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
-import org.apache.shardingsphere.mode.metadata.persist.service.ComputeNodePersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseVersionPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.DataSourcePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.impl.DatabaseRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.GlobalRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.PropertiesPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.impl.DatabaseRulePersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 
@@ -61,8 +60,6 @@ public final class MetaDataPersistService {
     
     private final PropertiesPersistService propsService;
     
-    private final ComputeNodePersistService computeNodePersistService;
-    
     private final DatabaseVersionPersistService databaseVersionPersistService;
     
     public MetaDataPersistService(final PersistRepository repository) {
@@ -72,7 +69,6 @@ public final class MetaDataPersistService {
         databaseRulePersistService = new DatabaseRulePersistService(repository);
         globalRuleService = new GlobalRulePersistService(repository);
         propsService = new PropertiesPersistService(repository);
-        computeNodePersistService = new ComputeNodePersistService(repository);
         databaseVersionPersistService = new DatabaseVersionPersistService(repository);
     }
     
@@ -90,8 +86,14 @@ public final class MetaDataPersistService {
         propsService.persist(props, isOverwrite);
         for (Entry<String, ? extends DatabaseConfiguration> entry : schemaConfigs.entrySet()) {
             String databaseName = entry.getKey();
-            dataSourceService.persist(databaseName, getDataSourcePropertiesMap(entry.getValue().getDataSources()), isOverwrite);
-            databaseRulePersistService.persist(databaseName, entry.getValue().getRuleConfigurations(), isOverwrite);
+            Map<String, DataSourceProperties> dataSourcePropertiesMap = getDataSourcePropertiesMap(entry.getValue().getDataSources());
+            Collection<RuleConfiguration> ruleConfigurations = entry.getValue().getRuleConfigurations();
+            if (dataSourcePropertiesMap.isEmpty() && ruleConfigurations.isEmpty()) {
+                schemaMetaDataService.persistDatabase(databaseName);
+            } else {
+                dataSourceService.persist(databaseName, getDataSourcePropertiesMap(entry.getValue().getDataSources()), isOverwrite);
+                databaseRulePersistService.persist(databaseName, entry.getValue().getRuleConfigurations(), isOverwrite);
+            }
         }
     }
     
@@ -101,17 +103,6 @@ public final class MetaDataPersistService {
             result.put(each.getKey(), DataSourcePropertiesCreator.create(each.getValue()));
         }
         return result;
-    }
-    
-    /**
-     * Persist instance labels.
-     *
-     * @param instanceId instance id
-     * @param labels labels
-     * @param isOverwrite whether overwrite registry center's configuration if existed
-     */
-    public void persistInstanceLabels(final String instanceId, final Collection<String> labels, final boolean isOverwrite) {
-        computeNodePersistService.persistInstanceLabels(instanceId, labels, isOverwrite);
     }
     
     /**

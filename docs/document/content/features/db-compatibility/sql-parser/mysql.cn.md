@@ -18,3 +18,5 @@ MySQL 不支持的 SQL 清单如下：
 | DROP RESOURCE GROUP group_name                               |
 | CREATE RESOURCE GROUP group_name TYPE = SYSTEM               |
 | ALTER RESOURCE GROUP rg1 VCPU = 0-63                         |
+
+**源码：https://github.com/apache/shardingsphere/tree/master/shardingsphere-sql-parser/shardingsphere-sql-parser-dialect/shardingsphere-sql-parser-mysql**

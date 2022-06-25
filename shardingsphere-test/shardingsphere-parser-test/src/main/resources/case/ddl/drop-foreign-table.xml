@@ -17,20 +17,20 @@
   -->
 
 <sql-parser-test-cases>
-    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case63"/>
-    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case64"/>
-    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case65"/>
-    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case66"/>
-    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case67"/>
-    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case68"/>
-    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case69"/>
-    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case70"/>
-    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case71"/>
-    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case72"/>
-    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case73"/>
-    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case74"/>
-    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case75"/>
-    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case76"/>
-    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case77"/>
-    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case78"/>
+    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case63" />
+    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case64" />
+    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case65" />
+    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case66" />
+    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case67" />
+    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case68" />
+    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case69" />
+    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case70" />
+    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case71" />
+    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case72" />
+    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case73" />
+    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case74" />
+    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case75" />
+    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case76" />
+    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case77" />
+    <drop-foreign-table sql-case-id="drop_by_postgresql_source_test_case78" />
 </sql-parser-test-cases>

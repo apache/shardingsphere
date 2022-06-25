@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sqltranslator.yaml.swapper;
 
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.sqltranslator.config.SQLTranslatorRuleConfiguration;
+import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
 import org.apache.shardingsphere.sqltranslator.constant.SQLTranslatorOrder;
 import org.apache.shardingsphere.sqltranslator.yaml.config.YamlSQLTranslatorRuleConfiguration;
 
@@ -30,13 +30,13 @@ public final class SQLTranslatorRuleConfigurationYamlSwapper implements YamlRule
     @Override
     public YamlSQLTranslatorRuleConfiguration swapToYamlConfiguration(final SQLTranslatorRuleConfiguration data) {
         YamlSQLTranslatorRuleConfiguration result = new YamlSQLTranslatorRuleConfiguration();
-        result.setType(data.getType().orElse(null));
+        result.setType(data.getType());
         return result;
     }
     
     @Override
     public SQLTranslatorRuleConfiguration swapToObject(final YamlSQLTranslatorRuleConfiguration yamlConfig) {
-        return new SQLTranslatorRuleConfiguration(yamlConfig.getType());
+        return new SQLTranslatorRuleConfiguration(yamlConfig.getType(), yamlConfig.isUseOriginalSQLWhenTranslatingFailed());
     }
     
     @Override

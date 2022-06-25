@@ -35,6 +35,16 @@ public final class ShardingSphereConfigurationException extends RuntimeException
     }
     
     /**
+     * Constructs an exception with error message and cause.
+     *
+     * @param errorMessage formatted error message
+     * @param cause the cause of this exception
+     */
+    public ShardingSphereConfigurationException(final String errorMessage, final Throwable cause) {
+        super(errorMessage, cause);
+    }
+    
+    /**
      * Constructs an exception with cause exception. 
      *
      * @param cause cause exception

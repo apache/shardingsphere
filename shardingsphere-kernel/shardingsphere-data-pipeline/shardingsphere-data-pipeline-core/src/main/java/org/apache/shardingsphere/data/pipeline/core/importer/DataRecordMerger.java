@@ -129,11 +129,11 @@ public final class DataRecordMerger {
             for (int i = 0; i < dataRecord.getColumnCount(); i++) {
                 mergedDataRecord.addColumn(new Column(
                         dataRecord.getColumn(i).getName(),
-                        dataRecord.getColumn(i).isPrimaryKey()
+                        dataRecord.getColumn(i).isUniqueKey()
                                 ? beforeDataRecord.getColumn(i).getOldValue()
                                 : beforeDataRecord.getColumn(i).getValue(),
                         true,
-                        dataRecord.getColumn(i).isPrimaryKey()));
+                        dataRecord.getColumn(i).isUniqueKey()));
             }
             mergedDataRecord.setTableName(dataRecord.getTableName());
             mergedDataRecord.setType(IngestDataChangeType.DELETE);
@@ -153,12 +153,12 @@ public final class DataRecordMerger {
         for (int i = 0; i < curDataRecord.getColumnCount(); i++) {
             result.addColumn(new Column(
                     curDataRecord.getColumn(i).getName(),
-                    preDataRecord.getColumn(i).isPrimaryKey()
+                    preDataRecord.getColumn(i).isUniqueKey()
                             ? mergePrimaryKeyOldValue(preDataRecord.getColumn(i), curDataRecord.getColumn(i))
                             : null,
                     curDataRecord.getColumn(i).getValue(),
                     preDataRecord.getColumn(i).isUpdated() || curDataRecord.getColumn(i).isUpdated(),
-                    curDataRecord.getColumn(i).isPrimaryKey()));
+                    curDataRecord.getColumn(i).isUniqueKey()));
         }
         return result;
     }

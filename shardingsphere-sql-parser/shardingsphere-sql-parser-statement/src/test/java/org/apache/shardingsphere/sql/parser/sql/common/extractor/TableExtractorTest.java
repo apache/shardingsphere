@@ -17,13 +17,26 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.extractor;
 
+import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.OnDuplicateKeyColumnsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
 import org.junit.Test;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.Optional;
 
@@ -36,10 +49,19 @@ public final class TableExtractorTest {
     private final TableExtractor tableExtractor = new TableExtractor();
     
     @Test
-    public void assertExtractTablesFromSelectLockWithEmptyValue() {
+    public void assertExtractTablesFromSelectProjects() {
+        AggregationProjectionSegment aggregationProjection = new AggregationProjectionSegment(10, 20, AggregationType.SUM, "t_order.id");
+        ColumnSegment columnSegment = new ColumnSegment(133, 136, new IdentifierValue("id"));
+        columnSegment.setOwner(new OwnerSegment(130, 132, new IdentifierValue("t_order")));
+        aggregationProjection.getParameters().add(columnSegment);
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(10, 20);
+        projectionsSegment.getProjections().add(aggregationProjection);
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
+        selectStatement.setProjections(projectionsSegment);
         tableExtractor.extractTablesFromSelect(selectStatement);
-        assertTrue(tableExtractor.getRewriteTables().isEmpty());
+        assertThat(tableExtractor.getRewriteTables().size(), is(1));
+        Iterator<SimpleTableSegment> tableSegmentIterator = tableExtractor.getRewriteTables().iterator();
+        assertTableSegment(tableSegmentIterator.next(), 130, 132, "t_order");
     }
     
     @Test
@@ -54,6 +76,22 @@ public final class TableExtractorTest {
         Iterator<SimpleTableSegment> tableSegmentIterator = tableExtractor.getRewriteTables().iterator();
         assertTableSegment(tableSegmentIterator.next(), 122, 128, "t_order");
         assertTableSegment(tableSegmentIterator.next(), 143, 154, "t_order_item");
+    }
+    
+    @Test
+    public void assertExtractTablesFromInsert() {
+        MySQLInsertStatement mySQLInsertStatement = new MySQLInsertStatement();
+        mySQLInsertStatement.setTable(new SimpleTableSegment(new TableNameSegment(122, 128, new IdentifierValue("t_order"))));
+        Collection<AssignmentSegment> assignmentSegments = new ArrayList<>();
+        ColumnSegment columnSegment = new ColumnSegment(133, 136, new IdentifierValue("id"));
+        columnSegment.setOwner(new OwnerSegment(130, 132, new IdentifierValue("t_order")));
+        assignmentSegments.add(new ColumnAssignmentSegment(130, 140, Arrays.asList(columnSegment), new LiteralExpressionSegment(141, 142, 1)));
+        mySQLInsertStatement.setOnDuplicateKeyColumns(new OnDuplicateKeyColumnsSegment(130, 140, assignmentSegments));
+        tableExtractor.extractTablesFromInsert(mySQLInsertStatement);
+        assertThat(tableExtractor.getRewriteTables().size(), is(2));
+        Iterator<SimpleTableSegment> tableSegmentIterator = tableExtractor.getRewriteTables().iterator();
+        assertTableSegment(tableSegmentIterator.next(), 122, 128, "t_order");
+        assertTableSegment(tableSegmentIterator.next(), 130, 132, "t_order");
     }
     
     private void assertTableSegment(final SimpleTableSegment actual, final int expectedStartIndex, final int expectedStopIndex, final String expectedTableName) {

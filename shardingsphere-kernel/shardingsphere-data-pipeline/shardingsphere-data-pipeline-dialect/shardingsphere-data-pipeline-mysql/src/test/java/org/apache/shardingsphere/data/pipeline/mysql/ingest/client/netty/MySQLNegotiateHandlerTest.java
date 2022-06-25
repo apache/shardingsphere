@@ -86,7 +86,7 @@ public final class MySQLNegotiateHandlerTest {
     
     @Test
     public void assertChannelReadOkPacket() throws NoSuchFieldException, IllegalAccessException {
-        MySQLOKPacket okPacket = new MySQLOKPacket(0);
+        MySQLOKPacket okPacket = new MySQLOKPacket(0, 0);
         ServerInfo serverInfo = new ServerInfo();
         ReflectionUtil.setFieldValue(mysqlNegotiateHandler, "serverInfo", serverInfo);
         mysqlNegotiateHandler.channelRead(channelHandlerContext, okPacket);

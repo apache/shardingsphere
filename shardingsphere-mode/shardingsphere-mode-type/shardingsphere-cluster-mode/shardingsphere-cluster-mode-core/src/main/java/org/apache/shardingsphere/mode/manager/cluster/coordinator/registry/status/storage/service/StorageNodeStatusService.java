@@ -21,7 +21,7 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.node.StorageStatusNode;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.node.StorageNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
@@ -42,10 +42,10 @@ public final class StorageNodeStatusService {
      * @return loaded storage node names
      */
     public Map<String, StorageNodeDataSource> loadStorageNodes() {
-        Collection<String> storageNodes = repository.getChildrenKeys(StorageStatusNode.getRootPath());
+        Collection<String> storageNodes = repository.getChildrenKeys(StorageNode.getRootPath());
         Map<String, StorageNodeDataSource> result = new HashMap<>(storageNodes.size(), 1);
         storageNodes.forEach(each -> {
-            String yamlContext = repository.get(StorageStatusNode.getStorageNodesDataSourcePath(each));
+            String yamlContext = repository.get(StorageNode.getStorageNodesDataSourcePath(each));
             if (!Strings.isNullOrEmpty(yamlContext)) {
                 result.put(each, YamlEngine.unmarshal(yamlContext, StorageNodeDataSource.class));
             }

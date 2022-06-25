@@ -20,11 +20,12 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowUnusedShardingAlgorithmsStatement;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
@@ -41,57 +42,16 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Result set for show unused sharding algorithms.
+ * Query result set for show unused sharding algorithms.
  */
 public final class UnusedShardingAlgorithmsQueryResultSet implements DistSQLResultSet {
-    
-    private static final String TYPE = ShowUnusedShardingAlgorithmsStatement.class.getName();
-    
-    private static final String NAME = "name";
-    
-    private static final String COLUMN_TYPE = "type";
-    
-    private static final String PROPS = "props";
     
     private Iterator<Entry<String, ShardingSphereAlgorithmConfiguration>> data = Collections.emptyIterator();
     
     @Override
-    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        Optional<ShardingRuleConfiguration> ruleConfig = metaData.getRuleMetaData().getConfigurations()
-                .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findAny();
-        ruleConfig.ifPresent(this::getUnusedShardingAlgorithms);
-    }
-    
-    @Override
-    public Collection<String> getColumnNames() {
-        return Arrays.asList(NAME, COLUMN_TYPE, PROPS);
-    }
-    
-    @Override
-    public boolean next() {
-        return data.hasNext();
-    }
-    
-    @Override
-    public Collection<Object> getRowData() {
-        return buildTableRowData(data.next());
-    }
-    
-    private Collection<Object> buildTableRowData(final Entry<String, ShardingSphereAlgorithmConfiguration> data) {
-        Collection<Object> result = new LinkedList<>();
-        result.add(data.getKey());
-        result.add(data.getValue().getType());
-        result.add(buildProps(data.getValue().getProps()));
-        return result;
-    }
-    
-    private Object buildProps(final Properties props) {
-        return Objects.nonNull(props) ? PropertiesConverter.convert(props) : "";
-    }
-    
-    @Override
-    public String getType() {
-        return TYPE;
+    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
+        rule.ifPresent(optional -> getUnusedShardingAlgorithms((ShardingRuleConfiguration) optional.getConfiguration()));
     }
     
     private void getUnusedShardingAlgorithms(final ShardingRuleConfiguration shardingRuleConfig) {
@@ -125,5 +85,37 @@ public final class UnusedShardingAlgorithmsQueryResultSet implements DistSQLResu
             result.add(databaseShardingStrategy.getShardingAlgorithmName());
         }
         return result;
+    }
+    
+    @Override
+    public Collection<String> getColumnNames() {
+        return Arrays.asList("name", "type", "props");
+    }
+    
+    @Override
+    public boolean next() {
+        return data.hasNext();
+    }
+    
+    @Override
+    public Collection<Object> getRowData() {
+        return buildTableRowData(data.next());
+    }
+    
+    private Collection<Object> buildTableRowData(final Entry<String, ShardingSphereAlgorithmConfiguration> data) {
+        Collection<Object> result = new LinkedList<>();
+        result.add(data.getKey());
+        result.add(data.getValue().getType());
+        result.add(buildProps(data.getValue().getProps()));
+        return result;
+    }
+    
+    private Object buildProps(final Properties props) {
+        return Objects.nonNull(props) ? PropertiesConverter.convert(props) : "";
+    }
+    
+    @Override
+    public String getType() {
+        return ShowUnusedShardingAlgorithmsStatement.class.getName();
     }
 }

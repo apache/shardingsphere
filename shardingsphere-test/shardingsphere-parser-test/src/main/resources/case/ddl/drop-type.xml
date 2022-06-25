@@ -21,4 +21,5 @@
     <drop-type sql-case-id="drop_type_cascade" />
     <drop-type sql-case-id="drop_type_restrict" />
     <drop-type sql-case-id="drop_type_if_exists" />
+    <drop-type sql-case-id="drop_type_namelist" />
 </sql-parser-test-cases>

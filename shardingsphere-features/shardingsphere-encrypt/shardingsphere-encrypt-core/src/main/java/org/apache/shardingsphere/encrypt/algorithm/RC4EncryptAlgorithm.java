@@ -74,11 +74,7 @@ public final class RC4EncryptAlgorithm implements EncryptAlgorithm<Object, Strin
     }
     
     private byte[] handle(final byte[] data, final byte[] key) {
-        reset();
-        setKey(key);
-        byte[] result = crypt(data);
-        reset();
-        return result;
+        return crypt(data);
     }
     
     private void reset() {

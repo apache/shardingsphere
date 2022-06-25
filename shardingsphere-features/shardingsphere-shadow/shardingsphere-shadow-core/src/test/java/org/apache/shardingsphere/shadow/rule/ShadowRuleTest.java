@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shadow.rule;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
@@ -27,6 +26,7 @@ import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -135,7 +135,7 @@ public final class ShadowRuleTest {
     
     @Test
     public void assertGetRelatedShadowTables() {
-        Collection<String> relatedShadowTables = shadowRule.getRelatedShadowTables(Lists.newArrayList("t_user", "t_auto"));
+        Collection<String> relatedShadowTables = shadowRule.getRelatedShadowTables(Arrays.asList("t_user", "t_auto"));
         assertThat(relatedShadowTables.size(), is(1));
         assertThat(relatedShadowTables.iterator().next(), is("t_user"));
     }

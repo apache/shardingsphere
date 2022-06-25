@@ -19,10 +19,11 @@ package org.apache.shardingsphere.shadow.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowAlgorithmsStatement;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
@@ -35,35 +36,27 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Result set for shadow algorithm.
+ * Query result set for show shadow algorithm.
  */
 public final class ShadowAlgorithmQueryResultSet implements DistSQLResultSet {
-    
-    private static final String SHADOW_ALGORITHM_NAME = "shadow_algorithm_name";
-    
-    private static final String TYPE = "type";
-    
-    private static final String PROPS = "props";
-    
-    private static final String DEFAULT = "is_default";
     
     private Iterator<Entry<String, ShardingSphereAlgorithmConfiguration>> data = Collections.emptyIterator();
     
     private String defaultAlgorithm;
     
     @Override
-    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        Optional<ShadowRuleConfiguration> rule = metaData.getRuleMetaData().getConfigurations()
-                .stream().filter(each -> each instanceof ShadowRuleConfiguration).map(each -> (ShadowRuleConfiguration) each).findAny();
-        rule.ifPresent(optional -> {
-            data = optional.getShadowAlgorithms().entrySet().iterator();
-            defaultAlgorithm = optional.getDefaultShadowAlgorithmName();
-        });
+    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+        Optional<ShadowRule> rule = database.getRuleMetaData().findSingleRule(ShadowRule.class);
+        if (rule.isPresent()) {
+            ShadowRuleConfiguration config = (ShadowRuleConfiguration) rule.get().getConfiguration();
+            data = config.getShadowAlgorithms().entrySet().iterator();
+            defaultAlgorithm = config.getDefaultShadowAlgorithmName();
+        }
     }
     
     @Override
     public Collection<String> getColumnNames() {
-        return Arrays.asList(SHADOW_ALGORITHM_NAME, TYPE, PROPS, DEFAULT);
+        return Arrays.asList("shadow_algorithm_name", "type", "props", "is_default");
     }
     
     @Override

@@ -17,37 +17,37 @@
 
 <dataset update-count="2">
     <metadata data-nodes="db_${0..9}.t_broadcast_table">
-        <column name="id" type="numeric"/>
-        <column name="status" type="varchar"/>
+        <column name="id" type="numeric" />
+        <column name="status" type="varchar" />
     </metadata>
-    <row data-node="db_0.t_broadcast_table" values="1, init"/>
-    <row data-node="db_0.t_broadcast_table" values="2, insert"/>
-    <row data-node="db_0.t_broadcast_table" values="3, insert"/>
-    <row data-node="db_1.t_broadcast_table" values="1, init"/>
-    <row data-node="db_1.t_broadcast_table" values="2, insert"/>
-    <row data-node="db_1.t_broadcast_table" values="3, insert"/>
-    <row data-node="db_2.t_broadcast_table" values="1, init"/>
-    <row data-node="db_2.t_broadcast_table" values="2, insert"/>
-    <row data-node="db_2.t_broadcast_table" values="3, insert"/>
-    <row data-node="db_3.t_broadcast_table" values="1, init"/>
-    <row data-node="db_3.t_broadcast_table" values="2, insert"/>
-    <row data-node="db_3.t_broadcast_table" values="3, insert"/>
-    <row data-node="db_4.t_broadcast_table" values="1, init"/>
-    <row data-node="db_4.t_broadcast_table" values="2, insert"/>
-    <row data-node="db_4.t_broadcast_table" values="3, insert"/>
-    <row data-node="db_5.t_broadcast_table" values="1, init"/>
-    <row data-node="db_5.t_broadcast_table" values="2, insert"/>
-    <row data-node="db_5.t_broadcast_table" values="3, insert"/>
-    <row data-node="db_6.t_broadcast_table" values="1, init"/>
-    <row data-node="db_6.t_broadcast_table" values="2, insert"/>
-    <row data-node="db_6.t_broadcast_table" values="3, insert"/>
-    <row data-node="db_7.t_broadcast_table" values="1, init"/>
-    <row data-node="db_7.t_broadcast_table" values="2, insert"/>
-    <row data-node="db_7.t_broadcast_table" values="3, insert"/>
-    <row data-node="db_8.t_broadcast_table" values="1, init"/>
-    <row data-node="db_8.t_broadcast_table" values="2, insert"/>
-    <row data-node="db_8.t_broadcast_table" values="3, insert"/>
-    <row data-node="db_9.t_broadcast_table" values="1, init"/>
-    <row data-node="db_9.t_broadcast_table" values="2, insert"/>
-    <row data-node="db_9.t_broadcast_table" values="3, insert"/>
+    <row data-node="db_0.t_broadcast_table" values="1, init" />
+    <row data-node="db_0.t_broadcast_table" values="2, insert" />
+    <row data-node="db_0.t_broadcast_table" values="3, insert" />
+    <row data-node="db_1.t_broadcast_table" values="1, init" />
+    <row data-node="db_1.t_broadcast_table" values="2, insert" />
+    <row data-node="db_1.t_broadcast_table" values="3, insert" />
+    <row data-node="db_2.t_broadcast_table" values="1, init" />
+    <row data-node="db_2.t_broadcast_table" values="2, insert" />
+    <row data-node="db_2.t_broadcast_table" values="3, insert" />
+    <row data-node="db_3.t_broadcast_table" values="1, init" />
+    <row data-node="db_3.t_broadcast_table" values="2, insert" />
+    <row data-node="db_3.t_broadcast_table" values="3, insert" />
+    <row data-node="db_4.t_broadcast_table" values="1, init" />
+    <row data-node="db_4.t_broadcast_table" values="2, insert" />
+    <row data-node="db_4.t_broadcast_table" values="3, insert" />
+    <row data-node="db_5.t_broadcast_table" values="1, init" />
+    <row data-node="db_5.t_broadcast_table" values="2, insert" />
+    <row data-node="db_5.t_broadcast_table" values="3, insert" />
+    <row data-node="db_6.t_broadcast_table" values="1, init" />
+    <row data-node="db_6.t_broadcast_table" values="2, insert" />
+    <row data-node="db_6.t_broadcast_table" values="3, insert" />
+    <row data-node="db_7.t_broadcast_table" values="1, init" />
+    <row data-node="db_7.t_broadcast_table" values="2, insert" />
+    <row data-node="db_7.t_broadcast_table" values="3, insert" />
+    <row data-node="db_8.t_broadcast_table" values="1, init" />
+    <row data-node="db_8.t_broadcast_table" values="2, insert" />
+    <row data-node="db_8.t_broadcast_table" values="3, insert" />
+    <row data-node="db_9.t_broadcast_table" values="1, init" />
+    <row data-node="db_9.t_broadcast_table" values="2, insert" />
+    <row data-node="db_9.t_broadcast_table" values="3, insert" />
 </dataset>

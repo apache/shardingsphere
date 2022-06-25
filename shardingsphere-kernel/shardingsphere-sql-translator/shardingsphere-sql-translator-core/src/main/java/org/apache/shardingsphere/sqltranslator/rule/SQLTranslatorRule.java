@@ -18,20 +18,54 @@
 package org.apache.shardingsphere.sqltranslator.rule;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
-import org.apache.shardingsphere.sqltranslator.config.SQLTranslatorRuleConfiguration;
-import org.apache.shardingsphere.sqltranslator.constant.SQLTranslatorConstants;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
+import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
+import org.apache.shardingsphere.sqltranslator.exception.SQLTranslationException;
+import org.apache.shardingsphere.sqltranslator.spi.SQLTranslator;
+import org.apache.shardingsphere.sqltranslator.factory.SQLTranslatorFactory;
 
 /**
  * SQL translator rule.
  */
-@Getter
 public final class SQLTranslatorRule implements GlobalRule {
     
-    private final String type;
+    @Getter
+    private final SQLTranslatorRuleConfiguration configuration;
+    
+    private final SQLTranslator translator;
+    
+    private final boolean useOriginalSQLWhenTranslatingFailed;
     
     public SQLTranslatorRule(final SQLTranslatorRuleConfiguration ruleConfig) {
-        type = ruleConfig.getType().orElse(SQLTranslatorConstants.DEFAULT_TYPE);
+        configuration = ruleConfig;
+        translator = SQLTranslatorFactory.getInstance(ruleConfig.getType());
+        useOriginalSQLWhenTranslatingFailed = ruleConfig.isUseOriginalSQLWhenTranslatingFailed();
+    }
+    
+    /**
+     * Translate SQL.
+     * 
+     * @param sql to be translated SQL
+     * @param sqlStatement to be translated SQL statement
+     * @param protocolType protocol type
+     * @param storageType storage type
+     * @return translated SQL
+     */
+    public String translate(final String sql, final SQLStatement sqlStatement, final DatabaseType protocolType, final DatabaseType storageType) {
+        if (protocolType.equals(storageType) || null == storageType) {
+            return sql;
+        }
+        try {
+            return translator.translate(sql, sqlStatement, protocolType, storageType);
+        } catch (final SQLTranslationException ex) {
+            if (useOriginalSQLWhenTranslatingFailed) {
+                return sql;
+            }
+            throw new ShardingSphereException(ex);
+        }
     }
     
     @Override

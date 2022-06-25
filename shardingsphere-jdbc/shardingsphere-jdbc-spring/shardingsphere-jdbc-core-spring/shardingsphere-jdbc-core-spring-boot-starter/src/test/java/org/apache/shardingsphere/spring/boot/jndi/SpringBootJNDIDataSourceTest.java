@@ -17,7 +17,9 @@
 
 package org.apache.shardingsphere.spring.boot.jndi;
 
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
+import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.spring.boot.jndi.fixture.InitialDataSourceInitialContextFactory;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.BeforeClass;
@@ -31,6 +33,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import javax.annotation.Resource;
 import javax.naming.Context;
 import javax.sql.DataSource;
+import java.lang.reflect.Field;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -55,9 +58,16 @@ public class SpringBootJNDIDataSourceTest {
     
     @Test
     public void assertDataSources() {
-        Map<String, DataSource> dataSources = dataSource.getContextManager().getMetaDataContexts().getMetaData("foo_db").getResource().getDataSources();
+        Map<String, DataSource> dataSources = getContextManager(dataSource).getMetaDataContexts().getMetaData().getDatabases().get("foo_db").getResource().getDataSources();
         assertThat(dataSources.size(), is(2));
         assertTrue(dataSources.containsKey("ds0"));
         assertTrue(dataSources.containsKey("ds1"));
+    }
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private ContextManager getContextManager(final ShardingSphereDataSource dataSource) {
+        Field field = ShardingSphereDataSource.class.getDeclaredField("contextManager");
+        field.setAccessible(true);
+        return (ContextManager) field.get(dataSource);
     }
 }

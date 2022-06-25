@@ -22,12 +22,14 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateIndexStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.index.IndexAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateIndexStatementTestCase;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Create index statement assert.
@@ -45,6 +47,7 @@ public final class CreateIndexStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final CreateIndexStatement actual, final CreateIndexStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
         assertIndex(assertContext, actual, expected);
+        assertColumns(assertContext, actual, expected);
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final CreateIndexStatement actual, final CreateIndexStatementTestCase expected) {
@@ -60,6 +63,14 @@ public final class CreateIndexStatementAssert {
         // TODO should assert index for all databases(mysql and sqlserver do not parse index right now)
         if (actual instanceof OracleCreateIndexStatement) {
             IndexAssert.assertIs(assertContext, actual.getIndex(), expected.getIndex());
+        }
+    }
+    
+    private static void assertColumns(final SQLCaseAssertContext assertContext, final CreateIndexStatement actual, final CreateIndexStatementTestCase expected) {
+        if (null == expected.getIndexColumns() || expected.getIndexColumns().getColumns().isEmpty()) {
+            assertTrue(assertContext.getText("Actual columns segments should not exist."), actual.getColumns().isEmpty());
+        } else {
+            ColumnAssert.assertIs(assertContext, actual.getColumns(), expected.getIndexColumns().getColumns());
         }
     }
 }

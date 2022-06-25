@@ -19,12 +19,20 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCommentStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndextypeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CommentStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CommentStatementHandler;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.index.IndextypeAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CommentStatementTestCase;
+
+import java.util.Optional;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Comment statement assert.
@@ -39,27 +47,35 @@ public final class CommentStatementAssert {
      * @param actual actual comment statement
      * @param expected expected comment statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final OracleCommentStatement actual, final CommentStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final CommentStatement actual, final CommentStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
         assertColumn(assertContext, actual, expected);
         assertIndextype(assertContext, actual, expected);
     }
     
-    private static void assertTable(final SQLCaseAssertContext assertContext, final OracleCommentStatement actual, final CommentStatementTestCase expected) {
+    private static void assertTable(final SQLCaseAssertContext assertContext, final CommentStatement actual, final CommentStatementTestCase expected) {
         if (null != expected.getTable()) {
             TableAssert.assertIs(assertContext, actual.getTable(), expected.getTable());
+        } else {
+            assertNull(assertContext.getText("Actual table should not exist."), actual.getTable());
         }
     }
     
-    private static void assertColumn(final SQLCaseAssertContext assertContext, final OracleCommentStatement actual, final CommentStatementTestCase expected) {
+    private static void assertColumn(final SQLCaseAssertContext assertContext, final CommentStatement actual, final CommentStatementTestCase expected) {
         if (null != expected.getColumn()) {
             ColumnAssert.assertIs(assertContext, actual.getColumn(), expected.getColumn());
+        } else {
+            assertNull(assertContext.getText("Actual column should not exist."), actual.getColumn());
         }
     }
     
-    private static void assertIndextype(final SQLCaseAssertContext assertContext, final OracleCommentStatement actual, final CommentStatementTestCase expected) {
+    private static void assertIndextype(final SQLCaseAssertContext assertContext, final CommentStatement actual, final CommentStatementTestCase expected) {
+        Optional<IndextypeSegment> indextypeSegment = CommentStatementHandler.getIndextype(actual);
         if (null != expected.getIndextype()) {
-            IndextypeAssert.assertIs(assertContext, actual.getIndextype(), expected.getIndextype());
+            assertTrue(assertContext.getText("Actual index type should exist"), indextypeSegment.isPresent());
+            IndextypeAssert.assertIs(assertContext, indextypeSegment.get(), expected.getIndextype());
+        } else {
+            assertFalse(assertContext.getText("Actual index type should not exist."), indextypeSegment.isPresent());
         }
     }
 }

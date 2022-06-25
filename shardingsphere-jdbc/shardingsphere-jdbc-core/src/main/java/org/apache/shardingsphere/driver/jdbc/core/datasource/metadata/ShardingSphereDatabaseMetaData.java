@@ -22,7 +22,7 @@ import org.apache.shardingsphere.driver.jdbc.adapter.AdaptedDatabaseMetaData;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.DatabaseMetaDataResultSet;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.metadata.resource.DataSourcesMetaData;
+import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 
@@ -42,8 +42,6 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     
     private final Collection<ShardingSphereRule> rules;
     
-    private final DataSourcesMetaData dataSourcesMetaData;
-    
     private String currentPhysicalDataSourceName;
     
     private Connection currentPhysicalConnection;
@@ -51,10 +49,9 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     private DatabaseMetaData currentDatabaseMetaData;
     
     public ShardingSphereDatabaseMetaData(final ShardingSphereConnection connection) {
-        super(connection.getContextManager().getMetaDataContexts().getMetaData(connection.getDatabaseName()).getResource().getCachedDatabaseMetaData());
+        super(connection.getJdbcContext().getCachedDatabaseMetaData());
         this.connection = connection;
-        rules = connection.getContextManager().getMetaDataContexts().getMetaData(connection.getDatabaseName()).getRuleMetaData().getRules();
-        dataSourcesMetaData = connection.getContextManager().getMetaDataContexts().getMetaData(connection.getDatabaseName()).getResource().getDataSourcesMetaData();
+        rules = connection.getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(connection.getDatabaseName()).getRuleMetaData().getRules();
     }
     
     @Override
@@ -229,11 +226,15 @@ public final class ShardingSphereDatabaseMetaData extends AdaptedDatabaseMetaDat
     }
     
     private String getActualCatalog(final String catalog) {
-        return null != catalog && catalog.contains(DefaultDatabase.LOGIC_NAME) ? dataSourcesMetaData.getDataSourceMetaData(getDataSourceName()).getCatalog() : catalog;
+        DataSourceMetaData metaData = connection.getContextManager()
+                .getMetaDataContexts().getMetaData().getDatabases().get(connection.getDatabaseName()).getResource().getDataSourceMetaData(getDataSourceName());
+        return null != catalog && catalog.contains(DefaultDatabase.LOGIC_NAME) ? metaData.getCatalog() : catalog;
     }
     
     private String getActualSchema(final String schema) {
-        return null != schema && schema.contains(DefaultDatabase.LOGIC_NAME) ? dataSourcesMetaData.getDataSourceMetaData(getDataSourceName()).getSchema() : schema;
+        DataSourceMetaData metaData = connection.getContextManager()
+                .getMetaDataContexts().getMetaData().getDatabases().get(connection.getDatabaseName()).getResource().getDataSourceMetaData(getDataSourceName());
+        return null != schema && schema.contains(DefaultDatabase.LOGIC_NAME) ? metaData.getSchema() : schema;
     }
     
     private String getDataSourceName() {

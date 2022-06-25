@@ -17,18 +17,18 @@
   -->
 
 <sql-cases>
-    <sql-case id="alter_foreign_data_wrapper_rename" value="ALTER FOREIGN DATA WRAPPER alt_fdw1 RENAME TO alt_fdw2;" db-types="PostgreSQL"/>
-    <sql-case id="alter_foreign_data_wrapper_handler" value="ALTER FOREIGN DATA WRAPPER foo HANDLER invalid_fdw_handler;" db-types="PostgreSQL"/>
-    <sql-case id="alter_foreign_data_wrapper_multi_handler" value="ALTER FOREIGN DATA WRAPPER foo HANDLER test_fdw_handler HANDLER anything;" db-types="PostgreSQL"/>
-    <sql-case id="alter_foreign_data_wrapper_no_validator" value="ALTER FOREIGN DATA WRAPPER foo NO VALIDATOR;" db-types="PostgreSQL"/>
-    <sql-case id="alter_foreign_data_wrapper_options_add" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (ADD d &apos;5&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_foreign_data_wrapper_options_add_drop" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (ADD x &apos;1&apos;, DROP x);" db-types="PostgreSQL"/>
-    <sql-case id="alter_foreign_data_wrapper_options_drop_set_add" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (DROP a, SET b &apos;3&apos;, ADD c &apos;4&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_foreign_data_wrapper_options_drop" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (DROP c);" db-types="PostgreSQL"/>
-    <sql-case id="alter_foreign_data_wrapper_options_set" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (SET c &apos;4&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_foreign_data_wrapper_options_option" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (a &apos;1&apos;, b &apos;2&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_foreign_data_wrapper_options_option_defined" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (gotcha &apos;true&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_foreign_data_wrapper_options_option_nonexistent" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (nonexistent &apos;fdw&apos;);" db-types="PostgreSQL"/>
-    <sql-case id="alter_foreign_data_wrapper_owner" value="ALTER FOREIGN DATA WRAPPER foo OWNER TO regress_test_role;" db-types="PostgreSQL"/>
-    <sql-case id="alter_foreign_data_wrapper_with_validator" value="ALTER FOREIGN DATA WRAPPER foo VALIDATOR bar;" db-types="PostgreSQL"/>
+    <sql-case id="alter_foreign_data_wrapper_rename" value="ALTER FOREIGN DATA WRAPPER alt_fdw1 RENAME TO alt_fdw2;" db-types="PostgreSQL" />
+    <sql-case id="alter_foreign_data_wrapper_handler" value="ALTER FOREIGN DATA WRAPPER foo HANDLER invalid_fdw_handler;" db-types="PostgreSQL" />
+    <sql-case id="alter_foreign_data_wrapper_multi_handler" value="ALTER FOREIGN DATA WRAPPER foo HANDLER test_fdw_handler HANDLER anything;" db-types="PostgreSQL" />
+    <sql-case id="alter_foreign_data_wrapper_no_validator" value="ALTER FOREIGN DATA WRAPPER foo NO VALIDATOR;" db-types="PostgreSQL" />
+    <sql-case id="alter_foreign_data_wrapper_options_add" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (ADD d &apos;5&apos;);" db-types="PostgreSQL" />
+    <sql-case id="alter_foreign_data_wrapper_options_add_drop" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (ADD x &apos;1&apos;, DROP x);" db-types="PostgreSQL" />
+    <sql-case id="alter_foreign_data_wrapper_options_drop_set_add" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (DROP a, SET b &apos;3&apos;, ADD c &apos;4&apos;);" db-types="PostgreSQL" />
+    <sql-case id="alter_foreign_data_wrapper_options_drop" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (DROP c);" db-types="PostgreSQL" />
+    <sql-case id="alter_foreign_data_wrapper_options_set" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (SET c &apos;4&apos;);" db-types="PostgreSQL" />
+    <sql-case id="alter_foreign_data_wrapper_options_option" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (a &apos;1&apos;, b &apos;2&apos;);" db-types="PostgreSQL" />
+    <sql-case id="alter_foreign_data_wrapper_options_option_defined" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (gotcha &apos;true&apos;);" db-types="PostgreSQL" />
+    <sql-case id="alter_foreign_data_wrapper_options_option_nonexistent" value="ALTER FOREIGN DATA WRAPPER foo OPTIONS (nonexistent &apos;fdw&apos;);" db-types="PostgreSQL" />
+    <sql-case id="alter_foreign_data_wrapper_owner" value="ALTER FOREIGN DATA WRAPPER foo OWNER TO regress_test_role;" db-types="PostgreSQL" />
+    <sql-case id="alter_foreign_data_wrapper_with_validator" value="ALTER FOREIGN DATA WRAPPER foo VALIDATOR bar;" db-types="PostgreSQL" />
 </sql-cases>

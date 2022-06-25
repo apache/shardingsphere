@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.fixture.AuthorityCheckerFixture
+org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.fixture.SQLCheckerFixture

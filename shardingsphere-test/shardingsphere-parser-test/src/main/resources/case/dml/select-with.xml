@@ -172,7 +172,7 @@
                                     </left>
                                     <operator>IS</operator>
                                     <right>
-                                        <literal-expression value="177..181" start-index="177" stop-index="181" />
+                                        <literal-expression value="NULL" start-index="177" stop-index="181" />
                                     </right>
                                 </binary-operation-expression>
                             </expr>
@@ -223,7 +223,7 @@
                                     </left>
                                     <operator>IS</operator>
                                     <right>
-                                        <literal-expression value="186..190" start-index="186" stop-index="190" />
+                                        <literal-expression value="NULL" start-index="186" stop-index="190" />
                                     </right>
                                 </binary-operation-expression>
                             </expr>

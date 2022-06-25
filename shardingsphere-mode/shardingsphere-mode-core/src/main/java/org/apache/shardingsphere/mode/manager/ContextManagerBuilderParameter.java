@@ -37,7 +37,7 @@ public final class ContextManagerBuilderParameter {
     
     private final ModeConfiguration modeConfig;
     
-    private final Map<String, ? extends DatabaseConfiguration> databaseConfigs;
+    private final Map<String, DatabaseConfiguration> databaseConfigs;
     
     private final Collection<RuleConfiguration> globalRuleConfigs;
     

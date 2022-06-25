@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.dml.impl;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingConditions;
 import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingStandardRoutingEngine;
@@ -39,13 +39,13 @@ public final class ShardingUpdateStatementValidator extends ShardingDMLStatement
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<UpdateStatement> sqlStatementContext,
-                            final List<Object> parameters, final ShardingSphereMetaData metaData) {
+                            final List<Object> parameters, final ShardingSphereDatabase database) {
         validateMultipleTable(shardingRule, sqlStatementContext);
     }
     
     @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<UpdateStatement> sqlStatementContext, final List<Object> parameters,
-                             final ShardingSphereMetaData metaData, final ConfigurationProperties props, final RouteContext routeContext) {
+                             final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
         String tableName = sqlStatementContext.getTablesContext().getTableNames().iterator().next();
         Optional<ShardingConditions> shardingConditions = createShardingConditions(sqlStatementContext, shardingRule,
                 sqlStatementContext.getSqlStatement().getSetAssignment().getAssignments(), parameters);

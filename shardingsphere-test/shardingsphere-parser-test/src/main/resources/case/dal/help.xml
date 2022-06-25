@@ -17,7 +17,7 @@
   -->
 
 <sql-parser-test-cases>
-    <help sql-case-id="help_with_text" search-string="test"/>
-    <help sql-case-id="help_with_quot" search-string="test"/>
-    <help sql-case-id="help_with_apos" search-string="test"/>
+    <help sql-case-id="help_with_text" search-string="test" />
+    <help sql-case-id="help_with_quot" search-string="test" />
+    <help sql-case-id="help_with_apos" search-string="test" />
 </sql-parser-test-cases>

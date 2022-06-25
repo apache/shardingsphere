@@ -39,9 +39,6 @@ public final class SingleTableMetadataValidatorFactory {
      */
     @SuppressWarnings("rawtypes")
     public static Optional<SingleTableMetadataValidator> newInstance(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof DropSchemaStatement) {
-            return Optional.of(new SingleTableDropSchemaMetadataValidator());
-        }
-        return Optional.empty();
+        return sqlStatement instanceof DropSchemaStatement ? Optional.of(new SingleTableDropSchemaMetadataValidator()) : Optional.empty();
     }
 }

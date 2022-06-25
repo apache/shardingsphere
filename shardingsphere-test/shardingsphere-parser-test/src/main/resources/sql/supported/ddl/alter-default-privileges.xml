@@ -17,8 +17,8 @@
   -->
 
 <sql-cases>
-    <sql-case id="alter_default_privileges_grant_all" value="ALTER DEFAULT PRIVILEGES FOR ROLE regress_addr_user IN SCHEMA public GRANT ALL ON TABLES TO regress_addr_user;" db-types="PostgreSQL,openGauss"/>
-    <sql-case id="alter_default_privileges_revoke_delete" value="ALTER DEFAULT PRIVILEGES FOR ROLE regress_addr_user REVOKE DELETE ON TABLES FROM regress_addr_user;" db-types="PostgreSQL,openGauss"/>
-    <sql-case id="alter_default_privileges_grant_insert" value="ALTER DEFAULT PRIVILEGES FOR ROLE regress_matview_user GRANT INSERT ON TABLES TO regress_matview_user;" db-types="PostgreSQL,openGauss"/>
-    <sql-case id="alter_default_privileges_revoke_insert" value="ALTER DEFAULT PRIVILEGES FOR ROLE regress_matview_user REVOKE INSERT ON TABLES FROM regress_matview_user;" db-types="PostgreSQL,openGauss"/>
+    <sql-case id="alter_default_privileges_grant_all" value="ALTER DEFAULT PRIVILEGES FOR ROLE regress_addr_user IN SCHEMA public GRANT ALL ON TABLES TO regress_addr_user;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_default_privileges_revoke_delete" value="ALTER DEFAULT PRIVILEGES FOR ROLE regress_addr_user REVOKE DELETE ON TABLES FROM regress_addr_user;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_default_privileges_grant_insert" value="ALTER DEFAULT PRIVILEGES FOR ROLE regress_matview_user GRANT INSERT ON TABLES TO regress_matview_user;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="alter_default_privileges_revoke_insert" value="ALTER DEFAULT PRIVILEGES FOR ROLE regress_matview_user REVOKE INSERT ON TABLES FROM regress_matview_user;" db-types="PostgreSQL,openGauss" />
 </sql-cases>

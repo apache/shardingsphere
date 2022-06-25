@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import javax.sql.DataSource;
@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Result set for show data source.
+ * Query result set for show data source.
  */
 public final class DataSourceQueryResultSet implements DistSQLResultSet {
     
@@ -60,10 +60,10 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
     private Iterator<String> dataSourceNames;
     
     @Override
-    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        resource = metaData.getResource();
-        dataSourcePropsMap = new LinkedHashMap<>(metaData.getResource().getDataSources().size(), 1);
-        for (Entry<String, DataSource> entry : metaData.getResource().getDataSources().entrySet()) {
+    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+        resource = database.getResource();
+        dataSourcePropsMap = new LinkedHashMap<>(database.getResource().getDataSources().size(), 1);
+        for (Entry<String, DataSource> entry : database.getResource().getDataSources().entrySet()) {
             dataSourcePropsMap.put(entry.getKey(), DataSourcePropertiesCreator.create(entry.getValue()));
         }
         dataSourceNames = dataSourcePropsMap.keySet().iterator();
@@ -83,7 +83,7 @@ public final class DataSourceQueryResultSet implements DistSQLResultSet {
     @Override
     public Collection<Object> getRowData() {
         String dataSourceName = dataSourceNames.next();
-        DataSourceMetaData metaData = resource.getDataSourcesMetaData().getDataSourceMetaData(dataSourceName);
+        DataSourceMetaData metaData = resource.getDataSourceMetaData(dataSourceName);
         Collection<Object> result = new LinkedList<>();
         result.add(dataSourceName);
         result.add(resource.getDatabaseType().getType());

@@ -19,12 +19,13 @@ package org.apache.shardingsphere.shadow.distsql.update;
 
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.update.DropDefaultShadowAlgorithmStatementUpdater;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.DropDefaultShadowAlgorithmStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -34,8 +35,8 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 public final class DropDefaultShadowAlgorithmStatementUpdaterTest {
     
-    @Mock
-    private ShardingSphereMetaData shardingSphereMetaData;
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ShardingSphereDatabase database;
     
     @Mock
     private ShadowRuleConfiguration currentConfig;
@@ -44,21 +45,21 @@ public final class DropDefaultShadowAlgorithmStatementUpdaterTest {
     
     @Test(expected = RequiredAlgorithmMissedException.class)
     public void assertCheckWithoutDefaultAlgorithm() throws DistSQLException {
-        updater.checkSQLStatement(shardingSphereMetaData, new DropDefaultShadowAlgorithmStatement(), currentConfig);
+        updater.checkSQLStatement(database, new DropDefaultShadowAlgorithmStatement(false), currentConfig);
     }
     
     @Test
     public void assertCheckWithIfExists() throws DistSQLException {
-        updater.checkSQLStatement(shardingSphereMetaData, new DropDefaultShadowAlgorithmStatement(true), currentConfig);
-        updater.checkSQLStatement(shardingSphereMetaData, new DropDefaultShadowAlgorithmStatement(true), null);
+        updater.checkSQLStatement(database, new DropDefaultShadowAlgorithmStatement(true), currentConfig);
+        updater.checkSQLStatement(database, new DropDefaultShadowAlgorithmStatement(true), null);
     }
     
     @Test
     public void assertUpdate() throws DistSQLException {
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
         ruleConfig.setDefaultShadowAlgorithmName("default");
-        DropDefaultShadowAlgorithmStatement statement = new DropDefaultShadowAlgorithmStatement();
-        updater.checkSQLStatement(shardingSphereMetaData, new DropDefaultShadowAlgorithmStatement(true), ruleConfig);
+        DropDefaultShadowAlgorithmStatement statement = new DropDefaultShadowAlgorithmStatement(false);
+        updater.checkSQLStatement(database, new DropDefaultShadowAlgorithmStatement(true), ruleConfig);
         assertTrue(updater.hasAnyOneToBeDropped(statement, ruleConfig));
         updater.updateCurrentRuleConfiguration(statement, ruleConfig);
         assertNull(ruleConfig.getDefaultShadowAlgorithmName());

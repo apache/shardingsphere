@@ -23,6 +23,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.util.List;
 
 @Data
 @XmlRootElement(name = "command")
@@ -38,21 +39,18 @@ public final class ExtraSQLCommand {
     @XmlElement(name = "full-insert-order")
     private String fullInsertOrder;
     
-    @XmlElement(name = "insert-order")
-    private String insertOrder;
+    @XmlElement(name = "full-insert-order-item")
+    private String fullInsertOrderItem;
     
-    @XmlElement(name = "insert-order-item")
-    private String insertOrderItem;
+    @XmlElement(name = "create-table-index")
+    private List<String> createTableIndexList;
     
-    @XmlElement(name = "update-order-by-id")
-    private String updateOrderById;
+    @XmlElement(name = "create-column-comment")
+    private List<String> createColumnCommentList;
     
-    @XmlElement(name = "update-order-item-by-id")
-    private String updateOrderItemById;
+    @XmlElement(name = "update-table-order-status")
+    private String updateTableOrderStatus;
     
-    @XmlElement(name = "delete-order-by-id")
-    private String deleteOrderById;
-    
-    @XmlElement(name = "delete-order-item-by-id")
-    private String deleteOrderItemById;
+    @XmlElement(name = "create-index-status")
+    private String createIndexStatus;
 }

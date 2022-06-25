@@ -17,9 +17,8 @@
 
 package org.apache.shardingsphere.infra.database.type.dialect;
 
-import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.database.metadata.dialect.PostgreSQLDataSourceMetaData;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.SchemaSupportedDatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
@@ -27,20 +26,22 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackSta
 
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
 
 /**
  * Database type of PostgreSQL.
  */
-public final class PostgreSQLDatabaseType implements DatabaseType {
+public final class PostgreSQLDatabaseType implements SchemaSupportedDatabaseType {
     
     private static final Map<String, Collection<String>> SYSTEM_DATABASE_SCHEMA_MAP = new HashMap<>();
     
-    private static final Collection<String> SYSTEM_SCHEMAS = Sets.newHashSet("information_schema", "pg_catalog");
+    private static final Collection<String> SYSTEM_SCHEMAS = new HashSet<>(Arrays.asList("information_schema", "pg_catalog"));
     
     static {
         SYSTEM_DATABASE_SCHEMA_MAP.put("postgres", SYSTEM_SCHEMAS);
@@ -89,7 +90,7 @@ public final class PostgreSQLDatabaseType implements DatabaseType {
     }
     
     @Override
-    public String getDefaultSchema(final String databaseName) {
+    public String getDefaultSchema() {
         return "public";
     }
     

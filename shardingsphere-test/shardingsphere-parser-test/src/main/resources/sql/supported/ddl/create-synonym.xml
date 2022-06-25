@@ -17,7 +17,8 @@
   -->
 
 <sql-cases>
-    <sql-case id="create_synonym" value="CREATE SYNONYM offices FOR hr.locations;" db-types="Oracle" />
+    <sql-case id="create_synonym" value="CREATE SYNONYM offices FOR hr.locations;" db-types="Oracle,openGauss" />
     <sql-case id="create_synonym_remote" value="CREATE PUBLIC SYNONYM emp_table FOR hr.employees@remote.us.example.com;" db-types="Oracle" />
     <sql-case id="create_synonym_public" value="CREATE PUBLIC SYNONYM customers FOR oe.customers;" db-types="Oracle" />
+    <sql-case id="create_synonym_or_replace" value="CREATE OR REPLACE SYNONYM offices FOR hr.locations;" db-types="openGauss" />
 </sql-cases>

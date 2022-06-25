@@ -17,7 +17,7 @@
   -->
 
 <sql-parser-test-cases>
-   <alter-resource-group sql-case-id="alter_resource_group">
-      <group name="rg" start-index="21" stop-index="22" />
-   </alter-resource-group>
+    <alter-resource-group sql-case-id="alter_resource_group">
+        <group name="rg" start-index="21" stop-index="22" />
+    </alter-resource-group>
 </sql-parser-test-cases>

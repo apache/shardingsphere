@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sharding.distsql.parser.segment.BindingTableRul
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingBindingTableRulesStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -44,27 +45,27 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 public final class DropShardingBindingTableRuleStatementUpdaterTest {
     
-    @Mock
-    private ShardingSphereMetaData shardingSphereMetaData;
-    
     private final DropShardingBindingTableRuleStatementUpdater updater = new DropShardingBindingTableRuleStatementUpdater();
+    
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ShardingSphereDatabase database;
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws DistSQLException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), null);
+        updater.checkSQLStatement(database, createSQLStatement(), null);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutExistedBindingTableRule() throws DistSQLException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), new ShardingRuleConfiguration());
+        updater.checkSQLStatement(database, createSQLStatement(), new ShardingRuleConfiguration());
     }
     
     @Test
     public void assertCheckSQLStatementWithIfExists() throws DistSQLException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(true, "t_1,t_2"), null);
+        updater.checkSQLStatement(database, createSQLStatement(true, "t_1,t_2"), null);
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.setBindingTableGroups(Collections.singletonList("t_3,t_4"));
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(true, "t_1,t_2"), shardingRuleConfig);
+        updater.checkSQLStatement(database, createSQLStatement(true, "t_1,t_2"), shardingRuleConfig);
     }
     
     @Test
@@ -93,7 +94,7 @@ public final class DropShardingBindingTableRuleStatementUpdaterTest {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         currentRuleConfig.getBindingTableGroups().add("t_1,t_2");
         DropShardingBindingTableRulesStatement sqlStatement = createSQLStatement("t_1,t_2");
-        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentRuleConfig);
+        updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
         updater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig);
         assertThat(currentRuleConfig.getBindingTableGroups().size(), is(1));
         assertTrue(currentRuleConfig.getBindingTableGroups().contains("t_order,t_order_item"));
@@ -104,7 +105,7 @@ public final class DropShardingBindingTableRuleStatementUpdaterTest {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         currentRuleConfig.getBindingTableGroups().add("t_1,t_2,t_3");
         DropShardingBindingTableRulesStatement sqlStatement = createSQLStatement("t_3,t_2,t_1");
-        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentRuleConfig);
+        updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
         updater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig);
         assertThat(currentRuleConfig.getBindingTableGroups().size(), is(1));
         assertTrue(currentRuleConfig.getBindingTableGroups().contains("t_order,t_order_item"));
@@ -116,7 +117,7 @@ public final class DropShardingBindingTableRuleStatementUpdaterTest {
         ShardingRuleConfiguration currentRuleConfig = createCurrentRuleConfiguration();
         currentRuleConfig.getBindingTableGroups().add("t_1,t_2,t_3");
         DropShardingBindingTableRulesStatement sqlStatement = createSQLStatement("T_3,T_2,T_1");
-        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, currentRuleConfig);
+        updater.checkSQLStatement(database, sqlStatement, currentRuleConfig);
         updater.updateCurrentRuleConfiguration(sqlStatement, currentRuleConfig);
         assertThat(currentRuleConfig.getBindingTableGroups().size(), is(1));
         assertTrue(currentRuleConfig.getBindingTableGroups().contains("t_order,t_order_item"));
@@ -125,12 +126,12 @@ public final class DropShardingBindingTableRuleStatementUpdaterTest {
     
     private DropShardingBindingTableRulesStatement createSQLStatement(final String... group) {
         Collection<BindingTableRuleSegment> segments = Arrays.stream(group).map(BindingTableRuleSegment::new).collect(Collectors.toList());
-        return new DropShardingBindingTableRulesStatement(segments);
+        return new DropShardingBindingTableRulesStatement(false, segments);
     }
     
-    private DropShardingBindingTableRulesStatement createSQLStatement(final boolean containsExistClause, final String... group) {
+    private DropShardingBindingTableRulesStatement createSQLStatement(final boolean ifExists, final String... group) {
         Collection<BindingTableRuleSegment> segments = Arrays.stream(group).map(BindingTableRuleSegment::new).collect(Collectors.toList());
-        return new DropShardingBindingTableRulesStatement(containsExistClause, segments);
+        return new DropShardingBindingTableRulesStatement(ifExists, segments);
     }
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {

@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-schemaName: shadow
+databaseName: shadow
 
 dataSources:
   db:

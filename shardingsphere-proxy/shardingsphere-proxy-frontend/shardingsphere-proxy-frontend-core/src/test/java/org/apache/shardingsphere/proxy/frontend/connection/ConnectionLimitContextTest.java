@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.frontend.connection;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.junit.After;
+import org.apache.shardingsphere.proxy.frontend.ProxyContextRestorer;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,19 +30,16 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ConnectionLimitContextTest {
-    
-    private ContextManager contextManagerBefore;
+public final class ConnectionLimitContextTest extends ProxyContextRestorer {
     
     @Before
     public void setup() {
-        contextManagerBefore = ProxyContext.getInstance().getContextManager();
-        ProxyContext.getInstance().init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
+        ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
     }
     
     @Test
     public void assertConnectionsLimited() {
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_MAX_CONNECTIONS)).thenReturn(2);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_MAX_CONNECTIONS)).thenReturn(2);
         assertTrue(ConnectionLimitContext.getInstance().connectionAllowed());
         assertTrue(ConnectionLimitContext.getInstance().connectionAllowed());
         assertFalse(ConnectionLimitContext.getInstance().connectionAllowed());
@@ -56,12 +53,7 @@ public final class ConnectionLimitContextTest {
     
     @Test
     public void assertConnectionsUnlimited() {
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_MAX_CONNECTIONS)).thenReturn(0);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_FRONTEND_MAX_CONNECTIONS)).thenReturn(0);
         assertFalse(ConnectionLimitContext.getInstance().limitsMaxConnections());
-    }
-    
-    @After
-    public void tearDown() {
-        ProxyContext.getInstance().init(contextManagerBefore);
     }
 }

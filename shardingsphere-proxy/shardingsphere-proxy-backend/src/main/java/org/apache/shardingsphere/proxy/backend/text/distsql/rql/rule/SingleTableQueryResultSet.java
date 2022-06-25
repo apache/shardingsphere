@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowSingleTableStatement;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -33,16 +33,16 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /**
- * Result set for show single table.
+ * Query result set for show single table.
  */
 public final class SingleTableQueryResultSet implements DistSQLResultSet {
     
     private Iterator<DataNode> data = Collections.emptyIterator();
     
     @Override
-    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
+    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         ShowSingleTableStatement showSingleTableStatement = (ShowSingleTableStatement) sqlStatement;
-        Stream<DataNode> singleTableRules = metaData.getRuleMetaData().getRules().stream().filter(each -> each instanceof SingleTableRule)
+        Stream<DataNode> singleTableRules = database.getRuleMetaData().getRules().stream().filter(each -> each instanceof SingleTableRule)
                 .map(each -> (SingleTableRule) each).map(each -> each.getSingleTableDataNodes().values()).flatMap(Collection::stream).filter(Objects::nonNull).map(each -> each.iterator().next());
         if (null != showSingleTableStatement.getTableName()) {
             singleTableRules = singleTableRules.filter(each -> showSingleTableStatement.getTableName().equals(each.getTableName()));

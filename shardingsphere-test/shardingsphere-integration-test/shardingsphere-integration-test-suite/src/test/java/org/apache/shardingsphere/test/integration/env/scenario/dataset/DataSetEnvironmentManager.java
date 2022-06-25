@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.env.scenario.dataset;
 
-import com.google.common.base.Joiner;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
@@ -124,7 +123,7 @@ public final class DataSetEnvironmentManager {
             }
             placeholders.add("?");
         }
-        return String.format("INSERT INTO %s (%s) VALUES (%s)", tableName, Joiner.on(",").join(columnNames), Joiner.on(",").join(placeholders));
+        return String.format("INSERT INTO %s (%s) VALUES (%s)", tableName, String.join(",", columnNames), String.join(",", placeholders));
     }
     
     private String generateEnum(final String type) {

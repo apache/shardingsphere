@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.sharding.route.engine.condition.value;
 
-import com.google.common.base.Joiner;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Sharding condition value for list values.
@@ -39,6 +39,7 @@ public final class ListShardingConditionValue<T extends Comparable<?>> implement
     
     @Override
     public String toString() {
-        return tableName + "." + columnName + (1 == values.size() ? " = " + new ArrayList<>(values).get(0) : " in (" + Joiner.on(",").join(values) + ")");
+        String condition = 1 == values.size() ? " = " + new ArrayList<>(values).get(0) : " in (" + values.stream().map(Object::toString).collect(Collectors.joining(",")) + ")";
+        return tableName + "." + columnName + condition;
     }
 }

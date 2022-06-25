@@ -1,7 +1,7 @@
 +++
-pre = "<b>4.2. </b>"
-title = "管控"
-weight = 2
+pre = "<b>4.3. </b>"
+title = "集群管控"
+weight = 3
 chapter = true
 +++
 

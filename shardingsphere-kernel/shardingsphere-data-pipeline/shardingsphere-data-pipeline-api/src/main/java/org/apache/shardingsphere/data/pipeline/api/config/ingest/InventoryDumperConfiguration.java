@@ -35,8 +35,7 @@ public final class InventoryDumperConfiguration extends DumperConfiguration {
     
     private String logicTableName;
     
-    // TODO rename to uniqueKey
-    private String primaryKey;
+    private String uniqueKey;
     
     private Integer uniqueKeyDataType;
     

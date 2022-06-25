@@ -1,7 +1,7 @@
 +++
-pre = "<b>4.10. </b>"
+pre = "<b>4.11. </b>"
 title = "可观察性"
-weight = 10
+weight = 11
 chapter = true
 +++
 
@@ -49,3 +49,5 @@ Tracing 和 Metrics 需要通过埋点来收集系统信息。
 ## 目标
 
 **提供尽量多的性能和统计指标，并隔离核心代码和埋点代码，是 Apache ShardingSphere 可观察性模块的设计目标。**
+
+**源码：https://github.com/apache/shardingsphere/tree/master/shardingsphere-agent**

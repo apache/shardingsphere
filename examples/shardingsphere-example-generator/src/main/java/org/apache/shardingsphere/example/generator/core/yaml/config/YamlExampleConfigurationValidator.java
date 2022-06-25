@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.example.generator.core.yaml.config;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -38,13 +38,13 @@ public final class YamlExampleConfigurationValidator {
      * @param config Yaml example configuration
      */
     public static void validate(final YamlExampleConfiguration config) {
-        Map<String, List<String>> configurationMap = Maps.newHashMap();
-        configurationMap.put("products", config.getProducts());
-        configurationMap.put("modes", config.getModes());
-        configurationMap.put("transactions", config.getTransactions());
-        configurationMap.put("features", config.getFeatures());
-        configurationMap.put("frameworks", config.getFrameworks());
-        validateConfigurationValues(configurationMap);
+        Map<String, List<String>> configMap = new HashMap<>(5, 1);
+        configMap.put("products", config.getProducts());
+        configMap.put("modes", config.getModes());
+        configMap.put("transactions", config.getTransactions());
+        configMap.put("features", config.getFeatures());
+        configMap.put("frameworks", config.getFrameworks());
+        validateConfigurationValues(configMap);
         validateAccountConfigProperties(config.getProps());
     }
     

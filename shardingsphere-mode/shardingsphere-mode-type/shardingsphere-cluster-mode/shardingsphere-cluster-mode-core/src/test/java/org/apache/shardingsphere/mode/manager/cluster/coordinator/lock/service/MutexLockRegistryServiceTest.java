@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Before;
@@ -49,7 +48,7 @@ public final class MutexLockRegistryServiceTest {
     @Test
     public void assertRemoveLock() {
         lockRegistryService.removeLock("test");
-        verify(clusterPersistRepository).delete(LockNodeUtil.generateMutexLockReleasedNodePath("test"));
+        verify(clusterPersistRepository).delete(LockNodeUtil.generateLockLeasesNodePath("test"));
     }
     
     @Test

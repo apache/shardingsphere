@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.traffic.algorithm.loadbalance;
 
-import org.apache.shardingsphere.infra.instance.definition.InstanceId;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -30,12 +31,12 @@ public final class RoundRobinTrafficLoadBalanceAlgorithmTest {
     
     @Test
     public void assertGetInstanceId() {
-        InstanceId instanceId1 = new InstanceId("127.0.0.1@3307");
-        InstanceId instanceId2 = new InstanceId("127.0.0.1@3308");
-        List<InstanceId> instanceIds = Arrays.asList(instanceId1, instanceId2);
+        InstanceDefinition instance1 = new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307", "127.0.0.1@3307");
+        InstanceDefinition instance2 = new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3308", "127.0.0.1@3308");
+        List<InstanceDefinition> instances = Arrays.asList(instance1, instance2);
         RoundRobinTrafficLoadBalanceAlgorithm roundRobinAlgorithm = new RoundRobinTrafficLoadBalanceAlgorithm();
-        assertThat(roundRobinAlgorithm.getInstanceId("simple_traffic", instanceIds), is(instanceId1));
-        assertThat(roundRobinAlgorithm.getInstanceId("simple_traffic", instanceIds), is(instanceId2));
-        assertThat(roundRobinAlgorithm.getInstanceId("simple_traffic", instanceIds), is(instanceId1));
+        assertThat(roundRobinAlgorithm.getInstanceId("simple_traffic", instances), is(instance1));
+        assertThat(roundRobinAlgorithm.getInstanceId("simple_traffic", instances), is(instance2));
+        assertThat(roundRobinAlgorithm.getInstanceId("simple_traffic", instances), is(instance1));
     }
 }

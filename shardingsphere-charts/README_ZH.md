@@ -1,12 +1,12 @@
 # 使用 Helm
 
-使用 Helm 工具在 Kubernetes 集群中引导 ShardingSphere-Proxy 实例进行安装。
+使用 [Helm](https://helm.sh/) 在 Kubernetes 集群中引导 ShardingSphere-Proxy 实例进行安装。
 
 ## 快速入门
 
 ```shell
 helm repo add shardingsphere https://shardingsphere.apache.org/charts
-helm install ShardingSphere-Proxy shardingsphere/ShardingSphere-Proxy
+helm install shardingsphere-proxy shardingsphere/apache-shardingsphere-proxy
 ```
 
 ## 操作步骤
@@ -19,9 +19,11 @@ kubectl
 
 helm 3.2.0+
 
-可以动态申请 PV(Persistent Volumes) 的 StorageClass 已持久化数据。
+可以动态申请 PV(Persistent Volumes) 的 StorageClass (可选)。
 
 ### 安装
+
+#### 在线安装
 
 将 ShardingSphere-Proxy 添加到 Helm 本地仓库：
 
@@ -32,7 +34,17 @@ helm repo add shardingsphere https://shardingsphere.apache.org/charts
 以 ShardingSphere-Proxy 命名安装 charts：
 
 ```shell
-helm install shardingsphere-proxy shardingsphere/shardingsphere-proxy
+helm install shardingsphere-proxy shardingsphere/apache-shardingsphere-proxy
+```
+
+#### 源码安装
+```shell
+cd apache-shardingsphere-proxy/charts/governance
+helm dependency build 
+cd ../..
+helm dependency build 
+cd ..
+helm install shardingsphere-proxy apache-shardingsphere-proxy 
 ```
 
 执行上述命令以执行默认配置进行安装。
@@ -47,40 +59,44 @@ helm uninstall shardingsphere-proxy
 
 默认删除所有发布记录，增加 `--keep-history` 参数保留发布记录。
 
-## 配置项说明
+## 配置项
 
-### 全局配置
+### 治理节点配置项
 
-| 名称                       | 描述           | 默认值  |
-| ------------------------- | -------------- | ----- |
-| global.resources.limits   | 容器的全局资源限制 | {}    |
-| global.resources.requests | 容器的全局资源申请 | {}    |
+| 配置项                  | 描述                  | 值      |
+|----------------------|---------------------|--------|
+| `governance.enabled` | 用来切换是否使用治理节点的 chart | `true` |
 
-### ShardingSphere-Proxy 配置
 
-| 名称                    | 描述                                                    | 默认值                        |
-| ---------------------- | ------------------------------------------------------- | --------------------------- |
-| image.repository       | ShardingSphere-Proxy 镜像名，默认是从 Apache 官方镜像仓库拉取 | apache/ShardingSphere-Proxy |
-| image.pullPolicy       | 镜像拉取策略                                              | IfNotPresent                |
-| image.tag              | 镜像 tag                                                 | 5.1.0                       |
-| service.type           | 网络模式                                                  | NodePort                    |
-| replicas               | 集群副本数                                                | 3                           |
-| proxyport              | 启动端口                                                  | 3307                        |
-| mysqlconnector.enabled | MySQL 驱动开启开关                                         | true                        |
-| mysqlconnector.version | MySQL 驱动版本                                            | 5.1.49                      |
+### 治理节点--ZooKeeper 配置项
 
-### MySQL 配置
+| 配置项                                               | 描述                                                                        | 值                   |
+|--------------------------------------------------|---------------------------------------------------------------------------|---------------------|
+| `governance.zookeeper.enabled`                   | 用来切换是否使用 ZooKeeper 的 chart                                                | `true`              |
+| `governance.zookeeper.replicaCount`              | ZooKeeper 节点数量                                                            | `1`                 |
+| `governance.zookeeper.persistence.enabled`       | 标识  ZooKeeper 是否使用持久卷申领 (PersistentVolumeClaim) 用来申请持久卷（PersistentVolume） | `false`             |
+| `governance.zookeeper.persistence.storageClass`  | 持久卷（PersistentVolume）的存储类 (StorageClass)                                  | `""`                |
+| `governance.zookeeper.persistence.accessModes`   | 持久卷（PersistentVolume）的访问模式                                                | `["ReadWriteOnce"]` |
+| `governance.zookeeper.persistence.size`          | 持久卷（PersistentVolume） 大小                                                  | `8Gi`               |
+| `governance.zookeeper.resources.limits`          | ZooKeeper 容器的资源限制                                                         | `{}`                |
+| `governance.zookeeper.resources.requests.memory` | ZooKeeper 容器申请的内存                                                         | `256Mi`             |
+| `governance.zookeeper.resources.requests.cpu`    | ZooKeeper 容器申请的 cpu 核数                                                    | `250m`              |
 
-| 名称                  | 描述                              | 默认值  |
-|--------------------- | -------------------------------- | ------ |
-| mysql.enabled        | 开启 MySQL 子 charts 依赖          | true   |
-| mysql.storageclass   | MySQL 持久化存储需要的 StorageClass | nil    |
-| mysql.storagerequest | MySQL 持久化存储需要的空间           | nil    |
 
-### ZooKeeper 配置
+### 计算节点--ShardingSphere-Proxy 配置项
 
-| 名称                      | 描述                                  | 默认值  |
-|------------------------- | ------------------------------------ | ------ |
-| zookeeper.enabled        | 开启 ZooKeeper 子 charts 依赖          | true   |
-| zookeeper.storageclass   | ZooKeeper 持久化存储需要的 StorageClass | nil    |
-| zookeeper.storagerequest | ZooKeeper 持久化存储需要的空间           | nil    |
+| 配置项                                | 描述                                | 值                             |
+|------------------------------------|-----------------------------------|-------------------------------|
+| `compute.image.repository`         | ShardingSphere-Proxy 的镜像名         | `apache/shardingsphere-proxy` |
+| `compute.image.pullPolicy`         | ShardingSphere-Proxy 镜像拉取策略       | `IfNotPresent`                |
+| `compute.image.tag`                | ShardingSphere-Proxy 镜像标签         | `5.1.2`                       |
+| `compute.imagePullSecrets`         | 拉取私有仓库的凭证                         | `[]`                          |
+| `compute.resources.limits`         | ShardingSphere-Proxy 容器的资源限制      | `{}`                          |
+| `compute.resources.requests.memory` | ShardingSphere-Proxy 容器申请的内存      | `2Gi`                         |
+| `compute.resources.requests.cpu`   | ShardingSphere-Proxy 容器申请的 cpu 核数 | `200m`                        |
+| `compute.replicas`                 | ShardingSphere-Proxy 节点个数         | `3`                           |
+| `compute.service.type`             | ShardingSphere-Proxy 网络模式         | `ClusterIP`                   |
+| `compute.service.port`             | ShardingSphere-Proxy 暴露端口         | `3307`                        |
+| `compute.mysqlConnector.version`   | MySQL 驱动版本                        | `5.1.49`                      |
+| `compute.startPort`                | ShardingSphere-Proxy 启动端口         | `3307`                        |
+| `compute.serverConfig`             | ShardingSphere-Proxy 模式配置文件       | `""`                          |

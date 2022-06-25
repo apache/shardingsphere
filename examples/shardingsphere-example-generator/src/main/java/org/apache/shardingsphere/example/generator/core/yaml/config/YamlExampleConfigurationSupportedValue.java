@@ -17,10 +17,11 @@
 
 package org.apache.shardingsphere.example.generator.core.yaml.config;
 
-import com.google.common.collect.Sets;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -30,15 +31,15 @@ import java.util.Set;
 @Getter
 public enum YamlExampleConfigurationSupportedValue {
     
-    PRODUCTS("products", Sets.newHashSet("jdbc", "proxy")),
+    PRODUCTS("products", new HashSet<>(Arrays.asList("jdbc", "proxy"))),
     
-    MODES("modes", Sets.newHashSet("memory", "proxy", "cluster-zookeeper", "cluster-etcd", "standalone-file")),
+    MODES("modes", new HashSet<>(Arrays.asList("memory", "proxy", "cluster-zookeeper", "cluster-etcd", "standalone-file"))),
     
-    TRANSACTIONS("transactions", Sets.newHashSet("local", "xa-atomikos", "xa-narayana", "xa-bitronix")),
+    TRANSACTIONS("transactions", new HashSet<>(Arrays.asList("local", "xa-atomikos", "xa-narayana", "xa-bitronix", "base-seata"))),
     
-    FEATURES("features", Sets.newHashSet("shadow", "sharding", "readwrite-splitting", "encrypt", "db-discovery")),
+    FEATURES("features", new HashSet<>(Arrays.asList("shadow", "sharding", "readwrite-splitting", "encrypt", "db-discovery"))),
     
-    FRAMEWORKS("frameworks", Sets.newHashSet("jdbc", "spring-boot-starter-jdbc", "spring-boot-starter-jpa", "spring-boot-starter-mybatis", "spring-namespace-jdbc", "spring-namespace-jpa", "spring-namespace-mybatis"));
+    FRAMEWORKS("frameworks", new HashSet<>(Arrays.asList("jdbc", "spring-boot-starter-jdbc", "spring-boot-starter-jpa", "spring-boot-starter-mybatis", "spring-namespace-jdbc", "spring-namespace-jpa", "spring-namespace-mybatis")));
     
     private final String configItem;
     

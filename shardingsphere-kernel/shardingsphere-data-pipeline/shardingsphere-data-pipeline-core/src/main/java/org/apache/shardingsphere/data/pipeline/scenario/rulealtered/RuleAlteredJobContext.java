@@ -49,9 +49,11 @@ public final class RuleAlteredJobContext {
     
     private final int shardingItem;
     
-    private JobStatus status = JobStatus.RUNNING;
+    private volatile boolean stopping;
     
-    private JobProgress initProgress;
+    private volatile JobStatus status = JobStatus.RUNNING;
+    
+    private final JobProgress initProgress;
     
     private final TaskConfiguration taskConfig;
     
@@ -63,7 +65,7 @@ public final class RuleAlteredJobContext {
     
     private final RuleAlteredContext ruleAlteredContext;
     
-    private final PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
+    private final PipelineDataSourceManager dataSourceManager;
     
     private final LazyInitializer<PipelineDataSourceWrapper> sourceDataSourceLazyInitializer = new LazyInitializer<PipelineDataSourceWrapper>() {
         
@@ -81,15 +83,18 @@ public final class RuleAlteredJobContext {
         }
     };
     
-    private RuleAlteredJobPreparer jobPreparer;
+    private final RuleAlteredJobPreparer jobPreparer;
     
-    public RuleAlteredJobContext(final RuleAlteredJobConfiguration jobConfig) {
+    public RuleAlteredJobContext(final RuleAlteredJobConfiguration jobConfig, final int jobShardingItem, final JobProgress initProgress,
+                                 final PipelineDataSourceManager dataSourceManager, final RuleAlteredJobPreparer jobPreparer) {
         ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
         this.jobConfig = jobConfig;
-        jobConfig.buildHandleConfig();
         jobId = jobConfig.getJobId();
-        shardingItem = jobConfig.getJobShardingItem();
-        taskConfig = RuleAlteredJobWorker.buildTaskConfig(jobConfig, ruleAlteredContext.getOnRuleAlteredActionConfig());
+        this.shardingItem = jobShardingItem;
+        this.initProgress = initProgress;
+        this.dataSourceManager = dataSourceManager;
+        this.jobPreparer = jobPreparer;
+        taskConfig = RuleAlteredJobWorker.buildTaskConfig(jobConfig, jobShardingItem, ruleAlteredContext.getOnRuleAlteredActionConfig());
     }
     
     /**
@@ -110,13 +115,5 @@ public final class RuleAlteredJobContext {
     @SneakyThrows(ConcurrentException.class)
     public PipelineTableMetaDataLoader getSourceMetaDataLoader() {
         return sourceMetaDataLoaderLazyInitializer.get();
-    }
-    
-    /**
-     * Release resources.
-     */
-    public void close() {
-        log.info("close...");
-        dataSourceManager.close();
     }
 }

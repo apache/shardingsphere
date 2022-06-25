@@ -29,7 +29,7 @@ rules:
       type: ALL_PERMITTED
 ```
 
-### SCHEMA_PERMITTED
+### DATABASE_PERMITTED
 ```yaml
 rules:
   - !AUTHORITY
@@ -37,9 +37,9 @@ rules:
       - root@:root
       - my_user@:pwd
     provider:
-      type: SCHEMA_PERMITTED
+      type: DATABASE_PERMITTED
       props:
-        user-schema-mappings: root@=sharding_db, root@=test_db, my_user@127.0.0.1=sharding_db
+        user-database-mappings: root@=sharding_db, root@=test_db, my_user@127.0.0.1=sharding_db
 ```
 The above configuration means:
 - The user `root` can access `sharding_db` when connecting from any host

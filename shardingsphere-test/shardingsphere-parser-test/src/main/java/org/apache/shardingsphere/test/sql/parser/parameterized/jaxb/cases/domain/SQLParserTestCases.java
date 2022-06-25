@@ -91,21 +91,34 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetRoleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetUserStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterAggregateStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterAnalyticViewStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterAttributeDimensionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterCollationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterConversionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDatabaseDictionaryStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDatabaseLinkStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDefaultPrivilegesTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDimensionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDirectoryStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDomainStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterExtensionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterFlashbackArchiveStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterForeignDataWrapperTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterForeignTableTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterFunctionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterIndexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterLanguageStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterLibraryStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterMaterializedViewStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterOperatorStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterOutlineStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterPackageStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterProcedureStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterPublicationStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterPolicyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSchemaStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSequenceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterServerStatementTestCase;
@@ -116,37 +129,54 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTextSearchStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTriggerStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTypeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterViewStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropPackageStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterInmemoryJoinGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AnalyzeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AssociateStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AuditStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CloseStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.ClusterStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CommentStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateAccessMethodStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateAggregateStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateCastStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateContextStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateControlFileStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateConversionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDatabaseLinkStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDimensionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDirectoryStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDiskgroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDomainStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateEditionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateExtensionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateFlashbackArchiveStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateFunctionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateIndexStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateInmemoryJoinGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateLanguageStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateLockdownProfileStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreatePFileStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateProcedureStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreatePublicationStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateRestorePointStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateRollbackSegmentStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateSPFileStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateSchemaStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateSequenceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateServerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateServiceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateSynonymStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateTableStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateEditionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateTablespaceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateTextSearchStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateTriggerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateTypeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateViewStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateSynonymStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropSynonymStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDirectoryStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CursorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DeclareStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DisassociateStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DiscardStatementTestCase;
@@ -156,28 +186,35 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropCollationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropConversionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDatabaseLinkStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDatabaseDictionaryStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDatabaseLinkStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDimensionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDirectoryStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDiskgroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropDomainStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropEditionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropEventTriggerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropExtensionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropFlashbackArchiveStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropForeignDataWrapperStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropForeignTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropFunctionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropIndexStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropInmemoryJoinGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropLanguageStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropLockdownProfileStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropMaterializedViewStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropOperatorClassStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropOperatorFamilyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropOperatorStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropOutlineStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropOwnedStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropPackageStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropPolicyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropProcedureStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropPublicationStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropRestorePointStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropRollbackSegmentStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropRoutineStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropSchemaStatementTestCase;
@@ -186,24 +223,22 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropServiceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropSubscriptionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropSynonymStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropTextSearchStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropTriggerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropTypeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropViewStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.FetchStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.FlashbackDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.FlashbackTableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.MoveStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.NoAuditStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.PreparedStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.PurgeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.RenameStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.RenameTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.TruncateStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropEditionStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.DropOutlineStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterOutlineStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterAnalyticViewStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterAttributeDimensionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintTableValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterInstanceStatementTestCase;
@@ -303,7 +338,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingKeyGeneratorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingScalingRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingTableRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountSchemaRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountDatabaseRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowDataBaseDiscoveryRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowDefaultShardingStrategyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowEncryptRulesStatementTestCase;
@@ -326,8 +361,10 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowUnusedShardingAlgorithmsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowUnusedShardingKeyGeneratorsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.CallStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.CheckpointStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.CopyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.DeleteStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.DoStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.InsertStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.MergeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
@@ -381,7 +418,7 @@ public final class SQLParserTestCases {
     private final List<AlterTableStatementTestCase> alterTableTestCases = new LinkedList<>();
     
     @XmlElement(name = "rename-table")
-    private final List<RenameTableStatementTestCase> renameTableStatementTestCases = new LinkedList<>();
+    private final List<RenameTableStatementTestCase> renameTableTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-table")
     private final List<DropTableStatementTestCase> dropTableTestCases = new LinkedList<>();
@@ -492,19 +529,19 @@ public final class SQLParserTestCases {
     private final List<ShowTablesStatementTestCase> showTablesTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-function-status")
-    private final List<ShowFunctionStatusStatementTestCase> showFunctionStatusStatementTestCases = new LinkedList<>();
+    private final List<ShowFunctionStatusStatementTestCase> showFunctionStatusTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-procedure-status")
-    private final List<ShowProcedureStatusStatementTestCase> showProcedureStatusStatementTestCases = new LinkedList<>();
+    private final List<ShowProcedureStatusStatementTestCase> showProcedureStatusTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-procedure-code")
-    private final List<ShowProcedureCodeStatementTestCase> showProcedureCodeStatementTestCases = new LinkedList<>();
+    private final List<ShowProcedureCodeStatementTestCase> showProcedureCodeTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-relaylog-events")
-    private final List<ShowRelaylogEventsStatementTestCase> showRelaylogEventsStatementTestCases = new LinkedList<>();
+    private final List<ShowRelaylogEventsStatementTestCase> showRelaylogEventsTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-slave-hosts")
-    private final List<ShowSlaveHostsStatementTestCase> showSlaveHostsStatementTestCases = new LinkedList<>();
+    private final List<ShowSlaveHostsStatementTestCase> showSlaveHostsTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-columns")
     private final List<ShowColumnsStatementTestCase> showColumnsTestCases = new LinkedList<>();
@@ -516,16 +553,16 @@ public final class SQLParserTestCases {
     private final List<ShowCreateTriggerStatementTestCase> showCreateTriggerTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-resource-group")
-    private final List<AlterResourceGroupStatementTestCase> alterResourceGroupStatementTestCases = new LinkedList<>();
+    private final List<AlterResourceGroupStatementTestCase> alterResourceGroupTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-resource-group")
-    private final List<CreateResourceGroupStatementTestCase> createResourceGroupStatementTestCases = new LinkedList<>();
+    private final List<CreateResourceGroupStatementTestCase> createResourceGroupTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-resource-group")
-    private final List<DropResourceGroupStatementTestCase> dropResourceGroupStatementTestCases = new LinkedList<>();
+    private final List<DropResourceGroupStatementTestCase> dropResourceGroupTestCases = new LinkedList<>();
     
     @XmlElement(name = "binlog")
-    private final List<BinlogStatementTestCase> binlogStatementTestCases = new LinkedList<>();
+    private final List<BinlogStatementTestCase> binlogTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-create-user")
     private final List<ShowCreateUserStatementTestCase> showCreateUserTestCases = new LinkedList<>();
@@ -540,7 +577,7 @@ public final class SQLParserTestCases {
     private final List<ShowStatementTestCase> showTestCases = new LinkedList<>();
     
     @XmlElement(name = "set-parameter")
-    private final List<SetParameterStatementTestCase> setVariableTestCases = new LinkedList<>();
+    private final List<SetParameterStatementTestCase> setParameterTestCases = new LinkedList<>();
     
     @XmlElement(name = "common")
     private final List<CommonStatementTestCase> commonTestCases = new LinkedList<>();
@@ -549,118 +586,142 @@ public final class SQLParserTestCases {
     private final List<AlterFunctionStatementTestCase> alterFunctionTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-database")
-    private final List<AlterDatabaseStatementTestCase> alterDatabaseTestCase = new LinkedList<>();
+    private final List<AlterDatabaseStatementTestCase> alterDatabaseTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-dimension")
-    private final List<AlterDimensionStatementTestCase> alterDimensionTestCase = new LinkedList<>();
+    private final List<AlterDimensionStatementTestCase> alterDimensionTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-procedure")
-    private final List<AlterProcedureStatementTestCase> alterProcedureTestCase = new LinkedList<>();
+    private final List<AlterProcedureStatementTestCase> alterProcedureTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-publication")
+    private final List<AlterPublicationStatementTestCase> alterPublicationTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-policy")
+    private final List<AlterPolicyStatementTestCase> alterPolicyTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-server")
-    private final List<AlterServerStatementTestCase> alterServerTestCase = new LinkedList<>();
+    private final List<AlterServerStatementTestCase> alterServerTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-session")
-    private final List<AlterSessionStatementTestCase> alterSessionTestCase = new LinkedList<>();
+    private final List<AlterSessionStatementTestCase> alterSessionTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-synonym")
-    private final List<AlterSynonymStatementTestCase> alterSynonymTestCase = new LinkedList<>();
+    private final List<AlterSynonymStatementTestCase> alterSynonymTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-type")
+    private final List<AlterTypeStatementTestCase> alterTypeTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-rule")
+    private final List<AlterRuleStatementTestCase> alterRuleTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-directory")
+    private final List<AlterDirectoryStatementTestCase> alterDirectoryTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-system")
-    private final List<AlterSystemStatementTestCase> alterSystemTestCase = new LinkedList<>();
+    private final List<AlterSystemStatementTestCase> alterSystemTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-database")
-    private final List<CreateDatabaseStatementTestCase> createDatabaseTestCase = new LinkedList<>();
+    private final List<CreateDatabaseStatementTestCase> createDatabaseTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-database-link")
-    private final List<CreateDatabaseLinkStatementTestCase> createDatabaseLinkTestCase = new LinkedList<>();
+    private final List<CreateDatabaseLinkStatementTestCase> createDatabaseLinkTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-database-link")
-    private final List<DropDatabaseLinkStatementTestCase> dropDatabaseLinkTestCase = new LinkedList<>();
+    private final List<DropDatabaseLinkStatementTestCase> dropDatabaseLinkTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-database-link")
-    private final List<AlterDatabaseLinkStatementTestCase> alterDatabaseLinkTestCase = new LinkedList<>();
+    private final List<AlterDatabaseLinkStatementTestCase> alterDatabaseLinkTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-database-dictionary")
-    private final List<AlterDatabaseDictionaryStatementTestCase> alterDatabaseDictionaryTestCase = new LinkedList<>();
+    private final List<AlterDatabaseDictionaryStatementTestCase> alterDatabaseDictionaryTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-view")
     private final List<AlterViewStatementTestCase> alterViewTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-package")
+    private final List<AlterPackageStatementTestCase> alterPackageTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-package")
     private final List<DropPackageStatementTestCase> dropPackageTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-dimension")
-    private final List<CreateDimensionStatementTestCase> createDimensionTestCase = new LinkedList<>();
+    private final List<CreateDimensionStatementTestCase> createDimensionTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-function")
-    private final List<CreateFunctionStatementTestCase> createFunctionTestCase = new LinkedList<>();
+    private final List<CreateFunctionStatementTestCase> createFunctionTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-procedure")
-    private final List<CreateProcedureStatementTestCase> createProcedureTestCase = new LinkedList<>();
+    private final List<CreateProcedureStatementTestCase> createProcedureTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-server")
-    private final List<CreateServerStatementTestCase> createServerTestCase = new LinkedList<>();
+    private final List<CreateServerStatementTestCase> createServerTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-trigger")
-    private final List<CreateTriggerStatementTestCase> createTriggerTestCase = new LinkedList<>();
+    private final List<CreateTriggerStatementTestCase> createTriggerTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-view")
-    private final List<CreateViewStatementTestCase> createViewTestCase = new LinkedList<>();
+    private final List<CreateViewStatementTestCase> createViewTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-synonym")
-    private final List<CreateSynonymStatementTestCase> createSynonymTestCase = new LinkedList<>();
+    private final List<CreateSynonymStatementTestCase> createSynonymTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-aggregate")
+    private final List<CreateAggregateStatementTestCase> createAggregateTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-publication")
+    private final List<CreatePublicationStatementTestCase> createPublicationTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-synonym")
-    private final List<DropSynonymStatementTestCase> dropSynonymTestCase = new LinkedList<>();
+    private final List<DropSynonymStatementTestCase> dropSynonymTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-directory")
-    private final List<CreateDirectoryStatementTestCase> createDirectoryTestCase = new LinkedList<>();
+    private final List<CreateDirectoryStatementTestCase> createDirectoryTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-domain")
-    private final List<CreateDomainStatementTestCase> createDomainStatementTestCases = new LinkedList<>();
+    private final List<CreateDomainStatementTestCase> createDomainTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-rule")
-    private final List<CreateRuleStatementTestCase> createRuleStatementTestCases = new LinkedList<>();
+    private final List<CreateRuleStatementTestCase> createRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-type")
-    private final List<CreateTypeStatementTestCase> createTypeStatementTestCases = new LinkedList<>();
+    private final List<CreateTypeStatementTestCase> createTypeTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-extension")
-    private final List<CreateExtensionStatementTestCase> createExtensionStatementTestCase = new LinkedList<>();
+    private final List<CreateExtensionStatementTestCase> createExtensionTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-extension")
-    private final List<AlterExtensionStatementTestCase> alterExtensionStatementTestCase = new LinkedList<>();
+    private final List<AlterExtensionStatementTestCase> alterExtensionTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-extension")
-    private final List<DropExtensionStatementTestCase> dropExtensionStatementTestCase = new LinkedList<>();
+    private final List<DropExtensionStatementTestCase> dropExtensionTestCases = new LinkedList<>();
     
     @XmlElement(name = "declare")
-    private final List<DeclareStatementTestCase> declareStatementTestCase = new LinkedList<>();
+    private final List<DeclareStatementTestCase> declareTestCases = new LinkedList<>();
     
     @XmlElement(name = "discard")
-    private final List<DiscardStatementTestCase> discardStatementTestCase = new LinkedList<>();
+    private final List<DiscardStatementTestCase> discardTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-database")
-    private final List<DropDatabaseStatementTestCase> dropDatabaseTestCase = new LinkedList<>();
+    private final List<DropDatabaseStatementTestCase> dropDatabaseTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-dimension")
-    private final List<DropDimensionStatementTestCase> dropDimensionTestCase = new LinkedList<>();
+    private final List<DropDimensionStatementTestCase> dropDimensionTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-directory")
-    private final List<DropDirectoryStatementTestCase> dropDirectoryTestCase = new LinkedList<>();
+    private final List<DropDirectoryStatementTestCase> dropDirectoryTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-function")
-    private final List<DropFunctionStatementTestCase> dropFunctionTestCase = new LinkedList<>();
+    private final List<DropFunctionStatementTestCase> dropFunctionTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-group")
     private final List<DropGroupStatementTestCase> dropGroupTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-policy")
-    private final List<DropPolicyStatementTestCase> dropPolicyTestCase = new LinkedList<>();
+    private final List<DropPolicyStatementTestCase> dropPolicyTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-procedure")
-    private final List<DropProcedureStatementTestCase> dropProcedureTestCase = new LinkedList<>();
+    private final List<DropProcedureStatementTestCase> dropProcedureTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-routine")
     private final List<DropRoutineStatementTestCase> dropRoutineTestCases = new LinkedList<>();
@@ -678,103 +739,106 @@ public final class SQLParserTestCases {
     private final List<DropSubscriptionStatementTestCase> dropSubscriptionTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-server")
-    private final List<DropServerStatementTestCase> dropServerTestCase = new LinkedList<>();
+    private final List<DropServerStatementTestCase> dropServerTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-trigger")
-    private final List<DropTriggerStatementTestCase> dropTriggerTestCase = new LinkedList<>();
+    private final List<DropTriggerStatementTestCase> dropTriggerTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-trigger")
-    private final List<AlterTriggerStatementTestCase> alterTriggerTestCase = new LinkedList<>();
+    private final List<AlterTriggerStatementTestCase> alterTriggerTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-event-trigger")
-    private final List<DropEventTriggerStatementTestCase> dropEventTriggerTestCase = new LinkedList<>();
+    private final List<DropEventTriggerStatementTestCase> dropEventTriggerTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-domain")
-    private final List<DropDomainStatementTestCase> dropDomainStatementTestCases = new LinkedList<>();
+    private final List<DropDomainStatementTestCase> dropDomainTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-triggers")
-    private final List<ShowTriggersStatementTestCase> showTriggerTestCase = new LinkedList<>();
+    private final List<ShowTriggersStatementTestCase> showTriggerTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-view")
-    private final List<DropViewStatementTestCase> dropViewTestCase = new LinkedList<>();
+    private final List<DropViewStatementTestCase> dropViewTestCases = new LinkedList<>();
     
     @XmlElement(name = "call")
-    private final List<CallStatementTestCase> callProcedureTestCase = new LinkedList<>();
+    private final List<CallStatementTestCase> callProcedureTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "do")
+    private final List<DoStatementTestCase> doTestCases = new LinkedList<>();
     
     @XmlElement(name = "copy")
-    private final List<CopyStatementTestCase> copyStatementTestCase = new LinkedList<>();
+    private final List<CopyStatementTestCase> copyTestCases = new LinkedList<>();
     
     @XmlElement(name = "xa")
-    private final List<XATestCase> xaTestCase = new LinkedList<>();
+    private final List<XATestCase> xaTestCases = new LinkedList<>();
     
     @XmlElement(name = "merge")
-    private final List<MergeStatementTestCase> mergeTestCase = new LinkedList<>();
+    private final List<MergeStatementTestCase> mergeTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-sequence")
-    private final List<CreateSequenceStatementTestCase> createSequenceTestCase = new LinkedList<>();
+    private final List<CreateSequenceStatementTestCase> createSequenceTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-sequence")
-    private final List<AlterSequenceStatementTestCase> alterSequenceTestCase = new LinkedList<>();
+    private final List<AlterSequenceStatementTestCase> alterSequenceTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-sequence")
-    private final List<DropSequenceStatementTestCase> dropSequenceTestCase = new LinkedList<>();
+    private final List<DropSequenceStatementTestCase> dropSequenceTestCases = new LinkedList<>();
     
     @XmlElement(name = "analyze")
-    private final List<AnalyzeStatementTestCase> analyzeTestCase = new LinkedList<>();
+    private final List<AnalyzeStatementTestCase> analyzeTestCases = new LinkedList<>();
     
     @XmlElement(name = "associate-statistics")
-    private final List<AssociateStatisticsStatementTestCase> associateStatisticsTestCase = new LinkedList<>();
+    private final List<AssociateStatisticsStatementTestCase> associateStatisticsTestCases = new LinkedList<>();
     
     @XmlElement(name = "disassociate-statistics")
-    private final List<DisassociateStatisticsStatementTestCase> disassociateStatisticsTestCase = new LinkedList<>();
+    private final List<DisassociateStatisticsStatementTestCase> disassociateStatisticsTestCases = new LinkedList<>();
     
     @XmlElement(name = "audit")
-    private final List<AuditStatementTestCase> auditTestCase = new LinkedList<>();
+    private final List<AuditStatementTestCase> auditTestCases = new LinkedList<>();
     
     @XmlElement(name = "no-audit")
-    private final List<NoAuditStatementTestCase> noAuditTestCase = new LinkedList<>();
+    private final List<NoAuditStatementTestCase> noAuditTestCases = new LinkedList<>();
     
     @XmlElement(name = "comment")
-    private final List<CommentStatementTestCase> commentTestCase = new LinkedList<>();
+    private final List<CommentStatementTestCase> commentTestCases = new LinkedList<>();
     
     @XmlElement(name = "flashback-database")
-    private final List<FlashbackDatabaseStatementTestCase> flashbackDatabaseTestCase = new LinkedList<>();
+    private final List<FlashbackDatabaseStatementTestCase> flashbackDatabaseTestCases = new LinkedList<>();
     
     @XmlElement(name = "flashback-table")
-    private final List<FlashbackTableStatementTestCase> flashbackTableTestCase = new LinkedList<>();
+    private final List<FlashbackTableStatementTestCase> flashbackTableTestCases = new LinkedList<>();
     
     @XmlElement(name = "purge")
-    private final List<PurgeStatementTestCase> purgeTestCase = new LinkedList<>();
+    private final List<PurgeStatementTestCase> purgeTestCases = new LinkedList<>();
     
     @XmlElement(name = "rename")
-    private final List<RenameStatementTestCase> renameTestCase = new LinkedList<>();
+    private final List<RenameStatementTestCase> renameTestCases = new LinkedList<>();
     
     @XmlElement(name = "add-resource")
-    private final List<AddResourceStatementTestCase> addResourceTestCase = new LinkedList<>();
+    private final List<AddResourceStatementTestCase> addResourceTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-resource")
-    private final List<AlterResourceStatementTestCase> alterResourceTestCase = new LinkedList<>();
+    private final List<AlterResourceStatementTestCase> alterResourceTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-database-discovery-definition-rule")
     private final List<AlterDatabaseDiscoveryDefinitionRuleStatementTestCase> alterDatabaseDiscoveryDefinitionRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-database-discovery-construction-rule")
-    private final List<AlterDatabaseDiscoveryConstructionRuleStatementTestCase> alterDataBaseDiscoveryConstructionRuleTestCase = new LinkedList<>();
+    private final List<AlterDatabaseDiscoveryConstructionRuleStatementTestCase> alterDataBaseDiscoveryConstructionRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-encrypt-rule")
-    private final List<AlterEncryptRuleStatementTestCase> alterEncryptRuleTestCase = new LinkedList<>();
+    private final List<AlterEncryptRuleStatementTestCase> alterEncryptRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-readwrite-splitting-rule")
-    private final List<AlterReadwriteSplittingRuleStatementTestCase> alterReadwriteSplittingRuleTestCase = new LinkedList<>();
+    private final List<AlterReadwriteSplittingRuleStatementTestCase> alterReadwriteSplittingRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-sharding-binding-table-rules")
-    private final List<AlterShardingBindingTableRulesStatementTestCase> alterShardingBindingTableRulesTestCase = new LinkedList<>();
+    private final List<AlterShardingBindingTableRulesStatementTestCase> alterShardingBindingTableRulesTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-sharding-broadcast-table-rules")
-    private final List<AlterShardingBroadcastTableRulesStatementTestCase> alterShardingBroadcastTableRulesTestCase = new LinkedList<>();
+    private final List<AlterShardingBroadcastTableRulesStatementTestCase> alterShardingBroadcastTableRulesTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-sharding-auto-table-rule")
-    private final List<AlterShardingAutoTableRuleStatementTestCase> alterShardingTableRuleTestCase = new LinkedList<>();
+    private final List<AlterShardingAutoTableRuleStatementTestCase> alterShardingAutoTableRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-sharding-table-rule")
     private final List<AlterShardingTableRuleStatementTestCase> alterShardingTableRuleTestCases = new LinkedList<>();
@@ -783,7 +847,7 @@ public final class SQLParserTestCases {
     private final List<CreateDatabaseDiscoveryDefinitionRuleStatementTestCase> createDatabaseDiscoveryDefinitionRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-database-discovery-construction-rule")
-    private final List<CreateDatabaseDiscoveryConstructionRuleStatementTestCase> createDataBaseDiscoveryConstructionRuleTestCase = new LinkedList<>();
+    private final List<CreateDatabaseDiscoveryConstructionRuleStatementTestCase> createDataBaseDiscoveryConstructionRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-database-discovery-type")
     private final List<CreateDatabaseDiscoveryTypeStatementTestCase> createDatabaseDiscoveryTypeTestCases = new LinkedList<>();
@@ -798,25 +862,25 @@ public final class SQLParserTestCases {
     private final List<AlterDatabaseDiscoveryTypeStatementTestCase> alterDatabaseDiscoveryTypeTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-encrypt-rule")
-    private final List<CreateEncryptRuleStatementTestCase> createEncryptRuleTestCase = new LinkedList<>();
+    private final List<CreateEncryptRuleStatementTestCase> createEncryptRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-readwrite-splitting-rule")
-    private final List<CreateReadwriteSplittingRuleStatementTestCase> createReadwriteSplittingRuleTestCase = new LinkedList<>();
+    private final List<CreateReadwriteSplittingRuleStatementTestCase> createReadwriteSplittingRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-sharding-binding-table-rule")
-    private final List<CreateShardingBindingTableRulesStatementTestCase> createShardingBindingTableRulesTestCase = new LinkedList<>();
+    private final List<CreateShardingBindingTableRulesStatementTestCase> createShardingBindingTableRulesTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-sharding-broadcast-table-rule")
-    private final List<CreateShardingBroadcastTableRulesStatementTestCase> createShardingBroadcastTableRulesTestCase = new LinkedList<>();
+    private final List<CreateShardingBroadcastTableRulesStatementTestCase> createShardingBroadcastTableRulesTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-sharding-auto-table-rule")
-    private final List<CreateShardingAutoTableRuleStatementTestCase> createShardingTableRuleTestCase = new LinkedList<>();
+    private final List<CreateShardingAutoTableRuleStatementTestCase> createShardingAutoTableRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-sharding-table-rule")
     private final List<CreateShardingTableRuleStatementTestCase> createShardingTableRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-database-discovery-rule")
-    private final List<DropDataBaseDiscoveryRuleStatementTestCase> dropDataBaseDiscoveryRuleTestCase = new LinkedList<>();
+    private final List<DropDataBaseDiscoveryRuleStatementTestCase> dropDataBaseDiscoveryRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-database-discovery-type")
     private final List<DropDataBaseDiscoveryTypeStatementTestCase> dropDataBaseDiscoveryTypeTestCases = new LinkedList<>();
@@ -825,289 +889,289 @@ public final class SQLParserTestCases {
     private final List<DropDataBaseDiscoveryHeartbeatStatementTestCase> dropDataBaseDiscoveryHeartbeatTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-encrypt-rule")
-    private final List<DropEncryptRuleStatementTestCase> dropEncryptRuleTestCase = new LinkedList<>();
+    private final List<DropEncryptRuleStatementTestCase> dropEncryptRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-readwrite-splitting-rule")
-    private final List<DropReadwriteSplittingRuleStatementTestCase> dropReadwriteSplittingRuleTestCase = new LinkedList<>();
+    private final List<DropReadwriteSplittingRuleStatementTestCase> dropReadwriteSplittingRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-resource")
-    private final List<DropResourceStatementTestCase> dropResourceTestCase = new LinkedList<>();
+    private final List<DropResourceStatementTestCase> dropResourceTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-sharding-binding-table-rules")
-    private final List<DropShardingBindingTableRulesStatementTestCase> dropShardingBindingTableRulesTestCase = new LinkedList<>();
+    private final List<DropShardingBindingTableRulesStatementTestCase> dropShardingBindingTableRulesTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-sharding-broadcast-table-rules")
-    private final List<DropShardingBroadcastTableRulesStatementTestCase> dropShardingBroadcastTableRulesTestCase = new LinkedList<>();
+    private final List<DropShardingBroadcastTableRulesStatementTestCase> dropShardingBroadcastTableRulesTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-sharding-table-rule")
-    private final List<DropShardingTableRuleStatementTestCase> dropShardingTableRuleTestCase = new LinkedList<>();
+    private final List<DropShardingTableRuleStatementTestCase> dropShardingTableRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-db-discovery-rules")
-    private final List<ShowDataBaseDiscoveryRulesStatementTestCase> showDataBaseDiscoveryRulesTestCase = new LinkedList<>();
+    private final List<ShowDataBaseDiscoveryRulesStatementTestCase> showDataBaseDiscoveryRulesTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-encrypt-rules")
-    private final List<ShowEncryptRulesStatementTestCase> showEncryptRulesTestCase = new LinkedList<>();
+    private final List<ShowEncryptRulesStatementTestCase> showEncryptRulesTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-readwrite-splitting-rules")
-    private final List<ShowReadwriteSplittingRulesStatementTestCase> showReadwriteSplittingRulesTestCase = new LinkedList<>();
+    private final List<ShowReadwriteSplittingRulesStatementTestCase> showReadwriteSplittingRulesTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-sharding-binding-table-rules")
-    private final List<ShowShardingBindingTableRulesStatementTestCase> showShardingBindingTableRulesTestCase = new LinkedList<>();
+    private final List<ShowShardingBindingTableRulesStatementTestCase> showShardingBindingTableRulesTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-sharding-broadcast-table-rules")
-    private final List<ShowShardingBroadcastTableRulesStatementTestCase> showShardingBroadcastTableRulesTestCase = new LinkedList<>();
+    private final List<ShowShardingBroadcastTableRulesStatementTestCase> showShardingBroadcastTableRulesTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-sharding-algorithms")
-    private final List<ShowShardingAlgorithmsStatementTestCase> showShardingAlgorithmsTestCase = new LinkedList<>();
+    private final List<ShowShardingAlgorithmsStatementTestCase> showShardingAlgorithmsTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-sharding-table-rules")
-    private final List<ShowShardingTableRulesStatementTestCase> showShardingTableRulesTestCase = new LinkedList<>();
+    private final List<ShowShardingTableRulesStatementTestCase> showShardingTableRulesTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-sharding-table-rule")
-    private final List<ShowShardingTableRulesStatementTestCase> showShardingTableRuleTestCase = new LinkedList<>();
+    private final List<ShowShardingTableRulesStatementTestCase> showShardingTableRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-scaling-list")
-    private final List<ShowScalingListStatementTestCase> showScalingListStatementTestCase = new LinkedList<>();
+    private final List<ShowScalingListStatementTestCase> showScalingListTestCases = new LinkedList<>();
     
     @XmlElement(name = "check-scaling")
-    private final List<CheckScalingStatementTestCase> checkScalingStatementTestCase = new LinkedList<>();
+    private final List<CheckScalingStatementTestCase> checkScalingTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-scaling-status")
-    private final List<ShowScalingStatusStatementTestCase> showScalingStatusStatementTestCases = new LinkedList<>();
+    private final List<ShowScalingStatusStatementTestCase> showScalingStatusTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-scaling-check-algorithms")
-    private final List<ShowScalingCheckAlgorithmsStatementTestCase> showScalingCheckAlgorithmsStatementTestCase = new LinkedList<>();
+    private final List<ShowScalingCheckAlgorithmsStatementTestCase> showScalingCheckAlgorithmsTestCases = new LinkedList<>();
     
     @XmlElement(name = "stop-scaling-source-writing")
-    private final List<StopScalingSourceWritingStatementTestCase> stopScalingSourceWritingStatementTestCase = new LinkedList<>();
+    private final List<StopScalingSourceWritingStatementTestCase> stopScalingSourceWritingTestCases = new LinkedList<>();
     
     @XmlElement(name = "restore-scaling-source-writing")
-    private final List<RestoreScalingSourceWritingStatementTestCase> restoreScalingSourceWritingStatementTestCase = new LinkedList<>();
+    private final List<RestoreScalingSourceWritingStatementTestCase> restoreScalingSourceWritingTestCases = new LinkedList<>();
     
     @XmlElement(name = "apply-scaling")
-    private final List<ApplyScalingStatementTestCase> applyScalingStatementTestCases = new LinkedList<>();
+    private final List<ApplyScalingStatementTestCase> applyScalingTestCases = new LinkedList<>();
     
     @XmlElement(name = "reset-scaling")
-    private final List<ResetScalingStatementTestCase> resetScalingStatementTestCases = new LinkedList<>();
+    private final List<ResetScalingStatementTestCase> resetScalingTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-scaling")
-    private final List<DropScalingStatementTestCase> dropScalingStatementTestCases = new LinkedList<>();
+    private final List<DropScalingStatementTestCase> dropScalingTestCases = new LinkedList<>();
     
     @XmlElement(name = "stop-scaling")
-    private final List<StopScalingStatementTestCase> stopScalingStatementTestCases = new LinkedList<>();
+    private final List<StopScalingStatementTestCase> stopScalingTestCases = new LinkedList<>();
     
     @XmlElement(name = "start-scaling")
-    private final List<StartScalingStatementTestCase> startScalingStatementTestCases = new LinkedList<>();
+    private final List<StartScalingStatementTestCase> startScalingTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-sharding-scaling-rule")
-    private final List<CreateShardingScalingRuleStatementTestCase> createShardingScalingRuleStatementTestCases = new LinkedList<>();
+    private final List<CreateShardingScalingRuleStatementTestCase> createShardingScalingRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-sharding-scaling-rule")
-    private final List<DropShardingScalingRuleStatementTestCase> dropShardingScalingRuleStatementTestCases = new LinkedList<>();
+    private final List<DropShardingScalingRuleStatementTestCase> dropShardingScalingRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "enable-sharding-scaling-rule")
-    private final List<EnableShardingScalingRuleStatementTestCase> enableShardingScalingRuleStatementTestCases = new LinkedList<>();
+    private final List<EnableShardingScalingRuleStatementTestCase> enableShardingScalingRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "disable-sharding-scaling-rule")
-    private final List<DisableShardingScalingRuleStatementTestCase> disableShardingScalingRuleStatementTestCases = new LinkedList<>();
+    private final List<DisableShardingScalingRuleStatementTestCase> disableShardingScalingRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-sharding-scaling-rules")
-    private final List<ShowShardingScalingRulesStatementTestCase> showShardingScalingRulesStatementTestCases = new LinkedList<>();
+    private final List<ShowShardingScalingRulesStatementTestCase> showShardingScalingRulesTestCases = new LinkedList<>();
     
     @XmlElement(name = "preview-sql")
-    private final List<PreviewStatementTestCase> previewStatementTestCase = new LinkedList<>();
+    private final List<PreviewStatementTestCase> previewTestCases = new LinkedList<>();
     
     @XmlElement(name = "parse-sql")
     private final List<ParseStatementTestCase> parseStatementAsserts = new LinkedList<>();
     
     @XmlElement(name = "show-variable")
-    private final List<ShowVariableStatementTestCase> showVariableStatementTestCase = new LinkedList<>();
+    private final List<ShowVariableStatementTestCase> showVariableTestCases = new LinkedList<>();
     
     @XmlElement(name = "set-variable")
-    private final List<SetVariableStatementTestCase> setVariableStatementTestCase = new LinkedList<>();
+    private final List<SetVariableStatementTestCase> setVariableTestCases = new LinkedList<>();
     
     @XmlElement(name = "set-readwrite-splitting-hint-source")
-    private final List<SetReadwriteSplittingHintStatementTestCase> setReadwriteSplittingHintStatementTestCase = new LinkedList<>();
+    private final List<SetReadwriteSplittingHintStatementTestCase> setReadwriteSplittingHintTestCases = new LinkedList<>();
     
     @XmlElement(name = "set-sharding-hint-database-value")
-    private final List<SetShardingHintDatabaseValueStatementTestCase> setShardingHintDatabaseValueStatementTestCase = new LinkedList<>();
+    private final List<SetShardingHintDatabaseValueStatementTestCase> setShardingHintDatabaseValueTestCases = new LinkedList<>();
     
     @XmlElement(name = "add-sharding-hint-database-value")
-    private final List<AddShardingHintDatabaseValueStatementTestCase> addShardingHintDatabaseValueStatementTestCase = new LinkedList<>();
+    private final List<AddShardingHintDatabaseValueStatementTestCase> addShardingHintDatabaseValueTestCases = new LinkedList<>();
     
     @XmlElement(name = "add-sharding-hint-table-value")
-    private final List<AddShardingHintTableValueStatementTestCase> addShardingHintTableValueStatementTestCase = new LinkedList<>();
+    private final List<AddShardingHintTableValueStatementTestCase> addShardingHintTableValueTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-readwrite-splitting-hint-source")
-    private final List<ShowReadwriteSplittingHintStatusStatementTestCase> showReadwriteSplittingHintStatusStatementTestCase = new LinkedList<>();
+    private final List<ShowReadwriteSplittingHintStatusStatementTestCase> showReadwriteSplittingHintStatusTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-sharding-hint-status")
-    private final List<ShowShardingHintStatusStatementTestCase> showShardingHintStatusStatementTestCase = new LinkedList<>();
+    private final List<ShowShardingHintStatusStatementTestCase> showShardingHintStatusTestCases = new LinkedList<>();
     
     @XmlElement(name = "clear-readwrite-splitting-hint-source")
-    private final List<ClearReadwriteSplittingHintStatementTestCase> clearReadwriteSplittingHintStatementTestCase = new LinkedList<>();
+    private final List<ClearReadwriteSplittingHintStatementTestCase> clearReadwriteSplittingHintTestCases = new LinkedList<>();
     
     @XmlElement(name = "clear-sharding-hint")
-    private final List<ClearShardingHintStatementTestCase> clearShardingHintStatementTestCase = new LinkedList<>();
+    private final List<ClearShardingHintStatementTestCase> clearShardingHintTestCases = new LinkedList<>();
     
     @XmlElement(name = "clear-hint")
-    private final List<ClearHintStatementTestCase> clearHintStatementTestCase = new LinkedList<>();
+    private final List<ClearHintStatementTestCase> clearHintTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-shadow-rule")
-    private final List<CreateShadowRuleStatementTestCase> createShadowRuleTestCase = new LinkedList<>();
+    private final List<CreateShadowRuleStatementTestCase> createShadowRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-shadow-rule")
-    private final List<DropShadowRuleStatementTestCase> dropShadowRuleTestCase = new LinkedList<>();
+    private final List<DropShadowRuleStatementTestCase> dropShadowRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-shadow-rule")
-    private final List<AlterShadowRuleStatementTestCase> alterShadowRuleTestCase = new LinkedList<>();
+    private final List<AlterShadowRuleStatementTestCase> alterShadowRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-shadow-algorithm")
-    private final List<AlterShadowAlgorithmStatementTestCase> alterShadowAlgorithmTestCase = new LinkedList<>();
+    private final List<AlterShadowAlgorithmStatementTestCase> alterShadowAlgorithmTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-shadow-algorithm")
-    private final List<CreateShadowAlgorithmStatementTestCase> createShadowAlgorithmTestCase = new LinkedList<>();
+    private final List<CreateShadowAlgorithmStatementTestCase> createShadowAlgorithmTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-shadow-rules")
-    private final List<ShowShadowRulesStatementTestCase> showShadowRulesStatementTestCase = new LinkedList<>();
+    private final List<ShowShadowRulesStatementTestCase> showShadowRulesTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-shadow-algorithms")
-    private final List<ShowShadowAlgorithmsStatementTestCase> showShadowAlgorithmsStatementTestCase = new LinkedList<>();
+    private final List<ShowShadowAlgorithmsStatementTestCase> showShadowAlgorithmsTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-shadow-table-rules")
-    private final List<ShowShadowTableRulesStatementTestCase> showShadowTableRulesStatementTestCase = new LinkedList<>();
+    private final List<ShowShadowTableRulesStatementTestCase> showShadowTableRulesTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-shadow-algorithm")
-    private final List<DropShadowAlgorithmStatementTestCase> dropShadowAlgorithmStatementTestCase = new LinkedList<>();
+    private final List<DropShadowAlgorithmStatementTestCase> dropShadowAlgorithmTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-service")
-    private final List<CreateServiceStatementTestCase> createServiceTestCase = new LinkedList<>();
+    private final List<CreateServiceStatementTestCase> createServiceTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-service")
-    private final List<AlterServiceStatementTestCase> alterServiceTestCase = new LinkedList<>();
+    private final List<AlterServiceStatementTestCase> alterServiceTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-service")
-    private final List<DropServiceStatementTestCase> dropServiceTestCase = new LinkedList<>();
+    private final List<DropServiceStatementTestCase> dropServiceTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-schema")
-    private final List<CreateSchemaStatementTestCase> createSchemaTestCase = new LinkedList<>();
+    private final List<CreateSchemaStatementTestCase> createSchemaTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-schema")
-    private final List<AlterSchemaStatementTestCase> alterSchemaTestCase = new LinkedList<>();
+    private final List<AlterSchemaStatementTestCase> alterSchemaTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-schema")
-    private final List<DropSchemaStatementTestCase> dropSchemaTestCase = new LinkedList<>();
+    private final List<DropSchemaStatementTestCase> dropSchemaTestCases = new LinkedList<>();
     
     @XmlElement(name = "install-component")
-    private final List<InstallComponentStatementTestCase> installComponentTestCase = new LinkedList<>();
+    private final List<InstallComponentStatementTestCase> installComponentTestCases = new LinkedList<>();
     
     @XmlElement(name = "flush")
-    private final List<FlushStatementTestCase> flushStatementTestCase = new LinkedList<>();
+    private final List<FlushStatementTestCase> flushTestCases = new LinkedList<>();
     
     @XmlElement(name = "install-plugin")
-    private final List<InstallPluginStatementTestCase> installPluginStatementTestCase = new LinkedList<>();
+    private final List<InstallPluginStatementTestCase> installPluginTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-instance")
-    private final List<ShowInstanceStatementTestCase> showInstanceStatementTestCases = new LinkedList<>();
+    private final List<ShowInstanceStatementTestCase> showInstanceTestCases = new LinkedList<>();
     
     @XmlElement(name = "count-instance-rules")
-    private final List<CountInstanceRulesStatementTestCase> countInstanceRulesStatementTestCases = new LinkedList<>();
+    private final List<CountInstanceRulesStatementTestCase> countInstanceRulesTestCases = new LinkedList<>();
     
     @XmlElement(name = "clone")
-    private final List<CloneStatementTestCase> cloneStatementTestCases = new LinkedList<>();
+    private final List<CloneStatementTestCase> cloneTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-readwrite-splitting-read-resources")
-    private final List<ShowReadwriteSplittingReadResourcesStatementTestCase> showReadwriteSplittingReadResourcesStatementTestCases = new LinkedList<>();
+    private final List<ShowReadwriteSplittingReadResourcesStatementTestCase> showReadwriteSplittingReadResourcesTestCases = new LinkedList<>();
     
     @XmlElement(name = "uninstall-component")
-    private final List<UninstallComponentStatementTestCase> uninstallComponentStatementTestCases = new LinkedList<>();
+    private final List<UninstallComponentStatementTestCase> uninstallComponentTestCases = new LinkedList<>();
     
     @XmlElement(name = "uninstall-plugin")
-    private final List<UninstallPluginStatementTestCase> uninstallPluginStatementTestCases = new LinkedList<>();
+    private final List<UninstallPluginStatementTestCase> uninstallPluginTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-single-table")
-    private final List<ShowSingleTableStatementTestCase> showSingleTableStatementTestCases = new LinkedList<>();
+    private final List<ShowSingleTableStatementTestCase> showSingleTableTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-single-table-rules")
-    private final List<ShowSingleTableRulesStatementTestCase> showSingleTableRulesStatementTestCases = new LinkedList<>();
+    private final List<ShowSingleTableRulesStatementTestCase> showSingleTableRulesTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-sharding-table-nodes")
-    private final List<ShowShardingTableNodesStatementTestCase> showShardingTableNodesStatementTestCases = new LinkedList<>();
+    private final List<ShowShardingTableNodesStatementTestCase> showShardingTableNodesTestCases = new LinkedList<>();
     
     @XmlElement(name = "set-resource-group")
-    private final List<SetResourceGroupStatementTestCase> setResourceGroupStatementTestCases = new LinkedList<>();
+    private final List<SetResourceGroupStatementTestCase> setResourceGroupTestCases = new LinkedList<>();
     
     @XmlElement(name = "optimize-table")
-    private final List<OptimizeTableStatementTestCase> optimizeTableStatementTestCases = new LinkedList<>();
+    private final List<OptimizeTableStatementTestCase> optimizeTableTestCases = new LinkedList<>();
     
     @XmlElement(name = "repair-table")
-    private final List<RepairTableStatementTestCase> repairTableStatementTestCases = new LinkedList<>();
+    private final List<RepairTableStatementTestCase> repairTableTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-sharding-algorithm")
-    private final List<CreateShardingAlgorithmStatementTestCase> createShardingAlgorithmStatementTestCases = new LinkedList<>();
+    private final List<CreateShardingAlgorithmStatementTestCase> createShardingAlgorithmTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-sharding-key-generator")
-    private final List<CreateShardingKeyGeneratorStatementTestCase> createShardingKeyGeneratorStatementTestCases = new LinkedList<>();
+    private final List<CreateShardingKeyGeneratorStatementTestCase> createShardingKeyGeneratorTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-default-sharding-strategy")
-    private final List<CreateDefaultShardingStrategyStatementTestCase> createDefaultShardingStrategyStatementTestCases = new LinkedList<>();
+    private final List<CreateDefaultShardingStrategyStatementTestCase> createDefaultShardingStrategyTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-default-sharding-strategy")
-    private final List<AlterDefaultShardingStrategyStatementTestCase> alterDefaultShardingStrategyStatementTestCases = new LinkedList<>();
+    private final List<AlterDefaultShardingStrategyStatementTestCase> alterDefaultShardingStrategyTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-default-shadow-algorithm")
-    private final List<CreateDefaultShadowAlgorithmStatementTestCase> createDefaultShadowAlgorithmStatementTestCases = new LinkedList<>();
+    private final List<CreateDefaultShadowAlgorithmStatementTestCase> createDefaultShadowAlgorithmTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-replicas")
-    private final List<ShowReplicasStatementTestCase> showReplicasStatementTestCases = new LinkedList<>();
+    private final List<ShowReplicasStatementTestCase> showReplicasTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-replica-status")
-    private final List<ShowReplicaStatusStatementTestCase> showReplicaStatusStatementTestCases = new LinkedList<>();
+    private final List<ShowReplicaStatusStatementTestCase> showReplicaStatusTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-slave-status")
-    private final List<ShowSlaveStatusStatementTestCase> showSlaveStatusStatementTestCases = new LinkedList<>();
+    private final List<ShowSlaveStatusStatementTestCase> showSlaveStatusTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-sharding-algorithm")
-    private final List<AlterShardingAlgorithmStatementTestCase> alterShardingAlgorithmStatementTestCases = new LinkedList<>();
+    private final List<AlterShardingAlgorithmStatementTestCase> alterShardingAlgorithmTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-sharding-key-generator")
-    private final List<AlterShardingKeyGeneratorStatementTestCase> alterShardingKeyGeneratorStatementTestCases = new LinkedList<>();
+    private final List<AlterShardingKeyGeneratorStatementTestCase> alterShardingKeyGeneratorTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-sharding-key-generator")
-    private final List<DropShardingKeyGeneratorStatementTestCase> dropShardingKeyGeneratorStatementTestCases = new LinkedList<>();
+    private final List<DropShardingKeyGeneratorStatementTestCase> dropShardingKeyGeneratorTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-default-sharding-strategy")
-    private final List<DropDefaultShardingStrategyStatementTestCase> dropDefaultShardingStrategyStatementTestCases = new LinkedList<>();
+    private final List<DropDefaultShardingStrategyStatementTestCase> dropDefaultShardingStrategyTestCases = new LinkedList<>();
     
     @XmlElement(name = "reset")
-    private final List<ResetStatementTestCase> resetStatementTestCases = new LinkedList<>();
+    private final List<ResetStatementTestCase> resetTestCases = new LinkedList<>();
     
     @XmlElement(name = "reset-persist")
-    private final List<ResetPersistStatementTestCase> resetPersistStatementTestCases = new LinkedList<>();
+    private final List<ResetPersistStatementTestCase> resetPersistTestCases = new LinkedList<>();
     
     @XmlElement(name = "cache-index")
-    private final List<CacheIndexStatementTestCase> cacheIndexStatementTestCases = new LinkedList<>();
+    private final List<CacheIndexStatementTestCase> cacheIndexTestCases = new LinkedList<>();
     
     @XmlElement(name = "load-index")
-    private final List<LoadIndexInfoStatementTestCase> loadIndexInfoStatementTestCases = new LinkedList<>();
+    private final List<LoadIndexInfoStatementTestCase> loadIndexInfoTestCases = new LinkedList<>();
     
     @XmlElement(name = "kill")
-    private final List<KillStatementTestCase> killStatementTestCases = new LinkedList<>();
+    private final List<KillStatementTestCase> killTestCases = new LinkedList<>();
     
     @XmlElement(name = "shutdown")
-    private final List<ShutdownStatementTestCase> shutdownStatementTestCases = new LinkedList<>();
+    private final List<ShutdownStatementTestCase> shutdownTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-default-single-table")
-    private final List<CreateDefaultSingleTableRuleStatementTestCase> createDefaultSingleTableRuleStatementTestCases = new LinkedList<>();
+    private final List<CreateDefaultSingleTableRuleStatementTestCase> createDefaultSingleTableRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-default-single-table")
-    private final List<AlterDefaultSingleTableRuleStatementTestCase> alterDefaultSingleTableRuleStatementTestCases = new LinkedList<>();
+    private final List<AlterDefaultSingleTableRuleStatementTestCase> alterDefaultSingleTableRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-default-single-table")
-    private final List<DropDefaultSingleTableRuleStatementTestCase> dropDefaultSingleTableRuleStatementTestCases = new LinkedList<>();
+    private final List<DropDefaultSingleTableRuleStatementTestCase> dropDefaultSingleTableRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-open-tables")
-    private final List<ShowOpenTablesStatementTestCase> showOpenTablesStatementTestCases = new LinkedList<>();
+    private final List<ShowOpenTablesStatementTestCase> showOpenTablesTestCases = new LinkedList<>();
     
     @XmlElement(name = "check-table")
     private final List<CheckTableStatementTestCase> checkTableTestCases = new LinkedList<>();
@@ -1116,217 +1180,301 @@ public final class SQLParserTestCases {
     private final List<ChecksumTableStatementTestCase> checksumTableTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-status")
-    private final List<ShowStatusStatementTestCase> showStatusStatementTestCases = new LinkedList<>();
+    private final List<ShowStatusStatementTestCase> showStatusTestCases = new LinkedList<>();
     
     @XmlElement(name = "refresh-table-metadata")
-    private final List<RefreshTableMetadataStatementTestCase> refreshTableMetadataStatementTestCases = new LinkedList<>();
+    private final List<RefreshTableMetadataStatementTestCase> refreshTableMetadataTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-events")
-    private final List<ShowEventsStatementTestCase> showEventsStatementTestCases = new LinkedList<>();
+    private final List<ShowEventsStatementTestCase> showEventsTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-character-set")
-    private final List<ShowCharacterSetStatementTestCase> showCharacterSetStatementTestCases = new LinkedList<>();
+    private final List<ShowCharacterSetStatementTestCase> showCharacterSetTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-collation")
-    private final List<ShowCollationStatementTestCase> showCollationStatementTestCases = new LinkedList<>();
+    private final List<ShowCollationStatementTestCase> showCollationTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-variables")
-    private final List<ShowVariablesStatementTestCase> showVariablesStatementTestCases = new LinkedList<>();
+    private final List<ShowVariablesStatementTestCase> showVariablesTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-sharding-key-generators")
-    private final List<ShowShardingKeyGeneratorsStatementTestCase> showShardingKeyGeneratorsStatementTestCases = new LinkedList<>();
+    private final List<ShowShardingKeyGeneratorsStatementTestCase> showShardingKeyGeneratorsTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-default-sharding-strategy")
-    private final List<ShowDefaultShardingStrategyStatementTestCase> showDefaultShardingStrategyStatementTestCases = new LinkedList<>();
+    private final List<ShowDefaultShardingStrategyStatementTestCase> showDefaultShardingStrategyTestCases = new LinkedList<>();
     
     @XmlElement(name = "delimiter")
-    private final List<DelimiterStatementTestCase> delimiterStatementTestCases = new LinkedList<>();
+    private final List<DelimiterStatementTestCase> delimiterTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-sql-parser-rule")
-    private final List<ShowSQLParserRuleStatementTestCase> showSQLParserRuleStatementTestCases = new LinkedList<>();
+    private final List<ShowSQLParserRuleStatementTestCase> showSQLParserRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-authority-rule")
-    private final List<ShowAuthorityRuleStatementTestCase> showAuthorityRuleStatementTestCases = new LinkedList<>();
+    private final List<ShowAuthorityRuleStatementTestCase> showAuthorityRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-transaction-rule")
-    private final List<ShowTransactionRuleStatementTestCase> showTransactionRuleStatementTestCases = new LinkedList<>();
+    private final List<ShowTransactionRuleStatementTestCase> showTransactionRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-traffic-rules")
-    private final List<ShowTrafficRulesStatementTestCase> showTrafficRulesStatementTestCases = new LinkedList<>();
+    private final List<ShowTrafficRulesStatementTestCase> showTrafficRulesTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-traffic-rule")
-    private final List<CreateTrafficRuleStatementTestCase> createTrafficRulesStatementTestCases = new LinkedList<>();
+    private final List<CreateTrafficRuleStatementTestCase> createTrafficRulesTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-traffic-rule")
-    private final List<AlterTrafficRuleStatementTestCase> alterTrafficRulesStatementTestCases = new LinkedList<>();
+    private final List<AlterTrafficRuleStatementTestCase> alterTrafficRulesTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-sql-parser-rule")
-    private final List<AlterSQLParserRuleStatementTestCase> alterSQLParserRuleStatementTestCases = new LinkedList<>();
+    private final List<AlterSQLParserRuleStatementTestCase> alterSQLParserRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-traffic-rule")
-    private final List<DropTrafficRuleStatementTestCase> dropTrafficRuleStatementTestCases = new LinkedList<>();
+    private final List<DropTrafficRuleStatementTestCase> dropTrafficRuleTestCases = new LinkedList<>();
     
     @XmlElement(name = "label-instance")
-    private final List<LabelInstanceStatementTestCase> labelStatementTestCases = new LinkedList<>();
+    private final List<LabelInstanceStatementTestCase> labelTestCases = new LinkedList<>();
     
     @XmlElement(name = "unlabel-instance")
-    private final List<UnlabelInstanceStatementTestCase> unlabelStatementTestCases = new LinkedList<>();
+    private final List<UnlabelInstanceStatementTestCase> unlabelTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-instance")
-    private final List<AlterInstanceStatementTestCase> alterInstanceStatementTestCases = new LinkedList<>();
+    private final List<AlterInstanceStatementTestCase> alterInstanceTestCases = new LinkedList<>();
     
     @XmlElement(name = "prepare-distsql")
-    private final List<PrepareDistSQLStatementTestCase> prepareDistSQLStatementTestCases = new LinkedList<>();
+    private final List<PrepareDistSQLStatementTestCase> prepareDistSQLTestCases = new LinkedList<>();
     
     @XmlElement(name = "apply-distsql")
-    private final List<ApplyDistSQLStatementTestCase> applyDistSQLStatementTestCases = new LinkedList<>();
+    private final List<ApplyDistSQLStatementTestCase> applyDistSQLTestCases = new LinkedList<>();
     
     @XmlElement(name = "discard-distsql")
-    private final List<DiscardDistSQLStatementTestCase> discardDistSQLStatementTestCases = new LinkedList<>();
+    private final List<DiscardDistSQLStatementTestCase> discardDistSQLTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-table-metadata")
-    private final List<ShowTableMetadataStatementTestCase> showTableMetadataStatementTestCases = new LinkedList<>();
+    private final List<ShowTableMetadataStatementTestCase> showTableMetadataTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-conversion")
-    private final List<CreateConversionStatementTestCase> createConversionStatementTestCase = new LinkedList<>();
+    private final List<CreateConversionStatementTestCase> createConversionTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-cast")
+    private final List<CreateCastStatementTestCase> createCastTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-conversion")
-    private final List<DropConversionStatementTestCase> dropConversionStatementTestCase = new LinkedList<>();
+    private final List<DropConversionStatementTestCase> dropConversionTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-domain")
-    private final List<AlterDomainStatementTestCase> alterDomainStatementTestCase = new LinkedList<>();
+    private final List<AlterDomainStatementTestCase> alterDomainTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-aggregate")
-    private final List<AlterAggregateStatementTestCase> alterAggregateStatementTestCase = new LinkedList<>();
+    private final List<AlterAggregateStatementTestCase> alterAggregateTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-conversion")
-    private final List<AlterConversionStatementTestCase> alterConversionStatementTestCase = new LinkedList<>();
+    private final List<AlterConversionStatementTestCase> alterConversionTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-collation")
-    private final List<AlterCollationStatementTestCase> alterCollationStatementTestCase = new LinkedList<>();
+    private final List<AlterCollationStatementTestCase> alterCollationTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-default-privileges")
-    private final List<AlterDefaultPrivilegesTestCase> alterDefaultPrivilegesTestCase = new LinkedList<>();
+    private final List<AlterDefaultPrivilegesTestCase> alterDefaultPrivilegesTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-foreign-data-wrapper")
-    private final List<AlterForeignDataWrapperTestCase> alterForeignDataWrapperTestCase = new LinkedList<>();
+    private final List<AlterForeignDataWrapperTestCase> alterForeignDataWrapperTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-foreign-table")
-    private final List<AlterForeignTableTestCase> alterForeignTableTestCase = new LinkedList<>();
+    private final List<AlterForeignTableTestCase> alterForeignTableTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-foreign-table")
-    private final List<DropForeignTableStatementTestCase> dropForeignTableStatementTestCase = new LinkedList<>();
+    private final List<DropForeignTableStatementTestCase> dropForeignTableTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-group")
-    private final List<AlterGroupStatementTestCase> alterGroupStatementTestCase = new LinkedList<>();
+    private final List<AlterGroupStatementTestCase> alterGroupTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-materialized-view")
-    private final List<AlterMaterializedViewStatementTestCase> alterMaterializedViewStatementTestCase = new LinkedList<>();
+    private final List<AlterMaterializedViewStatementTestCase> alterMaterializedViewTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-operator")
+    private final List<AlterOperatorStatementTestCase> alterOperatorTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-text-search")
-    private final List<CreateTextSearchStatementTestCase> createTextSearchStatementTestCases = new LinkedList<>();
+    private final List<CreateTextSearchStatementTestCase> createTextSearchTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-text-search")
-    private final List<AlterTextSearchStatementTestCase> alterTextSearchStatementTestCases = new LinkedList<>();
+    private final List<AlterTextSearchStatementTestCase> alterTextSearchTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-language")
-    private final List<CreateLanguageStatementTestCase> createLanguageStatementTestCases = new LinkedList<>();
+    private final List<CreateLanguageStatementTestCase> createLanguageTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-language")
-    private final List<AlterLanguageStatementTestCase> alterLanguageStatementTestCases = new LinkedList<>();
+    private final List<AlterLanguageStatementTestCase> alterLanguageTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-language")
-    private final List<DropLanguageStatementTestCase> dropLanguageStatementTestCases = new LinkedList<>();
+    private final List<DropLanguageStatementTestCase> dropLanguageTestCases = new LinkedList<>();
     
     @XmlElement(name = "help")
-    private final List<HelpStatementTestCase> helpStatementTestCases = new LinkedList<>();
+    private final List<HelpStatementTestCase> helpTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-unused-sharding-algorithms")
-    private final List<ShowUnusedShardingAlgorithmsStatementTestCase> showUnusedShardingAlgorithmsStatementTestCases = new LinkedList<>();
+    private final List<ShowUnusedShardingAlgorithmsStatementTestCase> showUnusedShardingAlgorithmsTestCases = new LinkedList<>();
     
-    @XmlElement(name = "count-schema-rules")
-    private final List<CountSchemaRulesStatementTestCase> countSchemaRulesStatementTestCases = new LinkedList<>();
+    @XmlElement(name = "count-database-rules")
+    private final List<CountDatabaseRulesStatementTestCase> countDatabaseRulesTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-unused-sharding-key-generators")
-    private final List<ShowUnusedShardingKeyGeneratorsStatementTestCase> showUnusedShardingKeyGeneratorsStatementTestCases = new LinkedList<>();
+    private final List<ShowUnusedShardingKeyGeneratorsStatementTestCase> showUnusedShardingKeyGeneratorsTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-binlog-events")
-    private final List<ShowBinlogEventsStatementTestCase> showBinlogEventsStatementTestCases = new LinkedList<>();
+    private final List<ShowBinlogEventsStatementTestCase> showBinlogEventsTestCases = new LinkedList<>();
     
     @XmlElement(name = "lock")
-    private final List<LockStatementTestCase> lockStatementTestCases = new LinkedList<>();
+    private final List<LockStatementTestCase> lockTestCases = new LinkedList<>();
     
     @XmlElement(name = "unlock")
-    private final List<UnlockStatementTestCase> unlockStatementTestCases = new LinkedList<>();
+    private final List<UnlockStatementTestCase> unlockTestCases = new LinkedList<>();
     
     @XmlElement(name = "export-database-config")
-    private final List<ExportDatabaseConfigurationStatementTestCase> exportDatabaseConfigurationStatementTestCases = new LinkedList<>();
+    private final List<ExportDatabaseConfigurationStatementTestCase> exportDatabaseConfigurationTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-rules-used-resource")
-    private final List<ShowRulesUsedResourceStatementTestCase> showRulesUsedResourceStatementTestCases = new LinkedList<>();
+    private final List<ShowRulesUsedResourceStatementTestCase> showRulesUsedResourceTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-sharding-table-rules-used-algorithm")
-    private final List<ShowShardingTableRulesUsedAlgorithmStatementTestCase> showShardingTableRulesUsedAlgorithmStatementTestCases = new LinkedList<>();
+    private final List<ShowShardingTableRulesUsedAlgorithmStatementTestCase> showShardingTableRulesUsedAlgorithmTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-sharding-table-rules-used-key-generator")
-    private final List<ShowShardingTableRulesUsedKeyGeneratorStatementTestCase> showShardingTableRulesUsedKeyGeneratorStatementTestCases = new LinkedList<>();
+    private final List<ShowShardingTableRulesUsedKeyGeneratorStatementTestCase> showShardingTableRulesUsedKeyGeneratorTestCases = new LinkedList<>();
     
     @XmlElement(name = "prepared")
-    private final List<PreparedStatementTestCase> preparedStatementTestCases = new LinkedList<>();
+    private final List<PreparedStatementTestCase> preparedTestCases = new LinkedList<>();
     
     @XmlElement(name = "set-user")
-    private final List<SetUserStatementTestCase> setUserStatementTestCases = new LinkedList<>();
+    private final List<SetUserStatementTestCase> setUserTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-sharding-algorithm")
-    private final List<DropShardingAlgorithmStatementTestCase> dropShardingAlgorithmStatementTestCases = new LinkedList<>();
+    private final List<DropShardingAlgorithmStatementTestCase> dropShardingAlgorithmTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-owned")
-    private final List<DropOwnedStatementTestCase> dropOwnedStatementTestCases = new LinkedList<>();
+    private final List<DropOwnedStatementTestCase> dropOwnedTestCases = new LinkedList<>();
     
     @XmlElement(name = "create-tablespace")
     private final List<CreateTablespaceStatementTestCase> createTablespaceTestCases = new LinkedList<>();
     
     @XmlElement(name = "import-database-config")
-    private final List<ImportDatabaseConfigurationStatementTestCase> importDatabaseConfigurationStatementTestCases = new LinkedList<>();
+    private final List<ImportDatabaseConfigurationStatementTestCase> importDatabaseConfigurationTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-operator")
-    private final List<DropOperatorStatementTestCase> dropOperatorStatementTestCases = new LinkedList<>();
+    private final List<DropOperatorStatementTestCase> dropOperatorTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-materialized-view")
-    private final List<DropMaterializedViewStatementTestCase> dropMaterializedViewStatementTestCases = new LinkedList<>();
+    private final List<DropMaterializedViewStatementTestCase> dropMaterializedViewTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-cast")
-    private final List<DropCastStatementTestCase> dropCastStatementTestCases = new LinkedList<>();
+    private final List<DropCastStatementTestCase> dropCastTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-aggregate")
-    private final List<DropAggregateStatementTestCase> dropAggregateStatementTestCases = new LinkedList<>();
+    private final List<DropAggregateStatementTestCase> dropAggregateTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-collation")
-    private final List<DropCollationStatementTestCase> dropCollationStatementTestCases = new LinkedList<>();
+    private final List<DropCollationStatementTestCase> dropCollationTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-foreign-data-wrapper")
-    private final List<DropForeignDataWrapperStatementTestCase> dropForeignDataWrapperStatementTestCases = new LinkedList<>();
+    private final List<DropForeignDataWrapperStatementTestCase> dropForeignDataWrapperTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-type")
-    private final List<DropTypeStatementTestCase> dropTypeStatementTestCases = new LinkedList<>();
+    private final List<DropTypeStatementTestCase> dropTypeTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-operator-class")
-    private final List<DropOperatorClassStatementTestCase> dropOperatorClassStatementTestCases = new LinkedList<>();
+    private final List<DropOperatorClassStatementTestCase> dropOperatorClassTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-operator-family")
-    private final List<DropOperatorFamilyStatementTestCase> dropOperatorFamilyStatementTestCases = new LinkedList<>();
+    private final List<DropOperatorFamilyStatementTestCase> dropOperatorFamilyTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-access-method")
-    private final List<DropAccessMethodStatementTestCase> dropAccessMethodStatementTestCases = new LinkedList<>();
+    private final List<DropAccessMethodStatementTestCase> dropAccessMethodTestCases = new LinkedList<>();
     
     @XmlElement(name = "revert")
-    private final List<RevertStatementTestCase> revertStatementTestCases = new LinkedList<>();
+    private final List<RevertStatementTestCase> revertTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-analytic-view")
-    private final List<AlterAnalyticViewStatementTestCase> alterAnalyticViewStatementTestCases = new LinkedList<>();
+    private final List<AlterAnalyticViewStatementTestCase> alterAnalyticViewTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-attribute-dimension")
     private final List<AlterAttributeDimensionStatementTestCase> alterAttributeDimensionTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-context")
+    private final List<CreateContextStatementTestCase> createContextTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-spfile")
+    private final List<CreateSPFileStatementTestCase> createSPFileTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-pfile")
+    private final List<CreatePFileStatementTestCase> createPFileTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-control-file")
+    private final List<CreateControlFileStatementTestCase> createControlFileTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-flashback-archive")
+    private final List<CreateFlashbackArchiveStatementTestCase> createFlashbackArchiveTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-flashback-archive")
+    private final List<AlterFlashbackArchiveStatementTestCase> alterFlashbackArchiveTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-flashback-archive")
+    private final List<DropFlashbackArchiveStatementTestCase> dropFlashbackArchiveTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-diskgroup")
+    private final List<CreateDiskgroupStatementTestCase> createDiskgroupTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-diskgroup")
+    private final List<DropDiskgroupStatementTestCase> dropDiskgroupTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-rollback-segment")
+    private final List<CreateRollbackSegmentStatementTestCase> createRollbackSegmentTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-rollback-segment")
+    private final List<DropRollbackSegmentStatementTestCase> dropRollbackSegmentTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-lockdown-profile")
+    private final List<CreateLockdownProfileStatementTestCase> createLockdownProfileTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-lockdown-profile")
+    private final List<DropLockdownProfileStatementTestCase> dropLockdownProfileTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-inmemory-join-group")
+    private final List<CreateInmemoryJoinGroupStatementTestCase> createInmemoryJoinGroupTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-inmemory-join-group")
+    private final List<AlterInmemoryJoinGroupStatementTestCase> alterInmemoryJoinGroupTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-inmemory-join-group")
+    private final List<DropInmemoryJoinGroupStatementTestCase> dropInmemoryJoinGroupTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-restore-point")
+    private final List<CreateRestorePointStatementTestCase> createRestorePointTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "drop-restore-point")
+    private final List<DropRestorePointStatementTestCase> dropRestorePointTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-library")
+    private final List<AlterLibraryStatementTestCase> alterLibraryTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "cursor")
+    private final List<CursorStatementTestCase> cursorTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "close")
+    private final List<CloseStatementTestCase> closeTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "move")
+    private final List<MoveStatementTestCase> moveTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "fetch")
+    private final List<FetchStatementTestCase> fetchTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "checkpoint")
+    private final List<CheckpointStatementTestCase> checkpointTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "cluster")
+    private final List<ClusterStatementTestCase> clusterStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-access-method")
+    private final List<CreateAccessMethodStatementTestCase> createAccessMethodTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
@@ -1379,11 +1527,11 @@ public final class SQLParserTestCases {
         putAll(describeTestCases, result);
         putAll(showDatabasesTestCases, result);
         putAll(showTablesTestCases, result);
-        putAll(showFunctionStatusStatementTestCases, result);
-        putAll(showProcedureStatusStatementTestCases, result);
-        putAll(showRelaylogEventsStatementTestCases, result);
-        putAll(showSlaveHostsStatementTestCases, result);
-        putAll(showProcedureCodeStatementTestCases, result);
+        putAll(showFunctionStatusTestCases, result);
+        putAll(showProcedureStatusTestCases, result);
+        putAll(showRelaylogEventsTestCases, result);
+        putAll(showSlaveHostsTestCases, result);
+        putAll(showProcedureCodeTestCases, result);
         putAll(showColumnsTestCases, result);
         putAll(showCreateTableTestCases, result);
         putAll(showCreateTriggerTestCases, result);
@@ -1391,274 +1539,311 @@ public final class SQLParserTestCases {
         putAll(showTableStatusTestCases, result);
         putAll(showIndexTestCases, result);
         putAll(showTestCases, result);
-        putAll(setVariableTestCases, result);
+        putAll(setParameterTestCases, result);
         putAll(commonTestCases, result);
         putAll(alterFunctionTestCases, result);
-        putAll(alterServerTestCase, result);
-        putAll(alterSessionTestCase, result);
-        putAll(alterSynonymTestCase, result);
-        putAll(alterSystemTestCase, result);
-        putAll(alterProcedureTestCase, result);
-        putAll(alterDatabaseTestCase, result);
-        putAll(alterDimensionTestCase, result);
-        putAll(createViewTestCase, result);
-        putAll(createSynonymTestCase, result);
-        putAll(dropSynonymTestCase, result);
-        putAll(createDirectoryTestCase, result);
-        putAll(createTriggerTestCase, result);
-        putAll(createServerTestCase, result);
-        putAll(createProcedureTestCase, result);
-        putAll(createFunctionTestCase, result);
-        putAll(createDatabaseTestCase, result);
-        putAll(createDatabaseLinkTestCase, result);
-        putAll(dropDatabaseLinkTestCase, result);
-        putAll(alterDatabaseDictionaryTestCase, result);
-        putAll(alterDatabaseLinkTestCase, result);
+        putAll(alterServerTestCases, result);
+        putAll(alterSessionTestCases, result);
+        putAll(alterSynonymTestCases, result);
+        putAll(alterTypeTestCases, result);
+        putAll(alterRuleTestCases, result);
+        putAll(alterDirectoryTestCases, result);
+        putAll(alterSystemTestCases, result);
+        putAll(alterProcedureTestCases, result);
+        putAll(alterPublicationTestCases, result);
+        putAll(alterPolicyTestCases, result);
+        putAll(alterDatabaseTestCases, result);
+        putAll(alterDimensionTestCases, result);
+        putAll(createViewTestCases, result);
+        putAll(createSynonymTestCases, result);
+        putAll(createAggregateTestCases, result);
+        putAll(createPublicationTestCases, result);
+        putAll(dropSynonymTestCases, result);
+        putAll(createDirectoryTestCases, result);
+        putAll(createTriggerTestCases, result);
+        putAll(createServerTestCases, result);
+        putAll(createProcedureTestCases, result);
+        putAll(createFunctionTestCases, result);
+        putAll(createDatabaseTestCases, result);
+        putAll(createDatabaseLinkTestCases, result);
+        putAll(dropDatabaseLinkTestCases, result);
+        putAll(alterDatabaseDictionaryTestCases, result);
+        putAll(alterDatabaseLinkTestCases, result);
         putAll(alterViewTestCases, result);
+        putAll(alterPackageTestCases, result);
         putAll(dropPackageTestCases, result);
-        putAll(createDimensionTestCase, result);
-        putAll(dropDimensionTestCase, result);
-        putAll(dropDirectoryTestCase, result);
-        putAll(dropViewTestCase, result);
-        putAll(dropTriggerTestCase, result);
-        putAll(alterTriggerTestCase, result);
-        putAll(dropEventTriggerTestCase, result);
-        putAll(showTriggerTestCase, result);
-        putAll(dropServerTestCase, result);
-        putAll(dropPolicyTestCase, result);
-        putAll(dropProcedureTestCase, result);
+        putAll(createDimensionTestCases, result);
+        putAll(dropDimensionTestCases, result);
+        putAll(dropDirectoryTestCases, result);
+        putAll(dropViewTestCases, result);
+        putAll(dropTriggerTestCases, result);
+        putAll(alterTriggerTestCases, result);
+        putAll(dropEventTriggerTestCases, result);
+        putAll(showTriggerTestCases, result);
+        putAll(dropServerTestCases, result);
+        putAll(dropPolicyTestCases, result);
+        putAll(dropProcedureTestCases, result);
         putAll(dropRoutineTestCases, result);
         putAll(dropRuleTestCases, result);
         putAll(dropStatisticsTestCases, result);
         putAll(dropPublicationTestCases, result);
         putAll(dropSubscriptionTestCases, result);
-        putAll(dropFunctionTestCase, result);
+        putAll(dropFunctionTestCases, result);
         putAll(dropGroupTestCases, result);
-        putAll(dropDatabaseTestCase, result);
-        putAll(callProcedureTestCase, result);
-        putAll(copyStatementTestCase, result);
-        putAll(xaTestCase, result);
-        putAll(mergeTestCase, result);
-        putAll(createSequenceTestCase, result);
-        putAll(alterSequenceTestCase, result);
-        putAll(dropSequenceTestCase, result);
-        putAll(analyzeTestCase, result);
-        putAll(associateStatisticsTestCase, result);
-        putAll(disassociateStatisticsTestCase, result);
-        putAll(auditTestCase, result);
-        putAll(noAuditTestCase, result);
-        putAll(commentTestCase, result);
-        putAll(flashbackDatabaseTestCase, result);
-        putAll(flashbackTableTestCase, result);
-        putAll(purgeTestCase, result);
-        putAll(renameTestCase, result);
-        putAll(addResourceTestCase, result);
-        putAll(alterResourceTestCase, result);
+        putAll(dropDatabaseTestCases, result);
+        putAll(callProcedureTestCases, result);
+        putAll(doTestCases, result);
+        putAll(copyTestCases, result);
+        putAll(xaTestCases, result);
+        putAll(mergeTestCases, result);
+        putAll(createSequenceTestCases, result);
+        putAll(alterSequenceTestCases, result);
+        putAll(dropSequenceTestCases, result);
+        putAll(analyzeTestCases, result);
+        putAll(associateStatisticsTestCases, result);
+        putAll(disassociateStatisticsTestCases, result);
+        putAll(auditTestCases, result);
+        putAll(noAuditTestCases, result);
+        putAll(commentTestCases, result);
+        putAll(flashbackDatabaseTestCases, result);
+        putAll(flashbackTableTestCases, result);
+        putAll(purgeTestCases, result);
+        putAll(renameTestCases, result);
+        putAll(addResourceTestCases, result);
+        putAll(alterResourceTestCases, result);
         putAll(alterDatabaseDiscoveryDefinitionRuleTestCases, result);
-        putAll(alterDataBaseDiscoveryConstructionRuleTestCase, result);
-        putAll(alterEncryptRuleTestCase, result);
-        putAll(alterReadwriteSplittingRuleTestCase, result);
-        putAll(alterShardingBindingTableRulesTestCase, result);
-        putAll(alterShardingBroadcastTableRulesTestCase, result);
-        putAll(alterShardingTableRuleTestCase, result);
+        putAll(alterDataBaseDiscoveryConstructionRuleTestCases, result);
+        putAll(alterEncryptRuleTestCases, result);
+        putAll(alterReadwriteSplittingRuleTestCases, result);
+        putAll(alterShardingBindingTableRulesTestCases, result);
+        putAll(alterShardingBroadcastTableRulesTestCases, result);
+        putAll(alterShardingAutoTableRuleTestCases, result);
         putAll(createDatabaseDiscoveryDefinitionRuleTestCases, result);
-        putAll(createDataBaseDiscoveryConstructionRuleTestCase, result);
+        putAll(createDataBaseDiscoveryConstructionRuleTestCases, result);
         putAll(createDatabaseDiscoveryTypeTestCases, result);
         putAll(createDatabaseDiscoveryHeartbeatTestCases, result);
         putAll(alterDatabaseDiscoveryHeartbeatTestCases, result);
         putAll(alterDatabaseDiscoveryTypeTestCases, result);
-        putAll(createEncryptRuleTestCase, result);
-        putAll(createReadwriteSplittingRuleTestCase, result);
-        putAll(createShardingBindingTableRulesTestCase, result);
-        putAll(createShardingBroadcastTableRulesTestCase, result);
-        putAll(createShardingTableRuleTestCase, result);
-        putAll(dropDataBaseDiscoveryRuleTestCase, result);
+        putAll(createEncryptRuleTestCases, result);
+        putAll(createReadwriteSplittingRuleTestCases, result);
+        putAll(createShardingBindingTableRulesTestCases, result);
+        putAll(createShardingBroadcastTableRulesTestCases, result);
+        putAll(createShardingAutoTableRuleTestCases, result);
+        putAll(dropDataBaseDiscoveryRuleTestCases, result);
         putAll(dropDataBaseDiscoveryTypeTestCases, result);
         putAll(dropDataBaseDiscoveryHeartbeatTestCases, result);
-        putAll(dropResourceTestCase, result);
-        putAll(dropEncryptRuleTestCase, result);
-        putAll(dropReadwriteSplittingRuleTestCase, result);
-        putAll(dropShardingBindingTableRulesTestCase, result);
-        putAll(dropShardingBroadcastTableRulesTestCase, result);
-        putAll(dropShardingTableRuleTestCase, result);
-        putAll(showDataBaseDiscoveryRulesTestCase, result);
-        putAll(showEncryptRulesTestCase, result);
-        putAll(showReadwriteSplittingRulesTestCase, result);
-        putAll(showShardingBindingTableRulesTestCase, result);
-        putAll(showShardingBroadcastTableRulesTestCase, result);
-        putAll(showShardingAlgorithmsTestCase, result);
-        putAll(showShardingTableRulesTestCase, result);
-        putAll(showShardingTableRuleTestCase, result);
-        putAll(showScalingListStatementTestCase, result);
-        putAll(checkScalingStatementTestCase, result);
-        putAll(showScalingStatusStatementTestCases, result);
-        putAll(showScalingCheckAlgorithmsStatementTestCase, result);
-        putAll(stopScalingSourceWritingStatementTestCase, result);
-        putAll(restoreScalingSourceWritingStatementTestCase, result);
-        putAll(applyScalingStatementTestCases, result);
-        putAll(resetScalingStatementTestCases, result);
-        putAll(dropScalingStatementTestCases, result);
-        putAll(stopScalingStatementTestCases, result);
-        putAll(startScalingStatementTestCases, result);
-        putAll(createShardingScalingRuleStatementTestCases, result);
-        putAll(dropShardingScalingRuleStatementTestCases, result);
-        putAll(enableShardingScalingRuleStatementTestCases, result);
-        putAll(disableShardingScalingRuleStatementTestCases, result);
-        putAll(showShardingScalingRulesStatementTestCases, result);
-        putAll(showVariableStatementTestCase, result);
-        putAll(setVariableStatementTestCase, result);
-        putAll(previewStatementTestCase, result);
+        putAll(dropResourceTestCases, result);
+        putAll(dropEncryptRuleTestCases, result);
+        putAll(dropReadwriteSplittingRuleTestCases, result);
+        putAll(dropShardingBindingTableRulesTestCases, result);
+        putAll(dropShardingBroadcastTableRulesTestCases, result);
+        putAll(dropShardingTableRuleTestCases, result);
+        putAll(showDataBaseDiscoveryRulesTestCases, result);
+        putAll(showEncryptRulesTestCases, result);
+        putAll(showReadwriteSplittingRulesTestCases, result);
+        putAll(showShardingBindingTableRulesTestCases, result);
+        putAll(showShardingBroadcastTableRulesTestCases, result);
+        putAll(showShardingAlgorithmsTestCases, result);
+        putAll(showShardingTableRulesTestCases, result);
+        putAll(showShardingTableRuleTestCases, result);
+        putAll(showScalingListTestCases, result);
+        putAll(checkScalingTestCases, result);
+        putAll(showScalingStatusTestCases, result);
+        putAll(showScalingCheckAlgorithmsTestCases, result);
+        putAll(stopScalingSourceWritingTestCases, result);
+        putAll(restoreScalingSourceWritingTestCases, result);
+        putAll(applyScalingTestCases, result);
+        putAll(resetScalingTestCases, result);
+        putAll(dropScalingTestCases, result);
+        putAll(stopScalingTestCases, result);
+        putAll(startScalingTestCases, result);
+        putAll(createShardingScalingRuleTestCases, result);
+        putAll(dropShardingScalingRuleTestCases, result);
+        putAll(enableShardingScalingRuleTestCases, result);
+        putAll(disableShardingScalingRuleTestCases, result);
+        putAll(showShardingScalingRulesTestCases, result);
+        putAll(showVariableTestCases, result);
+        putAll(setVariableTestCases, result);
+        putAll(previewTestCases, result);
         putAll(parseStatementAsserts, result);
-        putAll(setReadwriteSplittingHintStatementTestCase, result);
-        putAll(setShardingHintDatabaseValueStatementTestCase, result);
-        putAll(addShardingHintDatabaseValueStatementTestCase, result);
-        putAll(addShardingHintTableValueStatementTestCase, result);
-        putAll(showReadwriteSplittingHintStatusStatementTestCase, result);
-        putAll(showShardingHintStatusStatementTestCase, result);
-        putAll(clearReadwriteSplittingHintStatementTestCase, result);
-        putAll(clearShardingHintStatementTestCase, result);
-        putAll(clearHintStatementTestCase, result);
-        putAll(createShadowRuleTestCase, result);
-        putAll(dropShadowRuleTestCase, result);
-        putAll(alterShadowRuleTestCase, result);
-        putAll(alterShadowAlgorithmTestCase, result);
-        putAll(showShadowRulesStatementTestCase, result);
-        putAll(showShadowTableRulesStatementTestCase, result);
-        putAll(showShadowAlgorithmsStatementTestCase, result);
-        putAll(dropShadowAlgorithmStatementTestCase, result);
-        putAll(createServiceTestCase, result);
-        putAll(alterServiceTestCase, result);
-        putAll(dropServiceTestCase, result);
-        putAll(createSchemaTestCase, result);
-        putAll(alterSchemaTestCase, result);
-        putAll(dropSchemaTestCase, result);
-        putAll(installComponentTestCase, result);
-        putAll(flushStatementTestCase, result);
-        putAll(installPluginStatementTestCase, result);
-        putAll(showInstanceStatementTestCases, result);
-        putAll(countInstanceRulesStatementTestCases, result);
-        putAll(cloneStatementTestCases, result);
-        putAll(showReadwriteSplittingReadResourcesStatementTestCases, result);
-        putAll(uninstallComponentStatementTestCases, result);
-        putAll(alterResourceGroupStatementTestCases, result);
-        putAll(createResourceGroupStatementTestCases, result);
-        putAll(dropResourceGroupStatementTestCases, result);
-        putAll(binlogStatementTestCases, result);
-        putAll(uninstallPluginStatementTestCases, result);
-        putAll(showSingleTableStatementTestCases, result);
-        putAll(showSingleTableRulesStatementTestCases, result);
-        putAll(showShardingTableNodesStatementTestCases, result);
-        putAll(setResourceGroupStatementTestCases, result);
-        putAll(optimizeTableStatementTestCases, result);
-        putAll(repairTableStatementTestCases, result);
-        putAll(createShardingAlgorithmStatementTestCases, result);
-        putAll(createShardingKeyGeneratorStatementTestCases, result);
-        putAll(createDefaultShardingStrategyStatementTestCases, result);
-        putAll(alterDefaultShardingStrategyStatementTestCases, result);
+        putAll(setReadwriteSplittingHintTestCases, result);
+        putAll(setShardingHintDatabaseValueTestCases, result);
+        putAll(addShardingHintDatabaseValueTestCases, result);
+        putAll(addShardingHintTableValueTestCases, result);
+        putAll(showReadwriteSplittingHintStatusTestCases, result);
+        putAll(showShardingHintStatusTestCases, result);
+        putAll(clearReadwriteSplittingHintTestCases, result);
+        putAll(clearShardingHintTestCases, result);
+        putAll(clearHintTestCases, result);
+        putAll(createShadowRuleTestCases, result);
+        putAll(dropShadowRuleTestCases, result);
+        putAll(alterShadowRuleTestCases, result);
+        putAll(alterShadowAlgorithmTestCases, result);
+        putAll(showShadowRulesTestCases, result);
+        putAll(showShadowTableRulesTestCases, result);
+        putAll(showShadowAlgorithmsTestCases, result);
+        putAll(dropShadowAlgorithmTestCases, result);
+        putAll(createServiceTestCases, result);
+        putAll(alterServiceTestCases, result);
+        putAll(dropServiceTestCases, result);
+        putAll(createSchemaTestCases, result);
+        putAll(alterSchemaTestCases, result);
+        putAll(dropSchemaTestCases, result);
+        putAll(installComponentTestCases, result);
+        putAll(flushTestCases, result);
+        putAll(installPluginTestCases, result);
+        putAll(showInstanceTestCases, result);
+        putAll(countInstanceRulesTestCases, result);
+        putAll(cloneTestCases, result);
+        putAll(showReadwriteSplittingReadResourcesTestCases, result);
+        putAll(uninstallComponentTestCases, result);
+        putAll(alterResourceGroupTestCases, result);
+        putAll(createResourceGroupTestCases, result);
+        putAll(dropResourceGroupTestCases, result);
+        putAll(binlogTestCases, result);
+        putAll(uninstallPluginTestCases, result);
+        putAll(showSingleTableTestCases, result);
+        putAll(showSingleTableRulesTestCases, result);
+        putAll(showShardingTableNodesTestCases, result);
+        putAll(setResourceGroupTestCases, result);
+        putAll(optimizeTableTestCases, result);
+        putAll(repairTableTestCases, result);
+        putAll(createShardingAlgorithmTestCases, result);
+        putAll(createShardingKeyGeneratorTestCases, result);
+        putAll(createDefaultShardingStrategyTestCases, result);
+        putAll(alterDefaultShardingStrategyTestCases, result);
         putAll(createShardingTableRuleTestCases, result);
         putAll(alterShardingTableRuleTestCases, result);
-        putAll(resetStatementTestCases, result);
-        putAll(resetPersistStatementTestCases, result);
-        putAll(showReplicasStatementTestCases, result);
-        putAll(showReplicaStatusStatementTestCases, result);
-        putAll(showSlaveStatusStatementTestCases, result);
-        putAll(alterShardingAlgorithmStatementTestCases, result);
-        putAll(alterShardingKeyGeneratorStatementTestCases, result);
-        putAll(killStatementTestCases, result);
-        putAll(createDefaultShadowAlgorithmStatementTestCases, result);
-        putAll(cacheIndexStatementTestCases, result);
-        putAll(loadIndexInfoStatementTestCases, result);
-        putAll(createShadowAlgorithmTestCase, result);
-        putAll(createDefaultSingleTableRuleStatementTestCases, result);
-        putAll(alterDefaultSingleTableRuleStatementTestCases, result);
-        putAll(dropDefaultSingleTableRuleStatementTestCases, result);
-        putAll(shutdownStatementTestCases, result);
-        putAll(showOpenTablesStatementTestCases, result);
-        putAll(showStatusStatementTestCases, result);
+        putAll(resetTestCases, result);
+        putAll(resetPersistTestCases, result);
+        putAll(showReplicasTestCases, result);
+        putAll(showReplicaStatusTestCases, result);
+        putAll(showSlaveStatusTestCases, result);
+        putAll(alterShardingAlgorithmTestCases, result);
+        putAll(alterShardingKeyGeneratorTestCases, result);
+        putAll(killTestCases, result);
+        putAll(createDefaultShadowAlgorithmTestCases, result);
+        putAll(cacheIndexTestCases, result);
+        putAll(loadIndexInfoTestCases, result);
+        putAll(createShadowAlgorithmTestCases, result);
+        putAll(createDefaultSingleTableRuleTestCases, result);
+        putAll(alterDefaultSingleTableRuleTestCases, result);
+        putAll(dropDefaultSingleTableRuleTestCases, result);
+        putAll(shutdownTestCases, result);
+        putAll(showOpenTablesTestCases, result);
+        putAll(showStatusTestCases, result);
         putAll(checkTableTestCases, result);
         putAll(checksumTableTestCases, result);
-        putAll(refreshTableMetadataStatementTestCases, result);
-        putAll(showEventsStatementTestCases, result);
-        putAll(showCharacterSetStatementTestCases, result);
-        putAll(showCollationStatementTestCases, result);
-        putAll(showVariablesStatementTestCases, result);
-        putAll(showShardingKeyGeneratorsStatementTestCases, result);
-        putAll(showDefaultShardingStrategyStatementTestCases, result);
-        putAll(dropShardingKeyGeneratorStatementTestCases, result);
-        putAll(dropDefaultShardingStrategyStatementTestCases, result);
-        putAll(delimiterStatementTestCases, result);
-        putAll(dropDomainStatementTestCases, result);
-        putAll(showSQLParserRuleStatementTestCases, result);
-        putAll(createDomainStatementTestCases, result);
-        putAll(createRuleStatementTestCases, result);
-        putAll(showAuthorityRuleStatementTestCases, result);
-        putAll(showTransactionRuleStatementTestCases, result);
-        putAll(showTrafficRulesStatementTestCases, result);
-        putAll(createTrafficRulesStatementTestCases, result);
-        putAll(alterTrafficRulesStatementTestCases, result);
-        putAll(alterSQLParserRuleStatementTestCases, result);
-        putAll(createTypeStatementTestCases, result);
-        putAll(createConversionStatementTestCase, result);
-        putAll(dropConversionStatementTestCase, result);
-        putAll(alterDomainStatementTestCase, result);
-        putAll(alterAggregateStatementTestCase, result);
-        putAll(alterConversionStatementTestCase, result);
-        putAll(alterCollationStatementTestCase, result);
-        putAll(alterDefaultPrivilegesTestCase, result);
-        putAll(alterForeignDataWrapperTestCase, result);
-        putAll(alterForeignTableTestCase, result);
-        putAll(dropForeignTableStatementTestCase, result);
-        putAll(alterGroupStatementTestCase, result);
-        putAll(alterMaterializedViewStatementTestCase, result);
-        putAll(createTextSearchStatementTestCases, result);
-        putAll(alterTextSearchStatementTestCases, result);
-        putAll(createLanguageStatementTestCases, result);
-        putAll(alterLanguageStatementTestCases, result);
-        putAll(dropLanguageStatementTestCases, result);
-        putAll(showTableMetadataStatementTestCases, result);
-        putAll(dropTrafficRuleStatementTestCases, result);
-        putAll(labelStatementTestCases, result);
-        putAll(unlabelStatementTestCases, result);
-        putAll(alterInstanceStatementTestCases, result);
-        putAll(prepareDistSQLStatementTestCases, result);
-        putAll(applyDistSQLStatementTestCases, result);
-        putAll(discardDistSQLStatementTestCases, result);
-        putAll(helpStatementTestCases, result);
-        putAll(showUnusedShardingAlgorithmsStatementTestCases, result);
-        putAll(showUnusedShardingKeyGeneratorsStatementTestCases, result);
-        putAll(renameTableStatementTestCases, result);
-        putAll(showBinlogEventsStatementTestCases, result);
-        putAll(createExtensionStatementTestCase, result);
-        putAll(countSchemaRulesStatementTestCases, result);
-        putAll(alterExtensionStatementTestCase, result);
-        putAll(dropExtensionStatementTestCase, result);
-        putAll(declareStatementTestCase, result);
-        putAll(discardStatementTestCase, result);
-        putAll(lockStatementTestCases, result);
-        putAll(unlockStatementTestCases, result);
-        putAll(exportDatabaseConfigurationStatementTestCases, result);
-        putAll(showRulesUsedResourceStatementTestCases, result);
-        putAll(preparedStatementTestCases, result);
-        putAll(showShardingTableRulesUsedAlgorithmStatementTestCases, result);
-        putAll(showShardingTableRulesUsedKeyGeneratorStatementTestCases, result);
-        putAll(setUserStatementTestCases, result);
-        putAll(dropShardingAlgorithmStatementTestCases, result);
+        putAll(refreshTableMetadataTestCases, result);
+        putAll(showEventsTestCases, result);
+        putAll(showCharacterSetTestCases, result);
+        putAll(showCollationTestCases, result);
+        putAll(showVariablesTestCases, result);
+        putAll(showShardingKeyGeneratorsTestCases, result);
+        putAll(showDefaultShardingStrategyTestCases, result);
+        putAll(dropShardingKeyGeneratorTestCases, result);
+        putAll(dropDefaultShardingStrategyTestCases, result);
+        putAll(delimiterTestCases, result);
+        putAll(dropDomainTestCases, result);
+        putAll(showSQLParserRuleTestCases, result);
+        putAll(createDomainTestCases, result);
+        putAll(createRuleTestCases, result);
+        putAll(showAuthorityRuleTestCases, result);
+        putAll(showTransactionRuleTestCases, result);
+        putAll(showTrafficRulesTestCases, result);
+        putAll(createTrafficRulesTestCases, result);
+        putAll(alterTrafficRulesTestCases, result);
+        putAll(alterSQLParserRuleTestCases, result);
+        putAll(createTypeTestCases, result);
+        putAll(createConversionTestCases, result);
+        putAll(createCastTestCases, result);
+        putAll(dropConversionTestCases, result);
+        putAll(alterDomainTestCases, result);
+        putAll(alterAggregateTestCases, result);
+        putAll(alterConversionTestCases, result);
+        putAll(alterCollationTestCases, result);
+        putAll(alterDefaultPrivilegesTestCases, result);
+        putAll(alterForeignDataWrapperTestCases, result);
+        putAll(alterForeignTableTestCases, result);
+        putAll(dropForeignTableTestCases, result);
+        putAll(alterGroupTestCases, result);
+        putAll(alterMaterializedViewTestCases, result);
+        putAll(alterOperatorTestCases, result);
+        putAll(createTextSearchTestCases, result);
+        putAll(alterTextSearchTestCases, result);
+        putAll(createLanguageTestCases, result);
+        putAll(alterLanguageTestCases, result);
+        putAll(dropLanguageTestCases, result);
+        putAll(showTableMetadataTestCases, result);
+        putAll(dropTrafficRuleTestCases, result);
+        putAll(labelTestCases, result);
+        putAll(unlabelTestCases, result);
+        putAll(alterInstanceTestCases, result);
+        putAll(prepareDistSQLTestCases, result);
+        putAll(applyDistSQLTestCases, result);
+        putAll(discardDistSQLTestCases, result);
+        putAll(helpTestCases, result);
+        putAll(showUnusedShardingAlgorithmsTestCases, result);
+        putAll(showUnusedShardingKeyGeneratorsTestCases, result);
+        putAll(renameTableTestCases, result);
+        putAll(showBinlogEventsTestCases, result);
+        putAll(createExtensionTestCases, result);
+        putAll(countDatabaseRulesTestCases, result);
+        putAll(alterExtensionTestCases, result);
+        putAll(dropExtensionTestCases, result);
+        putAll(declareTestCases, result);
+        putAll(discardTestCases, result);
+        putAll(lockTestCases, result);
+        putAll(unlockTestCases, result);
+        putAll(exportDatabaseConfigurationTestCases, result);
+        putAll(showRulesUsedResourceTestCases, result);
+        putAll(preparedTestCases, result);
+        putAll(showShardingTableRulesUsedAlgorithmTestCases, result);
+        putAll(showShardingTableRulesUsedKeyGeneratorTestCases, result);
+        putAll(setUserTestCases, result);
+        putAll(dropShardingAlgorithmTestCases, result);
         putAll(createTablespaceTestCases, result);
-        putAll(importDatabaseConfigurationStatementTestCases, result);
-        putAll(dropOwnedStatementTestCases, result);
-        putAll(dropOperatorStatementTestCases, result);
-        putAll(dropMaterializedViewStatementTestCases, result);
-        putAll(dropCastStatementTestCases, result);
-        putAll(dropAggregateStatementTestCases, result);
-        putAll(dropCollationStatementTestCases, result);
-        putAll(dropForeignDataWrapperStatementTestCases, result);
-        putAll(dropTypeStatementTestCases, result);
-        putAll(dropOperatorClassStatementTestCases, result);
-        putAll(dropOperatorFamilyStatementTestCases, result);
-        putAll(dropAccessMethodStatementTestCases, result);
-        putAll(revertStatementTestCases, result);
-        putAll(alterAnalyticViewStatementTestCases, result);
+        putAll(importDatabaseConfigurationTestCases, result);
+        putAll(dropOwnedTestCases, result);
+        putAll(dropOperatorTestCases, result);
+        putAll(dropMaterializedViewTestCases, result);
+        putAll(dropCastTestCases, result);
+        putAll(dropAggregateTestCases, result);
+        putAll(dropCollationTestCases, result);
+        putAll(dropForeignDataWrapperTestCases, result);
+        putAll(dropTypeTestCases, result);
+        putAll(dropOperatorClassTestCases, result);
+        putAll(dropOperatorFamilyTestCases, result);
+        putAll(dropAccessMethodTestCases, result);
+        putAll(revertTestCases, result);
+        putAll(alterAnalyticViewTestCases, result);
         putAll(alterAttributeDimensionTestCases, result);
+        putAll(createContextTestCases, result);
+        putAll(createSPFileTestCases, result);
+        putAll(createPFileTestCases, result);
+        putAll(createControlFileTestCases, result);
+        putAll(createFlashbackArchiveTestCases, result);
+        putAll(alterFlashbackArchiveTestCases, result);
+        putAll(dropFlashbackArchiveTestCases, result);
+        putAll(createDiskgroupTestCases, result);
+        putAll(dropDiskgroupTestCases, result);
+        putAll(createRollbackSegmentTestCases, result);
+        putAll(dropRollbackSegmentTestCases, result);
+        putAll(createLockdownProfileTestCases, result);
+        putAll(dropLockdownProfileTestCases, result);
+        putAll(createInmemoryJoinGroupTestCases, result);
+        putAll(alterInmemoryJoinGroupTestCases, result);
+        putAll(dropInmemoryJoinGroupTestCases, result);
+        putAll(createRestorePointTestCases, result);
+        putAll(dropRestorePointTestCases, result);
+        putAll(alterLibraryTestCases, result);
+        putAll(cursorTestCases, result);
+        putAll(closeTestCases, result);
+        putAll(moveTestCases, result);
+        putAll(fetchTestCases, result);
+        putAll(checkpointTestCases, result);
+        putAll(clusterStatementTestCases, result);
+        putAll(createAccessMethodTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON

@@ -32,5 +32,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 @ToString
 public final class MySQLShowCreateDatabaseStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
-    private String schemaName;
+    private String databaseName;
 }

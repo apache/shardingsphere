@@ -34,13 +34,6 @@ public final class PropertyUtilTest {
         assertThat(PropertyUtil.getCamelCaseKeys(createToBeConvertedMap()), is(createConvertedMap()));
     }
     
-    @Test
-    public void test() throws Exception {
-        MockEnvironment mockEnvironment = new MockEnvironment();
-        mockEnvironment.setProperty("spring.shardingsphere.rules.sharding.sharding-algorithms.table-inline.type", "INLINE");
-        assertTrue(PropertyUtil.containPropertyPrefix(mockEnvironment, "spring.shardingsphere.rules.sharding.sharding-algorithms.table-inline"));
-    }
-    
     private Map<String, Object> createToBeConvertedMap() {
         Map<String, Object> result = new LinkedHashMap<>(2, 1);
         result.put("fooKey", "fooValue");
@@ -53,5 +46,12 @@ public final class PropertyUtilTest {
         result.put("fooKey", "fooValue");
         result.put("barKey", "barValue");
         return result;
+    }
+    
+    @Test
+    public void assertContainPropertyPrefix() {
+        MockEnvironment mockEnvironment = new MockEnvironment();
+        mockEnvironment.setProperty("spring.shardingsphere.rules.sharding.sharding-algorithms.table-inline.type", "INLINE");
+        assertTrue(PropertyUtil.containPropertyPrefix(mockEnvironment, "spring.shardingsphere.rules.sharding.sharding-algorithms.table-inline"));
     }
 }

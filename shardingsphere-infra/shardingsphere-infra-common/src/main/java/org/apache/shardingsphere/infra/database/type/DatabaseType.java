@@ -89,16 +89,6 @@ public interface DatabaseType extends TypedSPI {
     }
     
     /**
-     * Get default schema.
-     *
-     * @param databaseName database name
-     * @return default schema
-     */
-    default String getDefaultSchema(String databaseName) {
-        return databaseName;
-    }
-    
-    /**
      * Get schema.
      *
      * @param connection connection

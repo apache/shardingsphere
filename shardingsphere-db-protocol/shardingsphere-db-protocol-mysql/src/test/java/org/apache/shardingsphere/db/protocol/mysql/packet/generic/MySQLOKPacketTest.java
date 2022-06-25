@@ -37,7 +37,7 @@ public final class MySQLOKPacketTest {
     
     @Test
     public void assertNewOKPacketWithSequenceId() {
-        MySQLOKPacket actual = new MySQLOKPacket(1);
+        MySQLOKPacket actual = new MySQLOKPacket(1, MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getAffectedRows(), is(0L));
         assertThat(actual.getLastInsertId(), is(0L));
@@ -48,7 +48,7 @@ public final class MySQLOKPacketTest {
     
     @Test
     public void assertNewOKPacketWithAffectedRowsAndLastInsertId() {
-        MySQLOKPacket actual = new MySQLOKPacket(1, 100L, 9999L);
+        MySQLOKPacket actual = new MySQLOKPacket(1, 100L, 9999L, MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getAffectedRows(), is(100L));
         assertThat(actual.getLastInsertId(), is(9999L));
@@ -74,7 +74,7 @@ public final class MySQLOKPacketTest {
     
     @Test
     public void assertWrite() {
-        new MySQLOKPacket(1, 100L, 9999L).write(packetPayload);
+        new MySQLOKPacket(1, 100L, 9999L, MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()).write(packetPayload);
         verify(packetPayload).writeInt1(MySQLOKPacket.HEADER);
         verify(packetPayload).writeIntLenenc(100L);
         verify(packetPayload).writeIntLenenc(9999L);

@@ -5,7 +5,7 @@ weight = 6
 
 ## Configuration Item Explanation
 
-Namespace：[http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser-5.1.1.xsd)
+Namespace：[http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser-5.1.2.xsd)
 
 \<sql-parser:rule />
 
@@ -23,4 +23,3 @@ Namespace：[http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/s
 | id                          | Attribute  | Local cache configuration item name          |
 | initial-capacity            | Attribute  | Initial capacity of local cache           |
 | maximum-size                | Attribute  | Maximum capacity of local cache             |
-| concurrency-level           | Attribute  | Local cache concurrency level, the maximum number of concurrent updates allowed by threads |

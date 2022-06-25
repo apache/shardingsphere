@@ -28,7 +28,7 @@ public interface SingleTableRouteEngine {
     /**
      * Route.
      *
-     * @param routeContext route context 
+     * @param routeContext route context
      * @param singleTableRule single table rule
      */
     void route(RouteContext routeContext, SingleTableRule singleTableRule);

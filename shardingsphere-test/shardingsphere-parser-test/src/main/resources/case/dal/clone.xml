@@ -18,19 +18,19 @@
 
 <sql-parser-test-cases>
     <clone sql-case-id="clone_local">
-        <data-directory location="/path/to/clone_dir"/>
+        <data-directory location="/path/to/clone_dir" />
     </clone>
     <clone sql-case-id="clone_instance">
-        <instance username="donor_clone_user" hostname="example.donor.host.com" port="3306" password="password"/>
+        <instance username="donor_clone_user" hostname="example.donor.host.com" port="3306" password="password" />
     </clone>
     <clone sql-case-id="clone_instance_with_data_dir">
-        <instance username="donor_clone_user" hostname="example.donor.host.com" port="3306" password="password"/>
-        <data-directory location="/tmp/clone_dir"/>
+        <instance username="donor_clone_user" hostname="example.donor.host.com" port="3306" password="password" />
+        <data-directory location="/tmp/clone_dir" />
     </clone>
     <clone sql-case-id="clone_instance_require_ssl">
-        <instance username="donor_clone_user" hostname="example.donor.host.com" port="3306" password="password" require-ssl="true"/>
+        <instance username="donor_clone_user" hostname="example.donor.host.com" port="3306" password="password" require-ssl="true" />
     </clone>
     <clone sql-case-id="clone_instance_require_no_ssl">
-        <instance username="donor_clone_user" hostname="example.donor.host.com" port="3306" password="password" require-ssl="false"/>
+        <instance username="donor_clone_user" hostname="example.donor.host.com" port="3306" password="password" require-ssl="false" />
     </clone>
 </sql-parser-test-cases>

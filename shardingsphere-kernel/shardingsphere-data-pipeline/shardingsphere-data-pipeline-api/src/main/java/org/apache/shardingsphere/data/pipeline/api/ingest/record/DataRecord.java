@@ -33,15 +33,15 @@ import java.util.List;
  */
 @Getter
 @Setter
-@EqualsAndHashCode(of = {"tableName", "primaryKeyValue"}, callSuper = false)
+@EqualsAndHashCode(of = {"tableName", "uniqueKeyValue"}, callSuper = false)
 @ToString
 public final class DataRecord extends Record {
     
     private final List<Column> columns;
     
-    private final List<Object> primaryKeyValue = new LinkedList<>();
+    private final List<Object> uniqueKeyValue = new LinkedList<>();
     
-    private final List<Object> oldPrimaryKeyValues = new ArrayList<>();
+    private final List<Object> oldUniqueKeyValues = new ArrayList<>();
     
     private String type;
     
@@ -59,9 +59,9 @@ public final class DataRecord extends Record {
      */
     public void addColumn(final Column data) {
         columns.add(data);
-        if (data.isPrimaryKey()) {
-            primaryKeyValue.add(data.getValue());
-            oldPrimaryKeyValues.add(data.getOldValue());
+        if (data.isUniqueKey()) {
+            uniqueKeyValue.add(data.getValue());
+            oldUniqueKeyValues.add(data.getOldValue());
         }
     }
     
@@ -90,7 +90,7 @@ public final class DataRecord extends Record {
      * @return key
      */
     public Key getKey() {
-        return new Key(tableName, primaryKeyValue);
+        return new Key(tableName, uniqueKeyValue);
     }
     
     /**
@@ -99,7 +99,7 @@ public final class DataRecord extends Record {
      * @return key
      */
     public Key getOldKey() {
-        return new Key(tableName, oldPrimaryKeyValues);
+        return new Key(tableName, oldUniqueKeyValues);
     }
     
     @EqualsAndHashCode
@@ -108,6 +108,6 @@ public final class DataRecord extends Record {
         
         private final String tableName;
         
-        private final List<Object> primaryKeyValues;
+        private final List<Object> uniqueKeyValues;
     }
 }

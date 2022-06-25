@@ -18,5 +18,5 @@
 
 <sql-parser-test-cases>
     <drop-group sql-case-id="drop_group_if_exists" />
-    <drop-group sql-case-id="drop_group"/>
+    <drop-group sql-case-id="drop_group" />
 </sql-parser-test-cases>

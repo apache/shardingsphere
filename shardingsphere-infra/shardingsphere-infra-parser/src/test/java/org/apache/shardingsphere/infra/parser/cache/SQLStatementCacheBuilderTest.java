@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.parser.cache;
 
-import com.google.common.cache.LoadingCache;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.junit.Test;
 
@@ -28,6 +28,6 @@ public final class SQLStatementCacheBuilderTest {
     
     @Test
     public void assertBuild() {
-        assertThat(SQLStatementCacheBuilder.build("MySQL", new CacheOption(2000, 65535L, 4), new CacheOption(128, 1024L, 4), false), isA(LoadingCache.class));
+        assertThat(SQLStatementCacheBuilder.build("MySQL", new CacheOption(2000, 65535L), new CacheOption(128, 1024L), false), isA(LoadingCache.class));
     }
 }

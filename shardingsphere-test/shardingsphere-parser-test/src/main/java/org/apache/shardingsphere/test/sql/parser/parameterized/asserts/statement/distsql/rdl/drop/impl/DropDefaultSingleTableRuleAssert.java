@@ -47,7 +47,7 @@ public final class DropDefaultSingleTableRuleAssert {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            assertThat(assertContext.getText("Actual statement should exist."), actual.isContainsExistClause(), is(expected.isContainsExistClause()));
+            assertThat(assertContext.getText("Actual statement should exist."), actual.isIfExists(), is(expected.isIfExists()));
         }
     }
 }

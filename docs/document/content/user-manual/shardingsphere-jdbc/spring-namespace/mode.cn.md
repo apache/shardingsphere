@@ -5,7 +5,7 @@ weight = 1
 
 ## 配置项说明
 
-命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.1.xsd)
+命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.2.xsd)
 
 \<shardingsphere:mode />
 
@@ -31,7 +31,7 @@ weight = 1
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd">
     
-    <shardingsphere:data-source id="ds" schema-name="foo_schema" data-source-names="..." rule-refs="..." />
+    <shardingsphere:data-source id="ds" database-name="foo_schema" data-source-names="..." rule-refs="..." />
 </beans>
 ```
 
@@ -39,7 +39,7 @@ weight = 1
 
 #### 配置项说明
 
-命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository-5.1.1.xsd)
+命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository-5.1.2.xsd)
 
 <standalone:repository />
 
@@ -69,7 +69,7 @@ weight = 1
         </props>
     </standalone:repository>
 
-    <shardingsphere:data-source id="ds" schema-name="foo_schema" data-source-names="..." rule-refs="..." >
+    <shardingsphere:data-source id="ds" database-name="foo_schema" data-source-names="..." rule-refs="..." >
         <shardingsphere:mode type="Standalone" repository-ref="standaloneRepository" overwrite="true" />
     </shardingsphere:data-source>
 </beans>
@@ -79,7 +79,7 @@ weight = 1
 
 #### 配置项说明
 
-命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository-5.1.1.xsd)
+命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository-5.1.2.xsd)
 
 <cluster:repository />
 
@@ -112,7 +112,7 @@ weight = 1
         </props>
     </cluster:repository>
     
-    <shardingsphere:data-source id="ds" schema-name="foo_schema" data-source-names="..." rule-refs="...">
+    <shardingsphere:data-source id="ds" database-name="foo_schema" data-source-names="..." rule-refs="...">
         <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" overwrite="true" />
     </shardingsphere:data-source>
 </beans>

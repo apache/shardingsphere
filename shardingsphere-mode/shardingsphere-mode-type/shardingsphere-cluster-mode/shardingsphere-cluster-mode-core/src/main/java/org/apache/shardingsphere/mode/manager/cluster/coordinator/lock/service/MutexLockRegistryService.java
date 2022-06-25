@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
+import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -31,6 +31,11 @@ import java.util.concurrent.TimeUnit;
 public final class MutexLockRegistryService implements LockRegistryService {
     
     private final ClusterPersistRepository repository;
+    
+    @Override
+    public Collection<String> acquireAckLockedInstances(final String ackLockName) {
+        return repository.getChildrenKeys(ackLockName);
+    }
     
     @Override
     public boolean tryLock(final String lockName, final long timeoutMilliseconds) {
@@ -48,7 +53,7 @@ public final class MutexLockRegistryService implements LockRegistryService {
     
     @Override
     public void removeLock(final String lockName) {
-        repository.delete(LockNodeUtil.generateMutexLockReleasedNodePath(lockName));
+        repository.delete(LockNodeUtil.generateLockLeasesNodePath(lockName));
     }
     
     @Override

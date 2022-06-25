@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.shadow.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowRulesStatement;
+import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
@@ -37,7 +38,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Result set for show shadow rules.
+ * Query result set for show shadow rules.
  */
 public final class ShadowRuleQueryResultSet implements DistSQLResultSet {
     
@@ -52,10 +53,9 @@ public final class ShadowRuleQueryResultSet implements DistSQLResultSet {
     private Iterator<Map<String, String>> data = Collections.emptyIterator();
     
     @Override
-    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        Optional<ShadowRuleConfiguration> ruleConfig = metaData.getRuleMetaData().getConfigurations().stream()
-                .filter(each -> each instanceof ShadowRuleConfiguration).map(each -> (ShadowRuleConfiguration) each).findAny();
-        ruleConfig.ifPresent(optional -> buildDataSourceIterator(optional, (ShowShadowRulesStatement) sqlStatement));
+    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+        Optional<ShadowRule> rule = database.getRuleMetaData().findSingleRule(ShadowRule.class);
+        rule.ifPresent(optional -> buildDataSourceIterator((ShadowRuleConfiguration) optional.getConfiguration(), (ShowShadowRulesStatement) sqlStatement));
     }
     
     private void buildDataSourceIterator(final ShadowRuleConfiguration ruleConfig, final ShowShadowRulesStatement sqlStatement) {
@@ -92,10 +92,7 @@ public final class ShadowRuleQueryResultSet implements DistSQLResultSet {
     }
     
     private String convertToString(final Collection<String> shadowTables) {
-        if (null != shadowTables) {
-            return String.join(",", shadowTables);
-        }
-        return "";
+        return null == shadowTables ? "" : String.join(",", shadowTables);
     }
     
     @Override

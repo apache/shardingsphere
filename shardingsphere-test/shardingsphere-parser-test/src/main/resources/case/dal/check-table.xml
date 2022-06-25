@@ -17,31 +17,31 @@
   -->
 
 <sql-parser-test-cases>
-    <check-table sql-case-id="check_table" >
+    <check-table sql-case-id="check_table">
         <table name="test_table" start-index="12" stop-index="21" />
     </check-table>
-    <check-table sql-case-id="check_tables" >
+    <check-table sql-case-id="check_tables">
         <table name="t_order" start-index="12" stop-index="18" />
         <table name="t_order_item" start-index="20" stop-index="31" />
     </check-table>
-    <checksum-table sql-case-id="checksum_table" >
+    <checksum-table sql-case-id="checksum_table">
         <table name="t_order" start-index="15" stop-index="21" />
     </checksum-table>
-    <checksum-table sql-case-id="checksum_table_quick" >
+    <checksum-table sql-case-id="checksum_table_quick">
         <table name="t_order" start-index="15" stop-index="21" />
     </checksum-table>
-    <checksum-table sql-case-id="checksum_table_extended" >
+    <checksum-table sql-case-id="checksum_table_extended">
         <table name="t_order" start-index="15" stop-index="21" />
     </checksum-table>
-    <checksum-table sql-case-id="checksum_tables" >
+    <checksum-table sql-case-id="checksum_tables">
         <table name="t_order" start-index="16" stop-index="22" />
         <table name="t_order_item" start-index="24" stop-index="35" />
     </checksum-table>
-    <checksum-table sql-case-id="checksum_tables_quick" >
+    <checksum-table sql-case-id="checksum_tables_quick">
         <table name="t_order" start-index="16" stop-index="22" />
         <table name="t_order_item" start-index="24" stop-index="35" />
     </checksum-table>
-    <checksum-table sql-case-id="checksum_tables_extended" >
+    <checksum-table sql-case-id="checksum_tables_extended">
         <table name="t_order" start-index="16" stop-index="22" />
         <table name="t_order_item" start-index="24" stop-index="35" />
     </checksum-table>

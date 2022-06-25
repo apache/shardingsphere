@@ -52,7 +52,7 @@ public final class DropResourceBackendHandler extends DatabaseRequiredBackendHan
     @Override
     public ResponseHeader execute(final String databaseName, final DropResourceStatement sqlStatement) throws DistSQLException {
         Collection<String> toBeDroppedResourceNames = sqlStatement.getNames();
-        check(databaseName, toBeDroppedResourceNames, sqlStatement.isIgnoreSingleTables(), sqlStatement.isContainsExistClause());
+        check(databaseName, toBeDroppedResourceNames, sqlStatement.isIgnoreSingleTables(), sqlStatement.isIfExists());
         ProxyContext.getInstance().getContextManager().dropResource(databaseName, toBeDroppedResourceNames);
         return new UpdateResponseHeader(sqlStatement);
     }
@@ -66,7 +66,7 @@ public final class DropResourceBackendHandler extends DatabaseRequiredBackendHan
     }
     
     private void checkResourceNameExisted(final String databaseName, final Collection<String> resourceNames) throws DistSQLException {
-        Map<String, DataSource> resources = ProxyContext.getInstance().getMetaData(databaseName).getResource().getDataSources();
+        Map<String, DataSource> resources = ProxyContext.getInstance().getDatabase(databaseName).getResource().getDataSources();
         Collection<String> notExistedResourceNames = resourceNames.stream().filter(each -> !resources.containsKey(each)).collect(Collectors.toList());
         DistSQLException.predictionThrow(notExistedResourceNames.isEmpty(), () -> new RequiredResourceMissedException(databaseName, notExistedResourceNames));
     }
@@ -95,7 +95,7 @@ public final class DropResourceBackendHandler extends DatabaseRequiredBackendHan
     
     private Multimap<String, String> getInUsedResources(final String databaseName) {
         Multimap<String, String> result = LinkedListMultimap.create();
-        for (ShardingSphereRule each : ProxyContext.getInstance().getMetaData(databaseName).getRuleMetaData().getRules()) {
+        for (ShardingSphereRule each : ProxyContext.getInstance().getDatabase(databaseName).getRuleMetaData().getRules()) {
             if (each instanceof DataSourceContainedRule) {
                 Collection<String> inUsedResourceNames = getInUsedResourceNames((DataSourceContainedRule) each);
                 inUsedResourceNames.forEach(eachResource -> result.put(eachResource, each.getType()));

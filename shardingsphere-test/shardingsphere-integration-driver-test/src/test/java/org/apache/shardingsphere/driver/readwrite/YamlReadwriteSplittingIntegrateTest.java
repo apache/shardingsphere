@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.driver.readwrite;
 
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.AbstractYamlDataSourceTest;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
@@ -34,6 +32,8 @@ import java.sql.Connection;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 @RunWith(Parameterized.class)
@@ -61,8 +61,11 @@ public final class YamlReadwriteSplittingIntegrateTest extends AbstractYamlDataS
         if (hasDataSource) {
             dataSource = YamlShardingSphereDataSourceFactory.createDataSource(yamlFile);
         } else {
-            dataSource = YamlShardingSphereDataSourceFactory.createDataSource(
-                    Maps.asMap(Sets.newHashSet("db_write", "read_ds_0", "read_ds_1"), AbstractYamlDataSourceTest::createDataSource), yamlFile);
+            Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1);
+            dataSourceMap.put("db_write", createDataSource("db_write"));
+            dataSourceMap.put("read_ds_0", createDataSource("read_ds_0"));
+            dataSourceMap.put("read_ds_1", createDataSource("read_ds_1"));
+            dataSource = YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, yamlFile);
         }
         try (
                 Connection connection = dataSource.getConnection();
@@ -81,8 +84,11 @@ public final class YamlReadwriteSplittingIntegrateTest extends AbstractYamlDataS
         if (hasDataSource) {
             dataSource = YamlShardingSphereDataSourceFactory.createDataSource(yamlFile);
         } else {
-            dataSource = YamlShardingSphereDataSourceFactory.createDataSource(
-                    Maps.asMap(Sets.newHashSet("db_write", "read_ds_0", "read_ds_1"), AbstractYamlDataSourceTest::createDataSource), yamlFile);
+            Map<String, DataSource> dataSourceMap = new HashMap<>(3, 1);
+            dataSourceMap.put("db_write", createDataSource("db_write"));
+            dataSourceMap.put("read_ds_0", createDataSource("read_ds_0"));
+            dataSourceMap.put("read_ds_1", createDataSource("read_ds_1"));
+            dataSource = YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, yamlFile);
         }
         try (
                 Connection connection = dataSource.getConnection();

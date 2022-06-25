@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.driver.jdbc.base;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 import org.apache.shardingsphere.driver.api.yaml.YamlShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
@@ -36,7 +34,9 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public abstract class AbstractShardingSphereDataSourceForEncryptTest extends AbstractSQLTest {
     
@@ -46,27 +46,27 @@ public abstract class AbstractShardingSphereDataSourceForEncryptTest extends Abs
     
     private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Collections.singletonList("encrypt");
     
-    private static final String ENCRYPT_CONFIG_QUERY_WITH_PLAIN_FILE = "config/config-encrypt-query-with-plain.yaml";
+    private static final String CONFIG_FILE_WITH_QUERY_WITH_PLAIN = "config/config-encrypt-query-with-plain.yaml";
     
-    private static final String ENCRYPT_CONFIG_QUERY_WITH_CIPHER_FILE = "config/config-encrypt-query-with-cipher.yaml";
+    private static final String CONFIG_FILE_WITH_QUERY_WITH_CIPHER = "config/config-encrypt-query-with-cipher.yaml";
     
     @BeforeClass
     public static void initEncryptDataSource() throws SQLException, IOException {
         if (null != queryWithPlainDataSource && null != queryWithCipherDataSource) {
             return;
         }
-        DataSource dataSource = getDataSources().values().iterator().next();
-        queryWithPlainDataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(dataSource, getFile(ENCRYPT_CONFIG_QUERY_WITH_CIPHER_FILE));
-        queryWithCipherDataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(dataSource, getFile(ENCRYPT_CONFIG_QUERY_WITH_PLAIN_FILE));
+        DataSource dataSource = getDataSourceMap().values().iterator().next();
+        queryWithPlainDataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(dataSource, getFile(CONFIG_FILE_WITH_QUERY_WITH_CIPHER));
+        queryWithCipherDataSource = (ShardingSphereDataSource) YamlShardingSphereDataSourceFactory.createDataSource(dataSource, getFile(CONFIG_FILE_WITH_QUERY_WITH_PLAIN));
     }
     
     private static File getFile(final String fileName) {
-        return new File(Preconditions.checkNotNull(
-                AbstractShardingSphereDataSourceForEncryptTest.class.getClassLoader().getResource(fileName), "file resource `%s` must not be null.", fileName).getFile());
+        return new File(Objects.requireNonNull(
+                AbstractShardingSphereDataSourceForEncryptTest.class.getClassLoader().getResource(fileName), String.format("File `%s` is not existed.", fileName)).getFile());
     }
     
-    private static Map<String, DataSource> getDataSources() {
-        return Maps.filterKeys(getActualDataSources(), ACTUAL_DATA_SOURCE_NAMES::contains);
+    private static Map<String, DataSource> getDataSourceMap() {
+        return getActualDataSources().entrySet().stream().filter(entry -> ACTUAL_DATA_SOURCE_NAMES.contains(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
     }
     
     @Before
@@ -78,11 +78,11 @@ public abstract class AbstractShardingSphereDataSourceForEncryptTest extends Abs
         }
     }
     
-    protected final Connection getEncryptConnection() {
+    protected final Connection getEncryptConnection() throws SQLException {
         return queryWithPlainDataSource.getConnection();
     }
     
-    protected final ShardingSphereConnection getEncryptConnectionWithProps() {
+    protected final ShardingSphereConnection getEncryptConnectionWithProps() throws SQLException {
         return (ShardingSphereConnection) queryWithCipherDataSource.getConnection();
     }
     

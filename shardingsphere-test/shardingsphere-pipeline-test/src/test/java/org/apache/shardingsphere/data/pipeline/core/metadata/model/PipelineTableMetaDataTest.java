@@ -20,14 +20,14 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.model;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-
 import java.sql.Types;
 import java.util.Collections;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
 public final class PipelineTableMetaDataTest {
     
@@ -35,7 +35,8 @@ public final class PipelineTableMetaDataTest {
     
     @Before
     public void setUp() {
-        pipelineTableMetaData = new PipelineTableMetaData("test_data", Collections.singletonMap("test", new PipelineColumnMetaData(1, "test", Types.INTEGER, "INTEGER", true)));
+        PipelineColumnMetaData column = new PipelineColumnMetaData(1, "test", Types.INTEGER, "INTEGER", true, true);
+        pipelineTableMetaData = new PipelineTableMetaData("test_data", Collections.singletonMap("test", column), Collections.emptySet());
     }
     
     @Test
@@ -59,7 +60,7 @@ public final class PipelineTableMetaDataTest {
     
     @Test
     public void assertIsPrimaryKey() {
-        assertTrue(pipelineTableMetaData.isPrimaryKey(0));
-        assertFalse(pipelineTableMetaData.isPrimaryKey(1));
+        assertTrue(pipelineTableMetaData.isUniqueKey(0));
+        assertFalse(pipelineTableMetaData.isUniqueKey(1));
     }
 }

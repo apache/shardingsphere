@@ -19,7 +19,7 @@
 <sql-cases>
     <sql-case id="alter_dimension_add" value="ALTER DIMENSION customers_dim 
        ADD LEVEL zone IS customers.cust_postal_code
-       ADD ATTRIBUTE zone DETERMINES (cust_city)" db-types="Oracle" />    
+       ADD ATTRIBUTE zone DETERMINES (cust_city)" db-types="Oracle" />
     <sql-case id="alter_dimension_drop" value="ALTER DIMENSION customers_dim DROP ATTRIBUTE country" db-types="Oracle" />
     <sql-case id="alter_dimension_compile" value="ALTER DIMENSION customers_dim COMPILE" db-types="Oracle" />
 </sql-cases>

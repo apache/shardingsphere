@@ -19,22 +19,21 @@ package org.apache.shardingsphere.agent.core.bytebuddy.transformer.advice;
 
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.api.advice.ConstructorAdvice;
+import org.apache.shardingsphere.agent.core.mock.advice.MockConstructorAdvice;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
+import java.util.LinkedList;
 
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class ComposeConstructorAdviceTest {
     
-    @Mock
-    private ConstructorAdvice constructorAdvice;
+    private final ConstructorAdvice constructorAdvice = new MockConstructorAdvice();
     
     private ComposeConstructorAdvice actual;
     
@@ -47,7 +46,7 @@ public final class ComposeConstructorAdviceTest {
     public void assertOnConstructor() {
         AdviceTargetObject adviceTargetObject = mock(AdviceTargetObject.class);
         Object[] args = new Object[2];
+        args[0] = new LinkedList<String>();
         actual.onConstructor(adviceTargetObject, args);
-        verify(constructorAdvice).onConstructor(adviceTargetObject, args);
     }
 }

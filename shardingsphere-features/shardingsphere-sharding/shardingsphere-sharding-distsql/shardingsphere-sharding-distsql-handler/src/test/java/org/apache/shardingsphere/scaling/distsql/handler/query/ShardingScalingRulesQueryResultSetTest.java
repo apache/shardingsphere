@@ -22,21 +22,24 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration.InputConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration.OutputConfiguration;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.distsql.handler.query.ShardingAlgorithmsQueryResultSet;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingAlgorithmsStatement;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -45,10 +48,9 @@ public final class ShardingScalingRulesQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
-        ShardingSphereMetaData metaData = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
-        when(metaData.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
         ShardingScalingRulesQueryResultSet resultSet = new ShardingScalingRulesQueryResultSet();
-        resultSet.init(metaData, mock(ShowShardingAlgorithmsStatement.class));
+        resultSet.init(mockDatabase(), mock(ShowShardingAlgorithmsStatement.class));
+        assertTrue(resultSet.next());
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(actual.size(), is(6));
         assertThat(actual.get(0), is("scaling_name"));
@@ -61,40 +63,44 @@ public final class ShardingScalingRulesQueryResultSetTest {
         assertThat(actual.get(3).toString(), containsString("\"type\":\"MEMORY\",\"props\":{\"block-queue-size\":\"10000\"}"));
         assertThat(actual.get(4).toString(), containsString("\"type\":\"IDLE\",\"props\":{\"incremental-task-idle-seconds-threshold\":\"1800\"}"));
         assertThat(actual.get(5).toString(), containsString("\"type\":\"DATA_MATCH\",\"props\":{\"chunk-size\":\"1000\"}"));
+        assertFalse(resultSet.next());
+    }
+    
+    private ShardingSphereDatabase mockDatabase() {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
+        when(result.getRuleMetaData().findSingleRule(ShardingRule.class)).thenReturn(Optional.of(rule));
+        return result;
     }
     
     private RuleConfiguration createRuleConfiguration() {
-        Map<String, OnRuleAlteredActionConfiguration> scalingRuleConfigurationMap = new HashMap<>(1, 1);
-        scalingRuleConfigurationMap.put("scaling_name", buildCompleteConfiguration());
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.setScaling(scalingRuleConfigurationMap);
+        result.setScaling(Collections.singletonMap("scaling_name", buildCompleteConfiguration()));
         return result;
     }
     
     private OnRuleAlteredActionConfiguration buildCompleteConfiguration() {
-        InputConfiguration inputConfig = createInputConfiguration("QPS", newProperties("qps", "50"));
-        OutputConfiguration outputConfig = createOutputConfiguration("TPS", newProperties("tps", "2000"));
-        ShardingSphereAlgorithmConfiguration streamChannel = createAlgorithm("MEMORY", newProperties("block-queue-size", "10000"));
-        ShardingSphereAlgorithmConfiguration completionDetector = createAlgorithm("IDLE", newProperties("incremental-task-idle-seconds-threshold", "1800"));
-        ShardingSphereAlgorithmConfiguration dataConsistencyChecker = createAlgorithm("DATA_MATCH", newProperties("chunk-size", "1000"));
+        InputConfiguration inputConfig = new InputConfiguration(10, 100, 10, new ShardingSphereAlgorithmConfiguration("QPS", createProperties("qps", "50")));
+        OutputConfiguration outputConfig = new OutputConfiguration(10, 100, new ShardingSphereAlgorithmConfiguration("TPS", createProperties("tps", "2000")));
+        ShardingSphereAlgorithmConfiguration streamChannel = new ShardingSphereAlgorithmConfiguration("MEMORY", createProperties("block-queue-size", "10000"));
+        ShardingSphereAlgorithmConfiguration completionDetector = new ShardingSphereAlgorithmConfiguration("IDLE", createProperties("incremental-task-idle-seconds-threshold", "1800"));
+        ShardingSphereAlgorithmConfiguration dataConsistencyChecker = new ShardingSphereAlgorithmConfiguration("DATA_MATCH", createProperties("chunk-size", "1000"));
         return new OnRuleAlteredActionConfiguration(inputConfig, outputConfig, streamChannel, completionDetector, dataConsistencyChecker);
     }
     
-    private InputConfiguration createInputConfiguration(final String type, final Properties props) {
-        return new InputConfiguration(10, 100, createAlgorithm(type, props));
-    }
-    
-    private OutputConfiguration createOutputConfiguration(final String type, final Properties props) {
-        return new OutputConfiguration(10, 100, createAlgorithm(type, props));
-    }
-    
-    private ShardingSphereAlgorithmConfiguration createAlgorithm(final String type, final Properties props) {
-        return new ShardingSphereAlgorithmConfiguration(type, props);
-    }
-    
-    private Properties newProperties(final String key, final String value) {
+    private Properties createProperties(final String key, final String value) {
         Properties result = new Properties();
         result.setProperty(key, value);
         return result;
+    }
+    
+    @Test
+    public void assertGetRowDataWithoutShardingRule() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getRuleMetaData().findSingleRule(ShardingRule.class)).thenReturn(Optional.empty());
+        ShardingAlgorithmsQueryResultSet resultSet = new ShardingAlgorithmsQueryResultSet();
+        resultSet.init(database, mock(ShowShardingAlgorithmsStatement.class));
+        assertFalse(resultSet.next());
     }
 }

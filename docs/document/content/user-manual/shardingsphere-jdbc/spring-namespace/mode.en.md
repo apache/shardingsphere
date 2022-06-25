@@ -5,7 +5,7 @@ weight = 1
 
 ## Configuration Item Explanation
 
-Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.1.xsd)
+Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.2.xsd)
 
 \<shardingsphere:mode />
 
@@ -31,7 +31,7 @@ It is the default value.
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd">
     
-    <shardingsphere:data-source id="ds" schema-name="foo_schema" data-source-names="..." rule-refs="..." />
+    <shardingsphere:data-source id="ds" database-name="foo_schema" data-source-names="..." rule-refs="..." />
 </beans>
 ```
 
@@ -39,7 +39,7 @@ It is the default value.
 
 #### Configuration Item Explanation
 
-Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository-5.1.1.xsd)
+Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository-5.1.2.xsd)
 
 <standalone:repository />
 
@@ -69,7 +69,7 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/mode-reposito
         </props>
     </standalone:repository>
 
-    <shardingsphere:data-source id="ds" schema-name="foo_schema" data-source-names="..." rule-refs="..." >
+    <shardingsphere:data-source id="ds" database-name="foo_schema" data-source-names="..." rule-refs="..." >
         <shardingsphere:mode type="Standalone" repository-ref="standaloneRepository" overwrite="true" />
     </shardingsphere:data-source>
 </beans>
@@ -79,7 +79,7 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/mode-reposito
 
 #### Configuration Item Explanation
 
-Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository-5.1.1.xsd)
+Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository-5.1.2.xsd)
 
 <cluster:repository />
 
@@ -112,7 +112,7 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/mode-reposito
         </props>
     </cluster:repository>
     
-    <shardingsphere:data-source id="ds" schema-name="foo_schema" data-source-names="..." rule-refs="...">
+    <shardingsphere:data-source id="ds" database-name="foo_schema" data-source-names="..." rule-refs="...">
         <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" overwrite="true" />
     </shardingsphere:data-source>
 </beans>

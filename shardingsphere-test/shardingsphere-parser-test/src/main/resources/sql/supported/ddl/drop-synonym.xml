@@ -17,6 +17,9 @@
   -->
 
 <sql-cases>
-    <sql-case id="drop_synonym" value="DROP PUBLIC SYNONYM customers;" db-types="Oracle" />
+    <sql-case id="drop_synonym" value="DROP SYNONYM customers;" db-types="Oracle,openGauss" />
     <sql-case id="drop_synonym_with_force" value="DROP PUBLIC SYNONYM customers FORCE;" db-types="Oracle" />
+    <sql-case id="drop_synonym_if_exists" value="DROP SYNONYM IF EXISTS v1" db-types="openGauss" />
+    <sql-case id="drop_synonym_cascade" value="DROP SYNONYM ot CASCADE;" db-types="openGauss" />
+    <sql-case id="drop_synonym_restrict" value="DROP SYNONYM t1 RESTRICT;" db-types="openGauss" />
 </sql-cases>

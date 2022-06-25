@@ -17,4 +17,5 @@
 
 <sql-parser-test-cases>
     <drop-directory sql-case-id="drop_directory" />
+    <drop-directory sql-case-id="drop_directory_if_exists" />
 </sql-parser-test-cases>

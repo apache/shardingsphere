@@ -30,7 +30,7 @@ public final class RouteSQLBuilder extends AbstractSQLBuilder {
     private final RouteUnit routeUnit;
     
     public RouteSQLBuilder(final SQLRewriteContext context, final RouteUnit routeUnit) {
-        super(context);
+        super(context, routeUnit);
         this.routeUnit = routeUnit;
     }
     

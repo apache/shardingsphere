@@ -25,7 +25,7 @@
     <sql-case id="drop_table_cascade_constraints_and_purge" value="DROP TABLE t_log CASCADE CONSTRAINTS PURGE" db-types="Oracle" />
     <sql-case id="drop_table_purge_with_schema" value="DROP TABLE sharding_db.t_log PURGE" db-types="Oracle" />
     <sql-case id="drop_table_with_space" value="    DROP TABLE
-        t_order    "/>
+        t_order    " />
     <sql-case id="drop_table_with_back_quota" value="DROP TABLE `t_order`" left-delimiter="`" right-delimiter="`" db-types="MySQL" />
     <sql-case id="drop_tables" value="DROP TABLE t_order_item, t_order" db-types="MySQL,PostgreSQL,openGauss,SQLServer" />
     <sql-case id="drop_temporary_table" value="DROP TEMPORARY TABLE t_order" db-types="MySQL" />

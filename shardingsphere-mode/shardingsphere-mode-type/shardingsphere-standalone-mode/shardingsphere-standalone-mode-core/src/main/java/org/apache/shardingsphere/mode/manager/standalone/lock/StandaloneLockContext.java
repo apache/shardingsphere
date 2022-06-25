@@ -17,61 +17,39 @@
 
 package org.apache.shardingsphere.mode.manager.standalone.lock;
 
-import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.ReentrantLock;
+import org.apache.shardingsphere.mode.manager.lock.AbstractLockContext;
+import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDefinition;
 
 /**
  * Standalone lock context.
  */
-public final class StandaloneLockContext implements LockContext {
+public final class StandaloneLockContext extends AbstractLockContext {
     
-    private final Map<String, ShardingSphereLock> locks = new ConcurrentHashMap<>();
+    private final ShardingSphereLock standaloneLock = new ShardingSphereStandaloneLock();
     
     @Override
-    public void initLockState(final InstanceContext instanceContext) {
-        throw new UnsupportedOperationException("Lock context init lock state not supported in standalone mode");
+    public ShardingSphereLock getLock() {
+        return standaloneLock;
     }
     
     @Override
-    public synchronized boolean tryLockWriteDatabase(final String databaseName) {
-        Preconditions.checkNotNull(databaseName, "Try lock write database args database name can not be null.");
-        return getMutexLock(databaseName).tryLock(databaseName);
+    protected boolean tryLock(final DatabaseLockNameDefinition lockNameDefinition) {
+        return standaloneLock.tryLock(lockNameDefinition.getDatabaseName());
     }
     
     @Override
-    public void releaseLockWriteDatabase(final String databaseName) {
-        Preconditions.checkNotNull(databaseName, "Release lock write database args database name can not be null.");
-        getMutexLock(databaseName).releaseLock(databaseName);
+    protected boolean tryLock(final DatabaseLockNameDefinition lockNameDefinition, final long timeoutMilliseconds) {
+        return standaloneLock.tryLock(lockNameDefinition.getDatabaseName(), timeoutMilliseconds);
     }
     
     @Override
-    public boolean isLockedDatabase(final String databaseName) {
-        Preconditions.checkNotNull(databaseName, "Is locked database args database name can not be null.");
-        ShardingSphereLock shardingSphereLock = locks.get(databaseName);
-        return null != shardingSphereLock && shardingSphereLock.isLocked(databaseName);
+    protected void releaseLock(final DatabaseLockNameDefinition lockNameDefinition) {
+        standaloneLock.releaseLock(lockNameDefinition.getDatabaseName());
     }
     
     @Override
-    public ShardingSphereLock getMutexLock(final String lockName) {
-        Preconditions.checkNotNull(lockName, "Get global lock args lock name can not be null.");
-        ShardingSphereLock result = locks.get(lockName);
-        if (null != result) {
-            return result;
-        }
-        synchronized (locks) {
-            result = locks.get(lockName);
-            if (null != result) {
-                return result;
-            }
-            result = new ShardingSphereNonReentrantLock(new ReentrantLock());
-            locks.put(lockName, result);
-            return result;
-        }
+    protected boolean isLocked(final DatabaseLockNameDefinition lockNameDefinition) {
+        return standaloneLock.isLocked(lockNameDefinition.getDatabaseName());
     }
 }

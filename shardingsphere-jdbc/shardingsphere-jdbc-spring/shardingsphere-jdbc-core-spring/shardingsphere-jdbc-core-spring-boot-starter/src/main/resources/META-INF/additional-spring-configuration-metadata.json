@@ -34,12 +34,6 @@
   ],
   "properties": [
     {
-      "name": "spring.shardingsphere.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether enable shardingsphere or not.",
-      "defaultValue": true
-    },
-    {
       "name": "spring.shardingsphere.props",
       "type": "java.util.Properties",
       "sourceType": "org.apache.shardingsphere.spring.boot.prop.SpringBootPropertiesConfiguration",

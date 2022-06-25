@@ -247,6 +247,10 @@ FORCE
     : F O R C E
     ;
 
+NOFORCE
+    : N O F O R C E
+    ;
+
 GLOBAL
     : G L O B A L
     ;
@@ -1927,6 +1931,10 @@ SPFILE
     : S P F I L E
     ;
 
+PFILE
+    : P F I L E
+    ;
+
 BOTH
     : B O T H
     ;
@@ -2745,4 +2753,84 @@ NOEXTEND
 
 NOSHARD
     : N O S H A R D
+    ;
+
+INITIALIZED
+    : I N I T I A L I Z E D
+    ;
+
+EXTERNALLY
+    : E X T E R N A L L Y
+    ;
+
+GLOBALLY
+    : G L O B A L L Y
+    ;
+
+ACCESSED
+    : A C C E S S E D
+    ;
+
+RESTART
+    : R E S T A R T
+    ;
+
+OPTIMIZE
+    : O P T I M I Z E
+    ;
+
+QUOTA
+    : Q U O T A
+    ;
+
+DISKGROUP
+    : D I S K G R O U P
+    ;
+
+NORMAL
+    : N O R M A L
+    ;
+
+FLEX
+    : F L E X
+    ;
+
+SITE
+    : S I T E
+    ;
+
+QUORUM
+    : Q U O R U M
+    ;
+
+REGULAR
+    : R E G U L A R
+    ;
+
+FAILGROUP
+    : F A I L G R O U P
+    ;
+
+DISK
+    : D I S K
+    ;
+
+EXCLUDING
+    : E X C L U D I N G
+    ;
+
+CONTENTS
+    : C O N T E N T S
+    ;
+
+LOCKDOWN
+    : L O C K D O W N
+    ;
+
+CLEAN
+    : C L E A N
+    ;
+
+GUARANTEE
+    : G U A R A N T E E
     ;

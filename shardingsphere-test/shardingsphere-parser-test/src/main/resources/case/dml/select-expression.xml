@@ -551,7 +551,7 @@
                     </left>
                     <operator>IS</operator>
                     <right>
-                        <literal-expression value="51..56" start-index="51" stop-index="56"/>
+                        <literal-expression value="FALSE" start-index="51" stop-index="56"/>
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -584,7 +584,7 @@
                     </left>
                     <operator>IS</operator>
                     <right>
-                        <literal-expression value="51..60" start-index="51" stop-index="60"/>
+                        <literal-expression value="NOT FALSE" start-index="51" stop-index="60"/>
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -608,7 +608,7 @@
                     </left>
                     <operator>IS</operator>
                     <right>
-                        <literal-expression value="45..49" start-index="45" stop-index="49"/>
+                        <literal-expression value="NULL" start-index="45" stop-index="49"/>
                     </right>
                 </binary-operation-expression>
             </expr>
@@ -632,7 +632,7 @@
                     </left>
                     <operator>IS</operator>
                     <right>
-                        <literal-expression value="45..53" start-index="45" stop-index="53"/>
+                        <literal-expression value="NOT NULL" start-index="45" stop-index="53"/>
                     </right>
                 </binary-operation-expression>
             </expr>

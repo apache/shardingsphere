@@ -20,8 +20,8 @@ package org.apache.shardingsphere.example.generator.scenario.framework.type;
 import org.apache.shardingsphere.example.generator.scenario.framework.FrameworkExampleScenario;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -51,16 +51,12 @@ public final class SpringBootStarterMyBatisExampleScenario implements FrameworkE
     
     @Override
     public Collection<String> getJavaClassPaths() {
-        Collection<String> result = new HashSet<>();
-        result.add("repository");
-        return result;
+        return Collections.singleton("repository");
     }
     
     @Override
     public Collection<String> getResourcePaths() {
-        Collection<String> result = new HashSet<>();
-        result.add("mappers");
-        return result;
+        return Collections.singleton("mappers");
     }
     
     @Override

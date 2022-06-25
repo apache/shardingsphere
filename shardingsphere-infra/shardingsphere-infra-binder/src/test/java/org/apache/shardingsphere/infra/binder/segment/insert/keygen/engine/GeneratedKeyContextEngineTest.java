@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.binder.segment.insert.keygen.engine;
 
 import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKeyContext;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.schema.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
@@ -44,10 +44,8 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.Types;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -63,10 +61,9 @@ public final class GeneratedKeyContextEngineTest {
     
     @Before
     public void setUp() {
-        TableMetaData tableMetaData = new TableMetaData("tbl", Collections.singletonList(new ColumnMetaData("id", Types.INTEGER, true, true, false)), Collections.emptyList(), Collections.emptyList());
-        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(1, 1);
-        tableMetaDataMap.put("tbl", tableMetaData);
-        schema = new ShardingSphereSchema(tableMetaDataMap);
+        ShardingSphereTable table = new ShardingSphereTable(
+                "tbl", Collections.singletonList(new ShardingSphereColumn("id", Types.INTEGER, true, true, false)), Collections.emptyList(), Collections.emptyList());
+        schema = new ShardingSphereSchema(Collections.singletonMap("tbl", table));
     }
     
     @Test
@@ -175,9 +172,9 @@ public final class GeneratedKeyContextEngineTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get().getGeneratedValues().size(), is(3));
         Iterator<Comparable<?>> generatedValuesIterator = actual.get().getGeneratedValues().iterator();
-        assertThat(generatedValuesIterator.next(), is((Comparable) 1));
-        assertThat(generatedValuesIterator.next(), is((Comparable) 100));
-        assertThat(generatedValuesIterator.next(), is((Comparable) "value"));
+        assertThat(generatedValuesIterator.next(), is(1));
+        assertThat(generatedValuesIterator.next(), is(100));
+        assertThat(generatedValuesIterator.next(), is("value"));
         assertTrue(new GeneratedKeyContextEngine(insertStatement, schema).createGenerateKeyContext(Collections.emptyList(), Collections.emptyList(), Collections.singletonList(1)).isPresent());
     }
 }

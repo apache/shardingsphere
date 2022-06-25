@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sharding.distsql.handler.update.DropShardingAlg
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropShardingAlgorithmStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -43,41 +44,40 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 public final class DropShardingAlgorithmStatementUpdaterTest {
     
-    @Mock
-    private ShardingSphereMetaData shardingSphereMetaData;
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ShardingSphereDatabase database;
     
     private final DropShardingAlgorithmStatementUpdater updater = new DropShardingAlgorithmStatementUpdater();
     
     @Test(expected = RequiredAlgorithmMissedException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(shardingSphereMetaData, new DropShardingAlgorithmStatement(Collections.emptyList()), null);
+        updater.checkSQLStatement(database, new DropShardingAlgorithmStatement(false, Collections.emptyList()), null);
     }
     
     @Test
     public void assertCheckSQLStatementWithoutCurrentRuleWithIfExists() throws RuleDefinitionViolationException {
-        DropShardingAlgorithmStatement dropShardingAlgorithmStatement = new DropShardingAlgorithmStatement(Collections.emptyList());
-        dropShardingAlgorithmStatement.setContainsExistClause(true);
-        updater.checkSQLStatement(shardingSphereMetaData, dropShardingAlgorithmStatement, null);
+        DropShardingAlgorithmStatement dropShardingAlgorithmStatement = new DropShardingAlgorithmStatement(true, Collections.emptyList());
+        updater.checkSQLStatement(database, dropShardingAlgorithmStatement, null);
     }
     
     @Test(expected = RequiredAlgorithmMissedException.class)
     public void assertCheckSQLStatementWithoutExistedAlgorithm() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("t_order"), new ShardingRuleConfiguration());
+        updater.checkSQLStatement(database, createSQLStatement("t_order"), new ShardingRuleConfiguration());
     }
     
     @Test
     public void assertCheckSQLStatementWithoutExistedAlgorithmWithIfExists() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatementWithIfExists("t_order"), new ShardingRuleConfiguration());
+        updater.checkSQLStatement(database, createSQLStatementWithIfExists("t_order"), new ShardingRuleConfiguration());
     }
     
     @Test(expected = AlgorithmInUsedException.class)
     public void assertCheckSQLStatementWithBindingTableRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("t_order_tb_inline"), createCurrentRuleConfiguration());
+        updater.checkSQLStatement(database, createSQLStatement("t_order_tb_inline"), createCurrentRuleConfiguration());
     }
     
     @Test(expected = AlgorithmInUsedException.class)
     public void assertCheckSQLStatementWithBindingTableRuleWithIfExists() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatementWithIfExists("t_order_tb_inline"), createCurrentRuleConfiguration());
+        updater.checkSQLStatement(database, createSQLStatementWithIfExists("t_order_tb_inline"), createCurrentRuleConfiguration());
     }
     
     @Test
@@ -105,13 +105,11 @@ public final class DropShardingAlgorithmStatementUpdaterTest {
     }
     
     private DropShardingAlgorithmStatement createSQLStatement(final String algorithmName) {
-        return new DropShardingAlgorithmStatement(Collections.singleton(algorithmName));
+        return new DropShardingAlgorithmStatement(false, Collections.singleton(algorithmName));
     }
     
     private DropShardingAlgorithmStatement createSQLStatementWithIfExists(final String algorithmName) {
-        DropShardingAlgorithmStatement result = new DropShardingAlgorithmStatement(Collections.singleton(algorithmName));
-        result.setContainsExistClause(true);
-        return result;
+        return new DropShardingAlgorithmStatement(true, Collections.singleton(algorithmName));
     }
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {

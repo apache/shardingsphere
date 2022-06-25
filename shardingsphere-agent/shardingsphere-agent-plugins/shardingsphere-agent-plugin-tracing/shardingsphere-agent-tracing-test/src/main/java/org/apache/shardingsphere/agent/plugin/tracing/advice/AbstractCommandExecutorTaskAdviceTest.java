@@ -21,15 +21,20 @@ import io.netty.util.DefaultAttributeMap;
 import lombok.Getter;
 import org.apache.shardingsphere.agent.api.advice.AdviceTargetObject;
 import org.apache.shardingsphere.agent.plugin.tracing.AgentRunner;
+import org.apache.shardingsphere.agent.plugin.tracing.ProxyContextRestorer;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecutorTask;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.runner.RunWith;
+
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
 @RunWith(AgentRunner.class)
-public abstract class AbstractCommandExecutorTaskAdviceTest implements AdviceTestBase {
+public abstract class AbstractCommandExecutorTaskAdviceTest extends ProxyContextRestorer implements AdviceTestBase {
     
     @Getter
     private AdviceTargetObject targetObject;
@@ -37,6 +42,7 @@ public abstract class AbstractCommandExecutorTaskAdviceTest implements AdviceTes
     @SuppressWarnings("ConstantConditions")
     @Override
     public final void prepare() {
+        ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
         ConnectionSession connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.BASE, new DefaultAttributeMap());
         Object executorTask = new CommandExecutorTask(null, connectionSession, null, null);
         targetObject = (AdviceTargetObject) executorTask;

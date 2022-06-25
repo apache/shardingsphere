@@ -82,6 +82,6 @@
     
     <sql-parser:rule id="sqlParseRule" sql-comment-parse-enable="true" parse-tree-cache-ref="parseTreeCache" sql-statement-cache-ref="sqlStatementCache" />
     
-    <sql-parser:cache-option id="sqlStatementCache" initial-capacity="1024" maximum-size="1024" concurrency-level="4"/>
-    <sql-parser:cache-option id="parseTreeCache" initial-capacity="1024" maximum-size="1024" concurrency-level="4"/>
+    <sql-parser:cache-option id="sqlStatementCache" initial-capacity="1024" maximum-size="1024"/>
+    <sql-parser:cache-option id="parseTreeCache" initial-capacity="1024" maximum-size="1024"/>
 </beans>

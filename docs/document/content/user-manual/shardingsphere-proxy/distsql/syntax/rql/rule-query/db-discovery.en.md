@@ -6,11 +6,11 @@ weight = 4
 ## Syntax
 
 ```sql
-SHOW DB_DISCOVERY RULES [FROM schemaName]
+SHOW DB_DISCOVERY RULES [FROM databaseName]
 
-SHOW DB_DISCOVERY TYPES [FROM schemaName]
+SHOW DB_DISCOVERY TYPES [FROM databaseName]
 
-SHOW DB_DISCOVERY HEARTBEATS [FROM schemaName]
+SHOW DB_DISCOVERY HEARTBEATS [FROM databaseName]
 ```
 
 ## Return Value Description
@@ -36,7 +36,7 @@ SHOW DB_DISCOVERY HEARTBEATS [FROM schemaName]
 ### DB Discovery Heartbeat
 
 | Column                   | Description           |
-| ------------------------ | ----------------------|
+| ------------------------ | --------------------- |
 | name                     | Heartbeat name        |
 | props                    | Heartbeat properties  |
 

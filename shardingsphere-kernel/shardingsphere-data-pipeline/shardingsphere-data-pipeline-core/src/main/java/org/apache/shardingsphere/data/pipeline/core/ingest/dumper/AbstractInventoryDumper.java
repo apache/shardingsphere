@@ -106,8 +106,8 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     private void dump() {
         String schemaName = dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName()));
         int uniqueKeyDataType = dumperConfig.getUniqueKeyDataType();
-        String firstSQL = pipelineSQLBuilder.buildInventoryDumpSQL(schemaName, dumperConfig.getActualTableName(), dumperConfig.getPrimaryKey(), uniqueKeyDataType, true);
-        String laterSQL = pipelineSQLBuilder.buildInventoryDumpSQL(schemaName, dumperConfig.getActualTableName(), dumperConfig.getPrimaryKey(), uniqueKeyDataType, false);
+        String firstSQL = pipelineSQLBuilder.buildInventoryDumpSQL(schemaName, dumperConfig.getActualTableName(), dumperConfig.getUniqueKey(), uniqueKeyDataType, true);
+        String laterSQL = pipelineSQLBuilder.buildInventoryDumpSQL(schemaName, dumperConfig.getActualTableName(), dumperConfig.getUniqueKey(), uniqueKeyDataType, false);
         IngestPosition<?> position = dumperConfig.getPosition();
         log.info("inventory dump, uniqueKeyDataType={}, firstSQL={}, laterSQL={}, position={}", uniqueKeyDataType, firstSQL, laterSQL, position);
         if (position instanceof FinishedPosition) {
@@ -167,12 +167,12 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
                     record.setType(IngestDataChangeType.INSERT);
                     record.setTableName(logicTableName);
                     for (int i = 1; i <= metaData.getColumnCount(); i++) {
-                        boolean isPrimaryKey = tableMetaData.isPrimaryKey(i - 1);
+                        boolean isUniqueKey = tableMetaData.isUniqueKey(i - 1);
                         Object value = readValue(resultSet, i);
-                        if (isPrimaryKey) {
+                        if (isUniqueKey) {
                             maxUniqueKeyValue = value;
                         }
-                        record.addColumn(new Column(metaData.getColumnName(i), value, true, isPrimaryKey));
+                        record.addColumn(new Column(metaData.getColumnName(i), value, true, isUniqueKey));
                     }
                     pushRecord(record);
                     rowCount++;
@@ -181,7 +181,7 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
                         break;
                     }
                 }
-                if (PipelineJdbcUtils.isStringColumn(uniqueKeyDataType) && 0 == round % 50) {
+                if (0 == round % 50) {
                     log.info("dump, round={}, rowCount={}, maxUniqueKeyValue={}", round, rowCount, maxUniqueKeyValue);
                 }
                 return Optional.ofNullable(maxUniqueKeyValue);
@@ -198,8 +198,8 @@ public abstract class AbstractInventoryDumper extends AbstractLifecycleExecutor 
     }
     
     private IngestPosition<?> newPosition(final ResultSet rs) throws SQLException {
-        return null == dumperConfig.getPrimaryKey() ? new PlaceholderPosition()
-                : PrimaryKeyPositionFactory.newInstance(rs.getObject(dumperConfig.getPrimaryKey()), ((PrimaryKeyPosition<?>) dumperConfig.getPosition()).getEndValue());
+        return null == dumperConfig.getUniqueKey() ? new PlaceholderPosition()
+                : PrimaryKeyPositionFactory.newInstance(rs.getObject(dumperConfig.getUniqueKey()), ((PrimaryKeyPosition<?>) dumperConfig.getPosition()).getEndValue());
     }
     
     protected abstract PreparedStatement createPreparedStatement(Connection connection, String sql) throws SQLException;

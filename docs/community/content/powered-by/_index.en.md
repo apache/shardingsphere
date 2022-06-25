@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 194 companies.
+Total: 209 companies.
 
 ### Infra Software
 <ul>
@@ -35,6 +35,7 @@ Total: 194 companies.
 <ul>
     <li><a href="https://www.bestpay.com.cn/" rel="nofollow">China Telecom Best Pay(Orange Finance)</a></li>
     <li><a href="https://www.kjtpay.com/" rel="nofollow">KJT pay</a></li>
+    <li><a href="https://www.baofu.com/" rel="nofollow">BAO FU</a></li>
 </ul>
 
 ### Telecommunications
@@ -73,12 +74,14 @@ Total: 194 companies.
     <li><a href="https://www.jd.ru/" rel="nofollow">JD.ru</a></li>
     <li><a href="https://www.wandougongzhu.cn" rel="nofollow">WanDouGongZhu</a></li>
     <li><a href="https://www.missfresh.cn/" rel="nofollow">MissFresh</a></li>
+    <li><a href="http://www.ucreater.com/" rel="nofollow">UCREATER</a></li>
 </ul>
 
 ### E-Commerce
 <ul>
     <li><a href="https://www.yuanqisenlin.com/" rel="nofollow">Yuan Qi Sen Lin</a></li>
     <li><a href="http://www.3songshu.com/" rel="nofollow">Three Squirrels</a></li>
+    <li><a href="http://www.heilan.com.cn/en/" rel="nofollow">HEILAN</a></li>
     <li><a href="http://www.pagoda.com.cn/" rel="nofollow">Pagoda</a></li>
     <li><a href="https://www.dayi35.com/" rel="nofollow">Dayi35</a></li>
     <li><a href="https://www.xiaohongchun.com/" rel="nofollow">XiaoHongChun</a></li>
@@ -102,7 +105,6 @@ Total: 194 companies.
     <li>JD’s Big Data and Intelligent Supply Chain Department
     <li><a href="https://aifanfan.baidu.com/" rel="nofollow">Baidu aifanfan</a></li>
     <li><a href="https://www.tuya.com/" rel="nofollow">tuya</a></li>
-    <li><a href="https://www.itrus.com.cn/" rel="nofollow">ITrusChina</a></li>
     <li><a href="https://www.advancegroup.com/" rel="nofollow">Advance Intelligence Group</a></li>
     <li><a href="http://www.zhenxinsafe.com/" rel="nofollow">ZhenXin Safe</a></li>
     <li><a href="http://www.cloudansys.com/" rel="nofollow">YUNLU</a></li>
@@ -112,13 +114,17 @@ Total: 194 companies.
     <li><a href="https://www.shebaotong.com/" rel="nofollow">SheBaoTong</a></li>
     <li><a href="http://www.dtchuxing.com/" rel="nofollow">Bus Cloud</a></li>
     <li><a href="http://www.ushareit.com/" rel="nofollow">Shareit</a></li>
-    <li><a href="https://www.xforceplus.com/" rel="nofollow">Xforceplus</a></li>
+    <li><a href="https://www.xforceplus.com/" rel="nofollow">XForcePlus</a></li>
     <li><a href="http://www.meicloud.com/" rel="nofollow">Midea Cloud</a></li>
     <li><a href="http://www.shangquanquan.com/" rel="nofollow">shangquanquan</a></li>
     <li><a href="https://www.glodon.com/" rel="nofollow">Glodon</a></li>
     <li><a href="https://www.zego.im/" rel="nofollow">ZEGO</a></li>
     <li><a href="http://www.sdjictec.com" rel="nofollow">Sdjic Tec</a></li>
     <li><a href="https://www.baozun.com/" rel="nofollow">BAO ZUN</a></li>
+    <li><a href="https://www.maxrocky.com/" rel="nofollow">Max Rocky</a></li>
+    <li><a href="https://www.teddymobile.cn/" rel="nofollow">Teddy Mobile</a></li>
+    <li><a href="https://www.ecopiatech.com/" rel="nofollow">Ecopia</a></li>
+    <li><a href="https://xiaoman.cn/" rel="nofollow">OKKI CRM</a></li>
 </ul>
 
 ### Transportation
@@ -190,6 +196,13 @@ Total: 194 companies.
     <li><a href="http://www.swydedu.com/" rel="nofollow">swydEdu</a></li>
     <li><a href="https://www.codemao.cn/" rel="nofollow">Dianmao</a></li>
     <li><a href="https://www.yxt.com/" rel="nofollow">YunXueTang</a></li>
+    <li><a href="https://www.weixiaotong.com.cn/" rel="nofollow">Wei Xiao Tong</a></li>
+</ul>
+
+### E-Security
+<ul>
+    <li><a href="https://www.itrus.com.cn/" rel="nofollow">ITrusChina</a></li>
+    <li><a href="http://www.ncs-cyber.com.cn" rel="nofollow">EncryptCyber</a></li>
 </ul>
 
 ### News
@@ -217,12 +230,13 @@ Total: 194 companies.
 ### Public Utilities
 <ul>
     <li><a href="http://www.electricpower.com.cn/" rel="nofollow">China Electric Power</a></li>
-    <li><a href="https://hulucc.com/" rel="nofollow">HULU STORY</a></li>:  <a href="https://shardingsphere.medium.com/e-hualu-x-shardingsphere-hulu-storys-data-processing-shortcut-5c18d5efa811?source=friends_link&sk=aa07f51aa502be1fd1a847d8d880ac1f" rel="nofollow">User Case</a></li>   
+    <li><a href="https://hulucc.com/" rel="nofollow">HULU STORY</a>: <a href="https://shardingsphere.medium.com/e-hualu-x-shardingsphere-hulu-storys-data-processing-shortcut-5c18d5efa811?source=friends_link&sk=aa07f51aa502be1fd1a847d8d880ac1f" rel="nofollow">User Case</a></li>   
     <li><a href="http://dnr.gxzf.gov.cn/" rel="nofollow">Guangxi Province Natural Resources Information Center</a></li>
     <li><a href="http://www.ascf.com.cn/" rel="nofollow">AreoSpace</a></li>
     <li><a href="http://www.chiscdc.com/" rel="nofollow">CHISCDC</a></li>
     <li><a href="http://www.taxchina.com/" rel="nofollow">Tax China</a></li>
     <li><a href="http://www.gddxit.com/" rel="nofollow">GUANG DONG DA XIN</a></li>
+    <li><a href="http://www.tshaisen.com/" rel="nofollow">TIANYING</a></li>
 </ul>
 
 ### ICT (Information and Communications Technology)
@@ -243,7 +257,8 @@ Total: 194 companies.
 
 ### Manufacturing
 <ul>
-    <li><a href="https://www.lixiang.com" rel="nofollow">LiXiang</a></li>
+    <li><a href="https://www.lixiang.com/" rel="nofollow">LiXiang</a></li>
+    <li><a href="https://en.tanksuv.com/" rel="nofollow">Tank SUV</a></li>
     <li><a href="https://www.gongniu.cn/" rel="nofollow">Bull</a></li>
 </ul>
 
@@ -291,6 +306,14 @@ Total: 194 companies.
     <li><a href="http://www.huxleymedical.tech/" rel="nofollow">Hualian Medical</a></li>
     <li><a href="https://www.xingren.com/" rel="nofollow">xingren</a></li>
     <li><a href="https://www.medbanks.cn/" rel="nofollow">Medbanks</a></li>
+    <li><a href="http://swifthealth.cn/" rel="nofollow">CHAOQIANKEJI</a></li>
+    <li><a href="http://www.greenbon.cn/" rel="nofollow">Greenbon</a></li>
+    <li><a href="http://yilihui.com/" rel="nofollow">yilihui</a></li>
+</ul>
+
+### Recruitment
+<ul>
+    <li><a href="https://hireez.com/" rel="nofollow">hireEZ</a></li>
 </ul>
 
 <img src="https://shardingsphere.apache.org/community/image/powered-by.png" width = "30%" height = "30%" align="right" alt="Powered By ShardingSphere" />

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.executor.check;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -62,14 +62,14 @@ public final class SQLCheckEngine {
      * @param parameters SQL parameters
      * @param rules rules
      * @param currentDatabase current database
-     * @param metaDataMap meta data map
+     * @param databases databases
      * @param grantee grantee
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public static void check(final SQLStatement sqlStatement, final List<Object> parameters, final Collection<ShardingSphereRule> rules,
-                             final String currentDatabase, final Map<String, ShardingSphereMetaData> metaDataMap, final Grantee grantee) {
+                             final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final Grantee grantee) {
         for (Entry<ShardingSphereRule, SQLChecker> entry : SQLCheckerFactory.getInstance(rules).entrySet()) {
-            SQLCheckResult checkResult = entry.getValue().check(sqlStatement, parameters, grantee, currentDatabase, metaDataMap, entry.getKey());
+            SQLCheckResult checkResult = entry.getValue().check(sqlStatement, parameters, grantee, currentDatabase, databases, entry.getKey());
             if (!checkResult.isPassed()) {
                 throw new SQLCheckException(checkResult.getErrorMessage());
             }

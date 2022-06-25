@@ -49,6 +49,8 @@ public final class OnRuleAlteredActionConfiguration {
         
         private final Integer batchSize;
         
+        private final Integer shardingSize;
+        
         private final ShardingSphereAlgorithmConfiguration rateLimiter;
     }
     

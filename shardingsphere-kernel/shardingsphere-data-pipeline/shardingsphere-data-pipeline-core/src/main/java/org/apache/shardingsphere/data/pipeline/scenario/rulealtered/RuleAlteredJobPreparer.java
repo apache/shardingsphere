@@ -30,6 +30,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineIgnoredException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializerFactory;
@@ -75,13 +76,20 @@ public final class RuleAlteredJobPreparer {
      * @param jobContext job context
      */
     public void prepare(final RuleAlteredJobContext jobContext) {
-        // TODO Initialize source and target data source after tasks initialization, since dumper and importer constructor might call appendJDBCQueryProperties.
-        // But InventoryTaskSplitter need to check target tables. It need to do some refactoring for appendJDBCQueryProperties vocations.
         checkSourceDataSource(jobContext);
+        if (jobContext.isStopping()) {
+            throw new PipelineIgnoredException("Job stopping, jobId=" + jobContext.getJobId());
+        }
         prepareAndCheckTargetWithLock(jobContext);
+        if (jobContext.isStopping()) {
+            throw new PipelineIgnoredException("Job stopping, jobId=" + jobContext.getJobId());
+        }
         // TODO check metadata
         try {
             initIncrementalTasks(jobContext);
+            if (jobContext.isStopping()) {
+                throw new PipelineJobPrepareFailedException("Job stopping, jobId=" + jobContext.getJobId());
+            }
             initInventoryTasks(jobContext);
             log.info("prepare, jobId={}, shardingItem={}, inventoryTasks={}, incrementalTasks={}",
                     jobContext.getJobId(), jobContext.getShardingItem(), jobContext.getInventoryTasks(), jobContext.getIncrementalTasks());
@@ -95,8 +103,8 @@ public final class RuleAlteredJobPreparer {
         RuleAlteredJobConfiguration jobConfig = jobContext.getJobConfig();
         // TODO the lock will be replaced
         String lockName = "prepare-" + jobConfig.getJobId();
-        ShardingSphereLock lock = PipelineContext.getContextManager().getInstanceContext().getLockContext().getMutexLock(lockName);
-        if (lock.tryLock(lockName, 1)) {
+        ShardingSphereLock lock = PipelineContext.getContextManager().getInstanceContext().getLockContext().getLock();
+        if (lock.tryLock(lockName, 3000)) {
             try {
                 prepareAndCheckTarget(jobContext);
             } finally {
@@ -176,9 +184,9 @@ public final class RuleAlteredJobPreparer {
     private IngestPosition<?> getIncrementalPosition(final RuleAlteredJobContext jobContext, final TaskConfiguration taskConfig,
                                                      final PipelineDataSourceManager dataSourceManager) throws SQLException {
         if (null != jobContext.getInitProgress()) {
-            Optional<IngestPosition<?>> positionOptional = jobContext.getInitProgress().getIncrementalPosition(taskConfig.getDumperConfig().getDataSourceName());
-            if (positionOptional.isPresent()) {
-                return positionOptional.get();
+            Optional<IngestPosition<?>> position = jobContext.getInitProgress().getIncrementalPosition(taskConfig.getDumperConfig().getDataSourceName());
+            if (position.isPresent()) {
+                return position.get();
             }
         }
         String databaseType = taskConfig.getJobConfig().getSourceDatabaseType();

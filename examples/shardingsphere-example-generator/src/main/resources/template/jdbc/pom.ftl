@@ -84,6 +84,17 @@
             <artifactId>btm</artifactId>
             <version>2.1.3</version>
         </dependency>
+    <#elseif transaction=="base-seata">
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
+            <version>${r'${project.version}'}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.seata</groupId>
+            <artifactId>seata-all</artifactId>
+            <version>1.4.2</version>
+        </dependency>
     </#if>
     <#if framework?contains("jpa")>
         <dependency>

@@ -110,6 +110,7 @@ public final class WalEventConverter {
         // TODO completion columns
         DataRecord result = createDataRecord(event, event.getPrimaryKeys().size());
         result.setType(IngestDataChangeType.DELETE);
+        // TODO Unique key may be a column within unique index
         List<String> primaryKeyColumns = getPipelineTableMetaData(event.getTableName()).getPrimaryKeyColumns();
         for (int i = 0; i < event.getPrimaryKeys().size(); i++) {
             result.addColumn(new Column(primaryKeyColumns.get(i), event.getPrimaryKeys().get(i), true, true));
@@ -125,9 +126,9 @@ public final class WalEventConverter {
     
     private void putColumnsIntoDataRecord(final DataRecord dataRecord, final PipelineTableMetaData tableMetaData, final List<Object> values) {
         for (int i = 0, count = values.size(); i < count; i++) {
-            boolean isPrimaryKey = tableMetaData.isPrimaryKey(i);
-            Object primaryKeyOldValue = isPrimaryKey ? values.get(i) : null;
-            Column column = new Column(tableMetaData.getColumnMetaData(i).getName(), primaryKeyOldValue, values.get(i), true, isPrimaryKey);
+            boolean isUniqueKey = tableMetaData.isUniqueKey(i);
+            Object uniqueKeyOldValue = isUniqueKey ? values.get(i) : null;
+            Column column = new Column(tableMetaData.getColumnMetaData(i).getName(), uniqueKeyOldValue, values.get(i), true, isUniqueKey);
             dataRecord.addColumn(column);
         }
     }

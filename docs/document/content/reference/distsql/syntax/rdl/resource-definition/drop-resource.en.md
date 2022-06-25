@@ -1,11 +1,11 @@
 +++
 title = "DROP RESOURCE"
-weight = 3
+weight = 4
 +++
 
 ### Description
 
-The `DROP RESOURCE` syntax is used to drop resources from the current schema
+The `DROP RESOURCE` syntax is used to drop resources from the current database
 
 ### Syntax
 ```SQL

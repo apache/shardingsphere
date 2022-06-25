@@ -19,10 +19,11 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingAlgorithmsStatement;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Arrays;
@@ -36,17 +37,16 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Result set for show sharding algorithms.
+ * Query result set for show sharding algorithms.
  */
 public final class ShardingAlgorithmsQueryResultSet implements DistSQLResultSet {
     
     private Iterator<Entry<String, ShardingSphereAlgorithmConfiguration>> data;
     
     @Override
-    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
-        Optional<ShardingRuleConfiguration> ruleConfig = metaData.getRuleMetaData().getConfigurations()
-                .stream().filter(each -> each instanceof ShardingRuleConfiguration).map(each -> (ShardingRuleConfiguration) each).findAny();
-        data = ruleConfig.map(ShardingRuleConfiguration::getShardingAlgorithms).orElseGet(Collections::emptyMap).entrySet().iterator();
+    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
+        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
+        data = rule.map(optional -> ((ShardingRuleConfiguration) optional.getConfiguration()).getShardingAlgorithms().entrySet().iterator()).orElse(Collections.emptyIterator());
     }
     
     @Override

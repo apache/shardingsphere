@@ -18,5 +18,5 @@
 
 <sql-parser-test-cases>
     <drop-policy sql-case-id="drop_event_trigger_if_exists" />
-    <drop-policy sql-case-id="drop_event_trigger"/>
+    <drop-policy sql-case-id="drop_event_trigger" />
 </sql-parser-test-cases>

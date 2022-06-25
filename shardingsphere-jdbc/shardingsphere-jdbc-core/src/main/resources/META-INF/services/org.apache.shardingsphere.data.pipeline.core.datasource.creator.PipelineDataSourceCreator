@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.driver.config.datasource.ShardingSpherePipelineDataSourceCreator
+org.apache.shardingsphere.driver.data.pipeline.datasource.creator.ShardingSpherePipelineDataSourceCreator

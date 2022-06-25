@@ -22,12 +22,21 @@ import BaseRule;
 options {tokenVocab = ModeLexer;}
 
 call
-    : CALL funcName LP_ callClauses? RP_
+    : CALL identifier LP_ callArguments? RP_
     ;
 
-callClauses
-    : (ALL | DISTINCT)? funcArgList sortClause?
-    | VARIADIC funcArgExpr sortClause
-    | funcArgList COMMA_ VARIADIC funcArgExpr sortClause
-    | ASTERISK_
+callArguments
+    : callArgument (COMMA_ callArgument)*
+    ;
+
+callArgument
+    : positionalNotation | namedNotation
+    ;
+
+positionalNotation
+    : aExpr
+    ;
+
+namedNotation
+    : identifier EQ_ GT_ aExpr
     ;

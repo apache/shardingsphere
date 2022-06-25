@@ -61,9 +61,9 @@ public abstract class AbstractJDBCExecutorCallbackAdviceTest implements AdviceTe
         extraMap = new HashMap<>();
         Statement statement = mock(Statement.class);
         Connection connection = mock(Connection.class);
-        DatabaseMetaData metaData = mock(DatabaseMetaData.class);
-        when(metaData.getURL()).thenReturn("mock_url");
-        when(connection.getMetaData()).thenReturn(metaData);
+        DatabaseMetaData databaseMetaData = mock(DatabaseMetaData.class);
+        when(databaseMetaData.getURL()).thenReturn("mock_url");
+        when(connection.getMetaData()).thenReturn(databaseMetaData);
         when(statement.getConnection()).thenReturn(connection);
         executionUnit = new JDBCExecutionUnit(new ExecutionUnit("mock.db", new SQLUnit("select 1", Collections.emptyList())), null, statement);
         JDBCExecutorCallback mock = mock(JDBCExecutorCallback.class, invocation -> {

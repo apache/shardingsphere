@@ -54,11 +54,11 @@
             WHERE C.StoreID = @storeid
             GROUP BY P.ProductID, P.Name
         );" db-types="SQLServer" />
-    <sql-case id="create_function_declare_without_at" value="CREATE FUNCTION bug13575 ( p1 integer ) returns varchar(3) 
-        BEGIN 
-            DECLARE v1 VARCHAR(10) DEFAULT null; 
-            SELECT f2 INTO v1 FROM t3 WHERE f1 = p1; RETURN v1; 
-        END" db-types="MySQL"/>
+    <sql-case id="create_function_declare_without_at" value="CREATE FUNCTION bug13575 ( p1 integer ) returns varchar(3)
+        BEGIN
+            DECLARE v1 VARCHAR(10) DEFAULT null;
+            SELECT f2 INTO v1 FROM t3 WHERE f1 = p1; RETURN v1;
+        END" db-types="MySQL" />
     <sql-case id="create_function_call_spec_java" value="CREATE FUNCTION SecondMax (input NUMBER) RETURN NUMBER
         PARALLEL_ENABLE AGGREGATE USING SecondMaxImpl AS LANGUAGE JAVA NAME 'name'" db-types="Oracle" />
     <sql-case id="create_function_call_spec_c" value="CREATE FUNCTION get_val
@@ -70,5 +70,5 @@
           LIBRARY c_utils
           PARAMETERS (CONTEXT)" db-types="Oracle" />
     
-    <sql-case id="create_function_with_set_var" value="CREATE DEFINER = u1@localhost FUNCTION f2() RETURNS int BEGIN DECLARE n int; DECLARE m int; SET n:= (SELECT min(a) FROM t1); SET m:= (SELECT max(a) FROM t1); RETURN n &lt; m; END ;" db-types="MySQL"/>
+    <sql-case id="create_function_with_set_var" value="CREATE DEFINER = u1@localhost FUNCTION f2() RETURNS int BEGIN DECLARE n int; DECLARE m int; SET n:= (SELECT min(a) FROM t1); SET m:= (SELECT max(a) FROM t1); RETURN n &lt; m; END ;" db-types="MySQL" />
 </sql-cases>

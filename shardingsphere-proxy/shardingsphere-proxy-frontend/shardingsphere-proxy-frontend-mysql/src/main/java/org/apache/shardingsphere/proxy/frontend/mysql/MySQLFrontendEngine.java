@@ -22,7 +22,7 @@ import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.mysql.codec.MySQLPacketCodecEngine;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementRegistry;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIDGenerator;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -48,22 +48,22 @@ public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine
     private final DatabasePacketCodecEngine<MySQLPacket> codecEngine = new MySQLPacketCodecEngine();
     
     public MySQLFrontendEngine() {
-        MySQLServerInfo.setDefualtMysqlVersion(ProxyContext.getInstance().getContextManager().getMetaDataContexts()
-                .getProps().<String>getValue(ConfigurationPropertyKey.PROXY_MYSQL_DEFAULT_VERSION));
+        MySQLServerInfo.setDefaultMysqlVersion(ProxyContext.getInstance()
+                .getContextManager().getMetaDataContexts().getMetaData().getProps().<String>getValue(ConfigurationPropertyKey.PROXY_MYSQL_DEFAULT_VERSION));
     }
     
     @Override
-    public void setDatabaseVersion(final String schemaName, final String databaseVersion) {
-        MySQLServerInfo.setServerVersion(schemaName, databaseVersion);
+    public void setDatabaseVersion(final String databaseName, final String databaseVersion) {
+        MySQLServerInfo.setServerVersion(databaseName, databaseVersion);
     }
     
     @Override
     public void release(final ConnectionSession connectionSession) {
-        MySQLPreparedStatementRegistry.getInstance().unregisterConnection(connectionSession.getConnectionId());
+        MySQLStatementIDGenerator.getInstance().unregisterConnection(connectionSession.getConnectionId());
     }
     
     @Override
-    public void handleException(final ConnectionSession connectionSession) {
+    public void handleException(final ConnectionSession connectionSession, final Exception exception) {
     }
     
     @Override

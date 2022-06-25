@@ -42,7 +42,7 @@ public final class ComposeClassStaticMethodAroundAdviceTest {
     
     @Before
     public void setUp() {
-        actual = new ComposeClassStaticMethodAroundAdvice(new ArrayList<>(Collections.singletonList(classStaticMethodAroundAdvice)));
+        actual = new ComposeClassStaticMethodAroundAdvice(new ArrayList<>(Collections.singleton(classStaticMethodAroundAdvice)));
     }
     
     @Test

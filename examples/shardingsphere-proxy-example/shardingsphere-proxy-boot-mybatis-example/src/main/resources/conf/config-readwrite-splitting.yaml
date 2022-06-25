@@ -22,7 +22,7 @@
 # 
 ######################################################################################################
 
-schemaName: readwrite-splitting_db
+databaseName: readwrite-splitting_db
 
 dataSources:
   write_ds:

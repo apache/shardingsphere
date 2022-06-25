@@ -20,24 +20,24 @@ ShardingSphere-JDBC 提供官方的 Spring 命名空间，使开发者可以非�
 </dependency>
 ```
 
-## 配置 Spring Bean
+### 配置 Spring Bean
 
-### 配置项说明
+#### 配置项说明
 
-命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.1.xsd)
+命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.2.xsd)
 
 \<shardingsphere:data-source />
 
 | *名称*             | *类型* | *说明*                                                                            |
 | ----------------- | ----- | --------------------------------------------------------------------------------- |
 | id                | 属性  | Spring Bean Id                                                                     |
-| schema-name (?)   | 属性  | JDBC 数据源别名                                                                      |
+| database-name (?)   | 属性  | JDBC 数据源别名                                                                      |
 | data-source-names | 标签  | 数据源名称，多个数据源以逗号分隔                                                         |
 | rule-refs         | 标签  | 规则名称，多个规则以逗号分隔                                                            |
 | mode (?)          | 标签  | 运行模式配置                                                                         |
 | props (?)         | 标签  | 属性配置，详情请参见[属性配置](/cn/user-manual/shardingsphere-jdbc/props) |
 
-### 配置示例
+#### 配置示例
 
 ```xml
 <beans xmlns="http://www.springframework.org/schema/beans"
@@ -48,7 +48,7 @@ ShardingSphere-JDBC 提供官方的 Spring 命名空间，使开发者可以非�
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            ">
-    <shardingsphere:data-source id="ds" schema-name="foo_schema" data-source-names="..." rule-refs="...">
+    <shardingsphere:data-source id="ds" database-name="foo_schema" data-source-names="..." rule-refs="...">
         <shardingsphere:mode type="..." />
         <props>
             <prop key="xxx.xxx">${xxx.xxx}</prop>
@@ -57,6 +57,6 @@ ShardingSphere-JDBC 提供官方的 Spring 命名空间，使开发者可以非�
 </beans>
 ```
 
-## 在 Spring 中使用 ShardingSphere 数据源
+### 使用数据源
 
 使用方式同 Spring Boot Starter。

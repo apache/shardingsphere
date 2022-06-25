@@ -105,7 +105,6 @@ public final class ProxyConfigurationLoader {
             result.setDatabaseName(result.getSchemaName());
         }
         Preconditions.checkNotNull(result.getDatabaseName(), "Property `databaseName` in file `%s` is required.", yamlFile.getName());
-        Preconditions.checkState(!result.getDataSources().isEmpty(), "Data sources configuration in file `%s` is required.", yamlFile.getName());
         return Optional.of(result);
     }
     

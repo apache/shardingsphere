@@ -17,8 +17,8 @@
 
 <dataset>
     <metadata>
-        <column name="variable_name"/>
-        <column name="variable_value"/>
+        <column name="variable_name" />
+        <column name="variable_value" />
     </metadata>
-    <row values="transaction_type| XA"/>
+    <row values="transaction_type| XA" />
 </dataset>

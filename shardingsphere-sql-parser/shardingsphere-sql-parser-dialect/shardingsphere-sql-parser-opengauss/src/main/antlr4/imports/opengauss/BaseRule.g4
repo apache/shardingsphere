@@ -461,6 +461,14 @@ schemaName
     : identifier
     ;
 
+synonymName
+    : identifier
+    ;
+
+objectName
+    : (owner DOT_)? identifier
+    ;
+    
 tableName
     : (owner DOT_)? name
     ;
@@ -1268,6 +1276,14 @@ aliasClause
     | colId
     ;
 
+directoryName
+    : name
+    ;
+
+pathString
+    : STRING_
+    ;
+
 nameList
     : name | nameList COMMA_ name
     ;
@@ -1848,10 +1864,10 @@ typeNameList
     : typeName (COMMA_ typeName)*
     ;
     
-notExistClause
+ifNotExists
     : IF NOT EXISTS
     ;
     
-existClause
+ifExists
     : IF EXISTS
     ;

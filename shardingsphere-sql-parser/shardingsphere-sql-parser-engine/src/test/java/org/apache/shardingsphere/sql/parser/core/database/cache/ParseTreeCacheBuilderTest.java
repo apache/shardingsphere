@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.core.database.cache;
 
-import com.google.common.cache.LoadingCache;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.junit.Test;
@@ -29,7 +29,7 @@ public final class ParseTreeCacheBuilderTest {
     
     @Test
     public void assertParseTreeCacheBuild() {
-        LoadingCache<String, ParseASTNode> cache = ParseTreeCacheBuilder.build(new CacheOption(1, 10, 1), "MySQL");
+        LoadingCache<String, ParseASTNode> cache = ParseTreeCacheBuilder.build(new CacheOption(1, 10), "MySQL");
         assertThat(cache, isA(LoadingCache.class));
     }
 }

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.example.generator.scenario.framework.type;
 import org.apache.shardingsphere.example.generator.scenario.framework.FrameworkExampleScenario;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 
 /**
@@ -41,7 +41,7 @@ public final class SpringNamespaceMyBatisExampleScenario implements FrameworkExa
     
     @Override
     public Map<String, String> getResourceTemplateMap() {
-        Map<String, String> result = new HashMap<>(1, 1);
+        Map<String, String> result = new HashMap<>(4, 1);
         result.put("resources/xml/application.ftl", "application.xml");
         result.put("resources/mappers/OrderItemMapper.ftl", "mappers/OrderItemMapper.xml");
         result.put("resources/mappers/OrderMapper.ftl", "mappers/OrderMapper.xml");
@@ -51,16 +51,12 @@ public final class SpringNamespaceMyBatisExampleScenario implements FrameworkExa
     
     @Override
     public Collection<String> getJavaClassPaths() {
-        Collection<String> result = new HashSet<>();
-        result.add("repository");
-        return result;
+        return Collections.singleton("repository");
     }
     
     @Override
     public Collection<String> getResourcePaths() {
-        Collection<String> result = new HashSet<>();
-        result.add("mappers");
-        return result;
+        return Collections.singleton("mappers");
     }
     
     @Override

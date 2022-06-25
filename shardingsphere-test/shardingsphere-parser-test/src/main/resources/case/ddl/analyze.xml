@@ -53,5 +53,5 @@
         <index name="order_index" start-index="14" stop-index="24" />
     </analyze>
 
-    <analyze sql-case-id="analyze_cluster" /> 
+    <analyze sql-case-id="analyze_cluster" />
 </sql-parser-test-cases>

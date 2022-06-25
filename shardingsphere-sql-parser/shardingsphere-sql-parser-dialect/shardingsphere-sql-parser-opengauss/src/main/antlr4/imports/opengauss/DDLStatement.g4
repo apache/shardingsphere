@@ -20,7 +20,7 @@ grammar DDLStatement;
 import DMLStatement;
 
 createTable
-    : CREATE createTableSpecification TABLE notExistClause? tableName
+    : CREATE createTableSpecification TABLE ifNotExists? tableName
       (createDefinitionClause | (OF anyName (LP_ typedTableElementList RP_)?) | (PARTITION OF qualifiedName (LP_ typedTableElementList RP_)? partitionBoundSpec))
       inheritClause partitionSpec? tableAccessMethodClause? withOption? onCommitOption? tableSpace?
       (AS select withData?)?
@@ -88,7 +88,7 @@ accessMethod
     ;
 
 createIndex
-    : CREATE createIndexSpecification INDEX concurrentlyClause (notExistClause? indexName)? ON onlyClause tableName
+    : CREATE createIndexSpecification INDEX concurrentlyClause (ifNotExists? indexName)? ON onlyClause tableName
       accessMethodClause? LP_ indexParams RP_ include? (WITH reloptions)? tableSpace? whereClause?
     ;
 
@@ -125,7 +125,11 @@ columnElem
     ;
 
 dropDatabase
-    : DROP DATABASE existClause? name
+    : DROP DATABASE ifExists? name
+    ;
+
+dropDirectory
+    : DROP DIRECTORY ifExists? directoryName
     ;
 
 createDatabaseSpecification
@@ -144,16 +148,16 @@ createdbOptName
 
 alterTable
     : ALTER TABLE
-    ( existClause? onlyClause tableNameClause alterDefinitionClause
+    ( ifExists? onlyClause tableNameClause alterDefinitionClause
     | ALL IN TABLESPACE tableNameClause (OWNED BY roleList)? SET TABLESPACE name NOWAIT?)
     ;
 
 alterIndex
-    : ALTER INDEX (existClause? | ALL IN TABLESPACE) qualifiedName alterIndexDefinitionClause
+    : ALTER INDEX (ifExists? | ALL IN TABLESPACE) qualifiedName alterIndexDefinitionClause
     ;
 
 dropTable
-    : DROP TABLE existClause? tableNames dropTableOpt?
+    : DROP TABLE ifExists? tableNames dropTableOpt?
     ;
 
 dropTableOpt
@@ -161,7 +165,7 @@ dropTableOpt
     ;
 
 dropIndex
-    : DROP INDEX concurrentlyClause existClause? qualifiedNameList dropIndexOpt?
+    : DROP INDEX concurrentlyClause ifExists? qualifiedNameList dropIndexOpt?
     ;
 
 dropIndexOpt
@@ -398,11 +402,11 @@ alterTableAction
     ;
 
 addColumnSpecification
-    : ADD COLUMN? notExistClause? columnDefinition
+    : ADD COLUMN? ifNotExists? columnDefinition
     ;
 
 dropColumnSpecification
-    : DROP COLUMN? existClause? columnName (RESTRICT | CASCADE)?
+    : DROP COLUMN? ifExists? columnName (RESTRICT | CASCADE)?
     ;
 
 modifyColumnSpecification
@@ -412,7 +416,7 @@ modifyColumnSpecification
     | modifyColumn (SET | DROP) NOT NULL
     | modifyColumn ADD GENERATED (ALWAYS | (BY DEFAULT)) AS IDENTITY (LP_ sequenceOptions RP_)?
     | modifyColumn alterColumnSetOption alterColumnSetOption*
-    | modifyColumn DROP IDENTITY existClause?
+    | modifyColumn DROP IDENTITY ifExists?
     | modifyColumn SET STATISTICS NUMBER_
     | modifyColumn SET LP_ attributeOptions RP_
     | modifyColumn RESET LP_ attributeOptions RP_
@@ -452,7 +456,7 @@ validateConstraintSpecification
     ;
 
 dropConstraintSpecification
-    : DROP CONSTRAINT existClause? constraintName (RESTRICT | CASCADE)?
+    : DROP CONSTRAINT ifExists? constraintName (RESTRICT | CASCADE)?
     ;
 
 storageParameterWithValue
@@ -506,7 +510,7 @@ alterTableCmds
     ;
 
 alterTableCmd
-    : ADD COLUMN? notExistClause? columnDef
+    : ADD COLUMN? ifNotExists? columnDef
     | ALTER COLUMN? colId alterColumnDefault
     | ALTER COLUMN? colId DROP NOT NULL
     | ALTER COLUMN? colId SET NOT NULL
@@ -518,15 +522,15 @@ alterTableCmd
     | ALTER COLUMN? colId ADD GENERATED generatedWhen AS IDENTITY parenthesizedSeqOptList?
     | ALTER COLUMN? colId alterIdentityColumnOptionList
     | ALTER COLUMN? colId DROP IDENTITY
-    | ALTER COLUMN? colId DROP IDENTITY existClause
-    | DROP COLUMN? existClause colId dropBehavior?
+    | ALTER COLUMN? colId DROP IDENTITY ifExists
+    | DROP COLUMN? ifExists colId dropBehavior?
     | DROP COLUMN? colId dropBehavior?
     | ALTER COLUMN? colId setData? TYPE typeName collateClause? alterUsing?
     | ALTER COLUMN? colId alterGenericOptions
     | ADD tableConstraint (NOT VALID)?
     | ALTER CONSTRAINT name constraintAttributeSpec
     | VALIDATE CONSTRAINT name
-    | DROP CONSTRAINT existClause name dropBehavior?
+    | DROP CONSTRAINT ifExists name dropBehavior?
     | DROP CONSTRAINT name dropBehavior?
     | SET WITHOUT OIDS
     | CLUSTER ON name
@@ -724,6 +728,14 @@ alterCollationClause
     | SET SCHEMA schemaName
     ;
 
+alterSynonym
+    : ALTER SYNONYM synonymName OWNER TO owner
+    ;
+
+alterDirectory
+    : ALTER DIRECTORY directoryName OWNER TO owner
+    ;
+
 alterConversion
     : ALTER CONVERSION anyName alterConversionClause
     ;
@@ -804,7 +816,7 @@ alterDomain
 alterDomainClause
     : anyName (SET | DROP) NOT NULL
     | anyName ADD tableConstraint (NOT VALID)?
-    | anyName DROP CONSTRAINT existClause? name dropBehavior?
+    | anyName DROP CONSTRAINT ifExists? name dropBehavior?
     | anyName VALIDATE CONSTRAINT name
     | anyName RENAME CONSTRAINT constraintName TO constraintName
     | anyName OWNER TO roleSpec
@@ -832,6 +844,10 @@ alterExtension
     : ALTER EXTENSION name alterExtensionClauses
     ;
 
+createSynonym
+    : CREATE (OR REPLACE)? SYNONYM synonymName FOR objectName
+    ;
+    
 alterExtensionClauses
     : UPDATE alterExtensionOptList
     | (ADD | DROP) ACCESS METHOD name
@@ -944,27 +960,29 @@ alterMaterializedView
     ;
 
 alterMaterializedViewClauses
-    : existClause? qualifiedName alterTableCmds
+    : ifExists? qualifiedName alterTableCmds
     | qualifiedName DEPENDS ON EXTENSION name
-    | existClause? qualifiedName RENAME COLUMN? columnName TO columnName
-    | existClause? qualifiedName RENAME TO qualifiedName
-    | existClause? qualifiedName SET SCHEMA schemaName
+    | ifExists? qualifiedName RENAME COLUMN? columnName TO columnName
+    | ifExists? qualifiedName RENAME TO qualifiedName
+    | ifExists? qualifiedName SET SCHEMA schemaName
     | ALL IN TABLESPACE name (OWNED BY roleList) SET TABLESPACE name NOWAIT?
     ;
 
 declare
-    : DECLARE name cursorOptions CURSOR (WITH HOLD | WITHOUT HOLD)? FOR select
+    : DECLARE cursorName cursorOptions CURSOR (WITH HOLD | WITHOUT HOLD)? FOR select
     ;
 
+cursor
+    : CURSOR cursorName cursorOptions (WITH HOLD | WITHOUT HOLD)? FOR select
+    ;
+    
 cursorOptions
     : cursorOption*
     ;
 
 cursorOption
-    : NO SCROLL
-    | SCROLL
-    | BINARY
-    | INSENSITIVE
+    : BINARY
+    | NO SCROLL
     ;
 
 executeStmt
@@ -972,7 +990,7 @@ executeStmt
     ;
 
 createMaterializedView
-    : CREATE UNLOGGED? MATERIALIZED VIEW notExistClause? createMvTarget AS select (WITH DATA | WITH NO DATA)?
+    : CREATE UNLOGGED? MATERIALIZED VIEW ifNotExists? createMvTarget AS select (WITH DATA | WITH NO DATA)?
     ;
 
 createMvTarget
@@ -984,7 +1002,7 @@ refreshMatViewStmt
     ;
 
 alterPolicy
-    : ALTER POLICY existClause? name ON qualifiedName alterPolicyClauses
+    : ALTER POLICY ifExists? name ON qualifiedName alterPolicyClauses
     ;
 
 alterPolicyClauses
@@ -1033,11 +1051,11 @@ alterRoutine
     ;
 
 alterRule
-    : ALTER RULE ON qualifiedName RENAME TO name
+    : ALTER RULE name ON tableName RENAME TO name
     ;
 
 alterSequence
-    : ALTER SEQUENCE existClause? qualifiedName alterSequenceClauses
+    : ALTER SEQUENCE ifExists? qualifiedName alterSequenceClauses
     ;
 
 alterSequenceClauses
@@ -1059,7 +1077,7 @@ foreignServerVersion
 
 alterStatistics
     : ALTER STATISTICS
-    ( existClause? anyName SET STATISTICS signedIconst
+    ( ifExists? anyName SET STATISTICS signedIconst
     | anyName RENAME TO name
     | anyName SET SCHEMA name
     | anyName OWNER TO roleSpec)
@@ -1105,7 +1123,7 @@ alterTextSearchConfigurationClauses
     | OWNER TO roleSpec
     | (ADD | ALTER) MAPPING FOR nameList WITH? anyNameList
     | ALTER MAPPING (FOR nameList)? REPLACE anyName WITH anyName
-    | DROP MAPPING existClause? FOR nameList
+    | DROP MAPPING ifExists? FOR nameList
     ;
 
 anyNameList
@@ -1138,12 +1156,11 @@ alterType
 
 alterTypeClauses
     : alterTypeCmds
-    | ADD VALUE notExistClause? STRING_ ((BEFORE | AFTER) STRING_)?
+    | ADD VALUE ifNotExists? STRING_ ((BEFORE | AFTER) STRING_)?
     | RENAME VALUE STRING_ TO STRING_
     | RENAME TO name
     | RENAME ATTRIBUTE name TO name dropBehavior?
     | SET SCHEMA name
-    | SET LP_ operatorDefList RP_
     | OWNER TO roleSpec
     ;
 
@@ -1153,8 +1170,7 @@ alterTypeCmds
 
 alterTypeCmd
     : ADD ATTRIBUTE tableFuncElement dropBehavior?
-    | DROP ATTRIBUTE existClause colId dropBehavior?
-    | DROP ATTRIBUTE colId dropBehavior?
+    | DROP ATTRIBUTE ifExists? colId dropBehavior?
     | ALTER ATTRIBUTE colId setData? TYPE typeName collateClause? dropBehavior?
     ;
 
@@ -1167,7 +1183,7 @@ authIdent
     ;
 
 alterView
-    : ALTER VIEW existClause? qualifiedName alterViewClauses
+    : ALTER VIEW ifExists? qualifiedName alterViewClauses
     ;
 
 alterViewClauses
@@ -1262,7 +1278,7 @@ createAccessMethod
     ;
 
 createAggregate
-    : CREATE (OR REPLACE)? AGGREGATE funcName (aggrArgs definition | oldAggrDefinition)
+    : CREATE AGGREGATE funcName (aggrArgs definition | oldAggrDefinition)
     ;
 
 oldAggrDefinition
@@ -1278,18 +1294,19 @@ oldAggrElem
     ;
 
 createCast
-    : CREATE CAST LP_ typeName AS typeName RP_
-    ( WITH FUNCTION functionWithArgtypes castContext?
-    | WITHOUT FUNCTION castContext?
-    | WITH INOUT castContext?)
+    : CREATE CAST LP_ typeName AS typeName RP_ (
+    | WITH FUNCTION (funcName | dataTypeName) funcArgs
+    | WITHOUT FUNCTION
+    | WITH INOUT 
+    ) castContext?
     ;
 
 castContext
-    : AS IMPLICIT | AS ASSIGNMENT
+    : AS (ASSIGNMENT | IMPLICIT)
     ;
 
 createCollation
-    : CREATE COLLATION notExistClause? (anyName definition | anyName FROM anyName)
+    : CREATE COLLATION ifNotExists? (anyName definition | anyName FROM anyName)
     ;
 
 createConversion
@@ -1317,7 +1334,7 @@ eventTriggerValueList
     ;
 
 createExtension
-    : CREATE EXTENSION notExistClause? name WITH? createExtensionOptList
+    : CREATE EXTENSION ifNotExists? name WITH? createExtensionOptList
     ;
 
 createExtensionOptList
@@ -1340,9 +1357,9 @@ createForeignTable
     ;
 
 createForeignTableClauses
-    : notExistClause? qualifiedName LP_ tableElementList? RP_
+    : ifNotExists? qualifiedName LP_ tableElementList? RP_
       (INHERITS LP_ qualifiedNameList RP_)? SERVER name createGenericOptions?
-    | notExistClause? qualifiedName PARTITION OF qualifiedName (LP_ typedTableElementList RP_)? partitionBoundSpec
+    | ifNotExists? qualifiedName PARTITION OF qualifiedName (LP_ typedTableElementList RP_)? partitionBoundSpec
       SERVER name createGenericOptions?
     ;
 
@@ -1549,7 +1566,7 @@ transitionOldOrNew
     ;
 
 createSequence
-    : CREATE tempOption? SEQUENCE notExistClause? qualifiedName seqOptList?
+    : CREATE tempOption? SEQUENCE ifNotExists? qualifiedName seqOptList?
     ;
 
 tempOption
@@ -1557,11 +1574,11 @@ tempOption
     ;
 
 createServer
-    : CREATE SERVER notExistClause? name (TYPE STRING_)? foreignServerVersion? FOREIGN DATA WRAPPER name createGenericOptions
+    : CREATE SERVER ifNotExists? name (TYPE STRING_)? foreignServerVersion? FOREIGN DATA WRAPPER name createGenericOptions
     ;
 
 createStatistics
-    : CREATE STATISTICS notExistClause? anyName optNameList ON exprList FROM fromList
+    : CREATE STATISTICS ifNotExists? anyName optNameList ON exprList FROM fromList
     ;
 
 createSubscription
@@ -1596,7 +1613,7 @@ enumValList
     ;
 
 createUserMapping
-    : CREATE USER MAPPING notExistClause? FOR authIdent SERVER name createGenericOptions
+    : CREATE USER MAPPING ifNotExists? FOR authIdent SERVER name createGenericOptions
     ;
 
 discard
@@ -1604,11 +1621,11 @@ discard
     ;
 
 dropAccessMethod
-    : DROP ACCESS METHOD existClause? name dropBehavior?
+    : DROP ACCESS METHOD ifExists? name dropBehavior?
     ;
 
 dropAggregate
-    : DROP AGGREGATE existClause? aggregateWithArgtypesList dropBehavior?
+    : DROP AGGREGATE ifExists? aggregateWithArgtypesList dropBehavior?
     ;
 
 aggregateWithArgtypesList
@@ -1616,39 +1633,39 @@ aggregateWithArgtypesList
     ;
 
 dropCast
-    : DROP CAST existClause? LP_ typeName AS typeName RP_ dropBehavior?
+    : DROP CAST ifExists? LP_ typeName AS typeName RP_ dropBehavior?
     ;
 
 dropCollation
-    : DROP COLLATION existClause? name dropBehavior?
+    : DROP COLLATION ifExists? name dropBehavior?
     ;
 
 dropConversion
-    : DROP CONVERSION existClause? name dropBehavior?
+    : DROP CONVERSION ifExists? name dropBehavior?
     ;
 
 dropDomain
-    : DROP DOMAIN existClause? nameList dropBehavior?
+    : DROP DOMAIN ifExists? nameList dropBehavior?
     ;
 
 dropEventTrigger
-    : DROP EVENT TRIGGER existClause? nameList dropBehavior?
+    : DROP EVENT TRIGGER ifExists? nameList dropBehavior?
     ;
 
 dropExtension
-    : DROP EXTENSION existClause? nameList dropBehavior?
+    : DROP EXTENSION ifExists? nameList dropBehavior?
     ;
 
 dropForeignDataWrapper
-    : DROP FOREIGN DATA WRAPPER existClause? nameList dropBehavior?
+    : DROP FOREIGN DATA WRAPPER ifExists? nameList dropBehavior?
     ;
 
 dropForeignTable
-    : DROP FOREIGN TABLE existClause? tableName (COMMA_ tableName)* dropBehavior?
+    : DROP FOREIGN TABLE ifExists? tableName (COMMA_ tableName)* dropBehavior?
     ;
 
 dropFunction
-    : DROP FUNCTION existClause? functionWithArgtypesList dropBehavior?
+    : DROP FUNCTION ifExists? functionWithArgtypesList dropBehavior?
     ;
 
 functionWithArgtypesList
@@ -1656,15 +1673,15 @@ functionWithArgtypesList
     ;
 
 dropLanguage
-    : DROP PROCEDURAL? LANGUAGE existClause? name dropBehavior?
+    : DROP PROCEDURAL? LANGUAGE ifExists? name dropBehavior?
     ;
 
 dropMaterializedView
-    : DROP MATERIALIZED VIEW existClause? anyNameList dropBehavior?
+    : DROP MATERIALIZED VIEW ifExists? anyNameList dropBehavior?
     ;
 
 dropOperator
-    : DROP OPERATOR existClause? operatorWithArgtypesList dropBehavior?
+    : DROP OPERATOR ifExists? operatorWithArgtypesList dropBehavior?
     ;
 
 operatorWithArgtypesList
@@ -1672,11 +1689,11 @@ operatorWithArgtypesList
     ;
 
 dropOperatorClass
-    : DROP OPERATOR CLASS existClause? anyName USING name dropBehavior?
+    : DROP OPERATOR CLASS ifExists? anyName USING name dropBehavior?
     ;
 
 dropOperatorFamily
-    : DROP OPERATOR FAMILY existClause? anyName USING name dropBehavior?
+    : DROP OPERATOR FAMILY ifExists? anyName USING name dropBehavior?
     ;
     
 dropOwned
@@ -1684,67 +1701,71 @@ dropOwned
     ;
 
 dropPolicy
-    : DROP POLICY existClause? name ON tableName dropBehavior?
+    : DROP POLICY ifExists? name ON tableName dropBehavior?
     ;
 
 dropProcedure
-    : DROP PROCEDURE existClause? functionWithArgtypesList dropBehavior?
+    : DROP PROCEDURE ifExists? functionWithArgtypesList dropBehavior?
     ;
 
 dropPublication
-    : DROP PUBLICATION existClause? anyNameList dropBehavior?
+    : DROP PUBLICATION ifExists? name dropBehavior?
     ;
 
 dropRoutine
-    : DROP ROUTINE existClause? functionWithArgtypesList dropBehavior?
+    : DROP ROUTINE ifExists? functionWithArgtypesList dropBehavior?
     ;
 
 dropRule
-    : DROP RULE existClause? name ON tableName dropBehavior?
+    : DROP RULE ifExists? name ON tableName dropBehavior?
     ;
 
 dropSequence
-    : DROP SEQUENCE existClause? qualifiedNameList dropBehavior?
+    : DROP SEQUENCE ifExists? qualifiedNameList dropBehavior?
+    ;
+
+dropSynonym
+    : DROP SYNONYM ifExists? synonymName dropBehavior?
     ;
 
 dropServer
-    : DROP SERVER existClause? qualifiedNameList dropBehavior?
+    : DROP SERVER ifExists? qualifiedNameList dropBehavior?
     ;
 
 dropStatistics
-    : DROP STATISTICS existClause? qualifiedNameList
+    : DROP STATISTICS ifExists? qualifiedNameList
     ;
 
 dropSubscription
-    : DROP SUBSCRIPTION existClause? qualifiedName dropBehavior?
+    : DROP SUBSCRIPTION ifExists? qualifiedName dropBehavior?
     ;
 
 dropTablespace
-    : DROP TABLESPACE existClause? qualifiedName
+    : DROP TABLESPACE ifExists? qualifiedName
     ;
 
 dropTextSearch
-    : DROP TEXT SEARCH (CONFIGURATION | DICTIONARY | PARSER | TEMPLATE) existClause? qualifiedName dropBehavior?
+    : DROP TEXT SEARCH (CONFIGURATION | DICTIONARY | PARSER | TEMPLATE) ifExists? qualifiedName dropBehavior?
     ;
 
 dropTransform
-    : DROP TRANSFORM existClause? FOR typeName LANGUAGE name dropBehavior?
+    : DROP TRANSFORM ifExists? FOR typeName LANGUAGE name dropBehavior?
     ;
 
 dropTrigger
-    : DROP TRIGGER existClause? qualifiedName ON tableName dropBehavior?
+    : DROP TRIGGER ifExists? qualifiedName ON tableName dropBehavior?
     ;
 
 dropType
-    : DROP TYPE existClause? anyNameList dropBehavior?
+    : DROP TYPE ifExists? anyNameList dropBehavior?
     ;
 
 dropUserMapping
-    : DROP USER MAPPING existClause? FOR authIdent SERVER name
+    : DROP USER MAPPING ifExists? FOR authIdent SERVER name
     ;
 
 dropView
-    : DROP VIEW existClause? qualifiedNameList dropBehavior?
+    : DROP VIEW ifExists? qualifiedNameList dropBehavior?
     ;
 
 importForeignSchema
@@ -1764,7 +1785,7 @@ listen
     ;
 
 move
-    : MOVE fetchArgs
+    : MOVE direction? (FROM | IN)? cursorName
     ;
 
 prepare
@@ -1811,7 +1832,7 @@ reindexTargetType
     ;
 
 alterForeignTable
-    : ALTER FOREIGN TABLE existClause? relationExpr alterForeignTableClauses
+    : ALTER FOREIGN TABLE ifExists? relationExpr alterForeignTableClauses
     ;
 
 alterForeignTableClauses
@@ -1855,7 +1876,7 @@ unlisten
     ;
 
 createSchema
-    : CREATE SCHEMA notExistClause? createSchemaClauses
+    : CREATE SCHEMA ifNotExists? createSchemaClauses
     ;
 
 createSchemaClauses
@@ -1869,12 +1890,104 @@ schemaEltList
 
 schemaStmt
     : createTable | createIndex | createSequence | createTrigger | grant | createView
-    ;    
+    ;
+
+grant
+    : GRANT (privilegeClause | roleClause)
+    ;
+    
+privilegeClause
+    : privilegeTypes ON onObjectClause (FROM | TO) granteeList (WITH GRANT OPTION)?
+    ;
+    
+roleClause
+    : privilegeList (FROM | TO) roleList (WITH ADMIN OPTION)? (GRANTED BY roleSpec)?
+    ;
+
+privilegeTypes
+    : privilegeType columnNames? (COMMA_ privilegeType columnNames?)*
+    ;
+    
+onObjectClause
+    : DATABASE nameList
+    | SCHEMA nameList
+    | DOMAIN anyNameList
+    | FUNCTION functionWithArgtypesList
+    | PROCEDURE functionWithArgtypesList
+    | ROUTINE functionWithArgtypesList
+    | LANGUAGE nameList
+    | LARGE OBJECT numericOnlyList
+    | TABLESPACE nameList
+    | TYPE anyNameList
+    | SEQUENCE qualifiedNameList
+    | TABLE? privilegeLevel
+    | FOREIGN DATA WRAPPER nameList
+    | FOREIGN SERVER nameList
+    | ALL TABLES IN SCHEMA nameList
+    | ALL SEQUENCES IN SCHEMA nameList
+    | ALL FUNCTIONS IN SCHEMA nameList
+    | ALL PROCEDURES IN SCHEMA nameList
+    | ALL ROUTINES IN SCHEMA nameList
+    ;
+    
+numericOnlyList
+    : numericOnly (COMMA_ numericOnly)*
+    ;
+    
+privilegeLevel
+    : ASTERISK_ | ASTERISK_ DOT_ASTERISK_ | identifier DOT_ASTERISK_ | tableNames | schemaName DOT_ routineName
+    ;
+
+routineName
+    : identifier
+    ;
+
+privilegeType
+    : SELECT
+    | INSERT
+    | UPDATE
+    | DELETE
+    | TRUNCATE
+    | REFERENCES
+    | TRIGGER
+    | CREATE
+    | CONNECT
+    | TEMPORARY
+    | TEMP
+    | EXECUTE
+    | USAGE
+    | ALL PRIVILEGES?
+    ;
+
+createDirectory
+    : CREATE (OR REPLACE)? DIRECTORY directoryName AS pathString
+    ;
 
 alterSchema
     : ALTER SCHEMA name (RENAME TO name | OWNER TO roleSpec)
     ;
 
 dropSchema
-    : DROP SCHEMA existClause? nameList dropBehavior?
+    : DROP SCHEMA ifExists? nameList dropBehavior?
+    ;
+
+fetch
+    : FETCH direction? (FROM | IN)? cursorName
+    ;
+
+direction
+    : NEXT #next
+    | PRIOR #prior
+    | FIRST #first
+    | LAST #last
+    | ABSOLUTE signedIconst #absoluteCount
+    | RELATIVE signedIconst #relativeCount
+    | signedIconst #count
+    | ALL #all
+    | FORWARD #forward
+    | FORWARD signedIconst #forwardCount
+    | FORWARD ALL #forwardAll
+    | BACKWARD #backward
+    | BACKWARD signedIconst #backwardCount
+    | BACKWARD ALL #backwardAll
     ;

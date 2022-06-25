@@ -125,7 +125,7 @@ public final class AbstractImporterTest {
         verify(preparedStatement).setObject(2, "UPDATE");
         verify(preparedStatement).setObject(3, 1);
         verify(preparedStatement).setObject(4, 10);
-        verify(preparedStatement).execute();
+        verify(preparedStatement).executeUpdate();
     }
     
     @Test
@@ -140,7 +140,7 @@ public final class AbstractImporterTest {
         inOrder.verify(preparedStatement).setObject(3, "UPDATE");
         inOrder.verify(preparedStatement).setObject(4, 1);
         inOrder.verify(preparedStatement).setObject(5, 10);
-        inOrder.verify(preparedStatement).execute();
+        inOrder.verify(preparedStatement).executeUpdate();
     }
     
     private DataRecord getUpdatePrimaryKeyDataRecord() {

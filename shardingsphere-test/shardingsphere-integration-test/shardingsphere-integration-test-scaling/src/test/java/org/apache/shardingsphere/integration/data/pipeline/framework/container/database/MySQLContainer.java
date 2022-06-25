@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.framework.container.database;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
@@ -28,6 +27,7 @@ import org.apache.shardingsphere.test.integration.framework.container.wait.JDBCC
 import org.testcontainers.containers.BindMode;
 
 import java.sql.DriverManager;
+import java.util.Arrays;
 import java.util.Properties;
 
 public final class MySQLContainer extends DockerDatabaseContainer {
@@ -42,7 +42,7 @@ public final class MySQLContainer extends DockerDatabaseContainer {
     protected void configure() {
         super.configure();
         withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password");
-        setEnv(Lists.newArrayList("LANG=C.UTF-8", "MYSQL_ROOT_PASSWORD=root", "MYSQL_ROOT_HOST=%"));
+        setEnv(Arrays.asList("LANG=C.UTF-8", "MYSQL_ROOT_PASSWORD=root", "MYSQL_ROOT_HOST=%"));
         withClasspathResourceMapping("/env/mysql/my.cnf", "/etc/mysql/my.cnf", BindMode.READ_ONLY);
         withExposedPorts(getPort());
         if (ITEnvTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItEnvType()) {

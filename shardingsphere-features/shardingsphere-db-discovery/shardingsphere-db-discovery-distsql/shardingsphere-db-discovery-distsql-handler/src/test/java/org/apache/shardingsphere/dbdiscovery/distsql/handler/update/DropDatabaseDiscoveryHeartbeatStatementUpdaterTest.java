@@ -24,9 +24,10 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.DropDataba
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleInUsedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -43,25 +44,25 @@ import static org.junit.Assert.assertTrue;
 @RunWith(MockitoJUnitRunner.class)
 public final class DropDatabaseDiscoveryHeartbeatStatementUpdaterTest {
     
-    @Mock
-    private ShardingSphereMetaData shardingSphereMetaData;
-    
     private final DropDatabaseDiscoveryHeartbeatStatementUpdater updater = new DropDatabaseDiscoveryHeartbeatStatementUpdater();
+    
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ShardingSphereDatabase database;
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutCurrentHeartbeat() throws DistSQLException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), null);
+        updater.checkSQLStatement(database, createSQLStatement(), null);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutToBeDroppedHeartbeat() throws DistSQLException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap()));
+        updater.checkSQLStatement(database, createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(), Collections.emptyMap()));
     }
     
     @Test(expected = RuleInUsedException.class)
     public void assertCheckSQLStatementWithInUsed() throws DistSQLException {
         DatabaseDiscoveryDataSourceRuleConfiguration ruleConfig = new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.emptyList(), "heartbeat_name", "");
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.singletonList(ruleConfig),
+        updater.checkSQLStatement(database, createSQLStatement(), new DatabaseDiscoveryRuleConfiguration(Collections.singletonList(ruleConfig),
                 Collections.singletonMap("heartbeat_name", null), Collections.emptyMap()));
     }
     
@@ -76,18 +77,18 @@ public final class DropDatabaseDiscoveryHeartbeatStatementUpdaterTest {
     public void assertUpdateCurrentRuleConfigurationWithIfExists() throws DistSQLException {
         DatabaseDiscoveryRuleConfiguration ruleConfig = createCurrentRuleConfiguration();
         DropDatabaseDiscoveryHeartbeatStatement dropDatabaseDiscoveryHeartbeatStatement = createSQLStatementWithIfExists();
-        updater.checkSQLStatement(shardingSphereMetaData, dropDatabaseDiscoveryHeartbeatStatement, ruleConfig);
+        updater.checkSQLStatement(database, dropDatabaseDiscoveryHeartbeatStatement, ruleConfig);
         assertFalse(updater.updateCurrentRuleConfiguration(dropDatabaseDiscoveryHeartbeatStatement, ruleConfig));
         assertTrue(ruleConfig.getDiscoveryHeartbeats().containsKey("heartbeat_name"));
         assertThat(ruleConfig.getDiscoveryHeartbeats().size(), is(2));
     }
     
     private DropDatabaseDiscoveryHeartbeatStatement createSQLStatement() {
-        return new DropDatabaseDiscoveryHeartbeatStatement(Collections.singleton("heartbeat_name"));
+        return new DropDatabaseDiscoveryHeartbeatStatement(false, Collections.singleton("heartbeat_name"));
     }
     
     private DropDatabaseDiscoveryHeartbeatStatement createSQLStatementWithIfExists() {
-        return new DropDatabaseDiscoveryHeartbeatStatement(Collections.singleton("heartbeat_name_0"), true);
+        return new DropDatabaseDiscoveryHeartbeatStatement(true, Collections.singleton("heartbeat_name_0"));
     }
     
     private DatabaseDiscoveryRuleConfiguration createCurrentRuleConfiguration() {

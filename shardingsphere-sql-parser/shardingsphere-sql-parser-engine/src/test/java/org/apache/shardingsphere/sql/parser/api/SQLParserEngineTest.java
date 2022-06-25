@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.sql.parser.api;
 
-import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
+import com.github.benmanes.caffeine.cache.CacheLoader;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecutor;
 import org.junit.Test;
@@ -40,15 +40,15 @@ public final class SQLParserEngineTest {
     public void assertParse() throws NoSuchFieldException, IllegalAccessException {
         SQLParserExecutor sqlParserExecutor = mock(SQLParserExecutor.class);
         when(sqlParserExecutor.parse(SQL)).thenReturn(mock(ParseASTNode.class));
-        CacheOption cacheOption = new CacheOption(128, 1024L, 4);
+        CacheOption cacheOption = new CacheOption(128, 1024L);
         SQLParserEngine sqlParserEngine = new SQLParserEngine("H2", cacheOption);
         Field sqlParserExecutorFiled = sqlParserEngine.getClass().getDeclaredField("sqlParserExecutor");
         Field parseTreeCacheField = sqlParserEngine.getClass().getDeclaredField("parseTreeCache");
         sqlParserExecutorFiled.setAccessible(true);
         parseTreeCacheField.setAccessible(true);
         sqlParserExecutorFiled.set(sqlParserEngine, sqlParserExecutor);
-        LoadingCache<String, ParseASTNode> parseTreeCache = CacheBuilder.newBuilder().softValues().initialCapacity(128)
-                .maximumSize(1024).concurrencyLevel(4).build(new CacheLoader<String, ParseASTNode>() {
+        LoadingCache<String, ParseASTNode> parseTreeCache = Caffeine.newBuilder().softValues().initialCapacity(128)
+                .maximumSize(1024).build(new CacheLoader<String, ParseASTNode>() {
                     
                     @ParametersAreNonnullByDefault
                     @Override

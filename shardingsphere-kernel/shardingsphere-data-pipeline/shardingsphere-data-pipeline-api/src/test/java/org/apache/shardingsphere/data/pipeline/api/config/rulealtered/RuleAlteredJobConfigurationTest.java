@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.api.config.rulealtered;
 
-import com.google.common.collect.Lists;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.RuleAlteredJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.YamlRuleAlteredJobConfiguration;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -27,22 +28,28 @@ import static org.junit.Assert.assertThat;
 
 public final class RuleAlteredJobConfigurationTest {
     
+    private static final RuleAlteredJobConfigurationSwapper JOB_CONFIG_SWAPPER = new RuleAlteredJobConfigurationSwapper();
+    
     @Test
     public void assertGetJobShardingCountByNull() {
-        assertThat(new RuleAlteredJobConfiguration().getJobShardingCount(), is(0));
+        YamlRuleAlteredJobConfiguration yamlJobConfig = new YamlRuleAlteredJobConfiguration();
+        RuleAlteredJobConfiguration jobConfig = JOB_CONFIG_SWAPPER.swapToObject(yamlJobConfig);
+        assertThat(jobConfig.getJobShardingCount(), is(0));
     }
     
     @Test
     public void assertGetJobShardingCount() {
-        RuleAlteredJobConfiguration jobConfig = new RuleAlteredJobConfiguration();
-        jobConfig.setJobShardingDataNodes(Arrays.asList("node1", "node2"));
+        YamlRuleAlteredJobConfiguration yamlJobConfig = new YamlRuleAlteredJobConfiguration();
+        yamlJobConfig.setJobShardingDataNodes(Arrays.asList("node1", "node2"));
+        RuleAlteredJobConfiguration jobConfig = JOB_CONFIG_SWAPPER.swapToObject(yamlJobConfig);
         assertThat(jobConfig.getJobShardingCount(), is(2));
     }
     
     @Test
     public void assertSplitLogicTableNames() {
-        RuleAlteredJobConfiguration jobConfig = new RuleAlteredJobConfiguration();
-        jobConfig.setLogicTables("foo_tbl,bar_tbl");
-        assertThat(jobConfig.splitLogicTableNames(), is(Lists.newArrayList("foo_tbl", "bar_tbl")));
+        YamlRuleAlteredJobConfiguration yamlJobConfig = new YamlRuleAlteredJobConfiguration();
+        yamlJobConfig.setLogicTables("foo_tbl,bar_tbl");
+        RuleAlteredJobConfiguration jobConfig = JOB_CONFIG_SWAPPER.swapToObject(yamlJobConfig);
+        assertThat(jobConfig.splitLogicTableNames(), is(Arrays.asList("foo_tbl", "bar_tbl")));
     }
 }

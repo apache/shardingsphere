@@ -1017,6 +1017,17 @@ flashbackArchiveClause
     : FLASHBACK ARCHIVE flashbackArchiveName? | NO FLASHBACK ARCHIVE
     ;
 
+alterPackage
+    : ALTER PACKAGE packageName (
+    | packageCompileClause
+    | (EDITIONABLE | NONEDITIONABLE)
+    )
+    ;
+
+packageCompileClause
+    : COMPILE DEBUG? (PACKAGE | SPECIFICATION | BODY)? (compilerParametersClause*)? (REUSE SETTINGS)?
+    ;
+
 alterSynonym
     : ALTER PUBLIC? SYNONYM (schemaName DOT_)? synonymName (COMPILE | EDITIONABLE | NONEDITIONABLE)
     ;
@@ -2300,4 +2311,209 @@ createSequenceClause
     | NOSHARD
     | SESSION
     | GLOBAL
+    ;
+
+alterSequence
+    : ALTER SEQUENCE (schemaName DOT_)? sequenceName alterSequenceClause+
+    ;
+
+alterSequenceClause
+   : (INCREMENT BY | START WITH) INTEGER_
+   | MAXVALUE INTEGER_
+   | NOMAXVALUE
+   | MINVALUE INTEGER_
+   | NOMINVALUE
+   | RESTART
+   | CYCLE
+   | NOCYCLE
+   | CACHE INTEGER_
+   | NOCACHE
+   | ORDER
+   | NOORDER
+   | KEEP
+   | NOKEEP
+   | SCALE (EXTEND | NOEXTEND)
+   | NOSCALE
+   | SHARD (EXTEND | NOEXTEND)
+   | NOSHARD
+   | SESSION
+   | GLOBAL
+   ;
+
+createContext
+    : CREATE (OR REPLACE)? CONTEXT namespace USING (schemaName DOT_)? packageName sharingClause? (initializedClause | accessedClause)?
+    ;
+
+initializedClause
+    : INITIALIZED (EXTERNALLY | GLOBALLY)
+    ;
+
+accessedClause
+    : ACCESSED GLOBALLY
+    ;
+
+createSPFile
+    : CREATE SPFILE (EQ_ spfileName)? FROM (PFILE (EQ_ pfileName)? (AS COPY)? | MEMORY)
+    ;
+
+createPFile
+    : CREATE PFILE (EQ_ pfileName)? FROM (SPFILE (EQ_ spfileName)? (AS COPY)? | MEMORY)
+    ;
+
+createControlFile
+    : CREATE CONTROLFILE REUSE? SET? DATABASE databaseName logfileForControlClause? resetLogsOrNot
+    ( MAXLOGFILES INTEGER_
+    | MAXLOGMEMBERS INTEGER_
+    | MAXLOGHISTORY INTEGER_
+    | MAXDATAFILES INTEGER_
+    | MAXINSTANCES INTEGER_
+    | ARCHIVELOG
+    | NOARCHIVELOG
+    | FORCE LOGGING
+    | SET STANDBY NOLOGGING FOR (DATA AVAILABILITY | LOAD PERFORMANCE)
+    )*
+    characterSetClause?
+    ;
+
+resetLogsOrNot
+   :  ( RESETLOGS | NORESETLOGS) (DATAFILE fileSpecifications)?
+   ;
+
+logfileForControlClause
+    : LOGFILE (GROUP INTEGER_)? fileSpecification (COMMA_ (GROUP INTEGER_)? fileSpecification)+
+    ;
+
+characterSetClause
+    : CHARACTER SET characterSetName
+    ;
+
+createFlashbackArchive
+   : CREATE FLASHBACK ARCHIVE DEFAULT? flashbackArchiveName tablespaceClause
+     flashbackArchiveQuota? (NO? OPTIMIZE DATA)? flashbackArchiveRetention
+   ;
+
+flashbackArchiveQuota
+    : QUOTA INTEGER_ quotaUnit
+    ;
+
+flashbackArchiveRetention
+    : RETENTION INTEGER_ (YEAR | MONTH | DAY)
+    ;
+
+alterFlashbackArchive
+    : ALTER FLASHBACK ARCHIVE flashbackArchiveName
+    ( SET DEFAULT
+    | (ADD | MODIFY) TABLESPACE tablespaceName flashbackArchiveQuota?
+    | REMOVE TABLESPACE tablespaceName
+    | MODIFY RETENTION flashbackArchiveRetention
+    | PURGE purgeClause
+    | NO? OPTIMIZE DATA)
+    ;
+
+purgeClause
+    : ALL
+    | BEFORE (SCN expr | TIMESTAMP expr)
+    ;
+
+dropFlashbackArchive
+    : DROP FLASHBACK ARCHIVE flashbackArchiveName
+    ;
+
+createDiskgroup
+    : CREATE DISKGROUP diskgroupName (redundancyClause REDUNDANCY)? diskClause+ attribute?
+    ;
+
+redundancyClause
+    : HIGH
+    | NORMAL
+    | FLEX
+    | EXTENDED (SITE siteName)?
+    | EXTERNAL
+    ;
+
+diskClause
+    : (QUORUM | REGULAR)? (FAILGROUP diskgroupName)? DISK qualifieDiskClause (COMMA_ qualifieDiskClause)*
+    ;
+
+qualifieDiskClause
+    : searchString (NAME diskName)? (SIZE sizeClause)? (FORCE | NOFORCE)?
+    ;
+
+attribute
+    : ATTRIBUTE attributeNameAndValue (COMMA_ attributeNameAndValue)*
+    ;
+
+attributeNameAndValue
+    : SQ_ attributeName SQ_ EQ_ SQ_ attributeValue SQ_
+    ;
+
+dropDiskgroup
+    : DROP DISKGROUP diskgroupName contentsClause?
+    ;
+
+contentsClause
+    : ((FORCE? INCLUDING) | EXCLUDING) CONTENTS
+    ;
+
+createRollbackSegment
+    : CREATE PUBLIC? ROLLBACK SEGMENT rollbackSegment ((TABLESPACE tablespaceName) | storageClause)*
+    ;
+
+dropRollbackSegment
+    : DROP ROLLBACK SEGMENT rollbackSegment
+    ;
+
+createLockdownProfile
+    : CREATE LOCKDOWN PROFILE profileName (staticBaseProfile | dynamicBaseProfile)?
+    ;
+
+staticBaseProfile
+    : FROM profileName
+    ;
+
+dynamicBaseProfile
+    : INCLUDING profileName
+    ;
+
+dropLockdownProfile
+    : DROP LOCKDOWN PROFILE profileName
+    ;
+
+createInmemoryJoinGroup
+    : CREATE INMEMORY JOIN GROUP (schemaName DOT_)? joinGroupName
+     LP_ tableColumnClause COMMA_ tableColumnClause (COMMA_ tableColumnClause)* RP_
+    ;
+
+tableColumnClause
+    : (schemaName DOT_)? tableName LP_ columnName RP_
+    ;
+
+alterInmemoryJoinGroup
+    : ALTER INMEMORY JOIN GROUP (schemaName DOT_)? joinGroupName (ADD | REMOVE) LP_ tableName LP_ columnName RP_ RP_
+    ;
+
+dropInmemoryJoinGroup
+    : DROP INMEMORY JOIN GROUP (schemaName DOT_)? joinGroupName
+    ;
+
+createRestorePoint
+    : CREATE CLEAN? RESTORE POINT restorePointName (FOR PLUGGABLE DATABASE pdbName)?
+      (AS OF (TIMESTAMP | SCN) expr)?
+      (PRESERVE | GUARANTEE FLASHBACK DATABASE)?
+    ;
+
+dropRestorePoint
+    : DROP RESTORE POINT restorePointName (FOR PLUGGABLE DATABASE pdbName)?
+    ;
+    
+dropOperator
+    : DROP OPERATOR (schemaName DOT_)? operatorName FORCE?
+    ;
+
+alterLibrary
+    : ALTER LIBRARY (schemaName DOT_)? libraryName (libraryCompileClause | EDITIONABLE | NONEDITIONABLE)
+    ;
+
+libraryCompileClause
+    : COMPILE DEBUG? compilerParametersClause* (REUSE SETTINGS)?
     ;

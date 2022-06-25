@@ -21,7 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.readwritesplitting.spi.ReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
@@ -33,7 +33,7 @@ import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 public final class ReplicaLoadBalanceAlgorithmFactory {
     
     static {
-        ShardingSphereServiceLoader.register(ReplicaLoadBalanceAlgorithm.class);
+        ShardingSphereServiceLoader.register(ReadQueryLoadBalanceAlgorithm.class);
     }
     
     /**
@@ -41,8 +41,8 @@ public final class ReplicaLoadBalanceAlgorithmFactory {
      *
      * @return created instance
      */
-    public static ReplicaLoadBalanceAlgorithm newInstance() {
-        return RequiredSPIRegistry.getRegisteredService(ReplicaLoadBalanceAlgorithm.class);
+    public static ReadQueryLoadBalanceAlgorithm newInstance() {
+        return RequiredSPIRegistry.getRegisteredService(ReadQueryLoadBalanceAlgorithm.class);
     }
     
     /**
@@ -51,8 +51,8 @@ public final class ReplicaLoadBalanceAlgorithmFactory {
      * @param replicaLoadBalanceAlgorithmConfig replica load-balance algorithm configuration
      * @return created instance
      */
-    public static ReplicaLoadBalanceAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration replicaLoadBalanceAlgorithmConfig) {
-        return ShardingSphereAlgorithmFactory.createAlgorithm(replicaLoadBalanceAlgorithmConfig, ReplicaLoadBalanceAlgorithm.class);
+    public static ReadQueryLoadBalanceAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration replicaLoadBalanceAlgorithmConfig) {
+        return ShardingSphereAlgorithmFactory.createAlgorithm(replicaLoadBalanceAlgorithmConfig, ReadQueryLoadBalanceAlgorithm.class);
     }
     
     /**
@@ -62,6 +62,6 @@ public final class ReplicaLoadBalanceAlgorithmFactory {
      * @return contains replica load-balance algorithm or not
      */
     public static boolean contains(final String replicaLoadBalanceAlgorithmType) {
-        return TypedSPIRegistry.findRegisteredService(ReplicaLoadBalanceAlgorithm.class, replicaLoadBalanceAlgorithmType).isPresent();
+        return TypedSPIRegistry.findRegisteredService(ReadQueryLoadBalanceAlgorithm.class, replicaLoadBalanceAlgorithmType).isPresent();
     }
 }

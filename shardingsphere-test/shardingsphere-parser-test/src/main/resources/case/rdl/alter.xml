@@ -18,47 +18,47 @@
 
 <sql-parser-test-cases>
     <alter-resource sql-case-id="alter-resource-simple-single-without-password">
-        <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password=""/>
+        <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="" />
     </alter-resource>
 
     <alter-resource sql-case-id="alter-resource-simple-single-with-password">
-        <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456"/>
+        <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456" />
     </alter-resource>
 
     <alter-resource sql-case-id="alter-resource-simple-multiple">
-        <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456"/>
-        <data-source name="ds_1" hostname="127.0.0.1" port="3306" db="test1" user="ROOT" password="123456"/>
+        <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456" />
+        <data-source name="ds_1" hostname="127.0.0.1" port="3306" db="test1" user="ROOT" password="123456" />
     </alter-resource>
 
     <alter-resource sql-case-id="alter-resource-url-single-without-password">
-        <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password=""/>
+        <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="" />
     </alter-resource>
 
     <alter-resource sql-case-id="alter-resource-url-single-with-password">
-        <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="123456"/>
+        <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="123456" />
     </alter-resource>
 
     <alter-resource sql-case-id="alter-resource-url-multiple">
-        <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="123456"/>
-        <data-source name="ds_1" url="jdbc:mysql://127.0.0.1:3306/test1" user="ROOT" password="123456"/>
+        <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="123456" />
+        <data-source name="ds_1" url="jdbc:mysql://127.0.0.1:3306/test1" user="ROOT" password="123456" />
     </alter-resource>
 
     <alter-resource sql-case-id="alter-resource-single-with-properties">
         <data-source name="ds_0" hostname="127.0.0.1" port="3306" db="test0" user="ROOT" password="123456">
             <properties>
-                <property key="maxPoolSize" value="30"/>
+                <property key="maxPoolSize" value="30" />
             </properties>
         </data-source>
     </alter-resource>
 
     <alter-resource sql-case-id="alter-resource-url-single-with-empty-properties">
-        <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password=""/>
+        <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="" />
     </alter-resource>
 
     <alter-resource sql-case-id="alter-resource-url-single-with-properties">
         <data-source name="ds_0" url="jdbc:mysql://127.0.0.1:3306/test0" user="ROOT" password="123456">
             <properties>
-                <property key="maxPoolSize" value="30"/>
+                <property key="maxPoolSize" value="30" />
             </properties>
         </data-source>
     </alter-resource>
@@ -69,7 +69,7 @@
             <data-source>ms_group_1</data-source>
             <table-strategy algorithm-name="hash_mod">
                 <properties>
-                    <property key="sharding-count" value="4"/>
+                    <property key="sharding-count" value="4" />
                 </properties>
             </table-strategy>
             <key-generate-strategy algorithm-name="snowflake" />
@@ -81,7 +81,7 @@
             <data-source>ms_group_${0..1}</data-source>
             <table-strategy algorithm-name="hash_mod">
                 <properties>
-                    <property key="sharding-count" value="4"/>
+                    <property key="sharding-count" value="4" />
                 </properties>
             </table-strategy>
             <key-generate-strategy algorithm-name="snowflake" />
@@ -107,8 +107,8 @@
     </alter-sharding-table-rule>
     
     <alter-sharding-binding-table-rules sql-case-id="alter-sharding-binding-table-rules">
-        <rule table-groups="t_order,t_order_item"/>
-        <rule table-groups="t_1,t_2"/>
+        <rule table-groups="t_order,t_order_item" />
+        <rule table-groups="t_1,t_2" />
     </alter-sharding-binding-table-rules>
 
     <alter-sharding-broadcast-table-rules sql-case-id="alter-sharding-broadcast-table-rules">
@@ -119,7 +119,7 @@
     <alter-readwrite-splitting-rule sql-case-id="alter-readwrite-splitting-rule">
         <rule name="ms_group_0" auto-aware-resource="group_0" load-balancer="random">
             <properties>
-                <property key="read_weight" value="'2:1'"/>
+                <property key="read_weight" value="'2:1'" />
             </properties>
         </rule>
         <rule name="ms_group_1" write-data-source="primary_ds" load-balancer="random">
@@ -134,11 +134,11 @@
             <data-source>resource1</data-source>
             <discovery-type algorithm-name="mgr">
                 <properties>
-                    <property key="groupName" value="92504d5b-6dec"/>
+                    <property key="groupName" value="92504d5b-6dec" />
                 </properties>
             </discovery-type>
             <heartbeat>
-                <property key="keepAliveCron" value="0/5 * * * * ?"/>
+                <property key="keepAliveCron" value="0/5 * * * * ?" />
             </heartbeat>
         </rule>
         <rule rule-name="ha_group_1" type="mgr2">
@@ -146,11 +146,11 @@
             <data-source>resource3</data-source>
             <discovery-type algorithm-name="mgr2">
                 <properties>
-                    <property key="groupName" value="92504d5b-6dec-2"/>
+                    <property key="groupName" value="92504d5b-6dec-2" />
                 </properties>
             </discovery-type>
             <heartbeat>
-                <property key="keepAliveCron" value="0/6 * * * * ?"/>
+                <property key="keepAliveCron" value="0/6 * * * * ?" />
             </heartbeat>
         </rule>
     </alter-database-discovery-definition-rule>
@@ -163,9 +163,9 @@
     </alter-database-discovery-construction-rule>
 
     <alter-database-discovery-heartbeat sql-case-id="alter-database-discovery-heartbeat">
-        <rule heartbeat-name="mgr_heartbeat" >
+        <rule heartbeat-name="mgr_heartbeat">
             <properties>
-                <property key="keepAliveCron" value="0/5 * * * * ?"/>
+                <property key="keepAliveCron" value="0/5 * * * * ?" />
             </properties>
         </rule>
     </alter-database-discovery-heartbeat>
@@ -174,12 +174,12 @@
         <type discovery-type-name="primary_replica_ds_mgr">
             <algorithm algorithm-name="mgr">
                 <properties>
-                    <property key="groupName" value="92504d5b-6dec"/>
+                    <property key="groupName" value="92504d5b-6dec" />
                 </properties>
             </algorithm>
         </type>
         <type discovery-type-name="primary_replica_ds_mgr_2">
-            <algorithm algorithm-name="mgr"/>
+            <algorithm algorithm-name="mgr" />
         </type>
     </alter-database-discovery-type>
     
@@ -188,27 +188,28 @@
             <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
                 <encryptor algorithm-name="AES">
                     <properties>
-                        <property key="aes-key-value" value="123456abc"/>
+                        <property key="aes-key-value" value="123456abc" />
                     </properties>
                 </encryptor>
             </column>
             <column name="order_id" cipher-column="order_cipher">
-                <encryptor algorithm-name="MD5"/>
+                <encryptor algorithm-name="MD5" />
             </column>
         </rule>
     </alter-encrypt-rule>
 
     <alter-encrypt-rule sql-case-id="alter-encrypt-rule-with-assisted-query-column">
         <rule name="t_encrypt">
-            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher" assisted-query-column = "assisted_column">
+            <column name="user_id" plain-column="user_plain" cipher-column="user_cipher" assisted-query-column="assisted_column">
                 <encryptor algorithm-name="AES">
                     <properties>
-                        <property key="aes-key-value" value="123456abc"/>
+                        <property key="aes-key-value" value="123456abc" />
                     </properties>
                 </encryptor>
+                <assisted-query-encryptor algorithm-name="MD5" />
             </column>
             <column name="order_id" cipher-column="order_cipher">
-                <encryptor algorithm-name="MD5"/>
+                <encryptor algorithm-name="MD5" />
             </column>
         </rule>
     </alter-encrypt-rule>
@@ -218,33 +219,33 @@
             <column name="user_id" plain-column="user_plain" cipher-column="user_cipher">
                 <encryptor algorithm-name="AES">
                     <properties>
-                        <property key="aes-key-value" value="123456abc"/>
+                        <property key="aes-key-value" value="123456abc" />
                     </properties>
                 </encryptor>
             </column>
             <column name="order_id" cipher-column="order_cipher">
-                <encryptor algorithm-name="MD5"/>
+                <encryptor algorithm-name="MD5" />
             </column>
         </rule>
     </alter-encrypt-rule>
     
     <alter-shadow-rule sql-case-id="alter-shadow-rule">
         <rule name="rule" rule-name="shadow_rule" source="demo_ds" shadow="demo_ds_shadow">
-            <table-rule  table-name="t_order">
+            <table-rule table-name="t_order">
                 <shadow-algorithm algorithm-id="shadow_rule_t_order_regex_match">
                     <algorithm algorithm-name="REGEX_MATCH">
                         <properties>
-                            <property key="operation" value="insert"/>
-                            <property key="column" value="user_id"/>
-                            <property key="regex" value="[1]"/>
+                            <property key="operation" value="insert" />
+                            <property key="column" value="user_id" />
+                            <property key="regex" value="[1]" />
                         </properties>
                     </algorithm>
                 </shadow-algorithm>
                 <shadow-algorithm algorithm-id="simple_hint_algorithm">
                     <algorithm algorithm-name="SIMPLE_HINT">
                         <properties>
-                            <property key="shadow" value="true"/>
-                            <property key="foo" value="bar"/>
+                            <property key="shadow" value="true" />
+                            <property key="foo" value="bar" />
                         </properties>
                     </algorithm>
                 </shadow-algorithm>
@@ -256,18 +257,18 @@
         <shadow-algorithm algorithm-id="simple_hint_algorithm">
             <algorithm algorithm-name="SIMPLE_HINT">
                 <properties>
-                    <property key="shadow" value="true"/>
-                    <property key="foo" value="bar"/>
+                    <property key="shadow" value="true" />
+                    <property key="foo" value="bar" />
                 </properties>
             </algorithm>
         </shadow-algorithm>
     </alter-shadow-algorithm>
 
     <alter-sharding-algorithm sql-case-id="alter-sharding-algorithm">
-        <shardingAlgorithm  sharding-algorithm-name="algorithm_name">
+        <shardingAlgorithm sharding-algorithm-name="algorithm_name">
             <algorithm algorithm-name="inline">
                 <properties>
-                    <property key="algorithm-expression" value="t_order_${order_id % 2}"/>
+                    <property key="algorithm-expression" value="t_order_${order_id % 2}" />
                 </properties>
             </algorithm>
         </shardingAlgorithm>
@@ -291,6 +292,6 @@
         </strategy>
     </alter-default-sharding-strategy>
 
-    <enable-sharding-scaling-rule sql-case-id="enable-sharding-scaling-rule" scaling-name="scalingName"/>
-    <disable-sharding-scaling-rule sql-case-id="disable-sharding-scaling-rule" scaling-name="scalingName"/>
+    <enable-sharding-scaling-rule sql-case-id="enable-sharding-scaling-rule" scaling-name="scalingName" />
+    <disable-sharding-scaling-rule sql-case-id="disable-sharding-scaling-rule" scaling-name="scalingName" />
 </sql-parser-test-cases>

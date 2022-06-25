@@ -1,7 +1,7 @@
 +++
-pre = "<b>4.8. </b>"
+pre = "<b>4.9. </b>"
 title = "数据加密"
-weight = 8
+weight = 9
 chapter = true
 +++
 
@@ -31,3 +31,5 @@ chapter = true
 ## 目标
 
 **根据业界对加密的需求及业务改造痛点，提供了一套完整、安全、透明化、低改造成本的数据加密整合解决方案，是 Apache ShardingSphere 数据加密模块的主要设计目标。**
+
+**源码：https://github.com/apache/shardingsphere/tree/master/shardingsphere-features/shardingsphere-encrypt**

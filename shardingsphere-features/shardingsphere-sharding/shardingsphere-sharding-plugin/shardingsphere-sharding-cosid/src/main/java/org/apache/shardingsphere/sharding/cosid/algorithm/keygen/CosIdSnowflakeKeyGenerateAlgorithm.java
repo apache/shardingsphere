@@ -37,8 +37,6 @@ import java.util.Properties;
  */
 public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm, InstanceAwareAlgorithm {
     
-    public static final String TYPE = CosIdAlgorithmConstants.TYPE_PREFIX + "SNOWFLAKE";
-    
     public static final long DEFAULT_EPOCH;
     
     public static final String AS_STRING_KEY = "as-string";
@@ -102,6 +100,6 @@ public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgo
     
     @Override
     public String getType() {
-        return TYPE;
+        return CosIdAlgorithmConstants.TYPE_PREFIX + "SNOWFLAKE";
     }
 }

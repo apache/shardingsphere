@@ -19,7 +19,7 @@ package org.apache.shardingsphere.authority.provider.natived.builder;
 
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.provider.natived.model.privilege.NativePrivileges;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.junit.Test;
 
@@ -43,11 +43,11 @@ public final class StoragePrivilegeBuilderTest {
     
     @Test
     public void assertBuildInCache() {
-        Collection<ShardingSphereMetaData> metaDataList = new LinkedList<>();
+        Collection<ShardingSphereDatabase> databases = new LinkedList<>();
         Collection<ShardingSphereUser> users = new LinkedList<>();
         ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
         users.add(root);
-        Map<ShardingSphereUser, NativePrivileges> result = StoragePrivilegeBuilder.build(metaDataList, users);
+        Map<ShardingSphereUser, NativePrivileges> result = StoragePrivilegeBuilder.build(databases, users);
         assertThat(result.size(), is(1));
         assertTrue(result.get(root).hasPrivileges(Collections.singletonList(PrivilegeType.SUPER)));
     }
@@ -57,8 +57,8 @@ public final class StoragePrivilegeBuilderTest {
         Collection<ShardingSphereUser> users = new LinkedList<>();
         ShardingSphereUser root = new ShardingSphereUser("root", "", "localhost");
         users.add(root);
-        ShardingSphereMetaData metaData = mockShardingSphereMetaData(users);
-        Map<ShardingSphereUser, NativePrivileges> result = StoragePrivilegeBuilder.build(Collections.singletonList(metaData), users);
+        ShardingSphereDatabase database = mockDatabase(users);
+        Map<ShardingSphereUser, NativePrivileges> result = StoragePrivilegeBuilder.build(Collections.singletonList(database), users);
         assertThat(result.size(), is(1));
         Collection<PrivilegeType> expected = new LinkedList<>();
         expected.add(PrivilegeType.SUPER);
@@ -70,8 +70,8 @@ public final class StoragePrivilegeBuilderTest {
         assertTrue(result.get(root).hasPrivileges(expected));
     }
     
-    private ShardingSphereMetaData mockShardingSphereMetaData(final Collection<ShardingSphereUser> users) throws SQLException {
-        ShardingSphereMetaData result = mock(ShardingSphereMetaData.class, RETURNS_DEEP_STUBS);
+    private ShardingSphereDatabase mockDatabase(final Collection<ShardingSphereUser> users) throws SQLException {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         DataSource dataSource = mockDataSourceForPrivileges(users);
         when(result.getResource().getAllInstanceDataSources()).thenReturn(Collections.singleton(dataSource));
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());

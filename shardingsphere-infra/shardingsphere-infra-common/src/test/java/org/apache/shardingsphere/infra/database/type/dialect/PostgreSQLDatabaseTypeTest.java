@@ -17,14 +17,15 @@
 
 package org.apache.shardingsphere.infra.database.type.dialect;
 
-import com.google.common.collect.Sets;
 import org.apache.shardingsphere.infra.database.metadata.dialect.PostgreSQLDataSourceMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -76,6 +77,6 @@ public final class PostgreSQLDatabaseTypeTest {
     
     @Test
     public void assertGetSystemSchemas() {
-        assertThat(new PostgreSQLDatabaseType().getSystemSchemas(), is(Sets.newHashSet("information_schema", "pg_catalog")));
+        assertThat(new PostgreSQLDatabaseType().getSystemSchemas(), is(new HashSet<>(Arrays.asList("information_schema", "pg_catalog"))));
     }
 }

@@ -17,15 +17,13 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.impl;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
+import org.junit.Before;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
 import java.sql.SQLException;
 import java.sql.Statement;
 
@@ -34,32 +32,17 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public final class OpenGaussStatementMemoryStrictlyFetchSizeSetterTest {
+public final class OpenGaussStatementMemoryStrictlyFetchSizeSetterTest extends ProxyContextRestorer {
     
-    private static ContextManager originContextManager;
-    
-    @BeforeClass
-    public static void setup() {
-        originContextManager = swapContextManager(mock(ContextManager.class, RETURNS_DEEP_STUBS));
-    }
-    
-    @AfterClass
-    public static void tearDown() {
-        swapContextManager(originContextManager);
-    }
-    
-    @SneakyThrows
-    private static ContextManager swapContextManager(final ContextManager newContextManager) {
-        Field contextManagerField = ProxyContext.class.getDeclaredField("contextManager");
-        contextManagerField.setAccessible(true);
-        ContextManager result = (ContextManager) contextManagerField.get(ProxyContext.getInstance());
-        contextManagerField.set(ProxyContext.getInstance(), newContextManager);
-        return result;
+    @Before
+    public void setUp() {
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        when(contextManager.getMetaDataContexts().getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE)).thenReturn(-1);
+        ProxyContext.init(contextManager);
     }
     
     @Test
     public void assertSetFetchSize() throws SQLException {
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().<Integer>getValue(ConfigurationPropertyKey.PROXY_BACKEND_QUERY_FETCH_SIZE)).thenReturn(-1);
         Statement statement = mock(Statement.class);
         new OpenGaussStatementMemoryStrictlyFetchSizeSetter().setFetchSize(statement);
         verify(statement).setFetchSize(1);

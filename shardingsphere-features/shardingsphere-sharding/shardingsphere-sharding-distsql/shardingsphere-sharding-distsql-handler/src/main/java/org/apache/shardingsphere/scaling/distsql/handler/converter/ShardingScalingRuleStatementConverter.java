@@ -52,7 +52,7 @@ public final class ShardingScalingRuleStatementConverter {
         if (null == inputSegment) {
             return null;
         }
-        return new InputConfiguration(inputSegment.getWorkerThread(), inputSegment.getBatchSize(), convertToAlgorithm(inputSegment.getRateLimiter()));
+        return new InputConfiguration(inputSegment.getWorkerThread(), inputSegment.getBatchSize(), inputSegment.getShardingSize(), convertToAlgorithm(inputSegment.getRateLimiter()));
     }
     
     private static OutputConfiguration convertToOutputConfiguration(final InputOrOutputSegment outputSegment) {

@@ -38,6 +38,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.R
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.RestoreScalingSourceWritingContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ScalingRuleDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.SchemaNameContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShardingSizeContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShowScalingCheckAlgorithmsContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShowScalingListContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ScalingStatementParser.ShowScalingStatusContext;
@@ -68,7 +69,7 @@ import org.apache.shardingsphere.scaling.distsql.statement.segment.InputOrOutput
 import org.apache.shardingsphere.scaling.distsql.statement.segment.ShardingScalingRuleConfigurationSegment;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.Properties;
@@ -168,11 +169,12 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     public ASTNode visitInputDefinition(final InputDefinitionContext ctx) {
         Integer workerThread = getWorkerThread(ctx.workerThread());
         Integer batchSize = getBatchSize(ctx.batchSize());
+        Integer shardingSize = getShardingSize(ctx.shardingSize());
         AlgorithmSegment rateLimiter = null;
         if (null != ctx.rateLimiter()) {
             rateLimiter = (AlgorithmSegment) visit(ctx.rateLimiter());
         }
-        return new InputOrOutputSegment(workerThread, batchSize, rateLimiter);
+        return new InputOrOutputSegment(workerThread, batchSize, shardingSize, rateLimiter);
     }
     
     @Override
@@ -194,6 +196,13 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     }
     
     private Integer getBatchSize(final BatchSizeContext ctx) {
+        if (null == ctx) {
+            return null;
+        }
+        return Integer.parseInt(ctx.intValue().getText());
+    }
+    
+    private Integer getShardingSize(final ShardingSizeContext ctx) {
         if (null == ctx) {
             return null;
         }
@@ -222,7 +231,7 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     
     @Override
     public ASTNode visitDropShardingScalingRule(final DropShardingScalingRuleContext ctx) {
-        return new DropShardingScalingRuleStatement(null != ctx.existsClause(), getIdentifierValue(ctx.scalingName()));
+        return new DropShardingScalingRuleStatement(null != ctx.ifExists(), getIdentifierValue(ctx.scalingName()));
     }
     
     @Override
@@ -237,7 +246,7 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     
     @Override
     public ASTNode visitShowShardingScalingRules(final ShowShardingScalingRulesContext ctx) {
-        return new ShowShardingScalingRulesStatement(null == ctx.schemaName() ? null : (SchemaSegment) visit(ctx.schemaName()));
+        return new ShowShardingScalingRulesStatement(null == ctx.schemaName() ? null : (DatabaseSegment) visit(ctx.schemaName()));
     }
     
     @Override
@@ -258,7 +267,7 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     
     @Override
     public ASTNode visitSchemaName(final SchemaNameContext ctx) {
-        return new SchemaSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
+        return new DatabaseSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), new IdentifierValue(ctx.getText()));
     }
     
     private String getIdentifierValue(final ParseTree context) {

@@ -20,9 +20,11 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.work
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.node.WorkerIdNode;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+
+import java.util.Optional;
 
 /**
  * Worker id generator for cluster mode.
@@ -32,18 +34,18 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     
     private final ClusterPersistRepository repository;
     
-    private final MetaDataPersistService metaDataPersistService;
+    private final RegistryCenter registryCenter;
     
     private final InstanceDefinition instanceDefinition;
     
     @Override
     public long generate() {
-        return metaDataPersistService.getComputeNodePersistService().loadInstanceWorkerId(instanceDefinition.getInstanceId().getId()).orElseGet(this::reGenerate);
+        return registryCenter.getComputeNodeStatusService().loadInstanceWorkerId(instanceDefinition.getInstanceId()).orElseGet(this::reGenerate);
     }
     
     private Long reGenerate() {
-        Long result = Long.valueOf(repository.getSequentialId(WorkerIdNode.getWorkerIdGeneratorPath(instanceDefinition.getInstanceId().getId()), ""));
-        metaDataPersistService.getComputeNodePersistService().persistInstanceWorkerId(instanceDefinition.getInstanceId().getId(), result);
+        Long result = Long.valueOf(Optional.ofNullable(repository.getSequentialId(WorkerIdNode.getWorkerIdGeneratorPath(instanceDefinition.getInstanceId()), "")).orElse("0"));
+        registryCenter.getComputeNodeStatusService().persistInstanceWorkerId(instanceDefinition.getInstanceId(), result);
         return result;
     }
 }

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.readwritesplitting.swapper;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperFactory;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
@@ -43,7 +42,7 @@ public final class ReadwriteSplittingRuleConfigurationYamlSwapperTest {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig =
                 new ReadwriteSplittingDataSourceRuleConfiguration("ds", "Static", getProperties(), "roundRobin");
         YamlReadwriteSplittingRuleConfiguration actual = getReadwriteSplittingRuleConfigurationYamlSwapper().swapToYamlConfiguration(new ReadwriteSplittingRuleConfiguration(
-                Collections.singleton(dataSourceConfig), ImmutableMap.of("roundRobin", new ShardingSphereAlgorithmConfiguration("ROUND_ROBIN", new Properties()))));
+                Collections.singleton(dataSourceConfig), Collections.singletonMap("roundRobin", new ShardingSphereAlgorithmConfiguration("ROUND_ROBIN", new Properties()))));
         assertThat(actual.getDataSources().get("ds").getProps().getProperty("write-data-source-name"), is("write"));
         assertThat(actual.getDataSources().get("ds").getProps().getProperty("read-data-source-names"), is("read"));
         assertThat(actual.getDataSources().get("ds").getLoadBalancerName(), is("roundRobin"));
@@ -99,11 +98,11 @@ public final class ReadwriteSplittingRuleConfigurationYamlSwapperTest {
     }
     
     private ReadwriteSplittingRuleConfigurationYamlSwapper getReadwriteSplittingRuleConfigurationYamlSwapper() {
-        Optional<ReadwriteSplittingRuleConfigurationYamlSwapper> optional = YamlRuleConfigurationSwapperFactory.getAllInstances().stream()
+        Optional<ReadwriteSplittingRuleConfigurationYamlSwapper> result = YamlRuleConfigurationSwapperFactory.getAllInstances().stream()
                 .filter(each -> each instanceof ReadwriteSplittingRuleConfigurationYamlSwapper)
                 .map(each -> (ReadwriteSplittingRuleConfigurationYamlSwapper) each)
                 .findFirst();
-        assertTrue(optional.isPresent());
-        return optional.get();
+        assertTrue(result.isPresent());
+        return result.get();
     }
 }

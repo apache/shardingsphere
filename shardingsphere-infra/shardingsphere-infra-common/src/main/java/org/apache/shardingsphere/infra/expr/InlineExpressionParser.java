@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.expr;
 
 import com.google.common.base.Strings;
-import com.google.common.collect.Collections2;
 import com.google.common.collect.Sets;
 import groovy.lang.Closure;
 import groovy.lang.GString;
@@ -29,10 +28,12 @@ import lombok.RequiredArgsConstructor;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * Inline expression parser.
@@ -83,7 +84,7 @@ public final class InlineExpressionParser {
      * @return closure
      */
     public Closure<?> evaluateClosure() {
-        return (Closure) evaluate("{it -> \"" + inlineExpression + "\"}");
+        return (Closure<?>) evaluate("{it -> \"" + inlineExpression + "\"}");
     }
     
     private List<Object> evaluate(final List<String> inlineExpressions) {
@@ -182,7 +183,7 @@ public final class InlineExpressionParser {
                 continue;
             }
             if (each instanceof Collection) {
-                result.add(Sets.newLinkedHashSet(Collections2.transform((Collection<Object>) each, Object::toString)));
+                result.add(((Collection<Object>) each).stream().map(Object::toString).collect(Collectors.toCollection(LinkedHashSet::new)));
             } else {
                 result.add(Sets.newHashSet(each.toString()));
             }

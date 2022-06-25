@@ -127,7 +127,12 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Proxy default start port.
      */
-    PROXY_DEFAULT_PORT("proxy-default-port", "3307", int.class, true);
+    PROXY_DEFAULT_PORT("proxy-default-port", "3307", int.class, true),
+    
+    /**
+     * Proxy Netty backlog size.
+     */
+    PROXY_NETTY_BACKLOG("proxy-netty-backlog", "1024", int.class, false);
     
     private final String key;
     

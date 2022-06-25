@@ -20,21 +20,30 @@ package org.apache.shardingsphere.infra.binder.statement.ddl;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
+import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
+
+import java.util.Collection;
 
 /**
  * Create view statement context.
  */
 @Getter
-public final class CreateViewStatementContext extends CommonSQLStatementContext<CreateViewStatement> {
+public final class CreateViewStatementContext extends CommonSQLStatementContext<CreateViewStatement> implements TableAvailable {
     
     private final TablesContext tablesContext;
     
     public CreateViewStatementContext(final CreateViewStatement sqlStatement) {
         super(sqlStatement);
         TableExtractor extractor = new TableExtractor();
-        sqlStatement.getSelect().ifPresent(extractor::extractTablesFromSelect);
+        extractor.extractTablesFromCreateViewStatement(sqlStatement);
         tablesContext = new TablesContext(extractor.getRewriteTables(), getDatabaseType());
+    }
+    
+    @Override
+    public Collection<SimpleTableSegment> getAllTables() {
+        return tablesContext.getTables();
     }
 }

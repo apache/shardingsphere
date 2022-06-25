@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.proxy.frontend.executor;
 
-import com.google.common.util.concurrent.ListeningExecutorService;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorServiceManager;
+
+import java.util.concurrent.ExecutorService;
 
 /**
  * User executor group.
@@ -31,7 +32,7 @@ public final class UserExecutorGroup {
     private static final UserExecutorGroup INSTANCE = new UserExecutorGroup();
     
     @Getter
-    private final ListeningExecutorService executorService;
+    private final ExecutorService executorService;
     
     private UserExecutorGroup() {
         ExecutorServiceManager executorServiceManager = new ExecutorServiceManager(0, NAME_FORMAT);

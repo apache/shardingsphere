@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.distsql.handler.query;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * Show scaling job status query result set.
+ * Query result set for show scaling job status.
  */
 public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSet {
     
@@ -41,7 +41,7 @@ public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSe
     private Iterator<Collection<Object>> data;
     
     @Override
-    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
+    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         long currentTimeMillis = System.currentTimeMillis();
         data = RULE_ALTERED_JOB_API.getProgress(((ShowScalingStatusStatement) sqlStatement).getJobId()).entrySet().stream()
                 .map(entry -> {

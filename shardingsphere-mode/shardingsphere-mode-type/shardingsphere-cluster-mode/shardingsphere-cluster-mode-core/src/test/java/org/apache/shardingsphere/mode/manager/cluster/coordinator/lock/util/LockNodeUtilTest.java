@@ -25,21 +25,22 @@ import static org.junit.Assert.assertThat;
 public final class LockNodeUtilTest {
     
     @Test
-    public void assertGenerateLockName() {
-        assertThat(LockNodeUtil.generateAckLockedName("database", "127.0.0.1@3307"), is("database#@#127.0.0.1@3307"));
+    public void assertGenerateLockLeasesNodePath() {
+        String lockName = "/lock/distributed/locks/sharding_db";
+        assertThat(LockNodeUtil.generateLockLeasesNodePath(lockName), is("/lock/distributed/locks/sharding_db/leases"));
     }
     
     @Test
-    public void assertParseLockName() {
-        String[] lockName = LockNodeUtil.parseAckLockName("database#@#127.0.0.1@3307");
+    public void assertGenerateLockSequenceNodePath() {
+        String lockName = "/lock/distributed/locks/sharding_db";
+        assertThat(LockNodeUtil.generateLockSequenceNodePath(lockName), is("/lock/distributed/locks/sharding_db/sequence"));
+    }
+    
+    @Test
+    public void assertParseAckLockName() {
+        String[] lockName = LockNodeUtil.parseAckLockName("sharding_db#@#127.0.0.1@3307");
         assertThat(lockName.length, is(2));
-        assertThat(lockName[0], is("database"));
+        assertThat(lockName[0], is("sharding_db"));
         assertThat(lockName[1], is("127.0.0.1@3307"));
-    }
-    
-    @Test
-    public void assertGenerateGlobalLockReleasedNodePath() {
-        String nodePath = "/lock/global/database/sharding_db";
-        assertThat(LockNodeUtil.generateMutexLockReleasedNodePath(nodePath), is("/lock/global/database/sharding_db/leases"));
     }
 }

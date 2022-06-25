@@ -5,7 +5,7 @@ weight = 6
 
 ## 配置项说明
 
-命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser-5.1.1.xsd)
+命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/sql-parser/sql-parser-5.1.2.xsd)
 
 \<sql-parser:rule />
 
@@ -23,4 +23,3 @@ weight = 6
 | id                          | 属性  | 本地缓存配置项名称                      |
 | initial-capacity            | 属性  | 本地缓存初始容量                        |
 | maximum-size                | 属性  | 本地缓存最大容量                        |
-| concurrency-level           | 属性  | 本地缓存并发级别，最多允许线程并发更新的个数 |

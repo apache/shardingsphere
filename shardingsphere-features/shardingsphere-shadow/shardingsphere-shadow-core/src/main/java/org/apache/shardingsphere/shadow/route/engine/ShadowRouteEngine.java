@@ -46,12 +46,12 @@ public interface ShadowRouteEngine {
         for (RouteUnit each : routeUnits) {
             String logicName = each.getDataSourceMapper().getLogicName();
             String shadowLogicName = each.getDataSourceMapper().getActualName();
-            Optional<String> sourceDataSourceNameOptional = shadowRule.getSourceDataSourceName(shadowLogicName);
-            if (sourceDataSourceNameOptional.isPresent()) {
-                String sourceDataSourceName = sourceDataSourceNameOptional.get();
-                String shadowDataSourceName = shadowDataSourceMappings.get(sourceDataSourceName);
+            Optional<String> sourceDataSourceName = shadowRule.getSourceDataSourceName(shadowLogicName);
+            if (sourceDataSourceName.isPresent()) {
+                String shadowDataSourceName = shadowDataSourceMappings.get(sourceDataSourceName.get());
                 toBeRemoved.add(each);
-                toBeAdded.add(null == shadowDataSourceName ? new RouteUnit(new RouteMapper(logicName, sourceDataSourceName), each.getTableMappers())
+                toBeAdded.add(null == shadowDataSourceName
+                        ? new RouteUnit(new RouteMapper(logicName, sourceDataSourceName.get()), each.getTableMappers())
                         : new RouteUnit(new RouteMapper(logicName, shadowDataSourceName), each.getTableMappers()));
             }
         }

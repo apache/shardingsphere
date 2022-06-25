@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.traffic.yaml.swapper;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
 import org.apache.shardingsphere.traffic.yaml.config.YamlTrafficStrategyConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.Arrays;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -42,7 +42,7 @@ public final class TrafficStrategyConfigurationYamlSwapperTest {
     
     private static final String LOAD_BALANCER_NAME = "testLoadBalancerName";
     
-    private static final List<String> LABELS = Lists.newArrayList(TEST_LABEL_ONE, TEST_LABEL_TWO);
+    private static final List<String> LABELS = Arrays.asList(TEST_LABEL_ONE, TEST_LABEL_TWO);
     
     private final TrafficStrategyConfigurationYamlSwapper yamlSwapper = new TrafficStrategyConfigurationYamlSwapper();
     

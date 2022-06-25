@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.node;
 
-import com.google.common.base.Joiner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -49,11 +48,11 @@ public final class DatabaseMetaDataNode {
      * Get meta data data source path.
      *
      * @param databaseName database name
-     * @param version data source version                  
+     * @param version data source version
      * @return data source path
      */
     public static String getMetaDataDataSourcePath(final String databaseName, final String version) {
-        return Joiner.on("/").join(getFullMetaDataPath(databaseName, VERSIONS), version, DATA_SOURCE_NODE);
+        return String.join("/", getFullMetaDataPath(databaseName, VERSIONS), version, DATA_SOURCE_NODE);
     }
     
     /**
@@ -79,11 +78,11 @@ public final class DatabaseMetaDataNode {
      * Get rule path.
      *
      * @param databaseName database name
-     * @param version rule version                  
+     * @param version rule version
      * @return rule path
      */
     public static String getRulePath(final String databaseName, final String version) {
-        return Joiner.on("/").join(getFullMetaDataPath(databaseName, VERSIONS), version, RULE_NODE);
+        return String.join("/", getFullMetaDataPath(databaseName, VERSIONS), version, RULE_NODE);
     }
     
     /**
@@ -212,7 +211,7 @@ public final class DatabaseMetaDataNode {
      * @return database version path
      */
     public static String getDatabaseVersionPath(final String databaseName, final String version) {
-        return Joiner.on("/").join(getFullMetaDataPath(databaseName, VERSIONS), version);
+        return String.join("/", getFullMetaDataPath(databaseName, VERSIONS), version);
     }
     
     /**

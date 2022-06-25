@@ -19,22 +19,20 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryabl
 
 import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowSQLParserRuleStatement;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
 
 /**
  * Show SQL parser rule handler.
  */
-public final class ShowSQLParserRuleHandler extends QueryableRALBackendHandler<ShowSQLParserRuleStatement, ShowSQLParserRuleHandler> {
+public final class ShowSQLParserRuleHandler extends QueryableRALBackendHandler<ShowSQLParserRuleStatement> {
     
     private static final Gson GSON = new Gson();
     
@@ -50,19 +48,13 @@ public final class ShowSQLParserRuleHandler extends QueryableRALBackendHandler<S
     }
     
     @Override
-    protected Collection<List<Object>> getRows(final ContextManager contextManager) {
-        Optional<SQLParserRuleConfiguration> sqlParserRuleConfigurationOptional = ProxyContext.getInstance().getContextManager()
-                .getMetaDataContexts().getGlobalRuleMetaData().findRuleConfiguration(SQLParserRuleConfiguration.class).stream().findAny();
-        if (!sqlParserRuleConfigurationOptional.isPresent()) {
-            return Collections.emptyList();
-        }
-        SQLParserRuleConfiguration sqlParserRuleConfig = sqlParserRuleConfigurationOptional.get();
-        List<Object> row = new LinkedList<>();
-        row.add(String.valueOf(sqlParserRuleConfig.isSqlCommentParseEnabled()));
-        row.add(GSON.toJson(sqlParserRuleConfig.getParseTreeCache()));
-        row.add(GSON.toJson(sqlParserRuleConfig.getSqlStatementCache()));
-        Collection<List<Object>> result = new LinkedList<>();
-        result.add(row);
-        return result;
+    protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
+        SQLParserRule sqlParserRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
+        return Collections.singleton(getRow(sqlParserRule));
+    }
+    
+    private LocalDataQueryResultRow getRow(final SQLParserRule sqlParserRule) {
+        return new LocalDataQueryResultRow(
+                String.valueOf(sqlParserRule.isSqlCommentParseEnabled()), GSON.toJson(sqlParserRule.getParseTreeCache()), GSON.toJson(sqlParserRule.getSqlStatementCache()));
     }
 }

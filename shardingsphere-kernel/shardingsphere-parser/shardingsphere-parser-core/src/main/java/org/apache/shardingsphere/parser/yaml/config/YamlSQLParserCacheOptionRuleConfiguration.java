@@ -31,6 +31,4 @@ public final class YamlSQLParserCacheOptionRuleConfiguration implements YamlConf
     private int initialCapacity;
     
     private long maximumSize;
-    
-    private int concurrencyLevel;
 }

@@ -17,7 +17,7 @@
   -->
 
 <sql-parser-test-cases>
-    <drop-foreign-data-wrapper sql-case-id="drop_foreign_data_wrapper"/>
-    <drop-foreign-data-wrapper sql-case-id="drop_foreign_data_wrapper_if_exists"/>
-    <drop-foreign-data-wrapper sql-case-id="drop_foreign_data_wrapper_cascade"/>
+    <drop-foreign-data-wrapper sql-case-id="drop_foreign_data_wrapper" />
+    <drop-foreign-data-wrapper sql-case-id="drop_foreign_data_wrapper_if_exists" />
+    <drop-foreign-data-wrapper sql-case-id="drop_foreign_data_wrapper_cascade" />
 </sql-parser-test-cases>

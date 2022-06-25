@@ -33,7 +33,7 @@ public final class StateContext {
      * Switch state.
      *
      * @param type state type
-     * @param on true if state type is valid, false if not            
+     * @param on true if state type is valid, false if not
      */
     public void switchState(final StateType type, final boolean on) {
         if (on) {

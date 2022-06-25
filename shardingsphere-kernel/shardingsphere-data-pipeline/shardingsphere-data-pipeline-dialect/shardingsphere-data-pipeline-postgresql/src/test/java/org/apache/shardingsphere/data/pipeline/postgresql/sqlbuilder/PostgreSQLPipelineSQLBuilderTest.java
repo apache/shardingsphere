@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.sqlbuilder;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Sets;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Column;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
@@ -27,6 +26,8 @@ import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.Post
 import org.junit.Test;
 import org.postgresql.replication.LogSequenceNumber;
 
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -38,7 +39,7 @@ public final class PostgreSQLPipelineSQLBuilderTest {
     private final PostgreSQLPipelineSQLBuilder sqlBuilder = new PostgreSQLPipelineSQLBuilder();
     
     private final Map<LogicTableName, Set<String>> shardingColumnsMap = ImmutableMap.<LogicTableName, Set<String>>builder()
-            .put(new LogicTableName("t_order"), Sets.newHashSet("order_id", "user_id")).build();
+            .put(new LogicTableName("t_order"), new HashSet<>(Arrays.asList("order_id", "user_id"))).build();
     
     @Test
     public void assertBuildInsertSQL() {

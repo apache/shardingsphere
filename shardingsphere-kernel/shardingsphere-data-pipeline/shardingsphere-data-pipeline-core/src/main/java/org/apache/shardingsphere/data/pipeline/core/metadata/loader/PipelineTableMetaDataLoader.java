@@ -22,17 +22,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.metadata.TableName;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineIndexMetaData;
 import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -49,13 +54,30 @@ public final class PipelineTableMetaDataLoader {
     private final Map<TableName, PipelineTableMetaData> tableMetaDataMap = new ConcurrentHashMap<>();
     
     /**
-     * Load table metadata.
+     * Get table metadata, load if it does not exist.
      *
-     * @param schemaName schema name
-     * @param tableNamePattern table name pattern
-     * @throws SQLException if loading failure
+     * @param schemaName schema name. nullable
+     * @param tableName dedicated table name, not table name pattern
+     * @return table metadata
      */
-    public void loadTableMetaData(final String schemaName, final String tableNamePattern) throws SQLException {
+    public PipelineTableMetaData getTableMetaData(final String schemaName, final String tableName) {
+        PipelineTableMetaData result = tableMetaDataMap.get(new TableName(tableName));
+        if (null != result) {
+            return result;
+        }
+        try {
+            loadTableMetaData(schemaName, tableName);
+        } catch (final SQLException ex) {
+            throw new RuntimeException(String.format("Load metadata for table '%s' failed", tableName), ex);
+        }
+        result = tableMetaDataMap.get(new TableName(tableName));
+        if (null == result) {
+            log.warn("getTableMetaData, can not load metadata for table '{}'", tableName);
+        }
+        return result;
+    }
+    
+    private void loadTableMetaData(final String schemaName, final String tableNamePattern) throws SQLException {
         try (Connection connection = dataSource.getConnection()) {
             long startMillis = System.currentTimeMillis();
             String schemaNameFinal = isSchemaAvailable() ? schemaName : null;
@@ -91,15 +113,34 @@ public final class PipelineTableMetaDataLoader {
                     throw ex;
                 }
                 boolean primaryKey = primaryKeys.contains(columnName);
-                PipelineColumnMetaData columnMetaData = new PipelineColumnMetaData(ordinalPosition, columnName, dataType, dataTypeName, primaryKey);
+                boolean isNullable = "YES".equals(resultSet.getString("IS_NULLABLE"));
+                PipelineColumnMetaData columnMetaData = new PipelineColumnMetaData(ordinalPosition, columnName, dataType, dataTypeName, isNullable, primaryKey);
                 columnMetaDataMap.put(columnName, columnMetaData);
             }
         }
         Map<TableName, PipelineTableMetaData> result = new LinkedHashMap<>();
         for (Entry<String, Map<String, PipelineColumnMetaData>> entry : tablePipelineColumnMetaDataMap.entrySet()) {
-            result.put(new TableName(entry.getKey()), new PipelineTableMetaData(entry.getKey(), entry.getValue()));
+            String tableName = entry.getKey();
+            result.put(new TableName(tableName), new PipelineTableMetaData(tableName, entry.getValue(), loadIndexesOfTable(connection, schemaName, entry.getValue(), tableName)));
         }
         return result;
+    }
+    
+    private Collection<PipelineIndexMetaData> loadIndexesOfTable(final Connection connection, final String schemaName, final Map<String, PipelineColumnMetaData> columns,
+                                                                 final String tableName) throws SQLException {
+        Map<String, PipelineIndexMetaData> result = new LinkedHashMap<>();
+        Map<String, SortedMap<Short, String>> orderedColumnsOfIndexes = new LinkedHashMap<>();
+        try (ResultSet resultSet = connection.getMetaData().getIndexInfo(connection.getCatalog(), schemaName, tableName, true, false)) {
+            while (resultSet.next()) {
+                String indexName = resultSet.getString("INDEX_NAME");
+                result.computeIfAbsent(indexName, unused -> new PipelineIndexMetaData(indexName, new LinkedList<>()));
+                orderedColumnsOfIndexes.computeIfAbsent(indexName, unused -> new TreeMap<>()).put(resultSet.getShort("ORDINAL_POSITION"), resultSet.getString("COLUMN_NAME"));
+            }
+        }
+        for (PipelineIndexMetaData each : result.values()) {
+            orderedColumnsOfIndexes.get(each.getName()).values().stream().map(columns::get).forEach(each.getColumns()::add);
+        }
+        return result.values();
     }
     
     private Set<String> loadPrimaryKeys(final Connection connection, final String schemaName, final String tableName) throws SQLException {
@@ -109,30 +150,6 @@ public final class PipelineTableMetaDataLoader {
             while (resultSet.next()) {
                 result.add(resultSet.getString("COLUMN_NAME"));
             }
-        }
-        return result;
-    }
-    
-    /**
-     * Get table metadata, load if it does not exist.
-     *
-     * @param schemaName schema name. nullable
-     * @param tableName dedicated table name, not table name pattern
-     * @return table metadata
-     */
-    public PipelineTableMetaData getTableMetaData(final String schemaName, final String tableName) {
-        PipelineTableMetaData result = tableMetaDataMap.get(new TableName(tableName));
-        if (null != result) {
-            return result;
-        }
-        try {
-            loadTableMetaData(schemaName, tableName);
-        } catch (final SQLException ex) {
-            throw new RuntimeException(String.format("Load metadata for table '%s' failed", tableName), ex);
-        }
-        result = tableMetaDataMap.get(new TableName(tableName));
-        if (null == result) {
-            log.warn("getTableMetaData, can not load metadata for table '{}'", tableName);
         }
         return result;
     }

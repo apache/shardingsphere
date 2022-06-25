@@ -30,6 +30,8 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourc
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
 import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.MultiplexMemoryPipelineChannel;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
+import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineColumnMetaData;
+import org.apache.shardingsphere.data.pipeline.core.metadata.model.PipelineTableMetaData;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.BinlogPosition;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractBinlogEvent;
@@ -40,12 +42,17 @@ import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.WriteRo
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -53,7 +60,10 @@ import java.util.List;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public final class MySQLIncrementalDumperTest {
     
     private MySQLIncrementalDumper incrementalDumper;
@@ -62,13 +72,19 @@ public final class MySQLIncrementalDumperTest {
     
     private final PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
     
+    @Mock
+    private PipelineTableMetaData pipelineTableMetaData;
+    
     @Before
     public void setUp() {
         DumperConfiguration dumperConfig = mockDumperConfiguration();
         initTableData(dumperConfig);
+        dumperConfig.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("jdbc:mysql://127.0.0.1:3306/ds_0", "root", "root"));
         channel = new MultiplexMemoryPipelineChannel();
         PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(dataSourceManager.getDataSource(dumperConfig.getDataSourceConfig()));
         incrementalDumper = new MySQLIncrementalDumper(dumperConfig, new BinlogPosition("binlog-000001", 4L), channel, metaDataLoader);
+        PipelineColumnMetaData column = new PipelineColumnMetaData(1, "test", Types.INTEGER, "INTEGER", true, true);
+        when(pipelineTableMetaData.getColumnMetaData(anyInt())).thenReturn(column);
     }
     
     private DumperConfiguration mockDumperConfiguration() {
@@ -97,14 +113,15 @@ public final class MySQLIncrementalDumperTest {
     }
     
     @Test
-    public void assertWriteRowsEvent() {
+    public void assertWriteRowsEvent() throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         WriteRowsEvent rowsEvent = new WriteRowsEvent();
         rowsEvent.setDatabaseName("");
         rowsEvent.setTableName("t_order");
         List<Serializable[]> rows = new ArrayList<>(1);
         rows.add(new String[]{"1", "order"});
         rowsEvent.setAfterRows(rows);
-        invokeHandleEvent(rowsEvent);
+        ReflectionUtil.invokeMethod(incrementalDumper, "handleWriteRowsEvent", new Class[]{WriteRowsEvent.class, PipelineTableMetaData.class},
+                new Object[]{rowsEvent, pipelineTableMetaData});
         List<Record> records = channel.fetchRecords(1, 0);
         assertThat(records.size(), is(1));
         assertThat(records.get(0), instanceOf(DataRecord.class));
@@ -112,7 +129,7 @@ public final class MySQLIncrementalDumperTest {
     }
     
     @Test
-    public void assertUpdateRowsEvent() {
+    public void assertUpdateRowsEvent() throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         UpdateRowsEvent rowsEvent = new UpdateRowsEvent();
         rowsEvent.setDatabaseName("");
         rowsEvent.setTableName("t_order");
@@ -122,7 +139,8 @@ public final class MySQLIncrementalDumperTest {
         afterRows.add(new String[]{"1", "order_new"});
         rowsEvent.setBeforeRows(beforeRows);
         rowsEvent.setAfterRows(afterRows);
-        invokeHandleEvent(rowsEvent);
+        ReflectionUtil.invokeMethod(incrementalDumper, "handleUpdateRowsEvent", new Class[]{UpdateRowsEvent.class, PipelineTableMetaData.class},
+                new Object[]{rowsEvent, pipelineTableMetaData});
         List<Record> records = channel.fetchRecords(1, 0);
         assertThat(records.size(), is(1));
         assertThat(records.get(0), instanceOf(DataRecord.class));
@@ -130,14 +148,14 @@ public final class MySQLIncrementalDumperTest {
     }
     
     @Test
-    public void assertDeleteRowsEvent() {
+    public void assertDeleteRowsEvent() throws InvocationTargetException, NoSuchMethodException, IllegalAccessException {
         DeleteRowsEvent rowsEvent = new DeleteRowsEvent();
         rowsEvent.setDatabaseName("");
         rowsEvent.setTableName("t_order");
         List<Serializable[]> rows = new ArrayList<>(1);
         rows.add(new String[]{"1", "order"});
         rowsEvent.setBeforeRows(rows);
-        invokeHandleEvent(rowsEvent);
+        ReflectionUtil.invokeMethod(incrementalDumper, "handleDeleteRowsEvent", new Class[]{DeleteRowsEvent.class, PipelineTableMetaData.class}, new Object[]{rowsEvent, pipelineTableMetaData});
         List<Record> records = channel.fetchRecords(1, 0);
         assertThat(records.size(), is(1));
         assertThat(records.get(0), instanceOf(DataRecord.class));

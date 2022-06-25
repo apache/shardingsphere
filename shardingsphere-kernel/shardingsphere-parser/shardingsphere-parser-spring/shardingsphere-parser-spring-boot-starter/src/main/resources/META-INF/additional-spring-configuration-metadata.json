@@ -55,11 +55,6 @@
       "sourceType": "org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfiguration"
     },
     {
-      "name": "spring.shardingsphere.rules.sql-parser.sql-statement-cache.concurrency-level",
-      "type": "java.lang.Integer",
-      "sourceType": "org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfiguration"
-    },
-    {
       "name": "spring.shardingsphere.rules.sql-parser.parse-tree-cache.initial-capacity",
       "type": "java.lang.Integer",
       "sourceType": "org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfiguration"
@@ -67,11 +62,6 @@
     {
       "name": "spring.shardingsphere.rules.sql-parser.parse-tree-cache.maximum-size",
       "type": "java.lang.Long",
-      "sourceType": "org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfiguration"
-    },
-    {
-      "name": "spring.shardingsphere.rules.sql-parser.parse-tree-cache.concurrency-level",
-      "type": "java.lang.Integer",
       "sourceType": "org.apache.shardingsphere.parser.yaml.config.YamlSQLParserCacheOptionRuleConfiguration"
     }
   ]

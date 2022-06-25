@@ -21,7 +21,9 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.reset.MySQLComStmtResetPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -34,9 +36,11 @@ public final class MySQLComStmtResetExecutor implements CommandExecutor {
     
     private final MySQLComStmtResetPacket packet;
     
+    private final ConnectionSession connectionSession;
+    
     @Override
     public Collection<DatabasePacket<?>> execute() {
         // TODO we should implement the stmt reset after supporting COM_STMT_SEND_LONG_DATA
-        return Collections.singleton(new MySQLOKPacket(1));
+        return Collections.singleton(new MySQLOKPacket(1, ServerStatusFlagCalculator.calculateFor(connectionSession)));
     }
 }

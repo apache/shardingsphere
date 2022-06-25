@@ -20,7 +20,6 @@ package org.apache.shardingsphere.db.protocol.mysql.packet.generic;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLStatusFlag;
 import org.apache.shardingsphere.db.protocol.mysql.packet.MySQLPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
@@ -44,8 +43,8 @@ public final class MySQLEofPacket implements MySQLPacket {
     
     private final int statusFlags;
     
-    public MySQLEofPacket(final int sequenceId) {
-        this(sequenceId, 0, MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
+    public MySQLEofPacket(final int sequenceId, final int statusFlags) {
+        this(sequenceId, 0, statusFlags);
     }
     
     public MySQLEofPacket(final MySQLPacketPayload payload) {

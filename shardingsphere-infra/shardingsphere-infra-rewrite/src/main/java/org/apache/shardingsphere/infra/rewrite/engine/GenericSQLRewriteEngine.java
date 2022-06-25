@@ -17,15 +17,25 @@
 
 package org.apache.shardingsphere.infra.rewrite.engine;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.engine.result.GenericSQLRewriteResult;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteUnit;
 import org.apache.shardingsphere.infra.rewrite.sql.impl.DefaultSQLBuilder;
+import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 
 /**
  * Generic SQL rewrite engine.
  */
+@RequiredArgsConstructor
 public final class GenericSQLRewriteEngine {
+    
+    private final SQLTranslatorRule translatorRule;
+    
+    private final DatabaseType protocolType;
+    
+    private final DatabaseType storageType;
     
     /**
      * Rewrite SQL and parameters.
@@ -34,6 +44,8 @@ public final class GenericSQLRewriteEngine {
      * @return SQL rewrite result
      */
     public GenericSQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext) {
-        return new GenericSQLRewriteResult(new SQLRewriteUnit(new DefaultSQLBuilder(sqlRewriteContext).toSQL(), sqlRewriteContext.getParameterBuilder().getParameters()));
+        String sql = translatorRule.translate(
+                new DefaultSQLBuilder(sqlRewriteContext).toSQL(), sqlRewriteContext.getSqlStatementContext().getSqlStatement(), protocolType, storageType);
+        return new GenericSQLRewriteResult(new SQLRewriteUnit(sql, sqlRewriteContext.getParameterBuilder().getParameters()));
     }
 }

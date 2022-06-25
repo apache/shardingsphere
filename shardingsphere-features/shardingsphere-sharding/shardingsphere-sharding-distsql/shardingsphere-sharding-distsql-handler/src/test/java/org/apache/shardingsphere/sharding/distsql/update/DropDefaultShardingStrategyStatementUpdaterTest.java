@@ -19,13 +19,14 @@ package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.update.DropDefaultStrategyStatementUpdater;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.DropDefaultShardingStrategyStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -34,25 +35,25 @@ import static org.junit.Assert.assertNull;
 @RunWith(MockitoJUnitRunner.class)
 public final class DropDefaultShardingStrategyStatementUpdaterTest {
     
-    @Mock
-    private ShardingSphereMetaData shardingSphereMetaData;
-    
     private final DropDefaultStrategyStatementUpdater updater = new DropDefaultStrategyStatementUpdater();
+    
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ShardingSphereDatabase database;
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws DistSQLException {
-        updater.checkSQLStatement(shardingSphereMetaData, new DropDefaultShardingStrategyStatement("TABLE"), null);
+        updater.checkSQLStatement(database, new DropDefaultShardingStrategyStatement(false, "TABLE"), null);
     }
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertCheckSQLStatementWithoutExistedAlgorithm() throws DistSQLException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("table"), new ShardingRuleConfiguration());
+        updater.checkSQLStatement(database, createSQLStatement("table"), new ShardingRuleConfiguration());
     }
     
     @Test
     public void assertCheckSQLStatementWithIfExists() throws DistSQLException {
-        updater.checkSQLStatement(shardingSphereMetaData, new DropDefaultShardingStrategyStatement(true, "table"), new ShardingRuleConfiguration());
-        updater.checkSQLStatement(shardingSphereMetaData, new DropDefaultShardingStrategyStatement(true, "table"), null);
+        updater.checkSQLStatement(database, new DropDefaultShardingStrategyStatement(true, "table"), new ShardingRuleConfiguration());
+        updater.checkSQLStatement(database, new DropDefaultShardingStrategyStatement(true, "table"), null);
     }
     
     @Test
@@ -63,7 +64,7 @@ public final class DropDefaultShardingStrategyStatementUpdaterTest {
     }
     
     private DropDefaultShardingStrategyStatement createSQLStatement(final String defaultType) {
-        return new DropDefaultShardingStrategyStatement(defaultType);
+        return new DropDefaultShardingStrategyStatement(false, defaultType);
     }
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {

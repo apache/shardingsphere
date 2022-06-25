@@ -49,7 +49,7 @@ public final class TestSQLStatementContextInstanceOfTableAvailable implements SQ
     
     @Override
     public DatabaseType getDatabaseType() {
-        return DatabaseTypeEngine.getDefaultDatabaseType();
+        return DatabaseTypeEngine.getDatabaseType("MySQL");
     }
     
     @Override

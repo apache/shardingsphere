@@ -40,8 +40,8 @@ import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContex
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.SubqueryType;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
@@ -102,44 +102,41 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     
     private PaginationContext paginationContext;
     
-    public SelectStatementContext(final Map<String, ShardingSphereMetaData> metaDataMap, final List<Object> parameters,
-                                  final SelectStatement sqlStatement, final String defaultDatabaseName) {
+    public SelectStatementContext(final Map<String, ShardingSphereDatabase> databases, final List<Object> parameters, final SelectStatement sqlStatement, final String defaultDatabaseName) {
         super(sqlStatement);
         extractWhereSegments(whereSegments, sqlStatement);
         ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
-        subqueryContexts = createSubqueryContexts(metaDataMap, parameters, defaultDatabaseName);
+        subqueryContexts = createSubqueryContexts(databases, parameters, defaultDatabaseName);
         tablesContext = new TablesContext(getAllTableSegments(), subqueryContexts, getDatabaseType());
         String databaseName = tablesContext.getDatabaseName().orElse(defaultDatabaseName);
-        Map<String, ShardingSphereSchema> schemas = getSchemas(metaDataMap, databaseName);
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
-        projectionsContext = new ProjectionsContextEngine(databaseName, schemas, getDatabaseType())
+        projectionsContext = new ProjectionsContextEngine(databaseName, getSchemas(databases, databaseName), getDatabaseType())
                 .createProjectionsContext(getSqlStatement().getFrom(), getSqlStatement().getProjections(), groupByContext, orderByContext);
         paginationContext = new PaginationContextEngine().createPaginationContext(sqlStatement, projectionsContext, parameters, whereSegments);
     }
     
-    private Map<Integer, SelectStatementContext> createSubqueryContexts(final Map<String, ShardingSphereMetaData> metaDataMap,
-                                                                        final List<Object> parameters, final String defaultDatabaseName) {
+    private Map<Integer, SelectStatementContext> createSubqueryContexts(final Map<String, ShardingSphereDatabase> databases, final List<Object> parameters, final String defaultDatabaseName) {
         Collection<SubquerySegment> subquerySegments = SubqueryExtractUtil.getSubquerySegments(getSqlStatement());
         Map<Integer, SelectStatementContext> result = new HashMap<>(subquerySegments.size(), 1);
         for (SubquerySegment each : subquerySegments) {
-            SelectStatementContext subqueryContext = new SelectStatementContext(metaDataMap, parameters, each.getSelect(), defaultDatabaseName);
+            SelectStatementContext subqueryContext = new SelectStatementContext(databases, parameters, each.getSelect(), defaultDatabaseName);
             subqueryContext.setSubqueryType(each.getSubqueryType());
             result.put(each.getStartIndex(), subqueryContext);
         }
         return result;
     }
     
-    private Map<String, ShardingSphereSchema> getSchemas(final Map<String, ShardingSphereMetaData> metaDataMap, final String databaseName) {
-        ShardingSphereMetaData metaData = metaDataMap.get(databaseName);
-        if (null == metaData) {
+    private Map<String, ShardingSphereSchema> getSchemas(final Map<String, ShardingSphereDatabase> databases, final String databaseName) {
+        ShardingSphereDatabase database = databases.get(databaseName);
+        if (null == database) {
             if (tablesContext.getTables().isEmpty()) {
                 return Collections.emptyMap();
             } else {
                 throw new DatabaseNotExistedException(databaseName);
             }
         }
-        return metaData.getSchemas();
+        return database.getSchemas();
     }
     
     /**
@@ -170,12 +167,12 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
     }
     
     /**
-     * Judge whether contains union or not.
+     * Judge whether contains combine or not.
      *
-     * @return whether contains union or not
+     * @return whether contains combine or not
      */
-    public boolean isContainsUnion() {
-        return !getSqlStatement().getUnionSegments().isEmpty();
+    public boolean isContainsCombine() {
+        return !getSqlStatement().getCombines().isEmpty();
     }
     
     /**

@@ -25,11 +25,11 @@ import org.apache.shardingsphere.agent.spi.definition.AbstractPluginDefinitionSe
  */
 public final class BaseLoggingPluginDefinitionService extends AbstractPluginDefinitionService {
     
-    private static final String SCHEMA_METADATA_LOADER_CLASS = "org.apache.shardingsphere.infra.context.metadata.MetaDataContextsBuilder";
+    private static final String SCHEMA_METADATA_LOADER_CLASS = "org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder";
     
-    private static final String SCHEMA_METADATA_LOADER_METHOD_NAME = "buildMetaData";
+    private static final String SCHEMA_METADATA_LOADER_METHOD_NAME = "build";
     
-    private static final String SCHEMA_METADATA_LOADER_ADVICE_CLASS = "org.apache.shardingsphere.agent.plugin.logging.base.advice.SchemaMetaDataLoaderAdvice";
+    private static final String SCHEMA_METADATA_LOADER_ADVICE_CLASS = "org.apache.shardingsphere.agent.plugin.logging.base.advice.MetaDataContextsBuilderAdvice";
     
     @Override
     public void defineInterceptors() {

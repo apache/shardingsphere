@@ -41,6 +41,34 @@ public final class DatabaseTypeEngine {
     private static final String DEFAULT_DATABASE_TYPE = "MySQL";
     
     /**
+     * Get protocol type.
+     *
+     * @param databaseConfigs database configs
+     * @param props props
+     * @return protocol type
+     */
+    public static DatabaseType getProtocolType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
+        Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType(props);
+        if (configuredDatabaseType.isPresent()) {
+            return configuredDatabaseType.get();
+        }
+        Collection<DataSource> dataSources = databaseConfigs.values().stream()
+                .filter(DatabaseTypeEngine::hasDataSource).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList);
+        return getDatabaseType(dataSources);
+    }
+    
+    /**
+     * Get storage type.
+     *
+     * @param databaseConfigs database configs
+     * @return storage type
+     */
+    public static DatabaseType getStorageType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
+        return getDatabaseType(
+                databaseConfigs.values().stream().filter(DatabaseTypeEngine::hasDataSource).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList));
+    }
+    
+    /**
      * Get database type.
      *
      * @param url database URL
@@ -63,7 +91,7 @@ public final class DatabaseTypeEngine {
             Preconditions.checkState(null == result || result == databaseType, "Database type inconsistent with '%s' and '%s'", result, databaseType);
             result = databaseType;
         }
-        return null == result ? DatabaseTypeEngine.getDefaultDatabaseType() : result;
+        return null == result ? DatabaseTypeFactory.getInstance(DEFAULT_DATABASE_TYPE) : result;
     }
     
     private static DatabaseType getDatabaseType(final DataSource dataSource) {
@@ -74,30 +102,13 @@ public final class DatabaseTypeEngine {
         }
     }
     
-    /**
-     * Get database type.
-     *
-     * @param databaseConfigs database configs
-     * @param props props
-     * @return database type
-     */
-    public static DatabaseType getDatabaseType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs, final ConfigurationProperties props) {
-        Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType(props);
-        if (configuredDatabaseType.isPresent()) {
-            return configuredDatabaseType.get();
-        }
-        Collection<DataSource> dataSources = databaseConfigs.values().stream()
-                .filter(DatabaseTypeEngine::isComplete).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList);
-        return getDatabaseType(dataSources);
-    }
-    
     private static Optional<DatabaseType> findConfiguredDatabaseType(final ConfigurationProperties props) {
         String configuredDatabaseType = props.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
         return configuredDatabaseType.isEmpty() ? Optional.empty() : Optional.of(DatabaseTypeEngine.getTrunkDatabaseType(configuredDatabaseType));
     }
     
-    private static boolean isComplete(final DatabaseConfiguration databaseConfig) {
-        return !databaseConfig.getRuleConfigurations().isEmpty() && !databaseConfig.getDataSources().isEmpty();
+    private static boolean hasDataSource(final DatabaseConfiguration databaseConfig) {
+        return !databaseConfig.getDataSources().isEmpty();
     }
     
     private static boolean matchURLs(final String url, final DatabaseType databaseType) {
@@ -126,11 +137,13 @@ public final class DatabaseTypeEngine {
     }
     
     /**
-     * Get default database type.
-     *
-     * @return default database type
+     * Get default schema name.
+     * 
+     * @param databaseType database type
+     * @param databaseName database name
+     * @return default schema name
      */
-    public static DatabaseType getDefaultDatabaseType() {
-        return DatabaseTypeFactory.getInstance(DEFAULT_DATABASE_TYPE);
+    public static String getDefaultSchemaName(final DatabaseType databaseType, final String databaseName) {
+        return databaseType instanceof SchemaSupportedDatabaseType ? ((SchemaSupportedDatabaseType) databaseType).getDefaultSchema() : databaseName;
     }
 }

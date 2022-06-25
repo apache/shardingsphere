@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.dml.impl;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.route.engine.validator.dml.ShardingDMLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -34,7 +34,8 @@ import java.util.List;
 public final class ShardingCopyStatementValidator extends ShardingDMLStatementValidator<CopyStatement> {
     
     @Override
-    public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<CopyStatement> sqlStatementContext, final List<Object> parameters, final ShardingSphereMetaData metaData) {
+    public void preValidate(final ShardingRule shardingRule,
+                            final SQLStatementContext<CopyStatement> sqlStatementContext, final List<Object> parameters, final ShardingSphereDatabase database) {
         String tableName = sqlStatementContext.getSqlStatement().getTableSegment().getTableName().getIdentifier().getValue();
         if (shardingRule.isShardingTable(tableName)) {
             throw new ShardingSphereException("COPY statement can not support sharding table %s.", tableName);
@@ -43,6 +44,6 @@ public final class ShardingCopyStatementValidator extends ShardingDMLStatementVa
     
     @Override
     public void postValidate(final ShardingRule shardingRule, final SQLStatementContext<CopyStatement> sqlStatementContext,
-                             final List<Object> parameters, final ShardingSphereMetaData metaData, final ConfigurationProperties props, final RouteContext routeContext) {
+                             final List<Object> parameters, final ShardingSphereDatabase database, final ConfigurationProperties props, final RouteContext routeContext) {
     }
 }

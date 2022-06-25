@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.distsql.update;
 
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.distsql.handler.update.DropShadowRuleStatementUpdater;
@@ -27,6 +27,7 @@ import org.apache.shardingsphere.shadow.distsql.parser.statement.DropShadowRuleS
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
@@ -41,8 +42,8 @@ import static org.mockito.Mockito.when;
 @RunWith(MockitoJUnitRunner.class)
 public final class DropShadowRuleStatementUpdaterTest {
     
-    @Mock
-    private ShardingSphereMetaData shardingSphereMetaData;
+    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    private ShardingSphereDatabase database;
     
     @Mock
     private ShadowRuleConfiguration currentConfig;
@@ -56,33 +57,35 @@ public final class DropShadowRuleStatementUpdaterTest {
     
     @Test(expected = RequiredRuleMissedException.class)
     public void assertExecuteWithoutRuleNameInMetaData() throws DistSQLException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("ruleSegment"), null);
+        updater.checkSQLStatement(database, createSQLStatement("ruleSegment"), null);
     }
     
     @Test
     public void assertExecuteWithIfExists() throws DistSQLException {
-        DropShadowRuleStatement sqlStatement = createSQLStatement("ruleSegment");
-        sqlStatement.setContainsExistClause(true);
-        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, mock(ShadowRuleConfiguration.class));
+        DropShadowRuleStatement sqlStatement = createSQLStatement(true, "ruleSegment");
+        updater.checkSQLStatement(database, sqlStatement, mock(ShadowRuleConfiguration.class));
     }
     
     @Test
     public void assertUpdate() throws DistSQLException {
-        DropShadowRuleStatement sqlStatement = createSQLStatement("ds_0");
-        sqlStatement.setContainsExistClause(true);
+        DropShadowRuleStatement sqlStatement = createSQLStatement(true, "ds_0");
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
-        ruleConfig.getTables().put("t_order", new ShadowTableConfiguration(new ArrayList<>(Collections.singletonList("ds_0")), Collections.emptyList()));
-        updater.checkSQLStatement(shardingSphereMetaData, sqlStatement, ruleConfig);
+        ruleConfig.getTables().put("t_order", new ShadowTableConfiguration(new ArrayList<>(Collections.singleton("ds_0")), Collections.emptyList()));
+        updater.checkSQLStatement(database, sqlStatement, ruleConfig);
         updater.updateCurrentRuleConfiguration(sqlStatement, ruleConfig);
         assertFalse(ruleConfig.getTables().containsKey("ds_0"));
     }
     
     @Test
     public void assertExecuteSuccess() throws DistSQLException {
-        updater.checkSQLStatement(shardingSphereMetaData, createSQLStatement("initRuleName"), currentConfig);
+        updater.checkSQLStatement(database, createSQLStatement("initRuleName"), currentConfig);
     }
     
     private DropShadowRuleStatement createSQLStatement(final String... ruleName) {
-        return new DropShadowRuleStatement(Arrays.asList(ruleName));
+        return new DropShadowRuleStatement(false, Arrays.asList(ruleName));
+    }
+    
+    private DropShadowRuleStatement createSQLStatement(final boolean ifExists, final String... ruleName) {
+        return new DropShadowRuleStatement(ifExists, Arrays.asList(ruleName));
     }
 }

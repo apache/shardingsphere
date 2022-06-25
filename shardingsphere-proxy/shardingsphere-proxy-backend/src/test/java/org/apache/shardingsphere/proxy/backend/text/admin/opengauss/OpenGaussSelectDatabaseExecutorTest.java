@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.opengauss;
 
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.junit.Test;
 import org.mockito.MockedStatic;
 
@@ -49,7 +51,9 @@ public final class OpenGaussSelectDatabaseExecutorTest {
     private void assertExecute0() throws SQLException {
         when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Arrays.asList("foo", "bar", "sharding_db", "other_db"));
         OpenGaussSelectDatabaseExecutor executor = new OpenGaussSelectDatabaseExecutor(SQL);
-        executor.execute(null);
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        when(connectionSession.getDatabaseType()).thenReturn(new OpenGaussDatabaseType());
+        executor.execute(connectionSession);
         QueryResultMetaData actualMetaData = executor.getQueryResultMetaData();
         assertThat(actualMetaData.getColumnCount(), is(2));
         assertThat(actualMetaData.getColumnName(1), is("datname"));

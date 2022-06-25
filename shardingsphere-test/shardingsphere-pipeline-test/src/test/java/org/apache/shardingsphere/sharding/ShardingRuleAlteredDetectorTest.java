@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Shardi
 import org.apache.shardingsphere.data.pipeline.core.util.ConfigurationFileUtil;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.schedule.ShardingRuleAlteredDetector;
+import org.apache.shardingsphere.sharding.data.pipeline.ShardingRuleAlteredDetector;
 import org.junit.Test;
 
 import java.util.Collection;

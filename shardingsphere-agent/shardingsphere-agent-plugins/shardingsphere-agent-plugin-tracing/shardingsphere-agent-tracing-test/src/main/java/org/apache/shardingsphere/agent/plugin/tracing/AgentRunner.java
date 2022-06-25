@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.agent.plugin.tracing;
 
-import com.google.common.collect.Sets;
 import net.bytebuddy.ByteBuddy;
 import net.bytebuddy.agent.ByteBuddyAgent;
 import net.bytebuddy.agent.builder.AgentBuilder;
@@ -35,7 +34,9 @@ import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 
 public final class AgentRunner extends BlockJUnit4ClassRunner {
@@ -59,7 +60,7 @@ public final class AgentRunner extends BlockJUnit4ClassRunner {
     @Override
     protected Statement withBeforeClasses(final Statement statement) {
         ByteBuddyAgent.install();
-        Collection<String> classes = Sets.newHashSet(ENHANCEMENT_CLASSES);
+        Collection<String> classes = new HashSet<>(Arrays.asList(ENHANCEMENT_CLASSES));
         byteBuddyAgent = new AgentBuilder.Default()
                 .with(new ByteBuddy().with(TypeValidation.ENABLED))
                 .type(ElementMatchers.namedOneOf(ENHANCEMENT_CLASSES))

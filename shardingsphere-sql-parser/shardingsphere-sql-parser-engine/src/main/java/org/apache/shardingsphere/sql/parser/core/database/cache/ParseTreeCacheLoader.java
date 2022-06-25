@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sql.parser.core.database.cache;
 
-import com.google.common.cache.CacheLoader;
+import com.github.benmanes.caffeine.cache.CacheLoader;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 import org.apache.shardingsphere.sql.parser.core.database.parser.SQLParserExecutor;
 
@@ -26,7 +26,7 @@ import javax.annotation.ParametersAreNonnullByDefault;
 /**
  * Parse context cache loader.
  */
-public final class ParseTreeCacheLoader extends CacheLoader<String, ParseASTNode> {
+public final class ParseTreeCacheLoader implements CacheLoader<String, ParseASTNode> {
     
     private final SQLParserExecutor sqlParserExecutor;
     

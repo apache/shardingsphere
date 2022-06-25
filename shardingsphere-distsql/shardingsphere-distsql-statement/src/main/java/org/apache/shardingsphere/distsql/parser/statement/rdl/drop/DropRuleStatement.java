@@ -18,21 +18,19 @@
 package org.apache.shardingsphere.distsql.parser.statement.rdl.drop;
 
 import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.distsql.parser.operation.DistSQLOperationTypeEnum;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
 
 /**
  * Drop rule statement.
  */
+@RequiredArgsConstructor
+@Getter
 public abstract class DropRuleStatement extends RuleDefinitionStatement {
     
-    @Getter
-    @Setter
-    private boolean containsExistClause;
+    private final boolean ifExists;
     
-    @Override
-    public DistSQLOperationTypeEnum getOperationType() {
-        return DistSQLOperationTypeEnum.DROP;
+    public DropRuleStatement() {
+        this(false);
     }
 }

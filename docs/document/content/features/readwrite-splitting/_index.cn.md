@@ -1,7 +1,7 @@
 +++
-pre = "<b>4.5. </b>"
+pre = "<b>4.6. </b>"
 title = "读写分离"
-weight = 5
+weight = 6
 chapter = true
 +++
 
@@ -31,3 +31,5 @@ chapter = true
 ## 目标
 
 **透明化读写分离所带来的影响，让使用方尽量像使用一个数据库一样使用主从数据库集群，是 Apache ShardingSphere 读写分离模块的主要设计目标。**
+
+**源码：https://github.com/apache/shardingsphere/tree/master/shardingsphere-features/shardingsphere-readwrite-splitting**

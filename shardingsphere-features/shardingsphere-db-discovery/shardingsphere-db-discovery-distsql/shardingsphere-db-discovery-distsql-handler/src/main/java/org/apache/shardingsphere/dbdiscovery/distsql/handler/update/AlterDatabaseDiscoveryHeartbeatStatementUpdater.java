@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionAlterUpdater;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.Collection;
 import java.util.Map.Entry;
@@ -48,9 +48,9 @@ public final class AlterDatabaseDiscoveryHeartbeatStatementUpdater implements Ru
     }
     
     @Override
-    public void checkSQLStatement(final ShardingSphereMetaData shardingSphereMetaData, final AlterDatabaseDiscoveryHeartbeatStatement sqlStatement,
+    public void checkSQLStatement(final ShardingSphereDatabase database, final AlterDatabaseDiscoveryHeartbeatStatement sqlStatement,
                                   final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        String databaseName = shardingSphereMetaData.getDatabaseName();
+        String databaseName = database.getName();
         checkCurrentConfiguration(databaseName, currentRuleConfig);
         checkDuplicateHeartbeat(databaseName, sqlStatement);
         checkNotExistHeartbeat(databaseName, sqlStatement, currentRuleConfig);

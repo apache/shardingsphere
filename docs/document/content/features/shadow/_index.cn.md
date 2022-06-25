@@ -1,7 +1,7 @@
 +++
-pre = "<b>4.9. </b>"
+pre = "<b>4.10. </b>"
 title = "影子库压测"
-weight = 9
+weight = 10
 chapter = true
 +++
 
@@ -23,3 +23,5 @@ chapter = true
 
 **Apache ShardingSphere 关注于全链路压测场景下，数据库层面的解决方案。
 将压测数据自动路由至用户指定的数据库，是 Apache ShardingSphere 影子库模块的主要设计目标。**
+
+**源码：https://github.com/apache/shardingsphere/tree/master/shardingsphere-features/shardingsphere-shadow**

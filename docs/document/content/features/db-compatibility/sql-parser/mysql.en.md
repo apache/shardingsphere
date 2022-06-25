@@ -18,3 +18,5 @@ The unsupported SQL list for MySQL are as follows:
 | DROP RESOURCE GROUP group_name                               |
 | CREATE RESOURCE GROUP group_name TYPE = SYSTEM               |
 | ALTER RESOURCE GROUP rg1 VCPU = 0-63                         |
+
+**Source Codes: https://github.com/apache/shardingsphere/tree/master/shardingsphere-sql-parser/shardingsphere-sql-parser-dialect/shardingsphere-sql-parser-mysql**

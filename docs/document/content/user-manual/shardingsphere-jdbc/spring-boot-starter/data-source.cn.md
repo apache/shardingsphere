@@ -22,7 +22,7 @@ spring.shardingsphere.datasource.<actual-data-source-name>.<xxx>= # ... 数据�
 
 ### 配置示例
 
-示例的数据库驱动为 MySQL，连接池为 HikariCP，可以更换为其他数据库驱动和连接池。
+示例的数据库驱动为 MySQL，连接池为 HikariCP，可以更换为其他数据库驱动和连接池。当使用 ShardingSphere JDBC 时，JDBC 池的属性名取决于各自 JDBC 池自己的定义，并不由 ShardingSphere 硬定义，相关的处理可以参考类`org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator`。例如对于 Alibaba Druid 1.2.9 而言，使用`url`代替如下示例中的`jdbc-url`是预期行为。
 
 ```properties
 # 配置真实数据源

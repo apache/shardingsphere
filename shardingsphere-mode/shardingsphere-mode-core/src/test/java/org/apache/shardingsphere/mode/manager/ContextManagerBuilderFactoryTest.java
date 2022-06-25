@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager;
 
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.mode.manager.fixture.FixtureContextManagerBuilder;
+import org.apache.shardingsphere.mode.manager.fixture.ContextManagerBuilderFixture;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -28,11 +28,11 @@ public final class ContextManagerBuilderFactoryTest {
     
     @Test
     public void assertGetInstanceWithModeConfiguration() {
-        assertThat(ContextManagerBuilderFactory.getInstance(new ModeConfiguration("Test", null, true)), instanceOf(FixtureContextManagerBuilder.class));
+        assertThat(ContextManagerBuilderFactory.getInstance(new ModeConfiguration("FIXTURE", null, true)), instanceOf(ContextManagerBuilderFixture.class));
     }
     
     @Test
     public void assertGetInstanceWithoutModeConfiguration() {
-        assertThat(ContextManagerBuilderFactory.getInstance(null), instanceOf(FixtureContextManagerBuilder.class));
+        assertThat(ContextManagerBuilderFactory.getInstance(null), instanceOf(ContextManagerBuilderFixture.class));
     }
 }

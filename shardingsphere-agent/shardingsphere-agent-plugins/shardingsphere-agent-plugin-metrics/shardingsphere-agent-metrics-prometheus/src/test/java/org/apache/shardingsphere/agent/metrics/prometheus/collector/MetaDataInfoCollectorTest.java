@@ -17,14 +17,20 @@
 
 package org.apache.shardingsphere.agent.metrics.prometheus.collector;
 
+import org.apache.shardingsphere.agent.metrics.prometheus.ProxyContextRestorer;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
 
-public final class MetaDataInfoCollectorTest {
+public final class MetaDataInfoCollectorTest extends ProxyContextRestorer {
     
     @Test
     public void assertCollect() {
+        ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
         assertFalse(new MetaDataInfoCollector().collect().isEmpty());
     }
 }

@@ -24,7 +24,7 @@ createShardingScalingRule
     ;
 
 dropShardingScalingRule
-    : DROP SHARDING SCALING RULE existsClause? scalingName
+    : DROP SHARDING SCALING RULE ifExists? scalingName
     ;
 
 enableShardingScalingRule
@@ -44,7 +44,7 @@ scalingRuleDefinition
     ;
 
 inputDefinition
-    : INPUT LP workerThread? (COMMA? batchSize)? (COMMA? rateLimiter)? RP
+    : INPUT LP workerThread? (COMMA? batchSize)? (COMMA? shardingSize)? (COMMA? rateLimiter)? RP
     ;
 
 outputDefinition
@@ -67,6 +67,10 @@ batchSize
     : BATCH_SIZE EQ intValue
     ;
 
+shardingSize
+    : SHARDING_SIZE EQ intValue
+    ;
+
 rateLimiter
     : RATE_LIMITER LP algorithmDefinition RP
     ;
@@ -79,6 +83,6 @@ intValue
     : INT
     ;
 
-existsClause
+ifExists
     : IF EXISTS
     ;

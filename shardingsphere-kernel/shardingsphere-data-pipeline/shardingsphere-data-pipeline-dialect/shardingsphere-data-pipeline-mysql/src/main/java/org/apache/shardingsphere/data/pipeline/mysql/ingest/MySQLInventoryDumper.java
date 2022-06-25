@@ -28,7 +28,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.Properties;
 
 /**
  * MySQL JDBC Dumper.
@@ -40,9 +39,6 @@ public final class MySQLInventoryDumper extends AbstractInventoryDumper {
     public MySQLInventoryDumper(final InventoryDumperConfiguration inventoryDumperConfig, final PipelineChannel channel,
                                 final DataSource dataSource, final PipelineTableMetaDataLoader metaDataLoader) {
         super(inventoryDumperConfig, channel, dataSource, metaDataLoader);
-        Properties queryProps = new Properties();
-        queryProps.setProperty("yearIsDateType", Boolean.FALSE.toString());
-        inventoryDumperConfig.getDataSourceConfig().appendJDBCQueryProperties(queryProps);
     }
     
     @Override

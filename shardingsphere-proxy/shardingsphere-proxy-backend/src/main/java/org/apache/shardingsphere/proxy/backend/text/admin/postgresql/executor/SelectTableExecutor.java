@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor;
 
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatabaseMetadataExecutor;
@@ -53,15 +54,15 @@ public final class SelectTableExecutor extends DefaultDatabaseMetadataExecutor {
     
     @Override
     protected void initDatabaseData(final String databaseName) {
-        ShardingSphereMetaData metaData = ProxyContext.getInstance().getMetaData(databaseName);
-        String schema = metaData.getResource().getDatabaseType().getDefaultSchema(databaseName);
-        tableNames = new ArrayList<>(metaData.getSchemaByName(schema).getAllTableNames());
+        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
+        String schemaName = DatabaseTypeEngine.getDefaultSchemaName(database.getResource().getDatabaseType(), databaseName);
+        tableNames = new ArrayList<>(database.getSchemas().get(schemaName).getAllTableNames());
     }
     
     @Override
     protected List<String> getDatabaseNames(final ConnectionSession connectionSession) {
-        Collection<String> schemaNames = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee())).collect(Collectors.toList());
-        return schemaNames.stream().filter(AbstractDatabaseMetadataExecutor::hasDatasource).collect(Collectors.toList());
+        Collection<String> databaseNames = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee())).collect(Collectors.toList());
+        return databaseNames.stream().filter(AbstractDatabaseMetadataExecutor::hasDatasource).collect(Collectors.toList());
     }
     
     @Override

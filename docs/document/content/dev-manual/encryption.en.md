@@ -18,13 +18,3 @@ chapter = true
 | RC4EncryptAlgorithm           | RC4 data encrypt algorithm |
 | SM3EncryptAlgorithm           | SM3 data encrypt algorithm |
 | SM4EncryptAlgorithm           | SM4 data encrypt algorithm |
-
-## QueryAssistedEncryptAlgorithm
-
-| *SPI Name*                    | *Description*                                              |
-| ----------------------------- | ---------------------------------------------------------- |
-| QueryAssistedEncryptAlgorithm | Data encrypt algorithm which include query assisted column |
-
-| *Implementation Class*        | *Description*                                              |
-| ----------------------------- | ---------------------------------------------------------- |
-| None                          |                                                            |

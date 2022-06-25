@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml;
 
-import com.google.common.collect.ImmutableMap;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.junit.Test;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -36,17 +36,31 @@ public final class YamlJdbcConfigurationTest {
     
     @Test
     public void assertConstructionWithJdbcUrl() {
-        Map<String, String> dataSourceProps = ImmutableMap.of("jdbcUrl", JDBC_URL, "username", USERNAME, "password", PASSWORD);
-        verifyFields(YamlEngine.unmarshal(YamlEngine.marshal(dataSourceProps), YamlJdbcConfiguration.class));
+        assertYamlJdbcConfiguration(YamlEngine.unmarshal(YamlEngine.marshal(getDataSourcePropsWithJdbcUrl()), YamlJdbcConfiguration.class));
+    }
+    
+    private Map<String, String> getDataSourcePropsWithJdbcUrl() {
+        Map<String, String> result = new HashMap<>(3, 1);
+        result.put("jdbcUrl", JDBC_URL);
+        result.put("username", USERNAME);
+        result.put("password", PASSWORD);
+        return result;
     }
     
     @Test
     public void assertConstructionWithUrl() {
-        Map<String, String> dataSourceProps = ImmutableMap.of("url", JDBC_URL, "username", USERNAME, "password", PASSWORD);
-        verifyFields(YamlEngine.unmarshal(YamlEngine.marshal(dataSourceProps), YamlJdbcConfiguration.class));
+        assertYamlJdbcConfiguration(YamlEngine.unmarshal(YamlEngine.marshal(getDataSourcePropsWithUrl()), YamlJdbcConfiguration.class));
     }
     
-    private void verifyFields(final YamlJdbcConfiguration actual) {
+    private Map<String, String> getDataSourcePropsWithUrl() {
+        Map<String, String> result = new HashMap<>(3, 1);
+        result.put("url", JDBC_URL);
+        result.put("username", USERNAME);
+        result.put("password", PASSWORD);
+        return result;
+    }
+    
+    private void assertYamlJdbcConfiguration(final YamlJdbcConfiguration actual) {
         assertThat(actual.getJdbcUrl(), is(JDBC_URL));
         assertThat(actual.getUsername(), is(USERNAME));
         assertThat(actual.getPassword(), is(PASSWORD));

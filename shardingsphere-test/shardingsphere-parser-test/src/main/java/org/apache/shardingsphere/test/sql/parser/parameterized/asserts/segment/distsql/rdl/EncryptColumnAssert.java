@@ -52,6 +52,7 @@ public final class EncryptColumnAssert {
             assertThat(assertContext.getText(String.format("`%s`'s assertion error", actual.getClass().getSimpleName())), actual.getCipherColumn(), is(expected.getCipherColumn()));
             assertThat(assertContext.getText(String.format("`%s`'s assertion error", actual.getClass().getSimpleName())), actual.getAssistedQueryColumn(), is(expected.getAssistedQueryColumn()));
             AlgorithmAssert.assertIs(assertContext, actual.getEncryptor(), expected.getEncryptor());
+            AlgorithmAssert.assertIs(assertContext, actual.getAssistedQueryEncryptor(), expected.getAssistedQueryEncryptor());
         }
     }
 }

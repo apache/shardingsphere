@@ -19,7 +19,9 @@ package org.apache.shardingsphere.infra.rewrite;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecoratorFactory;
@@ -28,8 +30,8 @@ import org.apache.shardingsphere.infra.rewrite.engine.RouteSQLRewriteEngine;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -39,20 +41,20 @@ import java.util.Map.Entry;
  */
 public final class SQLRewriteEntry {
     
-    private final String databaseName;
+    private final ShardingSphereDatabase database;
     
-    private final Map<String, ShardingSphereSchema> schemas;
+    private final ShardingSphereRuleMetaData globalRuleMetaData;
     
     private final ConfigurationProperties props;
     
     @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, SQLRewriteContextDecorator> decorators;
     
-    public SQLRewriteEntry(final String databaseName, final Map<String, ShardingSphereSchema> schemas, final ConfigurationProperties props, final Collection<ShardingSphereRule> rules) {
-        this.databaseName = databaseName;
-        this.schemas = schemas;
+    public SQLRewriteEntry(final ShardingSphereDatabase database, final ShardingSphereRuleMetaData globalRuleMetaData, final ConfigurationProperties props) {
+        this.database = database;
+        this.globalRuleMetaData = globalRuleMetaData;
         this.props = props;
-        decorators = SQLRewriteContextDecoratorFactory.getInstance(rules);
+        decorators = SQLRewriteContextDecoratorFactory.getInstance(database.getRuleMetaData().getRules());
     }
     
     /**
@@ -66,13 +68,16 @@ public final class SQLRewriteEntry {
      */
     public SQLRewriteResult rewrite(final String sql, final List<Object> parameters, final SQLStatementContext<?> sqlStatementContext, final RouteContext routeContext) {
         SQLRewriteContext sqlRewriteContext = createSQLRewriteContext(sql, parameters, sqlStatementContext, routeContext);
+        SQLTranslatorRule rule = globalRuleMetaData.getSingleRule(SQLTranslatorRule.class);
+        DatabaseType protocolType = database.getProtocolType();
+        DatabaseType storageType = database.getResource().getDatabaseType();
         return routeContext.getRouteUnits().isEmpty()
-                ? new GenericSQLRewriteEngine().rewrite(sqlRewriteContext)
-                : new RouteSQLRewriteEngine().rewrite(sqlRewriteContext, routeContext);
+                ? new GenericSQLRewriteEngine(rule, protocolType, storageType).rewrite(sqlRewriteContext)
+                : new RouteSQLRewriteEngine(rule, protocolType, storageType).rewrite(sqlRewriteContext, routeContext);
     }
     
     private SQLRewriteContext createSQLRewriteContext(final String sql, final List<Object> parameters, final SQLStatementContext<?> sqlStatementContext, final RouteContext routeContext) {
-        SQLRewriteContext result = new SQLRewriteContext(databaseName, schemas, sqlStatementContext, sql, parameters);
+        SQLRewriteContext result = new SQLRewriteContext(database.getName(), database.getSchemas(), sqlStatementContext, sql, parameters);
         decorate(decorators, result, routeContext);
         result.generateSQLTokens();
         return result;

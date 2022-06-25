@@ -16,22 +16,22 @@
   -->
 
 <command>
-    <create-sharding-algorithm>
+    <create-database-sharding-algorithm>
         CREATE SHARDING ALGORITHM database_inline (
         TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="ds_${user_id % 2}")))
-    </create-sharding-algorithm>
+    </create-database-sharding-algorithm>
     
-    <create-sharding-algorithm>
+    <create-order-sharding-algorithm>
         CREATE SHARDING ALGORITHM t_order_inline (
         TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="t_order_${order_id % 2}")))
-    </create-sharding-algorithm>
+    </create-order-sharding-algorithm>
     
-    <create-sharding-algorithm>
+    <create-order-item-sharding-algorithm>
         CREATE SHARDING ALGORITHM t_order_item_inline (
         TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="t_order_item_${order_id % 2}")))
-    </create-sharding-algorithm>
+    </create-order-item-sharding-algorithm>
     
-    <create-sharding-table>
+    <create-order-with-item-sharding-table-rule>
         CREATE SHARDING TABLE RULE t_order (
         DATANODES("ds_${0..1}.t_order_${0..1}"),
         DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
@@ -41,8 +41,18 @@
         DATANODES("ds_${0..1}.t_order_item_${0..1}"),
         DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
         TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_item_inline),
-        KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME=snowflake)))
-    </create-sharding-table>
+        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
+        )
+    </create-order-with-item-sharding-table-rule>
+    
+    <create-order-sharding-table-rule>
+        CREATE SHARDING TABLE RULE t_order (
+        DATANODES("ds_${0..1}.t_order_${0..1}"),
+        DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
+        TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
+        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
+        )
+    </create-order-sharding-table-rule>
     
     <alter-sharding-algorithm>
         ALTER SHARDING ALGORITHM database_inline
@@ -59,10 +69,10 @@
         DATANODES("ds_${2..4}.t_order_item_${0..1}"),
         DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
         TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_item_inline),
-        KEY_GENERATE_STRATEGY(COLUMN=order_item_id,TYPE(NAME=snowflake)))
+        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake)))
     </alter-sharding-table-rule>
     
-    <auto-alter-table-rule>
+    <auto-alter-order-with-item-sharding-table-rule>
         ALTER SHARDING TABLE RULE t_order(
         RESOURCES(ds_2, ds_3, ds_4),
         SHARDING_COLUMN=order_id,
@@ -74,13 +84,42 @@
         TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=6)),
         KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
         )
-    </auto-alter-table-rule>
+    </auto-alter-order-with-item-sharding-table-rule>
     
-    <simple-insert-order>
-        INSERT INTO t_order ( id, order_id, user_id) VALUES (?, ?, ?)
-    </simple-insert-order>
+    <auto-alter-order-sharding-table-rule>
+        ALTER SHARDING TABLE RULE t_order(
+        RESOURCES(ds_2, ds_3, ds_4),
+        SHARDING_COLUMN=order_id,
+        TYPE(NAME=hash_mod,PROPERTIES("sharding-count"=6)),
+        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
+        )
+    </auto-alter-order-sharding-table-rule>
     
-    <insert-order-item>
-        INSERT INTO t_order_item(item_id, order_id, user_id, status) VALUES(?,?,?,?)
-    </insert-order-item>
+    <source-add-resource-template>
+        ADD RESOURCE ds_0 (
+        URL="${ds0}",
+        USER=${user},
+        PASSWORD=${password}
+        ), ds_1 (
+        URL="${ds1}",
+        USER=${user},
+        PASSWORD=${password}
+        )
+    </source-add-resource-template>
+    
+    <target-add-resource-template>
+        ADD RESOURCE ds_2 (
+        URL="${ds2}",
+        USER=${user},
+        PASSWORD=${password}
+        ),ds_3 (
+        URL="${ds3}",
+        USER=${user},
+        PASSWORD=${password}
+        ),ds_4 (
+        URL="${ds4}",
+        USER=${user},
+        PASSWORD=${password}
+        )
+    </target-add-resource-template>
 </command>

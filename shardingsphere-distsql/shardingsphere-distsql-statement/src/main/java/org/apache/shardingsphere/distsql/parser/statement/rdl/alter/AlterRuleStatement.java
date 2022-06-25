@@ -17,16 +17,10 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.rdl.alter;
 
-import org.apache.shardingsphere.distsql.parser.operation.DistSQLOperationTypeEnum;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
 
 /**
  * Alter rule statement.
  */
 public abstract class AlterRuleStatement extends RuleDefinitionStatement {
-    
-    @Override
-    public DistSQLOperationTypeEnum getOperationType() {
-        return DistSQLOperationTypeEnum.ALTER;
-    }
 }

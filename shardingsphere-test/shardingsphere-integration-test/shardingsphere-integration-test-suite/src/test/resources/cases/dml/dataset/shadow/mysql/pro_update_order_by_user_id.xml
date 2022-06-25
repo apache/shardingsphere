@@ -27,7 +27,7 @@
         <column name="type_decimal" type="decimal" />
         <column name="type_date" type="Date" />
         <column name="type_time" type="time" />
-        <column name="type_timestamp" type="timestamp"/>
+        <column name="type_timestamp" type="timestamp" />
     </metadata>
     <row data-node="db.t_shadow" values="1, 1, pro_order_update, F, false, 60, spring, 120.00, 2021-01-02, 13:30:30, 2021-01-02 13:30:30.0" />
     <row data-node="db.t_shadow" values="2, 1, pro_order_update, F, false, 60, spring, 120.00, 2021-01-02, 13:30:30, 2021-01-02 13:30:30.0" />

@@ -82,7 +82,7 @@ public final class ProcessRegistrySubscriber {
     private Collection<String> getTriggerPaths(final String showProcessListId) {
         return Arrays.stream(InstanceType.values())
                 .flatMap(each -> repository.getChildrenKeys(ComputeNode.getOnlineNodePath(each)).stream()
-                        .map(onlinePath -> ComputeNode.getProcessTriggerInstanceIdNodePath(onlinePath, each, showProcessListId)))
+                        .map(onlinePath -> ComputeNode.getProcessTriggerInstanceIdNodePath(onlinePath, showProcessListId)))
                 .collect(Collectors.toList());
     }
     

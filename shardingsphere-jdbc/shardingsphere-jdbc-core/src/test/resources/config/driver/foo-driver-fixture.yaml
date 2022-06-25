@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-schemaName: foo_driver_fixture_db
+databaseName: foo_driver_fixture_db

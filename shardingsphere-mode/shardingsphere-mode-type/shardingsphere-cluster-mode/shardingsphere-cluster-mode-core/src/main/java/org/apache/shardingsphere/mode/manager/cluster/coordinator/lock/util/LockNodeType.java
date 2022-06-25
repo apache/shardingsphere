@@ -22,5 +22,5 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util;
  */
 public enum LockNodeType {
     
-    MUTEX, DATABASE, SCHEMA, GENERAL
+    DISTRIBUTED, DATABASE, SCHEMA, TABLE
 }

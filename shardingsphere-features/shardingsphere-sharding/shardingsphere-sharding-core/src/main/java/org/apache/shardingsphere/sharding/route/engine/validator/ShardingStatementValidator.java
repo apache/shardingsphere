@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -39,9 +39,9 @@ public interface ShardingStatementValidator<T extends SQLStatement> {
      * @param shardingRule sharding rule
      * @param sqlStatementContext SQL statement context
      * @param parameters SQL parameters
-     * @param metaData ShardingSphere meta data
+     * @param database database
      */
-    void preValidate(ShardingRule shardingRule, SQLStatementContext<T> sqlStatementContext, List<Object> parameters, ShardingSphereMetaData metaData);
+    void preValidate(ShardingRule shardingRule, SQLStatementContext<T> sqlStatementContext, List<Object> parameters, ShardingSphereDatabase database);
     
     /**
      * Validate whether sharding operation is supported after route.
@@ -49,10 +49,10 @@ public interface ShardingStatementValidator<T extends SQLStatement> {
      * @param shardingRule sharding rule
      * @param sqlStatementContext SQL statement context
      * @param parameters SQL parameters
-     * @param metaData ShardingSphere meta data
+     * @param database database
      * @param props props
      * @param routeContext route context
      */
-    void postValidate(ShardingRule shardingRule, SQLStatementContext<T> sqlStatementContext, List<Object> parameters,
-                      ShardingSphereMetaData metaData, ConfigurationProperties props, RouteContext routeContext);
+    void postValidate(ShardingRule shardingRule,
+                      SQLStatementContext<T> sqlStatementContext, List<Object> parameters, ShardingSphereDatabase database, ConfigurationProperties props, RouteContext routeContext);
 }

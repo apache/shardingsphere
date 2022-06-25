@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.extractor;
 import lombok.Getter;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.RoutineBodySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine.ValidStatementSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
@@ -45,11 +47,13 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Tab
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CreateTableStatementHandler;
+import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.InsertStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatementHandler;
 
 import java.util.Collection;
@@ -87,8 +91,8 @@ public final class TableExtractor {
         if (SelectStatementHandler.getLockSegment(selectStatement).isPresent()) {
             extractTablesFromLock(SelectStatementHandler.getLockSegment(selectStatement).get());
         }
-        if (!selectStatement.getUnionSegments().isEmpty()) {
-            selectStatement.getUnionSegments().forEach(each -> extractTablesFromSelect(each.getSelectStatement()));
+        if (!selectStatement.getCombines().isEmpty()) {
+            selectStatement.getCombines().forEach(each -> extractTablesFromSelect(each.getSelectStatement()));
         }
     }
     
@@ -166,6 +170,8 @@ public final class TableExtractor {
                     OwnerSegment ownerSegment = ((ColumnProjectionSegment) each).getColumn().getOwner().get();
                     rewriteTables.add(createSimpleTableSegment(ownerSegment));
                 }
+            } else if (each instanceof AggregationProjectionSegment) {
+                ((AggregationProjectionSegment) each).getParameters().forEach(this::extractTablesFromExpression);
             }
         }
     }
@@ -217,9 +223,23 @@ public final class TableExtractor {
                 extractTablesFromExpression(each);
             }
         }
+        InsertStatementHandler.getOnDuplicateKeyColumnsSegment(insertStatement).ifPresent(each -> extractTablesFromAssignmentItems(each.getColumns()));
         if (insertStatement.getInsertSelect().isPresent()) {
             extractTablesFromSelect(insertStatement.getInsertSelect().get().getSelect());
         }
+    }
+    
+    private void extractTablesFromAssignmentItems(final Collection<AssignmentSegment> assignmentItems) {
+        assignmentItems.forEach(each -> extractTablesFromColumnSegments(each.getColumns()));
+    }
+    
+    private void extractTablesFromColumnSegments(final Collection<ColumnSegment> columnSegments) {
+        columnSegments.forEach(each -> {
+            if (each.getOwner().isPresent() && needRewrite(each.getOwner().get())) {
+                OwnerSegment ownerSegment = each.getOwner().get();
+                rewriteTables.add(new SimpleTableSegment(new TableNameSegment(ownerSegment.getStartIndex(), ownerSegment.getStopIndex(), ownerSegment.getIdentifier())));
+            }
+        });
     }
     
     /**
@@ -243,7 +263,7 @@ public final class TableExtractor {
      */
     public boolean needRewrite(final OwnerSegment owner) {
         for (TableSegment each : tableContext) {
-            if (owner.getIdentifier().getValue().equals(each.getAlias().orElse(null))) {
+            if (owner.getIdentifier().getValue().equalsIgnoreCase(each.getAlias().orElse(null))) {
                 return false;
             }
         }
@@ -298,7 +318,7 @@ public final class TableExtractor {
         Collection<SimpleTableSegment> result = new LinkedList<>();
         for (ValidStatementSegment each : routineBody.getValidStatements()) {
             Optional<CreateTableStatement> createTable = each.getCreateTable();
-            if (createTable.isPresent() && !CreateTableStatementHandler.containsNotExistClause(createTable.get())) {
+            if (createTable.isPresent() && !CreateTableStatementHandler.ifNotExists(createTable.get())) {
                 result.add(createTable.get().getTable());
             }
         }
@@ -320,5 +340,16 @@ public final class TableExtractor {
         } else if (sqlStatement instanceof DeleteStatement) {
             extractTablesFromDelete((DeleteStatement) sqlStatement);
         }
+    }
+    
+    /**
+     * Extract table that should be rewrite from create view statement.
+     * 
+     * @param createViewStatement create view statement
+     */
+    public void extractTablesFromCreateViewStatement(final CreateViewStatement createViewStatement) {
+        tableContext.add(createViewStatement.getView());
+        rewriteTables.add(createViewStatement.getView());
+        createViewStatement.getSelect().ifPresent(this::extractTablesFromSelect);
     }
 }

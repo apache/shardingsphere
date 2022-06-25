@@ -28,7 +28,7 @@ alterShadowRule
     ;
 
 dropShadowRule
-    : DROP SHADOW RULE existClause? ruleName (COMMA ruleName)*
+    : DROP SHADOW RULE ifExists? ruleName (COMMA ruleName)*
     ;
    
 createShadowAlgorithm
@@ -40,7 +40,7 @@ alterShadowAlgorithm
     ;
 
 dropShadowAlgorithm
-    : DROP SHADOW ALGORITHM existClause? algorithmName (COMMA algorithmName)*
+    : DROP SHADOW ALGORITHM ifExists? algorithmName (COMMA algorithmName)*
     ;
 
 createDefaultShadowAlgorithm
@@ -48,7 +48,7 @@ createDefaultShadowAlgorithm
     ;
 
 dropDefaultShadowAlgorithm
-    : DROP DEFAULT SHADOW ALGORITHM existClause?
+    : DROP DEFAULT SHADOW ALGORITHM ifExists?
     ;
 
 shadowRuleDefinition
@@ -91,6 +91,6 @@ algorithmProperty
     : key = (SHADOW | IDENTIFIER | STRING) EQ value = (NUMBER | INT | STRING)
     ;
 
-existClause
+ifExists
     : IF EXISTS
     ;

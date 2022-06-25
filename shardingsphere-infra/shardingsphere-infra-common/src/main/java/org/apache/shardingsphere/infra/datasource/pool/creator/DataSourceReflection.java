@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.datasource.pool.creator;
 
 import com.google.common.base.CaseFormat;
-import com.google.common.collect.Sets;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
@@ -45,8 +44,9 @@ import java.util.Properties;
 public final class DataSourceReflection {
     
     static {
-        GENERAL_CLASS_TYPES = Sets.newHashSet(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class, Collection.class, List.class, Properties.class);
-        SKIPPED_PROPERTY_KEYS = Sets.newHashSet("loginTimeout", "driverClassName");
+        GENERAL_CLASS_TYPES = new HashSet<>(
+                Arrays.asList(boolean.class, Boolean.class, int.class, Integer.class, long.class, Long.class, String.class, Collection.class, List.class, Properties.class));
+        SKIPPED_PROPERTY_KEYS = new HashSet<>(Arrays.asList("loginTimeout", "driverClassName"));
     }
     
     private static final Collection<Class<?>> GENERAL_CLASS_TYPES;

@@ -18,10 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowTransactionRuleStatement;
-import org.apache.shardingsphere.infra.metadata.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -37,15 +39,16 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowTransactionRuleHandlerTest {
-    
-    private final ShowTransactionRuleHandler handler = new ShowTransactionRuleHandler().initStatement(new ShowTransactionRuleStatement());
+public final class ShowTransactionRuleHandlerTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecutorWithXA() throws SQLException {
+        ShowTransactionRuleHandler handler = new ShowTransactionRuleHandler();
+        handler.init(new ShowTransactionRuleStatement(), null);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData("XA", "Atomikos", getProperties()));
-        ProxyContext.getInstance().init(contextManager);
+        ShardingSphereRuleMetaData metaData = createGlobalRuleMetaData("XA", "Atomikos", getProperties());
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(metaData);
+        ProxyContext.init(contextManager);
         handler.execute();
         handler.next();
         List<Object> data = new ArrayList<>(handler.getRowData());
@@ -59,9 +62,12 @@ public final class ShowTransactionRuleHandlerTest {
     
     @Test
     public void assertExecutorWithLocal() throws SQLException {
+        ShowTransactionRuleHandler handler = new ShowTransactionRuleHandler();
+        handler.init(new ShowTransactionRuleStatement(), null);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData("LOCAL", null, null));
-        ProxyContext.getInstance().init(contextManager);
+        ShardingSphereRuleMetaData metaData = createGlobalRuleMetaData("LOCAL", null, null);
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(metaData);
+        ProxyContext.init(contextManager);
         handler.execute();
         handler.next();
         List<Object> data = new ArrayList<>(handler.getRowData());
@@ -71,8 +77,9 @@ public final class ShowTransactionRuleHandlerTest {
         assertThat(data.get(2), is(""));
     }
     
-    private ShardingSphereRuleMetaData getGlobalRuleMetaData(final String defaultType, final String providerType, final Properties props) {
-        return new ShardingSphereRuleMetaData(Collections.singleton(new TransactionRuleConfiguration(defaultType, providerType, props)), Collections.emptyList());
+    private ShardingSphereRuleMetaData createGlobalRuleMetaData(final String defaultType, final String providerType, final Properties props) {
+        TransactionRule rule = new TransactionRule(new TransactionRuleConfiguration(defaultType, providerType, props), Collections.emptyMap());
+        return new ShardingSphereRuleMetaData(Collections.singleton(rule));
     }
     
     private Properties getProperties() {

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.scaling.distsql.handler.query;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowScalingListStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -31,7 +31,7 @@ import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
- * Show scaling list query result set.
+ * Query result set fpr show scaling list.
  */
 public final class ShowScalingListQueryResultSet implements DistSQLResultSet {
     
@@ -40,7 +40,7 @@ public final class ShowScalingListQueryResultSet implements DistSQLResultSet {
     private Iterator<Collection<Object>> data;
     
     @Override
-    public void init(final ShardingSphereMetaData metaData, final SQLStatement sqlStatement) {
+    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         data = RULE_ALTERED_JOB_API.list().stream()
                 .map(each -> {
                     Collection<Object> result = new LinkedList<>();

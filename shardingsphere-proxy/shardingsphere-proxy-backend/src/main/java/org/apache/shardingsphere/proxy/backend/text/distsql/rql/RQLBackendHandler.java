@@ -45,7 +45,7 @@ public final class RQLBackendHandler extends DatabaseRequiredBackendHandler<RQLS
     
     @Override
     protected ResponseHeader execute(final String databaseName, final RQLStatement sqlStatement) {
-        resultSet.init(ProxyContext.getInstance().getMetaData(databaseName), sqlStatement);
+        resultSet.init(ProxyContext.getInstance().getDatabase(databaseName), sqlStatement);
         List<QueryHeader> queryHeaders = resultSet.getColumnNames().stream()
                 .map(each -> new QueryHeader(databaseName, "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false)).collect(Collectors.toList());
         return new QueryResponseHeader(queryHeaders);

@@ -54,6 +54,12 @@ import java.util.Properties;
 // TODO extract Pipeline Context
 public final class RuleAlteredContext {
     
+    private static final String INVENTORY_THREAD_PREFIX = "Inventory-";
+    
+    private static final String INCREMENTAL_THREAD_PREFIX = "Incremental-";
+    
+    private static final String IMPORTER_THREAD_PREFIX = "Importer-";
+    
     private static final OnRuleAlteredActionConfigurationYamlSwapper SWAPPER = new OnRuleAlteredActionConfigurationYamlSwapper();
     
     private final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig;
@@ -79,7 +85,7 @@ public final class RuleAlteredContext {
     private final ExecuteEngine importerExecuteEngine;
     
     @SuppressWarnings("unchecked")
-    public RuleAlteredContext(final OnRuleAlteredActionConfiguration actionConfig) {
+    public RuleAlteredContext(final String jobId, final OnRuleAlteredActionConfiguration actionConfig) {
         OnRuleAlteredActionConfiguration onRuleAlteredActionConfig = convertActionConfig(actionConfig);
         this.onRuleAlteredActionConfig = onRuleAlteredActionConfig;
         InputConfiguration inputConfig = onRuleAlteredActionConfig.getInput();
@@ -98,18 +104,22 @@ public final class RuleAlteredContext {
                 : null;
         rowBasedJobLock = RowBasedJobLockFactory.getInstance();
         ruleBasedJobLock = RuleBasedJobLockFactory.getInstance();
-        inventoryDumperExecuteEngine = ExecuteEngine.newFixedThreadInstance(inputConfig.getWorkerThread());
-        incrementalDumperExecuteEngine = ExecuteEngine.newCachedThreadInstance();
-        importerExecuteEngine = ExecuteEngine.newFixedThreadInstance(outputConfig.getWorkerThread());
+        inventoryDumperExecuteEngine = ExecuteEngine.newFixedThreadInstance(inputConfig.getWorkerThread(), INVENTORY_THREAD_PREFIX + jobId);
+        incrementalDumperExecuteEngine = ExecuteEngine.newCachedThreadInstance(INCREMENTAL_THREAD_PREFIX + jobId);
+        importerExecuteEngine = ExecuteEngine.newFixedThreadInstance(outputConfig.getWorkerThread(), IMPORTER_THREAD_PREFIX + jobId);
     }
     
     private OnRuleAlteredActionConfiguration convertActionConfig(final OnRuleAlteredActionConfiguration actionConfig) {
         YamlOnRuleAlteredActionConfiguration yamlActionConfig = SWAPPER.swapToYamlConfiguration(actionConfig);
         if (null == yamlActionConfig.getInput()) {
             yamlActionConfig.setInput(YamlInputConfiguration.buildWithDefaultValue());
+        } else {
+            yamlActionConfig.getInput().fillInNullFieldsWithDefaultValue();
         }
         if (null == yamlActionConfig.getOutput()) {
             yamlActionConfig.setOutput(YamlOutputConfiguration.buildWithDefaultValue());
+        } else {
+            yamlActionConfig.getOutput().fillInNullFieldsWithDefaultValue();
         }
         if (null == yamlActionConfig.getStreamChannel()) {
             yamlActionConfig.setStreamChannel(new YamlShardingSphereAlgorithmConfiguration(MemoryPipelineChannelCreator.TYPE, new Properties()));

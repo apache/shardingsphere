@@ -22,6 +22,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
+import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineIgnoredException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
@@ -50,7 +53,8 @@ public final class RuleAlteredJobScheduler implements Runnable {
      * Stop all task.
      */
     public void stop() {
-        log.info("stop job {}", jobContext.getJobId());
+        jobContext.setStopping(true);
+        log.info("stop, jobId={}, shardingItem={}", jobContext.getJobId(), jobContext.getShardingItem());
         for (InventoryTask each : jobContext.getInventoryTasks()) {
             log.info("stop inventory task {} - {}", jobContext.getJobId(), each.getTaskId());
             each.stop();
@@ -61,12 +65,39 @@ public final class RuleAlteredJobScheduler implements Runnable {
             each.stop();
             each.close();
         }
-        jobContext.close();
     }
     
     @Override
     public void run() {
+        String jobId = jobContext.getJobId();
+        GovernanceRepositoryAPI governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
+        try {
+            jobContext.getJobPreparer().prepare(jobContext);
+        } catch (final PipelineIgnoredException ex) {
+            log.info("pipeline ignore exception: {}", ex.getMessage());
+            RuleAlteredJobCenter.stop(jobId);
+            ShardingSphereEventBus.getInstance().post(new ScalingReleaseDatabaseLevelLockEvent(jobContext.getJobConfig().getDatabaseName()));
+            // CHECKSTYLE:OFF
+        } catch (final RuntimeException ex) {
+            // CHECKSTYLE:ON
+            log.error("job prepare failed, {}-{}", jobId, jobContext.getShardingItem(), ex);
+            RuleAlteredJobCenter.stop(jobId);
+            jobContext.setStatus(JobStatus.PREPARING_FAILURE);
+            governanceRepositoryAPI.persistJobProgress(jobContext);
+            ScalingReleaseDatabaseLevelLockEvent event = new ScalingReleaseDatabaseLevelLockEvent(jobContext.getJobConfig().getDatabaseName());
+            ShardingSphereEventBus.getInstance().post(event);
+            throw ex;
+        }
+        if (jobContext.isStopping()) {
+            log.info("job stopping, ignore inventory task");
+            return;
+        }
+        governanceRepositoryAPI.persistJobProgress(jobContext);
         if (executeInventoryTask()) {
+            if (jobContext.isStopping()) {
+                log.info("stopping, ignore incremental task");
+                return;
+            }
             executeIncrementalTask();
         }
     }

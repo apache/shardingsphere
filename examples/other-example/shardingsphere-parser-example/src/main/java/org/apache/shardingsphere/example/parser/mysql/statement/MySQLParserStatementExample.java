@@ -54,7 +54,7 @@ public final class MySQLParserStatementExample {
     
     public static void main(String[] args) {
         MYSQL_PARSER_STATEMENT_LIST.forEach(each -> {
-            CacheOption cacheOption = new CacheOption(128, 1024L, 4);
+            CacheOption cacheOption = new CacheOption(128, 1024L);
             SQLParserEngine parserEngine = new SQLParserEngine("MySQL", cacheOption);
             ParseASTNode parseASTNode = parserEngine.parse(each, false);
             SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "STATEMENT", false, new Properties());
