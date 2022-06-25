@@ -33,6 +33,7 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
+import org.yaml.snakeyaml.nodes.Tag;
 
 import javax.sql.DataSource;
 import java.io.File;
@@ -111,8 +112,13 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
         }
         stringBuilder.append("rules").append(":\n");
         for (Entry<RuleConfiguration, YamlRuleConfigurationSwapper> entry : YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurations(ruleConfigs).entrySet()) {
-            stringBuilder.append(YamlEngine.marshal(Collections.singleton(entry.getValue().swapToYamlConfiguration(entry.getKey()))));
+            String actual = YamlEngine.marshal(Collections.singleton(entry.getValue().swapToYamlConfiguration(entry.getKey())), Tag.MAP);
+            stringBuilder.append(rulesConfigKeywordReplace(actual));
         }
+    }
+    
+    private String rulesConfigKeywordReplace(final String rulesConfig) {
+        return rulesConfig.replace("? ", "- ").replace(": null\n", "");
     }
     
     @SuppressWarnings("ResultOfMethodCallIgnored")
