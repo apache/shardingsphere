@@ -70,7 +70,7 @@ public final class DropShadowAlgorithmStatementUpdaterTest {
         return new DropShadowAlgorithmStatement(false, Arrays.asList(ruleName));
     }
     
-    private DropShadowAlgorithmStatement createSQLStatement(final boolean ifExist, final String... ruleName) {
-        return new DropShadowAlgorithmStatement(ifExist, Arrays.asList(ruleName));
+    private DropShadowAlgorithmStatement createSQLStatement(final boolean ifExists, final String... ruleName) {
+        return new DropShadowAlgorithmStatement(ifExists, Arrays.asList(ruleName));
     }
 }

@@ -129,9 +129,9 @@ public final class DropShardingBindingTableRuleStatementUpdaterTest {
         return new DropShardingBindingTableRulesStatement(false, segments);
     }
     
-    private DropShardingBindingTableRulesStatement createSQLStatement(final boolean ifExist, final String... group) {
+    private DropShardingBindingTableRulesStatement createSQLStatement(final boolean ifExists, final String... group) {
         Collection<BindingTableRuleSegment> segments = Arrays.stream(group).map(BindingTableRuleSegment::new).collect(Collectors.toList());
-        return new DropShardingBindingTableRulesStatement(ifExist, segments);
+        return new DropShardingBindingTableRulesStatement(ifExists, segments);
     }
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {

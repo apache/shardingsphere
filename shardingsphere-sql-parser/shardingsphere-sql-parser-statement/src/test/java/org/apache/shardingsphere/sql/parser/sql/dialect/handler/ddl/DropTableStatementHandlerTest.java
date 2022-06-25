@@ -30,42 +30,42 @@ import static org.junit.Assert.assertTrue;
 public final class DropTableStatementHandlerTest {
     
     @Test
-    public void assertContainsIfExistClauseForMySQL() {
-        assertTrue(DropTableStatementHandler.containsExistClause(new MySQLDropTableStatement(true)));
+    public void assertContainsIfExistsForMySQL() {
+        assertTrue(DropTableStatementHandler.ifExists(new MySQLDropTableStatement(true)));
     }
     
     @Test
-    public void assertContainsIfExistClauseForPostgreSQL() {
-        assertTrue(DropTableStatementHandler.containsExistClause(new PostgreSQLDropTableStatement(true)));
+    public void assertContainsIfExistsForPostgreSQL() {
+        assertTrue(DropTableStatementHandler.ifExists(new PostgreSQLDropTableStatement(true)));
     }
     
     @Test
-    public void assertContainsIfExistClauseForSQLServer() {
-        assertTrue(DropTableStatementHandler.containsExistClause(new SQLServerDropTableStatement(true)));
+    public void assertContainsIfExistsForSQLServer() {
+        assertTrue(DropTableStatementHandler.ifExists(new SQLServerDropTableStatement(true)));
     }
     
     @Test
-    public void assertNotContainsIfExistClauseForMySQL() {
-        assertFalse(DropTableStatementHandler.containsExistClause(new MySQLDropTableStatement(false)));
+    public void assertNotContainsIfExistsForMySQL() {
+        assertFalse(DropTableStatementHandler.ifExists(new MySQLDropTableStatement(false)));
     }
     
     @Test
-    public void assertNotContainsIfExistClauseForOracle() {
-        assertFalse(DropTableStatementHandler.containsExistClause(new OracleDropTableStatement()));
+    public void assertNotContainsIfExistsForOracle() {
+        assertFalse(DropTableStatementHandler.ifExists(new OracleDropTableStatement()));
     }
     
     @Test
-    public void assertNotContainsIfExistClauseForPostgreSQL() {
-        assertFalse(DropTableStatementHandler.containsExistClause(new PostgreSQLDropTableStatement(false)));
+    public void assertNotContainsIfExistsForPostgreSQL() {
+        assertFalse(DropTableStatementHandler.ifExists(new PostgreSQLDropTableStatement(false)));
     }
     
     @Test
-    public void assertNotContainsIfExistClauseForSQL92() {
-        assertFalse(DropTableStatementHandler.containsExistClause(new SQL92DropTableStatement()));
+    public void assertNotContainsIfExistsForSQL92() {
+        assertFalse(DropTableStatementHandler.ifExists(new SQL92DropTableStatement()));
     }
     
     @Test
-    public void assertNotContainsIfExistClauseForSQLServer() {
-        assertFalse(DropTableStatementHandler.containsExistClause(new SQLServerDropTableStatement(false)));
+    public void assertNotContainsIfExistsForSQLServer() {
+        assertFalse(DropTableStatementHandler.ifExists(new SQLServerDropTableStatement(false)));
     }
 }

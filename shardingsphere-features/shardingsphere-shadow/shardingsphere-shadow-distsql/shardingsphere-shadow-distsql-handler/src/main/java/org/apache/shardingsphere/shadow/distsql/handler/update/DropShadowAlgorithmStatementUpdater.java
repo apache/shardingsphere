@@ -45,7 +45,7 @@ public final class DropShadowAlgorithmStatementUpdater implements RuleDefinition
     
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final DropShadowAlgorithmStatement sqlStatement, final ShadowRuleConfiguration currentRuleConfig) throws DistSQLException {
-        if (sqlStatement.isIfExist() && !isExistRuleConfig(currentRuleConfig)) {
+        if (sqlStatement.isIfExists() && !isExistRuleConfig(currentRuleConfig)) {
             return;
         }
         checkConfigurationExist(database.getName(), currentRuleConfig);
@@ -60,7 +60,7 @@ public final class DropShadowAlgorithmStatementUpdater implements RuleDefinition
         Collection<String> currentAlgorithms = ShadowRuleStatementSupporter.getAlgorithmNames(currentRuleConfig);
         Collection<String> requireAlgorithms = sqlStatement.getAlgorithmNames();
         String defaultShadowAlgorithmName = currentRuleConfig.getDefaultShadowAlgorithmName();
-        if (!sqlStatement.isIfExist()) {
+        if (!sqlStatement.isIfExists()) {
             ShadowRuleStatementChecker.checkAlgorithmExist(requireAlgorithms, currentAlgorithms, different -> new RequiredAlgorithmMissedException(SHADOW, databaseName, different));
         }
         checkAlgorithmInUsed(requireAlgorithms, getAlgorithmInUse(currentRuleConfig), identical -> new AlgorithmInUsedException(databaseName, identical));

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleState
  */
 public final class DropDefaultShadowAlgorithmStatement extends DropRuleStatement {
     
-    public DropDefaultShadowAlgorithmStatement(final boolean ifExist) {
-        super(ifExist);
+    public DropDefaultShadowAlgorithmStatement(final boolean ifExists) {
+        super(ifExists);
     }
 }

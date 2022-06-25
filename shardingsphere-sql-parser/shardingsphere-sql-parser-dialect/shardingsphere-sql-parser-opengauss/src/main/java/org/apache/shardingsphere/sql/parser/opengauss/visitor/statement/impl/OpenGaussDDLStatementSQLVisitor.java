@@ -259,7 +259,7 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        OpenGaussCreateTableStatement result = new OpenGaussCreateTableStatement(null != ctx.notExistClause());
+        OpenGaussCreateTableStatement result = new OpenGaussCreateTableStatement(null != ctx.ifNotExists());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
@@ -488,7 +488,7 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        OpenGaussDropTableStatement result = new OpenGaussDropTableStatement(null != ctx.existClause());
+        OpenGaussDropTableStatement result = new OpenGaussDropTableStatement(null != ctx.ifExists());
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
         return result;
     }
@@ -546,7 +546,7 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
-        OpenGaussDropIndexStatement result = new OpenGaussDropIndexStatement(null != ctx.existClause());
+        OpenGaussDropIndexStatement result = new OpenGaussDropIndexStatement(null != ctx.ifExists());
         result.getIndexes().addAll(createIndexSegments(((CollectionValue<SimpleTableSegment>) visit(ctx.qualifiedNameList())).getValue()));
         return result;
     }
@@ -641,7 +641,7 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
         OpenGaussDropDatabaseStatement result = new OpenGaussDropDatabaseStatement();
         result.setDatabaseName(((IdentifierValue) visit(ctx.name())).getValue());
-        result.setIfExist(null != ctx.existClause());
+        result.setIfExists(null != ctx.ifExists());
         return result;
     }
     

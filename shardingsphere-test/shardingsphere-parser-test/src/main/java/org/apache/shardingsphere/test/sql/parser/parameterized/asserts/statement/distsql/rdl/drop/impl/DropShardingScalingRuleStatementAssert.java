@@ -48,7 +48,7 @@ public final class DropShardingScalingRuleStatementAssert {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
             assertThat(assertContext.getText(String.format("`%s`'s scaling name assertion error: ", actual.getClass().getSimpleName())),
                     actual.getScalingName(), is(expected.getScalingName()));
-            assertThat(assertContext.getText("Contains exist clause assertion error: "), actual.isIfExist(), is(expected.isContainsExistClause()));
+            assertThat(assertContext.getText("Contains exist clause assertion error: "), actual.isIfExists(), is(expected.isIfExists()));
         }
     }
 }

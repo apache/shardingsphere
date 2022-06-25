@@ -33,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 @ToString
 public final class MySQLResetPersistStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
-    private final boolean ifExist;
+    private final boolean ifExists;
     
     private final IdentifierValue identifier;
 }

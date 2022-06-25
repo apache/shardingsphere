@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public final class DropDefaultSingleTableRuleStatement extends DropRuleStatement {
     
-    public DropDefaultSingleTableRuleStatement(final boolean ifExist) {
-        super(ifExist);
+    public DropDefaultSingleTableRuleStatement(final boolean ifExists) {
+        super(ifExists);
     }
 }

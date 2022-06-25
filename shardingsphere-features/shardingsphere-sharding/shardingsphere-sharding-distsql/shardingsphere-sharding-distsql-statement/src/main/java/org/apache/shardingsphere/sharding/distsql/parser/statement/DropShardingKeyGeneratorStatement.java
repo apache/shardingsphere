@@ -30,8 +30,8 @@ public final class DropShardingKeyGeneratorStatement extends DropRuleStatement {
     
     private final Collection<String> keyGeneratorNames;
     
-    public DropShardingKeyGeneratorStatement(final boolean ifExist, final Collection<String> keyGeneratorNames) {
-        super(ifExist);
+    public DropShardingKeyGeneratorStatement(final boolean ifExists, final Collection<String> keyGeneratorNames) {
+        super(ifExists);
         this.keyGeneratorNames = keyGeneratorNames;
     }
 }

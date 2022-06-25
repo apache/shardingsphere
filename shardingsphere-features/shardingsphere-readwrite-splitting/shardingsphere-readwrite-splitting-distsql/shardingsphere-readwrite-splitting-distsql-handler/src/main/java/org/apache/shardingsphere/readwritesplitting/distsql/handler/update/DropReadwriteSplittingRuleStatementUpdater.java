@@ -40,7 +40,7 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final DropReadwriteSplittingRuleStatement sqlStatement,
                                   final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws RuleDefinitionViolationException {
-        if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isIfExist()) {
+        if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isIfExists()) {
             return;
         }
         String databaseName = database.getName();
@@ -57,7 +57,7 @@ public final class DropReadwriteSplittingRuleStatementUpdater implements RuleDef
     
     private void checkToBeDroppedRuleNames(final String databaseName, final DropReadwriteSplittingRuleStatement sqlStatement,
                                            final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws RequiredRuleMissedException {
-        if (sqlStatement.isIfExist()) {
+        if (sqlStatement.isIfExists()) {
             return;
         }
         Collection<String> currentRuleNames = currentRuleConfig.getDataSources().stream().map(ReadwriteSplittingDataSourceRuleConfiguration::getName).collect(Collectors.toList());

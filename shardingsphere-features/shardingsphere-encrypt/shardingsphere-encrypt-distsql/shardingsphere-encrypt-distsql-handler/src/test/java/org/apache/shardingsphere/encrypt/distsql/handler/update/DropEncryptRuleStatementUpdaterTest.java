@@ -89,8 +89,8 @@ public final class DropEncryptRuleStatementUpdaterTest {
         return new DropEncryptRuleStatement(false, Collections.singleton(tableName));
     }
     
-    private DropEncryptRuleStatement createSQLStatement(final boolean containsExistClause, final String tableName) {
-        return new DropEncryptRuleStatement(containsExistClause, Collections.singleton(tableName));
+    private DropEncryptRuleStatement createSQLStatement(final boolean ifExists, final String tableName) {
+        return new DropEncryptRuleStatement(ifExists, Collections.singleton(tableName));
     }
     
     private EncryptRuleConfiguration createCurrentRuleConfiguration() {

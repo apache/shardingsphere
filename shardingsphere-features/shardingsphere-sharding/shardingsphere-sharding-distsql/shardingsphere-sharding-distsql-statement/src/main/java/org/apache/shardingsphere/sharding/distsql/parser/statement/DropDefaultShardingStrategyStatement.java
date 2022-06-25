@@ -28,8 +28,8 @@ public final class DropDefaultShardingStrategyStatement extends DropRuleStatemen
     
     private final String defaultType;
     
-    public DropDefaultShardingStrategyStatement(final boolean ifExist, final String defaultType) {
-        super(ifExist);
+    public DropDefaultShardingStrategyStatement(final boolean ifExists, final String defaultType) {
+        super(ifExists);
         this.defaultType = defaultType;
     }
 }

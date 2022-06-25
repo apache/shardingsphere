@@ -52,7 +52,7 @@ public final class DropTrafficRuleHandler extends UpdatableRALBackendHandler<Dro
     }
     
     private void checkRuleNames() throws DistSQLException {
-        if (getSqlStatement().isIfExist()) {
+        if (getSqlStatement().isIfExists()) {
             return;
         }
         TrafficRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);

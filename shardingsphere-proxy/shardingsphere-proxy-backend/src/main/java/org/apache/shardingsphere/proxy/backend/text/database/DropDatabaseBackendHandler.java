@@ -60,7 +60,7 @@ public final class DropDatabaseBackendHandler implements TextProtocolBackendHand
         if (!SQLCheckEngine.check(databaseName, getRules(databaseName), grantee)) {
             throw new UnknownDatabaseException(databaseName);
         }
-        if (!sqlStatement.isIfExist() && !ProxyContext.getInstance().getAllDatabaseNames().contains(databaseName)) {
+        if (!sqlStatement.isIfExists() && !ProxyContext.getInstance().getAllDatabaseNames().contains(databaseName)) {
             throw new DBDropNotExistsException(databaseName);
         }
     }

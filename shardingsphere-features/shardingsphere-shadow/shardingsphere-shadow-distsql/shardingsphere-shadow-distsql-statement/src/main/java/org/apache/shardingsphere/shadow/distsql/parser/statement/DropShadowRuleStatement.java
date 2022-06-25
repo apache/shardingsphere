@@ -30,8 +30,8 @@ public final class DropShadowRuleStatement extends DropRuleStatement {
     
     private final Collection<String> ruleNames;
     
-    public DropShadowRuleStatement(final boolean ifExist, final Collection<String> ruleNames) {
-        super(ifExist);
+    public DropShadowRuleStatement(final boolean ifExists, final Collection<String> ruleNames) {
+        super(ifExists);
         this.ruleNames = ruleNames;
     }
 }

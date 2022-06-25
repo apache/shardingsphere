@@ -214,7 +214,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
         MySQLCreateDatabaseStatement result = new MySQLCreateDatabaseStatement();
         result.setDatabaseName(new IdentifierValue(ctx.schemaName().getText()).getValue());
-        result.setIfNotExist(null != ctx.notExistClause());
+        result.setIfNotExists(null != ctx.ifNotExists());
         return result;
     }
     
@@ -227,14 +227,14 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
         MySQLDropDatabaseStatement result = new MySQLDropDatabaseStatement();
         result.setDatabaseName(new IdentifierValue(ctx.schemaName().getText()).getValue());
-        result.setIfExist(null != ctx.existClause());
+        result.setIfExists(null != ctx.ifExists());
         return result;
     }
     
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        MySQLCreateTableStatement result = new MySQLCreateTableStatement(null != ctx.notExistClause());
+        MySQLCreateTableStatement result = new MySQLCreateTableStatement(null != ctx.ifNotExists());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
@@ -531,7 +531,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        MySQLDropTableStatement result = new MySQLDropTableStatement(null != ctx.existClause());
+        MySQLDropTableStatement result = new MySQLDropTableStatement(null != ctx.ifExists());
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableList())).getValue());
         return result;
     }

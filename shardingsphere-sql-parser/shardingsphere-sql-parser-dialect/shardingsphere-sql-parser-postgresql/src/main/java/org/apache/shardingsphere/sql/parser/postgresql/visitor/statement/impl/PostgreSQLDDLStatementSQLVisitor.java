@@ -291,7 +291,7 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        PostgreSQLCreateTableStatement result = new PostgreSQLCreateTableStatement(null != ctx.notExistClause());
+        PostgreSQLCreateTableStatement result = new PostgreSQLCreateTableStatement(null != ctx.ifNotExists());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
@@ -550,7 +550,7 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        PostgreSQLDropTableStatement result = new PostgreSQLDropTableStatement(null != ctx.existClause());
+        PostgreSQLDropTableStatement result = new PostgreSQLDropTableStatement(null != ctx.ifExists());
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
         return result;
     }
@@ -633,7 +633,7 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
-        PostgreSQLDropIndexStatement result = new PostgreSQLDropIndexStatement(null != ctx.existClause());
+        PostgreSQLDropIndexStatement result = new PostgreSQLDropIndexStatement(null != ctx.ifExists());
         result.getIndexes().addAll(createIndexSegments(((CollectionValue<SimpleTableSegment>) visit(ctx.qualifiedNameList())).getValue()));
         return result;
     }
@@ -733,7 +733,7 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
         PostgreSQLDropDatabaseStatement result = new PostgreSQLDropDatabaseStatement();
         result.setDatabaseName(((IdentifierValue) visit(ctx.name())).getValue());
-        result.setIfExist(null != ctx.existClause());
+        result.setIfExists(null != ctx.ifExists());
         return result;
     }
     

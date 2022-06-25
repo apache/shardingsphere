@@ -310,7 +310,7 @@ public final class SQLServerDDLStatementSQLVisitor extends SQLServerStatementSQL
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        SQLServerDropTableStatement result = new SQLServerDropTableStatement(null != ctx.ifExist());
+        SQLServerDropTableStatement result = new SQLServerDropTableStatement(null != ctx.ifExists());
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
         return result;
     }
@@ -357,7 +357,7 @@ public final class SQLServerDDLStatementSQLVisitor extends SQLServerStatementSQL
     
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
-        SQLServerDropIndexStatement result = new SQLServerDropIndexStatement(null != ctx.ifExist());
+        SQLServerDropIndexStatement result = new SQLServerDropIndexStatement(null != ctx.ifExists());
         result.getIndexes().add((IndexSegment) visit(ctx.indexName()));
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         return result;

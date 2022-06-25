@@ -1261,11 +1261,11 @@ fieldOrVarSpec
     : LP_ (identifier (COMMA_ identifier)*)? RP_
     ;
     
-notExistClause
+ifNotExists
     : IF NOT EXISTS
     ;
     
-existClause
+ifExists
     : IF EXISTS
     ;
     
