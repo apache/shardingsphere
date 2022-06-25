@@ -62,7 +62,7 @@ public final class SingleTableDropSchemaMetadataValidatorTest {
     }
     
     private Map<String, DataSource> createSingleDataSourceMap() {
-        Map<String, DataSource> result = new HashMap<>(2, 1);
+        Map<String, DataSource> result = new HashMap<>(1, 1);
         result.put("ds_0", new MockedDataSource());
         return result;
     }
