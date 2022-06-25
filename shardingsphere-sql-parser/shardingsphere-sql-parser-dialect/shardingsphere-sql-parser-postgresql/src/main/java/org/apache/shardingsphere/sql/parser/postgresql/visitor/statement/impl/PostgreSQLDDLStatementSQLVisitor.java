@@ -1242,5 +1242,4 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitCreateCast(final CreateCastContext ctx) {
         return new PostgreSQLCreateCastStatement();
     }
-    
 }
