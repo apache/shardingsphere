@@ -140,7 +140,7 @@ dropService
     ;
 
 dropSchema
-    : DROP SCHEMA (IF EXISTS)? schemaName
+    : DROP SCHEMA ifExists? schemaName
     ;
 
 truncateTable

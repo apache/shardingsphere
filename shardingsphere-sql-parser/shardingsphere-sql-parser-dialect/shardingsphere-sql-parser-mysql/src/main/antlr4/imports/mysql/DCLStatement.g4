@@ -91,7 +91,7 @@ grantIdentifier
     ;
 
 createUser
-    : CREATE USER (IF NOT EXISTS)? createUserList defaultRoleClause? requireClause? connectOptions? accountLockPasswordExpireOptions?
+    : CREATE USER ifNotExists? createUserList defaultRoleClause? requireClause? connectOptions? accountLockPasswordExpireOptions?
     ;
 
 createUserEntry
