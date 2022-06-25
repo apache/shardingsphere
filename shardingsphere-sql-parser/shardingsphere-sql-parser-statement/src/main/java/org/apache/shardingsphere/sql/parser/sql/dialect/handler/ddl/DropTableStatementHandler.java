@@ -37,23 +37,23 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.
 public final class DropTableStatementHandler implements SQLStatementHandler {
     
     /**
-     * Judge whether contains exist clause or not.
+     * Judge whether contains if exists.
      *
      * @param dropTableStatement drop table statement
-     * @return whether contains exist clause or not
+     * @return contains contains if exists or not
      */
-    public static boolean containsExistClause(final DropTableStatement dropTableStatement) {
+    public static boolean ifExists(final DropTableStatement dropTableStatement) {
         if (dropTableStatement instanceof MySQLStatement) {
-            return ((MySQLDropTableStatement) dropTableStatement).isIfExist();
+            return ((MySQLDropTableStatement) dropTableStatement).isIfExists();
         }
         if (dropTableStatement instanceof PostgreSQLStatement) {
-            return ((PostgreSQLDropTableStatement) dropTableStatement).isIfExist();
+            return ((PostgreSQLDropTableStatement) dropTableStatement).isIfExists();
         }
         if (dropTableStatement instanceof SQLServerStatement) {
-            return ((SQLServerDropTableStatement) dropTableStatement).isIfExist();
+            return ((SQLServerDropTableStatement) dropTableStatement).isIfExists();
         }
         if (dropTableStatement instanceof OpenGaussStatement) {
-            return ((OpenGaussDropTableStatement) dropTableStatement).isIfExist();
+            return ((OpenGaussDropTableStatement) dropTableStatement).isIfExists();
         }
         return false;
     }

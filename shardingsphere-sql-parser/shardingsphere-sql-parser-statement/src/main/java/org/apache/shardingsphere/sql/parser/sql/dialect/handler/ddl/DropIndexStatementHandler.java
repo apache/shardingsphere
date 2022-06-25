@@ -61,15 +61,15 @@ public final class DropIndexStatementHandler implements SQLStatementHandler {
      * @param dropIndexStatement drop index statement
      * @return whether contains exist clause or not
      */
-    public static boolean containsExistClause(final DropIndexStatement dropIndexStatement) {
+    public static boolean ifExists(final DropIndexStatement dropIndexStatement) {
         if (dropIndexStatement instanceof PostgreSQLStatement) {
-            return ((PostgreSQLDropIndexStatement) dropIndexStatement).isIfExist();
+            return ((PostgreSQLDropIndexStatement) dropIndexStatement).isIfExists();
         }
         if (dropIndexStatement instanceof SQLServerStatement) {
-            return ((SQLServerDropIndexStatement) dropIndexStatement).isIfExist();
+            return ((SQLServerDropIndexStatement) dropIndexStatement).isIfExists();
         }
         if (dropIndexStatement instanceof OpenGaussStatement) {
-            return ((OpenGaussDropIndexStatement) dropIndexStatement).isIfExist();
+            return ((OpenGaussDropIndexStatement) dropIndexStatement).isIfExists();
         }
         return false;
     }

@@ -30,8 +30,8 @@ public final class DropShadowAlgorithmStatement extends DropRuleStatement {
     
     private final Collection<String> algorithmNames;
     
-    public DropShadowAlgorithmStatement(final boolean ifExist, final Collection<String> algorithmNames) {
-        super(ifExist);
+    public DropShadowAlgorithmStatement(final boolean ifExists, final Collection<String> algorithmNames) {
+        super(ifExists);
         this.algorithmNames = algorithmNames;
     }
 }

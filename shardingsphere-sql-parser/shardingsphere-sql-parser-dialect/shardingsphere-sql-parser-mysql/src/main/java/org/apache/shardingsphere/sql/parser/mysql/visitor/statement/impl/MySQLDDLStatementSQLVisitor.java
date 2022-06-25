@@ -214,7 +214,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitCreateDatabase(final CreateDatabaseContext ctx) {
         MySQLCreateDatabaseStatement result = new MySQLCreateDatabaseStatement();
         result.setDatabaseName(new IdentifierValue(ctx.schemaName().getText()).getValue());
-        result.setIfNotExist(null != ctx.notExistClause());
+        result.setIfNotExists(null != ctx.notExistClause());
         return result;
     }
     
@@ -227,7 +227,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
         MySQLDropDatabaseStatement result = new MySQLDropDatabaseStatement();
         result.setDatabaseName(new IdentifierValue(ctx.schemaName().getText()).getValue());
-        result.setIfExist(null != ctx.existClause());
+        result.setIfExists(null != ctx.existClause());
         return result;
     }
     

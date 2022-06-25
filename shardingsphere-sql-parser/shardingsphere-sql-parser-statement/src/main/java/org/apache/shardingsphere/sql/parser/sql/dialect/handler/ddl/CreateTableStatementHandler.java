@@ -43,20 +43,20 @@ import java.util.Optional;
 public final class CreateTableStatementHandler implements SQLStatementHandler {
     
     /**
-     * Judge whether contains not exist clause or not.
+     * Judge whether if not exists.
      *
      * @param createTableStatement create table statement
-     * @return whether contains not exist clause or not
+     * @return if not exists or not
      */
-    public static boolean containsNotExistClause(final CreateTableStatement createTableStatement) {
+    public static boolean ifNotExists(final CreateTableStatement createTableStatement) {
         if (createTableStatement instanceof MySQLStatement) {
-            return ((MySQLCreateTableStatement) createTableStatement).isIfNotExist();
+            return ((MySQLCreateTableStatement) createTableStatement).isIfNotExists();
         }
         if (createTableStatement instanceof PostgreSQLStatement) {
-            return ((PostgreSQLCreateTableStatement) createTableStatement).isIfNotExist();
+            return ((PostgreSQLCreateTableStatement) createTableStatement).isIfNotExists();
         }
         if (createTableStatement instanceof OpenGaussStatement) {
-            return ((OpenGaussCreateTableStatement) createTableStatement).isIfNotExist();
+            return ((OpenGaussCreateTableStatement) createTableStatement).isIfNotExists();
         }
         return false;
     }

@@ -31,5 +31,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 @ToString
 public final class MySQLDropTableStatement extends DropTableStatement implements MySQLStatement {
     
-    private final boolean ifExist;
+    private final boolean ifExists;
 }

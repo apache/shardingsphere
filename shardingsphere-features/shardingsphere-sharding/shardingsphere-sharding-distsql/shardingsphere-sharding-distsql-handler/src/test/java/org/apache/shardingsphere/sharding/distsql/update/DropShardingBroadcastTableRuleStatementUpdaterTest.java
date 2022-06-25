@@ -98,9 +98,10 @@ public final class DropShardingBroadcastTableRuleStatementUpdaterTest {
                 : new DropShardingBroadcastTableRulesStatement(false, Collections.singleton(tableName));
     }
     
-    private DropShardingBroadcastTableRulesStatement createSQLStatement(final boolean containsExistClause, final String tableName) {
-        return null == tableName ? new DropShardingBroadcastTableRulesStatement(false, Collections.emptyList())
-                : new DropShardingBroadcastTableRulesStatement(containsExistClause, Collections.singleton(tableName));
+    private DropShardingBroadcastTableRulesStatement createSQLStatement(final boolean ifExists, final String tableName) {
+        return null == tableName
+                ? new DropShardingBroadcastTableRulesStatement(false, Collections.emptyList())
+                : new DropShardingBroadcastTableRulesStatement(ifExists, Collections.singleton(tableName));
     }
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {

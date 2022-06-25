@@ -733,7 +733,7 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
         PostgreSQLDropDatabaseStatement result = new PostgreSQLDropDatabaseStatement();
         result.setDatabaseName(((IdentifierValue) visit(ctx.name())).getValue());
-        result.setIfExist(null != ctx.existClause());
+        result.setIfExists(null != ctx.existClause());
         return result;
     }
     

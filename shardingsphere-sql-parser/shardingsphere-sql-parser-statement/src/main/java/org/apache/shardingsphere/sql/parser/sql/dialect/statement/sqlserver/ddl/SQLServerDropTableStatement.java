@@ -31,5 +31,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
 @ToString
 public final class SQLServerDropTableStatement extends DropTableStatement implements SQLServerStatement {
     
-    private final boolean ifExist;
+    private final boolean ifExists;
 }

@@ -28,8 +28,8 @@ public final class DropShardingScalingRuleStatement extends DropRuleStatement {
     
     private final String scalingName;
     
-    public DropShardingScalingRuleStatement(final boolean ifExist, final String scalingName) {
-        super(ifExist);
+    public DropShardingScalingRuleStatement(final boolean ifExists, final String scalingName) {
+        super(ifExists);
         this.scalingName = scalingName;
     }
 }

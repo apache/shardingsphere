@@ -54,7 +54,7 @@ public final class DropDatabaseDiscoveryRuleStatementUpdater implements RuleDefi
     
     private void checkCurrentRuleConfiguration(final String databaseName, final DropDatabaseDiscoveryRuleStatement sqlStatement,
                                                final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        if (sqlStatement.isIfExist()) {
+        if (sqlStatement.isIfExists()) {
             return;
         }
         DistSQLException.predictionThrow(null != currentRuleConfig, () -> new RequiredRuleMissedException(RULE_TYPE, databaseName));

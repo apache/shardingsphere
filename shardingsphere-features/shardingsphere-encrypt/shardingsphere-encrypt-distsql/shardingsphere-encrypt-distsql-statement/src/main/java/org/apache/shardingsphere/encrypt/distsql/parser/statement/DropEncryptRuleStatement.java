@@ -30,8 +30,8 @@ public final class DropEncryptRuleStatement extends DropRuleStatement {
     
     private final Collection<String> tables;
     
-    public DropEncryptRuleStatement(final boolean ifExist, final Collection<String> tables) {
-        super(ifExist);
+    public DropEncryptRuleStatement(final boolean ifExists, final Collection<String> tables) {
+        super(ifExists);
         this.tables = tables;
     }
 }

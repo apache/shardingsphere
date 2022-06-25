@@ -32,5 +32,5 @@ public abstract class CreateDatabaseStatement extends AbstractSQLStatement imple
     
     private String databaseName;
     
-    private boolean ifNotExist;
+    private boolean ifNotExists;
 }

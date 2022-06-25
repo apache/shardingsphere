@@ -30,8 +30,8 @@ public final class DropDatabaseDiscoveryHeartbeatStatement extends DropRuleState
     
     private final Collection<String> heartbeatNames;
     
-    public DropDatabaseDiscoveryHeartbeatStatement(final Collection<String> heartbeatNames, final boolean ifExist) {
-        super(ifExist);
+    public DropDatabaseDiscoveryHeartbeatStatement(final boolean ifExists, final Collection<String> heartbeatNames) {
+        super(ifExists);
         this.heartbeatNames = heartbeatNames;
     }
 }

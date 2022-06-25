@@ -32,7 +32,7 @@ public final class DropShardingScalingRuleStatementUpdater implements RuleDefini
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database,
                                   final DropShardingScalingRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isIfExist()) {
+        if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isIfExists()) {
             return;
         }
         String databaseName = database.getName();
@@ -52,7 +52,7 @@ public final class DropShardingScalingRuleStatementUpdater implements RuleDefini
     }
     
     private void checkExist(final String databaseName, final DropShardingScalingRuleStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        if (sqlStatement.isIfExist()) {
+        if (sqlStatement.isIfExists()) {
             return;
         }
         if (!currentRuleConfig.getScaling().containsKey(sqlStatement.getScalingName())) {
