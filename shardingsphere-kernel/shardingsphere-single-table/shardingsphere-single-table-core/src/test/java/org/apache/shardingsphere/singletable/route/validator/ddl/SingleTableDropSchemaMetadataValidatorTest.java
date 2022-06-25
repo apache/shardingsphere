@@ -33,7 +33,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
-import org.apache.shardingsphere.singletable.fixtrue.FixtureRule;
 import org.apache.shardingsphere.singletable.route.validator.SingleTableMetadataValidator;
 import org.apache.shardingsphere.singletable.route.validator.SingleTableMetadataValidatorFactory;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
@@ -49,8 +48,7 @@ public final class SingleTableDropSchemaMetadataValidatorTest {
     
     @Test(expected = ShardingSphereException.class)
     public void assertValidate() {
-        FixtureRule rule = mock(FixtureRule.class);
-        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(rule));
+        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList());
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
                 mock(DatabaseType.class), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyMap());
         SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME,
@@ -59,8 +57,8 @@ public final class SingleTableDropSchemaMetadataValidatorTest {
         sqlStatement.getSchemaNames().add(new IdentifierValue("t_order_item"));
         sqlStatement.setParameterCount(1);
         SQLStatementContext<DropSchemaStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
-        Optional<SingleTableMetadataValidator> result = SingleTableMetadataValidatorFactory.newInstance(sqlStatementContext.getSqlStatement());
-        result.ifPresent(optional -> optional.validate(singleTableRule, sqlStatementContext, database));
+        Optional<SingleTableMetadataValidator> validator = SingleTableMetadataValidatorFactory.newInstance(sqlStatementContext.getSqlStatement());
+        validator.ifPresent(optional -> optional.validate(singleTableRule, sqlStatementContext, database));
     }
     
     private Map<String, DataSource> createSingleDataSourceMap() {
