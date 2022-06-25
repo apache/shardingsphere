@@ -17,9 +17,15 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
+@Getter
+@Setter
 @ToString
-public class ListenStatement extends AbstractSQLStatement implements TCLStatement {
+public class ListenStatement extends AbstractSQLStatement implements TCLStatement, PostgreSQLStatement {
+    private String channelName;
 }
