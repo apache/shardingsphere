@@ -190,7 +190,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitDropShardingTableRule(final DropShardingTableRuleContext ctx) {
-        DropShardingTableRuleStatement result = new DropShardingTableRuleStatement(null != ctx.existsClause(),
+        DropShardingTableRuleStatement result = new DropShardingTableRuleStatement(null != ctx.ifExists(),
                 ctx.tableName().stream().map(each -> (TableNameSegment) visit(each)).collect(Collectors.toList()));
         result.setDropUnusedAlgorithms(null != ctx.withUnusedAlgorithmsClause());
         return result;
@@ -200,7 +200,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     public ASTNode visitDropShardingBindingTableRules(final DropShardingBindingTableRulesContext ctx) {
         Collection<BindingTableRuleSegment> tableNames = null == ctx.bindTableRulesDefinition() ? Collections.emptyList()
                 : createBindingTableRuleSegment(ctx.bindTableRulesDefinition());
-        return new DropShardingBindingTableRulesStatement(null != ctx.existsClause(), tableNames);
+        return new DropShardingBindingTableRulesStatement(null != ctx.ifExists(), tableNames);
     }
     
     @Override
@@ -259,7 +259,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitDropDefaultShardingStrategy(final DropDefaultShardingStrategyContext ctx) {
-        return new DropDefaultShardingStrategyStatement(null != ctx.existsClause(), new IdentifierValue(ctx.type.getText()).getValue().toLowerCase());
+        return new DropDefaultShardingStrategyStatement(null != ctx.ifExists(), new IdentifierValue(ctx.type.getText()).getValue().toLowerCase());
     }
     
     @Override
@@ -270,12 +270,12 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     @Override
     public ASTNode visitDropShardingBroadcastTableRules(final DropShardingBroadcastTableRulesContext ctx) {
         Collection<String> tableNames = null == ctx.tableName() ? Collections.emptyList() : ctx.tableName().stream().map(this::getIdentifierValue).collect(Collectors.toList());
-        return new DropShardingBroadcastTableRulesStatement(null != ctx.existsClause(), tableNames);
+        return new DropShardingBroadcastTableRulesStatement(null != ctx.ifExists(), tableNames);
     }
     
     @Override
     public ASTNode visitDropShardingAlgorithm(final DropShardingAlgorithmContext ctx) {
-        return new DropShardingAlgorithmStatement(null != ctx.existsClause(), ctx.algorithmName().stream().map(this::getIdentifierValue).collect(Collectors.toList()));
+        return new DropShardingAlgorithmStatement(null != ctx.ifExists(), ctx.algorithmName().stream().map(this::getIdentifierValue).collect(Collectors.toList()));
     }
     
     @Override
@@ -447,7 +447,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     
     @Override
     public ASTNode visitDropShardingKeyGenerator(final DropShardingKeyGeneratorContext ctx) {
-        return new DropShardingKeyGeneratorStatement(null != ctx.existsClause(), ctx.keyGeneratorName().stream().map(this::getIdentifierValue).collect(Collectors.toList()));
+        return new DropShardingKeyGeneratorStatement(null != ctx.ifExists(), ctx.keyGeneratorName().stream().map(this::getIdentifierValue).collect(Collectors.toList()));
     }
     
     @Override

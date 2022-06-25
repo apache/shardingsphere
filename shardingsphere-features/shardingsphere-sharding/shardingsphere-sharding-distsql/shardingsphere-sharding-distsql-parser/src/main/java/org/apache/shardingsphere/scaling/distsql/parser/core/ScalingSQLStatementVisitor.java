@@ -231,7 +231,7 @@ public final class ScalingSQLStatementVisitor extends ScalingStatementBaseVisito
     
     @Override
     public ASTNode visitDropShardingScalingRule(final DropShardingScalingRuleContext ctx) {
-        return new DropShardingScalingRuleStatement(null != ctx.existsClause(), getIdentifierValue(ctx.scalingName()));
+        return new DropShardingScalingRuleStatement(null != ctx.ifExists(), getIdentifierValue(ctx.scalingName()));
     }
     
     @Override
