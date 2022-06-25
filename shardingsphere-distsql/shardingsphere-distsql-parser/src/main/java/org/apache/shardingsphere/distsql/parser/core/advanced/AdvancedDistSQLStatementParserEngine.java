@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.distsql.parser.core.advanced;
 
+import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
@@ -39,9 +40,15 @@ public final class AdvancedDistSQLStatementParserEngine {
         ASTNode astNode = parseToASTNode(sql);
         return getSQLStatement(sql, (ParseASTNode) astNode);
     }
-    
+
     private ASTNode parseToASTNode(final String sql) {
-        return SQLParserFactory.newInstance(sql, AdvancedDistSQLLexer.class, AdvancedDistSQLParser.class).parse();
+        try {
+            return SQLParserFactory.newInstance(sql, AdvancedDistSQLLexer.class, AdvancedDistSQLParser.class).parse();
+        } catch (final ParseCancellationException ignored) {
+            throw new SQLParsingException("You have an error in your SQL syntax: " + sql);
+        } catch (final SQLParsingException sqlParsingException) {
+            throw sqlParsingException;
+        }
     }
     
     private SQLStatement getSQLStatement(final String sql, final ParseASTNode parseASTNode) {
