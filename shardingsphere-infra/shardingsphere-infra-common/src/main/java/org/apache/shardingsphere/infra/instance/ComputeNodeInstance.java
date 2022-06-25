@@ -36,9 +36,9 @@ public final class ComputeNodeInstance {
     
     private final InstanceDefinition instanceDefinition;
     
-    private Collection<String> labels;
-    
     private final StateContext state = new StateContext();
+    
+    private Collection<String> labels;
     
     private Long workerId;
     
