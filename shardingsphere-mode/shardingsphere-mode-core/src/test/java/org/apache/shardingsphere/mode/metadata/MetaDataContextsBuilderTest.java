@@ -37,7 +37,6 @@ import org.junit.Test;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -90,9 +89,9 @@ public final class MetaDataContextsBuilderTest {
         assertTrue(actual.getMetaData().getDatabases().containsKey("performance_schema"));
         assertTrue(actual.getMetaData().getDatabases().containsKey("mysql"));
         assertTrue(actual.getMetaData().getDatabases().containsKey("sys"));
-        assertThat(actual.getMetaData().getDatabases().get("information_schema").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
-        assertThat(actual.getMetaData().getDatabases().get("performance_schema").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
-        assertThat(actual.getMetaData().getDatabases().get("mysql").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
-        assertThat(actual.getMetaData().getDatabases().get("sys").getRuleMetaData().getRules(), instanceOf(LinkedList.class));
+        assertTrue(actual.getMetaData().getDatabases().get("information_schema").getRuleMetaData().getRules().isEmpty());
+        assertTrue(actual.getMetaData().getDatabases().get("performance_schema").getRuleMetaData().getRules().isEmpty());
+        assertTrue(actual.getMetaData().getDatabases().get("mysql").getRuleMetaData().getRules().isEmpty());
+        assertTrue(actual.getMetaData().getDatabases().get("sys").getRuleMetaData().getRules().isEmpty());
     }
 }

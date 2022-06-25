@@ -18,22 +18,25 @@
 package org.apache.shardingsphere.mode.manager.standalone;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
-import org.apache.shardingsphere.mode.metadata.persist.node.GlobalNode;
+import org.apache.shardingsphere.mode.manager.instance.InstanceIdGeneratorFactory;
 import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
+import org.apache.shardingsphere.mode.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Test;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.Assert.assertNotNull;
@@ -44,19 +47,22 @@ public final class StandaloneContextManagerBuilderTextTest {
     
     @Test
     public void assertBuild() throws SQLException {
-        ContextManager actual = new StandaloneContextManagerBuilder().build(ContextManagerBuilderParameter.builder().modeConfig(new ModeConfiguration("Standalone", null, false))
-                .databaseConfigs(Collections.singletonMap("foo_schema",
-                        new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singleton(mock(RuleConfiguration.class)))))
-                .globalRuleConfigs(Collections.singleton(mock(RuleConfiguration.class))).props(new Properties())
-                .instanceDefinition(new InstanceDefinition(InstanceType.PROXY, 3307)).build());
-        assertNotNull(actual.getMetaDataContexts().getMetaData().getDatabases().get("foo_schema"));
+        ContextManager actual = new StandaloneContextManagerBuilder().build(createContextManagerBuilderParameter());
+        assertNotNull(actual.getMetaDataContexts().getMetaData().getDatabases().get("foo_db"));
         assertTrue(actual.getMetaDataContexts().getPersistService().isPresent());
         PersistRepository repository = actual.getMetaDataContexts().getPersistService().get().getRepository();
         assertNotNull(repository.get(GlobalNode.getGlobalRuleNode()));
-        assertNotNull(repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath("foo_schema", "0")));
-        assertNotNull(repository.get(DatabaseMetaDataNode.getRulePath("foo_schema", "0")));
-        Optional<TransactionRule> transactionRule = actual.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
-        assertTrue(transactionRule.isPresent());
-        assertTrue(transactionRule.get().getResources().containsKey("foo_schema"));
+        assertNotNull(repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath("foo_db", "0")));
+        assertNotNull(repository.get(DatabaseMetaDataNode.getRulePath("foo_db", "0")));
+        assertTrue(actual.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getResources().containsKey("foo_db"));
+    }
+    
+    private ContextManagerBuilderParameter createContextManagerBuilderParameter() {
+        ModeConfiguration modeConfig = new ModeConfiguration("Standalone", null, false);
+        Map<String, DatabaseConfiguration> databaseConfigs = Collections.singletonMap(
+                "foo_db", new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singleton(mock(RuleConfiguration.class))));
+        Collection<RuleConfiguration> globalRuleConfigs = Collections.singleton(mock(RuleConfiguration.class));
+        InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.PROXY, 3307, InstanceIdGeneratorFactory.getInstance(null).generate(InstanceType.PROXY));
+        return new ContextManagerBuilderParameter(modeConfig, databaseConfigs, globalRuleConfigs, new Properties(), Collections.emptyList(), instanceDefinition);
     }
 }

@@ -40,7 +40,6 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.HintDistS
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.SetVariableHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionAutoCommitHandler;
 import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBackendHandler;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
@@ -93,8 +92,7 @@ public final class TextProtocolBackendHandlerFactoryTest extends ProxyContextRes
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         CacheOption cacheOption = new CacheOption(1024, 1024);
-        when(metaDataContexts.getMetaData().getGlobalRuleMetaData()
-                .findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(new SQLParserRule(new SQLParserRuleConfiguration(true, cacheOption, cacheOption))));
+        when(metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class)).thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(true, cacheOption, cacheOption)));
         ProxyContext.init(contextManager);
     }
     
@@ -109,7 +107,7 @@ public final class TextProtocolBackendHandlerFactoryTest extends ProxyContextRes
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         TransactionRule transactionRule = mock(TransactionRule.class);
         when(transactionRule.getResources()).thenReturn(Collections.singletonMap("schema", new ShardingSphereTransactionManagerEngine()));
-        when(globalRuleMetaData.findSingleRule(TransactionRule.class)).thenReturn(Optional.of(transactionRule));
+        when(globalRuleMetaData.getSingleRule(TransactionRule.class)).thenReturn(transactionRule);
         when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
     }
     
@@ -147,28 +145,28 @@ public final class TextProtocolBackendHandlerFactoryTest extends ProxyContextRes
     public void assertNewInstanceWithSetAutoCommitToOff() throws SQLException {
         String sql = "SET AUTOCOMMIT=0";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
-        assertThat(actual, instanceOf(TransactionAutoCommitHandler.class));
+        assertThat(actual, instanceOf(TransactionBackendHandler.class));
     }
     
     @Test
     public void assertNewInstanceWithScopeSetAutoCommitToOff() throws SQLException {
         String sql = "SET @@SESSION.AUTOCOMMIT = OFF";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
-        assertThat(actual, instanceOf(TransactionAutoCommitHandler.class));
+        assertThat(actual, instanceOf(TransactionBackendHandler.class));
     }
     
     @Test
     public void assertNewInstanceWithSetAutoCommitToOn() throws SQLException {
         String sql = "SET AUTOCOMMIT=1";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
-        assertThat(actual, instanceOf(TransactionAutoCommitHandler.class));
+        assertThat(actual, instanceOf(TransactionBackendHandler.class));
     }
     
     @Test
     public void assertNewInstanceWithScopeSetAutoCommitToOnForInTransaction() throws SQLException {
         String sql = "SET @@SESSION.AUTOCOMMIT = ON";
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
-        assertThat(actual, instanceOf(TransactionAutoCommitHandler.class));
+        assertThat(actual, instanceOf(TransactionBackendHandler.class));
     }
     
     @Test

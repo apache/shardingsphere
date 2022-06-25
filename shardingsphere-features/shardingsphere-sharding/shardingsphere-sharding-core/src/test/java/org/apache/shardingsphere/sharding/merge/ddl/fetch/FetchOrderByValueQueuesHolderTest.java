@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.merge.ddl.fetch;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.PriorityQueue;
+import java.util.LinkedList;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -29,15 +29,19 @@ public final class FetchOrderByValueQueuesHolderTest {
     
     @Before
     public void setUp() {
-        FetchOrderByValueQueuesHolder.remove();
+        FetchOrderByValueGroupsHolder.remove();
     }
     
     @Test
-    public void assertTrafficContextHolder() {
-        assertFalse(FetchOrderByValueQueuesHolder.get().containsKey("t_order_cursor"));
-        FetchOrderByValueQueuesHolder.get().computeIfAbsent("t_order_cursor", key -> new PriorityQueue<>());
-        assertTrue(FetchOrderByValueQueuesHolder.get().containsKey("t_order_cursor"));
-        FetchOrderByValueQueuesHolder.remove();
-        assertFalse(FetchOrderByValueQueuesHolder.get().containsKey("t_order_cursor"));
+    public void assertFetchOrderByValueQueuesHolder() {
+        assertFalse(FetchOrderByValueGroupsHolder.getOrderByValueGroups().containsKey("t_order_cursor"));
+        assertFalse(FetchOrderByValueGroupsHolder.getMinGroupRowCounts().containsKey("t_order_cursor"));
+        FetchOrderByValueGroupsHolder.getOrderByValueGroups().computeIfAbsent("t_order_cursor", key -> new LinkedList<>());
+        FetchOrderByValueGroupsHolder.getMinGroupRowCounts().put("t_order_cursor", 0L);
+        assertTrue(FetchOrderByValueGroupsHolder.getOrderByValueGroups().containsKey("t_order_cursor"));
+        assertTrue(FetchOrderByValueGroupsHolder.getMinGroupRowCounts().containsKey("t_order_cursor"));
+        FetchOrderByValueGroupsHolder.remove();
+        assertTrue(FetchOrderByValueGroupsHolder.getOrderByValueGroups().isEmpty());
+        assertTrue(FetchOrderByValueGroupsHolder.getMinGroupRowCounts().isEmpty());
     }
 }

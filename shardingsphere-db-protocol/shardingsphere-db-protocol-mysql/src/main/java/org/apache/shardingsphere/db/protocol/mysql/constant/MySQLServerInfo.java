@@ -19,11 +19,10 @@ package org.apache.shardingsphere.db.protocol.mysql.constant;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.db.protocol.CommonConstants;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import org.apache.shardingsphere.db.protocol.CommonConstants;
 
 /**
  * ShardingSphere-Proxy's information for MySQL.
@@ -72,7 +71,7 @@ public final class MySQLServerInfo {
      * 
      * @param defaultMysqlVersion default mysql version
      */
-    public static void setDefualtMysqlVersion(final String defaultMysqlVersion) {
+    public static void setDefaultMysqlVersion(final String defaultMysqlVersion) {
         MySQLServerInfo.defaultMysqlVersion = defaultMysqlVersion;
     }
     

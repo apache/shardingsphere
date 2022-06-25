@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.rule.builder;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilder;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -32,7 +32,7 @@ import java.util.Map;
 /**
  * Sharding rule builder.
  */
-public final class ShardingRuleBuilder implements SchemaRuleBuilder<ShardingRuleConfiguration> {
+public final class ShardingRuleBuilder implements DatabaseRuleBuilder<ShardingRuleConfiguration> {
     
     @Override
     public ShardingRule build(final ShardingRuleConfiguration config, final String databaseName,

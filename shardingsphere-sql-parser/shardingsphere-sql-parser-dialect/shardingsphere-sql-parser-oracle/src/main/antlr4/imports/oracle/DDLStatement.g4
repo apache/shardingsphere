@@ -2488,6 +2488,10 @@ tableColumnClause
     : (schemaName DOT_)? tableName LP_ columnName RP_
     ;
 
+alterInmemoryJoinGroup
+    : ALTER INMEMORY JOIN GROUP (schemaName DOT_)? joinGroupName (ADD | REMOVE) LP_ tableName LP_ columnName RP_ RP_
+    ;
+
 dropInmemoryJoinGroup
     : DROP INMEMORY JOIN GROUP (schemaName DOT_)? joinGroupName
     ;
@@ -2496,4 +2500,20 @@ createRestorePoint
     : CREATE CLEAN? RESTORE POINT restorePointName (FOR PLUGGABLE DATABASE pdbName)?
       (AS OF (TIMESTAMP | SCN) expr)?
       (PRESERVE | GUARANTEE FLASHBACK DATABASE)?
+    ;
+
+dropRestorePoint
+    : DROP RESTORE POINT restorePointName (FOR PLUGGABLE DATABASE pdbName)?
+    ;
+    
+dropOperator
+    : DROP OPERATOR (schemaName DOT_)? operatorName FORCE?
+    ;
+
+alterLibrary
+    : ALTER LIBRARY (schemaName DOT_)? libraryName (libraryCompileClause | EDITIONABLE | NONEDITIONABLE)
+    ;
+
+libraryCompileClause
+    : COMPILE DEBUG? compilerParametersClause* (REUSE SETTINGS)?
     ;

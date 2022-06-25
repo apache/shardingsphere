@@ -17,9 +17,17 @@
 
 package org.apache.shardingsphere.mode.metadata.fixture;
 
-import org.apache.shardingsphere.infra.rule.identifier.scope.SchemaRule;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 
-public final class FixtureRule implements SchemaRule {
+import static org.mockito.Mockito.mock;
+
+public final class FixtureRule implements DatabaseRule {
+    
+    @Override
+    public RuleConfiguration getConfiguration() {
+        return mock(RuleConfiguration.class);
+    }
     
     @Override
     public String getType() {

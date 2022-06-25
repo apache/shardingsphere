@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable;
 
-import lombok.Getter;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
- * Count schema rules statement.
+ * Count instance rules statement.
+ * 
+ * @deprecated The class CountInstanceRulesHandler is deprecated, the entry SQL statement should be deprecated too.
  */
-@Getter
+@Deprecated
 public final class CountInstanceRulesStatement extends QueryableRALStatement {
 }

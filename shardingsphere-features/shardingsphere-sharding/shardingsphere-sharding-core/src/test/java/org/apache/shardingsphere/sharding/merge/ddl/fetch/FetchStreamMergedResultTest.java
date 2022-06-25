@@ -67,13 +67,15 @@ public final class FetchStreamMergedResultTest {
         resultMerger = new ShardingDDLResultMerger();
         database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
+        FetchOrderByValueGroupsHolder.remove();
     }
     
     private OpenGaussFetchStatement createFetchStatement(final boolean containsAllDirectionType) {
         OpenGaussFetchStatement result = new OpenGaussFetchStatement();
         result.setCursorName(new CursorNameSegment(0, 0, new IdentifierValue("t_order_cursor")));
         if (containsAllDirectionType) {
-            DirectionSegment direction = new DirectionSegment(0, 0, DirectionType.ALL);
+            DirectionSegment direction = new DirectionSegment(0, 0);
+            direction.setDirectionType(DirectionType.ALL);
             result.setDirection(direction);
         }
         return result;

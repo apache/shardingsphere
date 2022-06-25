@@ -42,7 +42,7 @@ public final class ShardingDropIndexStatementValidator extends ShardingDDLStatem
     
     @Override
     public void preValidate(final ShardingRule shardingRule, final SQLStatementContext<DropIndexStatement> sqlStatementContext, final List<Object> parameters, final ShardingSphereDatabase database) {
-        if (DropIndexStatementHandler.containsExistClause(sqlStatementContext.getSqlStatement())) {
+        if (DropIndexStatementHandler.ifExists(sqlStatementContext.getSqlStatement())) {
             return;
         }
         String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName());

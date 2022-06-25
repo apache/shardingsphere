@@ -45,7 +45,7 @@ public final class DropDefaultShadowAlgorithmStatementUpdaterTest {
     
     @Test(expected = RequiredAlgorithmMissedException.class)
     public void assertCheckWithoutDefaultAlgorithm() throws DistSQLException {
-        updater.checkSQLStatement(database, new DropDefaultShadowAlgorithmStatement(), currentConfig);
+        updater.checkSQLStatement(database, new DropDefaultShadowAlgorithmStatement(false), currentConfig);
     }
     
     @Test
@@ -58,7 +58,7 @@ public final class DropDefaultShadowAlgorithmStatementUpdaterTest {
     public void assertUpdate() throws DistSQLException {
         ShadowRuleConfiguration ruleConfig = new ShadowRuleConfiguration();
         ruleConfig.setDefaultShadowAlgorithmName("default");
-        DropDefaultShadowAlgorithmStatement statement = new DropDefaultShadowAlgorithmStatement();
+        DropDefaultShadowAlgorithmStatement statement = new DropDefaultShadowAlgorithmStatement(false);
         updater.checkSQLStatement(database, new DropDefaultShadowAlgorithmStatement(true), ruleConfig);
         assertTrue(updater.hasAnyOneToBeDropped(statement, ruleConfig));
         updater.updateCurrentRuleConfiguration(statement, ruleConfig);

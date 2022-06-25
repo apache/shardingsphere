@@ -78,6 +78,8 @@ public final class ConnectionSession {
     
     private final Map<String, CursorStatementContext> cursorDefinitions = new ConcurrentHashMap<>();
     
+    private final PreparedStatementRegistry preparedStatementRegistry = new PreparedStatementRegistry();
+    
     public ConnectionSession(final DatabaseType databaseType, final TransactionType initialTransactionType, final AttributeMap attributeMap) {
         this.databaseType = databaseType;
         transactionStatus = new TransactionStatus(initialTransactionType);

@@ -5,7 +5,7 @@ weight = 1
 
 ## Configuration Item Explanation
 
-Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.1.xsd)
+Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.2.xsd)
 
 \<shardingsphere:mode />
 
@@ -39,7 +39,7 @@ It is the default value.
 
 #### Configuration Item Explanation
 
-Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository-5.1.1.xsd)
+Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository-5.1.2.xsd)
 
 <standalone:repository />
 
@@ -79,7 +79,7 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/mode-reposito
 
 #### Configuration Item Explanation
 
-Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository-5.1.1.xsd)
+Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository-5.1.2.xsd)
 
 <cluster:repository />
 

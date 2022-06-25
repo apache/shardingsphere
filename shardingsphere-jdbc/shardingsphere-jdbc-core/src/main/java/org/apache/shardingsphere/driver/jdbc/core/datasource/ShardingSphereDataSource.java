@@ -30,6 +30,7 @@ import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
+import org.apache.shardingsphere.mode.manager.instance.InstanceIdGeneratorFactory;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -74,12 +75,10 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     
     private ContextManager createContextManager(final String databaseName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
                                                 final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
-        ContextManagerBuilderParameter parameter = ContextManagerBuilderParameter.builder()
-                .modeConfig(modeConfig)
-                .databaseConfigs(Collections.singletonMap(databaseName, new DataSourceProvidedDatabaseConfiguration(dataSourceMap, ruleConfigs)))
-                .globalRuleConfigs(ruleConfigs.stream().filter(each -> each instanceof GlobalRuleConfiguration).collect(Collectors.toList()))
-                .props(props)
-                .instanceDefinition(new InstanceDefinition(InstanceType.JDBC)).build();
+        InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.JDBC, InstanceIdGeneratorFactory.getInstance(modeConfig).generate(InstanceType.JDBC));
+        Collection<RuleConfiguration> globalRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof GlobalRuleConfiguration).collect(Collectors.toList());
+        ContextManagerBuilderParameter parameter = new ContextManagerBuilderParameter(modeConfig, Collections.singletonMap(databaseName,
+                new DataSourceProvidedDatabaseConfiguration(dataSourceMap, ruleConfigs)), globalRuleConfigs, props, Collections.emptyList(), instanceDefinition);
         return ContextManagerBuilderFactory.getInstance(modeConfig).build(parameter);
     }
     

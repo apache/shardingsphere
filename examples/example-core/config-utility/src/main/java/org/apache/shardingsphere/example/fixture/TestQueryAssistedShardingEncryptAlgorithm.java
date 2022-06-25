@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.example.fixture;
 
 import lombok.Getter;
-import org.apache.shardingsphere.encrypt.spi.QueryAssistedEncryptAlgorithm;
+import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
 
 import java.util.Properties;
 
 @Getter
-public final class TestQueryAssistedShardingEncryptAlgorithm implements QueryAssistedEncryptAlgorithm<Object, String> {
+public final class TestQueryAssistedShardingEncryptAlgorithm implements EncryptAlgorithm<Object, String> {
     
     private Properties props;
     
@@ -35,17 +35,12 @@ public final class TestQueryAssistedShardingEncryptAlgorithm implements QueryAss
     
     @Override
     public String encrypt(final Object plainValue, final EncryptContext encryptContext) {
-        return "encryptValue";
+        return "assistedEncryptValue";
     }
     
     @Override
     public Object decrypt(final String cipherValue, final EncryptContext encryptContext) {
         return "decryptValue";
-    }
-    
-    @Override
-    public String queryAssistedEncrypt(final Object plainValue, final EncryptContext encryptContext) {
-        return "assistedEncryptValue";
     }
     
     @Override

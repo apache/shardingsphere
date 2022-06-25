@@ -56,6 +56,7 @@ import org.apache.shardingsphere.infra.binder.statement.ddl.TruncateStatementCon
 import org.apache.shardingsphere.infra.binder.statement.dml.CallStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.CopyStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.DeleteStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.DoStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
@@ -83,6 +84,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatemen
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.FetchStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.MoveStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.PrepareStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.RenameTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.TruncateStatement;
@@ -90,6 +93,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CallStateme
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.CopyStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
@@ -100,8 +104,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTableStatusStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCursorStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussFetchStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussMoveStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl.SQLServerDenyUserStatement;
 
 import java.util.Collections;
@@ -172,6 +174,9 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof CopyStatement) {
             return new CopyStatementContext((CopyStatement) sqlStatement);
         }
+        if (sqlStatement instanceof DoStatement) {
+            return new DoStatementContext((DoStatement) sqlStatement);
+        }
         throw new UnsupportedOperationException(String.format("Unsupported SQL statement `%s`", sqlStatement.getClass().getSimpleName()));
     }
     
@@ -231,11 +236,11 @@ public final class SQLStatementContextFactory {
         if (sqlStatement instanceof CloseStatement) {
             return new CloseStatementContext((CloseStatement) sqlStatement);
         }
-        if (sqlStatement instanceof OpenGaussMoveStatement) {
-            return new MoveStatementContext((OpenGaussMoveStatement) sqlStatement);
+        if (sqlStatement instanceof MoveStatement) {
+            return new MoveStatementContext((MoveStatement) sqlStatement);
         }
-        if (sqlStatement instanceof OpenGaussFetchStatement) {
-            return new FetchStatementContext((OpenGaussFetchStatement) sqlStatement);
+        if (sqlStatement instanceof FetchStatement) {
+            return new FetchStatementContext((FetchStatement) sqlStatement);
         }
         return new CommonSQLStatementContext<>(sqlStatement);
     }

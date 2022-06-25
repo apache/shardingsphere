@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -87,7 +88,7 @@ public final class ScalingCaseHelper {
             } else {
                 orderData.add(new Object[]{keyGenerateAlgorithm.generateKey(), orderId, userId, generateString(6), randomInt,
                         BigDecimal.valueOf(generateDouble(1, 100)), true, generateString(2), generateString(2), generateFloat(),
-                        generateDouble(0, 1000)});
+                        generateDouble(0, 1000), LocalDateTime.now(), OffsetDateTime.now()});
             }
             orderItemData.add(new Object[]{keyGenerateAlgorithm.generateKey(), orderId, userId, "SUCCESS"});
         }

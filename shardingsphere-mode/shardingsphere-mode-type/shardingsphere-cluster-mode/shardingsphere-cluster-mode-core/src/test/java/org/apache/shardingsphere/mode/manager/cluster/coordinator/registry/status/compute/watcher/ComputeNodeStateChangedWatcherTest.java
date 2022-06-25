@@ -23,8 +23,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdAddedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdDeletedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.junit.Test;
@@ -93,19 +91,5 @@ public final class ComputeNodeStateChangedWatcherTest {
         assertTrue(actual.isPresent());
         assertThat(((LabelsEvent) actual.get()).getLabels(), is(Arrays.asList("label_1", "label_2")));
         assertThat(((LabelsEvent) actual.get()).getInstanceId(), is("127.0.0.1@3307"));
-    }
-    
-    @Test
-    public void assertCreateXaRecoveryIdEvent() {
-        Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
-                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/xa_recovery_id/127.0.0.1@3307/127.0.0.1@3307", "", Type.ADDED));
-        assertTrue(actual.isPresent());
-        assertThat(((XaRecoveryIdAddedEvent) actual.get()).getInstanceId(), is("127.0.0.1@3307"));
-        assertThat(((XaRecoveryIdAddedEvent) actual.get()).getXaRecoveryId(), is("127.0.0.1@3307"));
-        actual = new ComputeNodeStateChangedWatcher()
-                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/xa_recovery_id/127.0.0.1@3307/127.0.0.1@3307", "", Type.DELETED));
-        assertTrue(actual.isPresent());
-        assertThat(((XaRecoveryIdDeletedEvent) actual.get()).getInstanceId(), is("127.0.0.1@3307"));
-        assertThat(((XaRecoveryIdDeletedEvent) actual.get()).getXaRecoveryId(), is("127.0.0.1@3307"));
     }
 }

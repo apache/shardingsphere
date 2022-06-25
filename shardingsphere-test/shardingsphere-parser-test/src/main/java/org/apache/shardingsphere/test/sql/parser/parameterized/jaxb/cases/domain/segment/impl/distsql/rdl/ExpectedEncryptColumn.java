@@ -41,6 +41,9 @@ public final class ExpectedEncryptColumn extends AbstractExpectedIdentifierSQLSe
     @XmlAttribute(name = "assisted-query-column")
     private String assistedQueryColumn;
     
-    @XmlElement
+    @XmlElement(name = "encryptor")
     private ExpectedAlgorithm encryptor;
+    
+    @XmlElement(name = "assisted-query-encryptor")
+    private ExpectedAlgorithm assistedQueryEncryptor;
 }

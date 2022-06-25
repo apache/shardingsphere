@@ -71,8 +71,10 @@ public final class SQLNodeConverterEngine {
             SqlNode rightSqlNode = ((SqlBasicCall) sqlNode).getOperandList().get(1);
             SelectStatement leftSelectStatement = (SelectStatement) convertToSQLStatement(leftSqlNode);
             SelectStatement rightSelectStatement = (SelectStatement) convertToSQLStatement(rightSqlNode);
-            leftSelectStatement.getCombines().add(
-                    new CombineSegment(rightSqlNode.getParserPosition().getColumnNum() - 7, rightSqlNode.getParserPosition().getEndColumnNum() - 1, CombineType.UNION, rightSelectStatement));
+            CombineType combineType = CombineOperatorConverter.convert(((SqlBasicCall) sqlNode).getOperator());
+            int startIndex = rightSqlNode.getParserPosition().getColumnNum() - (((SqlBasicCall) sqlNode).getOperator().getName() + " ").length() - 1;
+            int stopIndex = rightSqlNode.getParserPosition().getEndColumnNum() - 1;
+            leftSelectStatement.getCombines().add(new CombineSegment(startIndex, stopIndex, combineType, rightSelectStatement));
             return leftSelectStatement;
         }
         throw new UnsupportedOperationException("Unsupported SQL statement conversion.");

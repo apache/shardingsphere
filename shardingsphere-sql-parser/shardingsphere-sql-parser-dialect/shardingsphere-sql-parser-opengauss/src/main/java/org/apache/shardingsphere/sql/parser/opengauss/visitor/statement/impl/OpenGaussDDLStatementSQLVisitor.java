@@ -60,6 +60,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Col
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.ColumnDefinitionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CommentContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CountContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateAggregateContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateCastContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateConversionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateDatabaseContext;
@@ -77,7 +78,6 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Cre
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateSynonymContext;
-import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateAggregateContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateTablespaceContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CreateTextSearchContext;
@@ -191,6 +191,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussAlterViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCloseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCommentStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateAggregateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateCastStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateConversionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateDatabaseStatement;
@@ -206,7 +207,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateSynonymStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateAggregateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateTextSearchStatement;
@@ -259,9 +259,8 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        OpenGaussCreateTableStatement result = new OpenGaussCreateTableStatement();
+        OpenGaussCreateTableStatement result = new OpenGaussCreateTableStatement(null != ctx.ifNotExists());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setContainsNotExistClause(null != ctx.notExistClause());
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
@@ -428,24 +427,15 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
         DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataType());
-        boolean isPrimaryKey = isPrimaryKey(ctx);
-        ColumnDefinitionSegment result = new ColumnDefinitionSegment(
-                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey);
+        boolean isPrimaryKey = ctx.columnConstraint().stream().anyMatch(each -> null != each.columnConstraintOption() && null != each.columnConstraintOption().primaryKey());
+        // TODO parse not null
+        ColumnDefinitionSegment result = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey, false);
         for (ColumnConstraintContext each : ctx.columnConstraint()) {
             if (null != each.columnConstraintOption().tableName()) {
                 result.getReferencedTables().add((SimpleTableSegment) visit(each.columnConstraintOption().tableName()));
             }
         }
         return result;
-    }
-    
-    private boolean isPrimaryKey(final ColumnDefinitionContext ctx) {
-        for (ColumnConstraintContext each : ctx.columnConstraint()) {
-            if (null != each.columnConstraintOption() && null != each.columnConstraintOption().primaryKey()) {
-                return true;
-            }
-        }
-        return false;
     }
     
     @Override
@@ -481,7 +471,7 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
         // TODO visit pk and table ref
         ColumnSegment column = (ColumnSegment) visit(ctx.modifyColumn().columnName());
         DataTypeSegment dataType = null == ctx.dataType() ? null : (DataTypeSegment) visit(ctx.dataType());
-        ColumnDefinitionSegment columnDefinition = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, false);
+        ColumnDefinitionSegment columnDefinition = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, false, false);
         return new ModifyColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnDefinition);
     }
     
@@ -498,9 +488,8 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        OpenGaussDropTableStatement result = new OpenGaussDropTableStatement();
+        OpenGaussDropTableStatement result = new OpenGaussDropTableStatement(null != ctx.ifExists());
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
-        result.setContainsExistClause(null != ctx.existClause());
         return result;
     }
     
@@ -557,9 +546,8 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
-        OpenGaussDropIndexStatement result = new OpenGaussDropIndexStatement();
+        OpenGaussDropIndexStatement result = new OpenGaussDropIndexStatement(null != ctx.ifExists());
         result.getIndexes().addAll(createIndexSegments(((CollectionValue<SimpleTableSegment>) visit(ctx.qualifiedNameList())).getValue()));
-        result.setContainsExistClause(null != ctx.existClause());
         return result;
     }
     
@@ -653,7 +641,7 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
         OpenGaussDropDatabaseStatement result = new OpenGaussDropDatabaseStatement();
         result.setDatabaseName(((IdentifierValue) visit(ctx.name())).getValue());
-        result.setContainsExistClause(null != ctx.existClause());
+        result.setIfExists(null != ctx.ifExists());
         return result;
     }
     
@@ -934,7 +922,10 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     
     @Override
     public ASTNode visitDeclare(final DeclareContext ctx) {
-        return new OpenGaussDeclareStatement();
+        OpenGaussDeclareStatement result = new OpenGaussDeclareStatement();
+        result.setCursorName((CursorNameSegment) visit(ctx.cursorName()));
+        result.setSelect((SelectStatement) visit(ctx.select()));
+        return result;
     }
     
     @Override
@@ -994,6 +985,7 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
         if (null != ctx.cursorName()) {
             result.setCursorName((CursorNameSegment) visit(ctx.cursorName()));
         }
+        result.setCloseAll(null != ctx.ALL());
         return result;
     }
     
@@ -1019,81 +1011,104 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     
     @Override
     public ASTNode visitNext(final NextContext ctx) {
-        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.NEXT);
+        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        result.setDirectionType(DirectionType.NEXT);
+        return result;
     }
     
     @Override
     public ASTNode visitPrior(final PriorContext ctx) {
-        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.PRIOR);
+        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        result.setDirectionType(DirectionType.PRIOR);
+        return result;
     }
     
     @Override
     public ASTNode visitFirst(final FirstContext ctx) {
-        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.FIRST);
+        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        result.setDirectionType(DirectionType.FIRST);
+        return result;
     }
     
     @Override
     public ASTNode visitLast(final LastContext ctx) {
-        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.LAST);
+        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        result.setDirectionType(DirectionType.LAST);
+        return result;
     }
     
     @Override
     public ASTNode visitAbsoluteCount(final AbsoluteCountContext ctx) {
-        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.ABSOLUTE_COUNT);
+        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        result.setDirectionType(DirectionType.ABSOLUTE_COUNT);
         result.setCount(((NumberLiteralValue) visit(ctx.signedIconst())).getValue().longValue());
         return result;
     }
     
     @Override
     public ASTNode visitRelativeCount(final RelativeCountContext ctx) {
-        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.RELATIVE_COUNT);
+        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        result.setDirectionType(DirectionType.RELATIVE_COUNT);
         result.setCount(((NumberLiteralValue) visit(ctx.signedIconst())).getValue().longValue());
         return result;
     }
     
     @Override
     public ASTNode visitCount(final CountContext ctx) {
-        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.COUNT);
+        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        result.setDirectionType(DirectionType.COUNT);
         result.setCount(((NumberLiteralValue) visit(ctx.signedIconst())).getValue().longValue());
         return result;
     }
     
     @Override
     public ASTNode visitAll(final AllContext ctx) {
-        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.ALL);
+        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        result.setDirectionType(DirectionType.ALL);
+        return result;
     }
     
     @Override
     public ASTNode visitForward(final ForwardContext ctx) {
-        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.FORWARD);
+        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        result.setDirectionType(DirectionType.FORWARD);
+        return result;
     }
     
     @Override
     public ASTNode visitForwardCount(final ForwardCountContext ctx) {
-        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.FORWARD_COUNT);
+        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        result.setDirectionType(DirectionType.FORWARD_COUNT);
         result.setCount(((NumberLiteralValue) visit(ctx.signedIconst())).getValue().longValue());
         return result;
     }
     
     @Override
     public ASTNode visitForwardAll(final ForwardAllContext ctx) {
-        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.FORWARD_ALL);
+        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        result.setDirectionType(DirectionType.FORWARD_ALL);
+        return result;
     }
     
     @Override
     public ASTNode visitBackward(final BackwardContext ctx) {
-        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.BACKWARD);
+        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        result.setDirectionType(DirectionType.BACKWARD);
+        return result;
     }
     
     @Override
     public ASTNode visitBackwardCount(final BackwardCountContext ctx) {
-        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.BACKWARD_COUNT);
+        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        result.setDirectionType(DirectionType.BACKWARD_COUNT);
         result.setCount(((NumberLiteralValue) visit(ctx.signedIconst())).getValue().longValue());
         return result;
     }
     
     @Override
     public ASTNode visitBackwardAll(final BackwardAllContext ctx) {
-        return new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex(), DirectionType.BACKWARD_ALL);
+        DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
+        result.setDirectionType(DirectionType.BACKWARD_ALL);
+        return result;
     }
 }

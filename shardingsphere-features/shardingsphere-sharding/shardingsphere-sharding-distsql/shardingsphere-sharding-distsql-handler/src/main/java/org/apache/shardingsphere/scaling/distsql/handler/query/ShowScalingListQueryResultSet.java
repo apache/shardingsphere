@@ -31,7 +31,7 @@ import java.util.LinkedList;
 import java.util.stream.Collectors;
 
 /**
- * Show scaling list query result set.
+ * Query result set fpr show scaling list.
  */
 public final class ShowScalingListQueryResultSet implements DistSQLResultSet {
     

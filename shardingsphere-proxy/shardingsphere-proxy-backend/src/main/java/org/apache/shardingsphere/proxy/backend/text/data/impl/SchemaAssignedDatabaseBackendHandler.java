@@ -36,7 +36,7 @@ import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler;
-import org.apache.shardingsphere.sharding.merge.ddl.fetch.FetchOrderByValueQueuesHolder;
+import org.apache.shardingsphere.sharding.merge.ddl.fetch.FetchOrderByValueGroupsHolder;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -91,7 +91,17 @@ public final class SchemaAssignedDatabaseBackendHandler implements DatabaseBacke
     }
     
     private void prepareCursorStatementContext(final CursorAvailable statementContext, final ConnectionSession connectionSession) {
-        String cursorName = statementContext.getCursorName().getIdentifier().getValue().toLowerCase();
+        if (statementContext.getCursorName().isPresent()) {
+            String cursorName = statementContext.getCursorName().get().getIdentifier().getValue().toLowerCase();
+            prepareCursorStatementContext(statementContext, connectionSession, cursorName);
+        }
+        if (statementContext instanceof CloseStatementContext && ((CloseStatementContext) statementContext).getSqlStatement().isCloseAll()) {
+            FetchOrderByValueGroupsHolder.remove();
+            connectionSession.getCursorDefinitions().clear();
+        }
+    }
+    
+    private void prepareCursorStatementContext(final CursorAvailable statementContext, final ConnectionSession connectionSession, final String cursorName) {
         if (statementContext instanceof CursorStatementContext) {
             connectionSession.getCursorDefinitions().put(cursorName, (CursorStatementContext) statementContext);
         }
@@ -101,7 +111,8 @@ public final class SchemaAssignedDatabaseBackendHandler implements DatabaseBacke
             ((CursorDefinitionAware) statementContext).setUpCursorDefinition(cursorStatementContext);
         }
         if (statementContext instanceof CloseStatementContext) {
-            FetchOrderByValueQueuesHolder.get().remove(cursorName);
+            FetchOrderByValueGroupsHolder.getOrderByValueGroups().remove(cursorName);
+            FetchOrderByValueGroupsHolder.getMinGroupRowCounts().remove(cursorName);
             connectionSession.getCursorDefinitions().remove(cursorName);
         }
     }

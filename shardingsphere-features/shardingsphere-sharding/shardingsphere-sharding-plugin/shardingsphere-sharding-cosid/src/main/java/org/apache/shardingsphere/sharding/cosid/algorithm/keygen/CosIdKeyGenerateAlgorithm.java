@@ -31,9 +31,7 @@ import java.util.Properties;
  */
 public final class CosIdKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
-    public static final String TYPE = CosId.COSID.toUpperCase();
-    
-    public static final String AS_STRING_KEY = "as-string";
+    private static final String AS_STRING_KEY = "as-string";
     
     @Getter
     private Properties props;
@@ -60,6 +58,6 @@ public final class CosIdKeyGenerateAlgorithm implements KeyGenerateAlgorithm {
     
     @Override
     public String getType() {
-        return TYPE;
+        return CosId.COSID.toUpperCase();
     }
 }

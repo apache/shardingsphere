@@ -58,7 +58,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -129,7 +128,7 @@ public abstract class BaseITCase {
         long startTime = System.currentTimeMillis();
         int waitTimes = 0;
         do {
-            List<Map<String, Object>> result = jdbcTemplate.queryForList("SHOW SHARDING ALGORITHMS");
+            List<Map<String, Object>> result = queryForListWithLog("SHOW SHARDING ALGORITHMS");
             if (result.size() >= 3) {
                 log.info("waitShardingAlgorithmEffect time consume: {}", System.currentTimeMillis() - startTime);
                 return true;
@@ -248,29 +247,33 @@ public abstract class BaseITCase {
         getIncreaseTaskThread().start();
     }
     
-    protected void assertBeforeApplyScalingMetadataCorrectly() {
-        List<Map<String, Object>> previewResults = queryForListWithLog("PREVIEW SELECT COUNT(1) FROM t_order");
-        Set<Object> actualSources = previewResults.stream().map(each -> each.get("actual_sql")).collect(Collectors.toSet());
-        assertThat("data_source_name name not correct, it's effective early, search watcher failed get more info",
-                previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet()), is(new HashSet<>(Arrays.asList("ds_0", "ds_1"))));
-        assertThat("actual_sql not correct, it's effective early, search watcher failed get more info", actualSources,
-                is(new HashSet<>(Collections.singletonList("SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_1"))));
+    protected void stopScalingSourceWriting(final String jobId) {
+        executeWithLog(String.format("STOP SCALING SOURCE WRITING %s", jobId));
     }
     
-    /**
-     * Check data match consistency.
-     *
-     * @throws InterruptedException interrupted exception
-     */
-    protected void assertCheckMatchConsistencySuccess() throws InterruptedException {
+    protected void applyScaling(final String jobId) {
+        executeWithLog(String.format("APPLY SCALING %s", jobId));
+    }
+    
+    protected void assertBeforeApplyScalingMetadataCorrectly() {
+        List<Map<String, Object>> previewResults = queryForListWithLog("PREVIEW SELECT COUNT(1) FROM t_order");
+        assertThat("data_source_name name not correct, it's effective early, search watcher failed get more info",
+                previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet()), is(new HashSet<>(Arrays.asList("ds_0", "ds_1"))));
+    }
+    
+    protected String getScalingJobId() {
         assertBeforeApplyScalingMetadataCorrectly();
-        if (null != increaseTaskThread) {
-            increaseTaskThread.join(60 * 1000L);
-        }
-        TimeUnit.SECONDS.sleep(4);
         List<Map<String, Object>> scalingListMap = queryForListWithLog("SHOW SCALING LIST");
         assertThat(scalingListMap.size(), is(1));
-        Object jobId = scalingListMap.get(0).get("id");
+        String jobId = scalingListMap.get(0).get("id").toString();
+        log.info("jobId: {}", jobId);
+        return jobId;
+    }
+    
+    protected void waitScalingFinished(final String jobId) throws InterruptedException {
+        if (null != increaseTaskThread) {
+            TimeUnit.SECONDS.timedJoin(increaseTaskThread, 60);
+        }
         log.info("jobId: {}", jobId);
         Map<String, String> actualStatusMap = new HashMap<>(2, 1);
         String showScalingStatus = String.format("SHOW SCALING STATUS %s", jobId);
@@ -297,21 +300,30 @@ public abstract class BaseITCase {
             TimeUnit.SECONDS.sleep(2);
         }
         assertThat(actualStatusMap.values().stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet()).size(), is(1));
-        executeWithLog(String.format("STOP SCALING SOURCE WRITING %s", jobId));
-        assertBeforeApplyScalingMetadataCorrectly();
+    }
+    
+    protected void assertCheckScalingSuccess(final String jobId) {
+        stopScalingSourceWriting(jobId);
+        assertStopScalingSourceWriting();
         List<Map<String, Object>> checkScalingResults = queryForListWithLog(String.format("CHECK SCALING %s BY TYPE (NAME=DATA_MATCH)", jobId));
         log.info("checkScalingResults: {}", checkScalingResults);
         for (Map<String, Object> entry : checkScalingResults) {
             assertTrue(Boolean.parseBoolean(entry.get("records_content_matched").toString()));
         }
-        assertBeforeApplyScalingMetadataCorrectly();
-        executeWithLog(String.format("APPLY SCALING %s", jobId));
-        // TODO make sure the scaling job was applied
-        TimeUnit.SECONDS.sleep(2);
-        List<Map<String, Object>> previewResults = queryForListWithLog("PREVIEW SELECT COUNT(1) FROM t_order");
-        Set<Object> targetSources = previewResults.stream().map(each -> each.get("actual_sql")).collect(Collectors.toSet());
-        assertThat(previewResults.stream().map(each -> each.get("data_source_name")).collect(Collectors.toSet()), is(new HashSet<>(Arrays.asList("ds_2", "ds_3", "ds_4"))));
-        assertThat(targetSources, is(new HashSet<>(Arrays.asList("SELECT COUNT(1) FROM t_order_0 UNION ALL SELECT COUNT(1) FROM t_order_3",
-                "SELECT COUNT(1) FROM t_order_1 UNION ALL SELECT COUNT(1) FROM t_order_4", "SELECT COUNT(1) FROM t_order_2 UNION ALL SELECT COUNT(1) FROM t_order_5"))));
     }
+    
+    protected void assertPreviewTableSuccess(final String tableName, final List<String> expect) {
+        List<Map<String, Object>> actualResults = queryForListWithLog(String.format("PREVIEW SELECT COUNT(1) FROM %s", tableName));
+        List<String> dataSourceNames = actualResults.stream().map(each -> String.valueOf(each.get("data_source_name"))).sorted().collect(Collectors.toList());
+        Collections.sort(expect);
+        assertThat(dataSourceNames, is(expect));
+    }
+    
+    protected void restoreScalingSourceWriting(final String jobId) {
+        executeWithLog(String.format("RESTORE SCALING SOURCE WRITING %s", jobId));
+    }
+    
+    protected abstract void assertStopScalingSourceWriting();
+    
+    protected abstract void assertRestoreScalingSourceWriting();
 }

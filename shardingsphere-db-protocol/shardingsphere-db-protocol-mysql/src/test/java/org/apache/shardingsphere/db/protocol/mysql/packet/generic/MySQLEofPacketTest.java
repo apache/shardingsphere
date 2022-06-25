@@ -37,7 +37,7 @@ public final class MySQLEofPacketTest {
     
     @Test
     public void assertNewEofPacketWithSequenceId() {
-        MySQLEofPacket actual = new MySQLEofPacket(1);
+        MySQLEofPacket actual = new MySQLEofPacket(1, MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());
         assertThat(actual.getSequenceId(), is(1));
         assertThat(actual.getWarnings(), is(0));
         assertThat(actual.getStatusFlags(), is(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()));
@@ -55,7 +55,7 @@ public final class MySQLEofPacketTest {
     
     @Test
     public void assertWrite() {
-        new MySQLEofPacket(1).write(payload);
+        new MySQLEofPacket(1, MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue()).write(payload);
         verify(payload).writeInt1(MySQLEofPacket.HEADER);
         verify(payload).writeInt2(0);
         verify(payload).writeInt2(MySQLStatusFlag.SERVER_STATUS_AUTOCOMMIT.getValue());

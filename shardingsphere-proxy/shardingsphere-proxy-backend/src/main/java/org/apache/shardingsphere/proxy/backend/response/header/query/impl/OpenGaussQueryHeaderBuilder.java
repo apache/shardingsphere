@@ -17,26 +17,24 @@
 
 package org.apache.shardingsphere.proxy.backend.response.header.query.impl;
 
-import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder;
 
 import java.sql.SQLException;
 
 /**
- * QueryHeaderBuilder for openGauss.
+ * Query header builder for openGauss.
  */
 public final class OpenGaussQueryHeaderBuilder implements QueryHeaderBuilder {
     
     private final PostgreSQLQueryHeaderBuilder delegated = new PostgreSQLQueryHeaderBuilder();
     
     @Override
-    public QueryHeader build(final QueryResultMetaData queryResultMetaData, final ShardingSphereDatabase database, final String columnName, final String columnLabel,
-                             final int columnIndex, final LazyInitializer<DataNodeContainedRule> dataNodeContainedRule) throws SQLException {
-        return delegated.build(queryResultMetaData, database, columnName, columnLabel, columnIndex, dataNodeContainedRule);
+    public QueryHeader build(final QueryResultMetaData queryResultMetaData,
+                             final ShardingSphereDatabase database, final String columnName, final String columnLabel, final int columnIndex) throws SQLException {
+        return delegated.build(queryResultMetaData, database, columnName, columnLabel, columnIndex);
     }
     
     @Override

@@ -20,6 +20,8 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
 
 import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Lock node service.
@@ -35,18 +37,13 @@ public interface LockNodeService {
     String LOCKED_ACK_NODE = "ack";
     
     /**
-     * Get sequence node path.
-     *
-     * @return sequence node path
-     */
-    String getSequenceNodePath();
-    
-    /**
      * Get locks node path.
      *
      * @return locks node path
      */
-    String getLocksNodePath();
+    default String getLocksNodePath() {
+        return PATH_DELIMITER + LOCK_ROOT + PATH_DELIMITER + getLockTypeName() + PATH_DELIMITER + LOCKS_NODE;
+    }
     
     /**
      * Generate locks name.
@@ -54,7 +51,19 @@ public interface LockNodeService {
      * @param locksName locks name
      * @return locks name
      */
-    String generateLocksName(String locksName);
+    default String generateLocksName(String locksName) {
+        return getLocksNodePath() + "/" + locksName;
+    }
+    
+    /**
+     * Generate freeze lock name.
+     *
+     * @param lockName lock name
+     * @return freeze lock name
+     */
+    default String generateFreezeLockName(String lockName) {
+        return getLocksNodePath() + "/" + lockName + "/freeze";
+    }
     
     /**
      * Generate ack lock name.
@@ -63,7 +72,9 @@ public interface LockNodeService {
      * @param lockedInstanceId locked instance id
      * @return ack lock name
      */
-    String generateAckLockName(String lockName, String lockedInstanceId);
+    default String generateAckLockName(String lockName, String lockedInstanceId) {
+        return getLocksNodePath() + "/" + lockName + "/" + LOCKED_ACK_NODE + "/" + lockedInstanceId;
+    }
     
     /**
      * Parse Locks node path.
@@ -71,7 +82,11 @@ public interface LockNodeService {
      * @param nodePath locks node path
      * @return locked node path
      */
-    Optional<String> parseLocksNodePath(String nodePath);
+    default Optional<String> parseLocksNodePath(String nodePath) {
+        Pattern pattern = Pattern.compile(getLocksNodePath() + "/" + "(.+)/leases/(.+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(nodePath);
+        return matcher.find() ? Optional.of(matcher.group(1)) : Optional.empty();
+    }
     
     /**
      * Parse locks ack node path.
@@ -79,7 +94,11 @@ public interface LockNodeService {
      * @param nodePath node path
      * @return locks ack node path
      */
-    Optional<String> parseLocksAckNodePath(String nodePath);
+    default Optional<String> parseLocksAckNodePath(String nodePath) {
+        Pattern pattern = Pattern.compile(getLocksNodePath() + "/" + "(.+)/ack/(.+)$", Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(nodePath);
+        return matcher.find() ? Optional.of(matcher.group(1) + "#@#" + matcher.group(2)) : Optional.empty();
+    }
     
     /**
      * Get type.
@@ -87,4 +106,11 @@ public interface LockNodeService {
      * @return lock node type
      */
     LockNodeType getType();
+    
+    /**
+     * Get lock type name.
+     *
+     * @return type name
+     */
+    String getLockTypeName();
 }

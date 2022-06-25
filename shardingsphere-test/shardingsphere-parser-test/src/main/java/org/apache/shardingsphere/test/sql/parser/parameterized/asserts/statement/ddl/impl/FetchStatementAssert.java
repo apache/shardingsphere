@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussFetchStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.FetchStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.cursor.DirectionSegmentAssert;
@@ -42,17 +42,17 @@ public final class FetchStatementAssert {
      * @param actual actual fetch statement
      * @param expected expected fetch statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final OpenGaussFetchStatement actual, final FetchStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final FetchStatement actual, final FetchStatementTestCase expected) {
         assertCursorName(assertContext, actual, expected);
         assertDirection(assertContext, actual, expected);
     }
     
-    private static void assertCursorName(final SQLCaseAssertContext assertContext, final OpenGaussFetchStatement actual, final FetchStatementTestCase expected) {
+    private static void assertCursorName(final SQLCaseAssertContext assertContext, final FetchStatement actual, final FetchStatementTestCase expected) {
         IdentifierValueAssert.assertIs(assertContext, actual.getCursorName().getIdentifier(), expected.getCursorName(), "Fetch");
         SQLSegmentAssert.assertIs(assertContext, actual.getCursorName(), expected.getCursorName());
     }
     
-    private static void assertDirection(final SQLCaseAssertContext assertContext, final OpenGaussFetchStatement actual, final FetchStatementTestCase expected) {
+    private static void assertDirection(final SQLCaseAssertContext assertContext, final FetchStatement actual, final FetchStatementTestCase expected) {
         if (null != expected.getDirection()) {
             assertTrue(assertContext.getText("Actual direction segment should exist."), actual.getDirection().isPresent());
             DirectionSegmentAssert.assertIs(assertContext, actual.getDirection().get(), expected.getDirection());

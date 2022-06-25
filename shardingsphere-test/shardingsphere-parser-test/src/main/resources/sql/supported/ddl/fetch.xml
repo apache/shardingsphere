@@ -17,18 +17,20 @@
   -->
 
 <sql-cases>
-    <sql-case id="fetch_next" value="FETCH NEXT FROM t_order_cursor;" db-types="openGauss" />
-    <sql-case id="fetch_prior" value="FETCH PRIOR FROM t_order_cursor;" db-types="openGauss" />
-    <sql-case id="fetch_first" value="FETCH FIRST FROM t_order_cursor;" db-types="openGauss" />
-    <sql-case id="fetch_last" value="FETCH LAST FROM t_order_cursor;" db-types="openGauss" />
-    <sql-case id="fetch_absolute_count" value="FETCH ABSOLUTE 10 FROM t_order_cursor;" db-types="openGauss" />
-    <sql-case id="fetch_relative_count" value="FETCH RELATIVE 10 FROM t_order_cursor;" db-types="openGauss" />
-    <sql-case id="fetch_count" value="FETCH 10 FROM t_order_cursor;" db-types="openGauss" />
-    <sql-case id="fetch_all" value="FETCH ALL FROM t_order_cursor;" db-types="openGauss" />
-    <sql-case id="fetch_forward" value="FETCH FORWARD FROM t_order_cursor;" db-types="openGauss" />
-    <sql-case id="fetch_forward_count" value="FETCH FORWARD 10 FROM t_order_cursor;" db-types="openGauss" />
-    <sql-case id="fetch_forward_all" value="FETCH FORWARD ALL FROM t_order_cursor;" db-types="openGauss" />
-    <sql-case id="fetch_backward" value="FETCH BACKWARD FROM t_order_cursor;" db-types="openGauss" />
-    <sql-case id="fetch_backward_count" value="FETCH BACKWARD 10 FROM t_order_cursor;" db-types="openGauss" />
-    <sql-case id="fetch_backward_all" value="FETCH BACKWARD ALL FROM t_order_cursor;" db-types="openGauss" />
+    <sql-case id="fetch_cursor" value="FETCH t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="fetch_cursor_with_from" value="FETCH FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="fetch_cursor_with_next" value="FETCH NEXT FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="fetch_cursor_with_prior" value="FETCH PRIOR FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="fetch_cursor_with_first" value="FETCH FIRST FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="fetch_cursor_with_last" value="FETCH LAST FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="fetch_cursor_with_absolute_count" value="FETCH ABSOLUTE 10 FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="fetch_cursor_with_relative_count" value="FETCH RELATIVE 10 FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="fetch_cursor_with_count" value="FETCH 10 FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="fetch_cursor_with_all" value="FETCH ALL FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="fetch_cursor_with_forward" value="FETCH FORWARD FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="fetch_cursor_with_forward_count" value="FETCH FORWARD 10 FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="fetch_cursor_with_forward_all" value="FETCH FORWARD ALL FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="fetch_cursor_with_backward" value="FETCH BACKWARD FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="fetch_cursor_with_backward_count" value="FETCH BACKWARD 10 FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="fetch_cursor_with_backward_all" value="FETCH BACKWARD ALL FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
 </sql-cases>

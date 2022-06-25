@@ -19,9 +19,10 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex;
 
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.MutexLockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
@@ -34,23 +35,21 @@ import java.util.Optional;
  */
 public final class ShardingSphereInterMutexLockHolder {
     
-    private final Map<String, InterMutexLock> interMutexLocks = new LinkedHashMap<>();
+    private final Map<String, MutexLock> mutexLocks = new LinkedHashMap<>();
     
-    private final Map<String, InterReentrantMutexLock> interReentrantMutexLocks = new LinkedHashMap<>();
-    
-    private final ClusterPersistRepository repository;
-    
-    private final LockRegistryService mutexLockRegistryService;
+    private final ClusterPersistRepository clusterRepository;
     
     private final ComputeNodeInstance currentInstance;
     
     private final Collection<ComputeNodeInstance> computeNodeInstances;
     
+    private final LockRegistryService mutexLockRegistryService;
+    
     public ShardingSphereInterMutexLockHolder(final ClusterPersistRepository repository, final ComputeNodeInstance instance, final Collection<ComputeNodeInstance> nodeInstances) {
-        this.repository = repository;
-        mutexLockRegistryService = new MutexLockRegistryService(repository);
+        clusterRepository = repository;
         currentInstance = instance;
         computeNodeInstances = nodeInstances;
+        mutexLockRegistryService = new MutexLockRegistryService(clusterRepository);
     }
     
     /**
@@ -60,17 +59,21 @@ public final class ShardingSphereInterMutexLockHolder {
      * @return inter mutex lock
      */
     public synchronized InterMutexLock getOrCreateInterMutexLock(final String locksName) {
-        InterMutexLock result = interMutexLocks.get(locksName);
+        MutexLock result = mutexLocks.get(locksName);
         if (null == result) {
             result = createInterMutexLock(locksName);
-            interMutexLocks.put(locksName, result);
+            mutexLocks.put(locksName, result);
         }
-        return result;
+        return (InterMutexLock) result;
     }
     
     private InterMutexLock createInterMutexLock(final String locksName) {
-        InterReentrantMutexLock interReentrantMutexLock = getInterReentrantMutexLock(locksName + "/sequence");
+        InterReentrantMutexLock interReentrantMutexLock = createInterReentrantMutexLock(LockNodeUtil.generateLockSequenceNodePath(locksName));
         return new InterMutexLock(locksName, interReentrantMutexLock, mutexLockRegistryService, currentInstance, computeNodeInstances);
+    }
+    
+    private InterReentrantMutexLock createInterReentrantMutexLock(final String lockNodePath) {
+        return new InterReentrantMutexLock(clusterRepository.getInternalReentrantMutexLock(lockNodePath));
     }
     
     /**
@@ -80,44 +83,57 @@ public final class ShardingSphereInterMutexLockHolder {
      * @return inter mutex lock
      */
     public Optional<InterMutexLock> getInterMutexLock(final String locksName) {
-        if (interMutexLocks.isEmpty()) {
+        if (mutexLocks.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.ofNullable(interMutexLocks.get(locksName));
+        return Optional.ofNullable((InterMutexLock) mutexLocks.get(locksName));
     }
     
     /**
-     * Get inter reentrant mutex lock.
+     * Get or create inter reentrant mutex lock.
      *
      * @param locksName locks name
      * @return inter reentrant mutex lock
      */
-    public InterReentrantMutexLock getInterReentrantMutexLock(final String locksName) {
-        InterReentrantMutexLock result = interReentrantMutexLocks.get(locksName);
+    public synchronized InterReentrantMutexLock getOrCreateInterReentrantMutexLock(final String locksName) {
+        MutexLock result = mutexLocks.get(locksName);
         if (null == result) {
-            result = new InterReentrantMutexLock(repository.getInternalReentrantMutexLock(locksName));
-            interReentrantMutexLocks.put(locksName, result);
+            result = createInterReentrantMutexLock(locksName);
+            mutexLocks.put(locksName, result);
         }
-        return result;
+        return (InterReentrantMutexLock) result;
     }
     
     /**
-     * Synchronize mutex lock.
+     * Get inter reentrant mutex Lock.
+     *
+     * @param locksName locks name
+     * @return inter mutex lock
+     */
+    public Optional<InterReentrantMutexLock> getInterReentrantMutexLock(final String locksName) {
+        if (mutexLocks.isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable((InterReentrantMutexLock) mutexLocks.get(locksName));
+    }
+    
+    /**
+     * Synchronize lock.
      *
      * @param lockNodeService lock node service
      */
-    public void synchronizeMutexLock(final LockNodeService lockNodeService) {
-        Collection<String> allGlobalLock = repository.getChildrenKeys(lockNodeService.getLocksNodePath());
+    public void synchronizeLock(final LockNodeService lockNodeService) {
+        Collection<String> allGlobalLock = clusterRepository.getChildrenKeys(lockNodeService.getLocksNodePath());
         if (allGlobalLock.isEmpty()) {
             if (LockNodeType.DISTRIBUTED == lockNodeService.getType()) {
                 return;
             }
-            repository.persist(lockNodeService.getLocksNodePath(), "");
+            clusterRepository.persist(lockNodeService.getLocksNodePath(), "");
             return;
         }
         for (String each : allGlobalLock) {
             Optional<String> generalLock = lockNodeService.parseLocksNodePath(each);
-            generalLock.ifPresent(optional -> interMutexLocks.put(optional, createInterMutexLock(optional)));
+            generalLock.ifPresent(optional -> mutexLocks.put(optional, createInterMutexLock(optional)));
         }
     }
     

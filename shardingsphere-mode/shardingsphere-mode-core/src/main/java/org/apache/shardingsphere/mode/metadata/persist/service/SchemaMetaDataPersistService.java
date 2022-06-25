@@ -115,6 +115,15 @@ public final class SchemaMetaDataPersistService {
     }
     
     /**
+     * Persist database name.
+     * 
+     * @param databaseName database name
+     */
+    public void persistDatabase(final String databaseName) {
+        repository.persist(DatabaseMetaDataNode.getDatabaseNamePath(databaseName), "");
+    }
+    
+    /**
      * Delete schema.
      *
      * @param databaseName database name
@@ -151,7 +160,7 @@ public final class SchemaMetaDataPersistService {
         tables.forEach(each -> {
             String content = repository.get(DatabaseMetaDataNode.getTableMetaDataPath(databaseName, schemaName, each));
             ShardingSphereTable table = new TableMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(content, YamlTableMetaData.class));
-            schema.getTables().put(each, table);
+            schema.put(each, table);
         });
         return Optional.of(schema);
     }

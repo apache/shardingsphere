@@ -64,7 +64,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -75,8 +74,6 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLCommandExecutorFactoryTest extends ProxyContextRestorer {
-    
-    private final SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ConnectionSession connectionSession;
@@ -98,7 +95,8 @@ public final class MySQLCommandExecutorFactoryTest extends ProxyContextRestorer 
                 mock(OptimizerContext.class, RETURNS_DEEP_STUBS));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
-        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(sqlParserRule));
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class))
+                .thenReturn(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()));
     }
     
     private ShardingSphereDatabase mockDatabase() {
@@ -146,9 +144,8 @@ public final class MySQLCommandExecutorFactoryTest extends ProxyContextRestorer 
     
     @Test
     public void assertNewInstanceWithComStmtExecute() throws SQLException {
-        MySQLComStmtExecutePacket packet = mock(MySQLComStmtExecutePacket.class);
-        when(packet.getSql()).thenReturn("SELECT 1");
-        assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_STMT_EXECUTE, packet, connectionSession), instanceOf(MySQLComStmtExecuteExecutor.class));
+        assertThat(MySQLCommandExecutorFactory.newInstance(MySQLCommandPacketType.COM_STMT_EXECUTE, mock(MySQLComStmtExecutePacket.class), connectionSession),
+                instanceOf(MySQLComStmtExecuteExecutor.class));
     }
     
     @Test

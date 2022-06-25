@@ -36,7 +36,6 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.UnsupportedVariableException;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
@@ -79,7 +78,7 @@ public final class SetVariableBackendHandlerTest extends ProxyContextRestorer {
         for (int i = 0; i < 10; i++) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
             when(database.getResource()).thenReturn(new ShardingSphereResource(Collections.emptyMap()));
-            when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.emptyList()));
+            when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
             when(database.getSchemas().get(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
             result.put(String.format(DATABASE_PATTERN, i), database);
         }
@@ -95,7 +94,9 @@ public final class SetVariableBackendHandlerTest extends ProxyContextRestorer {
     @Test
     public void assertSwitchTransactionTypeXA() throws SQLException {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        ResponseHeader actual = new SetVariableHandler().init(getParameter(new SetVariableStatement("transaction_type", "XA"), connectionSession)).execute();
+        SetVariableHandler handler = new SetVariableHandler();
+        handler.init(new SetVariableStatement("transaction_type", "XA"), connectionSession);
+        ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(connectionSession.getTransactionStatus().getTransactionType(), is(TransactionType.XA));
     }
@@ -103,7 +104,9 @@ public final class SetVariableBackendHandlerTest extends ProxyContextRestorer {
     @Test
     public void assertSwitchTransactionTypeBASE() throws SQLException {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        ResponseHeader actual = new SetVariableHandler().init(getParameter(new SetVariableStatement("transaction_type", "BASE"), connectionSession)).execute();
+        SetVariableHandler handler = new SetVariableHandler();
+        handler.init(new SetVariableStatement("transaction_type", "BASE"), connectionSession);
+        ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(connectionSession.getTransactionStatus().getTransactionType(), is(TransactionType.BASE));
     }
@@ -111,47 +114,55 @@ public final class SetVariableBackendHandlerTest extends ProxyContextRestorer {
     @Test
     public void assertSwitchTransactionTypeLOCAL() throws SQLException {
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        ResponseHeader actual = new SetVariableHandler().init(getParameter(new SetVariableStatement("transaction_type", "LOCAL"), connectionSession)).execute();
+        SetVariableHandler handler = new SetVariableHandler();
+        handler.init(new SetVariableStatement("transaction_type", "LOCAL"), connectionSession);
+        ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(connectionSession.getTransactionStatus().getTransactionType(), is(TransactionType.LOCAL));
     }
     
     @Test(expected = UnsupportedVariableException.class)
     public void assertSwitchTransactionTypeFailed() throws SQLException {
+        SetVariableHandler handler = new SetVariableHandler();
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        new SetVariableHandler().init(getParameter(new SetVariableStatement("transaction_type", "XXX"), connectionSession)).execute();
+        handler.init(new SetVariableStatement("transaction_type", "XXX"), connectionSession);
+        handler.execute();
     }
     
     @Test(expected = UnsupportedVariableException.class)
     public void assertNotSupportedVariable() throws SQLException {
-        new SetVariableHandler().init(getParameter(new SetVariableStatement("@@session", "XXX"), connectionSession)).execute();
+        SetVariableHandler handler = new SetVariableHandler();
+        handler.init(new SetVariableStatement("@@session", "XXX"), connectionSession);
+        handler.execute();
     }
     
     @Test
     public void assertSetAgentPluginsEnabledTrue() throws SQLException {
+        SetVariableHandler handler = new SetVariableHandler();
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        ResponseHeader actual = new SetVariableHandler().init(getParameter(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString()), null)).execute();
+        handler.init(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString()), null);
+        ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.TRUE.toString()));
     }
     
     @Test
     public void assertSetAgentPluginsEnabledFalse() throws SQLException {
+        SetVariableHandler handler = new SetVariableHandler();
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        ResponseHeader actual = new SetVariableHandler().init(getParameter(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), null)).execute();
+        handler.init(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), null);
+        ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.FALSE.toString()));
     }
     
     @Test
     public void assertSetAgentPluginsEnabledFalseWithUnknownValue() throws SQLException {
+        SetVariableHandler handler = new SetVariableHandler();
         connectionSession.setCurrentDatabase(String.format(DATABASE_PATTERN, 0));
-        ResponseHeader actual = new SetVariableHandler().init(getParameter(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "xxx"), connectionSession)).execute();
+        handler.init(new SetVariableStatement(VariableEnum.AGENT_PLUGINS_ENABLED.name(), "xxx"), connectionSession);
+        ResponseHeader actual = handler.execute();
         assertThat(actual, instanceOf(UpdateResponseHeader.class));
         assertThat(SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.FALSE.toString()), is(Boolean.FALSE.toString()));
-    }
-    
-    private HandlerParameter<SetVariableStatement> getParameter(final SetVariableStatement statement, final ConnectionSession connectionSession) {
-        return new HandlerParameter<>(statement, new MySQLDatabaseType(), connectionSession);
     }
 }

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
@@ -29,8 +30,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListUnitCompleteEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdAddedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdDeletedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
@@ -71,12 +70,9 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
                 return Optional.of(new LabelsEvent(instanceId, Strings.isNullOrEmpty(event.getValue()) ? new ArrayList<>() : YamlEngine.unmarshal(event.getValue(), Collection.class)));
             }
         } else if (event.getKey().startsWith(ComputeNode.getOnlineInstanceNodePath())) {
-            Optional<InstanceDefinition> instanceDefinition = ComputeNode.getInstanceDefinitionByInstanceOnlinePath(event.getKey());
-            return instanceDefinition.isPresent() ? createInstanceEvent(instanceDefinition.get(), event.getType(), event.getValue()) : Optional.empty();
+            return createInstanceEvent(event);
         } else if (event.getKey().startsWith(ComputeNode.getProcessTriggerNodePatch())) {
             return createShowProcessListTriggerEvent(event);
-        } else if (event.getKey().startsWith(ComputeNode.getXaRecoveryIdNodePath())) {
-            return createXaRecoveryIdEvent(event);
         }
         return Optional.empty();
     }
@@ -99,25 +95,25 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
         return pattern.matcher(event.getKey());
     }
     
-    private Optional<GovernanceEvent> createInstanceEvent(final InstanceDefinition instanceDefinition, final Type type, final String value) {
-        if (Type.ADDED == type) {
-            instanceDefinition.setAttributes(value);
-            return Optional.of(new InstanceOnlineEvent(instanceDefinition));
-        } else if (Type.DELETED == type) {
-            return Optional.of(new InstanceOfflineEvent(instanceDefinition));
+    private Optional<GovernanceEvent> createInstanceEvent(final DataChangedEvent event) {
+        Matcher matcher = matchInstanceOnlinePath(event.getKey());
+        if (matcher.find()) {
+            InstanceDefinition instanceDefinition = new InstanceDefinition(getInstanceType(matcher.group(1)), matcher.group(2), event.getValue());
+            if (Type.ADDED == event.getType()) {
+                return Optional.of(new InstanceOnlineEvent(instanceDefinition));
+            } else if (Type.DELETED == event.getType()) {
+                return Optional.of(new InstanceOfflineEvent(instanceDefinition));
+            }
         }
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createXaRecoveryIdEvent(final DataChangedEvent event) {
-        Matcher matcher = Pattern.compile(ComputeNode.getXaRecoveryIdNodePath() + "/([\\S]+)/([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(event.getKey());
-        if (matcher.find()) {
-            if (Type.ADDED == event.getType()) {
-                return Optional.of(new XaRecoveryIdAddedEvent(matcher.group(2), matcher.group(1)));
-            } else if (Type.DELETED == event.getType()) {
-                return Optional.of(new XaRecoveryIdDeletedEvent(matcher.group(2), matcher.group(1)));
-            }
-        }
-        return Optional.empty();
+    private Matcher matchInstanceOnlinePath(final String onlineInstancePath) {
+        Pattern pattern = Pattern.compile(ComputeNode.getOnlineInstanceNodePath() + "/" + "(proxy|jdbc)" + "/([\\S]+)$", Pattern.CASE_INSENSITIVE);
+        return pattern.matcher(onlineInstancePath);
+    }
+    
+    private InstanceType getInstanceType(final String instanceType) {
+        return InstanceType.PROXY.name().equalsIgnoreCase(instanceType) ? InstanceType.PROXY : InstanceType.JDBC;
     }
 }
