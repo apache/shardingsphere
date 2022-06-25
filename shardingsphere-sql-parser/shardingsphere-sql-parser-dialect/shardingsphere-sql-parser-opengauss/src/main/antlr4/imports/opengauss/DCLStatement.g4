@@ -57,7 +57,7 @@ alterOptRoleElem
     ;
 
 dropUser
-    : DROP USER existClause? roleList
+    : DROP USER ifExists? roleList
     ;
 
 alterUser
@@ -80,7 +80,7 @@ createRole
     ;
 
 dropRole
-    : DROP ROLE existClause? roleList
+    : DROP ROLE ifExists? roleList
     ;
 
 alterRole
@@ -92,7 +92,7 @@ createGroup
     ;
 
 dropDroup
-    : DROP GROUP existClause? roleList
+    : DROP GROUP ifExists? roleList
     ;
 
 reassignOwned
