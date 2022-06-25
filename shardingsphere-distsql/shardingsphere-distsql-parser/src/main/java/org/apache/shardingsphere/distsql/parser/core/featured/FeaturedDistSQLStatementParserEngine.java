@@ -52,7 +52,7 @@ public final class FeaturedDistSQLStatementParserEngine {
             } catch (final ParseCancellationException | SQLParsingException ignored) {
             }
         }
-        throw new SQLParsingException("You have an error in your SQL syntax.");
+        throw new SQLParsingException("You have an error in your SQL syntax: " + sql);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
