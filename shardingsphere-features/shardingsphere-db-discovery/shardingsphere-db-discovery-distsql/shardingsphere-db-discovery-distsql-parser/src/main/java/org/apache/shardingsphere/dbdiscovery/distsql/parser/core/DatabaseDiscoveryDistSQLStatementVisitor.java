@@ -111,7 +111,7 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     
     @Override
     public ASTNode visitDropDatabaseDiscoveryRule(final DropDatabaseDiscoveryRuleContext ctx) {
-        return new DropDatabaseDiscoveryRuleStatement(null != ctx.existClause(), ctx.ruleName().stream().map(this::getIdentifierValue).collect(Collectors.toList()));
+        return new DropDatabaseDiscoveryRuleStatement(null != ctx.ifExists(), ctx.ruleName().stream().map(this::getIdentifierValue).collect(Collectors.toList()));
     }
     
     @Override
@@ -179,12 +179,12 @@ public final class DatabaseDiscoveryDistSQLStatementVisitor extends DatabaseDisc
     
     @Override
     public ASTNode visitDropDatabaseDiscoveryType(final DropDatabaseDiscoveryTypeContext ctx) {
-        return new DropDatabaseDiscoveryTypeStatement(null != ctx.existClause(), ctx.discoveryTypeName().stream().map(this::getIdentifierValue).collect(Collectors.toList()));
+        return new DropDatabaseDiscoveryTypeStatement(null != ctx.ifExists(), ctx.discoveryTypeName().stream().map(this::getIdentifierValue).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitDropDatabaseDiscoveryHeartbeat(final DropDatabaseDiscoveryHeartbeatContext ctx) {
-        return new DropDatabaseDiscoveryHeartbeatStatement(null != ctx.existClause(), ctx.discoveryHeartbeatName().stream().map(this::getIdentifierValue).collect(Collectors.toList()));
+        return new DropDatabaseDiscoveryHeartbeatStatement(null != ctx.ifExists(), ctx.discoveryHeartbeatName().stream().map(this::getIdentifierValue).collect(Collectors.toList()));
     }
     
     private Properties getProperties(final PropertiesContext ctx) {

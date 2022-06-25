@@ -60,7 +60,7 @@ public final class CreateTableStatementHandlerTest {
     }
     
     @Test
-    public void assertNotContainsIfNotExistClauseForSQLServer() {
+    public void assertNotContainsIfNotExistsForSQLServer() {
         assertFalse(CreateTableStatementHandler.ifNotExists(new SQLServerCreateTableStatement()));
     }
 }
