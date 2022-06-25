@@ -82,6 +82,49 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_order"));
     }
     
+    @Test
+    public void assertForceRouteDbUseHintByShardingConditions() {
+        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", createShardingConditions("t_order"));
+        HintManager hintManager = HintManager.getInstance();
+        hintManager.addDatabaseShardingValue("t_order", "ds_0");
+        RouteContext routeContext = standardRoutingEngine.route(createBasedShardingRule());
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
+        assertThat(routeContext.getRouteUnits().size(), is(1));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
+        assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_order_1"));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_order"));
+    }
+    
+    @Test
+    public void assertForceRouteTableUseHintByShardingConditions() {
+        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", createShardingConditions("t_order"));
+        HintManager hintManager = HintManager.getInstance();
+        hintManager.addTableShardingValue("t_order", "t_order_0");
+        RouteContext routeContext = standardRoutingEngine.route(createBasedShardingRule());
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
+        assertThat(routeContext.getRouteUnits().size(), is(1));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_1"));
+        assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_order_0"));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_order"));
+    }
+    
+    @Test
+    public void assertForceRouteDbAndTableUseHintByShardingConditions() {
+        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", createShardingConditions("t_order"));
+        HintManager hintManager = HintManager.getInstance();
+        hintManager.addDatabaseShardingValue("t_order", "ds_0");
+        hintManager.addTableShardingValue("t_order", "t_order_0");
+        RouteContext routeContext = standardRoutingEngine.route(createBasedShardingRule());
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
+        assertThat(routeContext.getRouteUnits().size(), is(1));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
+        assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_order_0"));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_order"));
+    }
+    
     @Test(expected = ShardingSphereException.class)
     public void assertRouteByErrorShardingTableStrategy() {
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", createErrorShardingConditions("t_order"));
