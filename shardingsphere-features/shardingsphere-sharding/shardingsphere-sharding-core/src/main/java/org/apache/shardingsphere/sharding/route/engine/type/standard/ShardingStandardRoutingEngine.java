@@ -202,13 +202,15 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     }
     
     private Collection<String> routeDataSources(final TableRule tableRule, final ShardingStrategy databaseShardingStrategy, final List<ShardingConditionValue> databaseShardingValues) {
-        Collection<Comparable<?>> databaseShardings = HintManager.getDatabaseShardingValues(tableRule.getLogicTable());
-        if (databaseShardings != null && databaseShardings.size() > 0) {
-            List<String> list = new ArrayList<>();
-            for (Comparable<?> databaseSharding : databaseShardings) {
-                list.add((String) databaseSharding);
+        if (!(databaseShardingStrategy instanceof HintShardingStrategy)) {
+            Collection<Comparable<?>> databaseShardings = HintManager.getDatabaseShardingValues(tableRule.getLogicTable());
+            if (databaseShardings != null && databaseShardings.size() > 0) {
+                List<String> list = new ArrayList<>();
+                for (Comparable<?> databaseSharding : databaseShardings) {
+                    list.add(String.valueOf(databaseSharding));
+                }
+                return list;
             }
-            return list;
         }
         if (databaseShardingValues.isEmpty()) {
             return tableRule.getActualDatasourceNames();
@@ -222,14 +224,17 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
     
     private Collection<DataNode> routeTables(final TableRule tableRule, final String routedDataSource,
                                              final ShardingStrategy tableShardingStrategy, final List<ShardingConditionValue> tableShardingValues) {
-        Collection<Comparable<?>> tableShardings = HintManager.getTableShardingValues(tableRule.getLogicTable());
-        Collection<String> routedTables;
-        if (tableShardings != null && tableShardings.size() > 0) {
-            routedTables = new ArrayList<>(2);
-            for (Comparable<?> tableSharding : tableShardings) {
-                routedTables.add((String) tableSharding);
+        Collection<String> routedTables = null;
+        if (!(tableShardingStrategy instanceof HintShardingStrategy)) {
+            Collection<Comparable<?>> tableShardings = HintManager.getTableShardingValues(tableRule.getLogicTable());
+            if (tableShardings != null && tableShardings.size() > 0) {
+                routedTables = new ArrayList<>(2);
+                for (Comparable<?> tableSharding : tableShardings) {
+                    routedTables.add((String) tableSharding);
+                }
             }
-        } else {
+        }
+        if (routedTables == null || routedTables.isEmpty()) {
             Collection<String> availableTargetTables = tableRule.getActualTableNames(routedDataSource);
             routedTables = new LinkedHashSet<>(tableShardingValues.isEmpty()
                     ? availableTargetTables
