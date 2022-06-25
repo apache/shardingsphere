@@ -64,6 +64,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Co
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CountContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateAccessMethodContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateAggregateContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateCastContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateConversionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CreateDefinitionClauseContext;
@@ -211,6 +212,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCommentStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateAccessMethodStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateAggregateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateCastStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateConversionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateDomainStatement;
@@ -1234,5 +1236,10 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
         DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
         result.setDirectionType(DirectionType.BACKWARD_ALL);
         return result;
+    }
+    
+    @Override
+    public ASTNode visitCreateCast(final CreateCastContext ctx) {
+        return new PostgreSQLCreateCastStatement();
     }
 }
