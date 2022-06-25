@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.update;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.function.ResourceRequiredRuleConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
@@ -68,7 +67,6 @@ public final class DropReadwriteSplittingRuleStatementUpdaterTest {
     
     @Test
     public void assertCheckSQLStatementWithIfExists() throws RuleDefinitionViolationException {
-        when(database.getRuleMetaData().findRuleConfigurations(ResourceRequiredRuleConfiguration.class)).thenReturn(Collections.emptyList());
         updater.checkSQLStatement(database, new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")),
                 new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
         updater.checkSQLStatement(database, new DropReadwriteSplittingRuleStatement(true, Collections.singleton("readwrite_ds")), null);
