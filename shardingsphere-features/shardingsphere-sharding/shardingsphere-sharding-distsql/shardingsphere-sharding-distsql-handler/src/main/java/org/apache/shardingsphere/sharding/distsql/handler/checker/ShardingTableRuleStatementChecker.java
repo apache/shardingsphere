@@ -308,7 +308,7 @@ public final class ShardingTableRuleStatementChecker {
         }
         ShardingRuleConfiguration toBeAlteredRuleConfig = ShardingTableRuleStatementConverter.convert(rules);
         Collection<String> toBeAlteredLogicTableNames = getAlteredLogicalTableNames(toBeAlteredRuleConfig);
-        Collection<String> toBeAlteredBindingTableNames = toBeAlteredLogicTableNames.stream().filter(each -> bindingTables.contains(each)).collect(Collectors.toSet());
+        Collection<String> toBeAlteredBindingTableNames = toBeAlteredLogicTableNames.stream().filter(bindingTables::contains).collect(Collectors.toSet());
         if (toBeAlteredBindingTableNames.isEmpty()) {
             return;
         }
