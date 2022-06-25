@@ -92,8 +92,7 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
     }
     
     private static Matcher getShowProcessTriggerMatcher(final DataChangedEvent event) {
-        Pattern pattern = Pattern.compile(ComputeNode.getProcessTriggerNodePatch() + "/([\\S]+):([\\S]+)$", Pattern.CASE_INSENSITIVE);
-        return pattern.matcher(event.getKey());
+        return Pattern.compile(ComputeNode.getProcessTriggerNodePatch() + "/([\\S]+):([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(event.getKey());
     }
     
     private Optional<GovernanceEvent> createInstanceEvent(final DataChangedEvent event) {
@@ -102,7 +101,8 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
             InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.valueOf(matcher.group(1).toUpperCase()), matcher.group(2), event.getValue());
             if (Type.ADDED == event.getType()) {
                 return Optional.of(new InstanceOnlineEvent(instanceDefinition));
-            } else if (Type.DELETED == event.getType()) {
+            }
+            if (Type.DELETED == event.getType()) {
                 return Optional.of(new InstanceOfflineEvent(instanceDefinition));
             }
         }
@@ -110,7 +110,6 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
     }
     
     private Matcher matchInstanceOnlinePath(final String onlineInstancePath) {
-        Pattern pattern = Pattern.compile(ComputeNode.getOnlineInstanceNodePath() + "/" + "(proxy|jdbc)" + "/([\\S]+)$", Pattern.CASE_INSENSITIVE);
-        return pattern.matcher(onlineInstancePath);
+        return Pattern.compile(ComputeNode.getOnlineInstanceNodePath() + "/" + "(proxy|jdbc)" + "/([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(onlineInstancePath);
     }
 }
