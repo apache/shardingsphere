@@ -21,7 +21,6 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
-import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -270,7 +269,7 @@ public final class SingleTableRule implements DatabaseRule, DataNodeContainedRul
     
     @Override
     public Map<String, Object> getExportData() {
-        return Collections.singletonMap(ExportableConstants.EXPORT_SINGLE_TABLES, tableNames.keySet());
+        return Collections.singletonMap("single_tables", tableNames.keySet());
     }
     
     @Override
