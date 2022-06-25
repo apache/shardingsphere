@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
+import org.apache.shardingsphere.mode.manager.lock.definition.LockNameDefinitionFactory;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Test;
 
@@ -56,7 +57,7 @@ public final class DistributedLockContextTest {
         ComputeNodeInstance currentInstance = new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
         DistributedLockContext distributedLockContext = new DistributedLockContext(mock(ClusterPersistRepository.class));
         new InstanceContext(currentInstance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), distributedLockContext);
-        distributedLockContext.releaseLock("database");
+        distributedLockContext.releaseLock(LockNameDefinitionFactory.newDatabaseDefinition("database"));
     }
     
     @Test
@@ -64,6 +65,6 @@ public final class DistributedLockContextTest {
         ComputeNodeInstance currentInstance = new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
         DistributedLockContext distributedLockContext = new DistributedLockContext(mock(ClusterPersistRepository.class));
         new InstanceContext(currentInstance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), distributedLockContext);
-        assertFalse(distributedLockContext.isLocked("database"));
+        assertFalse(distributedLockContext.isLocked(LockNameDefinitionFactory.newDatabaseDefinition("database")));
     }
 }

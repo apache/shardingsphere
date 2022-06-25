@@ -21,6 +21,9 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatem
 
 /**
  * Count instance rules statement.
+ * 
+ * @deprecated The class CountInstanceRulesHandler is deprecated, the entry SQL statement should be deprecated too.
  */
+@Deprecated
 public final class CountInstanceRulesStatement extends QueryableRALStatement {
 }

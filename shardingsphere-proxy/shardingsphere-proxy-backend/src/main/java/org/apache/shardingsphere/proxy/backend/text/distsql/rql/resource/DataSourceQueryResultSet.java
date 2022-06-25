@@ -37,7 +37,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * Result set for show data source.
+ * Query result set for show data source.
  */
 public final class DataSourceQueryResultSet implements DistSQLResultSet {
     

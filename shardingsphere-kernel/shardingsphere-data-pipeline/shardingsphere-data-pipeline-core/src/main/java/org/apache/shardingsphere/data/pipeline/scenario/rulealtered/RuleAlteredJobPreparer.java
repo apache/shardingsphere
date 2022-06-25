@@ -30,6 +30,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineIgnoredException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializerFactory;
@@ -77,11 +78,11 @@ public final class RuleAlteredJobPreparer {
     public void prepare(final RuleAlteredJobContext jobContext) {
         checkSourceDataSource(jobContext);
         if (jobContext.isStopping()) {
-            throw new PipelineJobPrepareFailedException("Job stopping, jobId=" + jobContext.getJobId());
+            throw new PipelineIgnoredException("Job stopping, jobId=" + jobContext.getJobId());
         }
         prepareAndCheckTargetWithLock(jobContext);
         if (jobContext.isStopping()) {
-            throw new PipelineJobPrepareFailedException("Job stopping, jobId=" + jobContext.getJobId());
+            throw new PipelineIgnoredException("Job stopping, jobId=" + jobContext.getJobId());
         }
         // TODO check metadata
         try {

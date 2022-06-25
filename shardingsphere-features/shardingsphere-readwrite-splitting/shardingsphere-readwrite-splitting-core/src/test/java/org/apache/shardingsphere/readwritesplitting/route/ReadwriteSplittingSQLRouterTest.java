@@ -70,22 +70,35 @@ public final class ReadwriteSplittingSQLRouterTest {
     
     private ReadwriteSplittingRule rule;
     
+    private ReadwriteSplittingRule dynamicRule;
+    
     @Mock
     private CommonSQLStatementContext<SQLStatement> sqlStatementContext;
     
     private ReadwriteSplittingSQLRouter sqlRouter;
+    
+    private ReadwriteSplittingSQLRouter dynamicSqlRouter;
     
     @Before
     public void setUp() {
         rule = new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(Collections.singleton(
                 new ReadwriteSplittingDataSourceRuleConfiguration(DATASOURCE_NAME, "Static", createProperties(), "")), Collections.emptyMap()));
         sqlRouter = (ReadwriteSplittingSQLRouter) SQLRouterFactory.getInstances(Collections.singleton(rule)).get(rule);
+        dynamicRule = new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(Collections.singleton(
+                new ReadwriteSplittingDataSourceRuleConfiguration(DATASOURCE_NAME, "Dynamic", createDynamicProperties(), "")), Collections.emptyMap()));
+        dynamicSqlRouter = (ReadwriteSplittingSQLRouter) SQLRouterFactory.getInstances(Collections.singleton(dynamicRule)).get(dynamicRule);
     }
     
     private Properties createProperties() {
         Properties result = new Properties();
         result.setProperty("write-data-source-name", WRITE_DATASOURCE);
         result.setProperty("read-data-source-names", READ_DATASOURCE);
+        return result;
+    }
+    
+    private Properties createDynamicProperties() {
+        Properties result = new Properties();
+        result.setProperty("auto-aware-data-source-name", "readwrite_ds");
         return result;
     }
     
@@ -226,6 +239,34 @@ public final class ReadwriteSplittingSQLRouterTest {
                 mock(DatabaseType.class), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyMap());
         RouteContext actual = sqlRouter.createRouteContext(logicSQL, database, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
+        assertThat(routedDataSourceNames.next(), is(WRITE_DATASOURCE));
+    }
+    
+    @Test
+    public void assertCreateRouteContextToPrimaryDataSourceWithWriteDataSourceQueryEnabled() {
+        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
+        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, "", Collections.emptyList());
+        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(dynamicRule));
+        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
+                mock(DatabaseType.class), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyMap());
+        RouteContext actual = dynamicSqlRouter.createRouteContext(logicSQL, database, dynamicRule, new ConfigurationProperties(new Properties()));
+        Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
+        assertThat(routedDataSourceNames.next(), is(WRITE_DATASOURCE));
+    }
+    
+    @Test
+    public void assertDecorateRouteContextToPrimaryDataSourceWithWriteDataSourceQueryEnabled() {
+        RouteContext actual = mockRouteContext();
+        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
+        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, "", Collections.emptyList());
+        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(dynamicRule));
+        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
+                mock(DatabaseType.class), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyMap());
+        dynamicSqlRouter.decorateRouteContext(actual, logicSQL, database, dynamicRule, new ConfigurationProperties(new Properties()));
+        Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
+        assertThat(routedDataSourceNames.next(), is(NONE_READWRITE_SPLITTING_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(WRITE_DATASOURCE));
     }
     

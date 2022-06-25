@@ -67,7 +67,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListUnitCompleteEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.StorageNodeChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.util.ReflectionUtil;
@@ -309,12 +308,6 @@ public final class ClusterContextManagerCoordinatorTest {
         Collection<String> labels = Collections.singleton("test");
         coordinator.renew(new LabelsEvent(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId(), labels));
         assertThat(contextManager.getInstanceContext().getInstance().getLabels(), is(labels));
-    }
-    
-    @Test
-    public void assertRenewXaRecoveryIdEvent() {
-        coordinator.renew(new XaRecoveryIdAddedEvent(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId(), "foo_xa_recovery_id"));
-        assertTrue(contextManager.getInstanceContext().getInstance().getXaRecoveryIds().contains("foo_xa_recovery_id"));
     }
     
     @Test

@@ -39,7 +39,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Result set for show readwrite splitting rule.
+ * Query result set for show readwrite splitting rule.
  */
 public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResultSet {
     

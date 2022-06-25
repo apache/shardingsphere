@@ -110,11 +110,13 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterIndexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterLanguageStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterLibraryStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterMaterializedViewStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterOperatorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterOutlineStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterPackageStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterProcedureStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterPublicationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterPolicyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSchemaStatementTestCase;
@@ -129,6 +131,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTriggerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTypeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterViewStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterInmemoryJoinGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AnalyzeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AssociateStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AuditStatementTestCase;
@@ -361,6 +364,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.CheckpointStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.CopyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.DeleteStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.DoStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.InsertStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.MergeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
@@ -590,6 +594,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "alter-procedure")
     private final List<AlterProcedureStatementTestCase> alterProcedureTestCases = new LinkedList<>();
     
+    @XmlElement(name = "alter-publication")
+    private final List<AlterPublicationStatementTestCase> alterPublicationTestCases = new LinkedList<>();
+    
     @XmlElement(name = "alter-policy")
     private final List<AlterPolicyStatementTestCase> alterPolicyTestCases = new LinkedList<>();
     
@@ -754,6 +761,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "call")
     private final List<CallStatementTestCase> callProcedureTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "do")
+    private final List<DoStatementTestCase> doTestCases = new LinkedList<>();
     
     @XmlElement(name = "copy")
     private final List<CopyStatementTestCase> copyTestCases = new LinkedList<>();
@@ -1430,6 +1440,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "create-inmemory-join-group")
     private final List<CreateInmemoryJoinGroupStatementTestCase> createInmemoryJoinGroupTestCases = new LinkedList<>();
     
+    @XmlElement(name = "alter-inmemory-join-group")
+    private final List<AlterInmemoryJoinGroupStatementTestCase> alterInmemoryJoinGroupTestCases = new LinkedList<>();
+    
     @XmlElement(name = "drop-inmemory-join-group")
     private final List<DropInmemoryJoinGroupStatementTestCase> dropInmemoryJoinGroupTestCases = new LinkedList<>();
     
@@ -1438,6 +1451,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-restore-point")
     private final List<DropRestorePointStatementTestCase> dropRestorePointTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-library")
+    private final List<AlterLibraryStatementTestCase> alterLibraryTestCases = new LinkedList<>();
     
     @XmlElement(name = "cursor")
     private final List<CursorStatementTestCase> cursorTestCases = new LinkedList<>();
@@ -1534,6 +1550,7 @@ public final class SQLParserTestCases {
         putAll(alterDirectoryTestCases, result);
         putAll(alterSystemTestCases, result);
         putAll(alterProcedureTestCases, result);
+        putAll(alterPublicationTestCases, result);
         putAll(alterPolicyTestCases, result);
         putAll(alterDatabaseTestCases, result);
         putAll(alterDimensionTestCases, result);
@@ -1575,6 +1592,7 @@ public final class SQLParserTestCases {
         putAll(dropGroupTestCases, result);
         putAll(dropDatabaseTestCases, result);
         putAll(callProcedureTestCases, result);
+        putAll(doTestCases, result);
         putAll(copyTestCases, result);
         putAll(xaTestCases, result);
         putAll(mergeTestCases, result);
@@ -1814,9 +1832,11 @@ public final class SQLParserTestCases {
         putAll(createLockdownProfileTestCases, result);
         putAll(dropLockdownProfileTestCases, result);
         putAll(createInmemoryJoinGroupTestCases, result);
+        putAll(alterInmemoryJoinGroupTestCases, result);
         putAll(dropInmemoryJoinGroupTestCases, result);
         putAll(createRestorePointTestCases, result);
         putAll(dropRestorePointTestCases, result);
+        putAll(alterLibraryTestCases, result);
         putAll(cursorTestCases, result);
         putAll(closeTestCases, result);
         putAll(moveTestCases, result);

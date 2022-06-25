@@ -25,8 +25,6 @@ import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.state.StateType;
 
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Instance of compute node.
@@ -43,8 +41,6 @@ public final class ComputeNodeInstance {
     private final StateContext state = new StateContext();
     
     private Long workerId;
-    
-    private List<String> xaRecoveryIds = new LinkedList<>();
     
     /**
      * Set labels.

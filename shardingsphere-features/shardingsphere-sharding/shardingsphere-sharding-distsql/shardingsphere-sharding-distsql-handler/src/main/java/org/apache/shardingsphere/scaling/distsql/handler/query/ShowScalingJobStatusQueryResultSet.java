@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
- * Show scaling job status query result set.
+ * Query result set for show scaling job status.
  */
 public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSet {
     

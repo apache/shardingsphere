@@ -102,41 +102,6 @@ public final class InstanceContext {
     }
     
     /**
-     * Add instance XA recovery id.
-     *
-     * @param instanceId instance id
-     * @param xaRecoveryId XA recovery id
-     * @return true if current instance updated, else false                    
-     */
-    public boolean addXaRecoveryId(final String instanceId, final String xaRecoveryId) {
-        if (instanceId.equals(instance.getCurrentInstanceId()) && !instance.getXaRecoveryIds().contains(xaRecoveryId)) {
-            instance.getXaRecoveryIds().add(xaRecoveryId);
-            computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().equals(instanceId)).forEach(each -> each.getXaRecoveryIds().add(xaRecoveryId));
-            return true;
-        }
-        computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().equals(instanceId) && !each.getXaRecoveryIds().contains(xaRecoveryId))
-                .forEach(each -> each.getXaRecoveryIds().add(xaRecoveryId));
-        return false;
-    }
-    
-    /**
-     * Delete instance XA recovery id.
-     *
-     * @param instanceId instance id
-     * @param xaRecoveryId XA recovery id
-     * @return true if current instance updated, else false                    
-     */
-    public boolean deleteXaRecoveryId(final String instanceId, final String xaRecoveryId) {
-        if (instanceId.equals(instance.getCurrentInstanceId()) && instance.getXaRecoveryIds().contains(xaRecoveryId)) {
-            instance.getXaRecoveryIds().remove(xaRecoveryId);
-            computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().equals(instanceId)).forEach(each -> each.getXaRecoveryIds().remove(xaRecoveryId));
-            return true;
-        }
-        computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().equals(instanceId)).forEach(each -> each.getXaRecoveryIds().remove(xaRecoveryId));
-        return false;
-    }
-    
-    /**
      * Get worker id.
      *
      * @return worker id

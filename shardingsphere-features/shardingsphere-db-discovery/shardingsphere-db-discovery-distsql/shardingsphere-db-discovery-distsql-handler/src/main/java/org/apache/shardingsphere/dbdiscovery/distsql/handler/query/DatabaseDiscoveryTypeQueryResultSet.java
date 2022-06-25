@@ -32,7 +32,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 /**
- * Result set for show database discovery type.
+ * Query result set for show database discovery type.
  */
 public final class DatabaseDiscoveryTypeQueryResultSet implements DistSQLResultSet {
     

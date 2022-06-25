@@ -48,8 +48,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListUnitCompleteEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdAddedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.StorageNodeChangedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -58,7 +56,6 @@ import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.metadata.storage.event.PrimaryDataSourceChangedEvent;
 import org.apache.shardingsphere.mode.metadata.storage.event.StorageNodeDataSourceChangedEvent;
-import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -242,36 +239,6 @@ public final class ClusterContextManagerCoordinator {
     public synchronized void renew(final LabelsEvent event) {
         // TODO labels may be empty
         contextManager.getInstanceContext().updateLabel(event.getInstanceId(), event.getLabels());
-    }
-    
-    /**
-     * Renew instance xa recovery id event.
-     *
-     * @param event xa recovery id added event
-     */
-    @Subscribe
-    public synchronized void renew(final XaRecoveryIdAddedEvent event) {
-        if (contextManager.getInstanceContext().addXaRecoveryId(event.getInstanceId(), event.getXaRecoveryId())) {
-            TransactionRule transactionRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
-            for (String each : transactionRule.getResources().keySet()) {
-                transactionRule.addResource(contextManager.getMetaDataContexts().getMetaData().getDatabases().get(each));
-            }
-        }
-    }
-    
-    /**
-     * Renew instance xa recovery id event.
-     *
-     * @param event xa recovery id deleted event
-     */
-    @Subscribe
-    public synchronized void renew(final XaRecoveryIdDeletedEvent event) {
-        if (contextManager.getInstanceContext().deleteXaRecoveryId(event.getInstanceId(), event.getXaRecoveryId())) {
-            TransactionRule transactionRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
-            for (String each : transactionRule.getResources().keySet()) {
-                transactionRule.addResource(contextManager.getMetaDataContexts().getMetaData().getDatabases().get(each));
-            }
-        }
     }
     
     /**

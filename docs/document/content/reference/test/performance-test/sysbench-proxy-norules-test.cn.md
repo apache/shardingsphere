@@ -60,7 +60,7 @@ transaction_isolation=READ-COMMITTED
 #### config.yaml
 
 ```yaml
-schemaName: sharding_db
+databaseName: sharding_db
 
 dataSources:
   ds_0:

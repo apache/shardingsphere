@@ -28,9 +28,6 @@ import org.apache.shardingsphere.mode.manager.memory.lock.MemoryLockContext;
 import org.apache.shardingsphere.mode.manager.memory.workerid.generator.MemoryWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
-import org.apache.shardingsphere.transaction.rule.TransactionRule;
-import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGenerator;
-import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGeneratorFactory;
 
 import java.sql.SQLException;
 import java.util.Optional;
@@ -45,7 +42,6 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
         MetaDataContexts metaDataContexts = new MetaDataContextsBuilder(
                 parameter.getDatabaseConfigs(), parameter.getGlobalRuleConfigs(), new ConfigurationProperties(parameter.getProps())).build(null);
         InstanceContext instanceContext = buildInstanceContext(parameter);
-        generateTransactionConfigurationFile(instanceContext, metaDataContexts);
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);
         return result;
     }
@@ -54,15 +50,6 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
         ComputeNodeInstance instance = new ComputeNodeInstance(parameter.getInstanceDefinition());
         instance.setLabels(parameter.getLabels());
         return new InstanceContext(instance, new MemoryWorkerIdGenerator(), buildMemoryModeConfiguration(parameter.getModeConfig()), new MemoryLockContext());
-    }
-    
-    private void generateTransactionConfigurationFile(final InstanceContext instanceContext, final MetaDataContexts metaDataContexts) {
-        Optional<TransactionRule> transactionRule =
-                metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).map(each -> (TransactionRule) each).findFirst();
-        if (transactionRule.isPresent()) {
-            Optional<TransactionConfigurationFileGenerator> fileGenerator = TransactionConfigurationFileGeneratorFactory.findInstance(transactionRule.get().getProviderType());
-            fileGenerator.ifPresent(optional -> optional.generateFile(transactionRule.get().getProps(), instanceContext));
-        }
     }
     
     private ModeConfiguration buildMemoryModeConfiguration(final ModeConfiguration modeConfiguration) {

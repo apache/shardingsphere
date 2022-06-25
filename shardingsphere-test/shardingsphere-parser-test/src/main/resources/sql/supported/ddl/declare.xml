@@ -17,5 +17,5 @@
   -->
 
 <sql-cases>
-    <sql-case id="declare" value="DECLARE bc BINARY CURSOR FOR SELECT * FROM tenk1;" db-types="PostgreSQL,openGauss" />
+    <sql-case id="declare_cursor" value="DECLARE t_order_cursor BINARY CURSOR FOR SELECT * FROM t_order;" db-types="PostgreSQL,openGauss" />
 </sql-cases>

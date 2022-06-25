@@ -30,8 +30,6 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -76,24 +74,6 @@ public final class ComputeNodeStatusService {
     }
     
     /**
-     * Persist instance xa recovery id.
-     *
-     * @param instanceId instance id
-     * @param xaRecoveryIds collection of xa recovery id
-     */
-    public void persistInstanceXaRecoveryId(final String instanceId, final Collection<String> xaRecoveryIds) {
-        Collection<String> originalXaRecoveryIds = loadXaRecoveryIds(instanceId);
-        if (originalXaRecoveryIds.isEmpty()) {
-            xaRecoveryIds.forEach(each -> repository.persistEphemeral(ComputeNode.getInstanceXaRecoveryIdNodePath(each, instanceId), ""));
-        } else {
-            originalXaRecoveryIds.stream().filter(each -> !xaRecoveryIds.contains(each)).forEach(each -> repository.delete(ComputeNode
-                    .getInstanceXaRecoveryIdNodePath(each, instanceId)));
-            xaRecoveryIds.stream().filter(each -> !originalXaRecoveryIds.contains(each)).forEach(each -> repository.persistEphemeral(ComputeNode
-                    .getInstanceXaRecoveryIdNodePath(each, instanceId), ""));
-        }
-    }
-    
-    /**
      * Load instance labels.
      *
      * @param instanceId instance id
@@ -134,23 +114,6 @@ public final class ComputeNodeStatusService {
     }
     
     /**
-     * Load instance xa recovery id list.
-     *
-     * @param instanceId instance id
-     * @return collection of xa recovery id
-     */
-    public Collection<String> loadXaRecoveryIds(final String instanceId) {
-        Collection<String> result = new LinkedList<>();
-        List<String> xaRecoveryIds = repository.getChildrenKeys(ComputeNode.getXaRecoveryIdNodePath());
-        for (String xaRecoveryId : xaRecoveryIds) {
-            if (repository.getChildrenKeys(String.join("/", ComputeNode.getXaRecoveryIdNodePath(), xaRecoveryId)).contains(instanceId)) {
-                result.add(xaRecoveryId);
-            }
-        }
-        return result;
-    }
-    
-    /**
      * Load all compute node instances.
      *
      * @return compute node instances
@@ -177,7 +140,6 @@ public final class ComputeNodeStatusService {
         ComputeNodeInstance result = new ComputeNodeInstance(instanceDefinition);
         result.setLabels(loadInstanceLabels(instanceDefinition.getInstanceId()));
         result.switchState(loadInstanceStatus(instanceDefinition.getInstanceId()));
-        result.getXaRecoveryIds().addAll(loadXaRecoveryIds(instanceDefinition.getInstanceId()));
         loadInstanceWorkerId(instanceDefinition.getInstanceId()).ifPresent(result::setWorkerId);
         return result;
     }
