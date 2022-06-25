@@ -40,9 +40,9 @@ public final class InstanceDefinition {
     
     private final String instanceId;
     
-    private String ip;
+    private final String ip;
     
-    private String uniqueSign;
+    private final String uniqueSign;
     
     public InstanceDefinition(final InstanceType instanceType, final String instanceId) {
         this.instanceType = instanceType;
