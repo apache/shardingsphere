@@ -56,15 +56,15 @@ public final class MetaDataContextsBuilder {
      * @return meta data contexts
      */
     public MetaDataContexts build(final MetaDataPersistService persistService) throws SQLException {
-        DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfigMap, props);
-        DatabaseType storageType = DatabaseTypeEngine.getStorageType(databaseConfigMap);
-        Map<String, ShardingSphereDatabase> databases = getDatabases(protocolType, storageType);
+        Map<String, ShardingSphereDatabase> databases = createDatabases();
         ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, globalMetaData, props);
         return new MetaDataContexts(persistService, metaData, OptimizerContextFactory.create(databases, globalMetaData));
     }
     
-    private Map<String, ShardingSphereDatabase> getDatabases(final DatabaseType protocolType, final DatabaseType storageType) throws SQLException {
+    private Map<String, ShardingSphereDatabase> createDatabases() throws SQLException {
+        DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfigMap, props);
+        DatabaseType storageType = DatabaseTypeEngine.getStorageType(databaseConfigMap);
         Map<String, ShardingSphereDatabase> result = new HashMap<>(databaseConfigMap.size() + protocolType.getSystemDatabaseSchemaMap().size(), 1);
         result.putAll(getGenericDatabases(protocolType, storageType));
         result.putAll(getSystemDatabases(protocolType));
