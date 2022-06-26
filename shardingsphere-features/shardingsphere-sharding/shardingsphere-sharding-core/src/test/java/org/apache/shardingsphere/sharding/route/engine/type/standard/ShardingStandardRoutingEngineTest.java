@@ -86,7 +86,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     public void assertForceRouteDbUseHintByShardingConditions() {
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", createShardingConditions("t_order"));
         HintManager hintManager = HintManager.getInstance();
-        hintManager.addDatabaseShardingValue("t_order", "ds_0");
+        hintManager.addDatabaseShardingValue("t_order", 2L);
         RouteContext routeContext = standardRoutingEngine.route(createBasedShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
@@ -100,7 +100,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     public void assertForceRouteTableUseHintByShardingConditions() {
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", createShardingConditions("t_order"));
         HintManager hintManager = HintManager.getInstance();
-        hintManager.addTableShardingValue("t_order", "t_order_0");
+        hintManager.addTableShardingValue("t_order", 2l);
         RouteContext routeContext = standardRoutingEngine.route(createBasedShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
@@ -114,8 +114,8 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     public void assertForceRouteDbAndTableUseHintByShardingConditions() {
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", createShardingConditions("t_order"));
         HintManager hintManager = HintManager.getInstance();
-        hintManager.addDatabaseShardingValue("t_order", "ds_0");
-        hintManager.addTableShardingValue("t_order", "t_order_0");
+        hintManager.addDatabaseShardingValue("t_order", 2l);
+        hintManager.addTableShardingValue("t_order", 2l);
         RouteContext routeContext = standardRoutingEngine.route(createBasedShardingRule());
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
         assertThat(routeContext.getRouteUnits().size(), is(1));
