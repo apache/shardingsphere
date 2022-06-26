@@ -49,8 +49,8 @@ public final class ShardingSphereDatabasesFactory {
         return result;
     }
     
-    private static Map<String, ShardingSphereDatabase> createGenericDatabases(
-            final Map<String, DatabaseConfiguration> databaseConfigMap, final DatabaseType protocolType, final DatabaseType storageType, final ConfigurationProperties props) throws SQLException {
+    private static Map<String, ShardingSphereDatabase> createGenericDatabases(final Map<String, DatabaseConfiguration> databaseConfigMap, final DatabaseType protocolType,
+                                                                              final DatabaseType storageType, final ConfigurationProperties props) throws SQLException {
         Map<String, ShardingSphereDatabase> result = new HashMap<>(databaseConfigMap.size(), 1);
         for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
             String databaseName = entry.getKey();
