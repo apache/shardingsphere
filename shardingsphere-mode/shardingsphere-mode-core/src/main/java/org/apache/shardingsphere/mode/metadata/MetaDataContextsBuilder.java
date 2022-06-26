@@ -21,20 +21,17 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * Meta data contexts builder.
@@ -56,39 +53,9 @@ public final class MetaDataContextsBuilder {
      * @return meta data contexts
      */
     public MetaDataContexts build(final MetaDataPersistService persistService) throws SQLException {
-        Map<String, ShardingSphereDatabase> databases = createDatabases();
+        Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(databaseConfigMap, props);
         ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, globalMetaData, props);
         return new MetaDataContexts(persistService, metaData, OptimizerContextFactory.create(databases, globalMetaData));
-    }
-    
-    private Map<String, ShardingSphereDatabase> createDatabases() throws SQLException {
-        DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfigMap, props);
-        DatabaseType storageType = DatabaseTypeEngine.getStorageType(databaseConfigMap);
-        Map<String, ShardingSphereDatabase> result = new HashMap<>(databaseConfigMap.size() + protocolType.getSystemDatabaseSchemaMap().size(), 1);
-        result.putAll(createGenericDatabases(protocolType, storageType));
-        result.putAll(createSystemDatabases(protocolType));
-        return result;
-    }
-    
-    private Map<String, ShardingSphereDatabase> createGenericDatabases(final DatabaseType protocolType, final DatabaseType storageType) throws SQLException {
-        Map<String, ShardingSphereDatabase> result = new HashMap<>(databaseConfigMap.size(), 1);
-        for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
-            String databaseName = entry.getKey();
-            if (!entry.getValue().getDataSources().isEmpty() || !protocolType.getSystemSchemas().contains(databaseName)) {
-                result.put(databaseName, ShardingSphereDatabase.create(databaseName, protocolType, storageType, entry.getValue(), props));
-            }
-        }
-        return result;
-    }
-    
-    private Map<String, ShardingSphereDatabase> createSystemDatabases(final DatabaseType protocolType) throws SQLException {
-        Map<String, ShardingSphereDatabase> result = new HashMap<>(protocolType.getSystemDatabaseSchemaMap().size(), 1);
-        for (String each : protocolType.getSystemDatabaseSchemaMap().keySet()) {
-            if (!databaseConfigMap.containsKey(each) || databaseConfigMap.get(each).getDataSources().isEmpty()) {
-                result.put(each, ShardingSphereDatabase.create(each, protocolType));
-            }
-        }
-        return result;
     }
 }
