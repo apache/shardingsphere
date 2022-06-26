@@ -35,6 +35,7 @@ import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationD
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
@@ -133,10 +134,10 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private MetaDataContexts createMetaDataContext(final String databaseName) throws SQLException {
-        MetaDataContextsBuilder builder = new MetaDataContextsBuilder(
-                Collections.singletonMap(databaseName, new DataSourceProvidedDatabaseConfiguration(new HashMap<>(), new LinkedList<>())),
-                metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), metaDataContexts.getMetaData().getProps());
-        return builder.build(metaDataContexts.getPersistService().orElse(null));
+        Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(
+                Collections.singletonMap(databaseName, new DataSourceProvidedDatabaseConfiguration(new HashMap<>(), new LinkedList<>())), metaDataContexts.getMetaData().getProps());
+        MetaDataContextsBuilder builder = new MetaDataContextsBuilder(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), metaDataContexts.getMetaData().getProps());
+        return builder.build(databases, metaDataContexts.getPersistService().orElse(null));
     }
     
     /**
@@ -561,18 +562,20 @@ public final class ContextManager implements AutoCloseable {
         Map<String, DataSource> dataSourceMap = new HashMap<>(originalDatabase.getResource().getDataSources());
         dataSourceMap.putAll(DataSourcePoolCreator.create(addedDataSourceProps));
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(dataSourceMap, originalDatabase.getRuleMetaData().getConfigurations());
-        MetaDataContextsBuilder builder = new MetaDataContextsBuilder(Collections.singletonMap(originalDatabase.getName(), databaseConfig),
-                metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), metaDataContexts.getMetaData().getProps());
-        MetaDataContexts result = builder.build(metaDataContexts.getPersistService().orElse(null));
+        Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(
+                Collections.singletonMap(originalDatabase.getName(), databaseConfig), metaDataContexts.getMetaData().getProps());
+        MetaDataContextsBuilder builder = new MetaDataContextsBuilder(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), metaDataContexts.getMetaData().getProps());
+        MetaDataContexts result = builder.build(databases, metaDataContexts.getPersistService().orElse(null));
         persistMetaData(result);
         return result;
     }
     
     private MetaDataContexts buildChangedMetaDataContext(final ShardingSphereDatabase originalDatabase, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
-        MetaDataContextsBuilder builder = new MetaDataContextsBuilder(
+        Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(
                 Collections.singletonMap(originalDatabase.getName(), new DataSourceProvidedDatabaseConfiguration(originalDatabase.getResource().getDataSources(), ruleConfigs)),
-                metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), metaDataContexts.getMetaData().getProps());
-        MetaDataContexts result = builder.build(metaDataContexts.getPersistService().orElse(null));
+                metaDataContexts.getMetaData().getProps());
+        MetaDataContextsBuilder builder = new MetaDataContextsBuilder(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), metaDataContexts.getMetaData().getProps());
+        MetaDataContexts result = builder.build(databases, metaDataContexts.getPersistService().orElse(null));
         persistMetaData(result);
         return result;
     }
@@ -584,9 +587,10 @@ public final class ContextManager implements AutoCloseable {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(
                 getNewDataSources(originalDatabase.getResource().getDataSources(), getAddedDataSources(originalDatabase, newDataSourceProps), changedDataSources, deletedDataSources),
                 originalDatabase.getRuleMetaData().getConfigurations());
-        MetaDataContextsBuilder builder = new MetaDataContextsBuilder(Collections.singletonMap(originalDatabase.getName(), databaseConfig),
-                metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), metaDataContexts.getMetaData().getProps());
-        MetaDataContexts result = builder.build(metaDataContexts.getPersistService().orElse(null));
+        Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(
+                Collections.singletonMap(originalDatabase.getName(), databaseConfig), metaDataContexts.getMetaData().getProps());
+        MetaDataContextsBuilder builder = new MetaDataContextsBuilder(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), metaDataContexts.getMetaData().getProps());
+        MetaDataContexts result = builder.build(databases, metaDataContexts.getPersistService().orElse(null));
         persistMetaData(result);
         return result;
     }
@@ -597,9 +601,10 @@ public final class ContextManager implements AutoCloseable {
         Map<String, DataSource> changedDataSources = buildChangedDataSources(originalDatabase, newDataSourceProps);
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(getNewDataSources(originalDatabase.getResource().getDataSources(),
                 getAddedDataSources(originalDatabase, newDataSourceProps), changedDataSources, deletedDataSources), ruleConfigs);
-        MetaDataContextsBuilder builder = new MetaDataContextsBuilder(Collections.singletonMap(originalDatabase.getName(), databaseConfig),
-                metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), metaDataContexts.getMetaData().getProps());
-        MetaDataContexts result = builder.build(metaDataContexts.getPersistService().orElse(null));
+        Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(
+                Collections.singletonMap(originalDatabase.getName(), databaseConfig), metaDataContexts.getMetaData().getProps());
+        MetaDataContextsBuilder builder = new MetaDataContextsBuilder(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), metaDataContexts.getMetaData().getProps());
+        MetaDataContexts result = builder.build(databases, metaDataContexts.getPersistService().orElse(null));
         persistMetaData(result);
         return result;
     }

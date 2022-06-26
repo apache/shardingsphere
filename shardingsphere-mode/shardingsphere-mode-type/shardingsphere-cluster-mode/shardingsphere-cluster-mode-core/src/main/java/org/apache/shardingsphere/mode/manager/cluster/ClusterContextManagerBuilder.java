@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
@@ -59,7 +60,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
         persistConfigurations(persistService, parameter);
         RegistryCenter registryCenter = new RegistryCenter(repository);
-        MetaDataContexts metaDataContexts = createMetaDataContextsBuilder(persistService, parameter).build(persistService);
+        MetaDataContexts metaDataContexts = createMetaDataContexts(persistService, parameter);
         persistMetaData(metaDataContexts);
         ContextManager result = createContextManager(repository, registryCenter, parameter.getInstanceDefinition(), metaDataContexts, parameter.getModeConfig());
         registerOnline(persistService, parameter, result, registryCenter);
@@ -73,14 +74,14 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         }
     }
     
-    private MetaDataContextsBuilder createMetaDataContextsBuilder(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) {
+    private MetaDataContexts createMetaDataContexts(final MetaDataPersistService persistService, final ContextManagerBuilderParameter parameter) throws SQLException {
         Collection<String> databaseNames = InstanceType.JDBC == parameter.getInstanceDefinition().getInstanceType()
                 ? parameter.getDatabaseConfigs().keySet()
-                : metaDataPersistService.getSchemaMetaDataService().loadAllDatabaseNames();
-        Map<String, DatabaseConfiguration> databaseConfigMap = getDatabaseConfigMap(databaseNames, metaDataPersistService, parameter);
-        Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
-        ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());
-        return new MetaDataContextsBuilder(databaseConfigMap, globalRuleConfigs, props);
+                : persistService.getSchemaMetaDataService().loadAllDatabaseNames();
+        Collection<RuleConfiguration> globalRuleConfigs = persistService.getGlobalRuleService().load();
+        ConfigurationProperties props = new ConfigurationProperties(persistService.getPropsService().load());
+        Map<String, DatabaseConfiguration> databaseConfigMap = getDatabaseConfigMap(databaseNames, persistService, parameter);
+        return new MetaDataContextsBuilder(globalRuleConfigs, props).build(ShardingSphereDatabasesFactory.create(databaseConfigMap, props), persistService);
     }
     
     private Map<String, DatabaseConfiguration> getDatabaseConfigMap(final Collection<String> databaseNames, final MetaDataPersistService metaDataPersistService,

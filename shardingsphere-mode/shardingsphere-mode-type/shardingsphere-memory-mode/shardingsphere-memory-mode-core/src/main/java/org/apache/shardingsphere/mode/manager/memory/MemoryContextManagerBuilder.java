@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
@@ -39,10 +40,10 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
     
     @Override
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
+        ConfigurationProperties props = new ConfigurationProperties(parameter.getProps());
         MetaDataContexts metaDataContexts = new MetaDataContextsBuilder(
-                parameter.getDatabaseConfigs(), parameter.getGlobalRuleConfigs(), new ConfigurationProperties(parameter.getProps())).build(null);
-        InstanceContext instanceContext = buildInstanceContext(parameter);
-        return new ContextManager(metaDataContexts, instanceContext);
+                parameter.getGlobalRuleConfigs(), props).build(ShardingSphereDatabasesFactory.create(parameter.getDatabaseConfigs(), props), null);
+        return new ContextManager(metaDataContexts, buildInstanceContext(parameter));
     }
     
     private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter parameter) {

@@ -24,6 +24,8 @@ import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.metadata.fixture.FixtureRule;
@@ -37,6 +39,7 @@ import org.junit.Test;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -55,8 +58,8 @@ public final class MetaDataContextsBuilderTest {
         AuthorityRuleConfiguration authorityRuleConfig = new AuthorityRuleConfiguration(Collections.singleton(user),
                 new ShardingSphereAlgorithmConfiguration("ALL_PERMITTED", new Properties()));
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration()));
-        MetaDataContexts actual = new MetaDataContextsBuilder(
-                Collections.singletonMap("logic_db", databaseConfig), Collections.singleton(authorityRuleConfig), new ConfigurationProperties(props)).build(mock(MetaDataPersistService.class));
+        Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(Collections.singletonMap("logic_db", databaseConfig), new ConfigurationProperties(props));
+        MetaDataContexts actual = new MetaDataContextsBuilder(Collections.singleton(authorityRuleConfig), new ConfigurationProperties(props)).build(databases, mock(MetaDataPersistService.class));
         assertRules(actual);
         assertTrue(actual.getMetaData().getDatabases().get("logic_db").getResource().getDataSources().isEmpty());
         assertThat(actual.getMetaData().getProps().getProps().size(), is(1));
@@ -72,7 +75,7 @@ public final class MetaDataContextsBuilderTest {
     @Test
     public void assertBuildWithoutGlobalRuleConfigurations() throws SQLException {
         MetaDataContexts actual = new MetaDataContextsBuilder(
-                Collections.emptyMap(), Collections.emptyList(), new ConfigurationProperties(new Properties())).build(mock(MetaDataPersistService.class));
+                Collections.emptyList(), new ConfigurationProperties(new Properties())).build(Collections.emptyMap(), mock(MetaDataPersistService.class));
         assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().size(), is(4));
         assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof AuthorityRule).count(), is(1L));
         assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).count(), is(1L));
@@ -82,8 +85,8 @@ public final class MetaDataContextsBuilderTest {
     
     @Test
     public void assertBuildWithEmptyRuleConfigurations() throws SQLException {
-        MetaDataContexts actual = new MetaDataContextsBuilder(
-                Collections.emptyMap(), Collections.emptyList(), new ConfigurationProperties(new Properties())).build(mock(MetaDataPersistService.class));
+        Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(Collections.emptyMap(), new ConfigurationProperties(new Properties()));
+        MetaDataContexts actual = new MetaDataContextsBuilder(Collections.emptyList(), new ConfigurationProperties(new Properties())).build(databases, mock(MetaDataPersistService.class));
         assertThat(actual.getMetaData().getDatabases().size(), is(4));
         assertTrue(actual.getMetaData().getDatabases().containsKey("information_schema"));
         assertTrue(actual.getMetaData().getDatabases().containsKey("performance_schema"));

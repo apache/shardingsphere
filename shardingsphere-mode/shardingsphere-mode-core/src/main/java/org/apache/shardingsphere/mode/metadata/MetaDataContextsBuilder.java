@@ -19,12 +19,10 @@ package org.apache.shardingsphere.mode.metadata;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -39,8 +37,6 @@ import java.util.Map;
 @RequiredArgsConstructor
 public final class MetaDataContextsBuilder {
     
-    private final Map<String, DatabaseConfiguration> databaseConfigMap;
-    
     private final Collection<RuleConfiguration> globalRuleConfigs;
     
     private final ConfigurationProperties props;
@@ -52,8 +48,7 @@ public final class MetaDataContextsBuilder {
      * @exception SQLException SQL exception
      * @return meta data contexts
      */
-    public MetaDataContexts build(final MetaDataPersistService persistService) throws SQLException {
-        Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(databaseConfigMap, props);
+    public MetaDataContexts build(final Map<String, ShardingSphereDatabase> databases, final MetaDataPersistService persistService) throws SQLException {
         ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, globalMetaData, props);
         return new MetaDataContexts(persistService, metaData, OptimizerContextFactory.create(databases, globalMetaData));
