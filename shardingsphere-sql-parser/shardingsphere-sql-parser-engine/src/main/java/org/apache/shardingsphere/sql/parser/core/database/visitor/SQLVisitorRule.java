@@ -230,6 +230,8 @@ public enum SQLVisitorRule {
     
     RENAME("Rename", SQLStatementType.DDL),
     
+    ALTER_ROUTINE("AlterRoutine", SQLStatementType.DDL),
+    
     CREATE_EXTENSION("CreateExtension", SQLStatementType.DDL),
     
     ALTER_EXTENSION("AlterExtension", SQLStatementType.DDL),
