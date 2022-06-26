@@ -42,8 +42,7 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
         MetaDataContexts metaDataContexts = new MetaDataContextsBuilder(
                 parameter.getDatabaseConfigs(), parameter.getGlobalRuleConfigs(), new ConfigurationProperties(parameter.getProps())).build(null);
         InstanceContext instanceContext = buildInstanceContext(parameter);
-        ContextManager result = new ContextManager(metaDataContexts, instanceContext);
-        return result;
+        return new ContextManager(metaDataContexts, instanceContext);
     }
     
     private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter parameter) {
