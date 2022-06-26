@@ -56,13 +56,13 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
         ModeScheduleContextFactory.getInstance().init(parameter.getInstanceDefinition().getInstanceId(), parameter.getModeConfig());
         ClusterPersistRepository repository = ClusterPersistRepositoryFactory.getInstance((ClusterPersistRepositoryConfiguration) parameter.getModeConfig().getRepository());
-        MetaDataPersistService metaDataPersistService = new MetaDataPersistService(repository);
-        persistConfigurations(metaDataPersistService, parameter);
+        MetaDataPersistService persistService = new MetaDataPersistService(repository);
+        persistConfigurations(persistService, parameter);
         RegistryCenter registryCenter = new RegistryCenter(repository);
-        MetaDataContexts metaDataContexts = createMetaDataContextsBuilder(metaDataPersistService, parameter).build(metaDataPersistService);
+        MetaDataContexts metaDataContexts = createMetaDataContextsBuilder(persistService, parameter).build(persistService);
         persistMetaData(metaDataContexts);
         ContextManager result = createContextManager(repository, registryCenter, parameter.getInstanceDefinition(), metaDataContexts, parameter.getModeConfig());
-        registerOnline(metaDataPersistService, parameter, result, registryCenter);
+        registerOnline(persistService, parameter, result, registryCenter);
         return result;
     }
     
