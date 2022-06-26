@@ -17,14 +17,17 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
+import com.atomikos.jdbc.AtomikosDataSourceBean;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.AlterTransactionRuleStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -32,70 +35,70 @@ import org.apache.shardingsphere.mode.metadata.persist.service.impl.GlobalRulePe
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
+import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.Mockito;
 
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockitoSession;
 import static org.mockito.Mockito.when;
 
 public class AlterTransactionRuleHandlerTest {
-
+    ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
 
     @Before
-    public void before()  {
-//        GlobalRulePersistService globalRulePersistService =
-//                mock(GlobalRulePersistService.class,RETURNS_DEEP_STUBS);
-//        MetaDataPersistService metaDataPersistService =
-//                mock(MetaDataPersistService.class,RETURNS_DEEP_STUBS);
-//        when(metaDataPersistService.getGlobalRuleService()).thenReturn(globalRulePersistService);
-//
-//        ShardingSphereRuleMetaData shardingSphereRuleMetaData =
-//                mock(ShardingSphereRuleMetaData.class,RETURNS_DEEP_STUBS);
-//        MetaDataContexts metaDataContexts = new MetaDataContexts(
-//                metaDataPersistService,
-//                new ShardingSphereMetaData(
-//                        getDatabases()
-//                        ,shardingSphereRuleMetaData
-//                        , new ConfigurationProperties(
-//                                new Properties()))
-//                , mock(OptimizerContext.class, RETURNS_DEEP_STUBS)
-//        );
-//        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-//        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-//
-//        ProxyContext.init(contextManager);
+    public void before() {
+        GlobalRulePersistService globalRulePersistService = mock(GlobalRulePersistService.class, RETURNS_DEEP_STUBS);
+        MetaDataPersistService metaDataPersistService = mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS);
+        when(metaDataPersistService.getGlobalRuleService()).thenReturn(globalRulePersistService);
+        when(contextManager.getInstanceContext()).thenReturn(mock(InstanceContext.class, RETURNS_DEEP_STUBS));
+        ShardingSphereRuleMetaData shardingSphereRuleMetaData = mock(ShardingSphereRuleMetaData.class, RETURNS_DEEP_STUBS);
+        List<ShardingSphereRule> mockRules = new ArrayList<>();
+        mockRules.add(getLocalTransactionRule());
+        when(shardingSphereRuleMetaData.getRules()).thenReturn(mockRules);
+
+        MetaDataContexts metaDataContexts = new MetaDataContexts(metaDataPersistService, new ShardingSphereMetaData(getDatabases(), shardingSphereRuleMetaData, new ConfigurationProperties(new Properties())), mock(OptimizerContext.class, RETURNS_DEEP_STUBS));
+
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+
+        ProxyContext.init(contextManager);
     }
-    
+
     @After
     public void after() {
     }
+
+    private TransactionRule getLocalTransactionRule() {
+        TransactionRule result = new TransactionRule(new TransactionRuleConfiguration("LOCAL", null, new Properties()), Collections.emptyMap());
+        result.setInstanceContext(mock(InstanceContext.class));
+        result.getResources().put(DefaultDatabase.LOGIC_NAME, new ShardingSphereTransactionManagerEngine());
+        return result;
+    }
+
     private Map<String, ShardingSphereDatabase> getDatabases() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        when(result.getResource().getDataSources()).thenReturn(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(AtomikosDataSourceBean.class, RETURNS_DEEP_STUBS)));
         return Collections.singletonMap("db", result);
     }
+
     /**
      * Method: update(final ContextManager contextManager, final AlterTransactionRuleStatement sqlStatement)
      */
     @Test
-    public void testUpdate()  {
+    public void testUpdate() {
         try {
-            ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-            ProxyContext.init(contextManager);
-            AlterTransactionRuleStatement statement = mock(AlterTransactionRuleStatement.class, RETURNS_DEEP_STUBS);
-
             AlterTransactionRuleHandler alterTransactionRuleHandler = new AlterTransactionRuleHandler();
             AlterTransactionRuleStatement ralStatement = mock(AlterTransactionRuleStatement.class, RETURNS_DEEP_STUBS);
 
@@ -112,32 +115,28 @@ public class AlterTransactionRuleHandlerTest {
             Assert.fail();
         }
 
-
     }
-    
+
     /**
      * Method: getStatement()
      */
     @Test
-    public void testGetStatement()  {
+    public void testGetStatement() {
 
-        AlterTransactionRuleHandler alterTransactionRuleHandler =
-                new AlterTransactionRuleHandler();
-        AlterTransactionRuleStatement ralStatement = mock(AlterTransactionRuleStatement.class,RETURNS_DEEP_STUBS);
+        AlterTransactionRuleHandler alterTransactionRuleHandler = new AlterTransactionRuleHandler();
+        AlterTransactionRuleStatement ralStatement = mock(AlterTransactionRuleStatement.class, RETURNS_DEEP_STUBS);
 
         when(ralStatement.getDefaultType()).thenReturn("LOCAL");
 
 
-        ConnectionSession connectionSession =mock(ConnectionSession.class,
-                RETURNS_DEEP_STUBS);
+        ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
 
-        alterTransactionRuleHandler.init(ralStatement,connectionSession);
-        AlterTransactionRuleStatement testAlterStatement =
-                alterTransactionRuleHandler.getSqlStatement();
+        alterTransactionRuleHandler.init(ralStatement, connectionSession);
+        AlterTransactionRuleStatement testAlterStatement = alterTransactionRuleHandler.getSqlStatement();
         Assert.assertNotNull(testAlterStatement);
 
     }
-    
+
     /**
      * Method: execute()
      */
@@ -145,45 +144,38 @@ public class AlterTransactionRuleHandlerTest {
     public void testExecute() throws Exception {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         ProxyContext.init(contextManager);
-        AlterTransactionRuleStatement statement =
-                mock(AlterTransactionRuleStatement.class, RETURNS_DEEP_STUBS);
+        AlterTransactionRuleStatement statement = mock(AlterTransactionRuleStatement.class, RETURNS_DEEP_STUBS);
 
-        AlterTransactionRuleHandler alterTransactionRuleHandler =
-                new AlterTransactionRuleHandler();
-        AlterTransactionRuleStatement ralStatement = mock(AlterTransactionRuleStatement.class,RETURNS_DEEP_STUBS);
+        AlterTransactionRuleHandler alterTransactionRuleHandler = new AlterTransactionRuleHandler();
+        AlterTransactionRuleStatement ralStatement = mock(AlterTransactionRuleStatement.class, RETURNS_DEEP_STUBS);
 
         when(ralStatement.getDefaultType()).thenReturn("LOCAL");
 
 
-        ConnectionSession connectionSession =mock(ConnectionSession.class,
-                RETURNS_DEEP_STUBS);
+        ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
 
-        alterTransactionRuleHandler.init(ralStatement,connectionSession);
+        alterTransactionRuleHandler.init(ralStatement, connectionSession);
         ResponseHeader testRespHeader = alterTransactionRuleHandler.execute();
         Assert.assertNotNull(testRespHeader);
     }
-    
+
     /**
      * Method: getConnectionSession()
      */
     @Test
-    public void testGetConnectionSession()  {
-        AlterTransactionRuleHandler alterTransactionRuleHandler =
-                new AlterTransactionRuleHandler();
-        AlterTransactionRuleStatement ralStatement = mock(AlterTransactionRuleStatement.class,RETURNS_DEEP_STUBS);
+    public void testGetConnectionSession() {
+        AlterTransactionRuleHandler alterTransactionRuleHandler = new AlterTransactionRuleHandler();
+        AlterTransactionRuleStatement ralStatement = mock(AlterTransactionRuleStatement.class, RETURNS_DEEP_STUBS);
 
         when(ralStatement.getDefaultType()).thenReturn("LOCAL");
 
 
-        ConnectionSession connectionSession =mock(ConnectionSession.class,
-                RETURNS_DEEP_STUBS);
+        ConnectionSession connectionSession = mock(ConnectionSession.class, RETURNS_DEEP_STUBS);
 
-        alterTransactionRuleHandler.init(ralStatement,connectionSession);
-        ConnectionSession session =
-                alterTransactionRuleHandler.getConnectionSession();
+        alterTransactionRuleHandler.init(ralStatement, connectionSession);
+        ConnectionSession session = alterTransactionRuleHandler.getConnectionSession();
         Assert.assertNotNull(session);
     }
-    
 
-    
+
 }
