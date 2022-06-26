@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.yaml.engine.constructor.ShardingSphereYam
 import org.apache.shardingsphere.infra.yaml.engine.representer.ShardingSphereYamlRepresenter;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
-import org.yaml.snakeyaml.nodes.Tag;
 import org.yaml.snakeyaml.representer.Representer;
 
 import java.io.ByteArrayInputStream;
@@ -107,25 +106,10 @@ public final class YamlEngine {
      * @return YAML content
      */
     public static String marshal(final Object value) {
-        return marshal(value, null);
-    }
-    
-    /**
-     * Marshal YAML.
-     *
-     * @param value object to be marshaled
-     * @param classTag class tag
-     * @return YAML content
-     */
-    public static String marshal(final Object value, final Tag classTag) {
         DumperOptions dumperOptions = new DumperOptions();
         dumperOptions.setLineBreak(DumperOptions.LineBreak.getPlatformLineBreak());
-        ShardingSphereYamlRepresenter shardingSphereYamlRepresenter = new ShardingSphereYamlRepresenter();
-        if (classTag != null) {
-            shardingSphereYamlRepresenter.addClassTag(value.getClass(), classTag);
-        }
         if (value instanceof Collection) {
-            return new Yaml(shardingSphereYamlRepresenter, dumperOptions).dumpAs(value, null, DumperOptions.FlowStyle.BLOCK);
+            return new Yaml(new ShardingSphereYamlRepresenter(), dumperOptions).dumpAs(value, null, DumperOptions.FlowStyle.BLOCK);
         }
         return new Yaml(new ShardingSphereYamlRepresenter(), dumperOptions).dumpAsMap(value);
     }
