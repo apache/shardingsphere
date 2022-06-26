@@ -41,6 +41,10 @@ public final class MetaDataContextsBuilder {
     /**
      * Build meta data contexts.
      * 
+     * @param databases databases
+     * @param globalRuleConfigs global rule configurations
+     * @param props properties
+     *      
      * @param persistService meta data persist service
      * @exception SQLException SQL exception
      * @return meta data contexts
