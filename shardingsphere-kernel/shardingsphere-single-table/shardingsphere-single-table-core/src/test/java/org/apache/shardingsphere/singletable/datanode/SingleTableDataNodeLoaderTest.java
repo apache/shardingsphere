@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.singletable.datanode;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
@@ -35,7 +34,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -85,8 +83,7 @@ public final class SingleTableDataNodeLoaderTest {
     @Test
     public void assertLoad() {
         Collection<String> excludedTables = Arrays.asList("salary", "employee", "student");
-        Map<String, Collection<DataNode>> dataNodeMap = SingleTableDataNodeLoader.load(
-                DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), dataSourceMap, excludedTables, new ConfigurationProperties(new Properties()));
+        Map<String, Collection<DataNode>> dataNodeMap = SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), dataSourceMap, excludedTables);
         assertFalse(dataNodeMap.containsKey("employee"));
         assertFalse(dataNodeMap.containsKey("salary"));
         assertFalse(dataNodeMap.containsKey("student"));
@@ -100,6 +97,6 @@ public final class SingleTableDataNodeLoaderTest {
     
     @Test(expected = IllegalStateException.class)
     public void assertLoadWithConflictTables() {
-        SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), dataSourceMap, Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), dataSourceMap, Collections.emptyList());
     }
 }
