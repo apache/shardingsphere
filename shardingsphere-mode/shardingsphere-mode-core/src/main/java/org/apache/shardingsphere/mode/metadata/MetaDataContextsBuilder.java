@@ -49,8 +49,8 @@ public final class MetaDataContextsBuilder {
      * @exception SQLException SQL exception
      * @return meta data contexts
      */
-    public static MetaDataContexts build(final Map<String, ShardingSphereDatabase> databases, final Collection<RuleConfiguration> globalRuleConfigs,
-                                  final ConfigurationProperties props, final MetaDataPersistService persistService) throws SQLException {
+    public static MetaDataContexts build(final Map<String, ShardingSphereDatabase> databases, final Collection<RuleConfiguration> globalRuleConfigs, 
+                                         final ConfigurationProperties props, final MetaDataPersistService persistService) throws SQLException {
         ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, globalMetaData, props);
         return new MetaDataContexts(persistService, metaData, OptimizerContextFactory.create(databases, globalMetaData));
