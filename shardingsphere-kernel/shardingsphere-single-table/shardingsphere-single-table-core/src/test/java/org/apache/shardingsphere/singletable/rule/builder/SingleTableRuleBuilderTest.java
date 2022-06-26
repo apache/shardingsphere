@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.singletable.rule.builder;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilderFactory;
@@ -41,7 +40,7 @@ public final class SingleTableRuleBuilderTest {
     public void assertBuild() {
         DatabaseRuleBuilder builder = DatabaseRuleBuilderFactory.getInstances().iterator().next();
         DatabaseRule actual = builder.build(
-                mock(SingleTableRuleConfiguration.class), "", Collections.emptyMap(), Collections.singleton(mock(ShardingSphereRule.class)), new ConfigurationProperties(createProperties()));
+                mock(SingleTableRuleConfiguration.class), "", Collections.emptyMap(), Collections.singleton(mock(ShardingSphereRule.class)), new ConfigurationProperties(new Properties()));
         assertThat(actual, instanceOf(SingleTableRule.class));
     }
     
@@ -50,13 +49,7 @@ public final class SingleTableRuleBuilderTest {
     public void assertBuildWithDefaultDataSource() {
         DatabaseRuleBuilder builder = DatabaseRuleBuilderFactory.getInstances().iterator().next();
         DatabaseRule actual = builder.build(
-                new SingleTableRuleConfiguration("foo_ds"), "", Collections.emptyMap(), Collections.singleton(mock(ShardingSphereRule.class)), new ConfigurationProperties(createProperties()));
+                new SingleTableRuleConfiguration("foo_ds"), "", Collections.emptyMap(), Collections.singleton(mock(ShardingSphereRule.class)), new ConfigurationProperties(new Properties()));
         assertThat(actual, instanceOf(SingleTableRule.class));
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED.getKey(), Boolean.FALSE.toString());
-        return result;
     }
 }
