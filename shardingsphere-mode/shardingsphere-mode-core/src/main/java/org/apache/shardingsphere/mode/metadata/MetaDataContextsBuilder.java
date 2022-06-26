@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.mode.metadata;
 
-import lombok.RequiredArgsConstructor;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
@@ -34,12 +35,8 @@ import java.util.Map;
 /**
  * Meta data contexts builder.
  */
-@RequiredArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class MetaDataContextsBuilder {
-    
-    private final Collection<RuleConfiguration> globalRuleConfigs;
-    
-    private final ConfigurationProperties props;
     
     /**
      * Build meta data contexts.
@@ -48,7 +45,8 @@ public final class MetaDataContextsBuilder {
      * @exception SQLException SQL exception
      * @return meta data contexts
      */
-    public MetaDataContexts build(final Map<String, ShardingSphereDatabase> databases, final MetaDataPersistService persistService) throws SQLException {
+    public static MetaDataContexts build(final Map<String, ShardingSphereDatabase> databases, final Collection<RuleConfiguration> globalRuleConfigs,
+                                  final ConfigurationProperties props, final MetaDataPersistService persistService) throws SQLException {
         ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, globalMetaData, props);
         return new MetaDataContexts(persistService, metaData, OptimizerContextFactory.create(databases, globalMetaData));

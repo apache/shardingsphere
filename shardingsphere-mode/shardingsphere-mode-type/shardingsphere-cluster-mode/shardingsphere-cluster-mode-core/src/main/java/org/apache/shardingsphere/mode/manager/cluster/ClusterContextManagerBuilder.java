@@ -81,7 +81,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         Collection<RuleConfiguration> globalRuleConfigs = persistService.getGlobalRuleService().load();
         ConfigurationProperties props = new ConfigurationProperties(persistService.getPropsService().load());
         Map<String, DatabaseConfiguration> databaseConfigMap = getDatabaseConfigMap(databaseNames, persistService, parameter);
-        return new MetaDataContextsBuilder(globalRuleConfigs, props).build(ShardingSphereDatabasesFactory.create(databaseConfigMap, props), persistService);
+        return MetaDataContextsBuilder.build(ShardingSphereDatabasesFactory.create(databaseConfigMap, props), globalRuleConfigs, props, persistService);
     }
     
     private Map<String, DatabaseConfiguration> getDatabaseConfigMap(final Collection<String> databaseNames, final MetaDataPersistService metaDataPersistService,

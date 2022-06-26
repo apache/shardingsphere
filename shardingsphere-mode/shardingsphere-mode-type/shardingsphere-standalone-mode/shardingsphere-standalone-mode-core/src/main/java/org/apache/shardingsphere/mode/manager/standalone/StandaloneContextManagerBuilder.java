@@ -67,7 +67,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         Map<String, DatabaseConfiguration> databaseConfigMap = getDatabaseConfigMap(databaseNames, persistService, parameter);
         Collection<RuleConfiguration> globalRuleConfigs = persistService.getGlobalRuleService().load();
         ConfigurationProperties props = new ConfigurationProperties(persistService.getPropsService().load());
-        return new MetaDataContextsBuilder(globalRuleConfigs, props).build(ShardingSphereDatabasesFactory.create(databaseConfigMap, props), persistService);
+        return MetaDataContextsBuilder.build(ShardingSphereDatabasesFactory.create(databaseConfigMap, props), globalRuleConfigs, props, persistService);
     }
     
     private Map<String, DatabaseConfiguration> getDatabaseConfigMap(final Collection<String> databaseNames, final MetaDataPersistService metaDataPersistService,
@@ -85,10 +85,9 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     }
     
     private ContextManager createContextManager(final ContextManagerBuilderParameter parameter, final MetaDataContexts metaDataContexts) {
-        InstanceContext instanceContext = new InstanceContext(new ComputeNodeInstance(parameter.getInstanceDefinition()), new StandaloneWorkerIdGenerator(), parameter.getModeConfig(),
-                new StandaloneLockContext());
-        ContextManager result = new ContextManager(metaDataContexts, instanceContext);
-        return result;
+        InstanceContext instanceContext = new InstanceContext(
+                new ComputeNodeInstance(parameter.getInstanceDefinition()), new StandaloneWorkerIdGenerator(), parameter.getModeConfig(), new StandaloneLockContext());
+        return new ContextManager(metaDataContexts, instanceContext);
     }
     
     @Override

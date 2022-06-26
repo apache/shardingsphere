@@ -59,7 +59,7 @@ public final class MetaDataContextsBuilderTest {
                 new ShardingSphereAlgorithmConfiguration("ALL_PERMITTED", new Properties()));
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration()));
         Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(Collections.singletonMap("logic_db", databaseConfig), new ConfigurationProperties(props));
-        MetaDataContexts actual = new MetaDataContextsBuilder(Collections.singleton(authorityRuleConfig), new ConfigurationProperties(props)).build(databases, mock(MetaDataPersistService.class));
+        MetaDataContexts actual = MetaDataContextsBuilder.build(databases, Collections.singleton(authorityRuleConfig), new ConfigurationProperties(props), mock(MetaDataPersistService.class));
         assertRules(actual);
         assertTrue(actual.getMetaData().getDatabases().get("logic_db").getResource().getDataSources().isEmpty());
         assertThat(actual.getMetaData().getProps().getProps().size(), is(1));
@@ -74,8 +74,7 @@ public final class MetaDataContextsBuilderTest {
     
     @Test
     public void assertBuildWithoutGlobalRuleConfigurations() throws SQLException {
-        MetaDataContexts actual = new MetaDataContextsBuilder(
-                Collections.emptyList(), new ConfigurationProperties(new Properties())).build(Collections.emptyMap(), mock(MetaDataPersistService.class));
+        MetaDataContexts actual = MetaDataContextsBuilder.build(Collections.emptyMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()), mock(MetaDataPersistService.class));
         assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().size(), is(4));
         assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof AuthorityRule).count(), is(1L));
         assertThat(actual.getMetaData().getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof TransactionRule).count(), is(1L));
@@ -86,7 +85,7 @@ public final class MetaDataContextsBuilderTest {
     @Test
     public void assertBuildWithEmptyRuleConfigurations() throws SQLException {
         Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(Collections.emptyMap(), new ConfigurationProperties(new Properties()));
-        MetaDataContexts actual = new MetaDataContextsBuilder(Collections.emptyList(), new ConfigurationProperties(new Properties())).build(databases, mock(MetaDataPersistService.class));
+        MetaDataContexts actual = MetaDataContextsBuilder.build(databases, Collections.emptyList(), new ConfigurationProperties(new Properties()), mock(MetaDataPersistService.class));
         assertThat(actual.getMetaData().getDatabases().size(), is(4));
         assertTrue(actual.getMetaData().getDatabases().containsKey("information_schema"));
         assertTrue(actual.getMetaData().getDatabases().containsKey("performance_schema"));

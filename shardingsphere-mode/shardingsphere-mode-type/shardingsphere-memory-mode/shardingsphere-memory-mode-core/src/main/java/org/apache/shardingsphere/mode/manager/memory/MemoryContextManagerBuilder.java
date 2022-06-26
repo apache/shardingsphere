@@ -41,8 +41,7 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
     @Override
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
         ConfigurationProperties props = new ConfigurationProperties(parameter.getProps());
-        MetaDataContexts metaDataContexts = new MetaDataContextsBuilder(
-                parameter.getGlobalRuleConfigs(), props).build(ShardingSphereDatabasesFactory.create(parameter.getDatabaseConfigs(), props), null);
+        MetaDataContexts metaDataContexts = MetaDataContextsBuilder.build(ShardingSphereDatabasesFactory.create(parameter.getDatabaseConfigs(), props), parameter.getGlobalRuleConfigs(), props, null);
         return new ContextManager(metaDataContexts, buildInstanceContext(parameter));
     }
     
