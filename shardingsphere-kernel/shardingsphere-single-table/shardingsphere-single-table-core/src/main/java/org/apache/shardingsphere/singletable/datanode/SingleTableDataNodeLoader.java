@@ -22,7 +22,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.SchemaTableNamesLoader;
@@ -57,7 +56,6 @@ public final class SingleTableDataNodeLoader {
     public static Map<String, Collection<DataNode>> load(final String databaseName, final DatabaseType databaseType, final Map<String, DataSource> dataSourceMap,
                                                          final Collection<String> excludedTables, final ConfigurationProperties props) {
         Map<String, Collection<DataNode>> result = new ConcurrentHashMap<>();
-        boolean checkDuplicateTable = props.getValue(ConfigurationPropertyKey.CHECK_DUPLICATE_TABLE_ENABLED);
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             Map<String, Collection<DataNode>> dataNodeMap = load(databaseName, databaseType, entry.getKey(), entry.getValue(), excludedTables);
             for (String each : dataNodeMap.keySet()) {
@@ -65,9 +63,7 @@ public final class SingleTableDataNodeLoader {
                 Collection<DataNode> existDataNodes = result.getOrDefault(each.toLowerCase(), new LinkedHashSet<>(addedDataNodes.size(), 1));
                 existDataNodes.addAll(addedDataNodes);
                 result.putIfAbsent(each.toLowerCase(), existDataNodes);
-                if (checkDuplicateTable) {
-                    Preconditions.checkState(!containsDuplicateTable(existDataNodes), "Single table conflict, there are multiple tables `%s` existed.", each);
-                }
+                Preconditions.checkState(!containsDuplicateTable(existDataNodes), "Single table conflict, there are multiple tables `%s` existed.", each);
             }
         }
         return result;
