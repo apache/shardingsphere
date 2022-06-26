@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.singletable.route.engine;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -34,7 +33,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -47,8 +45,7 @@ public final class SingleTableDatabaseBroadcastRouteEngineTest {
     
     @Test
     public void assertRoute() throws SQLException {
-        SingleTableRule singleTableRule = new SingleTableRule(
-                new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         SingleTableDatabaseBroadcastRouteEngine engine = new SingleTableDatabaseBroadcastRouteEngine();
         engine.route(routeContext, singleTableRule);
