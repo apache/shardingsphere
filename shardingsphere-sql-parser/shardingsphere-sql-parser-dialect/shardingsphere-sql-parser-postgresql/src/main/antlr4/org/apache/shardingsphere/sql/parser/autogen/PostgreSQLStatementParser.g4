@@ -155,5 +155,6 @@ execute
     | alterPublication
     | createAggregate
     | createCast
+    | alterRoutine
     ) SEMI_? EOF
     ;

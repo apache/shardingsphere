@@ -3402,10 +3402,6 @@
     <sql-case id="alter_by_postgresql_source_test_case214" value="ALTER OPERATOR FAMILY alt_opf7 USING btree DROP OPERATOR 1 (int4, int2, int8);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case215" value="ALTER OPERATOR FAMILY alt_opf8 USING btree ADD OPERATOR 1 &lt; (int4, int4);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case216" value="ALTER OPERATOR FAMILY alt_opf9 USING gist ADD OPERATOR 1 &lt; (int4, int4) FOR ORDER BY float_ops;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case282" value="ALTER ROUTINE cp_testfunc1(int) RENAME TO cp_testfunc1a;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case283" value="ALTER ROUTINE cp_testfunc1a RENAME TO cp_testfunc1;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case284" value="ALTER ROUTINE ptest1(text) RENAME TO ptest1a;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case285" value="ALTER ROUTINE ptest1a RENAME TO ptest1;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case286" value="ALTER RULE &quot;_RETURN&quot; ON rule_v1 RENAME TO abc;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case287" value="ALTER RULE InsertRule ON rule_v1 RENAME TO NewInsertRule;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case288" value="ALTER RULE InsertRule ON rule_v1 RENAME to NewInsertRule;" db-types="PostgreSQL" />
