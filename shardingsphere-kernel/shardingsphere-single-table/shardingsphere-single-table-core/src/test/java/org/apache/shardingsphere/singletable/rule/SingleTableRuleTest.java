@@ -65,8 +65,8 @@ public final class SingleTableRuleTest {
     @Before
     public void setUp() throws SQLException {
         dataSourceMap = new LinkedHashMap<>(2, 1);
-        dataSourceMap.put("ds_0", mockDataSource("ds_0", Arrays.asList("employee", "t_order_0", "t_order_1")));
-        dataSourceMap.put("ds_1", mockDataSource("ds_1", Arrays.asList("student", "t_order_0", "t_order_1")));
+        dataSourceMap.put("foo_ds", mockDataSource("foo_ds", Arrays.asList("employee", "t_order_0")));
+        dataSourceMap.put("bar_ds", mockDataSource("bar_ds", Arrays.asList("student", "t_order_1")));
     }
     
     private DataSource mockDataSource(final String dataSourceName, final List<String> tableNames) throws SQLException {
@@ -121,7 +121,7 @@ public final class SingleTableRuleTest {
                 new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule), new ConfigurationProperties(new Properties()));
         Optional<DataNode> actual = singleTableRule.findSingleTableDataNode(DefaultDatabase.LOGIC_NAME, "employee");
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getDataSourceName(), is("ds_0"));
+        assertThat(actual.get().getDataSourceName(), is("foo_ds"));
         assertThat(actual.get().getTableName(), is("employee"));
     }
     
@@ -132,7 +132,7 @@ public final class SingleTableRuleTest {
                 new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule), new ConfigurationProperties(new Properties()));
         Optional<DataNode> actual = singleTableRule.findSingleTableDataNode(DefaultDatabase.LOGIC_NAME, "EMPLOYEE");
         assertTrue(actual.isPresent());
-        assertThat(actual.get().getDataSourceName(), is("ds_0"));
+        assertThat(actual.get().getDataSourceName(), is("foo_ds"));
         assertThat(actual.get().getTableName(), is("employee"));
     }
     
@@ -150,7 +150,7 @@ public final class SingleTableRuleTest {
     public void assertIsAllTablesInSameDataSource() {
         Collection<QualifiedTable> singleTableNames = new LinkedList<>();
         singleTableNames.add(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "employee"));
-        RouteMapper dataSourceMapper = new RouteMapper("ds_0", null);
+        RouteMapper dataSourceMapper = new RouteMapper("foo_ds", null);
         Collection<RouteMapper> tableMappers = new LinkedList<>();
         tableMappers.add(dataSourceMapper);
         RouteContext routeContext = new RouteContext();
@@ -165,10 +165,10 @@ public final class SingleTableRuleTest {
     public void assertAssignNewDataSourceName() {
         DataNodeContainedRule dataNodeContainedRule = mock(DataNodeContainedRule.class);
         SingleTableRuleConfiguration singleTableRuleConfig = new SingleTableRuleConfiguration();
-        singleTableRuleConfig.setDefaultDataSource("ds_0");
+        singleTableRuleConfig.setDefaultDataSource("foo_ds");
         SingleTableRule singleTableRule = new SingleTableRule(
                 singleTableRuleConfig, DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule), new ConfigurationProperties(new Properties()));
-        assertThat(singleTableRule.assignNewDataSourceName(), is("ds_0"));
+        assertThat(singleTableRule.assignNewDataSourceName(), is("foo_ds"));
     }
     
     @Test
@@ -188,7 +188,7 @@ public final class SingleTableRuleTest {
         SingleTableRule singleTableRule = new SingleTableRule(
                 new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, dataSourceMap, Collections.singleton(dataNodeContainedRule), new ConfigurationProperties(new Properties()));
         String tableName = "teacher";
-        String dataSourceName = "ds_0";
+        String dataSourceName = "foo_ds";
         singleTableRule.put(dataSourceName, DefaultDatabase.LOGIC_NAME, tableName);
         Collection<QualifiedTable> tableNames = new LinkedList<>();
         tableNames.add(new QualifiedTable(DefaultDatabase.LOGIC_NAME, "teacher"));
@@ -235,7 +235,7 @@ public final class SingleTableRuleTest {
         Collection<DataNode> actual = singleTableRule.getDataNodesByTableName("EMPLOYEE");
         assertThat(actual.size(), is(1));
         DataNode dataNode = actual.iterator().next();
-        assertThat(dataNode.getDataSourceName(), is("ds_0"));
+        assertThat(dataNode.getDataSourceName(), is("foo_ds"));
         assertThat(dataNode.getTableName(), is("employee"));
     }
     
