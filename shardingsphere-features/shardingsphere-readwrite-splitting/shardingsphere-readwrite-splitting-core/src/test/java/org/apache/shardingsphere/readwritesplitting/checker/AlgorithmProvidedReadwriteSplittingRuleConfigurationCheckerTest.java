@@ -66,7 +66,7 @@ public final class AlgorithmProvidedReadwriteSplittingRuleConfigurationCheckerTe
     private AlgorithmProvidedReadwriteSplittingRuleConfiguration createInvalidConfiguration() {
         AlgorithmProvidedReadwriteSplittingRuleConfiguration result = mock(AlgorithmProvidedReadwriteSplittingRuleConfiguration.class);
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = mock(ReadwriteSplittingDataSourceRuleConfiguration.class);
-        when(dataSourceConfig.getDataSourceStrategy()).thenReturn(new DynamicReadwriteSplittingStrategyConfiguration("ds0"));
+        when(dataSourceConfig.getDataSourceStrategy()).thenReturn(null);
         when(result.getDataSources()).thenReturn(Collections.singleton(dataSourceConfig));
         return result;
     }

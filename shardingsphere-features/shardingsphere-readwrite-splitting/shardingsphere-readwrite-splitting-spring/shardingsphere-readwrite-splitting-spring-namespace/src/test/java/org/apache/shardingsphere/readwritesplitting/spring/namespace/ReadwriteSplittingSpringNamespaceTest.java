@@ -65,10 +65,10 @@ public final class ReadwriteSplittingSpringNamespaceTest extends AbstractJUnit4S
     }
     
     private void assertDefaultDataSourceRule(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig) {
-/*        assertThat(dataSourceRuleConfig.getName(), is("default_ds"));
-        assertThat(dataSourceRuleConfig.getProps().getProperty("write-data-source-name"), is("write_ds"));
-        assertThat(dataSourceRuleConfig.getProps().getProperty("read-data-source-names"), is("read_ds_0, read_ds_1"));
-        assertThat(dataSourceRuleConfig.getLoadBalancerName(), is(""));*/
+        /*
+         * assertThat(dataSourceRuleConfig.getName(), is("default_ds")); assertThat(dataSourceRuleConfig.getProps().getProperty("write-data-source-name"), is("write_ds"));
+         * assertThat(dataSourceRuleConfig.getProps().getProperty("read-data-source-names"), is("read_ds_0, read_ds_1")); assertThat(dataSourceRuleConfig.getLoadBalancerName(), is(""));
+         */
     }
     
     @Test
@@ -80,8 +80,9 @@ public final class ReadwriteSplittingSpringNamespaceTest extends AbstractJUnit4S
     
     private void assertRandomDataSourceRule(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig) {
         assertThat(dataSourceRuleConfig.getName(), is("random_ds"));
-/*        assertThat(dataSourceRuleConfig.getProps().getProperty("write-data-source-name"), is("write_ds"));
-        assertThat(dataSourceRuleConfig.getProps().getProperty("read-data-source-names"), is("read_ds_0, read_ds_1"));
-        assertThat(dataSourceRuleConfig.getLoadBalancerName(), is("randomLoadbalancer"));*/
+        /*
+         * assertThat(dataSourceRuleConfig.getProps().getProperty("write-data-source-name"), is("write_ds")); assertThat(dataSourceRuleConfig.getProps().getProperty("read-data-source-names"),
+         * is("read_ds_0, read_ds_1")); assertThat(dataSourceRuleConfig.getLoadBalancerName(), is("randomLoadbalancer"));
+         */
     }
 }

@@ -26,7 +26,11 @@ import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwrit
 import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
 
 /**
  * Readwrite splitting rule statement converter.
@@ -55,10 +59,11 @@ public final class ReadwriteSplittingRuleStatementConverter {
         return new ReadwriteSplittingRuleConfiguration(dataSources, loadBalancers);
     }
     
-    private static ReadwriteSplittingDataSourceRuleConfiguration createDataSourceRuleConfiguration(final ReadwriteSplittingRuleSegment segment, final String loadBalancerName, final boolean isAutoAware) {
+    private static ReadwriteSplittingDataSourceRuleConfiguration createDataSourceRuleConfiguration(final ReadwriteSplittingRuleSegment segment,
+                                                                                                   final String loadBalancerName, final boolean isAutoAware) {
         return isAutoAware ? new ReadwriteSplittingDataSourceRuleConfiguration(segment.getName(), new DynamicReadwriteSplittingStrategyConfiguration(segment.getAutoAwareResource()), loadBalancerName)
                 : new ReadwriteSplittingDataSourceRuleConfiguration(segment.getName(),
-                new StaticReadwriteSplittingStrategyConfiguration(segment.getWriteDataSource(), new ArrayList<>(segment.getReadDataSources())), loadBalancerName);
+                        new StaticReadwriteSplittingStrategyConfiguration(segment.getWriteDataSource(), new ArrayList<>(segment.getReadDataSources())), loadBalancerName);
     }
     
     private static ShardingSphereAlgorithmConfiguration createLoadBalancer(final ReadwriteSplittingRuleSegment ruleSegment) {

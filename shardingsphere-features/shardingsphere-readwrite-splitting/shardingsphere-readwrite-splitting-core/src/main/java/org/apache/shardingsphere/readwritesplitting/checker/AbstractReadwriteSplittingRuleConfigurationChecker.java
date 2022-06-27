@@ -37,9 +37,7 @@ public abstract class AbstractReadwriteSplittingRuleConfigurationChecker<T exten
     }
     
     private void checkDataSources(final String databaseName, final Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources) {
-        dataSources.forEach(each -> {
-             Preconditions.checkState(null != each.getDataSourceStrategy(), "No available readwrite-splitting rule configuration in database `%s`.", databaseName);
-        });
+        dataSources.forEach(each -> Preconditions.checkState(null != each.getDataSourceStrategy(), "No available readwrite-splitting rule configuration in database `%s`.", databaseName));
     }
     
     protected abstract Collection<ReadwriteSplittingDataSourceRuleConfiguration> getDataSources(T config);

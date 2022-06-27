@@ -81,7 +81,9 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
     
     private Collection<Object> buildDataItem(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig, final Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers) {
         String name = dataSourceRuleConfig.getName();
-        Map<String, String> exportDataSources = dataSourceRuleConfig.getDataSourceStrategy() instanceof DynamicReadwriteSplittingStrategyConfiguration ? exportableAutoAwareDataSource.get(name) : exportableDataSourceMap.get(name);
+        Map<String, String> exportDataSources = dataSourceRuleConfig.getDataSourceStrategy() instanceof DynamicReadwriteSplittingStrategyConfiguration
+                ? exportableAutoAwareDataSource.get(name)
+                : exportableDataSourceMap.get(name);
         Optional<ShardingSphereAlgorithmConfiguration> loadBalancer = Optional.ofNullable(loadBalancers.get(dataSourceRuleConfig.getLoadBalancerName()));
         return Arrays.asList(name,
                 getAutoAwareDataSourceName(dataSourceRuleConfig),
