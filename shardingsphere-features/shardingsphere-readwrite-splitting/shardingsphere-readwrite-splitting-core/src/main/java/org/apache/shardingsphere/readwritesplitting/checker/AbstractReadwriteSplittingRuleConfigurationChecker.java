@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.readwritesplitting.checker;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -36,6 +35,7 @@ public abstract class AbstractReadwriteSplittingRuleConfigurationChecker<T exten
         checkDataSources(databaseName, getDataSources(config));
     }
     
+    // TODO Fix me when readwrite-splitting api changed finished.
     private void checkDataSources(final String databaseName, final Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources) {
         dataSources.forEach(each -> {
 //            Preconditions.checkState(!each.getType().isEmpty(), "No available readwrite-splitting rule configuration in database `%s`.", databaseName);

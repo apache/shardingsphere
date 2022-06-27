@@ -97,8 +97,8 @@ public final class ReadwriteSplittingRuleConfigurationYamlSwapperTest {
         ReadwriteSplittingDataSourceRuleConfiguration group = actual.getDataSources().iterator().next();
         assertThat(group.getName(), is("read_query_ds"));
         assertThat(group.getDataSourceStrategy(), instanceOf(StaticReadwriteSplittingStrategyConfiguration.class));
-        assertThat(((StaticReadwriteSplittingStrategyConfiguration)group.getDataSourceStrategy()).getWriteDataSourceName(), is("write"));
-        assertThat(((StaticReadwriteSplittingStrategyConfiguration)group.getDataSourceStrategy()).getReadDataSourceNames(), is(Arrays.asList("read")));
+        assertThat(((StaticReadwriteSplittingStrategyConfiguration) group.getDataSourceStrategy()).getWriteDataSourceName(), is("write"));
+        assertThat(((StaticReadwriteSplittingStrategyConfiguration) group.getDataSourceStrategy()).getReadDataSourceNames(), is(Arrays.asList("read")));
     }
     
     private ReadwriteSplittingRuleConfigurationYamlSwapper getReadwriteSplittingRuleConfigurationYamlSwapper() {

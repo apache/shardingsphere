@@ -21,10 +21,11 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     test_ds:
-      type: Static
-      props:
-        write-data-source-name: test_primary_ds
-        read-data-source-names: test_replica_ds
+      dataSourceStrategy:
+        staticStrategy:
+          writeDataSourceName: test_primary_ds
+          readDataSourceNames:
+            - test_replica_ds
       loadBalancerName: roundRobin
   loadBalancers:
     roundRobin:

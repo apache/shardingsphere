@@ -40,8 +40,8 @@ public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
     public void assertSwapToYamlConfiguration() {
         YamlReadwriteSplittingRuleConfiguration actual = createYamlReadwriteSplittingRuleConfiguration();
         assertThat(actual.getDataSources().keySet(), is(Collections.singleton("name")));
-        assertThat((actual.getDataSources().get("name").getDataSourceStrategy()).getStaticStrategy().getWriteDataSourceName(), is("writeDataSourceName"));
-        assertThat((actual.getDataSources().get("name").getDataSourceStrategy().getStaticStrategy().getReadDataSourceNames()), is(Arrays.asList("readDataSourceName")));
+        assertThat(actual.getDataSources().get("name").getDataSourceStrategy().getStaticStrategy().getWriteDataSourceName(), is("writeDataSourceName"));
+        assertThat(actual.getDataSources().get("name").getDataSourceStrategy().getStaticStrategy().getReadDataSourceNames(), is(Arrays.asList("readDataSourceName")));
         assertThat(actual.getDataSources().get("name").getLoadBalancerName(), is("loadBalancerName"));
         assertThat(actual.getLoadBalancers().keySet(), is(Collections.singleton("name")));
         assertThat(actual.getLoadBalancers().get("name").getType(), is("RANDOM"));

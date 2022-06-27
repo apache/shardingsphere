@@ -38,8 +38,10 @@ public final class ReadWriteSplittingDataSourceRuleConfigurationTest {
     
     @Before
     public void setup() {
-        readwriteSplittingDataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("ds", new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds_0", "read_ds_1")), "");
-        readwriteSplittingDataSourceRuleConfigDynamic = new ReadwriteSplittingDataSourceRuleConfiguration("ds", new DynamicReadwriteSplittingStrategyConfiguration("readwrite_ds"), "");
+        readwriteSplittingDataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("ds",
+                new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds_0", "read_ds_1")), "");
+        readwriteSplittingDataSourceRuleConfigDynamic = new ReadwriteSplittingDataSourceRuleConfiguration("ds",
+                new DynamicReadwriteSplittingStrategyConfiguration("readwrite_ds"), "");
     }
     
     @Test

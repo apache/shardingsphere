@@ -21,5 +21,5 @@ package org.apache.shardingsphere.readwritesplitting.api.strategy;
  * Readwrite-splitting strategy configuration.
  */
 public interface ReadwriteSplittingStrategyConfiguration {
-
+    
 }

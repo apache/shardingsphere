@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.readwritesplitting.strategy;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -30,9 +29,7 @@ import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwrite
 import org.apache.shardingsphere.readwritesplitting.strategy.type.DynamicReadwriteSplittingStrategy;
 import org.apache.shardingsphere.readwritesplitting.strategy.type.StaticReadwriteSplittingStrategy;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Readwrite splitting strategy factory.

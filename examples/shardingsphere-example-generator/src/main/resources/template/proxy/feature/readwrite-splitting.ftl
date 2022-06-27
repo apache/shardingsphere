@@ -17,10 +17,12 @@
   - !READWRITE_SPLITTING
     dataSources:
       readwrite_ds:
-        type: Static
-        props:
-          write-data-source-name: write_ds
-          read-data-source-names: read_ds_0, read_ds_1
+        dataSourceStrategy:
+          staticStrategy:
+            writeDataSourceName: write_ds
+            readDataSourceNames:
+              - read_ds_0
+              - read_ds_1
         loadBalancerName: read_balance
     loadBalancers:
       read_balance:
