@@ -15,20 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.function;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-
-import java.util.Collection;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Resource Required rule configuration.
+ * Oracle alter materialized zonemap statement.
  */
-public interface ResourceRequiredRuleConfiguration extends RuleConfiguration {
-    
-    /**
-     * Get Required Resource.
-     * @return required resource names
-     */
-    Collection<String> getRequiredResource();
+@ToString
+public final class OracleAlterMaterializedZonemapStatement extends AbstractSQLStatement implements OracleStatement {
 }

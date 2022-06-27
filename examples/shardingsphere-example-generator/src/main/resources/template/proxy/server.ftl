@@ -37,4 +37,3 @@ props:
   sql-show: false
   check-table-metadata-enabled: false
   sql-simple: false
-  check-duplicate-table-enabled: false

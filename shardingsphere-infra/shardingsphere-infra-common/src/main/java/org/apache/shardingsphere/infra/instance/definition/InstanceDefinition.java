@@ -34,25 +34,25 @@ public final class InstanceDefinition {
     
     private static final String DELIMITER = "@";
     
-    private static final AtomicLong ATOMIC_LONG = new AtomicLong();
+    private static final AtomicLong COUNTER = new AtomicLong();
     
     private final InstanceType instanceType;
     
     private final String instanceId;
     
-    private String ip;
+    private final String ip;
     
-    private String uniqueSign;
+    private final String uniqueSign;
     
-    public InstanceDefinition(final InstanceType instanceType, final String instanceId) {
-        this.instanceType = instanceType;
+    public InstanceDefinition(final String instanceId) {
+        instanceType = InstanceType.JDBC;
         this.instanceId = instanceId;
         ip = IpUtils.getIp();
-        uniqueSign = String.join("", ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0], String.valueOf(ATOMIC_LONG.incrementAndGet()));
+        uniqueSign = String.join("", ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0], String.valueOf(COUNTER.incrementAndGet()));
     }
     
-    public InstanceDefinition(final InstanceType instanceType, final Integer port, final String instanceId) {
-        this.instanceType = instanceType;
+    public InstanceDefinition(final int port, final String instanceId) {
+        instanceType = InstanceType.PROXY;
         this.instanceId = instanceId;
         ip = IpUtils.getIp();
         uniqueSign = String.valueOf(port);
@@ -69,7 +69,7 @@ public final class InstanceDefinition {
     /**
      * Get instance attributes.
      * 
-     * @return ip@uniqueSign
+     * @return got instance attributes, format is ip@uniqueSign
      */
     public String getAttributes() {
         return Joiner.on(DELIMITER).join(ip, uniqueSign);
