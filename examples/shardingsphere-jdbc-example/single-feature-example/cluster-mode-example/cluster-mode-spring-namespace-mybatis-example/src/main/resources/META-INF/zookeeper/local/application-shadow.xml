@@ -48,7 +48,46 @@
         <property name="password" value=""/>
     </bean>
     
-    <shadow:rule id="shadowRule" column="shadow" sourceDataSourceNames="demo_ds" shadowDataSourceNames="shadow_demo_ds"/>
+    <shadow:rule id="shadowRule">
+        <shadow:data-source id="shadow-data-source" source-data-source-name="demo_ds" shadow-data-source-name="shadow_demo_ds"/>
+        <shadow:shadow-table name="t_user" data-sources="shadow-data-source">
+            <shadow:algorithm shadow-algorithm-ref="user-id-insert-match-algorithm" />
+            <shadow:algorithm shadow-algorithm-ref="user-id-delete-match-algorithm" />
+            <shadow:algorithm shadow-algorithm-ref="user-id-select-match-algorithm" />
+            <shadow:algorithm shadow-algorithm-ref="simple-hint-algorithm" />
+        </shadow:shadow-table>
+    </shadow:rule>
+    
+    <shadow:shadow-algorithm id="user-id-insert-match-algorithm" type="REGEX_MATCH">
+        <props>
+            <prop key="operation">insert</prop>
+            <prop key="column">user_type</prop>
+            <prop key="regex">[1]</prop>
+        </props>
+    </shadow:shadow-algorithm>
+    
+    <shadow:shadow-algorithm id="user-id-delete-match-algorithm" type="REGEX_MATCH">
+        <props>
+            <prop key="operation">delete</prop>
+            <prop key="column">user_type</prop>
+            <prop key="regex">[1]</prop>
+        </props>
+    </shadow:shadow-algorithm>
+    
+    <shadow:shadow-algorithm id="user-id-select-match-algorithm" type="REGEX_MATCH">
+        <props>
+            <prop key="operation">select</prop>
+            <prop key="column">user_type</prop>
+            <prop key="regex">[1]</prop>
+        </props>
+    </shadow:shadow-algorithm>
+    
+    <shadow:shadow-algorithm id="simple-hint-algorithm" type="SIMPLE_HINT">
+        <props>
+            <prop key="shadow">true</prop>
+            <prop key="foo">bar</prop>
+        </props>
+    </shadow:shadow-algorithm>
     
     <shardingsphere:data-source id="shadowDataSource" data-source-names="demo_ds,shadow_demo_ds" rule-refs="shadowRule">
         <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" />

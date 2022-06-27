@@ -30,7 +30,7 @@ import java.util.Collection;
 @Getter
 public final class DropTrafficRuleStatement extends UpdatableRALStatement {
     
-    private final Collection<String> ruleNames;
+    private final boolean ifExists;
     
-    private final boolean ifExist;
+    private final Collection<String> ruleNames;
 }

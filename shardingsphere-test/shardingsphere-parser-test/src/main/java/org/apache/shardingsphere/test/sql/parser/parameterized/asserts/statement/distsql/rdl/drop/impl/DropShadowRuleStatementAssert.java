@@ -47,7 +47,7 @@ public final class DropShadowRuleStatementAssert {
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
             assertThat(assertContext.getText("Shadow rule assertion error: "), actual.getRuleNames(), is(expected.getRuleName()));
-            assertThat(assertContext.getText("Shadow rule assertion error: "), actual.isContainsExistClause(), is(expected.isContainsExistClause()));
+            assertThat(assertContext.getText("Shadow rule assertion error: "), actual.isIfExists(), is(expected.isIfExists()));
         }
     }
 }

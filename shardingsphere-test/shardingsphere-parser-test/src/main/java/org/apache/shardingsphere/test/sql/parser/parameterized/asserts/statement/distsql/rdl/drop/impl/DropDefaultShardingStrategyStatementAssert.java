@@ -47,7 +47,7 @@ public final class DropDefaultShardingStrategyStatementAssert {
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
             assertThat(assertContext.getText("default sharding strategy  assertion error: "), actual.getDefaultType(), is(expected.getDefaultType()));
-            assertThat(assertContext.getText("default sharding strategy  assertion error: "), actual.isContainsExistClause(), is(expected.isContainsExistClause()));
+            assertThat(assertContext.getText("default sharding strategy  assertion error: "), actual.isIfExists(), is(expected.isIfExists()));
         }
     }
 }

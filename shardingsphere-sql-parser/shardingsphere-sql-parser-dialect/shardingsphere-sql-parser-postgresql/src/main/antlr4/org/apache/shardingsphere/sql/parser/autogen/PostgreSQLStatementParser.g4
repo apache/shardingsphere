@@ -154,5 +154,7 @@ execute
     | createAccessMethod
     | alterPublication
     | createAggregate
+    | createCast
+    | alterRoutine
     ) SEMI_? EOF
     ;

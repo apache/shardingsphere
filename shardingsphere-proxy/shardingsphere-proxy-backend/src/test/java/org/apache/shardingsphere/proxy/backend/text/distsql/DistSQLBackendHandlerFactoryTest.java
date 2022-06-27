@@ -113,7 +113,7 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     public void assertExecuteShardingTableRuleContext() throws SQLException {
         setContextManager(true);
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase("db");
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(mock(CreateShardingTableRuleStatement.class), connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
@@ -275,6 +275,7 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
         when(database.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(database.getResource().getDataSources()).thenReturn(Collections.emptyMap());
         when(database.getResource().getNotExistedResources(any())).thenReturn(Collections.emptyList());
+        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
         when(result.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("db", database));
         return result;
     }

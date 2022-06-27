@@ -49,7 +49,7 @@ public final class DropTrafficRuleHandlerTest extends ProxyContextRestorer {
     public void assertExecuteForNotExistedRuleWithoutIfExists() throws SQLException {
         mockContextManager();
         DropTrafficRuleHandler handler = new DropTrafficRuleHandler();
-        handler.init(new DropTrafficRuleStatement(Collections.singleton("not_existed_rule"), false), null);
+        handler.init(new DropTrafficRuleStatement(false, Collections.singleton("not_existed_rule")), null);
         handler.execute();
     }
     
@@ -57,7 +57,7 @@ public final class DropTrafficRuleHandlerTest extends ProxyContextRestorer {
     public void assertExecuteForNotExistedRuleWithIfExists() throws SQLException {
         ContextManager contextManager = mockContextManager();
         DropTrafficRuleHandler handler = new DropTrafficRuleHandler();
-        handler.init(new DropTrafficRuleStatement(Collections.singleton("rule_name_3"), true), null);
+        handler.init(new DropTrafficRuleStatement(true, Collections.singleton("rule_name_3")), null);
         handler.execute();
         TrafficRuleConfiguration updatedConfig = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class).getConfiguration();
         assertThat(updatedConfig.getTrafficStrategies().size(), is(2));
@@ -69,7 +69,7 @@ public final class DropTrafficRuleHandlerTest extends ProxyContextRestorer {
     public void assertExecute() throws SQLException {
         ContextManager contextManager = mockContextManager();
         DropTrafficRuleHandler handler = new DropTrafficRuleHandler();
-        handler.init(new DropTrafficRuleStatement(Collections.singleton("rule_name_1"), false), null);
+        handler.init(new DropTrafficRuleStatement(false, Collections.singleton("rule_name_1")), null);
         handler.execute();
         TrafficRuleConfiguration updatedConfig = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class).getConfiguration();
         assertThat(updatedConfig.getTrafficStrategies().size(), is(1));

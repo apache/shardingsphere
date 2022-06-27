@@ -133,7 +133,7 @@ public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
     }
     
     private DropDatabaseDiscoveryRuleStatement createSQLStatementWithIfExists() {
-        return new DropDatabaseDiscoveryRuleStatement(Collections.singleton("ha_group_0"), true);
+        return new DropDatabaseDiscoveryRuleStatement(true, Collections.singleton("ha_group_0"));
     }
     
     private DatabaseDiscoveryRuleConfiguration createCurrentRuleConfiguration() {

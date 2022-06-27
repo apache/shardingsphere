@@ -230,6 +230,8 @@ public enum SQLVisitorRule {
     
     RENAME("Rename", SQLStatementType.DDL),
     
+    ALTER_ROUTINE("AlterRoutine", SQLStatementType.DDL),
+    
     CREATE_EXTENSION("CreateExtension", SQLStatementType.DDL),
     
     ALTER_EXTENSION("AlterExtension", SQLStatementType.DDL),
@@ -561,6 +563,10 @@ public enum SQLVisitorRule {
     CREATE_RESTORE_POINT("CreateRestorePoint", SQLStatementType.DDL),
     
     DROP_RESTORE_POINT("DropRestorePoint", SQLStatementType.DDL),
+    
+    ALTER_LIBRARY("AlterLibrary", SQLStatementType.DDL),
+    
+    ALTER_MATERIALIZED_ZONEMAP("AlterMaterializedZonemap", SQLStatementType.DDL),
     
     CURSOR("Cursor", SQLStatementType.DDL),
     

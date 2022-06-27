@@ -237,7 +237,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitDropDefaultSingleTableRule(final DropDefaultSingleTableRuleContext ctx) {
-        return new DropDefaultSingleTableRuleStatement(null != ctx.existClause());
+        return new DropDefaultSingleTableRuleStatement(null != ctx.ifExists());
     }
     
     private Properties getProperties(final PropertiesDefinitionContext ctx) {
@@ -254,7 +254,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     @Override
     public ASTNode visitDropResource(final DropResourceContext ctx) {
         boolean ignoreSingleTables = null != ctx.ignoreSingleTables();
-        return new DropResourceStatement(ctx.existClause() != null,
+        return new DropResourceStatement(ctx.ifExists() != null,
                 ctx.IDENTIFIER().stream().map(ParseTree::getText).map(each -> new IdentifierValue(each).getValue()).collect(Collectors.toList()), ignoreSingleTables);
     }
     
@@ -337,7 +337,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     @Override
     public ASTNode visitDropTrafficRule(final DropTrafficRuleContext ctx) {
         Collection<String> ruleNames = null == ctx.ruleName() ? null : ctx.ruleName().stream().map(this::getIdentifierValue).collect(Collectors.toSet());
-        return new DropTrafficRuleStatement(ruleNames, null != ctx.ifExists());
+        return new DropTrafficRuleStatement(null != ctx.ifExists(), ruleNames);
     }
     
     @Override

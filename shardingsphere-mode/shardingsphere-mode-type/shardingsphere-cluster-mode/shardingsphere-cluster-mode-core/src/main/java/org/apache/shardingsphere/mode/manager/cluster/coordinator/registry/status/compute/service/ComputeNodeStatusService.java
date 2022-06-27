@@ -28,9 +28,10 @@ import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Compute node status service.
@@ -47,8 +48,7 @@ public final class ComputeNodeStatusService {
      * @param instanceDefinition instance definition
      */
     public void registerOnline(final InstanceDefinition instanceDefinition) {
-        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceDefinition.getInstanceId(), instanceDefinition.getInstanceType()),
-                instanceDefinition.getAttributes());
+        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceDefinition.getInstanceId(), instanceDefinition.getInstanceType()), instanceDefinition.getAttributes());
     }
     
     /**
@@ -119,15 +119,17 @@ public final class ComputeNodeStatusService {
      * @return compute node instances
      */
     public Collection<ComputeNodeInstance> loadAllComputeNodeInstances() {
-        Collection<ComputeNodeInstance> result = new ArrayList<>();
-        Arrays.stream(InstanceType.values()).forEach(instanceType -> {
-            Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType));
-            onlineComputeNodes.forEach(each -> {
-                InstanceDefinition instanceDefinition = new InstanceDefinition(instanceType, each, repository.get(ComputeNode.getOnlineInstanceNodePath(each, instanceType)));
-                result.add(loadComputeNodeInstance(instanceDefinition));
-            });
-        });
+        Collection<ComputeNodeInstance> result = new LinkedList<>();
+        for (InstanceType each : InstanceType.values()) {
+            result.addAll(loadComputeNodeInstances(each));
+        }
         return result;
+    }
+    
+    private Collection<ComputeNodeInstance> loadComputeNodeInstances(final InstanceType type) {
+        Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(type));
+        return onlineComputeNodes.stream()
+                .map(each -> loadComputeNodeInstance(new InstanceDefinition(type, each, repository.get(ComputeNode.getOnlineInstanceNodePath(each, type))))).collect(Collectors.toList());
     }
     
     /**

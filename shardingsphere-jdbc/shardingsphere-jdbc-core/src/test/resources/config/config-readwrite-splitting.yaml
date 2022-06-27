@@ -23,7 +23,7 @@ rules:
     test_ds:
       type: Static
       props:
-        write-data-source-name: test_write_ds
+        write-data-source-name: test_primary_ds
         read-data-source-names: test_replica_ds
       loadBalancerName: roundRobin
   loadBalancers:
