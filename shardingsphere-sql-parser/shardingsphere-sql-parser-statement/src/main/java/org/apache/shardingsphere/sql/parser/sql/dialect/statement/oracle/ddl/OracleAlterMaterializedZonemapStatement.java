@@ -15,27 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-
-import java.util.Collections;
-import java.util.List;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Binary prepared statement for MySQL.
+ * Oracle alter materialized zonemap statement.
  */
-@RequiredArgsConstructor
-@Getter
-@Setter
-public final class MySQLPreparedStatement {
-    
-    private final String sql;
-    
-    private final SQLStatement sqlStatement;
-    
-    private List<MySQLPreparedStatementParameterType> parameterTypes = Collections.emptyList();
+@ToString
+public final class OracleAlterMaterializedZonemapStatement extends AbstractSQLStatement implements OracleStatement {
 }

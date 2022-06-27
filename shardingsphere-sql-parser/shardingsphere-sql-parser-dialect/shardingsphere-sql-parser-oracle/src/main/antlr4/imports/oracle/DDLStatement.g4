@@ -2509,3 +2509,30 @@ dropRestorePoint
 dropOperator
     : DROP OPERATOR (schemaName DOT_)? operatorName FORCE?
     ;
+
+alterLibrary
+    : ALTER LIBRARY (schemaName DOT_)? libraryName (libraryCompileClause | EDITIONABLE | NONEDITIONABLE)
+    ;
+
+libraryCompileClause
+    : COMPILE DEBUG? compilerParametersClause* (REUSE SETTINGS)?
+    ;
+
+alterMaterializedZonemap
+    : ALTER MATERIALIZED ZONEMAP (schemaName DOT_)? zonemapName
+    ( alterZonemapAttributes
+    | zonemapRefreshClause
+    | (ENABLE | DISABLE) PRUNING
+    | COMPILE
+    | REBUILD
+    | UNUSABLE)
+    ;
+
+alterZonemapAttributes
+    : (PCTFREE INTEGER_ | PCTUSED INTEGER_ | CACHE | NOCACHE)+
+    ;
+
+zonemapRefreshClause
+    : REFRESH (FAST | COMPLETE | FORCE)?
+      (ON (DEMAND | COMMIT | LOAD | DATA MOVEMENT | LOAD DATA MOVEMENT) )?
+    ;

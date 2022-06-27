@@ -15,51 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended;
+package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary;
 
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLParameterDescriptionPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementParameterType;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.proxy.backend.session.PreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 /**
- * Prepared statement for PostgreSQL.
+ * Binary prepared statement for MySQL.
  */
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class PostgreSQLPreparedStatement {
+public final class MySQLPreparedStatement implements PreparedStatement {
     
     private final String sql;
     
     private final SQLStatement sqlStatement;
     
-    private final List<PostgreSQLColumnType> parameterTypes;
+    private final SQLStatementContext<?> sqlStatementContext;
     
-    @Getter(AccessLevel.NONE)
-    private PostgreSQLPacket rowDescription;
-    
-    /**
-     * Describe parameters of the prepared statement.
-     *
-     * @return packet of parameter descriptions
-     */
-    public PostgreSQLParameterDescriptionPacket describeParameters() {
-        return new PostgreSQLParameterDescriptionPacket(parameterTypes);
-    }
-    
-    /**
-     * Describe rows of the prepared statement.
-     * 
-     * @return packet of row description
-     */
-    public Optional<PostgreSQLPacket> describeRows() {
-        return Optional.ofNullable(rowDescription);
-    }
+    private List<MySQLPreparedStatementParameterType> parameterTypes = Collections.emptyList();
 }

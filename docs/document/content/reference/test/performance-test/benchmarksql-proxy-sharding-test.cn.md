@@ -115,7 +115,7 @@ props:
 Pool size 请根据实际压测情况适当调整。
 
 ```yaml
-schemaName: bmsql_sharding
+databaseName: bmsql_sharding
 dataSources:
   ds_0:
     url: jdbc:postgresql://db0.ip:5432/bmsql

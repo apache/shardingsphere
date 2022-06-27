@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.lock.definition.LockNameDefinitionFactory;
@@ -39,14 +38,14 @@ public final class DistributedLockContextTest {
     @Test
     public void assertGetDistributedLock() {
         DistributedLockContext distributedLockContext = new DistributedLockContext(mock(ClusterPersistRepository.class));
-        ComputeNodeInstance currentInstance = new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
+        ComputeNodeInstance currentInstance = new ComputeNodeInstance(new InstanceDefinition(3307, "1"));
         new InstanceContext(currentInstance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), distributedLockContext);
         assertThat(distributedLockContext.getLock(), instanceOf(ShardingSphereLock.class));
     }
     
     @Test
     public void assertTryLock() {
-        ComputeNodeInstance currentInstance = new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
+        ComputeNodeInstance currentInstance = new ComputeNodeInstance(new InstanceDefinition(3307, "1"));
         DistributedLockContext distributedLockContext = new DistributedLockContext(mock(ClusterPersistRepository.class));
         new InstanceContext(currentInstance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), distributedLockContext);
         assertNotNull(distributedLockContext.getLock());
@@ -54,7 +53,7 @@ public final class DistributedLockContextTest {
     
     @Test
     public void assertReleaseLock() {
-        ComputeNodeInstance currentInstance = new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
+        ComputeNodeInstance currentInstance = new ComputeNodeInstance(new InstanceDefinition(3307, "1"));
         DistributedLockContext distributedLockContext = new DistributedLockContext(mock(ClusterPersistRepository.class));
         new InstanceContext(currentInstance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), distributedLockContext);
         distributedLockContext.releaseLock(LockNameDefinitionFactory.newDatabaseDefinition("database"));
@@ -62,7 +61,7 @@ public final class DistributedLockContextTest {
     
     @Test
     public void assertIsLockedDatabase() {
-        ComputeNodeInstance currentInstance = new ComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, "127.0.0.1@3307"));
+        ComputeNodeInstance currentInstance = new ComputeNodeInstance(new InstanceDefinition(3307, "1"));
         DistributedLockContext distributedLockContext = new DistributedLockContext(mock(ClusterPersistRepository.class));
         new InstanceContext(currentInstance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), distributedLockContext);
         assertFalse(distributedLockContext.isLocked(LockNameDefinitionFactory.newDatabaseDefinition("database")));

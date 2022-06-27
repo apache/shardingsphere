@@ -107,13 +107,13 @@ public final class ShardingSpherePipelineDataSourceConfiguration implements Pipe
     }
     
     @Override
-    public String getType() {
-        return TYPE;
+    public Object getDataSourceConfiguration() {
+        return rootConfig;
     }
     
     @Override
-    public Object getDataSourceConfiguration() {
-        return rootConfig;
+    public String getType() {
+        return TYPE;
     }
     
     /**

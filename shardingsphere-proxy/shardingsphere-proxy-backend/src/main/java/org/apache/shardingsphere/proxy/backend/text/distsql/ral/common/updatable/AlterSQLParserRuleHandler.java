@@ -37,18 +37,15 @@ public final class AlterSQLParserRuleHandler extends UpdatableRALBackendHandler<
     
     @Override
     protected void update(final ContextManager contextManager) {
-        replaceNewRule(contextManager);
+        replaceNewRule();
         persistNewRuleConfigurations();
     }
     
-    private void replaceNewRule(final ContextManager contextManager) {
+    private void replaceNewRule() {
         SQLParserRuleConfiguration toBeAlteredRuleConfig = createToBeAlteredRuleConfiguration();
         Collection<ShardingSphereRule> globalRules = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules();
         globalRules.removeIf(each -> each instanceof SQLParserRule);
         globalRules.add(new SQLParserRule(toBeAlteredRuleConfig));
-        // TODO remove me after ShardingSphereRuleMetaData.configuration removed
-        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations().removeIf(each -> each instanceof SQLParserRuleConfiguration);
-        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations().add(toBeAlteredRuleConfig);
     }
     
     private SQLParserRuleConfiguration createToBeAlteredRuleConfiguration() {

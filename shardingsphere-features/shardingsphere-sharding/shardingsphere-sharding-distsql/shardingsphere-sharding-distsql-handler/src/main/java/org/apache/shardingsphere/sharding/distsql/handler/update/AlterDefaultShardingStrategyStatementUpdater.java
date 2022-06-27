@@ -40,8 +40,6 @@ import java.util.Optional;
  */
 public final class AlterDefaultShardingStrategyStatementUpdater implements RuleDefinitionAlterUpdater<AlterDefaultShardingStrategyStatement, ShardingRuleConfiguration> {
     
-    private static final String TYPE = AlterDefaultShardingStrategyStatement.class.getName();
-    
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database,
                                   final AlterDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
@@ -143,6 +141,6 @@ public final class AlterDefaultShardingStrategyStatementUpdater implements RuleD
     
     @Override
     public String getType() {
-        return TYPE;
+        return AlterDefaultShardingStrategyStatement.class.getName();
     }
 }

@@ -15,18 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.response.data.impl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterRoutineStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Text query response cell.
+ * PostgreSQL alter routine statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class TextQueryResponseCell implements QueryResponseCell {
-    
-    private final Object data;
+@ToString
+public final class PostgreSQLAlterRoutineStatement extends AlterRoutineStatement implements PostgreSQLStatement {
 }

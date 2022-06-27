@@ -21,10 +21,7 @@ import io.netty.buffer.Unpooled;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLNewParametersBoundFlag;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementParameterType;
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLSelectStatement;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.nio.charset.StandardCharsets;
@@ -38,14 +35,6 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public final class MySQLComStmtExecutePacketTest {
-    
-    @Before
-    public void setup() {
-        MySQLPreparedStatementRegistry.getInstance().registerConnection(1);
-        MySQLSelectStatement sqlStatement = new MySQLSelectStatement();
-        sqlStatement.setParameterCount(1);
-        MySQLPreparedStatementRegistry.getInstance().getConnectionPreparedStatements(1).prepareStatement("SELECT id FROM tbl WHERE id=?", sqlStatement);
-    }
     
     @Test
     public void assertNewWithoutParameter() throws SQLException {

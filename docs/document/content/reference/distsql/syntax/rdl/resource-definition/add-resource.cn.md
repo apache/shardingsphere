@@ -6,7 +6,7 @@ weight = 2
 
 ### 描述
 
-`ADD RESOURCE` 语法用于为当前所选逻辑库（SCHEMA）添加资源。
+`ADD RESOURCE` 语法用于为当前所选逻辑库（DATABASE）添加资源。
 
 
 

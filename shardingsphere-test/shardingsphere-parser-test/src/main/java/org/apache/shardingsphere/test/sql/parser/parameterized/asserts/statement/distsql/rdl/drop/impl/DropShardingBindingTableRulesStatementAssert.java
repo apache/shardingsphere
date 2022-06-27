@@ -43,6 +43,6 @@ public final class DropShardingBindingTableRulesStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final DropShardingBindingTableRulesStatement actual, final DropShardingBindingTableRulesStatementTestCase expected) {
         assertNotNull(assertContext.getText("Actual statement should exist."), actual);
         assertThat(assertContext.getText("Binding table rule assertion error: "), actual.getBindingGroups(), is(expected.getRules()));
-        assertThat(assertContext.getText("Binding table rule assertion error: "), actual.isContainsExistClause(), is(expected.isContainsExistClause()));
+        assertThat(assertContext.getText("Binding table rule assertion error: "), actual.isIfExists(), is(expected.isIfExists()));
     }
 }

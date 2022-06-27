@@ -6,7 +6,7 @@ weight = 3
 
 ### Description
 
-The `ALTER RESOURCE` syntax is used to alter resources for the currently selected schema.
+The `ALTER RESOURCE` syntax is used to alter resources for the currently selected database.
 
 
 
@@ -42,9 +42,9 @@ url ::=
 ```
 
  ### Supplement
-- Before altering the resources, please confirm that a schema exists in Proxy, and execute the `use` command to successfully select a schema
+- Before altering the resources, please confirm that a database exists in Proxy, and execute the `use` command to successfully select a database
 - `dataSourceName` is case-sensitive
-- `dataSourceName` needs to be unique within the current schema
+- `dataSourceName` needs to be unique within the current database
 - `dataSourceName` name only allows letters, numbers and `_`, and must start with a letter
 - `poolProperty` is used to customize connection pool parameters, `key` must be the same as the connection pool parameter name, `value` supports int and String types
 - When `password` contains special characters, it is recommended to use the string form; for example, the string form of `password@123` is `"password@123"`

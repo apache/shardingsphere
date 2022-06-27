@@ -84,11 +84,11 @@ public final class DropDatabaseDiscoveryHeartbeatStatementUpdaterTest {
     }
     
     private DropDatabaseDiscoveryHeartbeatStatement createSQLStatement() {
-        return new DropDatabaseDiscoveryHeartbeatStatement(Collections.singleton("heartbeat_name"));
+        return new DropDatabaseDiscoveryHeartbeatStatement(false, Collections.singleton("heartbeat_name"));
     }
     
     private DropDatabaseDiscoveryHeartbeatStatement createSQLStatementWithIfExists() {
-        return new DropDatabaseDiscoveryHeartbeatStatement(Collections.singleton("heartbeat_name_0"), true);
+        return new DropDatabaseDiscoveryHeartbeatStatement(true, Collections.singleton("heartbeat_name_0"));
     }
     
     private DatabaseDiscoveryRuleConfiguration createCurrentRuleConfiguration() {

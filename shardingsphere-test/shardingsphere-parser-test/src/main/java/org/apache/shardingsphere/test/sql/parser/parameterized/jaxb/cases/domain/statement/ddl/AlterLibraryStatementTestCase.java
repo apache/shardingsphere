@@ -15,20 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.response.data.impl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Binary query response cell.
+ * Alter library statement test case.
  */
-@RequiredArgsConstructor
-@Getter
-public final class BinaryQueryResponseCell implements QueryResponseCell {
-    
-    private final int jdbcType;
-    
-    private final Object data;
+public final class AlterLibraryStatementTestCase extends SQLParserTestCase {
 }

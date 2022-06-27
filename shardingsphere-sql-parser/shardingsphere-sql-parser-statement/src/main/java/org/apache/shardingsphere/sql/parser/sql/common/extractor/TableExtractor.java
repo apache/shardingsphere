@@ -263,7 +263,7 @@ public final class TableExtractor {
      */
     public boolean needRewrite(final OwnerSegment owner) {
         for (TableSegment each : tableContext) {
-            if (owner.getIdentifier().getValue().equals(each.getAlias().orElse(null))) {
+            if (owner.getIdentifier().getValue().equalsIgnoreCase(each.getAlias().orElse(null))) {
                 return false;
             }
         }
@@ -318,7 +318,7 @@ public final class TableExtractor {
         Collection<SimpleTableSegment> result = new LinkedList<>();
         for (ValidStatementSegment each : routineBody.getValidStatements()) {
             Optional<CreateTableStatement> createTable = each.getCreateTable();
-            if (createTable.isPresent() && !CreateTableStatementHandler.containsNotExistClause(createTable.get())) {
+            if (createTable.isPresent() && !CreateTableStatementHandler.ifNotExists(createTable.get())) {
                 result.add(createTable.get().getTable());
             }
         }

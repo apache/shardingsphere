@@ -50,7 +50,7 @@ public final class CreateTrafficRuleHandler extends UpdatableRALBackendHandler<C
     @Override
     protected void update(final ContextManager contextManager) throws DistSQLException {
         check();
-        replaceNewRule(contextManager);
+        replaceNewRule();
         persistNewRuleConfigurations();
     }
     
@@ -88,14 +88,11 @@ public final class CreateTrafficRuleHandler extends UpdatableRALBackendHandler<C
         return result;
     }
     
-    private void replaceNewRule(final ContextManager contextManager) {
+    private void replaceNewRule() {
         TrafficRuleConfiguration toBeAlteredRuleConfig = createToBeAlteredRuleConfiguration();
         Collection<ShardingSphereRule> globalRules = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules();
         globalRules.removeIf(each -> each instanceof TrafficRule);
         globalRules.add(new TrafficRule(toBeAlteredRuleConfig));
-        // TODO remove me after ShardingSphereRuleMetaData.configuration removed
-        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations().removeIf(each -> each instanceof TrafficRuleConfiguration);
-        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations().add(toBeAlteredRuleConfig);
     }
     
     private TrafficRuleConfiguration createToBeAlteredRuleConfiguration() {

@@ -107,5 +107,7 @@ execute
     | createRestorePoint
     | dropRestorePoint
     | dropOperator
+    | alterLibrary
+    | alterMaterializedZonemap
     ) SEMI_?
     ;

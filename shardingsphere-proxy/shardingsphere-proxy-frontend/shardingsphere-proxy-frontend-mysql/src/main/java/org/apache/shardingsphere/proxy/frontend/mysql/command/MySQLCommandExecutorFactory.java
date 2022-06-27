@@ -82,7 +82,7 @@ public final class MySQLCommandExecutorFactory {
             case COM_STMT_RESET:
                 return new MySQLComStmtResetExecutor((MySQLComStmtResetPacket) commandPacket, connectionSession);
             case COM_STMT_CLOSE:
-                return new MySQLComStmtCloseExecutor((MySQLComStmtClosePacket) commandPacket, connectionSession.getConnectionId());
+                return new MySQLComStmtCloseExecutor((MySQLComStmtClosePacket) commandPacket, connectionSession);
             case COM_SET_OPTION:
                 return new MySQLComSetOptionExecutor((MySQLComSetOptionPacket) commandPacket, connectionSession);
             default:

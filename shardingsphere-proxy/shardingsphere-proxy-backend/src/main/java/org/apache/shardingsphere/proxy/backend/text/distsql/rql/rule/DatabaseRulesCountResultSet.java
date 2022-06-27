@@ -41,7 +41,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Result set for count database rules.
+ * Query result set for count database rules.
  */
 public final class DatabaseRulesCountResultSet implements DistSQLResultSet {
     

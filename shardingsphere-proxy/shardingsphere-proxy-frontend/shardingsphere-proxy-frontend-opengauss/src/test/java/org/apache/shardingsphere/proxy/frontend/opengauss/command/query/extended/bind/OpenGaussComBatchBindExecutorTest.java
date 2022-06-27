@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.frontend.opengauss.command.query.extende
 
 import org.apache.shardingsphere.db.protocol.opengauss.packet.command.query.extended.bind.OpenGaussComBatchBindPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLBindCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -33,7 +32,9 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDB
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.statement.JDBCBackendStatement;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.PreparedStatementRegistry;
 import org.apache.shardingsphere.proxy.frontend.opengauss.ProxyContextRestorer;
+import org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.PostgreSQLPreparedStatement;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
@@ -76,7 +77,6 @@ public final class OpenGaussComBatchBindExecutorTest extends ProxyContextRestore
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(globalRuleMetaData.getSingleRule(SQLTranslatorRule.class)).thenReturn(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()));
-        int connectionId = 1;
         String statement = "S_1";
         OpenGaussComBatchBindPacket packet = mock(OpenGaussComBatchBindPacket.class);
         when(packet.getStatementId()).thenReturn("S_1");
@@ -93,9 +93,10 @@ public final class OpenGaussComBatchBindExecutorTest extends ProxyContextRestore
         when(backendStatement.createStorageResource(any(ExecutionUnit.class), any(Connection.class), any(ConnectionMode.class), any(StatementOption.class))).thenReturn(preparedStatement);
         when(connectionSession.getStatementManager()).thenReturn(backendStatement);
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
-        PostgreSQLPreparedStatementRegistry.getInstance().register(connectionId);
-        SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse("insert into bmsql (id) values (?)", false);
-        PostgreSQLPreparedStatementRegistry.getInstance().register(connectionId, statement, "", sqlStatement, Collections.emptyList());
+        when(connectionSession.getPreparedStatementRegistry()).thenReturn(new PreparedStatementRegistry());
+        String sql = "insert into bmsql (id) values (?)";
+        SQLStatement sqlStatement = SQL_PARSER_ENGINE.parse(sql, false);
+        connectionSession.getPreparedStatementRegistry().addPreparedStatement(statement, new PostgreSQLPreparedStatement(sql, sqlStatement, null, Collections.emptyList()));
         OpenGaussComBatchBindExecutor executor = new OpenGaussComBatchBindExecutor(packet, connectionSession);
         Iterator<DatabasePacket<?>> actualPacketsIterator = executor.execute().iterator();
         assertThat(actualPacketsIterator.next(), is(PostgreSQLBindCompletePacket.getInstance()));

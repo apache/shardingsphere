@@ -40,7 +40,7 @@ public final class MySQLResetPersistStatementAssert {
      * @param expected expected reset persist statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final MySQLResetPersistStatement actual, final ResetPersistStatementTestCase expected) {
-        assertThat(assertContext.getText("Actual reset persist exist clause does not match: "), actual.isContainsExistClause(), is(expected.isContainsExistClause()));
+        assertThat(assertContext.getText("Actual reset persist exist clause does not match: "), actual.isIfExists(), is(expected.isIfExists()));
         if (null != expected.getIdentifier()) {
             assertThat(assertContext.getText("Actual reset persist identifier does not match: "), actual.getIdentifier().getValue(), is(expected.getIdentifier()));
         }

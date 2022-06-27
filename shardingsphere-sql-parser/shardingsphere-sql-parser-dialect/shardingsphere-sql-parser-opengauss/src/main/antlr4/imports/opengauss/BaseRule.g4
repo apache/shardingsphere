@@ -1864,10 +1864,10 @@ typeNameList
     : typeName (COMMA_ typeName)*
     ;
     
-notExistClause
+ifNotExists
     : IF NOT EXISTS
     ;
     
-existClause
+ifExists
     : IF EXISTS
     ;

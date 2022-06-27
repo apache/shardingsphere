@@ -28,7 +28,7 @@ alterReadwriteSplittingRule
     ;
 
 dropReadwriteSplittingRule
-    : DROP READWRITE_SPLITTING RULE existClause? ruleName (COMMA ruleName)*
+    : DROP READWRITE_SPLITTING RULE ifExists? ruleName (COMMA ruleName)*
     ;
 
 readwriteSplittingRuleDefinition
@@ -71,6 +71,6 @@ algorithmProperty
     : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | STRING)
     ;
 
-existClause
+ifExists
     : IF EXISTS
     ;

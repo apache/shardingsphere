@@ -19,6 +19,8 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatabl
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.SetVariableStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -37,6 +39,7 @@ import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -67,7 +70,7 @@ public final class SetVariableExecutorTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecuteWithConfigurationKey() throws SQLException {
-        ContextManager contextManager = new ContextManager(new MetaDataContexts(null), null);
+        ContextManager contextManager = new ContextManager(new MetaDataContexts(null, new ShardingSphereMetaData(), mock(OptimizerContext.class)), null);
         ProxyContext.init(contextManager);
         SetVariableStatement statement = new SetVariableStatement("proxy_frontend_flush_threshold", "1024");
         SetVariableHandler handler = new SetVariableHandler();

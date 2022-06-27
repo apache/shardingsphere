@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.function.DistributedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.function.EnhancedRuleConfiguration;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Arrays;
@@ -46,14 +45,13 @@ public final class DatabaseRulesBuilder {
      *
      * @param databaseName database name
      * @param databaseConfig database configuration
-     * @param props configuration properties
      * @return built rules
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    public static Collection<ShardingSphereRule> build(final String databaseName, final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) {
+    public static Collection<ShardingSphereRule> build(final String databaseName, final DatabaseConfiguration databaseConfig) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, DatabaseRuleBuilder> entry : getRuleBuilderMap(databaseConfig).entrySet()) {
-            result.add(entry.getValue().build(entry.getKey(), databaseName, databaseConfig.getDataSources(), result, props));
+            result.add(entry.getValue().build(entry.getKey(), databaseName, databaseConfig.getDataSources(), result));
         }
         return result;
     }
