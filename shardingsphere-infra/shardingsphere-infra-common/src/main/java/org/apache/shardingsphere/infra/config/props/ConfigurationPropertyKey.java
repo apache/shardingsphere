@@ -89,11 +89,6 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     PROXY_BACKEND_QUERY_FETCH_SIZE("proxy-backend-query-fetch-size", String.valueOf(-1), int.class, false),
     
     /**
-     * Whether check duplicate table.
-     */
-    CHECK_DUPLICATE_TABLE_ENABLED("check-duplicate-table-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
-    
-    /**
      * Proxy frontend executor size. The default value is 0, which means let Netty decide.
      */
     PROXY_FRONTEND_EXECUTOR_SIZE("proxy-frontend-executor-size", String.valueOf(0), int.class, true),

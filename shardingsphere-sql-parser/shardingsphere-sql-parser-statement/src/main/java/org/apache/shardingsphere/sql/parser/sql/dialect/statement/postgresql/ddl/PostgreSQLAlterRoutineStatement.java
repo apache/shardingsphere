@@ -15,20 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.constant;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterRoutineStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Exportable constants.
+ * PostgreSQL alter routine statement.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExportableConstants {
-    
-    public static final String EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES = "primary_data_source";
-    
-    public static final String EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE = "dynamic_readwrite_splitting_rules";
-    
-    public static final String EXPORT_STATIC_READWRITE_SPLITTING_RULE = "static_readwrite_splitting_rules";
+@ToString
+public final class PostgreSQLAlterRoutineStatement extends AlterRoutineStatement implements PostgreSQLStatement {
 }

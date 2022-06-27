@@ -15,20 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.constant;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Exportable constants.
+ * Alter materialized zonemap statement test case.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExportableConstants {
-    
-    public static final String EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES = "primary_data_source";
-    
-    public static final String EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE = "dynamic_readwrite_splitting_rules";
-    
-    public static final String EXPORT_STATIC_READWRITE_SPLITTING_RULE = "static_readwrite_splitting_rules";
+public final class AlterMaterializedZonemapStatementTestCase extends SQLParserTestCase {
 }

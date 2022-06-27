@@ -134,9 +134,9 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private RuleConfiguration processAlter(final T sqlStatement, final RuleDefinitionAlterUpdater updater, final RuleConfiguration currentRuleConfig) {
-        RuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(sqlStatement);
-        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
-        return toBeAlteredRuleConfig;
+        RuleConfiguration result = updater.buildToBeAlteredRuleConfiguration(sqlStatement);
+        updater.updateCurrentRuleConfiguration(currentRuleConfig, result);
+        return result;
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -149,7 +149,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         }
     }
     
-    private void prepareScaling(final ShardingSphereDatabase database, final T sqlStatement, final RuleDefinitionAlterUpdater updater, final RuleConfiguration currentRuleConfig,
+    private void prepareScaling(final ShardingSphereDatabase database, final T sqlStatement, final RuleDefinitionAlterUpdater<?, ?> updater, final RuleConfiguration currentRuleConfig,
                                 final RuleDefinitionAlterPreprocessor<?> preprocessor) {
         Optional<MetaDataPersistService> metaDataPersistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService();
         if (metaDataPersistService.isPresent()) {
@@ -174,15 +174,15 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService().ifPresent(optional -> optional.getDatabaseRulePersistService().persist(databaseName, alteredConfigs));
     }
     
-    private RuleConfiguration getAlteredRuleConfig(final T sqlStatement, final RuleDefinitionAlterUpdater updater, final RuleConfiguration currentRuleConfig,
-                                                   final RuleDefinitionAlterPreprocessor preprocessor) {
+    private RuleConfiguration getAlteredRuleConfig(final T sqlStatement, final RuleDefinitionAlterUpdater updater,
+                                                   final RuleConfiguration currentRuleConfig, final RuleDefinitionAlterPreprocessor preprocessor) {
         RuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(sqlStatement);
         RuleConfiguration result = preprocessor.preprocess(currentRuleConfig, toBeAlteredRuleConfig);
         updater.updateCurrentRuleConfiguration(result, toBeAlteredRuleConfig);
         return result;
     }
     
-    private boolean getRefreshStatus(final SQLStatement sqlStatement, final RuleConfiguration currentRuleConfig, final RuleDefinitionUpdater updater) {
+    private boolean getRefreshStatus(final SQLStatement sqlStatement, final RuleConfiguration currentRuleConfig, final RuleDefinitionUpdater<?, ?> updater) {
         if (updater instanceof RuleDefinitionDropUpdater) {
             return ((RuleDefinitionDropUpdater) updater).hasAnyOneToBeDropped(sqlStatement, currentRuleConfig);
         }

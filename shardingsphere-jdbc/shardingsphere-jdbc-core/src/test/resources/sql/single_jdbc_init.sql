@@ -15,20 +15,5 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.constant;
-
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-/**
- * Exportable constants.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ExportableConstants {
-    
-    public static final String EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES = "primary_data_source";
-    
-    public static final String EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE = "dynamic_readwrite_splitting_rules";
-    
-    public static final String EXPORT_STATIC_READWRITE_SPLITTING_RULE = "static_readwrite_splitting_rules";
-}
+CREATE TABLE IF NOT EXISTS t_sys_0 (id INT NOT NULL AUTO_INCREMENT, param_key VARCHAR(45) NULL, param_value VARCHAR(45) NULL, PRIMARY KEY (id));
+CREATE TABLE IF NOT EXISTS t_sys_1 (id INT NOT NULL AUTO_INCREMENT, param_key VARCHAR(45) NULL, param_value VARCHAR(45) NULL, PRIMARY KEY (id));
