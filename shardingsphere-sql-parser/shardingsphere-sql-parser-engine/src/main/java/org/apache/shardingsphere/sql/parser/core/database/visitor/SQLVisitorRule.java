@@ -566,6 +566,8 @@ public enum SQLVisitorRule {
     
     ALTER_LIBRARY("AlterLibrary", SQLStatementType.DDL),
     
+    ALTER_MATERIALIZED_ZONEMAP("AlterMaterializedZonemap", SQLStatementType.DDL),
+    
     CURSOR("Cursor", SQLStatementType.DDL),
     
     CLOSE("Close", SQLStatementType.DDL),
