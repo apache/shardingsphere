@@ -142,7 +142,9 @@ public final class DatabaseOperateBackendHandlerFactoryTest extends ProxyContext
     
     private void setGovernanceMetaDataContexts(final boolean isGovernance) {
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
-        MetaDataContexts metaDataContexts = isGovernance ? mockMetaDataContexts() : new MetaDataContexts(mock(MetaDataPersistService.class));
+        MetaDataContexts metaDataContexts = isGovernance
+                ? mockMetaDataContexts()
+                : new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(), mock(OptimizerContext.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
     }
     
