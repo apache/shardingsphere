@@ -242,6 +242,8 @@ public enum SQLVisitorRule {
     
     DISCARD("Discard", SQLStatementType.DDL),
     
+    LISTEN("Listen", SQLStatementType.DDL),
+    
     SET_CONSTRAINTS("SetConstraints", SQLStatementType.TCL),
     
     SET_TRANSACTION("SetTransaction", SQLStatementType.TCL),
@@ -271,8 +273,6 @@ public enum SQLVisitorRule {
     RELEASE_SAVEPOINT("ReleaseSavepoint", SQLStatementType.TCL),
     
     ROLLBACK_TO_SAVEPOINT("RollbackToSavepoint", SQLStatementType.TCL),
-    
-    LISTEN("Listen", SQLStatementType.TCL),
     
     LOCK("Lock", SQLStatementType.TCL),
     
