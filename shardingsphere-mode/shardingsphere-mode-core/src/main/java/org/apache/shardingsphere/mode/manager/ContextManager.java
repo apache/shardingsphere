@@ -213,8 +213,8 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private void refreshRules(final String databaseName, final ShardingSphereDatabase database) {
-        Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(databaseName, new DataSourceProvidedDatabaseConfiguration(database.getResource().getDataSources(),
-                database.getRuleMetaData().getConfigurations()), new ConfigurationProperties(metaDataContexts.getMetaData().getProps().getProps()));
+        Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(
+                databaseName, new DataSourceProvidedDatabaseConfiguration(database.getResource().getDataSources(), database.getRuleMetaData().getConfigurations()));
         database.getRuleMetaData().getRules().clear();
         database.getRuleMetaData().getRules().addAll(databaseRules);
     }

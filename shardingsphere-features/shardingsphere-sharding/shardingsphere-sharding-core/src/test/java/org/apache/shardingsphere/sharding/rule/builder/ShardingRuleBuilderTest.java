@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.rule.builder;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilderFactory;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -27,7 +26,6 @@ import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.util.Collections;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -50,19 +48,18 @@ public final class ShardingRuleBuilderTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertBuild() {
-        assertThat(builder.build(ruleConfig, "test_schema",
-                Collections.singletonMap("name", mock(DataSource.class, RETURNS_DEEP_STUBS)), Collections.emptyList(), new ConfigurationProperties(new Properties())), instanceOf(ShardingRule.class));
+        assertThat(builder.build(ruleConfig, "test_schema", Collections.singletonMap("name", mock(DataSource.class, RETURNS_DEEP_STUBS)), Collections.emptyList()), instanceOf(ShardingRule.class));
     }
     
     @SuppressWarnings("unchecked")
     @Test(expected = IllegalArgumentException.class)
     public void assertBuildWithNullDataSourceMap() {
-        assertThat(builder.build(ruleConfig, "test_schema", null, Collections.emptyList(), new ConfigurationProperties(new Properties())), instanceOf(ShardingRule.class));
+        assertThat(builder.build(ruleConfig, "test_schema", null, Collections.emptyList()), instanceOf(ShardingRule.class));
     }
     
     @SuppressWarnings("unchecked")
     @Test(expected = IllegalArgumentException.class)
     public void assertBuildWithEmptyDataSourceMap() {
-        assertThat(builder.build(ruleConfig, "test_schema", Collections.emptyMap(), Collections.emptyList(), new ConfigurationProperties(new Properties())), instanceOf(ShardingRule.class));
+        assertThat(builder.build(ruleConfig, "test_schema", Collections.emptyMap(), Collections.emptyList()), instanceOf(ShardingRule.class));
     }
 }
