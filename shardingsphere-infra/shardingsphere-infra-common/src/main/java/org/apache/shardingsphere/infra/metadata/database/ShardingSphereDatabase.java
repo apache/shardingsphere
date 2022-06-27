@@ -70,7 +70,7 @@ public final class ShardingSphereDatabase {
      */
     public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseType storageType,
                                                 final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) throws SQLException {
-        Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(name, databaseConfig, props);
+        Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(name, databaseConfig);
         Map<String, ShardingSphereSchema> schemas = new ConcurrentHashMap<>();
         schemas.putAll(GenericSchemaBuilder.build(new GenericSchemaBuilderMaterials(protocolType, storageType, databaseConfig.getDataSources(), databaseRules, props, name)));
         schemas.putAll(SystemSchemaBuilder.build(name, protocolType));

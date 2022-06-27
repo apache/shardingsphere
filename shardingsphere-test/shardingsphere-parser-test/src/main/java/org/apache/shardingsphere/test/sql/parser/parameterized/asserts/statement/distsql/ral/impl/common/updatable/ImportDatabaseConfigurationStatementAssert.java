@@ -24,10 +24,8 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAs
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ImportDatabaseConfigurationStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 /**
  * Import database configuration statement assert.
@@ -47,10 +45,7 @@ public final class ImportDatabaseConfigurationStatementAssert {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
-            assertNotNull(assertContext.getText("Actual statement should exist."), actual);
-            assertTrue(actual.getFilePath().isPresent());
-            assertNotNull(expected.getFilePath());
-            assertThat(actual.getFilePath().get(), is(expected.getFilePath()));
+            assertThat(actual.getFilePath(), is(expected.getFilePath()));
         }
     }
 }

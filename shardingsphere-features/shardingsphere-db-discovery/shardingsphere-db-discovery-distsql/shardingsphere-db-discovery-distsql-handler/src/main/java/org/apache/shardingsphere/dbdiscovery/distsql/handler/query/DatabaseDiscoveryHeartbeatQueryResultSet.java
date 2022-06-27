@@ -32,7 +32,7 @@ import java.util.Iterator;
 import java.util.Map.Entry;
 
 /**
- * Result set for show database discovery heartbeat.
+ * Query result set for show database discovery heartbeat.
  */
 public final class DatabaseDiscoveryHeartbeatQueryResultSet implements DistSQLResultSet {
     

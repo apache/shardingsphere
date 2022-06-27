@@ -39,6 +39,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Cursor statement context.
@@ -81,8 +82,8 @@ public final class CursorStatementContext extends CommonSQLStatementContext<Open
     }
     
     @Override
-    public CursorNameSegment getCursorName() {
-        return getSqlStatement().getCursorName();
+    public Optional<CursorNameSegment> getCursorName() {
+        return Optional.of(getSqlStatement().getCursorName());
     }
     
     @Override

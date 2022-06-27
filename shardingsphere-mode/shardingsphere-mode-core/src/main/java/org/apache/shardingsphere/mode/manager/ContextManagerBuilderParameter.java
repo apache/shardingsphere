@@ -17,11 +17,11 @@
 
 package org.apache.shardingsphere.mode.manager;
 
-import lombok.Builder;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 
 import java.util.Collection;
@@ -31,7 +31,7 @@ import java.util.Properties;
 /**
  * Context manager builder parameter.
  */
-@Builder
+@RequiredArgsConstructor
 @Getter
 public final class ContextManagerBuilderParameter {
     
@@ -48,12 +48,12 @@ public final class ContextManagerBuilderParameter {
     private final InstanceDefinition instanceDefinition;
     
     /**
-     * Whether is empty or not.
+     * Whether parameter is empty.
      * 
-     * @return is empty or not
+     * @return parameter is empty or not
      */
     public boolean isEmpty() {
-        return props.isEmpty() && globalRuleConfigs.isEmpty()
+        return globalRuleConfigs.isEmpty() && props.isEmpty()
                 && databaseConfigs.entrySet().stream().allMatch(entry -> entry.getValue().getDataSources().isEmpty() && entry.getValue().getRuleConfigurations().isEmpty());
     }
 }

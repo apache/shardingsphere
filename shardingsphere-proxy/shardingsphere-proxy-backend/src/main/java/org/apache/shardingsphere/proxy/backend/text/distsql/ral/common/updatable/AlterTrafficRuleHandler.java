@@ -50,7 +50,7 @@ public final class AlterTrafficRuleHandler extends UpdatableRALBackendHandler<Al
     @Override
     protected void update(final ContextManager contextManager) throws DistSQLException {
         check();
-        replaceNewRule(contextManager);
+        replaceNewRule();
         persistNewRuleConfigurations();
     }
     
@@ -88,14 +88,11 @@ public final class AlterTrafficRuleHandler extends UpdatableRALBackendHandler<Al
         return result;
     }
     
-    private void replaceNewRule(final ContextManager contextManager) {
+    private void replaceNewRule() {
         TrafficRuleConfiguration toBeAlteredRuleConfig = createToBeAlteredRuleConfiguration();
         Collection<ShardingSphereRule> globalRules = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules();
         globalRules.removeIf(each -> each instanceof TrafficRule);
         globalRules.add(new TrafficRule(toBeAlteredRuleConfig));
-        // TODO remove me after ShardingSphereRuleMetaData.configuration removed
-        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations().removeIf(each -> each instanceof TrafficRuleConfiguration);
-        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getConfigurations().add(toBeAlteredRuleConfig);
     }
     
     private TrafficRuleConfiguration createToBeAlteredRuleConfiguration() {
@@ -104,7 +101,7 @@ public final class AlterTrafficRuleHandler extends UpdatableRALBackendHandler<Al
         TrafficRuleConfiguration currentConfig = ProxyContext
                 .getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class).getConfiguration();
         result.getTrafficStrategies().addAll(createToBeAlteredStrategyConfigurations(currentConfig, configFromSQLStatement));
-        result.getTrafficAlgorithms().putAll(createToBeAlteredTrafficAlgorithms(currentConfig, configFromSQLStatement));
+        result.getTrafficAlgorithms().putAll(createToBeAlteredTrafficAlgorithms(currentConfig, configFromSQLStatement, getInUsedTrafficAlgorithm(result)));
         result.getLoadBalancers().putAll(createToBeAlteredLoadBalancers(currentConfig, configFromSQLStatement, getInUsedLoadBalancer(result)));
         return result;
     }
@@ -117,9 +114,17 @@ public final class AlterTrafficRuleHandler extends UpdatableRALBackendHandler<Al
         return result;
     }
     
-    private Map<String, ShardingSphereAlgorithmConfiguration> createToBeAlteredTrafficAlgorithms(final TrafficRuleConfiguration currentConfig, final TrafficRuleConfiguration configFromSQLStatement) {
+    private Collection<String> getInUsedTrafficAlgorithm(final TrafficRuleConfiguration config) {
+        return config.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getAlgorithmName).collect(Collectors.toSet());
+    }
+    
+    private Map<String, ShardingSphereAlgorithmConfiguration> createToBeAlteredTrafficAlgorithms(final TrafficRuleConfiguration currentConfig, final TrafficRuleConfiguration configFromSQLStatement,
+                                                                                                 final Collection<String> inUsedTrafficAlgorithm) {
         Map<String, ShardingSphereAlgorithmConfiguration> result = new LinkedHashMap<>(currentConfig.getTrafficAlgorithms());
         result.putAll(configFromSQLStatement.getTrafficAlgorithms());
+        for (String each : result.keySet().stream().filter(each -> !inUsedTrafficAlgorithm.contains(each)).collect(Collectors.toSet())) {
+            result.remove(each);
+        }
         return result;
     }
     

@@ -24,8 +24,6 @@ import java.util.Properties;
 
 public final class ReadQueryLoadBalanceAlgorithmFixture implements ReadQueryLoadBalanceAlgorithm {
     
-    public static final String TYPE = "FIXTURE";
-    
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
         return null;
@@ -42,6 +40,6 @@ public final class ReadQueryLoadBalanceAlgorithmFixture implements ReadQueryLoad
     
     @Override
     public String getType() {
-        return TYPE;
+        return "FIXTURE";
     }
 }

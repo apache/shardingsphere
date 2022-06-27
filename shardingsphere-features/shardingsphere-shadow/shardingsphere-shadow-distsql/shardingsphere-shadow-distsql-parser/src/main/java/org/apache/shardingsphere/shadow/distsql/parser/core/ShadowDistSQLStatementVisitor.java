@@ -117,7 +117,7 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     
     @Override
     public ASTNode visitDropShadowRule(final DropShadowRuleContext ctx) {
-        return new DropShadowRuleStatement(null != ctx.existClause(), ctx.ruleName().stream().map(each -> new IdentifierValue(each.getText()).getValue()).collect(Collectors.toList()));
+        return new DropShadowRuleStatement(null != ctx.ifExists(), ctx.ruleName().stream().map(each -> new IdentifierValue(each.getText()).getValue()).collect(Collectors.toList()));
     }
     
     @Override
@@ -127,13 +127,13 @@ public final class ShadowDistSQLStatementVisitor extends ShadowDistSQLStatementB
     
     @Override
     public ASTNode visitDropShadowAlgorithm(final DropShadowAlgorithmContext ctx) {
-        return new DropShadowAlgorithmStatement(null != ctx.existClause(), null == ctx.algorithmName() ? Collections.emptyList()
+        return new DropShadowAlgorithmStatement(null != ctx.ifExists(), null == ctx.algorithmName() ? Collections.emptyList()
                 : ctx.algorithmName().stream().map(this::getIdentifierValue).collect(Collectors.toSet()));
     }
     
     @Override
     public ASTNode visitDropDefaultShadowAlgorithm(final DropDefaultShadowAlgorithmContext ctx) {
-        return new DropDefaultShadowAlgorithmStatement(null != ctx.existClause());
+        return new DropDefaultShadowAlgorithmStatement(null != ctx.ifExists());
     }
     
     @Override

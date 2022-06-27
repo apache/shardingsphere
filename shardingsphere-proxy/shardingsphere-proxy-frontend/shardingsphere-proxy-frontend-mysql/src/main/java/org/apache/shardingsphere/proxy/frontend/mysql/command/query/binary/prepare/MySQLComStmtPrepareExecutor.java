@@ -22,12 +22,13 @@ import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnTyp
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.admin.MySQLComSetOptionPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementRegistry;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLStatementIDGenerator;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.prepare.MySQLComStmtPrepareOKPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.prepare.MySQLComStmtPreparePacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -37,6 +38,8 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLPreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
@@ -69,7 +72,10 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
             throw new UnsupportedPreparedStatementException();
         }
         int projectionCount = getProjectionCount(sqlStatement);
-        int statementId = MySQLPreparedStatementRegistry.getInstance().getConnectionPreparedStatements(connectionSession.getConnectionId()).prepareStatement(packet.getSql(), sqlStatement);
+        int statementId = MySQLStatementIDGenerator.getInstance().nextStatementId(connectionSession.getConnectionId());
+        SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(),
+                sqlStatement, connectionSession.getDefaultDatabaseName());
+        connectionSession.getPreparedStatementRegistry().addPreparedStatement(statementId, new MySQLPreparedStatement(packet.getSql(), sqlStatement, sqlStatementContext));
         return createPackets(statementId, projectionCount, sqlStatement.getParameterCount());
     }
     
@@ -96,30 +102,31 @@ public final class MySQLComStmtPrepareExecutor implements CommandExecutor {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
         result.add(new MySQLComStmtPrepareOKPacket(++currentSequenceId, statementId, projectionCount, parameterCount, 0));
         int characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
+        int statusFlags = ServerStatusFlagCalculator.calculateFor(connectionSession);
         if (parameterCount > 0) {
-            result.addAll(createParameterColumnDefinition41Packets(parameterCount, characterSet));
+            result.addAll(createParameterColumnDefinition41Packets(parameterCount, characterSet, statusFlags));
         }
         if (projectionCount > 0) {
-            result.addAll(createProjectionColumnDefinition41Packets(projectionCount, characterSet));
+            result.addAll(createProjectionColumnDefinition41Packets(projectionCount, characterSet, statusFlags));
         }
         return result;
     }
     
-    private Collection<DatabasePacket<?>> createParameterColumnDefinition41Packets(final int parameterCount, final int characterSet) {
+    private Collection<DatabasePacket<?>> createParameterColumnDefinition41Packets(final int parameterCount, final int characterSet, final int statusFlags) {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
         for (int i = 0; i < parameterCount; i++) {
             result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, characterSet, "", "", "", "?", "", 0, MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING, 0, false));
         }
-        result.add(new MySQLEofPacket(++currentSequenceId));
+        result.add(new MySQLEofPacket(++currentSequenceId, statusFlags));
         return result;
     }
     
-    private Collection<DatabasePacket<?>> createProjectionColumnDefinition41Packets(final int projectionCount, final int characterSet) {
+    private Collection<DatabasePacket<?>> createProjectionColumnDefinition41Packets(final int projectionCount, final int characterSet, final int statusFlags) {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
         for (int i = 0; i < projectionCount; i++) {
             result.add(new MySQLColumnDefinition41Packet(++currentSequenceId, characterSet, "", "", "", "", "", 0, MySQLBinaryColumnType.MYSQL_TYPE_VAR_STRING, 0, false));
         }
-        result.add(new MySQLEofPacket(++currentSequenceId));
+        result.add(new MySQLEofPacket(++currentSequenceId, statusFlags));
         return result;
     }
 }

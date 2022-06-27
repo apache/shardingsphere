@@ -25,7 +25,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ComputeNodeStatusChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsChangedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdChangedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -64,16 +63,6 @@ public final class ComputeNodeStatusSubscriber {
             status.remove(ComputeNodeStatus.CIRCUIT_BREAK.name());
         }
         repository.persistEphemeral(computeStatusNodePath, YamlEngine.marshal(status));
-    }
-    
-    /**
-     * Update compute node xa recovery id.
-     * 
-     * @param event xa recovery id changed event
-     */
-    @Subscribe
-    public void update(final XaRecoveryIdChangedEvent event) {
-        registryCenter.getComputeNodeStatusService().persistInstanceXaRecoveryId(event.getInstanceId(), event.getXaRecoveryIds());
     }
     
     /**

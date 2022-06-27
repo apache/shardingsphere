@@ -32,8 +32,6 @@ import org.apache.shardingsphere.sharding.yaml.swapper.strategy.KeyGenerateStrat
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.ShardingStrategyConfigurationYamlSwapper;
 
 import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -116,12 +114,7 @@ public final class ShardingAutoTableRuleConfigurationYamlSwapper implements Yaml
     }
     
     private String getActualDataNodes(final ShardingAutoTableRuleConfiguration data, final int shardingCount) {
-        Collection<String> dataSourceNames = getDataSourceNames(data.getActualDataSources());
+        Collection<String> dataSourceNames = new InlineExpressionParser(data.getActualDataSources()).splitAndEvaluate();
         return String.join(",", DataNodeUtil.getFormatDataNodes(shardingCount, data.getLogicTable(), dataSourceNames));
-    }
-    
-    private Collection<String> getDataSourceNames(final String dataSources) {
-        List<String> actualDataSources = new InlineExpressionParser(dataSources).splitAndEvaluate();
-        return new HashSet<>(actualDataSources);
     }
 }

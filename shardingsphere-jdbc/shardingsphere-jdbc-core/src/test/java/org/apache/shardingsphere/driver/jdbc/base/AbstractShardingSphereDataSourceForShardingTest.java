@@ -41,7 +41,7 @@ public abstract class AbstractShardingSphereDataSourceForShardingTest extends Ab
     
     private static ShardingSphereDataSource dataSource;
     
-    private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("jdbc_0", "jdbc_1");
+    private static final List<String> ACTUAL_DATA_SOURCE_NAMES = Arrays.asList("jdbc_0", "jdbc_1", "single_jdbc");
     
     private static final String CONFIG_FILE = "config/config-sharding.yaml";
     

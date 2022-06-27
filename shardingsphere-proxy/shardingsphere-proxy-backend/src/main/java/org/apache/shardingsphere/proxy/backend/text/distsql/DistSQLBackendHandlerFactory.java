@@ -27,6 +27,8 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableS
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
+import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.mode.manager.lock.definition.LockNameDefinitionFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DatabaseLockedException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -75,7 +77,8 @@ public final class DistSQLBackendHandlerFactory {
         if (null == databaseName) {
             return;
         }
-        if (ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext().isLocked(databaseName)) {
+        LockContext lockContext = ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext();
+        if (lockContext.isLocked(LockNameDefinitionFactory.newDatabaseDefinition(databaseName))) {
             throw new DatabaseLockedException(databaseName);
         }
     }

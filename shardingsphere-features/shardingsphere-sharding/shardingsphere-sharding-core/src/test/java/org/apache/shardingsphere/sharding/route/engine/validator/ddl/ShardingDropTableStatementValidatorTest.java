@@ -74,7 +74,7 @@ public final class ShardingDropTableStatementValidatorTest {
     
     @Test(expected = ShardingSphereException.class)
     public void assertPreValidateDropTableForMySQL() {
-        MySQLDropTableStatement sqlStatement = new MySQLDropTableStatement();
+        MySQLDropTableStatement sqlStatement = new MySQLDropTableStatement(false);
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order_item"))));
         SQLStatementContext<DropTableStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
@@ -113,7 +113,7 @@ public final class ShardingDropTableStatementValidatorTest {
     
     @Test
     public void assertPostValidateDropTableWithSameRouteResultShardingTableForPostgreSQL() {
-        PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement();
+        PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement(false);
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         when(shardingRule.getTableRule("t_order")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_order"));
@@ -127,7 +127,7 @@ public final class ShardingDropTableStatementValidatorTest {
     
     @Test(expected = ShardingSphereException.class)
     public void assertPostValidateDropTableWithDifferentRouteResultShardingTableForPostgreSQL() {
-        PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement();
+        PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement(false);
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         when(shardingRule.isShardingTable("t_order")).thenReturn(true);
         when(shardingRule.getTableRule("t_order")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_order"));
@@ -140,7 +140,7 @@ public final class ShardingDropTableStatementValidatorTest {
     
     @Test
     public void assertPostValidateDropTableWithSameRouteResultBroadcastTableForPostgreSQL() {
-        PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement();
+        PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement(false);
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_config"))));
         when(shardingRule.isBroadcastTable("t_config")).thenReturn(true);
         when(shardingRule.getTableRule("t_config")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_config"));
@@ -154,7 +154,7 @@ public final class ShardingDropTableStatementValidatorTest {
     
     @Test(expected = ShardingSphereException.class)
     public void assertPostValidateDropTableWithDifferentRouteResultBroadcastTableForPostgreSQL() {
-        PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement();
+        PostgreSQLDropTableStatement sqlStatement = new PostgreSQLDropTableStatement(false);
         sqlStatement.getTables().add(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_config"))));
         when(shardingRule.isBroadcastTable("t_config")).thenReturn(true);
         when(shardingRule.getTableRule("t_config")).thenReturn(new TableRule(Arrays.asList("ds_0", "ds_1"), "t_config"));

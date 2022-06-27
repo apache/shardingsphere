@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.close;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementRegistry;
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementRegistry.MySQLConnectionPreparedStatements;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.close.MySQLComStmtClosePacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 
 import java.util.Collection;
@@ -35,18 +34,11 @@ public final class MySQLComStmtCloseExecutor implements CommandExecutor {
     
     private final MySQLComStmtClosePacket packet;
     
-    private final int connectionId;
+    private final ConnectionSession connectionSession;
     
     @Override
     public Collection<DatabasePacket<?>> execute() {
-        MySQLConnectionPreparedStatements connectionPreparedStatements = MySQLPreparedStatementRegistry.getInstance().getConnectionPreparedStatements(connectionId);
-        if (!connectionReleased(connectionPreparedStatements)) {
-            connectionPreparedStatements.closeStatement(packet.getStatementId());
-        }
+        connectionSession.getPreparedStatementRegistry().removePreparedStatement(packet.getStatementId());
         return Collections.emptyList();
-    }
-    
-    private boolean connectionReleased(final MySQLConnectionPreparedStatements connectionPreparedStatements) {
-        return null == connectionPreparedStatements;
     }
 }

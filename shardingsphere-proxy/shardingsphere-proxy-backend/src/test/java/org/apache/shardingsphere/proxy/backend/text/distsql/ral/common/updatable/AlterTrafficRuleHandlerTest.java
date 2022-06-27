@@ -36,6 +36,7 @@ import org.junit.Test;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.Properties;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -78,10 +79,9 @@ public final class AlterTrafficRuleHandlerTest extends ProxyContextRestorer {
     
     private void mockContextManager() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         TrafficRule rule = mockTrafficRule();
         when(rule.getConfiguration()).thenReturn(createTrafficRuleConfiguration());
-        when(globalRuleMetaData.getSingleRule(TrafficRule.class)).thenReturn(rule);
+        ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(new LinkedList<>(Collections.singleton(rule)));
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         ProxyContext.init(contextManager);
     }

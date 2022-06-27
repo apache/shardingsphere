@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.shadow.rule.builder;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilder;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
@@ -35,7 +34,7 @@ public final class AlgorithmProvidedShadowRuleBuilder implements DatabaseRuleBui
     
     @Override
     public ShadowRule build(final AlgorithmProvidedShadowRuleConfiguration config, final String databaseName,
-                            final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
+                            final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules) {
         return new ShadowRule(config);
     }
     

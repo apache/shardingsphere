@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CloseStatem
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Close statement context.
@@ -48,7 +49,7 @@ public final class CloseStatementContext extends CommonSQLStatementContext<Close
     }
     
     @Override
-    public CursorNameSegment getCursorName() {
+    public Optional<CursorNameSegment> getCursorName() {
         return getSqlStatement().getCursorName();
     }
     

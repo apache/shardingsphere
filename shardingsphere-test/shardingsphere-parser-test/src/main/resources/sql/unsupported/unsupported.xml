@@ -34,7 +34,6 @@
     <sql-case id="with_select" value="WITH cte AS (SELECT 0 /*! ) */ SELECT * FROM cte a, cte b;" db-types="MySQL" />
     <sql-case id="with_select_comment" value="WITH cte AS /*! ( */ SELECT 0) SELECT * FROM cte a, cte b;" db-types="MySQL" />
     <sql-case id="select_cast" value="SELECT cast( NULL AT TIME ZONE 'UTC' AS DATETIME );" db-types="MySQL" />
-    <sql-case id="create_aggregate" value="create aggregate my_avg(int4) (stype = avg_state, sfunc = avg_transfn, finalfunc = avg_finalfn)" db-types="PostgreSQL" />
     <sql-case id="create_table_as_select" value="create table agg_data_2k as select g from generate_series(0, 1999) g;" db-types="PostgreSQL" />
     <sql-case id="create_foreign_data_wrapper" value="CREATE FOREIGN DATA WRAPPER alt_fdw1" db-types="PostgreSQL" />
     <sql-case id="create_server" value="CREATE SERVER alt_fserv1 FOREIGN DATA WRAPPER alt_fdw1;" db-types="PostgreSQL" />
@@ -3403,10 +3402,6 @@
     <sql-case id="alter_by_postgresql_source_test_case214" value="ALTER OPERATOR FAMILY alt_opf7 USING btree DROP OPERATOR 1 (int4, int2, int8);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case215" value="ALTER OPERATOR FAMILY alt_opf8 USING btree ADD OPERATOR 1 &lt; (int4, int4);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case216" value="ALTER OPERATOR FAMILY alt_opf9 USING gist ADD OPERATOR 1 &lt; (int4, int4) FOR ORDER BY float_ops;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case282" value="ALTER ROUTINE cp_testfunc1(int) RENAME TO cp_testfunc1a;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case283" value="ALTER ROUTINE cp_testfunc1a RENAME TO cp_testfunc1;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case284" value="ALTER ROUTINE ptest1(text) RENAME TO ptest1a;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case285" value="ALTER ROUTINE ptest1a RENAME TO ptest1;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case286" value="ALTER RULE &quot;_RETURN&quot; ON rule_v1 RENAME TO abc;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case287" value="ALTER RULE InsertRule ON rule_v1 RENAME TO NewInsertRule;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case288" value="ALTER RULE InsertRule ON rule_v1 RENAME to NewInsertRule;" db-types="PostgreSQL" />
@@ -3579,102 +3574,6 @@
     <sql-case id="alter_by_postgresql_source_test_case459" value="ALTER TYPE test_typex DROP ATTRIBUTE a;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case460" value="ALTER TYPE tt_t0 DROP ATTRIBUTE z;" db-types="PostgreSQL" />
     <sql-case id="analyze_by_postgresql_source_test_case1" value="ANALYZE (nonexistent-arg) does_not_exist;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case8" value="CREATE AGGREGATE addr_nsp.genaggr(int4) (sfunc = int4pl, stype = int4);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case9" value="CREATE AGGREGATE alt_agg1 (   sfunc1 = int4pl, basetype = int4, stype1 = int4, initcond = 0 );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case10" value="CREATE AGGREGATE alt_agg1 (   sfunc1 = int4pl, basetype = int4, stype1 = int4, initcond = 100 );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case11" value="CREATE AGGREGATE alt_agg2 (   sfunc1 = int4mi, basetype = int4, stype1 = int4, initcond = -100 );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case12" value="CREATE AGGREGATE alt_agg2 (   sfunc1 = int4mi, basetype = int4, stype1 = int4, initcond = 0 );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case13" value="CREATE AGGREGATE array_larger_accum (anyarray) (     sfunc = array_larger,     stype = anyarray,     initcond = &apos;{}&apos; );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case14" value="CREATE AGGREGATE balk(int4) (     SFUNC = balkifnull(int8, int4),     STYPE = int8,     PARALLEL = SAFE,     INITCOND = &apos;0&apos; );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case15" value="CREATE AGGREGATE balk(int4) (     SFUNC = int4_sum(int8, int4),     STYPE = int8,     COMBINEFUNC = balkifnull(int8, int8),     PARALLEL = SAFE,     INITCOND = &apos;0&apos; );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case16" value="CREATE AGGREGATE case_agg ( 	&quot;Sfunc1&quot; = int4pl, 	&quot;Basetype&quot; = int4, 	&quot;Stype1&quot; = int4, 	&quot;Initcond1&quot; = &apos;0&apos;, 	&quot;Parallel&quot; = safe );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case17" value="CREATE AGGREGATE case_agg(float8) ( 	&quot;Stype&quot; = internal, 	&quot;Sfunc&quot; = ordered_set_transition, 	&quot;Finalfunc&quot; = percentile_disc_final, 	&quot;Finalfunc_extra&quot; = true, 	&quot;Finalfunc_modify&quot; = read_write, 	&quot;Parallel&quot; = safe );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case18" value="CREATE AGGREGATE invalidsumdouble (float8) (     stype = float8,     sfunc = float8pl,     mstype = float8,     msfunc = float8pl,     minvfunc = float8mi_n );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case19" value="CREATE AGGREGATE logging_agg_nonstrict (anyelement) ( 	stype = text, 	sfunc = logging_sfunc_nonstrict, 	mstype = text, 	msfunc = logging_msfunc_nonstrict, 	minvfunc = logging_minvfunc_nonstrict );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case20" value="CREATE AGGREGATE logging_agg_nonstrict_initcond (anyelement) ( 	stype = text, 	sfunc = logging_sfunc_nonstrict, 	mstype = text, 	msfunc = logging_msfunc_nonstrict, 	minvfunc = logging_minvfunc_nonstrict, 	initcond = &apos;I&apos;, 	minitcond = &apos;MI&apos; );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case21" value="CREATE AGGREGATE logging_agg_strict (text) ( 	stype = text, 	sfunc = logging_sfunc_strict, 	mstype = text, 	msfunc = logging_msfunc_strict, 	minvfunc = logging_minvfunc_strict );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case22" value="CREATE AGGREGATE logging_agg_strict_initcond (anyelement) ( 	stype = text, 	sfunc = logging_sfunc_strict, 	mstype = text, 	msfunc = logging_msfunc_strict, 	minvfunc = logging_minvfunc_strict, 	initcond = &apos;I&apos;, 	minitcond = &apos;MI&apos; );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case23" value="CREATE AGGREGATE myaggn01a(*) (SFUNC = stfnp, STYPE = int4[],   FINALFUNC = ffnp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case24" value="CREATE AGGREGATE myaggn01b(*) (SFUNC = stfnp, STYPE = int4[],   INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case25" value="CREATE AGGREGATE myaggn02a(*) (SFUNC = stfnp, STYPE = anyarray,   FINALFUNC = ffnp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case26" value="CREATE AGGREGATE myaggn02b(*) (SFUNC = stfnp, STYPE = anyarray,   INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case27" value="CREATE AGGREGATE myaggn03a(*) (SFUNC = stfp, STYPE = int4[],   FINALFUNC = ffnp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case28" value="CREATE AGGREGATE myaggn04a(*) (SFUNC = stfp, STYPE = anyarray,   FINALFUNC = ffnp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case29" value="CREATE AGGREGATE myaggn05a(BASETYPE = int, SFUNC = tfnp, STYPE = int[],   FINALFUNC = ffnp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case30" value="CREATE AGGREGATE myaggn05b(BASETYPE = int, SFUNC = tfnp, STYPE = int[],   INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case31" value="CREATE AGGREGATE myaggn06a(BASETYPE = int, SFUNC = tf2p, STYPE = int[],   FINALFUNC = ffnp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case32" value="CREATE AGGREGATE myaggn06b(BASETYPE = int, SFUNC = tf2p, STYPE = int[],   INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case33" value="CREATE AGGREGATE myaggn07a(BASETYPE = anyelement, SFUNC = tfnp, STYPE = int[],   FINALFUNC = ffnp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case34" value="CREATE AGGREGATE myaggn07b(BASETYPE = anyelement, SFUNC = tfnp, STYPE = int[],   INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case35" value="CREATE AGGREGATE myaggn08a(BASETYPE = anyelement, SFUNC = tf2p, STYPE = int[],   FINALFUNC = ffnp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case36" value="CREATE AGGREGATE myaggn08b(BASETYPE = anyelement, SFUNC = tf2p, STYPE = int[],   INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case37" value="CREATE AGGREGATE myaggn09a(BASETYPE = int, SFUNC = tf1p, STYPE = int[],   FINALFUNC = ffnp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case38" value="CREATE AGGREGATE myaggn10a(BASETYPE = int, SFUNC = tfp, STYPE = int[],   FINALFUNC = ffnp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case39" value="CREATE AGGREGATE myaggn11a(BASETYPE = anyelement, SFUNC = tf1p, STYPE = int[],   FINALFUNC = ffnp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case40" value="CREATE AGGREGATE myaggn12a(BASETYPE = anyelement, SFUNC = tfp, STYPE = int[],   FINALFUNC = ffnp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case41" value="CREATE AGGREGATE myaggn13a(BASETYPE = int, SFUNC = tfnp, STYPE = anyarray,   FINALFUNC = ffnp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case42" value="CREATE AGGREGATE myaggn13b(BASETYPE = int, SFUNC = tfnp, STYPE = anyarray,   INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case43" value="CREATE AGGREGATE myaggn14a(BASETYPE = int, SFUNC = tf2p, STYPE = anyarray,   FINALFUNC = ffnp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case44" value="CREATE AGGREGATE myaggn14b(BASETYPE = int, SFUNC = tf2p, STYPE = anyarray,   INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case45" value="CREATE AGGREGATE myaggn15a(BASETYPE = anyelement, SFUNC = tfnp,   STYPE = anyarray, FINALFUNC = ffnp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case46" value="CREATE AGGREGATE myaggn15b(BASETYPE = anyelement, SFUNC = tfnp,   STYPE = anyarray, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case47" value="CREATE AGGREGATE myaggn16a(BASETYPE = anyelement, SFUNC = tf2p,   STYPE = anyarray, FINALFUNC = ffnp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case48" value="CREATE AGGREGATE myaggn16b(BASETYPE = anyelement, SFUNC = tf2p,   STYPE = anyarray, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case49" value="CREATE AGGREGATE myaggn17a(BASETYPE = int, SFUNC = tf1p, STYPE = anyarray,   FINALFUNC = ffnp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case50" value="CREATE AGGREGATE myaggn18a(BASETYPE = int, SFUNC = tfp, STYPE = anyarray,   FINALFUNC = ffnp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case51" value="CREATE AGGREGATE myaggn19a(BASETYPE = anyelement, SFUNC = tf1p,   STYPE = anyarray, FINALFUNC = ffnp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case52" value="CREATE AGGREGATE myaggn20a(BASETYPE = anyelement, SFUNC = tfp,   STYPE = anyarray, FINALFUNC = ffnp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case53" value="CREATE AGGREGATE myaggp01a(*) (SFUNC = stfnp, STYPE = int4[],   FINALFUNC = ffp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case54" value="CREATE AGGREGATE myaggp02a(*) (SFUNC = stfnp, STYPE = anyarray,   FINALFUNC = ffp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case55" value="CREATE AGGREGATE myaggp03a(*) (SFUNC = stfp, STYPE = int4[],   FINALFUNC = ffp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case56" value="CREATE AGGREGATE myaggp03b(*) (SFUNC = stfp, STYPE = int4[],   INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case57" value="CREATE AGGREGATE myaggp04a(*) (SFUNC = stfp, STYPE = anyarray,   FINALFUNC = ffp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case58" value="CREATE AGGREGATE myaggp04b(*) (SFUNC = stfp, STYPE = anyarray,   INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case59" value="CREATE AGGREGATE myaggp05a(BASETYPE = int, SFUNC = tfnp, STYPE = int[],   FINALFUNC = ffp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case60" value="CREATE AGGREGATE myaggp06a(BASETYPE = int, SFUNC = tf2p, STYPE = int[],   FINALFUNC = ffp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case61" value="CREATE AGGREGATE myaggp07a(BASETYPE = anyelement, SFUNC = tfnp, STYPE = int[],   FINALFUNC = ffp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case62" value="CREATE AGGREGATE myaggp08a(BASETYPE = anyelement, SFUNC = tf2p, STYPE = int[],   FINALFUNC = ffp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case63" value="CREATE AGGREGATE myaggp09a(BASETYPE = int, SFUNC = tf1p, STYPE = int[],   FINALFUNC = ffp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case64" value="CREATE AGGREGATE myaggp09b(BASETYPE = int, SFUNC = tf1p, STYPE = int[],   INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case65" value="CREATE AGGREGATE myaggp10a(BASETYPE = int, SFUNC = tfp, STYPE = int[],   FINALFUNC = ffp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case66" value="CREATE AGGREGATE myaggp10b(BASETYPE = int, SFUNC = tfp, STYPE = int[],   INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case67" value="CREATE AGGREGATE myaggp11a(BASETYPE = anyelement, SFUNC = tf1p, STYPE = int[],   FINALFUNC = ffp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case68" value="CREATE AGGREGATE myaggp11b(BASETYPE = anyelement, SFUNC = tf1p, STYPE = int[],   INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case69" value="CREATE AGGREGATE myaggp12a(BASETYPE = anyelement, SFUNC = tfp, STYPE = int[],   FINALFUNC = ffp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case70" value="CREATE AGGREGATE myaggp12b(BASETYPE = anyelement, SFUNC = tfp, STYPE = int[],   INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case71" value="CREATE AGGREGATE myaggp13a(BASETYPE = int, SFUNC = tfnp, STYPE = anyarray,   FINALFUNC = ffp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case72" value="CREATE AGGREGATE myaggp14a(BASETYPE = int, SFUNC = tf2p, STYPE = anyarray,   FINALFUNC = ffp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case73" value="CREATE AGGREGATE myaggp15a(BASETYPE = anyelement, SFUNC = tfnp,   STYPE = anyarray, FINALFUNC = ffp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case74" value="CREATE AGGREGATE myaggp16a(BASETYPE = anyelement, SFUNC = tf2p,   STYPE = anyarray, FINALFUNC = ffp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case75" value="CREATE AGGREGATE myaggp17a(BASETYPE = int, SFUNC = tf1p, STYPE = anyarray,   FINALFUNC = ffp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case76" value="CREATE AGGREGATE myaggp17b(BASETYPE = int, SFUNC = tf1p, STYPE = anyarray,   INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case77" value="CREATE AGGREGATE myaggp18a(BASETYPE = int, SFUNC = tfp, STYPE = anyarray,   FINALFUNC = ffp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case78" value="CREATE AGGREGATE myaggp18b(BASETYPE = int, SFUNC = tfp, STYPE = anyarray,   INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case79" value="CREATE AGGREGATE myaggp19a(BASETYPE = anyelement, SFUNC = tf1p,   STYPE = anyarray, FINALFUNC = ffp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case80" value="CREATE AGGREGATE myaggp19b(BASETYPE = anyelement, SFUNC = tf1p,   STYPE = anyarray, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case81" value="CREATE AGGREGATE myaggp20a(BASETYPE = anyelement, SFUNC = tfp,   STYPE = anyarray, FINALFUNC = ffp, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case82" value="CREATE AGGREGATE myaggp20b(BASETYPE = anyelement, SFUNC = tfp,   STYPE = anyarray, INITCOND = &apos;{}&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case83" value="CREATE AGGREGATE myavg (numeric) ( 	stype = internal, 	sfunc = numeric_avg_accum, 	finalfunc = numeric_avg );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case84" value="CREATE AGGREGATE myavg (numeric) ( 	stype = internal, 	sfunc = numeric_avg_accum, 	finalfunc = numeric_avg, 	serialfunc = numeric_avg_serialize, 	deserialfunc = numeric_avg_deserialize, 	combinefunc = numeric_avg_combine, 	finalfunc_modify = shareable );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case85" value="CREATE AGGREGATE myavg (numeric) ( 	stype = internal, 	sfunc = numeric_avg_accum, 	serialfunc = numeric_avg_deserialize, 	deserialfunc = numeric_avg_deserialize );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case86" value="CREATE AGGREGATE myavg (numeric) ( 	stype = internal, 	sfunc = numeric_avg_accum, 	serialfunc = numeric_avg_serialize );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case87" value="CREATE AGGREGATE myavg (numeric) ( 	stype = internal, 	sfunc = numeric_avg_accum, 	serialfunc = numeric_avg_serialize, 	deserialfunc = numeric_avg_deserialize, 	combinefunc = int4larger );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case88" value="CREATE AGGREGATE myavg (numeric) ( 	stype = internal, 	sfunc = numeric_avg_accum, 	serialfunc = numeric_avg_serialize, 	deserialfunc = numeric_avg_serialize );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case89" value="CREATE AGGREGATE mysum (int) ( 	stype = int, 	sfunc = int4pl, 	parallel = pear );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case90" value="CREATE AGGREGATE mysum2(anyelement,anyelement) (SFUNC = sum3,   STYPE = anyelement, INITCOND = &apos;0&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case91" value="CREATE AGGREGATE newavg (    sfunc = int4_avg_accum, basetype = int4, stype = _int8,    finalfunc = int8_avg,    initcond1 = &apos;{0,0}&apos; );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case92" value="CREATE AGGREGATE newcnt (&quot;any&quot;) (    sfunc = int8inc_any, stype = int8,    initcond = &apos;0&apos; );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case93" value="CREATE AGGREGATE newcnt (*) (    sfunc = int8inc, stype = int8,    initcond = &apos;0&apos;, parallel = safe );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case94" value="CREATE AGGREGATE newsum (    sfunc1 = int4pl, basetype = int4, stype1 = int4,    initcond1 = &apos;0&apos; );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case95" value="CREATE AGGREGATE oldcnt (    sfunc = int8inc, basetype = &apos;ANY&apos;, stype = int8,    initcond = &apos;0&apos; );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case96" value="CREATE AGGREGATE schema_two.newton   (BASETYPE = int, SFUNC = schema_two.add, STYPE = int);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case97" value="CREATE AGGREGATE sum_int_randomrestart (int4) ( 	stype = int4, 	sfunc = int4pl, 	mstype = int4, 	msfunc = int4pl, 	minvfunc = sum_int_randrestart_minvfunc );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case98" value="CREATE AGGREGATE sumdouble (float8) (     stype = float8,     sfunc = float8pl,     mstype = float8,     msfunc = float8pl,     minvfunc = float8mi );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case99" value="CREATE AGGREGATE wrongreturntype (float8) (     stype = float8,     sfunc = float8pl,     mstype = float8,     msfunc = float8pl,     minvfunc = float8mi_int );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case100" value="CREATE CAST (int4 AS casttesttype) WITH FUNCTION int4_casttesttype(int4) AS IMPLICIT;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case101" value="CREATE CAST (int4 AS casttesttype) WITH INOUT;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case102" value="CREATE CAST (text AS casttesttype) WITHOUT FUNCTION AS IMPLICIT;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case103" value="CREATE CAST (text AS casttesttype) WITHOUT FUNCTION;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case104" value="CREATE COLLATION case_insensitive (provider = icu, locale = &apos;@colStrength=secondary&apos;, deterministic = false);" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case105" value="CREATE COLLATION case_sensitive (provider = icu, locale = &apos;&apos;);" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case106" value="CREATE COLLATION coll_icu_upgrade FROM &quot;und-x-icu&quot;;" db-types="PostgreSQL" />
@@ -3970,11 +3869,6 @@
     <sql-case id="create_by_postgresql_source_test_case396" value="CREATE OPERATOR schema_op1.#*# (    rightarg = int8,    procedure = factorial );" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case397" value="CREATE OPERATOR |&gt; (         PROCEDURE = int8gt,         LEFTARG = bigint,         RIGHTARG = bigint,         NEGATOR = &lt;|,         COMMUTATOR = &lt;| );" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case398" value="CREATE OPERATOR |@| (PROCEDURE = unnest, RIGHTARG = ANYARRAY);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case399" value="CREATE OR REPLACE AGGREGATE myavg (numeric) ( 	stype = internal, 	sfunc = numeric_avg_accum, 	finalfunc = numeric_avg, 	serialfunc = numeric_avg_serialize, 	deserialfunc = numeric_avg_deserialize, 	combinefunc = numeric_avg_combine, 	finalfunc_modify = shareable );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case400" value="CREATE OR REPLACE AGGREGATE myavg (numeric) ( 	stype = numeric, 	sfunc = numeric_add );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case401" value="CREATE OR REPLACE AGGREGATE myavg (numeric) ( 	stype = numeric, 	sfunc = numeric_add, 	finalfunc = numeric_out );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case402" value="CREATE OR REPLACE AGGREGATE myavg (order by numeric) ( 	stype = numeric, 	sfunc = numeric_add );" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case403" value="CREATE OR REPLACE AGGREGATE sum3 (int8,int8,int8) ( 	stype = int8, 	sfunc = sum4 );" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case404" value="CREATE OR REPLACE FUNCTION   mylt2 (x text, y text) RETURNS boolean LANGUAGE plpgsql AS $$ declare   xx text COLLATE &quot;POSIX&quot; := x;   yy text := y; begin   return xx &lt; yy; end $$;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case405" value="CREATE OR REPLACE FUNCTION compare_relfilenode_part(tabname text)   RETURNS TABLE (relname name, relkind &quot;char&quot;, state text) AS   $func$   BEGIN     RETURN QUERY EXECUTE       format(         &apos;SELECT  b.relname,                  b.relkind,                  CASE WHEN a.relfilenode = b.relfilenode THEN &apos;&apos;relfilenode is unchanged&apos;&apos;                  ELSE &apos;&apos;relfilenode has changed&apos;&apos; END            FROM %I b JOIN pg_class a ON b.relname = a.relname            ORDER BY 1;&apos;, tabname);   END   $func$ LANGUAGE plpgsql;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case406" value="CREATE OR REPLACE FUNCTION create_relfilenode_part(relname text, indname text)   RETURNS VOID AS   $func$   BEGIN   EXECUTE format(&apos;     CREATE TABLE %I AS       SELECT oid, relname, relfilenode, relkind, reltoastrelid       FROM pg_class       WHERE oid IN          (SELECT relid FROM pg_partition_tree(&apos;&apos;%I&apos;&apos;));&apos;, 	 relname, indname);   END   $func$ LANGUAGE plpgsql;" db-types="PostgreSQL" />
@@ -4625,168 +4519,6 @@
     <sql-case id="explain_by_postgresql_source_test_case118" value="EXPLAIN (costs off)   CREATE MATERIALIZED VIEW mvtest_tm AS SELECT type, sum(amt) AS totamt FROM mvtest_t GROUP BY type WITH NO DATA;" db-types="PostgreSQL" />
     <sql-case id="explain_by_postgresql_source_test_case119" value="EXPLAIN (costs off)   CREATE MATERIALIZED VIEW mvtest_tvm AS SELECT * FROM mvtest_tv ORDER BY type;" db-types="PostgreSQL" />
     <sql-case id="explain_by_postgresql_source_test_case120" value="EXPLAIN (costs off)   CREATE MATERIALIZED VIEW mvtest_tvvm AS SELECT * FROM mvtest_tvv;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case1" value="FETCH 1 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case2" value="FETCH 1 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case3" value="FETCH 1 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case4" value="FETCH 1 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case5" value="FETCH 1 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case6" value="FETCH 1 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case7" value="FETCH 1 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case8" value="FETCH 1 FROM foo24;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case9" value="FETCH 1 FROM foo24;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case10" value="FETCH 1 FROM foo;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case11" value="FETCH 1 FROM foo;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case12" value="FETCH 1 in foo1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case13" value="FETCH 10 in foo10;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case14" value="FETCH 11 in foo11;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case15" value="FETCH 12 in foo12;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case16" value="FETCH 13 in foo13;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case17" value="FETCH 14 in foo14;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case18" value="FETCH 15 in foo15;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case19" value="FETCH 16 in foo16;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case20" value="FETCH 17 in foo17;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case21" value="FETCH 18 in foo18;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case22" value="FETCH 19 in foo19;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case23" value="FETCH 2 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case24" value="FETCH 2 in foo2;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case25" value="FETCH 20 in foo20;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case26" value="FETCH 21 in foo21;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case27" value="FETCH 22 in foo22;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case28" value="FETCH 23 in foo23;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case29" value="FETCH 3 in foo3;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case30" value="FETCH 4 in foo4;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case31" value="FETCH 5 in foo5;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case32" value="FETCH 6 in foo6;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case33" value="FETCH 7 in foo7;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case34" value="FETCH 8 in foo8;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case35" value="FETCH 9 in foo9;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case36" value="FETCH ABSOLUTE -1 FROM foo25;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case37" value="FETCH ABSOLUTE 1 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case38" value="FETCH ABSOLUTE 1 FROM current_check_cursor;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case39" value="FETCH ABSOLUTE 1 FROM current_check_cursor;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case40" value="FETCH ABSOLUTE 1 FROM foo24;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case41" value="FETCH ABSOLUTE 12 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case42" value="FETCH ABSOLUTE 13 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case43" value="FETCH ABSOLUTE 2 FROM foo24;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case44" value="FETCH ABSOLUTE 4 FROM foo25ns;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case45" value="FETCH ABSOLUTE 4 FROM foo25ns;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case46" value="FETCH ABSOLUTE 8 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case47" value="FETCH ALL FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case48" value="FETCH ALL FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case49" value="FETCH ALL FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case50" value="FETCH ALL FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case51" value="FETCH ALL FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case52" value="FETCH ALL FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case53" value="FETCH BACKWARD 1 FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case54" value="FETCH BACKWARD 1 FROM foo24;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case55" value="FETCH BACKWARD FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case56" value="FETCH BACKWARD FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case57" value="FETCH BACKWARD FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case58" value="FETCH BACKWARD FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case59" value="FETCH BACKWARD FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case60" value="FETCH BACKWARD FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case61" value="FETCH BACKWARD FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case62" value="FETCH BACKWARD FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case63" value="FETCH BACKWARD FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case64" value="FETCH BACKWARD FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case65" value="FETCH BACKWARD FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case66" value="FETCH BACKWARD FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case67" value="FETCH BACKWARD FROM foo25;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case68" value="FETCH FIRST FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case69" value="FETCH FIRST FROM tablesample_cur;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case70" value="FETCH FIRST FROM tablesample_cur;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case71" value="FETCH FIRST c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case72" value="FETCH FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case73" value="FETCH FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case74" value="FETCH FROM foo25;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case75" value="FETCH FROM foo25;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case76" value="FETCH FROM foo25;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case77" value="FETCH FROM foo25ns;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case78" value="FETCH FROM foo25ns;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case79" value="FETCH FROM foo25ns;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case80" value="FETCH FROM foo26;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case81" value="FETCH LAST FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case82" value="FETCH LAST FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case83" value="FETCH LAST c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case84" value="FETCH NEXT FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case85" value="FETCH NEXT FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case86" value="FETCH NEXT FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case87" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case88" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case89" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case90" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case91" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case92" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case93" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case94" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case95" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case96" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case97" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case98" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case99" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case100" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case101" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case102" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case103" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case104" value="FETCH NEXT FROM c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case105" value="FETCH NEXT FROM tablesample_cur;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case106" value="FETCH NEXT FROM tablesample_cur;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case107" value="FETCH NEXT FROM tablesample_cur;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case108" value="FETCH NEXT FROM tablesample_cur;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case109" value="FETCH NEXT FROM tablesample_cur;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case110" value="FETCH NEXT FROM tablesample_cur;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case111" value="FETCH NEXT FROM tablesample_cur;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case112" value="FETCH NEXT FROM tablesample_cur;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case113" value="FETCH NEXT FROM tablesample_cur;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case114" value="FETCH NEXT FROM tablesample_cur;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case115" value="FETCH NEXT c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case116" value="FETCH NEXT c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case117" value="FETCH PRIOR c;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case118" value="FETCH RELATIVE 0 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case119" value="FETCH RELATIVE 0 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case120" value="FETCH RELATIVE 0 FROM c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case121" value="FETCH RELATIVE 1 FROM current_check_cursor;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case122" value="FETCH RELATIVE 1 FROM current_check_cursor;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case123" value="FETCH all in foo13;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case124" value="FETCH all in foo14;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case125" value="FETCH all in foo15;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case126" value="FETCH all in foo16;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case127" value="FETCH all in foo17;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case128" value="FETCH all in foo18;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case129" value="FETCH all in foo19;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case130" value="FETCH all in foo20;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case131" value="FETCH all in foo21;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case132" value="FETCH all in foo22;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case133" value="FETCH all in foo23;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case134" value="FETCH all in foo24;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case135" value="FETCH all in foo25;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case136" value="FETCH backward 1 in foo23;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case137" value="FETCH backward 10 in foo14;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case138" value="FETCH backward 11 in foo13;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case139" value="FETCH backward 12 in foo12;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case140" value="FETCH backward 13 in foo11;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case141" value="FETCH backward 14 in foo10;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case142" value="FETCH backward 15 in foo9;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case143" value="FETCH backward 16 in foo8;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case144" value="FETCH backward 17 in foo7;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case145" value="FETCH backward 18 in foo6;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case146" value="FETCH backward 19 in foo5;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case147" value="FETCH backward 2 in foo22;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case148" value="FETCH backward 20 in foo4;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case149" value="FETCH backward 21 in foo3;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case150" value="FETCH backward 22 in foo2;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case151" value="FETCH backward 23 in foo1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case152" value="FETCH backward 3 in foo21;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case153" value="FETCH backward 4 in foo20;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case154" value="FETCH backward 5 in foo19;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case155" value="FETCH backward 6 in foo18;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case156" value="FETCH backward 7 in foo17;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case157" value="FETCH backward 8 in foo16;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case158" value="FETCH backward 9 in foo15;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case159" value="FETCH c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case160" value="FETCH c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case161" value="FETCH c1;" db-types="PostgreSQL" />
-    <sql-case id="fetch_by_postgresql_source_test_case162" value="FETCH next from hsc;" db-types="PostgreSQL" />
     <sql-case id="import_by_postgresql_source_test_case1" value="IMPORT FOREIGN SCHEMA s1 EXCEPT (t1) FROM SERVER s9 INTO public;" db-types="PostgreSQL" />
     <sql-case id="import_by_postgresql_source_test_case2" value="IMPORT FOREIGN SCHEMA s1 EXCEPT (t1, t2) FROM SERVER s9 INTO public OPTIONS (option1 &apos;value1&apos;, option2 &apos;value2&apos;);" db-types="PostgreSQL" />
     <sql-case id="import_by_postgresql_source_test_case3" value="IMPORT FOREIGN SCHEMA s1 FROM SERVER s9 INTO public;" db-types="PostgreSQL" />
@@ -5012,11 +4744,6 @@
     <sql-case id="lock_by_postgresql_source_test_case39" value="LOCK hs1;" db-types="PostgreSQL" />
     <sql-case id="lock_by_postgresql_source_test_case40" value="LOCK lock_tbl1 IN ROW SHARE MODE;" db-types="PostgreSQL" />
     <sql-case id="lock_by_postgresql_source_test_case41" value="LOCK lock_tbl1 IN SHARE ROW EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="move_by_postgresql_source_test_case1" value="MOVE BACKWARD 10000 FROM c;" db-types="PostgreSQL" />
-    <sql-case id="move_by_postgresql_source_test_case2" value="MOVE BACKWARD ALL FROM c;" db-types="PostgreSQL" />
-    <sql-case id="move_by_postgresql_source_test_case3" value="MOVE BACKWARD ALL IN c1;" db-types="PostgreSQL" />
-    <sql-case id="move_by_postgresql_source_test_case4" value="MOVE BACKWARD ALL IN xc;" db-types="PostgreSQL" />
-    <sql-case id="move_by_postgresql_source_test_case5" value="MOVE FORWARD ALL FROM c;" db-types="PostgreSQL" />
     <sql-case id="notify_by_postgresql_source_test_case1" value="NOTIFY notify_async2;" db-types="PostgreSQL" />
     <sql-case id="prepare_by_postgresql_source_test_case1" value="PREPARE TRANSACTION &apos;foo1&apos;;" db-types="PostgreSQL" />
     <sql-case id="prepare_by_postgresql_source_test_case2" value="PREPARE TRANSACTION &apos;foo2&apos;;" db-types="PostgreSQL" />
@@ -6491,45 +6218,6 @@
     <sql-case id="low_alter_by_postgresql_source_test_case105" value="alter type rewritetype alter attribute a type varchar cascade;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case106" value="alter type testdomain2 rename to testdomain3;" db-types="PostgreSQL" />
     <sql-case id="low_alter_by_postgresql_source_test_case107" value="alter type two_ints add attribute c two_ints_range;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case1" value="create aggregate aggfns(integer,integer,text) (    sfunc = aggfns_trans, stype = aggtype[], sspace = 10000,    initcond = &apos;{}&apos; );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case2" value="create aggregate aggfstr(integer,integer,text) (    sfunc = aggf_trans, stype = aggtype[],    initcond = &apos;{}&apos; );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case3" value="create aggregate build_group(anyelement, integer) (   SFUNC = add_group,   STYPE = anyarray );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case4" value="create aggregate build_group(int8, integer) (   SFUNC = add_group,   STYPE = int2[] );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case5" value="create aggregate build_group(int8, integer) (   SFUNC = add_group,   STYPE = int8[] );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case6" value="create aggregate cleast_agg(variadic items anycompatiblearray) (   stype = anycompatible, sfunc = cleast_accum );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case7" value="create aggregate first_el_agg_any(anyelement) (   SFUNC = first_el_transfn,   STYPE = anyarray,   FINALFUNC = first_el );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case8" value="create aggregate first_el_agg_f8(float8) (   SFUNC = array_append,   STYPE = float8[],   FINALFUNC = first_el );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case9" value="create aggregate least_agg(int4) (   stype = int8, sfunc = least_accum );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case10" value="create aggregate least_agg(int4) (   stype = int8, sfunc = least_accum );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case11" value="create aggregate least_agg(int8) (   stype = int8, sfunc = least_accum );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case12" value="create aggregate least_agg(variadic items anyarray) (   stype = anyelement, sfunc = least_accum );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case13" value="create aggregate my_avg(int4) (    stype = avg_state,    sfunc = avg_transfn,    finalfunc = avg_finalfn );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case14" value="create aggregate my_avg_init(int4) (    stype = avg_state,    sfunc = avg_transfn,    finalfunc = avg_finalfn,    initcond = &apos;(10,0)&apos; );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case15" value="create aggregate my_avg_init2(int4) (    stype = avg_state,    sfunc = avg_transfn,    finalfunc = avg_finalfn,    initcond = &apos;(4,0)&apos; );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case16" value="create aggregate my_half_sum(int4) (    stype = int4,    sfunc = sum_transfn,    finalfunc = halfsum_finalfn );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case17" value="create aggregate my_percentile_disc(float8 ORDER BY anyelement) (   stype = internal,   sfunc = ordered_set_transition,   finalfunc = percentile_disc_final,   finalfunc_extra = true,   finalfunc_modify = read_write );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case18" value="create aggregate my_rank(VARIADIC &quot;any&quot; ORDER BY VARIADIC &quot;any&quot;) (   stype = internal,   sfunc = ordered_set_transition_multi,   finalfunc = rank_final,   finalfunc_extra = true,   hypothetical );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case19" value="create aggregate my_sum(int4) (    stype = avg_state,    sfunc = avg_transfn,    finalfunc = sum_finalfn );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case20" value="create aggregate my_sum(int4) (    stype = int4,    sfunc = sum_transfn );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case21" value="create aggregate my_sum_init(int4) (    stype = avg_state,    sfunc = avg_transfn,    finalfunc = sum_finalfn,    initcond = &apos;(10,0)&apos; );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case22" value="create aggregate newavg2 (sfunc = int4pl, 			  basetype = int4, 			  stype = int4, 			  finalfunc = int2um, 			  initcond = &apos;0&apos;);" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case23" value="create aggregate newcnt1 (sfunc = int4inc, 			  stype = int4, 			  initcond = &apos;0&apos;);" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case24" value="create aggregate sum2(int8,int8) (    sfunc = sum3, stype = int8,    initcond = &apos;0&apos; );" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case25" value="create cast (bigint as xfloat8) without function;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case26" value="create cast (float4 as xfloat4) without function;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case27" value="create cast (float8 as xfloat8) without function;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case28" value="create cast (int4 as myint) without function;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case29" value="create cast (int8 as int8alias1) without function;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case30" value="create cast (int8 as int8alias2) without function;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case31" value="create cast (int8alias1 as int8) without function;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case32" value="create cast (int8alias2 as int8) without function;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case33" value="create cast (integer as date) with function sql_to_date(integer) as assignment;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case34" value="create cast (integer as xfloat4) without function;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case35" value="create cast (myint as int4) without function;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case36" value="create cast (xfloat4 as float4) without function;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case37" value="create cast (xfloat4 as integer) without function;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case38" value="create cast (xfloat8 as bigint) without function;" db-types="PostgreSQL" />
-    <sql-case id="low_create_by_postgresql_source_test_case39" value="create cast (xfloat8 as float8) without function;" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case40" value="create constraint trigger parted_trig after insert on parted_constr_ancestor   deferrable   for each row execute procedure trigger_notice_ab();" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case41" value="create constraint trigger parted_trig_two after insert on parted_constr   deferrable initially deferred   for each row when (bark(new.b) AND new.a % 2 = 1)   execute procedure trigger_notice_ab();" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case42" value="create constraint trigger parted_trigger after update on parted_trigger   from parted_referenced   for each row execute procedure trigger_notice_ab();" db-types="PostgreSQL" />
@@ -7050,7 +6738,6 @@
     <sql-case id="low_create_by_postgresql_source_test_case559" value="create view tt201v as select   extract(day from now()) as extr,   (now(), &apos;1 day&apos;::interval) overlaps     (current_timestamp(2), &apos;1 day&apos;::interval) as o,   &apos;foo&apos; is normalized isn,   &apos;foo&apos; is nfkc normalized isnn,   normalize(&apos;foo&apos;) as n,   normalize(&apos;foo&apos;, nfkd) as nfkd,   overlay(&apos;foo&apos; placing &apos;bar&apos; from 2) as ovl,   overlay(&apos;foo&apos; placing &apos;bar&apos; from 2 for 3) as ovl2,   position(&apos;foo&apos; in &apos;foobar&apos;) as p,   substring(&apos;foo&apos; from 2 for 3) as s,   substring(&apos;foo&apos; similar &apos;f&apos; escape &apos;#&apos;) as ss,   substring(&apos;foo&apos; from &apos;oo&apos;) as ssf   trim(&apos; &apos; from &apos; foo &apos;) as bt,   trim(leading &apos; &apos; from &apos; foo &apos;) as lt,   trim(trailing &apos; foo &apos;) as rt,   trim(E&apos;\\000&apos;::bytea from E&apos;\\000Tom\\000&apos;::bytea) as btb,   trim(leading E&apos;\\000&apos;::bytea from E&apos;\\000Tom\\000&apos;::bytea) as ltb,   trim(trailing E&apos;\\000&apos;::bytea from E&apos;\\000Tom\\000&apos;::bytea) as rtb;" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case560" value="create view tt26v as select x + y + z as c1,        (x * y) + z as c2,        x + (y * z) as c3,        (x + y) * z as c4,        x * (y + z) as c5,        x + (y + z) as c6,        x + (y # z) as c7,        (x &gt; y) AND (y &gt; z OR x &gt; z) as c8,        (x &gt; y) OR (y &gt; z AND NOT (x &gt; z)) as c9,        (x,y) &lt;&gt; ALL (values(1,2),(3,4)) as c10,        (x,y) &lt;= ANY (values(1,2),(3,4)) as c11 from (values(1,2,3)) v(x,y,z);" db-types="PostgreSQL" />
     <sql-case id="low_create_by_postgresql_source_test_case561" value="create view view_of_joins_2d as select * from (tbl1 join tbl1a using (a) as x) as y;" db-types="PostgreSQL" />
-    <sql-case id="low_declare_by_postgresql_source_test_case13" value="declare rf_cur scroll cursor for select * from rows from(generate_series(1,5),generate_series(1,2)) with ordinality as g(i,j,o);" db-types="PostgreSQL" />
     <sql-case id="low_delete_by_postgresql_source_test_case1" value="delete from;" db-types="PostgreSQL" />
     <sql-case id="low_do_by_postgresql_source_test_case1" value="do $$   declare r integer;   begin     select dfunc(a=&gt;-- comment       1) into r;     raise info &apos;r = %&apos;, r;   end; $$;" db-types="PostgreSQL" />
     <sql-case id="low_do_by_postgresql_source_test_case2" value="do $$ BEGIN   EXECUTE &apos;CREATE COLLATION test0 (provider = icu, locale = &apos; ||           quote_literal(current_setting(&apos;lc_collate&apos;)) || &apos;);&apos;; END $$;" db-types="PostgreSQL" />
@@ -7238,67 +6925,6 @@
     <sql-case id="low_explain_by_postgresql_source_test_case21" value="explain (verbose, costs off) with recursive search_graph(f, t, label) as ( 	select * from graph g 	union all 	select g.* 	from graph g, search_graph sg 	where g.f = sg.t ) cycle f, t set is_cycle using path select * from search_graph;" db-types="PostgreSQL" />
     <sql-case id="low_explain_by_postgresql_source_test_case22" value="explain (verbose, costs off) with recursive search_graph(f, t, label) as ( 	select * from graph0 g 	union all 	select g.* 	from graph0 g, search_graph sg 	where g.f = sg.t ) search breadth first by f, t set seq select * from search_graph order by seq;" db-types="PostgreSQL" />
     <sql-case id="low_explain_by_postgresql_source_test_case23" value="explain (verbose, costs off) with recursive search_graph(f, t, label) as ( 	select * from graph0 g 	union all 	select g.* 	from graph0 g, search_graph sg 	where g.f = sg.t ) search depth first by f, t set seq select * from search_graph order by seq;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case1" value="fetch 1 from hsc;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case2" value="fetch 1 in c1;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case3" value="fetch 1 in c2;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case4" value="fetch 1 in c3;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case5" value="fetch 1 in c4;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case6" value="fetch 1 in c5;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case7" value="fetch absolute 1 from rf_cur;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case8" value="fetch all from c1;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case9" value="fetch all from c2;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case10" value="fetch all from c;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case11" value="fetch all from c;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case12" value="fetch all from rf_cur;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case13" value="fetch all from rf_cur;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case14" value="fetch all from test2;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case15" value="fetch all in c1;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case16" value="fetch all in c1;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case17" value="fetch all in c1;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case18" value="fetch all in c2;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case19" value="fetch all in c2;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case20" value="fetch all in c2;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case21" value="fetch all in c3;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case22" value="fetch all in c3;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case23" value="fetch all in c4;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case24" value="fetch all in c4;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case25" value="fetch all in c5;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case26" value="fetch all in c5;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case27" value="fetch all in c5;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case28" value="fetch backward 1 in c1;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case29" value="fetch backward 1 in c1;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case30" value="fetch backward 1 in c2;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case31" value="fetch backward 1 in c2;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case32" value="fetch backward 1 in c3;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case33" value="fetch backward 1 in c3;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case34" value="fetch backward 1 in c4;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case35" value="fetch backward 1 in c4;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case36" value="fetch backward 1 in c5;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case37" value="fetch backward 1 in c5;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case38" value="fetch backward all from cur;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case39" value="fetch backward all from rf_cur;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case40" value="fetch backward all in c1;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case41" value="fetch backward all in c1;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case42" value="fetch backward all in c1;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case43" value="fetch backward all in c2;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case44" value="fetch backward all in c2;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case45" value="fetch backward all in c3;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case46" value="fetch backward all in c4;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case47" value="fetch backward all in c5;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case48" value="fetch backward all in c5;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case49" value="fetch first from hsc;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case50" value="fetch last from hsc;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case51" value="fetch next from rf_cur;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case52" value="fetch next from rf_cur;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case53" value="fetch next from rf_cur;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case54" value="fetch next from rf_cur;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case55" value="fetch next from rf_cur;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case56" value="fetch next from test1;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case57" value="fetch next in test1;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case58" value="fetch prior from rf_cur;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case59" value="fetch prior from rf_cur;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case60" value="fetch prior from rf_cur;" db-types="PostgreSQL" />
-    <sql-case id="low_fetch_by_postgresql_source_test_case61" value="fetch prior from rf_cur;" db-types="PostgreSQL" />
     <sql-case id="low_insert_by_postgresql_source_test_case1" value="insert into arr_pk_tbl values (1, &apos;{3,4,5}&apos;) on conflict (pk)   do update set f1[1] = excluded.f1[1], f1[3] = excluded.f1[3]   returning pk, f1;" db-types="PostgreSQL" />
     <sql-case id="low_insert_by_postgresql_source_test_case2" value="insert into arr_pk_tbl(pk, f1[1:2]) values (1, &apos;{6,7,8}&apos;) on conflict (pk)   do update set f1[1] = excluded.f1[1],     f1[2] = excluded.f1[2],     f1[3] = excluded.f1[3]   returning pk, f1;" db-types="PostgreSQL" />
     <sql-case id="low_insert_by_postgresql_source_test_case7" value="insert into capitals values (&apos;Sacramento&apos;, 4664.E+5, 30, &apos;CA&apos;) on conflict (name) do update set population = excluded.population;" db-types="PostgreSQL" />
@@ -7367,9 +6993,6 @@
     <sql-case id="low_lock_by_postgresql_source_test_case1" value="lock table pxtest3 in access share mode nowait;" db-types="PostgreSQL" />
     <sql-case id="low_lock_by_postgresql_source_test_case2" value="lock table pxtest3 in access share mode nowait;" db-types="PostgreSQL" />
     <sql-case id="low_lock_by_postgresql_source_test_case3" value="lock twophase_tab in access exclusive mode;" db-types="PostgreSQL" />
-    <sql-case id="low_move_by_postgresql_source_test_case1" value="move 3 from cur;" db-types="PostgreSQL" />
-    <sql-case id="low_move_by_postgresql_source_test_case2" value="move backward all in c;" db-types="PostgreSQL" />
-    <sql-case id="low_move_by_postgresql_source_test_case3" value="move forward all in c1;" db-types="PostgreSQL" />
     <sql-case id="low_notify_by_postgresql_source_test_case1" value="notify a;" db-types="PostgreSQL" />
     <sql-case id="low_prepare_by_postgresql_source_test_case1" value="prepare q as   select &apos;some&quot;text&apos; as &quot;a&amp;title&quot;, E&apos;  &lt;foo&gt;\n&lt;bar&gt;&apos; as &quot;junk&quot;,          &apos;   &apos; as &quot;empty&quot;, n as int   from generate_series(1,2) as n;" db-types="PostgreSQL" />
     <sql-case id="low_prepare_by_postgresql_source_test_case2" value="prepare q as   select &apos;some\more_text&apos; as &quot;a$title&quot;, E&apos;  #&lt;foo&gt;%&amp;^~|\n{bar}&apos; as &quot;junk&quot;,          &apos;   &apos; as &quot;empty&quot;, n as int   from generate_series(1,2) as n;" db-types="PostgreSQL" />

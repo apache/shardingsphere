@@ -55,8 +55,8 @@ public final class AlterSQLParserRuleHandlerTest extends ProxyContextRestorer {
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        SQLParserRule sqlParserRule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
-        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(new LinkedList<>(Collections.singleton(sqlParserRule))));
+        SQLParserRule rule = new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build());
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(new LinkedList<>(Collections.singleton(rule))));
         ProxyContext.init(result);
         return result;
     }

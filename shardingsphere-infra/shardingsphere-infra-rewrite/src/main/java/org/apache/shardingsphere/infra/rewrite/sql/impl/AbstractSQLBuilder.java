@@ -23,6 +23,8 @@ import org.apache.shardingsphere.infra.rewrite.sql.SQLBuilder;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.ComposableSQLToken;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
+import org.apache.shardingsphere.infra.route.context.RouteUnit;
 
 import java.util.Collections;
 
@@ -34,6 +36,8 @@ public abstract class AbstractSQLBuilder implements SQLBuilder {
     
     private final SQLRewriteContext context;
     
+    private final RouteUnit routeUnit;
+    
     @Override
     public final String toSQL() {
         if (context.getSqlTokens().isEmpty()) {
@@ -43,7 +47,13 @@ public abstract class AbstractSQLBuilder implements SQLBuilder {
         StringBuilder result = new StringBuilder();
         result.append(context.getSql(), 0, context.getSqlTokens().get(0).getStartIndex());
         for (SQLToken each : context.getSqlTokens()) {
-            result.append(each instanceof ComposableSQLToken ? getComposableSQLTokenText((ComposableSQLToken) each) : getSQLTokenText(each));
+            if (each instanceof ComposableSQLToken) {
+                result.append(getComposableSQLTokenText((ComposableSQLToken) each));
+            } else if (each instanceof SubstitutableColumnNameToken) {
+                result.append(((SubstitutableColumnNameToken) each).toString(routeUnit));
+            } else {
+                result.append(getSQLTokenText(each));
+            }
             result.append(getConjunctionText(each));
         }
         return result.toString();

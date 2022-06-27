@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
@@ -36,11 +37,17 @@ public final class ShardingSphereRuleMetaData {
     
     private final Collection<ShardingSphereRule> rules;
     
-    private final Collection<RuleConfiguration> configurations;
-    
     public ShardingSphereRuleMetaData(final Collection<ShardingSphereRule> rules) {
-        this.rules = rules;
-        configurations = rules.stream().map(ShardingSphereRule::getConfiguration).collect(Collectors.toList());
+        this.rules = new CopyOnWriteArrayList<>(rules);
+    }
+    
+    /**
+     * Get rule configurations.
+     * 
+     * @return got rule configurations
+     */
+    public Collection<RuleConfiguration> getConfigurations() {
+        return rules.stream().map(ShardingSphereRule::getConfiguration).collect(Collectors.toList());
     }
     
     /**
@@ -83,22 +90,5 @@ public final class ShardingSphereRuleMetaData {
         Collection<T> foundRules = findRules(clazz);
         Preconditions.checkState(1 == foundRules.size(), "Rule `%s` should have and only have one instance.", clazz.getSimpleName());
         return foundRules.iterator().next();
-    }
-    
-    /**
-     * Find rule configuration by class.
-     *
-     * @param clazz target class
-     * @param <T> type of rule configuration
-     * @return found rule configurations
-     */
-    public <T extends RuleConfiguration> Collection<T> findRuleConfigurations(final Class<T> clazz) {
-        Collection<T> result = new LinkedList<>();
-        for (ShardingSphereRule each : rules) {
-            if (clazz.isAssignableFrom(each.getConfiguration().getClass())) {
-                result.add(clazz.cast(each.getConfiguration()));
-            }
-        }
-        return result;
     }
 }

@@ -1384,6 +1384,7 @@ defArg
     | NUMBER_
     | STRING_
     | NONE
+    | funcName (LP_ funcArgsList RP_ | LP_ RP_)
     ;
 
 funcType
@@ -1848,12 +1849,12 @@ event
 typeNameList
     : typeName (COMMA_ typeName)*
     ;
-    
-notExistClause
+
+ifNotExists
     : IF NOT EXISTS
     ;
-    
-existClause
+
+ifExists
     : IF EXISTS
     ;
 

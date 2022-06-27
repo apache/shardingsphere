@@ -33,7 +33,7 @@ import java.util.HashSet;
 @RequiredArgsConstructor
 public final class PostgreSQLCommandCompletePacket implements PostgreSQLIdentifierPacket {
     
-    private static final Collection<String> TAGS_WITH_COUNT = new HashSet<>(Arrays.asList("INSERT", "SELECT", "UPDATE", "DELETE"));
+    private static final Collection<String> TAGS_WITH_COUNT = new HashSet<>(Arrays.asList("INSERT", "SELECT", "UPDATE", "DELETE", "MOVE"));
     
     private final String sqlCommand;
     

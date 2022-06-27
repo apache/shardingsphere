@@ -26,4 +26,9 @@
         <input sql="CLOSE &quot;t_account_cursor&quot;" />
         <output sql="CLOSE &quot;t_account_cursor_t_account_0&quot;" />
     </rewrite-assertion>
+
+    <rewrite-assertion id="close_all_cursor" db-types="openGauss">
+        <input sql="CLOSE ALL;" />
+        <output sql="CLOSE ALL;" />
+    </rewrite-assertion>
 </rewrite-assertions>
