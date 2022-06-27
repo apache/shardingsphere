@@ -151,7 +151,7 @@ jobs:
         run: echo y | ./mvnw -B --no-transfer-progress clean install ${{ matrix.java.maven_args }}
       - name: Build examples with Maven
         run: echo y | ./mvnw -B -f examples/pom.xml clean package -DskipTests
-  
+
   macos:
     if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
     name: macos
@@ -183,7 +183,7 @@ jobs:
         run: echo y | ./mvnw -B --no-transfer-progress clean install ${{ matrix.java.maven_args }}
       - name: Build examples with Maven
         run: echo y | ./mvnw -B -f examples/pom.xml clean package -DskipTests
-  
+
   shardingsphere-example-generator:
     if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere') || (github.event_name != 'schedule')
     name: shardingsphere example generator
