@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.readwritesplitting.rule.builder;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilderFactory;
 import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
@@ -39,7 +38,7 @@ public final class AlgorithmProvidedReadwriteSplittingRuleBuilderTest {
         AlgorithmProvidedReadwriteSplittingRuleConfiguration ruleConfig = new AlgorithmProvidedReadwriteSplittingRuleConfiguration(
                 Collections.singletonList(new ReadwriteSplittingDataSourceRuleConfiguration("name", "Static", createProperties(), "loadBalancerName")), Collections.emptyMap());
         DatabaseRuleBuilder builder = DatabaseRuleBuilderFactory.getInstanceMap(Collections.singletonList(ruleConfig)).get(ruleConfig);
-        assertThat(builder.build(ruleConfig, "", Collections.emptyMap(), Collections.emptyList(), new ConfigurationProperties(new Properties())), instanceOf(ReadwriteSplittingRule.class));
+        assertThat(builder.build(ruleConfig, "", Collections.emptyMap(), Collections.emptyList()), instanceOf(ReadwriteSplittingRule.class));
     }
     
     private Properties createProperties() {

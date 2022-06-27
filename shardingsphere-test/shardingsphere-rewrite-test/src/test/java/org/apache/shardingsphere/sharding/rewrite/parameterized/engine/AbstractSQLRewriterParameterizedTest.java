@@ -66,7 +66,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -108,7 +107,7 @@ public abstract class AbstractSQLRewriterParameterizedTest {
         when(resource.getDatabaseType()).thenReturn(databaseType);
         String schemaName = DatabaseTypeEngine.getDefaultSchemaName(databaseType, DefaultDatabase.LOGIC_NAME);
         Map<String, ShardingSphereSchema> schemas = mockSchemas(schemaName);
-        Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(DefaultDatabase.LOGIC_NAME, databaseConfig, new ConfigurationProperties(new Properties()));
+        Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(DefaultDatabase.LOGIC_NAME, databaseConfig);
         mockRules(databaseRules, schemaName);
         databaseRules.add(sqlParserRule);
         ShardingSphereDatabase database = new ShardingSphereDatabase(schemaName, databaseType, resource, new ShardingSphereRuleMetaData(databaseRules), schemas);
