@@ -15,15 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ListenStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * PostgreSQL listen statement.
+ * Listen statement.
  */
-@ToString
-public class PostgreSQLListenStatement extends ListenStatement implements PostgreSQLStatement {
+@Getter
+@Setter
+public abstract class ListenStatement extends AbstractSQLStatement implements DDLStatement {
+    
+    private String listenName;
 }

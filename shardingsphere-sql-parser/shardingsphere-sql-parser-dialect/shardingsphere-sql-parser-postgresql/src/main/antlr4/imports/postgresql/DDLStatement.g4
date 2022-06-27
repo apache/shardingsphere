@@ -1782,9 +1782,6 @@ importQualificationType
     : LIMIT TO | EXCEPT
     ;
 
-listen
-    : LISTEN colId
-    ;
 
 move
     : MOVE direction? (FROM | IN)? cursorName
@@ -1792,6 +1789,10 @@ move
 
 fetch
     : FETCH direction? (FROM | IN)? cursorName
+    ;
+
+listen
+    : LISTEN colId
     ;
 
 direction

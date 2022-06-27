@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.tcl.impl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ListenStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.ListenStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.limit.LimitClauseAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.ListenStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.SQLSegmentAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.value.IdentifierValueAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.ListenStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ListenStatementAssert {
-
+public final class ListenStatementAssert {
+    
     /**
      * Assert listen statement is correct with expected parser result.
      *
@@ -40,11 +39,6 @@ public class ListenStatementAssert {
      * @param expected expected listen statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ListenStatement actual, final ListenStatementTestCase expected) {
-        if (null != expected.getChannelName()) {
-            assertNotNull(assertContext.getText("Actual channelName should exist."), actual.getChannelName());
-            assertThat(actual.getChannelName(), is(expected.getChannelName()));
-        } else {
-            assertNull(assertContext.getText("Actual channelName should not exist."), actual.getChannelName());
-        }
+        assertThat(assertContext.getText("Listen name assertion error."), actual.getListenName(), is(expected.getListenName()));
     }
 }

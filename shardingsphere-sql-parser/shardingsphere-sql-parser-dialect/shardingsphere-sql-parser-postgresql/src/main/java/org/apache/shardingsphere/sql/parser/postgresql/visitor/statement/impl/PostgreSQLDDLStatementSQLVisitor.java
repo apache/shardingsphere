@@ -151,6 +151,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Ta
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableNamesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ValidateConstraintSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ListenContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.DirectionType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
@@ -270,6 +271,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLMoveStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLPrepareStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLTruncateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLListenStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -1242,6 +1244,14 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitBackwardAll(final BackwardAllContext ctx) {
         DirectionSegment result = new DirectionSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
         result.setDirectionType(DirectionType.BACKWARD_ALL);
+        return result;
+    }
+    
+    @Override
+    public ASTNode visitListen(final ListenContext ctx) {
+        String listenName = ctx.colId().getText();
+        PostgreSQLListenStatement result = new PostgreSQLListenStatement();
+        result.setListenName(listenName);
         return result;
     }
 }

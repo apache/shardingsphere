@@ -87,12 +87,3 @@ constraintsSetMode
 constraintsSetList
     : ALL | qualifiedNameList
     ;
-
-listen
-    : LISTEN channelName
-    ;
-
-channelName
-    : (owner DOT_)? name
-    ;
-

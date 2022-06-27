@@ -15,20 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlAttribute;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.ListenStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Listen statement test case.
+ * PostgreSQL listen statement.
  */
-@Getter
-@Setter
-public class ListenStatementTestCase extends SQLParserTestCase {
-    @XmlAttribute(name = "channel-name")
-    private String channelName;
+@ToString
+public class PostgreSQLListenStatement extends ListenStatement implements PostgreSQLStatement {
 }

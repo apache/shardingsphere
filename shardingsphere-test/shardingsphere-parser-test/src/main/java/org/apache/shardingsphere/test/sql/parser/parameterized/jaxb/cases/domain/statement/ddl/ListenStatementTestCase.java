@@ -15,17 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
 import lombok.Getter;
 import lombok.Setter;
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
+import javax.xml.bind.annotation.XmlAttribute;
+
+/**
+ * Listen statement test case.
+ */
 @Getter
 @Setter
-@ToString
-public class ListenStatement extends AbstractSQLStatement implements TCLStatement, PostgreSQLStatement {
-    private String channelName;
+public final class ListenStatementTestCase extends SQLParserTestCase {
+    
+    @XmlAttribute(name = "listen-name")
+    private String listenName;
 }
