@@ -107,7 +107,7 @@ public final class AlterTransactionRuleHandlerTest {
     }
 
     @Test
-    public void assertUpdate(){
+    public void assertUpdate() {
         AlterTransactionRuleHandler alterTransactionRuleHandler = new AlterTransactionRuleHandler();
         AlterTransactionRuleStatement ralStatement = mock(AlterTransactionRuleStatement.class, RETURNS_DEEP_STUBS);
         when(ralStatement.getDefaultType()).thenReturn("LOCAL");
