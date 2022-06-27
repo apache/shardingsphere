@@ -69,7 +69,7 @@ public final class ShardingSphereStatementTest extends AbstractShardingSphereDat
     public void assertAddGetGeneratedKeysForNoGeneratedValues() throws SQLException {
         String sql = "INSERT INTO t_product (product_name) VALUES ('%s')";
         try (Statement statement = getShardingSphereDataSource().getConnection().createStatement()) {
-            statement.execute(String.format(sql, "food"), Statement.RETURN_GENERATED_KEYS);
+            statement.execute(String.format(sql, "cup"), Statement.RETURN_GENERATED_KEYS);
             ResultSet generatedKeysResultSet = statement.getGeneratedKeys();
             assertTrue(generatedKeysResultSet.next());
             assertThat(generatedKeysResultSet.getInt(1), is(1));
