@@ -18,11 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
 import com.atomikos.jdbc.AtomikosDataSourceBean;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.Properties;
-import java.util.stream.Collectors;
 import org.apache.shardingsphere.distsql.parser.segment.TransactionProviderSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.AlterTransactionRuleStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -32,7 +27,6 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -41,15 +35,20 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
+import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Answers;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.junit.Assert.assertNotNull;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -57,47 +56,42 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class AlterTransactionRuleHandlerTest extends ProxyContextRestorer {
-
-    @Mock(answer = Answers.RETURNS_DEEP_STUBS)
+    
+    @Mock
     private ContextManager contextManager;
-
+    
     @Before
     public void before() {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS), createMetaData(), mock(OptimizerContext.class, RETURNS_DEEP_STUBS));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
     }
-
+    
     private ShardingSphereMetaData createMetaData() {
-        ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(ruleMetaData.getRules()).thenReturn(new LinkedList<>(Collections.singleton(createTransactionRule())));
+        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(new LinkedList<>(Collections.singleton(createTransactionRule())));
         return new ShardingSphereMetaData(Collections.singletonMap("foo_db", mockDatabase()), ruleMetaData, new ConfigurationProperties(new Properties()));
     }
-
+    
     private TransactionRule createTransactionRule() {
         TransactionRule result = new TransactionRule(new TransactionRuleConfiguration("LOCAL", null, new Properties()), Collections.emptyMap());
         result.setInstanceContext(mock(InstanceContext.class));
         result.getResources().put(DefaultDatabase.LOGIC_NAME, new ShardingSphereTransactionManagerEngine());
         return result;
     }
-
+    
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getResource().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", mock(AtomikosDataSourceBean.class, RETURNS_DEEP_STUBS)));
         return result;
     }
-
+    
     @Test
     public void assertUpdate() {
         AlterTransactionRuleHandler handler = new AlterTransactionRuleHandler();
-        handler.init(new AlterTransactionRuleStatement("LOCAL", new TransactionProviderSegment(null, new Properties())), mock(ConnectionSession.class, RETURNS_DEEP_STUBS));
+        handler.init(new AlterTransactionRuleStatement("BASE", new TransactionProviderSegment(null, new Properties())), mock(ConnectionSession.class, RETURNS_DEEP_STUBS));
         handler.update(contextManager);
-        Collection<ShardingSphereRule> collection = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules();
-        Collection<TransactionRule> transactionRules = collection.stream().map(item -> (TransactionRule) item).collect(Collectors.toList());
-        assertNotNull(transactionRules);
-        assertTrue(!transactionRules.isEmpty());
-        assertTrue(transactionRules.stream().anyMatch(item -> item.getConfiguration().getDefaultType().equals("LOCAL")));
-        assertTrue(transactionRules.stream().anyMatch(item -> item.getDatabases().containsKey("foo_db")));
-
+        TransactionRule updatedRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
+        assertThat(updatedRule.getDefaultType(), is(TransactionType.BASE));
+        assertTrue(updatedRule.getDatabases().containsKey("foo_db"));
     }
 }
