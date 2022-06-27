@@ -30,5 +30,5 @@ public class YamlDynamicReadwriteSplittingStrategyConfiguration implements YamlC
     
     private String autoAwareDataSourceName;
     
-    private boolean writeDataSourceQueryEnabled;
+    private String writeDataSourceQueryEnabled;
 }

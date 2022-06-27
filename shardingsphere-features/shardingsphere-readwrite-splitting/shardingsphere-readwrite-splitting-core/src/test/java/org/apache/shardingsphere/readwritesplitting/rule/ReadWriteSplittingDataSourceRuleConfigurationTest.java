@@ -46,8 +46,8 @@ public final class ReadWriteSplittingDataSourceRuleConfigurationTest {
     
     @Test
     public void assertStaticReadWriteSplittingConfig() {
-        assertNotNull(readwriteSplittingDataSourceRuleConfigDynamic.getDataSourceStrategy());
-        StaticReadwriteSplittingStrategyConfiguration actual = (StaticReadwriteSplittingStrategyConfiguration) readwriteSplittingDataSourceRuleConfigDynamic.getDataSourceStrategy();
+        assertNotNull(readwriteSplittingDataSourceRuleConfig.getDataSourceStrategy());
+        StaticReadwriteSplittingStrategyConfiguration actual = (StaticReadwriteSplittingStrategyConfiguration) readwriteSplittingDataSourceRuleConfig.getDataSourceStrategy();
         assertThat(actual.getWriteDataSourceName(), is("write_ds"));
         assertThat(actual.getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
     }

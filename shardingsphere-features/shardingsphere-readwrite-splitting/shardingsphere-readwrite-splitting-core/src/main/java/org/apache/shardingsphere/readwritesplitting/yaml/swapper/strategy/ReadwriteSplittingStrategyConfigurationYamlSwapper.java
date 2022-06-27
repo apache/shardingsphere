@@ -64,7 +64,7 @@ public final class ReadwriteSplittingStrategyConfigurationYamlSwapper implements
     private YamlDynamicReadwriteSplittingStrategyConfiguration createYamlDynamicReadwriteSplittingStrategyConfiguration(final DynamicReadwriteSplittingStrategyConfiguration config) {
         YamlDynamicReadwriteSplittingStrategyConfiguration result = new YamlDynamicReadwriteSplittingStrategyConfiguration();
         result.setAutoAwareDataSourceName(config.getAutoAwareDataSourceName());
-        result.setWriteDataSourceQueryEnabled(config.isWriteDataSourceQueryEnabled());
+        result.setWriteDataSourceQueryEnabled(config.getWriteDataSourceQueryEnabled());
         return result;
     }
     
@@ -73,6 +73,6 @@ public final class ReadwriteSplittingStrategyConfigurationYamlSwapper implements
     }
     
     private DynamicReadwriteSplittingStrategyConfiguration createDynamicReadwriteSplittingStrategyConfiguration(final YamlDynamicReadwriteSplittingStrategyConfiguration yamlConfig) {
-        return new DynamicReadwriteSplittingStrategyConfiguration(yamlConfig.getAutoAwareDataSourceName(), yamlConfig.isWriteDataSourceQueryEnabled());
+        return new DynamicReadwriteSplittingStrategyConfiguration(yamlConfig.getAutoAwareDataSourceName(), yamlConfig.getWriteDataSourceQueryEnabled());
     }
 }

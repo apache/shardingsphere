@@ -29,9 +29,9 @@ public class DynamicReadwriteSplittingStrategyConfiguration implements Readwrite
     
     private final String autoAwareDataSourceName;
     
-    private boolean writeDataSourceQueryEnabled;
+    private String writeDataSourceQueryEnabled;
     
-    public DynamicReadwriteSplittingStrategyConfiguration(final String autoAwareDataSourceName, final boolean writeDataSourceQueryEnabled) {
+    public DynamicReadwriteSplittingStrategyConfiguration(final String autoAwareDataSourceName, final String writeDataSourceQueryEnabled) {
         this.autoAwareDataSourceName = autoAwareDataSourceName;
         this.writeDataSourceQueryEnabled = writeDataSourceQueryEnabled;
     }
