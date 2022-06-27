@@ -646,7 +646,7 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
         result.setIfExists(null != ctx.ifExists());
         return result;
     }
-
+    
     @Override
     public ASTNode visitDropServer(final DropServerContext ctx) {
         return new OpenGaussDropServerStatement();
