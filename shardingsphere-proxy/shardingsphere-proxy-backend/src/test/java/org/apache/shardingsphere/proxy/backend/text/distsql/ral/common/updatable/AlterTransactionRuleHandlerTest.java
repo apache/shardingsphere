@@ -92,7 +92,7 @@ public final class AlterTransactionRuleHandlerTest {
     }
 
     @Test
-    public void testUpdate() {
+    public void assertUpdate() {
         try {
             AlterTransactionRuleHandler alterTransactionRuleHandler = new AlterTransactionRuleHandler();
             AlterTransactionRuleStatement ralStatement = mock(AlterTransactionRuleStatement.class, RETURNS_DEEP_STUBS);
@@ -106,7 +106,7 @@ public final class AlterTransactionRuleHandlerTest {
     }
 
     @Test
-    public void testGetStatement() {
+    public void assertGetStatement() {
         AlterTransactionRuleHandler alterTransactionRuleHandler = new AlterTransactionRuleHandler();
         AlterTransactionRuleStatement ralStatement = mock(AlterTransactionRuleStatement.class, RETURNS_DEEP_STUBS);
         when(ralStatement.getDefaultType()).thenReturn("LOCAL");
@@ -117,7 +117,7 @@ public final class AlterTransactionRuleHandlerTest {
     }
 
     @Test
-    public void testExecute() throws Exception {
+    public void assertExecute() throws Exception {
         AlterTransactionRuleHandler alterTransactionRuleHandler = new AlterTransactionRuleHandler();
         AlterTransactionRuleStatement ralStatement = mock(AlterTransactionRuleStatement.class, RETURNS_DEEP_STUBS);
         when(ralStatement.getDefaultType()).thenReturn("LOCAL");
@@ -128,7 +128,7 @@ public final class AlterTransactionRuleHandlerTest {
     }
 
     @Test
-    public void testGetConnectionSession() {
+    public void assertGetConnectionSession() {
         AlterTransactionRuleHandler alterTransactionRuleHandler = new AlterTransactionRuleHandler();
         AlterTransactionRuleStatement ralStatement = mock(AlterTransactionRuleStatement.class, RETURNS_DEEP_STUBS);
         when(ralStatement.getDefaultType()).thenReturn("LOCAL");
