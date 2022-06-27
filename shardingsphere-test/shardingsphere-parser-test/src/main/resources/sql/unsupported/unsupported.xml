@@ -340,21 +340,13 @@
     <sql-case id="create_by_mysql_source_test_case459" value="CREATE TABLE t1 (a VARCHAR(10)) PARTITION BY HASH (EXTRACT(YEAR_MONTH FROM a))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case460" value="CREATE TABLE t1 (a datetime, b datetime DEFAULT (utc_date()))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case461" value="CREATE TABLE t1 (a datetime, b datetime DEFAULT (utc_time()))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case465" value="CREATE TABLE t1 (c TIMESTAMP) PARTITION BY RANGE (TO_DAYS(c)) (PARTITION p0 VALUES LESS THAN (10000), PARTITION p1 VALUES LESS THAN (MAXVALUE))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case466" value="CREATE TABLE t1 (c TIMESTAMP) PARTITION BY RANGE (UNIX_TIMESTAMP(c)) (PARTITION p0 VALUES LESS THAN (&apos;2000-01-01 00:00:00&apos;), PARTITION p1 VALUES LESS THAN (MAXVALUE))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case467" value="CREATE TABLE t1 (c TIMESTAMP) PARTITION BY RANGE (UNIX_TIMESTAMP(c)) (PARTITION p0 VALUES LESS THAN (UNIX_TIMESTAMP(&apos;2000-01-01 00:00:00&apos;)), PARTITION p1 VALUES LESS THAN (MAXVALUE))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case468" value="CREATE TABLE t1 (c TIMESTAMP) PARTITION BY RANGE (c) (PARTITION p0 VALUES LESS THAN (&apos;2000-01-01 00:00:00&apos;), PARTITION p1 VALUES LESS THAN (MAXVALUE))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case469" value="CREATE TABLE t1 (c TIMESTAMP) PARTITION BY RANGE COLUMNS(c) (PARTITION p0 VALUES LESS THAN (&apos;2000-01-01 00:00:00&apos;), PARTITION p1 VALUES LESS THAN (MAXVALUE))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case471" value="CREATE TABLE t1 (c1 YEAR(4294967295))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case472" value="CREATE TABLE t1 (c1 YEAR(4294967296))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case473" value="CREATE TABLE t1 (created DATETIME NOT NULL DEFAULT (UTC_DATE()))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case474" value="CREATE TABLE t1 (created DATETIME NOT NULL DEFAULT (UTC_TIME()))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case475" value="CREATE TABLE t1 (d ENUM(&quot;YES&quot;,&quot;NO&quot;)) PARTITION BY RANGE COLUMNS(d) (PARTITION p0 VALUES LESS THAN (&quot;NO&quot;), PARTITION p1 VALUES LESS THAN (MAXVALUE))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case476" value="CREATE TABLE t1 (d SET(&quot;Car&quot;,&quot;MC&quot;)) PARTITION BY RANGE COLUMNS(d) (PARTITION p0 VALUES LESS THAN (&quot;MC&quot;), PARTITION p1 VALUES LESS THAN (MAXVALUE))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case477" value="CREATE TABLE t1 (f1 DATETIME CHECK (f1 + UTC_DATE() &gt; &apos;2011-11-21&apos;))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case478" value="CREATE TABLE t1 (f1 DATETIME CHECK (f1 + UTC_TIME() &gt; &apos;23:11:21&apos;))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case479" value="CREATE TABLE t1 (f1 INT CHECK (f1 = default(f1)))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case480" value="CREATE TABLE t1 (f1 INT NOT NULL AUTO_INCREMENT, f2 INT NOT NULL, PRIMARY KEY (f1,f2)) ENGINE=InnoDB PARTITION BY RANGE (f2) (PARTITION p0 VALUES LESS THAN (100), PARTITION p1 VALUES LESS THAN (200), PARTITION p2 VALUES LESS THAN (300), PARTITION p3 VALUES LESS THAN (MAXVALUE))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case481" value="CREATE TABLE t1 (f1 INT) ENGINE=MyiSAM START TRANSACTION" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case482" value="CREATE TABLE t1 (f1 INT) START TRANSACTION" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case483" value="CREATE TABLE t1 (f1 INT) START TRANSACTION" db-types="MySQL" />
@@ -364,7 +356,6 @@
     <sql-case id="create_by_mysql_source_test_case487" value="CREATE TABLE t1 (f1 INT, f2 INT PRIMARY KEY INVISIBLE)" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case488" value="CREATE TABLE t1 (g GEOMCOLLECTION)" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case489" value="CREATE TABLE t1 (get INT)" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case494" value="CREATE TABLE t1 (user_num BIGINT, hours SMALLINT, KEY user_num (user_num)) ENGINE = InnoDB PARTITION BY RANGE COLUMNS (hours) (PARTITION hour_003 VALUES LESS THAN (3), PARTITION hour_004 VALUES LESS THAN (4), PARTITION hour_005 VALUES LESS THAN (5), PARTITION hour_last VALUES LESS THAN (MAXVALUE))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case495" value="CREATE TABLE t1 AS SELECT CONCAT(CURRENT_TIME()), CONCAT(CURRENT_TIME(6)), CONCAT(UTC_TIME()), CONCAT(UTC_TIME(6)), CONCAT(CURRENT_TIMESTAMP()), CONCAT(CURRENT_TIMESTAMP(6)), CONCAT(UTC_TIMESTAMP()), CONCAT(UTC_TIMESTAMP(6)), CONCAT(LOCALTIME()), CONCAT(LOCALTIME(6)), CONCAT(LOCALTIMESTAMP()), CONCAT(LOCALTIMESTAMP(6)), CONCAT(SYSDATE()), CONCAT(SYSDATE(6))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case496" value="CREATE TABLE t1 AS SELECT REPEAT (&apos; &apos;, 10) AS a LIMIT 0" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case497" value="CREATE TABLE t1 AS SELECT REPEAT (&apos; &apos;, 10) AS a LIMIT 0" db-types="MySQL" />
@@ -398,7 +389,6 @@
     <sql-case id="create_by_mysql_source_test_case531" value="CREATE TABLE t1(f1 INT INVISIBLE, f2 INT)" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case532" value="CREATE TABLE t1(f1 INT INVISIBLE, f2 INT, f3 INT AS (f1 + 10), f4 INT AS (f2 + 10) INVISIBLE)" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case533" value="CREATE TABLE t1(f1 INT INVISIBLE, f2 INT, f3 INT AS (f1 + 10), f4 INT AS (f2 + 10) INVISIBLE, f5 INT AS (f2 + 10) STORED INVISIBLE)" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case534" value="CREATE TABLE t1(f1 INT, f2 VARCHAR(64) NOT NULL, PRIMARY KEY (f1)) PARTITION BY RANGE(f1) ( PARTITION p1 VALUES LESS THAN (3), PARTITION p2 VALUES LESS THAN (maxvalue) )" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case535" value="CREATE TABLE t1(f1 int CHECK())" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case536" value="CREATE TABLE t1(f1 int CHECK(f1 &lt; 10), f2 int CHECK())" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case537" value="CREATE TABLE t1(f1 int CHECK(f1 &lt; 10), f2 int CHECK(f2 &lt; 10) NOT)" db-types="MySQL" />
@@ -422,7 +412,6 @@
     <sql-case id="create_by_mysql_source_test_case555" value="CREATE TABLE t1(id INT NOT NULL INVISIBLE, name VARCHAR(10)) PARTITION BY LIST(id) ( PARTITION p0 VALUES IN (10,19), PARTITION p1 VALUES IN (20,29), PARTITION p2 VALUES IN (30,39), PARTITION p3 VALUES IN (40,49))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case556" value="CREATE TABLE t1(id INT NOT NULL INVISIBLE, name VARCHAR(40)) PARTITION BY HASH(id) PARTITIONS 4" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case557" value="CREATE TABLE t1(id INT PRIMARY KEY NOT NULL INVISIBLE, name VARCHAR(40)) PARTITION BY KEY() PARTITIONS 4" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case558" value="CREATE TABLE t1(id INT) PARTITION BY RANGE (id) (PARTITION p0 VALUES LESS THAN (100), PARTITION pmax VALUES LESS THAN (MAXVALUE))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case559" value="CREATE TABLE t1(j json, INDEX mv_idx((CAST(j AS UNSIGNED ARRAY))))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case561" value="CREATE TABLE t1(x INT, KEY `` ((x + 1)))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case565" value="CREATE TABLE t2 (a INT, b INT DEFAULT (select * from t1))" db-types="MySQL" />
@@ -440,13 +429,9 @@
     <sql-case id="create_by_mysql_source_test_case578" value="CREATE TABLE t2 LIKE t1 PARTITION (p0, p2)" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case579" value="CREATE TABLE t2(f1 INT, f2 INT INVISIBLE)" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case580" value="CREATE TABLE t3 (a INT PRIMARY KEY, d INT DEFAULT (-a + 1), c INT DEFAULT (DEFAULT(d)) )" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case581" value="CREATE TABLE t3 (a int DEFAULT 10, b varchar(64) DEFAULT &quot;Default&quot;, c varchar(64) DEFAULT &quot;Default&quot;, d int unsigned DEFAULT 9, e varchar(255) DEFAULT &quot;Default-filler.filler.filler.&quot;, PRIMARY KEY (a,b,c,d)) charset latin1 PARTITION BY RANGE COLUMNS (a, b) SUBPARTITION BY LINEAR KEY (d, c) SUBPARTITIONS 4 (PARTITION pNeg VALUES LESS THAN (0, &quot;&quot;), PARTITION `p0-9` VALUES LESS THAN (9, MAXVALUE), PARTITION p10 VALUES LESS THAN (10, MAXVALUE), PARTITION `p11-100` VALUES LESS THAN (99, MAXVALUE))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case585" value="CREATE TABLE t4 (s1 CHAR(50) CHARACTER SET latin1, s2 CHAR(50) CHARACTER SET cp932, d DECIMAL(10,2))| CREATE PROCEDURE bug18293 (IN ins1 CHAR(50), IN ins2 CHAR(50) CHARACTER SET cp932, IN ind DECIMAL(10,2)) BEGIN INSERT INTO t4 VALUES (ins1, ins2, ind)" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case586" value="CREATE TABLE t5 ( f1 INT, f2 INT ) ENGINE=InnoDB PARTITION BY RANGE COLUMNS(f1,f2) ( PARTITION p0 VALUES LESS THAN (10000,12), PARTITION p1 VALUES LESS THAN (MAXVALUE, MAXVALUE) )" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case587" value="CREATE TABLE t6 ( a INT, b INT ) ENGINE=InnoDB PARTITION BY RANGE COLUMNS(a,b) SUBPARTITION BY KEY(a,b) SUBPARTITIONS 2 ( PARTITION p0 VALUES LESS THAN (10000,12), PARTITION p1 VALUES LESS THAN (MAXVALUE, MAXVALUE) )" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case588" value="CREATE TABLE t_illegal (col_1 INT CHECK something (whatever))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case589" value="CREATE TABLE t_illegal (col_1 INT CHECK something)" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case590" value="CREATE TABLE tp (a VARCHAR(24), b DATETIME, PRIMARY KEY (a,b)) PARTITION BY RANGE COLUMNS (a, b) (PARTITION p0 VALUES LESS THAN (&quot;Middle&quot;, &apos;0000-00-00&apos;), PARTITION p1 VALUES LESS THAN (MAXVALUE, &apos;9999-12-31 23:59:59&apos;))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case591" value="CREATE TABLE v0(v1 DEC, v2 INT)" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case672" value="CREATE TEMPORARY TABLE issue_functional_key_part ( sold_on DATETIME NOT NULL DEFAULT NOW(), INDEX sold_on_date ((DATE(sold_on))) ) SELECT NOW() `sold_on`" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case673" value="CREATE TEMPORARY TABLE t1 (f1 INT) START TRANSACTION" db-types="MySQL" />
@@ -739,26 +724,13 @@
     <sql-case id="create_by_mysql_source_test_case1258" value="create table t1 (a int not null, key key_block_size=1024 (a))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1265" value="create table t1 (a int) partition by key(a) partitions -1" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1266" value="create table t1 (a int) partition by key(a) partitions 0.2+e1" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case1267" value="create table t1 (a int) partition by range (a) ( partition p0 values less than (NULL), partition p1 values less than (MAXVALUE))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case1268" value="create table t1 (a int) partition by range (a) ( partition p0 values less than (maxvalue))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1269" value="create table t1 (a int) transactional=0" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case1270" value="create table t1 (a int, b char(10), c varchar(25), d datetime) partition by range columns(a,b,c,d) subpartition by hash (to_seconds(d)) subpartitions 4 ( partition p0 values less than (1, &apos;0&apos;, MAXVALUE, &apos;1900-01-01&apos;), partition p1 values less than (1, &apos;a&apos;, MAXVALUE, &apos;1999-01-01&apos;), partition p2 values less than (1, &apos;b&apos;, MAXVALUE, MAXVALUE), partition p3 values less than (1, MAXVALUE, MAXVALUE, MAXVALUE))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case1271" value="create table t1 (a int, b char(10), c varchar(25), d datetime) partition by range columns(a,b,c,d) subpartition by hash (to_seconds(d)) subpartitions 4 ( partition p0 values less than (1, 0, MAXVALUE, &apos;1900-01-01&apos;), partition p1 values less than (1, &apos;a&apos;, MAXVALUE, &apos;1999-01-01&apos;), partition p2 values less than (1, &apos;a&apos;, MAXVALUE, MAXVALUE), partition p3 values less than (1, MAXVALUE, MAXVALUE, MAXVALUE))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case1272" value="create table t1 (a int, b int) partition by list columns(a,b) ( partition p0 values in ((maxvalue, 0)))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case1273" value="create table t1 (a int, b int) partition by list columns(a,b) (partition p0 values in ((maxvalue,maxvalue)))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case1274" value="create table t1 (a int, b int) partition by range columns (a,b) ( partition p0 values less than (maxvalue, 10), partition p1 values less than (maxvalue, maxvalue))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case1275" value="create table t1 (a int, b int) partition by range columns (a,b) (partition p0 values less than (NULL, maxvalue))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case1276" value="create table t1 (a int, b int) partition by range columns(a,b) (partition p0 values less than (1, 0), partition p1 values less than (2, maxvalue), partition p2 values less than (3, 3), partition p3 values less than (10, maxvalue))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case1277" value="create table t1 (a int, b int) partition by range columns(a,b) (partition p0 values less than (maxvalue, 10))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case1278" value="create table t1 (a int, b int) partition by range columns(a,b) (partition p0 values less than (maxvalue,maxvalue))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case1279" value="create table t1 (a int, b int, c int) partition by range columns (a,b,c) ( partition p0 values less than (1, maxvalue, 10), partition p1 values less than (1, maxvalue, maxvalue))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1280" value="create table t1 (a int,)" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1281" value="create table t1 (a int,,b int)" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1282" value="create table t1 (a timestamp default now())" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1283" value="create table t1 (b int4 unsigned not null)" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1286" value="create table t1 (c national character varying(10))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1287" value="create table t1 (i int, index `` (i))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case1290" value="create table t1 (id int) partition by range (id) (partition p0 values less than (1000), partition p1 values less than (maxvalue))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1298" value="create table t1 (t1 timestamp not null default &apos;2003-01-01 00:00:00&apos; on update now(), t2 datetime)" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1299" value="create table t1 (t1 timestamp not null default now() on update now(), t2 datetime)" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1300" value="create table t1 (t1 timestamp not null default now(), t2 datetime, t3 timestamp NOT NULL DEFAULT &apos;0000-00-00 00:00:00&apos;)" db-types="MySQL" />
@@ -1978,8 +1950,6 @@
     <sql-case id="alter_by_mysql_source_test_case28" value="ALTER TABLE t1 TABLESPACE ``" db-types="MySQL" />
     <sql-case id="alter_by_mysql_source_test_case29" value="ALTER TABLE t1 partition by range (a) subpartition by hash (a+b) ( partition x1 values less than (1) ( subpartition x11 engine innodb nodegroup 0, subpartition x12 engine innodb nodegroup 1), partition x2 values less than (5) ( subpartition x21 engine innodb nodegroup 0, subpartition x22 engine innodb nodegroup 1) )" db-types="MySQL" />
     <sql-case id="alter_by_mysql_source_test_case30" value="ALTER TABLE t2 ADD f2 INT, START TRANSACTION" db-types="MySQL" />
-    <sql-case id="alter_by_mysql_source_test_case31" value="ALTER TABLE t2 PARTITION BY RANGE (TO_DAYS(c)) (PARTITION p0 VALUES LESS THAN (10000), PARTITION p1 VALUES LESS THAN (MAXVALUE))" db-types="MySQL" />
-    <sql-case id="alter_by_mysql_source_test_case32" value="ALTER TABLE t2 PARTITION BY RANGE COLUMNS(c) (PARTITION p0 VALUES LESS THAN (&apos;2000-01-01 00:00:00&apos;), PARTITION p1 VALUES LESS THAN (MAXVALUE))" db-types="MySQL" />
     <sql-case id="alter_by_mysql_source_test_case33" value="ALTER TABLE t6 UNION = ()" db-types="MySQL" />
     <sql-case id="alter_by_mysql_source_test_case34" value="ALTER TABLESPACE innodb_system RENAME TO ts3" db-types="MySQL" />
     <sql-case id="alter_by_mysql_source_test_case35" value="ALTER TABLESPACE innodb_temporary RENAME TO ts3" db-types="MySQL" />
@@ -2850,7 +2820,6 @@
     <sql-case id="low_abcd_by_mysql_source_test_case1" value="abcd CREATE TABLE t1 (id INT NOT NULL AUTO_INCREMENT PRIMARY KEY, name TINYBLOB NOT NULL, modified TIMESTAMP DEFAULT &apos;0000-00-00 00:00:00&apos;, INDEX namelocs (name(255))) ENGINE = InnoDB PARTITION BY HASH(id) PARTITIONS 2" db-types="MySQL" />
     <sql-case id="low_alter_by_mysql_source_test_case1" value="alter event e_43 do alter event e_43 do set @a = 4" db-types="MySQL" />
     <sql-case id="low_alter_by_mysql_source_test_case2" value="alter event e_43 do begin alter event e_43 on schedule every 5 minute; insert into test_nested values(1); end" db-types="MySQL" />
-    <sql-case id="low_alter_by_mysql_source_test_case7" value="alter table t1 add partition (partition p1 values in (maxvalue, maxvalue))" db-types="MySQL" />
     <sql-case id="low_analyze_by_mysql_source_test_case1" value="analyze table t1 extended" db-types="MySQL" />
     <sql-case id="low_begin_by_mysql_source_test_case1" value="begin work" db-types="MySQL" />
     <sql-case id="low_begin_by_mysql_source_test_case2" value="begin work" db-types="MySQL" />
