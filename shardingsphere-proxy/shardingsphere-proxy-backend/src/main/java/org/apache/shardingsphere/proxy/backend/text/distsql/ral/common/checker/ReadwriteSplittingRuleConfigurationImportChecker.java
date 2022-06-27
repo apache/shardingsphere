@@ -21,10 +21,11 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.factory.ReplicaLoadBalanceAlgorithmFactory;
 
 import java.util.Collection;
@@ -56,14 +57,17 @@ public final class ReadwriteSplittingRuleConfigurationImportChecker {
         Collection<String> requireResources = new LinkedHashSet<>();
         Collection<String> requireDiscoverableResources = new LinkedHashSet<>();
         currentRuleConfig.getDataSources().forEach(each -> {
-            if (each.getAutoAwareDataSourceName().isPresent()) {
-                requireDiscoverableResources.add(each.getAutoAwareDataSourceName().get());
+            if (each.getDataSourceStrategy() instanceof DynamicReadwriteSplittingStrategyConfiguration) {
+                requireDiscoverableResources.add(((DynamicReadwriteSplittingStrategyConfiguration) each.getDataSourceStrategy()).getAutoAwareDataSourceName());
             }
-            if (each.getWriteDataSourceName().isPresent()) {
-                requireResources.add(each.getWriteDataSourceName().get());
-            }
-            if (each.getReadDataSourceNames().isPresent()) {
-                requireResources.addAll(new InlineExpressionParser(each.getReadDataSourceNames().get()).splitAndEvaluate());
+            if (each.getDataSourceStrategy() instanceof StaticReadwriteSplittingStrategyConfiguration) {
+                StaticReadwriteSplittingStrategyConfiguration staticConfig = (StaticReadwriteSplittingStrategyConfiguration) each.getDataSourceStrategy();
+                if (null != staticConfig.getWriteDataSourceName()) {
+                    requireResources.add(staticConfig.getWriteDataSourceName());
+                }
+                if (!staticConfig.getReadDataSourceNames().isEmpty()) {
+                    requireResources.addAll(staticConfig.getReadDataSourceNames());
+                }
             }
         });
         Collection<String> notExistResources = database.getResource().getNotExistedResources(requireResources);
