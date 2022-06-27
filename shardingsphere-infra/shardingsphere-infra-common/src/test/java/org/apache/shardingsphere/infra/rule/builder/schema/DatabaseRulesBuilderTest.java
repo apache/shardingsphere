@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.rule.builder.schema;
 
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.fixture.TestRuleConfiguration;
 import org.apache.shardingsphere.infra.fixture.TestShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -27,7 +26,6 @@ import org.junit.Test;
 
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertFalse;
@@ -37,8 +35,8 @@ public final class DatabaseRulesBuilderTest {
     
     @Test
     public void assertBuild() {
-        Iterator<ShardingSphereRule> actual = DatabaseRulesBuilder.build("schema_name",
-                new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new TestRuleConfiguration())), new ConfigurationProperties(new Properties())).iterator();
+        Iterator<ShardingSphereRule> actual = DatabaseRulesBuilder.build(
+                "schema_name", new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new TestRuleConfiguration()))).iterator();
         assertThat(actual.next(), instanceOf(TestShardingSphereRule.class));
         assertThat(actual.next(), instanceOf(FixtureDatabaseRule.class));
         assertFalse(actual.hasNext());
