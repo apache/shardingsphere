@@ -15,22 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.api.rule;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.readwritesplitting.api.strategy.ReadwriteSplittingStrategyConfiguration;
+package org.apache.shardingsphere.readwritesplitting.api.strategy;
 
 /**
- * Readwrite-splitting data source rule configuration.
+ * Readwrite-splitting strategy configuration.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ReadwriteSplittingDataSourceRuleConfiguration {
-    
-    private final String name;
-    
-    private final ReadwriteSplittingStrategyConfiguration dataSourceStrategy;
-    
-    private final String loadBalancerName;
+public interface ReadwriteSplittingStrategyConfiguration {
+
 }

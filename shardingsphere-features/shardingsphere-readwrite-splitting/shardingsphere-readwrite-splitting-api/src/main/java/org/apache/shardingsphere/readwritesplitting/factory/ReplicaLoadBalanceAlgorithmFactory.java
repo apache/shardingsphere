@@ -27,7 +27,7 @@ import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 /**
- * Replica load-balance algorithm factory.
+ * Read query load-balance algorithm factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class ReplicaLoadBalanceAlgorithmFactory {

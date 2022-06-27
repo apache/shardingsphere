@@ -20,6 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.spring.boot;
 import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -29,6 +30,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.annotation.Resource;
 
+import java.util.Arrays;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -54,13 +58,13 @@ public class ReadwriteSplittingSpringBootStarterTest {
     public void assertReadwriteSplittingRuleConfiguration() {
         assertThat(config.getDataSources().size(), is(1));
         assertTrue(config.getDataSources().stream().findFirst().isPresent());
-        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = config.getDataSources().stream().findFirst().get();
-        assertThat(dataSourceRuleConfig.getName(), is("readwrite_ds"));
-        assertThat(dataSourceRuleConfig.getType(), is("Static"));
-        assertThat(dataSourceRuleConfig.getProps().getProperty("write-data-source-name"), is("write_ds"));
-        assertThat(dataSourceRuleConfig.getProps().getProperty("read-data-source-names"), is("read_ds_0,read_ds_1"));
-        assertThat(dataSourceRuleConfig.getLoadBalancerName(), is("random"));
-        assertTrue(config.getDataSources().contains(dataSourceRuleConfig));
+        ReadwriteSplittingDataSourceRuleConfiguration actual = config.getDataSources().stream().findFirst().get();
+        assertThat(actual.getName(), is("readwrite_ds"));
+        assertThat(actual.getDataSourceStrategy(), instanceOf(StaticReadwriteSplittingStrategyConfiguration.class));
+        assertThat(((StaticReadwriteSplittingStrategyConfiguration) actual.getDataSourceStrategy()).getWriteDataSourceName(), is("write_ds"));
+        assertThat(((StaticReadwriteSplittingStrategyConfiguration) actual.getDataSourceStrategy()).getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
+        assertThat(actual.getLoadBalancerName(), is("random"));
+        assertTrue(config.getDataSources().contains(actual));
         assertThat(config.getLoadBalanceAlgorithms().size(), is(1));
         assertTrue(config.getLoadBalanceAlgorithms().containsKey("random"));
     }

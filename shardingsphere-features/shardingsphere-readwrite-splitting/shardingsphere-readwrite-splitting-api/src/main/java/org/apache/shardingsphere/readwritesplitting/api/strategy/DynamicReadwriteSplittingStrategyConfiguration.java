@@ -15,22 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.api.rule;
+package org.apache.shardingsphere.readwritesplitting.api.strategy;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.readwritesplitting.api.strategy.ReadwriteSplittingStrategyConfiguration;
 
 /**
- * Readwrite-splitting data source rule configuration.
+ * Dynamic Readwrite-splitting strategy configuration.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ReadwriteSplittingDataSourceRuleConfiguration {
+public class DynamicReadwriteSplittingStrategyConfiguration implements ReadwriteSplittingStrategyConfiguration {
     
-    private final String name;
+    private final String autoAwareDataSourceName;
     
-    private final ReadwriteSplittingStrategyConfiguration dataSourceStrategy;
+    private boolean writeDataSourceQueryEnabled;
     
-    private final String loadBalancerName;
+    public DynamicReadwriteSplittingStrategyConfiguration(final String autoAwareDataSourceName, final boolean writeDataSourceQueryEnabled) {
+        this.autoAwareDataSourceName = autoAwareDataSourceName;
+        this.writeDataSourceQueryEnabled = writeDataSourceQueryEnabled;
+    }
 }

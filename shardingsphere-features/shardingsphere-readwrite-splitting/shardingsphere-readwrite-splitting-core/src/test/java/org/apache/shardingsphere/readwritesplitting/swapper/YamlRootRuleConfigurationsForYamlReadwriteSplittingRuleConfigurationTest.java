@@ -20,6 +20,7 @@ package org.apache.shardingsphere.readwritesplitting.swapper;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.yaml.config.strategy.YamlStaticReadwriteSplittingStrategyConfiguration;
 import org.junit.Test;
 
 import java.io.BufferedReader;
@@ -68,14 +69,18 @@ public final class YamlRootRuleConfigurationsForYamlReadwriteSplittingRuleConfig
     }
     
     private void assertReadwriteSplittingRuleForDs0(final YamlReadwriteSplittingRuleConfiguration actual) {
-        assertThat(actual.getDataSources().get("ds_0").getType(), is("Static"));
-        assertThat(actual.getDataSources().get("ds_0").getProps().getProperty("write-data-source-name"), is("write_ds_0"));
+        assertNotNull(actual.getDataSources().get("ds_0").getDataSourceStrategy());
+        assertNotNull(actual.getDataSources().get("ds_0").getDataSourceStrategy().getStaticStrategy());
+        YamlStaticReadwriteSplittingStrategyConfiguration staticConfig = actual.getDataSources().get("ds_0").getDataSourceStrategy().getStaticStrategy();
+        assertThat(staticConfig.getWriteDataSourceName(), is("write_ds_0"));
         assertThat(actual.getDataSources().get("ds_0").getLoadBalancerName(), is("roundRobin"));
     }
     
     private void assertReadwriteSplittingRuleForDs1(final YamlReadwriteSplittingRuleConfiguration actual) {
-        assertThat(actual.getDataSources().get("ds_1").getType(), is("Static"));
-        assertThat(actual.getDataSources().get("ds_1").getProps().getProperty("write-data-source-name"), is("write_ds_1"));
+        assertNotNull(actual.getDataSources().get("ds_1").getDataSourceStrategy());
+        assertNotNull(actual.getDataSources().get("ds_1").getDataSourceStrategy().getStaticStrategy());
+        YamlStaticReadwriteSplittingStrategyConfiguration staticConfig = actual.getDataSources().get("ds_1").getDataSourceStrategy().getStaticStrategy();
+        assertThat(staticConfig.getWriteDataSourceName(), is("write_ds_1"));
         assertThat(actual.getDataSources().get("ds_1").getLoadBalancerName(), is("random"));
     }
 }

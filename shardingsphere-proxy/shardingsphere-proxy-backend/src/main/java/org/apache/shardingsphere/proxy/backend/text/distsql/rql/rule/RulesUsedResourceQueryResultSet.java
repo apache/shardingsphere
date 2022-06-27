@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
@@ -100,11 +101,14 @@ public final class RulesUsedResourceQueryResultSet implements DistSQLResultSet {
         Collection<Collection<Object>> result = new LinkedList<>();
         ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) rule.get().getConfiguration();
         for (ReadwriteSplittingDataSourceRuleConfiguration each : config.getDataSources()) {
-            if (each.getWriteDataSourceName().isPresent() && each.getWriteDataSourceName().get().equalsIgnoreCase(resourceName)) {
-                result.add(buildRow(READWRITE_SPLITTING, each.getName()));
-            }
-            if (each.getReadDataSourceNames().isPresent() && Arrays.asList(each.getReadDataSourceNames().get().split(",")).contains(resourceName)) {
-                result.add(buildRow(READWRITE_SPLITTING, each.getName()));
+            if (each.getDataSourceStrategy() instanceof StaticReadwriteSplittingStrategyConfiguration) {
+                StaticReadwriteSplittingStrategyConfiguration readwriteSplittingConfig = (StaticReadwriteSplittingStrategyConfiguration) each.getDataSourceStrategy();
+                if (readwriteSplittingConfig.getWriteDataSourceName().equalsIgnoreCase(resourceName)) {
+                    result.add(buildRow(READWRITE_SPLITTING, each.getName()));
+                }
+                if (readwriteSplittingConfig.getReadDataSourceNames().contains(resourceName)) {
+                    result.add(buildRow(READWRITE_SPLITTING, each.getName()));
+                }
             }
         }
         return result;

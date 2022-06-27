@@ -20,12 +20,13 @@ package org.apache.shardingsphere.readwritesplitting.swapper;
 import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReplicaLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.swapper.ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapper;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -39,9 +40,8 @@ public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
     public void assertSwapToYamlConfiguration() {
         YamlReadwriteSplittingRuleConfiguration actual = createYamlReadwriteSplittingRuleConfiguration();
         assertThat(actual.getDataSources().keySet(), is(Collections.singleton("name")));
-        Properties props = actual.getDataSources().get("name").getProps();
-        assertThat(props.getProperty("write-data-source-name"), is("writeDataSourceName"));
-        assertThat(props.getProperty("read-data-source-names"), is("readDataSourceName"));
+        assertThat((actual.getDataSources().get("name").getDataSourceStrategy()).getStaticStrategy().getWriteDataSourceName(), is("writeDataSourceName"));
+        assertThat((actual.getDataSources().get("name").getDataSourceStrategy().getStaticStrategy().getReadDataSourceNames()), is(Arrays.asList("readDataSourceName")));
         assertThat(actual.getDataSources().get("name").getLoadBalancerName(), is("loadBalancerName"));
         assertThat(actual.getLoadBalancers().keySet(), is(Collections.singleton("name")));
         assertThat(actual.getLoadBalancers().get("name").getType(), is("RANDOM"));
@@ -53,22 +53,16 @@ public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
         assertTrue(actual.getDataSources().iterator().hasNext());
         ReadwriteSplittingDataSourceRuleConfiguration ruleConfig = actual.getDataSources().iterator().next();
         assertThat(ruleConfig.getName(), is("name"));
-        assertThat(ruleConfig.getProps().getProperty("write-data-source-name"), is("writeDataSourceName"));
-        assertThat(ruleConfig.getProps().getProperty("read-data-source-names"), is("readDataSourceName"));
+        assertThat(((StaticReadwriteSplittingStrategyConfiguration) ruleConfig.getDataSourceStrategy()).getWriteDataSourceName(), is("writeDataSourceName"));
+        assertThat(((StaticReadwriteSplittingStrategyConfiguration) ruleConfig.getDataSourceStrategy()).getReadDataSourceNames(), is(Arrays.asList("readDataSourceName")));
         assertThat(ruleConfig.getLoadBalancerName(), is("loadBalancerName"));
         assertThat(actual.getLoadBalanceAlgorithms(), is(Collections.emptyMap()));
     }
     
     private YamlReadwriteSplittingRuleConfiguration createYamlReadwriteSplittingRuleConfiguration() {
-        ReadwriteSplittingDataSourceRuleConfiguration ruleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("name", "Static", createProperties(), "loadBalancerName");
+        ReadwriteSplittingDataSourceRuleConfiguration ruleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("name",
+                new StaticReadwriteSplittingStrategyConfiguration("writeDataSourceName", Arrays.asList("readDataSourceName")), "loadBalancerName");
         return swapper.swapToYamlConfiguration(
                 new AlgorithmProvidedReadwriteSplittingRuleConfiguration(Collections.singletonList(ruleConfig), Collections.singletonMap("name", new RandomReplicaLoadBalanceAlgorithm())));
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("write-data-source-name", "writeDataSourceName");
-        result.setProperty("read-data-source-names", "readDataSourceName");
-        return result;
     }
 }

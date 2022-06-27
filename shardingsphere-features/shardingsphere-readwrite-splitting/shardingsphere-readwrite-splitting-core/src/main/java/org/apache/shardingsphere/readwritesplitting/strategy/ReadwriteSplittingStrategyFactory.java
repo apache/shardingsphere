@@ -24,6 +24,9 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.strategy.DynamicDataSourceStrategy;
 import org.apache.shardingsphere.infra.datasource.strategy.DynamicDataSourceStrategyFactory;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.ReadwriteSplittingStrategyConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.strategy.type.DynamicReadwriteSplittingStrategy;
 import org.apache.shardingsphere.readwritesplitting.strategy.type.StaticReadwriteSplittingStrategy;
 
@@ -40,28 +43,25 @@ public final class ReadwriteSplittingStrategyFactory {
     /**
      * Create new instance of readwrite splitting strategy.
      * 
-     * @param type type of readwrite splitting strategy
-     * @param props properties of readwrite splitting strategy
+     * @param dataSourceStrategy data source strategy
      * @return created instance
      */
-    public static ReadwriteSplittingStrategy newInstance(final String type, final Properties props) {
-        return "STATIC".equalsIgnoreCase(type) ? createStaticReadwriteSplittingStrategy(props) : createDynamicReadwriteSplittingStrategy(props);
+    public static ReadwriteSplittingStrategy newInstance(final ReadwriteSplittingStrategyConfiguration dataSourceStrategy) {
+        return dataSourceStrategy instanceof StaticReadwriteSplittingStrategyConfiguration ? createStaticReadwriteSplittingStrategy((StaticReadwriteSplittingStrategyConfiguration) dataSourceStrategy)
+                : createDynamicReadwriteSplittingStrategy((DynamicReadwriteSplittingStrategyConfiguration) dataSourceStrategy);
     }
     
-    private static StaticReadwriteSplittingStrategy createStaticReadwriteSplittingStrategy(final Properties props) {
-        String writeDataSourceName = props.getProperty("write-data-source-name");
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(writeDataSourceName), "Write data source name is required.");
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(props.getProperty("read-data-source-names")), "Read data source names are required.");
-        List<String> readDataSourceNames = Splitter.on(",").trimResults().splitToList(props.getProperty("read-data-source-names"));
-        return new StaticReadwriteSplittingStrategy(writeDataSourceName, readDataSourceNames);
+    private static StaticReadwriteSplittingStrategy createStaticReadwriteSplittingStrategy(final StaticReadwriteSplittingStrategyConfiguration staticConfig) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(staticConfig.getWriteDataSourceName()), "Write data source name is required.");
+        Preconditions.checkArgument(!staticConfig.getReadDataSourceNames().isEmpty(), "Read data source names are required.");
+        return new StaticReadwriteSplittingStrategy(staticConfig.getWriteDataSourceName(), staticConfig.getReadDataSourceNames());
     }
     
-    private static DynamicReadwriteSplittingStrategy createDynamicReadwriteSplittingStrategy(final Properties props) {
-        String autoAwareDataSourceName = props.getProperty("auto-aware-data-source-name");
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(autoAwareDataSourceName), "Auto aware data source name is required.");
+    private static DynamicReadwriteSplittingStrategy createDynamicReadwriteSplittingStrategy(final DynamicReadwriteSplittingStrategyConfiguration dynamicConfig) {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(dynamicConfig.getAutoAwareDataSourceName()), "Auto aware data source name is required.");
         Optional<DynamicDataSourceStrategy> dynamicDataSourceStrategy = DynamicDataSourceStrategyFactory.findInstance();
         Preconditions.checkArgument(dynamicDataSourceStrategy.isPresent(), "Dynamic data source strategy is required.");
-        boolean allowWriteDataSourceQuery = Boolean.parseBoolean(props.getOrDefault("write-data-source-query-enabled", String.valueOf(Boolean.TRUE)).toString());
-        return new DynamicReadwriteSplittingStrategy(autoAwareDataSourceName, allowWriteDataSourceQuery, dynamicDataSourceStrategy.get());
+        boolean allowWriteDataSourceQuery = dynamicConfig.isWriteDataSourceQueryEnabled();
+        return new DynamicReadwriteSplittingStrategy(dynamicConfig.getAutoAwareDataSourceName(), dynamicConfig.isWriteDataSourceQueryEnabled(), dynamicDataSourceStrategy.get());
     }
 }

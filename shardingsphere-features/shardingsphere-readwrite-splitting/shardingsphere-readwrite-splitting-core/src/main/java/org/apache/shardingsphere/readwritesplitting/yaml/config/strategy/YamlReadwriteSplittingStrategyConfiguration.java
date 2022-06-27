@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.api.rule;
+package org.apache.shardingsphere.readwritesplitting.yaml.config.strategy;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.readwritesplitting.api.strategy.ReadwriteSplittingStrategyConfiguration;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 
 /**
- * Readwrite-splitting data source rule configuration.
+ * Readwrite-splitting strategy configuration for YAML.
  */
-@RequiredArgsConstructor
 @Getter
-public final class ReadwriteSplittingDataSourceRuleConfiguration {
+@Setter
+public class YamlReadwriteSplittingStrategyConfiguration implements YamlConfiguration {
     
-    private final String name;
+    private YamlStaticReadwriteSplittingStrategyConfiguration staticStrategy;
     
-    private final ReadwriteSplittingStrategyConfiguration dataSourceStrategy;
-    
-    private final String loadBalancerName;
+    private YamlDynamicReadwriteSplittingStrategyConfiguration dynamicStrategy;
 }
