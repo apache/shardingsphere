@@ -21,7 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Binary query response cell.
+ * Query response cell.
  */
 @RequiredArgsConstructor
 @Getter
