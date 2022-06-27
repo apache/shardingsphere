@@ -24,6 +24,7 @@ import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingD
 import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.yaml.config.strategy.YamlReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.strategy.YamlStaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.swapper.ReadwriteSplittingRuleConfigurationYamlSwapper;
 import org.junit.Test;
@@ -86,10 +87,12 @@ public final class ReadwriteSplittingRuleConfigurationYamlSwapperTest {
     private YamlReadwriteSplittingRuleConfiguration createYamlReadwriteSplittingRuleConfiguration() {
         YamlReadwriteSplittingRuleConfiguration result = new YamlReadwriteSplittingRuleConfiguration();
         result.getDataSources().put("read_query_ds", new YamlReadwriteSplittingDataSourceRuleConfiguration());
+        YamlReadwriteSplittingStrategyConfiguration dataSourceStrategy = new YamlReadwriteSplittingStrategyConfiguration();
         YamlStaticReadwriteSplittingStrategyConfiguration staticConfig = new YamlStaticReadwriteSplittingStrategyConfiguration();
         staticConfig.setWriteDataSourceName("write");
         staticConfig.setReadDataSourceNames(Arrays.asList("read"));
-        result.getDataSources().get("read_query_ds").getDataSourceStrategy().setStaticStrategy(staticConfig);
+        dataSourceStrategy.setStaticStrategy(staticConfig);
+        result.getDataSources().get("read_query_ds").setDataSourceStrategy(dataSourceStrategy);
         return result;
     }
     
