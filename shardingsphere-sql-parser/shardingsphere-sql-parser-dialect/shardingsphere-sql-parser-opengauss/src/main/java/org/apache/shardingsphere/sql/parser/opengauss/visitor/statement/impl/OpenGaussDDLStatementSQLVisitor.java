@@ -21,7 +21,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.operation.SQLStatementVisitor;
 import org.apache.shardingsphere.sql.parser.api.visitor.type.DDLSQLVisitor;
-import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AbsoluteCountContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AddColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.AddConstraintSpecificationContext;
@@ -88,6 +87,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Cur
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CursorNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DeallocateContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DeclareContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropServerContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropCastContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropConstraintSpecificationContext;
@@ -648,7 +648,7 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     }
 
     @Override
-    public ASTNode visitDropServer(OpenGaussStatementParser.DropServerContext ctx) {
+    public ASTNode visitDropServer(final DropServerContext ctx) {
         return new OpenGaussDropServerStatement();
     }
     
