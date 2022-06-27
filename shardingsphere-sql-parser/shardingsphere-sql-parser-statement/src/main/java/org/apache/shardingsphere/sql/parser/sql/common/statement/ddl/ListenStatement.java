@@ -28,5 +28,5 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 @Setter
 public abstract class ListenStatement extends AbstractSQLStatement implements DDLStatement {
     
-    private String listenName;
+    private String channelName;
 }

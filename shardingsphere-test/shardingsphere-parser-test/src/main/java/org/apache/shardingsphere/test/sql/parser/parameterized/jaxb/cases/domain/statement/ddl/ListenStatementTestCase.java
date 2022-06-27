@@ -30,6 +30,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 @Setter
 public final class ListenStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute(name = "listen-name")
-    private String listenName;
+    @XmlAttribute(name = "channel-name")
+    private String channelName;
 }

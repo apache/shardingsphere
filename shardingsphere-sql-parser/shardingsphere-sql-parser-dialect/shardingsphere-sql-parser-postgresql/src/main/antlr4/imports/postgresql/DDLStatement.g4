@@ -1792,7 +1792,7 @@ fetch
     ;
 
 listen
-    : LISTEN colId
+    : LISTEN channelName
     ;
 
 direction

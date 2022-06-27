@@ -1254,9 +1254,9 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     
     @Override
     public ASTNode visitListen(final ListenContext ctx) {
-        String listenName = ctx.colId().getText();
+        String channelName = ctx.channelName().getText();
         PostgreSQLListenStatement result = new PostgreSQLListenStatement();
-        result.setListenName(listenName);
+        result.setChannelName(channelName);
         return result;
     }
 }

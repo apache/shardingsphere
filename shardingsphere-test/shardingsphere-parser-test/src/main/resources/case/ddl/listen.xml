@@ -17,7 +17,7 @@
   -->
 
 <sql-parser-test-cases>
-    <listen sql-case-id="listen" listen-name="foo_event" />
-    <listen sql-case-id="listen_notify" listen-name="notify_async2"/>
-    <listen sql-case-id="listen_low" listen-name="a"/>
+    <listen sql-case-id="listen" channel-name="foo_event" />
+    <listen sql-case-id="listen_notify" channel-name="notify_async2"/>
+    <listen sql-case-id="listen_low" channel-name="a"/>
 </sql-parser-test-cases>

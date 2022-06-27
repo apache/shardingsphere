@@ -37,6 +37,6 @@ public final class ListenStatementAssert {
      * @param expected expected listen statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ListenStatement actual, final ListenStatementTestCase expected) {
-        assertThat(assertContext.getText("Listen name assertion error."), actual.getListenName(), is(expected.getListenName()));
+        assertThat(assertContext.getText("Listen name assertion error."), actual.getChannelName(), is(expected.getChannelName()));
     }
 }
