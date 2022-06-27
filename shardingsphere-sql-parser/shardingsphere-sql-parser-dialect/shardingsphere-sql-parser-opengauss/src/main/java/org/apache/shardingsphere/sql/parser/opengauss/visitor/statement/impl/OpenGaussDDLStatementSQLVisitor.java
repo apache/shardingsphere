@@ -87,6 +87,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Cur
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CursorNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DeallocateContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DeclareContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropServerContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropCastContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropConstraintSpecificationContext;
@@ -229,6 +230,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropSequenceStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropServerStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropSynonymStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropTablespaceStatement;
@@ -643,6 +645,11 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
         result.setDatabaseName(((IdentifierValue) visit(ctx.name())).getValue());
         result.setIfExists(null != ctx.ifExists());
         return result;
+    }
+
+    @Override
+    public ASTNode visitDropServer(final DropServerContext ctx) {
+        return new OpenGaussDropServerStatement();
     }
     
     @Override
