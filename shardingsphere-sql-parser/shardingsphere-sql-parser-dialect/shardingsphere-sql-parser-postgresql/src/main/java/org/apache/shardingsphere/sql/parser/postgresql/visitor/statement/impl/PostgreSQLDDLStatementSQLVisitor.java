@@ -1246,7 +1246,7 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
         result.setDirectionType(DirectionType.BACKWARD_ALL);
         return result;
     }
-   
+    
     @Override
     public ASTNode visitCreateCast(final CreateCastContext ctx) {
         return new PostgreSQLCreateCastStatement();
@@ -1258,5 +1258,5 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
         PostgreSQLListenStatement result = new PostgreSQLListenStatement();
         result.setListenName(listenName);
         return result;
-     }
+    }
 }

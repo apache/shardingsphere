@@ -6987,7 +6987,6 @@
     <sql-case id="low_insert_by_postgresql_source_test_case136" value="insert into trigtest default values;" db-types="PostgreSQL" />
     <sql-case id="low_insert_by_postgresql_source_test_case137" value="insert into trigtest default values;" db-types="PostgreSQL" />
     <sql-case id="low_insert_by_postgresql_source_test_case138" value="insert into trigtest default values;" db-types="PostgreSQL" />
-    <sql-case id="low_listen_by_postgresql_source_test_case1" value="listen a;" db-types="PostgreSQL" />
     <sql-case id="low_lock_by_postgresql_source_test_case1" value="lock table pxtest3 in access share mode nowait;" db-types="PostgreSQL" />
     <sql-case id="low_lock_by_postgresql_source_test_case2" value="lock table pxtest3 in access share mode nowait;" db-types="PostgreSQL" />
     <sql-case id="low_lock_by_postgresql_source_test_case3" value="lock twophase_tab in access exclusive mode;" db-types="PostgreSQL" />
