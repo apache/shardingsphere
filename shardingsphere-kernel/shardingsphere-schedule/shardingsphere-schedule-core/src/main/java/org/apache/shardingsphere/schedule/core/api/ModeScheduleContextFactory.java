@@ -38,6 +38,15 @@ public final class ModeScheduleContextFactory {
     private final Map<String, ModeScheduleContext> modeScheduleContexts = new ConcurrentHashMap<>();
     
     /**
+     * Get instance.
+     *
+     * @return singleton instance
+     */
+    public static ModeScheduleContextFactory getInstance() {
+        return INSTANCE;
+    }
+    
+    /**
      * Init mode schedule context.
      * 
      * @param instanceId instance id
@@ -48,24 +57,12 @@ public final class ModeScheduleContextFactory {
     }
     
     /**
-     * Get mode schedule context of current instance.
+     * Get mode schedule context.
      * 
      * @param instanceId instance id
-     * @return mode schedule context
+     * @return got mode schedule context
      */
     public Optional<ModeScheduleContext> get(final String instanceId) {
-        if (modeScheduleContexts.values().isEmpty()) {
-            return Optional.empty();
-        }
         return Optional.ofNullable(modeScheduleContexts.get(instanceId));
-    }
-    
-    /**
-     * Get instance.
-     *
-     * @return singleton instance
-     */
-    public static ModeScheduleContextFactory getInstance() {
-        return INSTANCE;
     }
 }

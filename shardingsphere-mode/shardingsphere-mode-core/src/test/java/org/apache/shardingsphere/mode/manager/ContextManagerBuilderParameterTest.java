@@ -28,136 +28,46 @@ import java.util.Properties;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class ContextManagerBuilderParameterTest {
     
     @Test
-    public void assertIsEmpty() {
-        Map<String, DatabaseConfiguration> mockDatabaseConfigs = mockSchemaConfigurations(true, true);
-        ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
-                .globalRuleConfigs(Collections.emptyList())
-                .props(new Properties())
-                .databaseConfigs(mockDatabaseConfigs)
-                .build();
-        assertTrue(contextManagerBuilderParameter.isEmpty());
+    public void assertIsEmptyWithoutAllParameters() {
+        assertTrue(new ContextManagerBuilderParameter(null, Collections.emptyMap(), Collections.emptyList(), new Properties(), null, null).isEmpty());
     }
     
     @Test
-    public void assertIsEmptyWhenAllFieldIsEmpty() {
-        ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
-                .globalRuleConfigs(Collections.emptyList())
-                .props(new Properties())
-                .databaseConfigs(Collections.emptyMap())
-                .build();
-        assertTrue(contextManagerBuilderParameter.isEmpty());
+    public void assertIsEmptyWithDatabaseAndWithoutConfigurations() {
+        assertTrue(new ContextManagerBuilderParameter(null, mockDatabaseConfigurations(true, true), Collections.emptyList(), new Properties(), null, null).isEmpty());
     }
     
     @Test
-    public void assertIsEmptyWhenAllFieldIsNotEmpty() {
-        Map<String, DatabaseConfiguration> mockDatabaseConfigs = mockSchemaConfigurations(false, false);
-        ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
-                .globalRuleConfigs(Collections.emptyList())
-                .props(new Properties())
-                .databaseConfigs(mockDatabaseConfigs)
-                .build();
-        assertFalse(contextManagerBuilderParameter.isEmpty());
+    public void assertIsNotEmptyWhenGlobalRuleIsNotEmpty() {
+        assertFalse(new ContextManagerBuilderParameter(null, Collections.emptyMap(), Collections.singleton(mock(RuleConfiguration.class)), new Properties(), null, null).isEmpty());
     }
     
     @Test
-    public void assertIsEmptyWhenPropsIsNotEmpty() {
-        Properties props = createProperties();
-        ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
-                .globalRuleConfigs(Collections.emptyList())
-                .props(props)
-                .databaseConfigs(Collections.emptyMap())
-                .build();
-        assertFalse(contextManagerBuilderParameter.isEmpty());
+    public void assertIsNotEmptyWhenPropsIsNotEmpty() {
+        assertFalse(new ContextManagerBuilderParameter(null, Collections.emptyMap(), Collections.emptyList(), createProperties(), null, null).isEmpty());
     }
     
     @Test
-    public void assertIsEmptyWhenGlobalRuleConfigsIsNotEmpty() {
-        ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
-                .globalRuleConfigs(Collections.singleton(mock(RuleConfiguration.class)))
-                .props(new Properties())
-                .databaseConfigs(Collections.emptyMap())
-                .build();
-        assertFalse(contextManagerBuilderParameter.isEmpty());
+    public void assertIsEmptyWhenDataSourceIsNotEmpty() {
+        assertFalse(new ContextManagerBuilderParameter(null, mockDatabaseConfigurations(false, true), Collections.emptyList(), new Properties(), null, null).isEmpty());
     }
     
     @Test
-    public void assertIsEmptyWhenSchemaConfigsIsNotEmpty() {
-        Map<String, DatabaseConfiguration> mockDatabaseConfigs = mockSchemaConfigurations(false, false);
-        ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
-                .globalRuleConfigs(Collections.emptyList())
-                .props(new Properties())
-                .databaseConfigs(mockDatabaseConfigs)
-                .build();
-        assertFalse(contextManagerBuilderParameter.isEmpty());
+    public void assertIsEmptyWhenDatabaseRuleIsNotEmpty() {
+        assertFalse(new ContextManagerBuilderParameter(null, mockDatabaseConfigurations(true, false), Collections.emptyList(), new Properties(), null, null).isEmpty());
     }
     
-    @Test
-    public void assertIsEmptyWhenDataSourcesIsNotEmpty() {
-        Map<String, DatabaseConfiguration> mockDatabaseConfigs = mockSchemaConfigurations(false, true);
-        ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
-                .globalRuleConfigs(Collections.emptyList())
-                .props(new Properties())
-                .databaseConfigs(mockDatabaseConfigs)
-                .build();
-        assertFalse(contextManagerBuilderParameter.isEmpty());
-    }
-    
-    @Test
-    public void assertIsEmptyWhenRuleConfigurationsIsNotEmpty() {
-        Map<String, DatabaseConfiguration> databaseConfigs = mockSchemaConfigurations(true, false);
-        ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
-                .globalRuleConfigs(Collections.emptyList())
-                .props(new Properties())
-                .databaseConfigs(databaseConfigs)
-                .build();
-        assertFalse(contextManagerBuilderParameter.isEmpty());
-    }
-    
-    @Test
-    public void assertIsEmptyWhenOnlyPropsIsEmpty() {
-        Map<String, DatabaseConfiguration> mockDatabaseConfigs = mockSchemaConfigurations(true, true);
-        ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
-                .globalRuleConfigs(Collections.singleton(mock(RuleConfiguration.class)))
-                .props(new Properties())
-                .databaseConfigs(mockDatabaseConfigs)
-                .build();
-        assertFalse(contextManagerBuilderParameter.isEmpty());
-    }
-    
-    @Test
-    public void assertIsEmptyWhenOnlyGlobalRuleConfigsIsEmpty() {
-        Map<String, DatabaseConfiguration> mockDatabaseConfigs = mockSchemaConfigurations(true, true);
-        Properties props = createProperties();
-        ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
-                .globalRuleConfigs(Collections.emptyList())
-                .props(props)
-                .databaseConfigs(mockDatabaseConfigs)
-                .build();
-        assertFalse(contextManagerBuilderParameter.isEmpty());
-    }
-    
-    @Test
-    public void assertIsEmptyWhenOnlySchemaConfigsIsEmpty() {
-        Properties props = createProperties();
-        ContextManagerBuilderParameter contextManagerBuilderParameter = ContextManagerBuilderParameter.builder()
-                .globalRuleConfigs(Collections.singleton(mock(RuleConfiguration.class)))
-                .props(props)
-                .databaseConfigs(Collections.emptyMap())
-                .build();
-        assertFalse(contextManagerBuilderParameter.isEmpty());
-    }
-    
-    private Map<String, DatabaseConfiguration> mockSchemaConfigurations(final boolean dataSourcesIsEmpty, final boolean ruleConfigurationsIsEmpty) {
-        DatabaseConfiguration result = mock(DatabaseConfiguration.class, RETURNS_DEEP_STUBS);
-        lenient().when(result.getDataSources().isEmpty()).thenReturn(dataSourcesIsEmpty);
-        lenient().when(result.getRuleConfigurations().isEmpty()).thenReturn(ruleConfigurationsIsEmpty);
-        return Collections.singletonMap("logic", result);
+    private Map<String, DatabaseConfiguration> mockDatabaseConfigurations(final boolean isEmptyDataSources, final boolean isEmptyRuleConfigs) {
+        DatabaseConfiguration databaseConfig = mock(DatabaseConfiguration.class, RETURNS_DEEP_STUBS);
+        when(databaseConfig.getDataSources().isEmpty()).thenReturn(isEmptyDataSources);
+        when(databaseConfig.getRuleConfigurations().isEmpty()).thenReturn(isEmptyRuleConfigs);
+        return Collections.singletonMap("foo_ds", databaseConfig);
     }
     
     private Properties createProperties() {

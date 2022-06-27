@@ -36,7 +36,7 @@ public final class SingleTableRuleBuilder implements DatabaseRuleBuilder<SingleT
     @Override
     public SingleTableRule build(final SingleTableRuleConfiguration config, final String databaseName,
                                  final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
-        return new SingleTableRule(config, databaseName, dataSources, builtRules, props);
+        return new SingleTableRule(config, databaseName, dataSources, builtRules);
     }
     
     @Override

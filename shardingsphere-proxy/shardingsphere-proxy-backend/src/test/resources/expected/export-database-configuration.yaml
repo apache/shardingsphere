@@ -30,19 +30,14 @@ dataSources:
     minPoolSize: 1
     maxPoolSize: 50
 rules:
-!!set
-? !SHARDING
+- !SHARDING
   defaultDatabaseStrategy:
     standard:
       shardingAlgorithmName: ds_inline
       shardingColumn: order_id
-  defaultTableStrategy:
-    none: ''
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
-  scaling:
-    default_scaling: null
   scalingName: default_scaling
   shardingAlgorithms:
     ds_inline:
@@ -56,4 +51,3 @@ rules:
         column: order_id
         keyGeneratorName: snowflake
       logicTable: t_order
-: null

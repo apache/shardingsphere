@@ -111,7 +111,7 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
         }
         stringBuilder.append("rules").append(":\n");
         for (Entry<RuleConfiguration, YamlRuleConfigurationSwapper> entry : YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurations(ruleConfigs).entrySet()) {
-            stringBuilder.append(YamlEngine.marshal(Collections.singleton(entry.getValue().swapToYamlConfiguration(entry.getKey()))));
+            stringBuilder.append(YamlEngine.marshal(Collections.singletonList(entry.getValue().swapToYamlConfiguration(entry.getKey()))));
         }
     }
     

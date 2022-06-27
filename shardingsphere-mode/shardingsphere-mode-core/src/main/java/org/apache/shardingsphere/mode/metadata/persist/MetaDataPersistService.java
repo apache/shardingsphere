@@ -75,16 +75,16 @@ public final class MetaDataPersistService {
     /**
      * Persist configurations.
      *
-     * @param schemaConfigs schema configurations
+     * @param databaseConfigs database configurations
      * @param globalRuleConfigs global rule configurations
      * @param props properties
      * @param isOverwrite whether overwrite registry center's configuration if existed
      */
-    public void persistConfigurations(final Map<String, ? extends DatabaseConfiguration> schemaConfigs,
+    public void persistConfigurations(final Map<String, ? extends DatabaseConfiguration> databaseConfigs,
                                       final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean isOverwrite) {
         globalRuleService.persist(globalRuleConfigs, isOverwrite);
         propsService.persist(props, isOverwrite);
-        for (Entry<String, ? extends DatabaseConfiguration> entry : schemaConfigs.entrySet()) {
+        for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigs.entrySet()) {
             String databaseName = entry.getKey();
             Map<String, DataSourceProperties> dataSourcePropertiesMap = getDataSourcePropertiesMap(entry.getValue().getDataSources());
             Collection<RuleConfiguration> ruleConfigurations = entry.getValue().getRuleConfigurations();
