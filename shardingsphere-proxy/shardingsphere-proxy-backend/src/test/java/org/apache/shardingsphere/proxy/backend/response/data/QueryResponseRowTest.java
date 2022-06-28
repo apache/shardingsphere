@@ -22,10 +22,10 @@ import org.junit.Test;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class QueryResponseRowTest {
     
@@ -40,7 +40,8 @@ public final class QueryResponseRowTest {
         QueryResponseCell queryResponseCell1 = new QueryResponseCell(Types.INTEGER, 1);
         QueryResponseCell queryResponseCell2 = new QueryResponseCell(Types.VARCHAR, "column");
         QueryResponseRow queryResponseRow = new QueryResponseRow(Arrays.asList(queryResponseCell1, queryResponseCell2));
-        assertThat(queryResponseRow.getData().size(), is(2));
-        assertTrue(queryResponseRow.getData().containsAll(Arrays.asList(1, "column")));
+        List<Object> actualData = queryResponseRow.getData();
+        assertThat(actualData.size(), is(2));
+        assertThat(actualData, is(Arrays.asList(1, "column")));
     }
 }

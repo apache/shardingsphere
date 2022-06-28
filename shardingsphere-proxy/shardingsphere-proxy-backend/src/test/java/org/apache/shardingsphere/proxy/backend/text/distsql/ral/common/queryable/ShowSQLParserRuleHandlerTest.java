@@ -28,7 +28,6 @@ import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.junit.Test;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -50,7 +49,7 @@ public final class ShowSQLParserRuleHandlerTest extends ProxyContextRestorer {
         handler.init(new ShowSQLParserRuleStatement(), null);
         handler.execute();
         handler.next();
-        List<Object> data = new ArrayList<>(handler.getRowData());
+        List<Object> data = handler.getRowData().getData();
         assertThat(data.size(), is(3));
         assertThat(data.get(0), is(Boolean.TRUE.toString()));
         String parseTreeCache = String.valueOf(data.get(1));

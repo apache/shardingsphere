@@ -94,6 +94,6 @@ public final class DatabaseAdminQueryBackendHandlerTest extends ProxyContextRest
     public void assertGetRowData() throws SQLException {
         handler.execute();
         assertTrue(handler.next());
-        assertThat(handler.getRowData().size(), is(1));
+        assertThat(handler.getRowData().getData().size(), is(1));
     }
 }

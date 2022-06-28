@@ -23,6 +23,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilderEngine;
@@ -33,8 +35,6 @@ import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdmin
 
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -76,11 +76,11 @@ public final class DatabaseAdminQueryBackendHandler implements TextProtocolBacke
     }
     
     @Override
-    public Collection<Object> getRowData() throws SQLException {
-        Collection<Object> result = new LinkedList<>();
+    public QueryResponseRow getRowData() throws SQLException {
+        List<QueryResponseCell> result = new ArrayList<>(queryResultMetaData.getColumnCount());
         for (int columnIndex = 1; columnIndex <= queryResultMetaData.getColumnCount(); columnIndex++) {
-            result.add(mergedResult.getValue(columnIndex, Object.class));
+            result.add(new QueryResponseCell(queryResultMetaData.getColumnType(columnIndex), mergedResult.getValue(columnIndex, Object.class)));
         }
-        return result;
+        return new QueryResponseRow(result);
     }
 }

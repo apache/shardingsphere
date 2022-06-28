@@ -91,7 +91,7 @@ public final class RQLBackendHandlerTest extends ProxyContextRestorer {
         when(resultSet.getRowData()).thenReturn(Arrays.asList("foo_value", "bar_value"));
         RQLBackendHandler handler = new RQLBackendHandler(mock(RQLStatement.class), mock(ConnectionSession.class), resultSet);
         handler.execute("test", mock(RQLStatement.class));
-        Collection<Object> rowData = handler.getRowData();
+        Collection<Object> rowData = handler.getRowData().getData();
         assertThat(rowData.size(), is(2));
         assertTrue(rowData.contains("foo_value"));
         assertTrue(rowData.contains("bar_value"));
