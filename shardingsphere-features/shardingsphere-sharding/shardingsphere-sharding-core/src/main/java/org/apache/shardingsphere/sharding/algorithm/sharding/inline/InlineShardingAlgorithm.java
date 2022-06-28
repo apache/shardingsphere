@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
+import org.codehaus.groovy.runtime.typehandling.NumberMath;
 
 import java.util.Collection;
 import java.util.Properties;
@@ -67,7 +68,11 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     @Override
     public String doSharding(final Collection<String> availableTargetNames, final PreciseShardingValue<Comparable<?>> shardingValue) {
         Closure<?> closure = createClosure();
-        closure.setProperty(shardingValue.getColumnName(), shardingValue.getValue());
+        Comparable<?> value = shardingValue.getValue();
+        if (value instanceof Number) {
+            value = (Comparable<?>) NumberMath.abs((Number) value);
+        }
+        closure.setProperty(shardingValue.getColumnName(), value);
         return getTargetShardingNode(closure, shardingValue.getColumnName());
     }
     
