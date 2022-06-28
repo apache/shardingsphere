@@ -153,6 +153,3 @@ compute:
           server-lists: "{{ printf \"%s-zookeeper.%s:2181\" .Release.Name .Release.Namespace }}"
           timeToLiveSeconds: 60
       overwrite: true
-
-
-

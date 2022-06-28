@@ -6,7 +6,9 @@ weight = 3
 Use [Helm](https://helm.sh/) to provide guidance for the installation of ShardingSphere-Proxy instance in Kubernetes cluster.
 
 ## Quick Start
+
 Attention: The following installation method will start ShardingSphere-Proxy with the default server.yaml configuration
+
 ```shell
 helm repo add shardingsphere https://shardingsphere.apache.org/charts
 helm install shardingsphere-proxy shardingsphere/apache-shardingsphere-proxy
@@ -17,16 +19,15 @@ helm install shardingsphere-proxy shardingsphere/apache-shardingsphere-proxy
 ### Requirements
 
 1. Kubernetes 1.18+
-
-2. kubectl
-
-3. Helm 3.2.0+
+1. kubectl
+1. Helm 3.2.0+
 
 Use StorageClass to allow dynamic provisioning of Persistent Volumes (PV) for data persistent (optional).
 
 ### Install
 
-#### Online installation     
+#### Online installation    
+
 1. Add ShardingSphere-Proxy to the local helm repo:
 
 ```shell
@@ -50,6 +51,7 @@ helm install shardingsphere-proxy apache-shardingsphere-proxy
 ```
 
 #### Source installation
+
 ```shell
 cd apache-shardingsphere-proxy/charts/governance
 helm dependency build 
@@ -134,6 +136,3 @@ Delete all release records by default, add `--keep-history` to keep them.
 | `compute.serverConfig.mode.repository.props.timeToLiveSeconds`            | Seconds of ephemeral data live                                      | `60`                                                                   |
 | `compute.serverConfig.mode.repository.type`                               | Type of persist repository. Now only support ZooKeeper              | `ZooKeeper`                                                            |
 | `compute.serverConfig.mode.overwrite`                                     | Whether overwrite persistent configuration with local configuration | `true`                                                                 |
-
-
-
