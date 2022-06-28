@@ -3,7 +3,9 @@
 使用 [Helm](https://helm.sh/) 在 Kubernetes 集群中引导 ShardingSphere-Proxy 实例进行安装。
 
 ## 快速入门
+
 注意️：以下安装方式将使用默认的 server.yaml 配置启动 ShardingSphere-Proxy
+
 ```shell
 helm repo add shardingsphere https://shardingsphere.apache.org/charts
 helm install shardingsphere-proxy shardingsphere/apache-shardingsphere-proxy
@@ -13,11 +15,9 @@ helm install shardingsphere-proxy shardingsphere/apache-shardingsphere-proxy
 
 ### 必要条件
 
-kubernetes 1.18+
-
-kubectl
-
-helm 3.2.0+
+1. kubernetes 1.18+
+1. kubectl
+1. helm 3.2.0+
 
 可以动态申请 PV(Persistent Volumes) 的 StorageClass (可选)。
 
@@ -48,6 +48,7 @@ helm install shardingsphere-proxy apache-shardingsphere-proxy
 ```
 
 #### 源码安装
+
 ```shell
 cd apache-shardingsphere-proxy/charts/governance
 helm dependency build 
@@ -78,7 +79,7 @@ helm uninstall shardingsphere-proxy
 | `governance.enabled` | 用来切换是否使用治理节点的 chart | `true` |
 
 
-### 治理节点--ZooKeeper 配置项
+### 治理节点 ZooKeeper 配置项
 
 | 配置项                                               | 描述                                                                        | 值                   |
 |--------------------------------------------------|---------------------------------------------------------------------------|---------------------|
@@ -93,7 +94,7 @@ helm uninstall shardingsphere-proxy
 | `governance.zookeeper.resources.requests.cpu`    | ZooKeeper 容器申请的 cpu 核数                                                    | `250m`              |
 
 
-### 计算节点--ShardingSphere-Proxy 配置项
+### 计算节点 ShardingSphere-Proxy 配置项
 
 | 配置项                                | 描述                                | 值                             |
 |------------------------------------|-----------------------------------|-------------------------------|
@@ -110,7 +111,7 @@ helm uninstall shardingsphere-proxy
 | `compute.mysqlConnector.version`   | MySQL 驱动版本                        | `5.1.49`                      |
 | `compute.startPort`                | ShardingSphere-Proxy 启动端口         | `3307`                        |
 
-### 计算节点--ShardingSphere-Proxy Server配置 权限配置项
+### 计算节点 ShardingSphere-Proxy Server配置 权限配置项
 
 | Name                                               | Description                                                               | Value                      |
 | -------------------------------------------------- |---------------------------------------------------------------------------| -------------------------- |
@@ -119,7 +120,7 @@ helm uninstall shardingsphere-proxy
 | `compute.serverConfig.authority.users[0].user`     | 用于登录计算节点的用户名，授权主机。格式: <username>@<hostname> hostname 为 % 或空字符串表示不限制授权主机   | `root@%`                   |
 
 
-### 计算节点--ShardingSphere-Proxy Server配置 模式配置项
+### 计算节点 ShardingSphere-Proxy Server配置 模式配置项
 
 | Name                                                                      | Description               | Value                                                                 |
 | ------------------------------------------------------------------------- |---------------------------| --------------------------------------------------------------------- |
@@ -132,5 +133,3 @@ helm uninstall shardingsphere-proxy
 | `compute.serverConfig.mode.repository.props.timeToLiveSeconds`            | 临时数据失效的秒数                 | `60`                                                                  |
 | `compute.serverConfig.mode.repository.type`                               | 持久化仓库类型。 现阶段仅支持 ZooKeeper | `ZooKeeper`                                                           |
 | `compute.serverConfig.mode.overwrite`                                     | 是否使用本地配置覆盖持久化配置           | `true`                                                                |
-
-
