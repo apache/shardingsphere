@@ -48,6 +48,7 @@ customKeyword
     | REDO_LOG
     | LAST_VALUE
     | PRIMARY
+    | BIT_XOR
     ;
     
 literals
