@@ -50,11 +50,11 @@ public final class SingleTableDropSchemaMetadataValidatorTest {
     @Test(expected = ShardingSphereException.class)
     public void assertValidate() {
         FixtureRule rule = mock(FixtureRule.class);
-        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.emptyList(), Collections.singleton(rule));
+        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(rule));
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
                 mock(DatabaseType.class), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyMap());
         SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME,
-                createSingleDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
+                createSingleDataSourceMap(), Collections.singleton(rule));
         DropSchemaStatement sqlStatement = new PostgreSQLDropSchemaStatement();
         sqlStatement.getSchemaNames().add(new IdentifierValue("t_order_item"));
         sqlStatement.setParameterCount(1);

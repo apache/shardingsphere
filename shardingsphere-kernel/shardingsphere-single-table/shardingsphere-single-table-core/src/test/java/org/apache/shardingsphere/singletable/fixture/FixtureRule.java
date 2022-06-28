@@ -17,12 +17,19 @@
 
 package org.apache.shardingsphere.singletable.fixture;
 
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import static org.mockito.Mockito.mock;
 
 public class FixtureRule implements ShardingSphereRule {
     
     @Override
     public String getType() {
         return "FIXTURE";
+    }
+    
+    @Override
+    public RuleConfiguration getConfiguration() {
+        return mock(RuleConfiguration.class);
     }
 }
