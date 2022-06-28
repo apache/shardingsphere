@@ -17,21 +17,20 @@
 
 package org.apache.shardingsphere.infra.binder.statement.impl;
 
+import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.*;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.ColumnOrderByItemSegment;
@@ -56,9 +55,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -483,6 +480,41 @@ public final class SelectStatementContextTest {
         selectStatement.setProjections(projectionsSegment);
         assertTrue(new SelectStatementContext(
                 Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class)), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME).isContainsSubquery());
+    }
+
+    @Test
+    public void assertContainsDollarForMySQL() {
+        assertContainsDollar(new MySQLSelectStatement());
+    }
+
+    @Test
+    public void assertContainsDollarForOracle() {
+        assertContainsDollar(new OracleSelectStatement());
+    }
+
+    @Test
+    public void assertContainsDollarForPostgreSQL() {
+        assertContainsDollar(new PostgreSQLSelectStatement());
+    }
+
+    @Test
+    public void assertContainsDollarForSQL92() {
+        assertContainsDollar(new SQL92SelectStatement());
+    }
+
+    @Test
+    public void assertContainsDollarForSQLServer() {
+        assertContainsDollar(new SQLServerSelectStatement());
+    }
+
+    private void assertContainsDollar(final SelectStatement selectStatement) {
+        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("table"))));
+        ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
+        when(projectionsSegment.getProjections()).thenReturn(Lists.newArrayList(new ParameterMarkerExpressionSegment(0, 0, 0, ParameterMarkerType.DOLLAR)));
+        selectStatement.setProjections(projectionsSegment);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(
+                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class)), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+        assertTrue(selectStatementContext.isContainsDollarParameterMarker());
     }
     
     private OrderByItemSegment createOrderByItemSegment(final String type) {
