@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
  */
 @Getter
 @Setter
-public class YamlDynamicReadwriteSplittingStrategyConfiguration implements YamlConfiguration {
+public final class YamlDynamicReadwriteSplittingStrategyConfiguration implements YamlConfiguration {
     
     private String autoAwareDataSourceName;
     

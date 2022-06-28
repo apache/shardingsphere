@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
  * Readwrite-splitting static bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class StaticReadwriteSplittingBeanDefinitionTag {
+public final class StaticReadwriteSplittingBeanDefinitionTag {
     
     public static final String STATIC_STRATEGY_ROOT_TAG = "static-strategy";
     

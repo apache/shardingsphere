@@ -24,7 +24,7 @@ import org.apache.shardingsphere.readwritesplitting.yaml.config.strategy.YamlDyn
 /**
  * Dynamic Readwrite-splitting strategy configuration YAML swapper.
  */
-public class DynamicReadwriteSplittingStrategyConfigurationYamlSwapper
+public final class DynamicReadwriteSplittingStrategyConfigurationYamlSwapper
         implements
             YamlConfigurationSwapper<YamlDynamicReadwriteSplittingStrategyConfiguration, DynamicReadwriteSplittingStrategyConfiguration> {
     

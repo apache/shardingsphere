@@ -28,7 +28,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class YamlStaticReadwriteSplittingStrategyConfiguration implements YamlConfiguration {
+public final class YamlStaticReadwriteSplittingStrategyConfiguration implements YamlConfiguration {
     
     private String writeDataSourceName;
     

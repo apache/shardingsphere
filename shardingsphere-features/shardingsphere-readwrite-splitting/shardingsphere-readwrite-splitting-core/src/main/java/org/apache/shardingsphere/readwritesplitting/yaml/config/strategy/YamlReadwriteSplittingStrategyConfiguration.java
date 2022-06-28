@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
  */
 @Getter
 @Setter
-public class YamlReadwriteSplittingStrategyConfiguration implements YamlConfiguration {
+public final class YamlReadwriteSplittingStrategyConfiguration implements YamlConfiguration {
     
     private YamlStaticReadwriteSplittingStrategyConfiguration staticStrategy;
     

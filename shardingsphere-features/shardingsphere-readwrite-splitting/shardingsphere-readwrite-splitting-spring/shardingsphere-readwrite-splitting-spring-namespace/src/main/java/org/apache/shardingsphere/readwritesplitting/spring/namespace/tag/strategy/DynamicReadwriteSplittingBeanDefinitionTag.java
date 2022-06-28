@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
  * Readwrite-splitting Dynamic bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class DynamicReadwriteSplittingBeanDefinitionTag {
+public final class DynamicReadwriteSplittingBeanDefinitionTag {
     
     public static final String DYNAMIC_STRATEGY_ROOT_TAG = "dynamic-strategy";
     
