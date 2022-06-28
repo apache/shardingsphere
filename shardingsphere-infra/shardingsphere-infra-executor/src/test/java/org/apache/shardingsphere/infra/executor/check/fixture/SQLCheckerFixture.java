@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.executor.check.fixture;
 
-import org.apache.shardingsphere.infra.executor.check.SQLCheckResult;
+import org.apache.shardingsphere.infra.check.SQLCheckResult;
 import org.apache.shardingsphere.infra.executor.check.SQLChecker;
 import org.apache.shardingsphere.infra.executor.sql.fixture.FixtureRule;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
