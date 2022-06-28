@@ -33,18 +33,18 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLDropSchemaStatement;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class SingleTableDropSchemaMetadataValidatorTest {
+public final class SingleTableDropSchemaMetadataValidatorTest {
+
     @Test(expected = ShardingSphereException.class)
     public void assertValidateCascadeNotEmpty() {
         SingleTableDropSchemaMetadataValidator singleTableDropSchemaMetadataValidator = new SingleTableDropSchemaMetadataValidator();
         SingleTableRule singleTableRule = mock(SingleTableRule.class, RETURNS_DEEP_STUBS);
         SQLStatementContext<DropSchemaStatement> sqlStatementContext = createSQLStatementContext("foo_schema", false);
-        ShardingSphereDatabase database = createMockDataBase("foo_schema");
+        ShardingSphereDatabase database = createMockDatabase("foo_schema");
         singleTableDropSchemaMetadataValidator.validate(singleTableRule, sqlStatementContext, database);
     }
 
@@ -53,33 +53,27 @@ public class SingleTableDropSchemaMetadataValidatorTest {
         SingleTableDropSchemaMetadataValidator singleTableDropSchemaMetadataValidator = new SingleTableDropSchemaMetadataValidator();
         SingleTableRule singleTableRule = mock(SingleTableRule.class, RETURNS_DEEP_STUBS);
         SQLStatementContext<DropSchemaStatement> sqlStatementContext = createSQLStatementContext("foo_schema1", true);
-        ShardingSphereDatabase database = createMockDataBase("foo_schema");
+        ShardingSphereDatabase database = createMockDatabase("foo_schema");
         singleTableDropSchemaMetadataValidator.validate(singleTableRule, sqlStatementContext, database);
     }
 
     @Test
     public void assertValidate() {
-        boolean isVerified = true;
-        try {
-            SingleTableDropSchemaMetadataValidator singleTableDropSchemaMetadataValidator = new SingleTableDropSchemaMetadataValidator();
-            SingleTableRule singleTableRule = mock(SingleTableRule.class, RETURNS_DEEP_STUBS);
-            SQLStatementContext<DropSchemaStatement> sqlStatementContext = createSQLStatementContext("foo_schema", true);
-            ShardingSphereDatabase database = createMockDataBase("foo_schema");
-            singleTableDropSchemaMetadataValidator.validate(singleTableRule, sqlStatementContext, database);
-        } catch (ShardingSphereException ex) {
-            isVerified = false;
-        }
-        assertTrue(isVerified);
+        SingleTableDropSchemaMetadataValidator singleTableDropSchemaMetadataValidator = new SingleTableDropSchemaMetadataValidator();
+        SingleTableRule singleTableRule = mock(SingleTableRule.class, RETURNS_DEEP_STUBS);
+        SQLStatementContext<DropSchemaStatement> sqlStatementContext = createSQLStatementContext("foo_schema", true);
+        ShardingSphereDatabase database = createMockDatabase("foo_schema");
+        singleTableDropSchemaMetadataValidator.validate(singleTableRule, sqlStatementContext, database);
     }
 
-    private ShardingSphereDatabase createMockDataBase(final String schemaName) {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+    private ShardingSphereDatabase createMockDatabase(final String schemaName) {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         Map<String, ShardingSphereSchema> map = new HashMap<>();
         ShardingSphereSchema shardingSphereSchema = new ShardingSphereSchema();
         shardingSphereSchema.put("foo_table", new ShardingSphereTable());
         map.put(schemaName, shardingSphereSchema);
-        when(database.getSchemas()).thenReturn(map);
-        return database;
+        when(result.getSchemas()).thenReturn(map);
+        return result;
     }
 
     private SQLStatementContext<DropSchemaStatement> createSQLStatementContext(final String schemaName, final boolean isCascade) {
@@ -88,7 +82,7 @@ public class SingleTableDropSchemaMetadataValidatorTest {
         Collection<IdentifierValue> collection = new ArrayList<>();
         collection.add(new IdentifierValue(schemaName));
         when(dropDatabaseStatement.getSchemaNames()).thenReturn(collection);
-        SQLStatementContext<DropSchemaStatement> sqlStatementContext = new CommonSQLStatementContext(dropDatabaseStatement);
-        return sqlStatementContext;
+        SQLStatementContext<DropSchemaStatement> result = new CommonSQLStatementContext(dropDatabaseStatement);
+        return result;
     }
 }
