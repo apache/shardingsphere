@@ -69,7 +69,7 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
         Closure<?> closure = createClosure();
         Comparable<?> value = shardingValue.getValue();
         if (value instanceof Number) {
-            value = Math.abs(((Number) value).doubleValue());
+            value = Math.abs(((Number) value).intValue());
         }
         closure.setProperty(shardingValue.getColumnName(), value);
         return getTargetShardingNode(closure, shardingValue.getColumnName());
