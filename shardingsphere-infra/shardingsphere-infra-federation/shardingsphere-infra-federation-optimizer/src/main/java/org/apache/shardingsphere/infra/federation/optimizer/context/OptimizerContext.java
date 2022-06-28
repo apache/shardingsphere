@@ -47,12 +47,12 @@ public final class OptimizerContext {
     private final Map<String, OptimizerPlannerContext> plannerContexts;
     
     /**
-     * Add federation database meta data.
+     * Add database.
      *
      * @param databaseName database name
      * @param protocolType protocol database type
      */
-    public void addFederationDatabaseMetaData(final String databaseName, final DatabaseType protocolType) {
+    public void addDatabase(final String databaseName, final DatabaseType protocolType) {
         FederationDatabaseMetaData federationDatabaseMetaData = new FederationDatabaseMetaData(databaseName, Collections.emptyMap());
         federationMetaData.getDatabases().put(databaseName, federationDatabaseMetaData);
         parserContexts.put(databaseName, OptimizerParserContextFactory.create(protocolType));

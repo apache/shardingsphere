@@ -123,7 +123,7 @@ public final class ContextManager implements AutoCloseable {
         }
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), metaDataContexts.getMetaData().getProps());
         addDatabaseMetaData(databaseName, protocolType);
-        metaDataContexts.getOptimizerContext().addFederationDatabaseMetaData(databaseName, protocolType);
+        metaDataContexts.getOptimizerContext().addDatabase(databaseName, protocolType);
         persistMetaData(metaDataContexts);
     }
     
