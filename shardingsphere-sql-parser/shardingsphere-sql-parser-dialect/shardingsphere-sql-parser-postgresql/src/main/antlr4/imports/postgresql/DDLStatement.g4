@@ -1767,9 +1767,6 @@ importQualificationType
     : LIMIT TO | EXCEPT
     ;
 
-listen
-    : LISTEN colId
-    ;
 
 declare
     : DECLARE cursorName cursorOptions CURSOR (WITH HOLD | WITHOUT HOLD)? FOR select
@@ -1792,6 +1789,10 @@ move
 
 fetch
     : FETCH direction? (FROM | IN)? cursorName
+    ;
+
+listen
+    : LISTEN channelName
     ;
 
 direction

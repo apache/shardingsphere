@@ -104,6 +104,7 @@ execute
     | deallocate
     | explain
     | analyzeTable
+    | listen
     | load
     | createTablespace
     | alterTablespace
