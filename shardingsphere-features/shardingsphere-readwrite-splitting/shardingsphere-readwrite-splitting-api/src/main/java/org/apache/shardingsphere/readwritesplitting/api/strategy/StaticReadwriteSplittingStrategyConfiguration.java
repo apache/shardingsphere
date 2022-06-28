@@ -27,7 +27,7 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
-public class StaticReadwriteSplittingStrategyConfiguration implements ReadwriteSplittingStrategyConfiguration {
+public class StaticReadwriteSplittingStrategyConfiguration {
     
     private final String writeDataSourceName;
     

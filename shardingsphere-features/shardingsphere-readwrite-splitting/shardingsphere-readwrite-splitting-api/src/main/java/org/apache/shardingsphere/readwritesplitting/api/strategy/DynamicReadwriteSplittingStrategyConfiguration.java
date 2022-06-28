@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public class DynamicReadwriteSplittingStrategyConfiguration implements ReadwriteSplittingStrategyConfiguration {
+public class DynamicReadwriteSplittingStrategyConfiguration {
     
     private final String autoAwareDataSourceName;
     
