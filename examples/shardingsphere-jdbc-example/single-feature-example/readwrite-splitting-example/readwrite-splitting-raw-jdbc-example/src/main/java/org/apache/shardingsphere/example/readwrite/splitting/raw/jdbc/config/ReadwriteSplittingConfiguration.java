@@ -38,7 +38,8 @@ public final class ReadwriteSplittingConfiguration implements ExampleConfigurati
     @Override
     public DataSource getDataSource() throws SQLException {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = new ReadwriteSplittingDataSourceRuleConfiguration(
-                "demo_read_query_ds", new StaticReadwriteSplittingStrategyConfiguration("demo_write_ds", Arrays.asList("demo_read_ds_0", "demo_read_ds_1")), "demo_weight_lb");
+                "demo_read_query_ds", new StaticReadwriteSplittingStrategyConfiguration("demo_write_ds",
+                Arrays.asList("demo_read_ds_0", "demo_read_ds_1")), null,"demo_weight_lb");
         Properties algorithmProps = new Properties();
         algorithmProps.setProperty("demo_read_ds_0", "2");
         algorithmProps.setProperty("demo_read_ds_1", "1");

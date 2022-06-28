@@ -243,11 +243,10 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     readwrite_ds_0:
-      dataSourceStrategy:
-        staticStrategy:
-          writeDataSourceName: encrypt_write_ds_0
-          readDataSourceNames:
-            - encrypt_read_ds_0
+      staticStrategy:
+        writeDataSourceName: encrypt_write_ds_0
+        readDataSourceNames:
+          - encrypt_read_ds_0
       loadBalancerName: roundRobin
 
   loadBalancers:

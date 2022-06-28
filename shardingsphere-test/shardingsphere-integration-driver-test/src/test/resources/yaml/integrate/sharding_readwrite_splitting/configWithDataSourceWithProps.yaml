@@ -107,18 +107,16 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     readwrite_ds_0:
-      dataSourceStrategy:
-        staticStrategy:
-          writeDataSourceName: write_ds_0
-          readDataSourceNames:
-            - read_ds_0
+      staticStrategy:
+        writeDataSourceName: write_ds_0
+        readDataSourceNames:
+          - read_ds_0
       loadBalancerName: random
     readwrite_ds_1:
-      dataSourceStrategy:
-        staticStrategy:
-          writeDataSourceName: write_ds_1
-          readDataSourceNames:
-            - read_ds_1
+      staticStrategy:
+        writeDataSourceName: write_ds_1
+        readDataSourceNames:
+          - read_ds_1
       loadBalancerName: roundRobin
   loadBalancers:
     random:

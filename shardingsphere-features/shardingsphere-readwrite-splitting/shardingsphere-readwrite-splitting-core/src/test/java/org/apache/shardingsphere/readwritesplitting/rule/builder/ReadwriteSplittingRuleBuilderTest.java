@@ -38,7 +38,8 @@ public final class ReadwriteSplittingRuleBuilderTest {
     public void assertBuild() {
         ReadwriteSplittingRuleConfiguration ruleConfig = new ReadwriteSplittingRuleConfiguration(
                 Collections.singletonList(new ReadwriteSplittingDataSourceRuleConfiguration("name",
-                        new StaticReadwriteSplittingStrategyConfiguration("writeDataSourceName", Arrays.asList("readDataSourceName")), "loadBalancerName")),
+                        new StaticReadwriteSplittingStrategyConfiguration("writeDataSourceName", Arrays.asList("readDataSourceName")),
+                        null, "loadBalancerName")),
                 Collections.emptyMap());
         DatabaseRuleBuilder builder = DatabaseRuleBuilderFactory.getInstanceMap(Collections.singletonList(ruleConfig)).get(ruleConfig);
         assertThat(builder.build(ruleConfig, "", Collections.emptyMap(), Collections.emptyList()), instanceOf(ReadwriteSplittingRule.class));

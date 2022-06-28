@@ -95,7 +95,7 @@ public final class RulesUsedResourceQueryResultSetTest {
         ReadwriteSplittingRule result = mock(ReadwriteSplittingRule.class);
         ReadwriteSplittingRuleConfiguration config = mock(ReadwriteSplittingRuleConfiguration.class);
         when(config.getDataSources()).thenReturn(Collections.singleton(new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_splitting_source",
-                new StaticReadwriteSplittingStrategyConfiguration("foo_ds", Arrays.asList("foo_ds", "bar_ds")), "")));
+                new StaticReadwriteSplittingStrategyConfiguration("foo_ds", Arrays.asList("foo_ds", "bar_ds")), null, "")));
         when(result.getConfiguration()).thenReturn(config);
         return result;
     }

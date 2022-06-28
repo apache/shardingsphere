@@ -97,10 +97,9 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     readwrite_ds:
-      dataSourceStrategy:
-        staticStrategy:
-          writeDataSourceName: write_ds
-          readDataSourceNames:
-            - read_ds
+      staticStrategy:
+        writeDataSourceName: write_ds
+        readDataSourceNames:
+          - read_ds
 props:
   sql-show: false

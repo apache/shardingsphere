@@ -20,8 +20,6 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.converter;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.junit.Test;
 
@@ -37,9 +35,9 @@ import java.util.stream.Stream;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 public final class ReadwriteSplittingRuleStatementConverterTest {
     
@@ -65,11 +63,9 @@ public final class ReadwriteSplittingRuleStatementConverterTest {
         assertThat(actualRuleConfig.getName(), is(expectedSingleReadwriteSplittingRuleSegment.getName()));
         String expectedLoadBalancerName = String.format("%s_%s", expectedSingleReadwriteSplittingRuleSegment.getName(), expectedSingleReadwriteSplittingRuleSegment.getLoadBalancer());
         assertThat(actualRuleConfig.getLoadBalancerName(), is(expectedLoadBalancerName));
-        assertThat(actualRuleConfig.getDataSourceStrategy(), instanceOf(StaticReadwriteSplittingStrategyConfiguration.class));
-        assertThat(((StaticReadwriteSplittingStrategyConfiguration) actualRuleConfig.getDataSourceStrategy()).getWriteDataSourceName(),
-                is(expectedSingleReadwriteSplittingRuleSegment.getWriteDataSource()));
-        assertThat(((StaticReadwriteSplittingStrategyConfiguration) actualRuleConfig.getDataSourceStrategy()).getReadDataSourceNames(),
-                is(expectedSingleReadwriteSplittingRuleSegment.getReadDataSources()));
+        assertNotNull(actualRuleConfig.getStaticStrategy());
+        assertThat(actualRuleConfig.getStaticStrategy().getWriteDataSourceName(), is(expectedSingleReadwriteSplittingRuleSegment.getWriteDataSource()));
+        assertThat(actualRuleConfig.getStaticStrategy().getReadDataSourceNames(), is(expectedSingleReadwriteSplittingRuleSegment.getReadDataSources()));
         String actualLoadBalancerName = actualSingleRuleSegmentConvertResultLoadBalancers.keySet().iterator().next();
         assertThat(actualLoadBalancerName, is(expectedLoadBalancerName));
         ShardingSphereAlgorithmConfiguration actualSphereAlgorithmConfig = actualSingleRuleSegmentConvertResultLoadBalancers.get(actualLoadBalancerName);
@@ -108,17 +104,11 @@ public final class ReadwriteSplittingRuleStatementConverterTest {
     }
     
     private String getWriteDataSourceName(final ReadwriteSplittingDataSourceRuleConfiguration ruleConfiguration) {
-        if (ruleConfiguration.getDataSourceStrategy() instanceof DynamicReadwriteSplittingStrategyConfiguration) {
-            return null;
-        }
-        return ((StaticReadwriteSplittingStrategyConfiguration) ruleConfiguration.getDataSourceStrategy()).getWriteDataSourceName();
+        return null != ruleConfiguration.getDynamicStrategy() ? null : ruleConfiguration.getStaticStrategy().getWriteDataSourceName();
     }
     
     private Collection<String> getReadDataSourceNames(final ReadwriteSplittingDataSourceRuleConfiguration ruleConfiguration) {
-        if (ruleConfiguration.getDataSourceStrategy() instanceof DynamicReadwriteSplittingStrategyConfiguration) {
-            return Collections.emptyList();
-        }
-        return ((StaticReadwriteSplittingStrategyConfiguration) ruleConfiguration.getDataSourceStrategy()).getReadDataSourceNames();
+        return null != ruleConfiguration.getDynamicStrategy() ? Collections.emptyList() : ruleConfiguration.getStaticStrategy().getReadDataSourceNames();
     }
     
     private ReadwriteSplittingRuleSegment createReadwriteSplittingRuleSegment(final String name, final String writeDataSource, final List<String> readDataSources, final String loadBalancerTypeName,

@@ -39,23 +39,23 @@ public final class ReadWriteSplittingDataSourceRuleConfigurationTest {
     @Before
     public void setup() {
         readwriteSplittingDataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("ds",
-                new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds_0", "read_ds_1")), "");
-        readwriteSplittingDataSourceRuleConfigDynamic = new ReadwriteSplittingDataSourceRuleConfiguration("ds",
+                new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds_0", "read_ds_1")), null, "");
+        readwriteSplittingDataSourceRuleConfigDynamic = new ReadwriteSplittingDataSourceRuleConfiguration("ds", null,
                 new DynamicReadwriteSplittingStrategyConfiguration("readwrite_ds"), "");
     }
     
     @Test
     public void assertStaticReadWriteSplittingConfig() {
-        assertNotNull(readwriteSplittingDataSourceRuleConfig.getDataSourceStrategy());
-        StaticReadwriteSplittingStrategyConfiguration actual = (StaticReadwriteSplittingStrategyConfiguration) readwriteSplittingDataSourceRuleConfig.getDataSourceStrategy();
+        assertNotNull(readwriteSplittingDataSourceRuleConfig.getStaticStrategy());
+        StaticReadwriteSplittingStrategyConfiguration actual = readwriteSplittingDataSourceRuleConfig.getStaticStrategy();
         assertThat(actual.getWriteDataSourceName(), is("write_ds"));
         assertThat(actual.getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
     }
     
     @Test
     public void assertDynamicReadWriteSplittingConfig() {
-        assertNotNull(readwriteSplittingDataSourceRuleConfigDynamic.getDataSourceStrategy());
-        DynamicReadwriteSplittingStrategyConfiguration actual = (DynamicReadwriteSplittingStrategyConfiguration) readwriteSplittingDataSourceRuleConfigDynamic.getDataSourceStrategy();
+        assertNotNull(readwriteSplittingDataSourceRuleConfigDynamic.getDynamicStrategy());
+        DynamicReadwriteSplittingStrategyConfiguration actual = readwriteSplittingDataSourceRuleConfigDynamic.getDynamicStrategy();
         assertThat(actual.getAutoAwareDataSourceName(), is("readwrite_ds"));
     }
 }

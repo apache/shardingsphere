@@ -24,7 +24,8 @@ import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwri
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.yaml.swapper.strategy.ReadwriteSplittingStrategyConfigurationYamlSwapper;
+import org.apache.shardingsphere.readwritesplitting.yaml.swapper.strategy.DynamicReadwriteSplittingStrategyConfigurationYamlSwapper;
+import org.apache.shardingsphere.readwritesplitting.yaml.swapper.strategy.StaticReadwriteSplittingStrategyConfigurationYamlSwapper;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -39,7 +40,9 @@ public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
         implements
             YamlRuleConfigurationSwapper<YamlReadwriteSplittingRuleConfiguration, AlgorithmProvidedReadwriteSplittingRuleConfiguration> {
     
-    private final ReadwriteSplittingStrategyConfigurationYamlSwapper readwriteSplittingYamlSwapper = new ReadwriteSplittingStrategyConfigurationYamlSwapper();
+    private final StaticReadwriteSplittingStrategyConfigurationYamlSwapper staticReadwriteSplittingYamlSwapper = new StaticReadwriteSplittingStrategyConfigurationYamlSwapper();
+    
+    private final DynamicReadwriteSplittingStrategyConfigurationYamlSwapper dynamicReadwriteSplittingYamlSwapper = new DynamicReadwriteSplittingStrategyConfigurationYamlSwapper();
     
     @Override
     public YamlReadwriteSplittingRuleConfiguration swapToYamlConfiguration(final AlgorithmProvidedReadwriteSplittingRuleConfiguration data) {
@@ -54,7 +57,12 @@ public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
     
     private YamlReadwriteSplittingDataSourceRuleConfiguration swapToYamlConfiguration(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig) {
         YamlReadwriteSplittingDataSourceRuleConfiguration result = new YamlReadwriteSplittingDataSourceRuleConfiguration();
-        result.setDataSourceStrategy(readwriteSplittingYamlSwapper.swapToYamlConfiguration(dataSourceRuleConfig.getDataSourceStrategy()));
+        if (null != dataSourceRuleConfig.getStaticStrategy()) {
+            result.setStaticStrategy(staticReadwriteSplittingYamlSwapper.swapToYamlConfiguration(dataSourceRuleConfig.getStaticStrategy()));
+        }
+        if (null != dataSourceRuleConfig.getDynamicStrategy()) {
+            result.setDynamicStrategy(dynamicReadwriteSplittingYamlSwapper.swapToYamlConfiguration(dataSourceRuleConfig.getDynamicStrategy()));
+        }
         result.setLoadBalancerName(dataSourceRuleConfig.getLoadBalancerName());
         return result;
     }
@@ -71,8 +79,8 @@ public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
     }
     
     private ReadwriteSplittingDataSourceRuleConfiguration swapToObject(final String name, final YamlReadwriteSplittingDataSourceRuleConfiguration yamlDataSourceRuleConfig) {
-        return new ReadwriteSplittingDataSourceRuleConfiguration(name,
-                readwriteSplittingYamlSwapper.swapToObject(yamlDataSourceRuleConfig.getDataSourceStrategy()), yamlDataSourceRuleConfig.getLoadBalancerName());
+        return new ReadwriteSplittingDataSourceRuleConfiguration(name, staticReadwriteSplittingYamlSwapper.swapToObject(yamlDataSourceRuleConfig.getStaticStrategy()),
+                dynamicReadwriteSplittingYamlSwapper.swapToObject(yamlDataSourceRuleConfig.getDynamicStrategy()), yamlDataSourceRuleConfig.getLoadBalancerName());
     }
     
     @Override

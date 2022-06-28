@@ -24,8 +24,6 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmCo
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.factory.ReplicaLoadBalanceAlgorithmFactory;
 
 import java.util.Collection;
@@ -57,16 +55,15 @@ public final class ReadwriteSplittingRuleConfigurationImportChecker {
         Collection<String> requireResources = new LinkedHashSet<>();
         Collection<String> requireDiscoverableResources = new LinkedHashSet<>();
         currentRuleConfig.getDataSources().forEach(each -> {
-            if (each.getDataSourceStrategy() instanceof DynamicReadwriteSplittingStrategyConfiguration) {
-                requireDiscoverableResources.add(((DynamicReadwriteSplittingStrategyConfiguration) each.getDataSourceStrategy()).getAutoAwareDataSourceName());
+            if (null != each.getDynamicStrategy()) {
+                requireDiscoverableResources.add(each.getDynamicStrategy().getAutoAwareDataSourceName());
             }
-            if (each.getDataSourceStrategy() instanceof StaticReadwriteSplittingStrategyConfiguration) {
-                StaticReadwriteSplittingStrategyConfiguration staticConfig = (StaticReadwriteSplittingStrategyConfiguration) each.getDataSourceStrategy();
-                if (null != staticConfig.getWriteDataSourceName()) {
-                    requireResources.add(staticConfig.getWriteDataSourceName());
+            if (null != each.getStaticStrategy()) {
+                if (null != each.getStaticStrategy().getWriteDataSourceName()) {
+                    requireResources.add(each.getStaticStrategy().getWriteDataSourceName());
                 }
-                if (!staticConfig.getReadDataSourceNames().isEmpty()) {
-                    requireResources.addAll(staticConfig.getReadDataSourceNames());
+                if (!each.getStaticStrategy().getReadDataSourceNames().isEmpty()) {
+                    requireResources.addAll(each.getStaticStrategy().getReadDataSourceNames());
                 }
             }
         });

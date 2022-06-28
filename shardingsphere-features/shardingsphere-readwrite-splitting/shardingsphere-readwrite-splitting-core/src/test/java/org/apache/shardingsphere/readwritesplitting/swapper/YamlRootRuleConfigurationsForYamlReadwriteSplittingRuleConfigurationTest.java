@@ -69,17 +69,15 @@ public final class YamlRootRuleConfigurationsForYamlReadwriteSplittingRuleConfig
     }
     
     private void assertReadwriteSplittingRuleForDs0(final YamlReadwriteSplittingRuleConfiguration actual) {
-        assertNotNull(actual.getDataSources().get("ds_0").getDataSourceStrategy());
-        assertNotNull(actual.getDataSources().get("ds_0").getDataSourceStrategy().getStaticStrategy());
-        YamlStaticReadwriteSplittingStrategyConfiguration staticConfig = actual.getDataSources().get("ds_0").getDataSourceStrategy().getStaticStrategy();
+        assertNotNull(actual.getDataSources().get("ds_0").getStaticStrategy());
+        YamlStaticReadwriteSplittingStrategyConfiguration staticConfig = actual.getDataSources().get("ds_0").getStaticStrategy();
         assertThat(staticConfig.getWriteDataSourceName(), is("write_ds_0"));
         assertThat(actual.getDataSources().get("ds_0").getLoadBalancerName(), is("roundRobin"));
     }
     
     private void assertReadwriteSplittingRuleForDs1(final YamlReadwriteSplittingRuleConfiguration actual) {
-        assertNotNull(actual.getDataSources().get("ds_1").getDataSourceStrategy());
-        assertNotNull(actual.getDataSources().get("ds_1").getDataSourceStrategy().getStaticStrategy());
-        YamlStaticReadwriteSplittingStrategyConfiguration staticConfig = actual.getDataSources().get("ds_1").getDataSourceStrategy().getStaticStrategy();
+        assertNotNull(actual.getDataSources().get("ds_1").getStaticStrategy());
+        YamlStaticReadwriteSplittingStrategyConfiguration staticConfig = actual.getDataSources().get("ds_1").getStaticStrategy();
         assertThat(staticConfig.getWriteDataSourceName(), is("write_ds_1"));
         assertThat(actual.getDataSources().get("ds_1").getLoadBalancerName(), is("random"));
     }

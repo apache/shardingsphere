@@ -23,8 +23,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.datasource.strategy.DynamicDataSourceStrategy;
 import org.apache.shardingsphere.infra.datasource.strategy.DynamicDataSourceStrategyFactory;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.strategy.ReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.strategy.type.DynamicReadwriteSplittingStrategy;
 import org.apache.shardingsphere.readwritesplitting.strategy.type.StaticReadwriteSplittingStrategy;
@@ -40,12 +40,12 @@ public final class ReadwriteSplittingStrategyFactory {
     /**
      * Create new instance of readwrite splitting strategy.
      * 
-     * @param dataSourceStrategy data source strategy
+     * @param readwriteSplittingConfig readwrite-splitting rule config
      * @return created instance
      */
-    public static ReadwriteSplittingStrategy newInstance(final ReadwriteSplittingStrategyConfiguration dataSourceStrategy) {
-        return dataSourceStrategy instanceof StaticReadwriteSplittingStrategyConfiguration ? createStaticReadwriteSplittingStrategy((StaticReadwriteSplittingStrategyConfiguration) dataSourceStrategy)
-                : createDynamicReadwriteSplittingStrategy((DynamicReadwriteSplittingStrategyConfiguration) dataSourceStrategy);
+    public static ReadwriteSplittingStrategy newInstance(final ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingConfig) {
+        return null != readwriteSplittingConfig.getStaticStrategy() ? createStaticReadwriteSplittingStrategy(readwriteSplittingConfig.getStaticStrategy())
+                : createDynamicReadwriteSplittingStrategy(readwriteSplittingConfig.getDynamicStrategy());
     }
     
     private static StaticReadwriteSplittingStrategy createStaticReadwriteSplittingStrategy(final StaticReadwriteSplittingStrategyConfiguration staticConfig) {

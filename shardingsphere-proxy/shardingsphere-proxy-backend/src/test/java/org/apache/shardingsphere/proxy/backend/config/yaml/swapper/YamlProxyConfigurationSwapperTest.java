@@ -27,7 +27,6 @@ import org.apache.shardingsphere.proxy.backend.config.ProxyConfigurationLoader;
 import org.apache.shardingsphere.proxy.backend.config.YamlProxyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -41,6 +40,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 public final class YamlProxyConfigurationSwapperTest {
     
@@ -81,9 +81,9 @@ public final class YamlProxyConfigurationSwapperTest {
         assertThat(actual.getDataSources().size(), is(1));
         ReadwriteSplittingDataSourceRuleConfiguration dataSource = actual.getDataSources().iterator().next();
         assertThat(dataSource.getName(), is("readwrite_ds"));
-        assertThat(dataSource.getDataSourceStrategy(), instanceOf(StaticReadwriteSplittingStrategyConfiguration.class));
-        assertThat(((StaticReadwriteSplittingStrategyConfiguration) dataSource.getDataSourceStrategy()).getWriteDataSourceName(), is("foo_db"));
-        assertThat(((StaticReadwriteSplittingStrategyConfiguration) dataSource.getDataSourceStrategy()).getReadDataSourceNames(), is(Arrays.asList("foo_db")));
+        assertNotNull(dataSource.getStaticStrategy());
+        assertThat(dataSource.getStaticStrategy().getWriteDataSourceName(), is("foo_db"));
+        assertThat( dataSource.getStaticStrategy().getReadDataSourceNames(), is(Arrays.asList("foo_db")));
         assertThat(actual.getLoadBalancers().size(), is(1));
         ShardingSphereAlgorithmConfiguration loadBalancer = actual.getLoadBalancers().get("round_robin");
         assertThat(loadBalancer.getProps().size(), is(1));

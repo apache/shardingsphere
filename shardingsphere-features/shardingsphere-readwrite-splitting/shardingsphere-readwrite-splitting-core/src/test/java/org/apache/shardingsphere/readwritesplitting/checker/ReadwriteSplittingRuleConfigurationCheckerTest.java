@@ -48,7 +48,7 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
     private ReadwriteSplittingRuleConfiguration createValidConfiguration() {
         ReadwriteSplittingRuleConfiguration result = mock(ReadwriteSplittingRuleConfiguration.class);
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = mock(ReadwriteSplittingDataSourceRuleConfiguration.class);
-        when(dataSourceConfig.getDataSourceStrategy()).thenReturn(new DynamicReadwriteSplittingStrategyConfiguration("ds0"));
+        when(dataSourceConfig.getDynamicStrategy()).thenReturn(new DynamicReadwriteSplittingStrategyConfiguration("ds0"));
         when(result.getDataSources()).thenReturn(Collections.singletonList(dataSourceConfig));
         return result;
     }
@@ -66,7 +66,6 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
     private ReadwriteSplittingRuleConfiguration createInvalidConfiguration() {
         ReadwriteSplittingRuleConfiguration result = mock(ReadwriteSplittingRuleConfiguration.class);
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = mock(ReadwriteSplittingDataSourceRuleConfiguration.class);
-        when(dataSourceConfig.getDataSourceStrategy()).thenReturn(null);
         when(result.getDataSources()).thenReturn(Collections.singleton(dataSourceConfig));
         return result;
     }

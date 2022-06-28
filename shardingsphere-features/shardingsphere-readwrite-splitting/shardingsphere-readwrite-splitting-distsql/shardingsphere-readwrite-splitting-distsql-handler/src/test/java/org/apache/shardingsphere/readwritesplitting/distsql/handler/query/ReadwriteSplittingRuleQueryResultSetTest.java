@@ -76,7 +76,7 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
     private RuleConfiguration createRuleConfiguration() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig =
                 new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds",
-                        new StaticReadwriteSplittingStrategyConfiguration("ds_primary", Arrays.asList("ds_slave_0", "ds_slave_1")), "test");
+                        new StaticReadwriteSplittingStrategyConfiguration("ds_primary", Arrays.asList("ds_slave_0", "ds_slave_1")), null, "test");
         Properties props = new Properties();
         props.setProperty("read_weight", "2:1");
         return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceRuleConfig), Collections.singletonMap("test", new ShardingSphereAlgorithmConfiguration("random", props)));
@@ -101,7 +101,7 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
     private RuleConfiguration createRuleConfigurationWithoutLoadBalancer() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig =
                 new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds",
-                        new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds_0", "read_ds_1")), null);
+                        new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds_0", "read_ds_1")), null, null);
         return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceRuleConfig), null);
     }
     
@@ -153,7 +153,7 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
     }
     
     private RuleConfiguration createRuleConfigurationWithAutoAwareDataSource() {
-        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds",
+        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds", null,
                 new DynamicReadwriteSplittingStrategyConfiguration("rd_rs"), "");
         return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceRuleConfig), null);
     }

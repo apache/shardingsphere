@@ -31,6 +31,7 @@ import java.util.Collections;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapperTest {
     
@@ -40,8 +41,9 @@ public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
     public void assertSwapToYamlConfiguration() {
         YamlReadwriteSplittingRuleConfiguration actual = createYamlReadwriteSplittingRuleConfiguration();
         assertThat(actual.getDataSources().keySet(), is(Collections.singleton("name")));
-        assertThat(actual.getDataSources().get("name").getDataSourceStrategy().getStaticStrategy().getWriteDataSourceName(), is("writeDataSourceName"));
-        assertThat(actual.getDataSources().get("name").getDataSourceStrategy().getStaticStrategy().getReadDataSourceNames(), is(Arrays.asList("readDataSourceName")));
+        assertNotNull(actual.getDataSources().get("name").getStaticStrategy());
+        assertThat(actual.getDataSources().get("name").getStaticStrategy().getWriteDataSourceName(), is("writeDataSourceName"));
+        assertThat(actual.getDataSources().get("name").getStaticStrategy().getReadDataSourceNames(), is(Arrays.asList("readDataSourceName")));
         assertThat(actual.getDataSources().get("name").getLoadBalancerName(), is("loadBalancerName"));
         assertThat(actual.getLoadBalancers().keySet(), is(Collections.singleton("name")));
         assertThat(actual.getLoadBalancers().get("name").getType(), is("RANDOM"));
@@ -53,15 +55,16 @@ public final class ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapp
         assertTrue(actual.getDataSources().iterator().hasNext());
         ReadwriteSplittingDataSourceRuleConfiguration ruleConfig = actual.getDataSources().iterator().next();
         assertThat(ruleConfig.getName(), is("name"));
-        assertThat(((StaticReadwriteSplittingStrategyConfiguration) ruleConfig.getDataSourceStrategy()).getWriteDataSourceName(), is("writeDataSourceName"));
-        assertThat(((StaticReadwriteSplittingStrategyConfiguration) ruleConfig.getDataSourceStrategy()).getReadDataSourceNames(), is(Arrays.asList("readDataSourceName")));
+        assertNotNull(ruleConfig.getStaticStrategy());
+        assertThat(ruleConfig.getStaticStrategy().getWriteDataSourceName(), is("writeDataSourceName"));
+        assertThat(ruleConfig.getStaticStrategy().getReadDataSourceNames(), is(Arrays.asList("readDataSourceName")));
         assertThat(ruleConfig.getLoadBalancerName(), is("loadBalancerName"));
         assertThat(actual.getLoadBalanceAlgorithms(), is(Collections.emptyMap()));
     }
     
     private YamlReadwriteSplittingRuleConfiguration createYamlReadwriteSplittingRuleConfiguration() {
         ReadwriteSplittingDataSourceRuleConfiguration ruleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("name",
-                new StaticReadwriteSplittingStrategyConfiguration("writeDataSourceName", Arrays.asList("readDataSourceName")), "loadBalancerName");
+                new StaticReadwriteSplittingStrategyConfiguration("writeDataSourceName", Arrays.asList("readDataSourceName")), null, "loadBalancerName");
         return swapper.swapToYamlConfiguration(
                 new AlgorithmProvidedReadwriteSplittingRuleConfiguration(Collections.singletonList(ruleConfig), Collections.singletonMap("name", new RandomReplicaLoadBalanceAlgorithm())));
     }

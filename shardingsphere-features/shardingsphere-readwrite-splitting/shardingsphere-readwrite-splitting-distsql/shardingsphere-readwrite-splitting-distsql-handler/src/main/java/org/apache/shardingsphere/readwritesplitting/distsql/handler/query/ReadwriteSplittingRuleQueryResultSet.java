@@ -27,8 +27,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
-import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.ShowReadwriteSplittingRulesStatement;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -81,9 +79,7 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
     
     private Collection<Object> buildDataItem(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig, final Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers) {
         String name = dataSourceRuleConfig.getName();
-        Map<String, String> exportDataSources = dataSourceRuleConfig.getDataSourceStrategy() instanceof DynamicReadwriteSplittingStrategyConfiguration
-                ? exportableAutoAwareDataSource.get(name)
-                : exportableDataSourceMap.get(name);
+        Map<String, String> exportDataSources = null != dataSourceRuleConfig.getDynamicStrategy() ? exportableAutoAwareDataSource.get(name) : exportableDataSourceMap.get(name);
         Optional<ShardingSphereAlgorithmConfiguration> loadBalancer = Optional.ofNullable(loadBalancers.get(dataSourceRuleConfig.getLoadBalancerName()));
         return Arrays.asList(name,
                 getAutoAwareDataSourceName(dataSourceRuleConfig),
@@ -99,25 +95,24 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
     }
     
     private String getAutoAwareDataSourceName(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig) {
-        if (!(dataSourceRuleConfig.getDataSourceStrategy() instanceof DynamicReadwriteSplittingStrategyConfiguration)) {
+        if (null == dataSourceRuleConfig.getDynamicStrategy()) {
             return "";
         }
-        String result = ((DynamicReadwriteSplittingStrategyConfiguration) dataSourceRuleConfig.getDataSourceStrategy()).getAutoAwareDataSourceName();
-        return null == result ? "" : result;
+        return dataSourceRuleConfig.getDynamicStrategy().getAutoAwareDataSourceName();
     }
     
     private String getWriteDataSourceName(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig, final Map<String, String> exportDataSources) {
         if (null != exportDataSources) {
             return exportDataSources.get(ExportableItemConstants.PRIMARY_DATA_SOURCE_NAME);
         }
-        return ((StaticReadwriteSplittingStrategyConfiguration) dataSourceRuleConfig.getDataSourceStrategy()).getWriteDataSourceName();
+        return dataSourceRuleConfig.getStaticStrategy().getWriteDataSourceName();
     }
     
     private String getReadDataSourceNames(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig, final Map<String, String> exportDataSources) {
         if (null != exportDataSources) {
             return exportDataSources.get(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES);
         }
-        return Joiner.on(",").join(((StaticReadwriteSplittingStrategyConfiguration) dataSourceRuleConfig.getDataSourceStrategy()).getReadDataSourceNames());
+        return Joiner.on(",").join(dataSourceRuleConfig.getStaticStrategy().getReadDataSourceNames());
     }
     
     @Override

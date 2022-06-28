@@ -73,7 +73,9 @@ public final class ReadwriteSplittingRuleBeanDefinitionParser extends AbstractBe
         if (null != strategyElement) {
             factory.addConstructorArgValue(getStaticReadwriteSplittingStrategyConfigBeanDefinition(DomUtils.getChildElementByTagName(element,
                     StaticReadwriteSplittingBeanDefinitionTag.STATIC_STRATEGY_ROOT_TAG)));
+            factory.addConstructorArgValue(null);
         } else {
+            factory.addConstructorArgValue(null);
             factory.addConstructorArgValue(getDynamicReadwriteSplittingStrategyConfigBeanDefinition(DomUtils.getChildElementByTagName(element,
                     DynamicReadwriteSplittingBeanDefinitionTag.DYNAMIC_STRATEGY_ROOT_TAG)));
         }

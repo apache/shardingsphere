@@ -135,7 +135,7 @@ public final class DatabaseRulesCountResultSetTest {
         ReadwriteSplittingRule result = mock(ReadwriteSplittingRule.class);
         ReadwriteSplittingRuleConfiguration config = mock(ReadwriteSplittingRuleConfiguration.class);
         when(config.getDataSources()).thenReturn(Collections.singletonList(new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_splitting",
-                new StaticReadwriteSplittingStrategyConfiguration("", Collections.emptyList()), "")));
+                new StaticReadwriteSplittingStrategyConfiguration("", Collections.emptyList()), null, "")));
         when(result.getConfiguration()).thenReturn(config);
         return result;
     }
