@@ -33,11 +33,10 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     readwrite_ds:
-      dataSourceStrategy:
-        staticStrategy:
-          writeDataSourceName: foo_db
-          readDataSourceNames:
-            - foo_db
+      staticStrategy:
+        writeDataSourceName: foo_db
+        readDataSourceNames:
+          - foo_db
 
   loadBalancers:
     round_robin:

@@ -116,12 +116,11 @@ rules:
           - write_ds_0_read_1
       loadBalancerName: roundRobin
     ds_1:
-      dataSourceStrategy:
-        staticStrategy:
-          writeDataSourceName: write_ds_1
-          readDataSourceNames:
-            - write_ds_1_read_0
-            - write_ds_1_read_1
+      staticStrategy:
+        writeDataSourceName: write_ds_1
+        readDataSourceNames:
+          - write_ds_1_read_0
+          - write_ds_1_read_1
       loadBalancerName: roundRobin
   loadBalancers:
     roundRobin:
