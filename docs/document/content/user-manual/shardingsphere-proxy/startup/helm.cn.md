@@ -38,7 +38,7 @@ helm repo add shardingsphere https://shardingsphere.apache.org/charts
 ```
 
 以 ShardingSphere-Proxy 命名安装 charts：
-⚠️：以下安装方式将使用默认的 server.yaml 配置启动 ShardingSphere-Proxy
+注意️：以下安装方式将使用默认的 server.yaml 配置启动 ShardingSphere-Proxy
 
 ```shell
 helm install shardingsphere-proxy shardingsphere/apache-shardingsphere-proxy
