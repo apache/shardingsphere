@@ -66,8 +66,8 @@ public final class ReadwriteSplittingSpringNamespaceTest extends AbstractJUnit4S
     private void assertDefaultDataSourceRule(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig) {
         assertThat(dataSourceRuleConfig.getDataSourceStrategy(), instanceOf(StaticReadwriteSplittingStrategyConfiguration.class));
         assertThat(dataSourceRuleConfig.getName(), is("default_ds"));
-        assertThat(((StaticReadwriteSplittingStrategyConfiguration)dataSourceRuleConfig.getDataSourceStrategy()).getWriteDataSourceName(), is("write_ds"));
-        assertThat(((StaticReadwriteSplittingStrategyConfiguration)dataSourceRuleConfig.getDataSourceStrategy()).getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
+        assertThat(((StaticReadwriteSplittingStrategyConfiguration) dataSourceRuleConfig.getDataSourceStrategy()).getWriteDataSourceName(), is("write_ds"));
+        assertThat(((StaticReadwriteSplittingStrategyConfiguration) dataSourceRuleConfig.getDataSourceStrategy()).getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
         assertThat(dataSourceRuleConfig.getLoadBalancerName(), is(""));
     }
     
@@ -81,8 +81,8 @@ public final class ReadwriteSplittingSpringNamespaceTest extends AbstractJUnit4S
     private void assertRandomDataSourceRule(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig) {
         assertThat(dataSourceRuleConfig.getName(), is("random_ds"));
         assertThat(dataSourceRuleConfig.getDataSourceStrategy(), instanceOf(StaticReadwriteSplittingStrategyConfiguration.class));
-        assertThat(((StaticReadwriteSplittingStrategyConfiguration)dataSourceRuleConfig.getDataSourceStrategy()).getWriteDataSourceName(), is("write_ds"));
-        assertThat(((StaticReadwriteSplittingStrategyConfiguration)dataSourceRuleConfig.getDataSourceStrategy()).getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
+        assertThat(((StaticReadwriteSplittingStrategyConfiguration) dataSourceRuleConfig.getDataSourceStrategy()).getWriteDataSourceName(), is("write_ds"));
+        assertThat(((StaticReadwriteSplittingStrategyConfiguration) dataSourceRuleConfig.getDataSourceStrategy()).getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
         assertThat(dataSourceRuleConfig.getLoadBalancerName(), is("randomLoadbalancer"));
     }
 }
