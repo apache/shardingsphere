@@ -6,7 +6,7 @@ weight = 3
 使用 [Helm](https://helm.sh/) 在 Kubernetes 集群中引导 ShardingSphere-Proxy 实例进行安装。
 
 ## 快速入门
-
+注意️：以下安装方式将使用默认的 server.yaml 配置启动 ShardingSphere-Proxy
 ```shell
 helm repo add shardingsphere https://shardingsphere.apache.org/charts
 helm install shardingsphere-proxy shardingsphere/apache-shardingsphere-proxy
@@ -35,9 +35,19 @@ helm repo add shardingsphere https://shardingsphere.apache.org/charts
 ```
 
 以 ShardingSphere-Proxy 命名安装 charts：
+注意️：以下安装方式将使用默认的 server.yaml 配置启动 ShardingSphere-Proxy
 
 ```shell
 helm install shardingsphere-proxy shardingsphere/apache-shardingsphere-proxy
+```
+
+如需修改配置，请执行以下操作:
+
+```shell
+helm pull shardingsphere/apache-shardingsphere-proxy
+tar -zxvf apache-shardingsphere-proxy-1.1.0-chart.tgz
+# 修改 apache-shardingsphere-proxy/values.yaml 中 serverConfig 部分
+helm install shardingsphere-proxy apache-shardingsphere-proxy
 ```
 
 #### 源码安装
@@ -102,4 +112,27 @@ helm uninstall shardingsphere-proxy
 | `compute.service.port`             | ShardingSphere-Proxy 暴露端口         | `3307`                        |
 | `compute.mysqlConnector.version`   | MySQL 驱动版本                        | `5.1.49`                      |
 | `compute.startPort`                | ShardingSphere-Proxy 启动端口         | `3307`                        |
-| `compute.serverConfig`             | ShardingSphere-Proxy 模式配置文件       | `""`                          |
+
+### 计算节点--ShardingSphere-Proxy Server配置 权限配置项
+
+| Name                                               | Description                                                               | Value                      |
+| -------------------------------------------------- |---------------------------------------------------------------------------| -------------------------- |
+| `compute.serverConfig.authority.privilege.type`    | 存储节点数据授权的权限提供者类型，缺省值为 ALL_PERMITTED                                       | `ALL_PRIVILEGES_PERMITTED` |
+| `compute.serverConfig.authority.users[0].password` | 用于登录计算节点的密码                                                               | `root`                     |
+| `compute.serverConfig.authority.users[0].user`     | 用于登录计算节点的用户名，授权主机。格式: <username>@<hostname> hostname 为 % 或空字符串表示不限制授权主机   | `root@%`                   |
+
+
+### 计算节点--ShardingSphere-Proxy Server配置 模式配置项
+
+| Name                                                                      | Description               | Value                                                                 |
+| ------------------------------------------------------------------------- |---------------------------| --------------------------------------------------------------------- |
+| `compute.serverConfig.mode.type`                                          | 运行模式类型。 现阶段仅支持 Cluster 模式 | `Cluster`                                                             |
+| `compute.serverConfig.mode.repository.props.namespace`                    | 注册中心命名空间                  | `governance_ds`                                                       |
+| `compute.serverConfig.mode.repository.props.server-lists`                 | 注册中心连接地址                  | `{{ printf "%s-zookeeper.%s:2181" .Release.Name .Release.Namespace }}` |
+| `compute.serverConfig.mode.repository.props.maxRetries`                   | 客户端连接最大重试次数               | `3`                                                                   |
+| `compute.serverConfig.mode.repository.props.operationTimeoutMilliseconds` | 客户端操作超时的毫秒数               | `5000`                                                                |
+| `compute.serverConfig.mode.repository.props.retryIntervalMilliseconds`    | 重试间隔毫秒数                   | `500`                                                                 |
+| `compute.serverConfig.mode.repository.props.timeToLiveSeconds`            | 临时数据失效的秒数                 | `60`                                                                  |
+| `compute.serverConfig.mode.repository.type`                               | 持久化仓库类型。 现阶段仅支持 ZooKeeper | `ZooKeeper`                                                           |
+| `compute.serverConfig.mode.overwrite`                                     | 是否使用本地配置覆盖持久化配置           | `true`                                                                |
+
