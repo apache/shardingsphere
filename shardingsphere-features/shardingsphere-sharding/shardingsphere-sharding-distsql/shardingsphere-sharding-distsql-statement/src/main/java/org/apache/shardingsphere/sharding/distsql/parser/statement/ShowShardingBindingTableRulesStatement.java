@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
-import org.apache.shardingsphere.distsql.parser.subject.impl.ShardingSubjectSupplier;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
  * Show sharding binding table rules statement.
  */
-public final class ShowShardingBindingTableRulesStatement extends ShowRulesStatement implements ShardingSubjectSupplier {
+public final class ShowShardingBindingTableRulesStatement extends ShowRulesStatement {
     
     public ShowShardingBindingTableRulesStatement(final DatabaseSegment database) {
         super(database);

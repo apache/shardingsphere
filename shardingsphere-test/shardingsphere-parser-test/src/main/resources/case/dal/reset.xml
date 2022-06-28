@@ -45,5 +45,5 @@
     <reset sql-case-id="reset_replica" />
     <reset-persist sql-case-id="reset_persist" />
     <reset-persist sql-case-id="reset_persist_identifier" identifier="TEST_ID" />
-    <reset-persist sql-case-id="reset_persist_exist_identifier" exist-clause="true" identifier="TEST_ID" />
+    <reset-persist sql-case-id="reset_persist_exist_identifier" if-exists="true" identifier="TEST_ID" />
 </sql-parser-test-cases>

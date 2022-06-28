@@ -17,16 +17,24 @@
 
 package org.apache.shardingsphere.infra.metadata.database.schema.fixture.rule;
 
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 
 import java.util.Collection;
 import java.util.Collections;
+
+import static org.mockito.Mockito.mock;
 
 public final class CommonFixtureRule implements TableContainedRule {
     
     @Override
     public Collection<String> getTables() {
         return Collections.emptyList();
+    }
+    
+    @Override
+    public RuleConfiguration getConfiguration() {
+        return mock(RuleConfiguration.class);
     }
     
     @Override

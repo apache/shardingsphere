@@ -52,8 +52,8 @@ public final class InstanceContext {
         this.workerIdGenerator = workerIdGenerator;
         this.modeConfiguration = modeConfiguration;
         this.lockContext = lockContext;
-        initLockContext();
         getWorkerId();
+        lockContext.initLockState(this);
     }
     
     /**
@@ -99,40 +99,6 @@ public final class InstanceContext {
             instance.setLabels(labels);
         }
         computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().equals(instanceId)).forEach(each -> each.setLabels(labels));
-    }
-    
-    /**
-     * Add instance XA recovery id.
-     *
-     * @param instanceId instance id
-     * @param xaRecoveryId XA recovery id
-     * @return true if current instance updated, else false                    
-     */
-    public boolean addXaRecoveryId(final String instanceId, final String xaRecoveryId) {
-        if (instanceId.equals(instance.getCurrentInstanceId()) && !instance.getXaRecoveryIds().contains(xaRecoveryId)) {
-            instance.getXaRecoveryIds().add(xaRecoveryId);
-            computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().equals(instanceId)).forEach(each -> each.getXaRecoveryIds().add(xaRecoveryId));
-            return true;
-        }
-        computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().equals(instanceId)).forEach(each -> each.getXaRecoveryIds().add(xaRecoveryId));
-        return false;
-    }
-    
-    /**
-     * Delete instance XA recovery id.
-     *
-     * @param instanceId instance id
-     * @param xaRecoveryId XA recovery id
-     * @return true if current instance updated, else false                    
-     */
-    public boolean deleteXaRecoveryId(final String instanceId, final String xaRecoveryId) {
-        if (instanceId.equals(instance.getCurrentInstanceId()) && instance.getXaRecoveryIds().contains(xaRecoveryId)) {
-            instance.getXaRecoveryIds().remove(xaRecoveryId);
-            computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().equals(instanceId)).forEach(each -> each.getXaRecoveryIds().remove(xaRecoveryId));
-            return true;
-        }
-        computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().equals(instanceId)).forEach(each -> each.getXaRecoveryIds().remove(xaRecoveryId));
-        return false;
     }
     
     /**
@@ -192,13 +158,6 @@ public final class InstanceContext {
      */
     public Optional<ComputeNodeInstance> getComputeNodeInstanceById(final String instanceId) {
         return computeNodeInstances.stream().filter(each -> instanceId.equals(each.getCurrentInstanceId())).findFirst();
-    }
-    
-    /**
-     * Init lock context.
-     */
-    public void initLockContext() {
-        lockContext.initLockState(this);
     }
     
     /**

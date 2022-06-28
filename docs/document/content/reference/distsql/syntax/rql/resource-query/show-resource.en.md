@@ -5,21 +5,21 @@ weight = 2
 
 ### Description
 
-The `SHOW RESOURCE` syntax is used to query the resources that have been added to the specified schema.
+The `SHOW RESOURCE` syntax is used to query the resources that have been added to the specified database.
 
 ### Syntax
 
 ```SQL
 ShowResource ::=
-  'SHOW' 'SCHEMA' 'RESOURCES' ('FROM' schemaName)?
+  'SHOW' 'DATABASE' 'RESOURCES' ('FROM' databaseName)?
 
-schemaName ::=
+databaseName ::=
   identifier
 ```
 
 ### Supplement
 
-- When `schemaName` is not specified, the default is the currently used `SCHEMA`; if `SCHEMA` is not used, it will prompt `No database selected`.
+- When `databaseName` is not specified, the default is the currently used `DATABASE`; if `DATABASE` is not used, it will prompt `No database selected`.
 
  ### Return Value Description
 
@@ -34,10 +34,10 @@ schemaName ::=
 
  ### Example
 
-- Query resources for the specified schema
+- Query resources for the specified database
 
 ```sql
-SHOW SCHEMA RESOURCES FROM sharding_db;
+SHOW DATABASE RESOURCES FROM sharding_db;
 ```
 ```sql
 +------+-------+-----------+------+------+---------------------------------+---------------------------+---------------------------+---------------+---------------+-----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -49,9 +49,9 @@ SHOW SCHEMA RESOURCES FROM sharding_db;
 2 rows in set (0.26 sec)
 ```
 
-- Query resources for the current schema
+- Query resources for the current database
 ```sql
-SHOW SCHEMA RESOURCES;
+SHOW DATABASE RESOURCES;
 ```
 ```sql
 +------+-------+-----------+------+------+---------------------------------+---------------------------+---------------------------+---------------+---------------+-----------+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+

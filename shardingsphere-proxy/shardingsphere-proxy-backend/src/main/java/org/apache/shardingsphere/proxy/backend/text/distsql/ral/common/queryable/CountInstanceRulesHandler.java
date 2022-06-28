@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.CountInstanceRulesStatement;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -38,12 +37,14 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
  * Count instance rules handler.
+ * 
+ * @deprecated This class breaks the pluggable design, nobody need to know all dynamic plugins. We should split the count logic push down to concrete rule. 
  */
+@Deprecated
 public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<CountInstanceRulesStatement> {
     
     private static final String SINGLE_TABLE = "single_table";
@@ -89,9 +90,7 @@ public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<
             if (each instanceof SingleTableRule) {
                 addSingleTableData(rowMap, (SingleTableRule) each);
             } else if (each instanceof ShardingRule) {
-                Optional<ShardingRuleConfiguration> shardingRuleConfig = database.getRuleMetaData().findSingleRuleConfiguration(ShardingRuleConfiguration.class);
-                Preconditions.checkState(shardingRuleConfig.isPresent());
-                addShardingData(rowMap, (ShardingRule) each, shardingRuleConfig.get());
+                addShardingData(rowMap, (ShardingRule) each);
             } else if (each instanceof ReadwriteSplittingRule) {
                 addReadwriteSplittingData(rowMap, (ReadwriteSplittingRule) each);
             } else if (each instanceof DatabaseDiscoveryRule) {
@@ -108,11 +107,11 @@ public final class CountInstanceRulesHandler extends QueryableRALBackendHandler<
         rowMap.compute(SINGLE_TABLE, (key, value) -> buildRow(value, SINGLE_TABLE, rule.getAllTables().size()));
     }
     
-    private void addShardingData(final Map<String, LocalDataQueryResultRow> rowMap, final ShardingRule rule, final ShardingRuleConfiguration ruleConfig) {
+    private void addShardingData(final Map<String, LocalDataQueryResultRow> rowMap, final ShardingRule rule) {
         addData(rowMap, SHARDING_TABLE, () -> rule.getTables().size());
         addData(rowMap, SHARDING_BINDING_TABLE, () -> rule.getBindingTableRules().size());
         addData(rowMap, SHARDING_BROADCAST_TABLE, () -> rule.getBroadcastTables().size());
-        addData(rowMap, SHARDING_SCALING, () -> ruleConfig.getScaling().size());
+        addData(rowMap, SHARDING_SCALING, () -> ((ShardingRuleConfiguration) rule.getConfiguration()).getScaling().size());
     }
     
     private void addReadwriteSplittingData(final Map<String, LocalDataQueryResultRow> rowMap, final ReadwriteSplittingRule rule) {

@@ -95,6 +95,6 @@ public final class FederationDatabaseMetaData {
      * @return FederationSchemaMetaData schema meta data
      */
     public Optional<FederationSchemaMetaData> getSchemaMetadata(final String schemaName) {
-        return Optional.of(schemas.get(schemaName));
+        return Optional.ofNullable(schemas.get(schemaName));
     }
 }

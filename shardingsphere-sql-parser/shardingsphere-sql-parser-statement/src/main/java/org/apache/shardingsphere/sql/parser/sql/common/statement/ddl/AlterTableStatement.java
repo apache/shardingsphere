@@ -86,5 +86,4 @@ public abstract class AlterTableStatement extends AbstractSQLStatement implement
     public Optional<ConvertTableDefinitionSegment> getConvertTableDefinition() {
         return Optional.ofNullable(convertTableDefinition);
     }
-    
 }

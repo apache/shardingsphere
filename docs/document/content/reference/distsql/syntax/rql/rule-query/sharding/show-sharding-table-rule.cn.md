@@ -11,17 +11,17 @@ weight = 3
 ### 语法
 ```
 ShowShardingTableRule ::=
-  'SHOW' 'SHARDING' 'TABLE' ('RULE' tableName | 'RULES') ('FROM' schemaName)?
+  'SHOW' 'SHARDING' 'TABLE' ('RULE' tableName | 'RULES') ('FROM' databaseName)?
 
 tableName ::=
   identifier
 
-schemaName ::=
+databaseName ::=
   identifier
 ```
 
 ### 补充说明
-- 未指定 `schemaName` 时，默认是当前使用的 `SCHEMA`。 如果也未使用 `SCHEMA` 则会提示 `No database selected`。
+- 未指定 `databaseName` 时，默认是当前使用的 `DATABASE`。 如果也未使用 `DATABASE` 则会提示 `No database selected`。
 
  ### 返回值说明
 

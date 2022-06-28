@@ -17,22 +17,14 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.rql.show;
 
-import lombok.Getter;
-import org.apache.shardingsphere.distsql.parser.subject.DistSQLSubjectTypeEnum;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
  * Count database rules statement.
  */
-@Getter
 public final class CountDatabaseRulesStatement extends ShowRulesStatement {
     
     public CountDatabaseRulesStatement(final DatabaseSegment database) {
         super(database);
-    }
-    
-    @Override
-    public DistSQLSubjectTypeEnum getSubjectType() {
-        return DistSQLSubjectTypeEnum.DEFAULT;
     }
 }

@@ -24,6 +24,9 @@ import org.apache.shardingsphere.integration.data.pipeline.framework.param.Scali
 import javax.xml.bind.JAXB;
 import java.util.List;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 public abstract class BaseExtraSQLITCase extends BaseITCase {
     
     @Getter
@@ -52,5 +55,29 @@ public abstract class BaseExtraSQLITCase extends BaseITCase {
     
     protected void createOrderItemTable() {
         executeWithLog(extraSQLCommand.getCreateTableOrderItem());
+    }
+    
+    @Override
+    protected void assertStopScalingSourceWriting() {
+        assertFalse(executeSql(extraSQLCommand.getUpdateTableOrderStatus()));
+        assertFalse(executeSql(extraSQLCommand.getCreateIndexStatus()));
+    }
+    
+    @Override
+    protected void assertRestoreScalingSourceWriting() {
+        assertTrue(executeSql(extraSQLCommand.getUpdateTableOrderStatus()));
+        assertTrue(executeSql(extraSQLCommand.getCreateIndexStatus()));
+    }
+    
+    private boolean executeSql(final String sql) {
+        try {
+            getJdbcTemplate().execute(sql);
+            return true;
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            assertTrue(ex.getCause().getMessage().endsWith("The database sharding_db is read-only"));
+            return false;
+        }
     }
 }

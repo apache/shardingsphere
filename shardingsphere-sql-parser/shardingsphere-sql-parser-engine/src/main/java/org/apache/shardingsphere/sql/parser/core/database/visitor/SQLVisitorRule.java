@@ -86,6 +86,8 @@ public enum SQLVisitorRule {
     
     CREATE_PUBLICATION("CreatePublication", SQLStatementType.DDL),
     
+    ALTER_PUBLICATION("AlterPublication", SQLStatementType.DDL),
+    
     ALTER_PROCEDURE("AlterProcedure", SQLStatementType.DDL),
     
     ALTER_STATEMENT("AlterStatement", SQLStatementType.DDL),
@@ -228,6 +230,8 @@ public enum SQLVisitorRule {
     
     RENAME("Rename", SQLStatementType.DDL),
     
+    ALTER_ROUTINE("AlterRoutine", SQLStatementType.DDL),
+    
     CREATE_EXTENSION("CreateExtension", SQLStatementType.DDL),
     
     ALTER_EXTENSION("AlterExtension", SQLStatementType.DDL),
@@ -239,6 +243,8 @@ public enum SQLVisitorRule {
     DECLARE("Declare", SQLStatementType.DDL),
     
     DISCARD("Discard", SQLStatementType.DDL),
+    
+    LISTEN("Listen", SQLStatementType.DDL),
     
     SET_CONSTRAINTS("SetConstraints", SQLStatementType.TCL),
     
@@ -480,6 +486,8 @@ public enum SQLVisitorRule {
     
     ALTER_DOMAIN("AlterDomain", SQLStatementType.DDL),
     
+    ALTER_POLICY("AlterPolicy", SQLStatementType.DDL),
+    
     ALTER_CONVERSION("AlterConversion", SQLStatementType.DDL),
     
     CREATE_TEXT_SEARCH("CreateTextSearch", SQLStatementType.DDL),
@@ -550,11 +558,17 @@ public enum SQLVisitorRule {
     
     CREATE_INMEMORY_JOIN_GROUP("CreateInmemoryJoinGroup", SQLStatementType.DDL),
     
+    ALTER_INMEMORY_JOIN_GROUP("AlterInmemoryJoinGroup", SQLStatementType.DDL),
+    
     DROP_INMEMORY_JOIN_GROUP("DropInmemoryJoinGroup", SQLStatementType.DDL),
     
     CREATE_RESTORE_POINT("CreateRestorePoint", SQLStatementType.DDL),
     
     DROP_RESTORE_POINT("DropRestorePoint", SQLStatementType.DDL),
+    
+    ALTER_LIBRARY("AlterLibrary", SQLStatementType.DDL),
+    
+    ALTER_MATERIALIZED_ZONEMAP("AlterMaterializedZonemap", SQLStatementType.DDL),
     
     CURSOR("Cursor", SQLStatementType.DDL),
     
@@ -566,7 +580,11 @@ public enum SQLVisitorRule {
     
     CHECKPOINT("Checkpoint", SQLStatementType.DML),
     
-    CLUSTER("Cluster", SQLStatementType.DDL);
+    CLUSTER("Cluster", SQLStatementType.DDL),
+    
+    CREATE_ACCESS_METHOD("CreateAccessMethod", SQLStatementType.DDL),
+    
+    DO("DoStatement", SQLStatementType.DML);
     
     private final String name;
     

@@ -104,6 +104,7 @@ execute
     | deallocate
     | explain
     | analyzeTable
+    | listen
     | load
     | createTablespace
     | alterTablespace
@@ -144,9 +145,17 @@ execute
     | dropOperatorFamily
     | dropAccessMethod
     | dropServer
+    | alterPolicy
     | checkpoint
+    | fetch
+    | move
     | close
     | cluster
     | alterOperator
+    | createAccessMethod
+    | alterPublication
+    | createAggregate
+    | createCast
+    | alterRoutine
     ) SEMI_? EOF
     ;

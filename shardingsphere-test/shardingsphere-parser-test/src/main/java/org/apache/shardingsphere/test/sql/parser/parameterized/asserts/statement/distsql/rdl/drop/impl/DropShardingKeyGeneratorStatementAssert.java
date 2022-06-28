@@ -45,7 +45,7 @@ public final class DropShardingKeyGeneratorStatementAssert {
             assertNull(assertContext.getText("Actual key generator name should not exist."), actual);
         } else {
             assertThat(assertContext.getText("Key generator names assertion error: "), actual.getKeyGeneratorNames(), is(expected.getKeyGeneratorName()));
-            assertThat(assertContext.getText("Contains exist clause assertion error: "), actual.isContainsExistClause(), is(expected.isContainsExistClause()));
+            assertThat(assertContext.getText("Contains exist clause assertion error: "), actual.isIfExists(), is(expected.isIfExists()));
         }
     }
 }

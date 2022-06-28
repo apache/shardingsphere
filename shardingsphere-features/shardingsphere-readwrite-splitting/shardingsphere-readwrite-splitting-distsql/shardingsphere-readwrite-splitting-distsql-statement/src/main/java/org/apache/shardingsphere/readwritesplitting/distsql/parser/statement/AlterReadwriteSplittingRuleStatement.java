@@ -19,7 +19,6 @@ package org.apache.shardingsphere.readwritesplitting.distsql.parser.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.subject.impl.ReadwriteSplittingSubjectSupplier;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
 
@@ -30,7 +29,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterReadwriteSplittingRuleStatement extends AlterRuleStatement implements ReadwriteSplittingSubjectSupplier {
+public final class AlterReadwriteSplittingRuleStatement extends AlterRuleStatement {
     
     private final Collection<ReadwriteSplittingRuleSegment> rules;
 }
