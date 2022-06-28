@@ -115,7 +115,6 @@ rules:
           readDataSourceNames:
             - write_ds_1_read_0
             - write_ds_1_read_1
-      type: Static
       loadBalancerName: roundRobin
   loadBalancers:
     roundRobin:
