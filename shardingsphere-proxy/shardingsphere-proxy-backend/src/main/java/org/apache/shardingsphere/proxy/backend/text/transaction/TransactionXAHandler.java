@@ -75,7 +75,6 @@ public final class TransactionXAHandler implements TextProtocolBackendHandler {
                 }
                 ResponseHeader header = backendHandler.execute();
                 TransactionHolder.setInTransaction();
-                connectionSession.getTransactionStatus().setManualXA(true);
                 return header;
             case "END":
             case "PREPARE":
@@ -86,7 +85,6 @@ public final class TransactionXAHandler implements TextProtocolBackendHandler {
                 try {
                     return backendHandler.execute();
                 } finally {
-                    connectionSession.getTransactionStatus().setManualXA(false);
                     TransactionHolder.clear();
                     FetchOrderByValueGroupsHolder.remove();
                 }
