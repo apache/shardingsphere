@@ -36,7 +36,6 @@ import java.util.Optional;
 import java.util.Properties;
 import java.util.Arrays;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -83,7 +82,7 @@ public final class YamlProxyConfigurationSwapperTest {
         assertThat(dataSource.getName(), is("readwrite_ds"));
         assertNotNull(dataSource.getStaticStrategy());
         assertThat(dataSource.getStaticStrategy().getWriteDataSourceName(), is("foo_db"));
-        assertThat( dataSource.getStaticStrategy().getReadDataSourceNames(), is(Arrays.asList("foo_db")));
+        assertThat(dataSource.getStaticStrategy().getReadDataSourceNames(), is(Arrays.asList("foo_db")));
         assertThat(actual.getLoadBalancers().size(), is(1));
         ShardingSphereAlgorithmConfiguration loadBalancer = actual.getLoadBalancers().get("round_robin");
         assertThat(loadBalancer.getProps().size(), is(1));
