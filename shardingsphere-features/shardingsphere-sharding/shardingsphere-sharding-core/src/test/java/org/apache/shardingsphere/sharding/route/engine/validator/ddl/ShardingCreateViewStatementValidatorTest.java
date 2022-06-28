@@ -89,6 +89,7 @@ public final class ShardingCreateViewStatementValidatorTest {
     public void assertPostValidateCreateView() {
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);
+        when(shardingRule.isShardingTable("order_view")).thenReturn(true);
         new ShardingCreateViewStatementValidator().postValidate(shardingRule, createViewStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class),
                 mock(ConfigurationProperties.class), routeContext);
     }
@@ -97,6 +98,15 @@ public final class ShardingCreateViewStatementValidatorTest {
     public void assertPostValidateCreateViewWithException() {
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(projectionsSegment.isDistinctRow()).thenReturn(true);
+        when(selectStatement.getProjections()).thenReturn(projectionsSegment);
+        new ShardingCreateViewStatementValidator().postValidate(shardingRule, createViewStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class),
+                mock(ConfigurationProperties.class), routeContext);
+    }
+    
+    @Test(expected = ShardingSphereException.class)
+    public void assertPostValidateCreateViewWithMultiRouteUnitWithoutRule() {
+        ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
+        when(projectionsSegment.isDistinctRow()).thenReturn(false);
         when(selectStatement.getProjections()).thenReturn(projectionsSegment);
         new ShardingCreateViewStatementValidator().postValidate(shardingRule, createViewStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class),
                 mock(ConfigurationProperties.class), routeContext);
