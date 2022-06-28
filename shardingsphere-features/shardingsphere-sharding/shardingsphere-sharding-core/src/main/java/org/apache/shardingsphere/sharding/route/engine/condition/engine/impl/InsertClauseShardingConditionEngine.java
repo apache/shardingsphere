@@ -114,10 +114,10 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
     
     private void generateShardingCondition(final CommonExpressionSegment expressionSegment, final ShardingCondition result, final String shardingColumn, final String tableName) {
         try {
-            Integer value = Integer.valueOf((expressionSegment).getText());
+            Integer value = Integer.valueOf(expressionSegment.getText());
             result.getValues().add(new ListShardingConditionValue<>(shardingColumn, tableName, Collections.singletonList(value)));
         } catch (NumberFormatException exception) {
-            result.getValues().add(new ListShardingConditionValue<>(shardingColumn, tableName, Collections.singletonList(( expressionSegment).getText())));
+            result.getValues().add(new ListShardingConditionValue<>(shardingColumn, tableName, Collections.singletonList(expressionSegment.getText())));
         }
     }
     
