@@ -490,7 +490,8 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        OpenGaussDropTableStatement result = new OpenGaussDropTableStatement(null != ctx.ifExists());
+        boolean containsCascade = null != ctx.dropTableOpt() && null != ctx.dropTableOpt().CASCADE();
+        OpenGaussDropTableStatement result = new OpenGaussDropTableStatement(null != ctx.ifExists(), containsCascade);
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
         return result;
     }

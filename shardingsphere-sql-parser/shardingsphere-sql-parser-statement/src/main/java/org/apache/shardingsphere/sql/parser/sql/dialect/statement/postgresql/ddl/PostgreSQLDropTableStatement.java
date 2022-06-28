@@ -32,4 +32,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 public final class PostgreSQLDropTableStatement extends DropTableStatement implements PostgreSQLStatement {
     
     private final boolean ifExists;
+    
+    private final boolean containsCascade;
 }

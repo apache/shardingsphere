@@ -556,7 +556,8 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        PostgreSQLDropTableStatement result = new PostgreSQLDropTableStatement(null != ctx.ifExists());
+        boolean containsCascade = null != ctx.dropTableOpt() && null != ctx.dropTableOpt().CASCADE();
+        PostgreSQLDropTableStatement result = new PostgreSQLDropTableStatement(null != ctx.ifExists(), containsCascade);
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
         return result;
     }
