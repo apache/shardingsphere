@@ -72,11 +72,11 @@ public final class TransactionBackendHandlerFactory {
                     ? new TransactionBackendHandler(tclStatement, TransactionOperationType.ROLLBACK_TO_SAVEPOINT, connectionSession)
                     : new TransactionBackendHandler(tclStatement, TransactionOperationType.ROLLBACK, connectionSession);
         }
-        if (tclStatement instanceof XAStatement) {
-            return new TransactionXAHandler(sqlStatementContext, sql, connectionSession);
-        }
         if (tclStatement instanceof SetTransactionStatement && OperationScope.GLOBAL != ((SetTransactionStatement) tclStatement).getScope()) {
             return new TransactionSetHandler((SetTransactionStatement) tclStatement, connectionSession);
+        }
+        if (tclStatement instanceof XAStatement) {
+            return new TransactionXAHandler(sqlStatementContext, sql, connectionSession);
         }
         return new BroadcastDatabaseBackendHandler(sqlStatementContext, sql, connectionSession);
     }
