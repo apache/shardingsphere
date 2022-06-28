@@ -16,7 +16,8 @@
   ~ limitations under the License.
   -->
 
-<sql-cases>
-    <sql-case id="drop_server" value="DROP SERVER s0" db-types="PostgreSQL,openGauss" />
-    <sql-case id="drop_server_if_exists" value="DROP SERVER IF EXISTS s0" db-types="PostgreSQL,openGauss" />
-</sql-cases>
+<sql-parser-test-cases>
+    <listen sql-case-id="listen" channel-name="foo_event" />
+    <listen sql-case-id="listen_notify" channel-name="notify_async2"/>
+    <listen sql-case-id="listen_low" channel-name="a"/>
+</sql-parser-test-cases>

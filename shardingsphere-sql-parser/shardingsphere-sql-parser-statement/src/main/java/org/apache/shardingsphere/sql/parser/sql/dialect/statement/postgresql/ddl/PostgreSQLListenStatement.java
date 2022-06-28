@@ -15,5 +15,15 @@
  * limitations under the License.
  */
 
-CREATE TABLE IF NOT EXISTS t_role (id INT NOT NULL AUTO_INCREMENT, user_name VARCHAR(45) NULL, PRIMARY KEY (id));
-CREATE TABLE IF NOT EXISTS t_product (id INT NOT NULL AUTO_INCREMENT, product_name VARCHAR(45) NULL, PRIMARY KEY (id));
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
+
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.ListenStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
+
+/**
+ * PostgreSQL listen statement.
+ */
+@ToString
+public class PostgreSQLListenStatement extends ListenStatement implements PostgreSQLStatement {
+}

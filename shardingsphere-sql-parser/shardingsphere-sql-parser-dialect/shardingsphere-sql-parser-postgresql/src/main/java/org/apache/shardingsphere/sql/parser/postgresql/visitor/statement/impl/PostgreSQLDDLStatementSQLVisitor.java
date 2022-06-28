@@ -153,6 +153,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Ta
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TableNamesClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ValidateConstraintSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ListenContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.DirectionType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
@@ -274,6 +275,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLMoveStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLPrepareStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLTruncateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLListenStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -1248,5 +1250,13 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     @Override
     public ASTNode visitCreateCast(final CreateCastContext ctx) {
         return new PostgreSQLCreateCastStatement();
+    }
+    
+    @Override
+    public ASTNode visitListen(final ListenContext ctx) {
+        String channelName = ctx.channelName().getText();
+        PostgreSQLListenStatement result = new PostgreSQLListenStatement();
+        result.setChannelName(channelName);
+        return result;
     }
 }

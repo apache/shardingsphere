@@ -244,6 +244,8 @@ public enum SQLVisitorRule {
     
     DISCARD("Discard", SQLStatementType.DDL),
     
+    LISTEN("Listen", SQLStatementType.DDL),
+    
     SET_CONSTRAINTS("SetConstraints", SQLStatementType.TCL),
     
     SET_TRANSACTION("SetTransaction", SQLStatementType.TCL),

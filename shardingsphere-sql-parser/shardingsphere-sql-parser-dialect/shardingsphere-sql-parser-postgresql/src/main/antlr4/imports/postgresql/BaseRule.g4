@@ -895,6 +895,10 @@ colId
     : identifier
     ;
 
+channelName
+    : identifier
+    ;
+
 typeFunctionName
     : identifier | unreservedWord | typeFuncNameKeyword
     ;

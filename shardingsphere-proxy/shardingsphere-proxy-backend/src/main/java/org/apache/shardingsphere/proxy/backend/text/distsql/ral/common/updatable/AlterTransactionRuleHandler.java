@@ -47,6 +47,7 @@ public final class AlterTransactionRuleHandler extends UpdatableRALBackendHandle
         globalRules.removeIf(each -> each instanceof TransactionRule);
         Map<String, ShardingSphereDatabase> databases = contextManager.getMetaDataContexts().getMetaData().getDatabases();
         TransactionRule transactionRule = new TransactionRule(toBeAlteredRuleConfig, databases);
+        transactionRule.setInstanceContext(contextManager.getInstanceContext());
         for (String each : transactionRule.getResources().keySet()) {
             transactionRule.addResource(databases.get(each));
         }

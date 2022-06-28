@@ -15,5 +15,15 @@
  * limitations under the License.
  */
 
-CREATE TABLE IF NOT EXISTS t_role (id INT NOT NULL AUTO_INCREMENT, user_name VARCHAR(45) NULL, PRIMARY KEY (id));
-CREATE TABLE IF NOT EXISTS t_product (id INT NOT NULL AUTO_INCREMENT, product_name VARCHAR(45) NULL, PRIMARY KEY (id));
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
+
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropServerStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
+
+/**
+ * OpenGauss drop server statement.
+ */
+@ToString
+public final class OpenGaussDropServerStatement extends DropServerStatement implements OpenGaussStatement {
+}

@@ -20,15 +20,10 @@ package org.apache.shardingsphere.mode.metadata;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
-import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
-import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Optional;
 
 /**
@@ -43,11 +38,6 @@ public final class MetaDataContexts implements AutoCloseable {
     private final ShardingSphereMetaData metaData;
     
     private final OptimizerContext optimizerContext;
-    
-    public MetaDataContexts(final MetaDataPersistService persistService) {
-        this(persistService, new ShardingSphereMetaData(),
-                OptimizerContextFactory.create(new HashMap<>(), new ShardingSphereRuleMetaData(GlobalRulesBuilder.buildRules(Collections.emptyList(), Collections.emptyMap()))));
-    }
     
     /**
      * Get persist service.
