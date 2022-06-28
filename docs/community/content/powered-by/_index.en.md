@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 209 companies.
+Total: 211 companies.
 
 ### Infra Software
 <ul>
@@ -47,7 +47,8 @@ Total: 209 companies.
 ### FinTech
 <ul>
     <li><a href="http://jr.jd.com/" rel="nofollow">JD Finance</a>: <a href="https://www.mysql.com/customers/view/?id=1461" rel="nofollow">User Case</a></li>
-    <li><a href="http://www.sunline-i.com/" rel="nofollow">Sunline</a></li>    
+    <li><a href="https://tech.pingan.com/" rel="nofollow">PING AN TECHNOLOGY</a></li>
+    <li><a href="http://www.sunline-i.com/" rel="nofollow">Sunline</a></li> 
     <li><a href="https://www.360jinrong.net/" rel="nofollow">360 ShuKe</a></li>
     <li><a href="https://www.msxf.com/" rel="nofollow">MSXF</a></li>
     <li><a href="https://www.9fgroup.com/" rel="nofollow">9fgroup</a></li>
@@ -207,6 +208,7 @@ Total: 209 companies.
 
 ### News
 <ul>
+    <li><a href="http://www.people.com.cn/" rel="nofollow">people.cn</a></li>
     <li><a href="https://ss.sohu.com/" rel="nofollow">Sohu News</a></li>
     <li><a href="https://www.tianya.cn/" rel="nofollow">TianYa</a></li>
     <li><a href="https://www.autohome.com.cn/" rel="nofollow">AutoHome</a></li>
