@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 209 家公司。
+共计 211 家公司。
 
 ### 基础软件
 <ul>
@@ -47,6 +47,7 @@ chapter = true
 ### 金融科技
 <ul>
     <li><a href="http://jr.jd.com/" rel="nofollow">京东金融</a>：<a href="https://mp.weixin.qq.com/s/Rzr-aKFwmm71QNUs68WQNA" rel="nofollow">用户案例</a></li>
+    <li><a href="https://tech.pingan.com/" rel="nofollow">平安科技</a></li>
     <li><a href="http://www.sunline.cn/" rel="nofollow">长亮科技</a></li>
     <li><a href="https://www.360jinrong.net/" rel="nofollow">360数科</a></li>
     <li><a href="https://www.msxf.com/" rel="nofollow">马上金融</a></li>
@@ -207,6 +208,7 @@ chapter = true
 
 ### 新闻资讯
 <ul>
+    <li><a href="http://www.people.com.cn/" rel="nofollow">人民网</a></li>
     <li><a href="https://ss.sohu.com/" rel="nofollow">搜狐新闻</a></li>
     <li><a href="https://www.tianya.cn/" rel="nofollow">天涯社区</a></li>
     <li><a href="https://www.autohome.com.cn/" rel="nofollow">汽车之家</a></li>

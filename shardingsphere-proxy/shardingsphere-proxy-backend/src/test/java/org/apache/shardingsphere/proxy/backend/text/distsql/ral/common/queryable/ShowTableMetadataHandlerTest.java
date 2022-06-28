@@ -32,7 +32,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.junit.Test;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -60,14 +59,14 @@ public final class ShowTableMetadataHandlerTest extends ProxyContextRestorer {
         handler.init(createSqlStatement(), connectionSession);
         handler.execute();
         handler.next();
-        List<Object> data = new ArrayList<>(handler.getRowData());
+        List<Object> data = handler.getRowData().getData();
         assertThat(data.size(), is(4));
         assertThat(data.get(0), is("db_name"));
         assertThat(data.get(1), is("t_order"));
         assertThat(data.get(2), is("COLUMN"));
         assertThat(data.get(3), is("order_id"));
         handler.next();
-        data = new ArrayList<>(handler.getRowData());
+        data = handler.getRowData().getData();
         assertThat(data.size(), is(4));
         assertThat(data.get(0), is("db_name"));
         assertThat(data.get(1), is("t_order"));

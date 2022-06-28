@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
@@ -29,7 +30,6 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.Hint
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.HintStatementExecutorFactory;
 
 import java.sql.SQLException;
-import java.util.Collection;
 
 /**
  * Hint dist sql backend handler.
@@ -59,7 +59,7 @@ public final class HintDistSQLBackendHandler implements TextProtocolBackendHandl
     }
     
     @Override
-    public Collection<Object> getRowData() throws SQLException {
-        return hintStatementExecutor.getQueryResponseRow().getData();
+    public QueryResponseRow getRowData() throws SQLException {
+        return hintStatementExecutor.getQueryResponseRow();
     }
 }

@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
  */
 public final class StandardJdbcUrlParser {
     
-    private static final String SCHEMA_PATTERN = "(?<schema>[\\w\\+:%]+)\\s*";
+    private static final String SCHEMA_PATTERN = "(?<schema>[\\w+:%]+)\\s*";
     
     private static final String AUTHORITY_PATTERN = "(?://(?<authority>[^/?#]*))?\\s*";
     

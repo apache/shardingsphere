@@ -27,7 +27,6 @@ import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Test;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -51,7 +50,7 @@ public final class ShowTransactionRuleHandlerTest extends ProxyContextRestorer {
         ProxyContext.init(contextManager);
         handler.execute();
         handler.next();
-        List<Object> data = new ArrayList<>(handler.getRowData());
+        List<Object> data = handler.getRowData().getData();
         assertThat(data.size(), is(3));
         assertThat(data.get(0), is("XA"));
         assertThat(data.get(1), is("Atomikos"));
@@ -70,7 +69,7 @@ public final class ShowTransactionRuleHandlerTest extends ProxyContextRestorer {
         ProxyContext.init(contextManager);
         handler.execute();
         handler.next();
-        List<Object> data = new ArrayList<>(handler.getRowData());
+        List<Object> data = handler.getRowData().getData();
         assertThat(data.size(), is(3));
         assertThat(data.get(0), is("LOCAL"));
         assertThat(data.get(1), is(""));
