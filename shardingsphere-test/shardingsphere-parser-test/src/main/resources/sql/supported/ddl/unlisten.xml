@@ -17,9 +17,7 @@
   -->
 
 <sql-cases>
-    <sql-case id="unlisten" value="UNLISTEN *;" db-types="PostgreSQL" />
-    <sql-case id="unlisten_notify" value="UNLISTEN notify_async2;" db-types="PostgreSQL" />
-    <sql-case id="unlisten_low" value="UNLISTEN a;" db-types="PostgreSQL" />
+    <sql-case id="unlisten" value="UNLISTEN *;" db-types="PostgreSQL"/>
+    <sql-case id="unlisten_notify" value="UNLISTEN notify_async2;" db-types="PostgreSQL"/>
+    <sql-case id="unlisten_low" value="UNLISTEN a;" db-types="PostgreSQL"/>
 </sql-cases>
-
-

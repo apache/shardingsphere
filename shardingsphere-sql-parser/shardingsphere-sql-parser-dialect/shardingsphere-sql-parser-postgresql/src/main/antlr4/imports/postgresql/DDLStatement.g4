@@ -1795,7 +1795,7 @@ listen
     : LISTEN channelName
     ;
 
-unListen
+unlisten
     : UNLISTEN (channelName | ASTERISK_)
     ;
 

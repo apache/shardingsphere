@@ -19,20 +19,20 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.UnListenStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.UnlistenStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.UnListenStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.UnlistenStatementTestCase;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class UnListenStatementAssert {
+public final class UnlistenStatementAssert {
     
     /**
-     * Assert unListen statement is correct with expected parser result.
+     * Assert unlisten statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual unListen statement
-     * @param expected expected unListen statement test case
+     * @param actual actual unlisten statement
+     * @param expected expected unlisten statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final UnListenStatement actual, final UnListenStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final UnlistenStatement actual, final UnlistenStatementTestCase expected) {
     }
 }

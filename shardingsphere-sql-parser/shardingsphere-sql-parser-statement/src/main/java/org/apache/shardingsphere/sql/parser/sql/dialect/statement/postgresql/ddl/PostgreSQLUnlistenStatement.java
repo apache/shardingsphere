@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.UnListenStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.UnlistenStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * PostgreSQL listen statement.
+ * PostgreSQL unlisten statement.
  */
 @ToString
-public class PostgreSQLUnListenStatement extends UnListenStatement implements PostgreSQLStatement {
+public class PostgreSQLUnlistenStatement extends UnlistenStatement implements PostgreSQLStatement {
 }

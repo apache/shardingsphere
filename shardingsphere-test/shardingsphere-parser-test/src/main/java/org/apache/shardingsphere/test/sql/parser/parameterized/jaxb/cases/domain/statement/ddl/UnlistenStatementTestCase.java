@@ -22,6 +22,5 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 /**
  * UnListen statement test case.
  */
-public final class UnListenStatementTestCase extends SQLParserTestCase {
-    
+public final class UnlistenStatementTestCase extends SQLParserTestCase {
 }
