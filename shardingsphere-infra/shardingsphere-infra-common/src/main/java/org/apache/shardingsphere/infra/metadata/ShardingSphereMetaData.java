@@ -35,6 +35,7 @@ import java.util.Properties;
 @Getter
 public final class ShardingSphereMetaData {
     
+    // TODO should be concurrentHashMap, but some times throw NPE, need to investigate
     private final Map<String, ShardingSphereDatabase> databases;
     
     private final ShardingSphereRuleMetaData globalRuleMetaData;
