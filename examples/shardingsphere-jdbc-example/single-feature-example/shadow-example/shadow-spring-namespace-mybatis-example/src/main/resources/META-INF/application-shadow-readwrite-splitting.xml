@@ -69,7 +69,7 @@
 
     <readwrite-splitting:rule id="readWriteSplittingRule">
         <readwrite-splitting:data-source-rule id="demo_ds" load-balance-algorithm-ref="randomStrategy">
-            <readwrite-splitting:static-strategy id="staticStrategy" write-data-source-name="write_ds" read-data-source-names="read_ds"/>
+            <readwrite-splitting:static-strategy id="staticStrategy" write-data-source-name="write-ds" read-data-source-names="read-ds"/>
         </readwrite-splitting:data-source-rule>
     </readwrite-splitting:rule>
 
