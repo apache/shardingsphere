@@ -111,6 +111,10 @@ countInstanceRules
     : COUNT INSTANCE RULES (FROM databaseName)?
     ;
 
+countSingleTableRule
+    : COUNT SINGLE TABLE RULE (FROM databaseName)?
+    ;
+
 trafficRuleDefinition
     : ruleName LP (labelDefinition COMMA)? trafficAlgorithmDefinition (COMMA loadBalancerDefinition)? RP
     ;
