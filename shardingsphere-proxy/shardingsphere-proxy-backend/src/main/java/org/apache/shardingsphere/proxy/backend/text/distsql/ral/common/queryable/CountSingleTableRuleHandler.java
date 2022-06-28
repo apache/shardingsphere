@@ -28,7 +28,7 @@ import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
@@ -37,7 +37,6 @@ import java.util.Map;
 public final class CountSingleTableRuleHandler extends QueryableRALBackendHandler<CountSingleTableRuleStatement> {
     
     private static final String SINGLE_TABLE = "single_table";
-    
     
     @Override
     public Collection<String> getColumnNames() {
@@ -50,9 +49,11 @@ public final class CountSingleTableRuleHandler extends QueryableRALBackendHandle
         ProxyContext.getInstance().getAllDatabaseNames().forEach(each -> addDatabaseData(result, ProxyContext.getInstance().getDatabase(each)));
         return result.values();
     }
-
+    
     private Map<String, LocalDataQueryResultRow> initRows() {
-        return Collections.singletonMap(SINGLE_TABLE, new LocalDataQueryResultRow(SINGLE_TABLE, 0));
+        Map<String, LocalDataQueryResultRow> result = new LinkedHashMap<>();
+        result.put(SINGLE_TABLE, new LocalDataQueryResultRow(SINGLE_TABLE, 0));
+        return result;
     }
     
     private void addDatabaseData(final Map<String, LocalDataQueryResultRow> rowMap, final ShardingSphereDatabase database) {
