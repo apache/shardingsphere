@@ -117,30 +117,24 @@ public final class ContextManager implements AutoCloseable {
      * @param databaseName database name
      * @throws SQLException SQL exception
      */
-    public void addDatabase(final String databaseName) throws SQLException {
-        if (metaDataContexts.getMetaData().getDatabases().containsKey(databaseName)) {
-            return;
+    public synchronized void addDatabase(final String databaseName) throws SQLException {
+        if (!metaDataContexts.getMetaData().getDatabases().containsKey(databaseName)) {
+            addDatabaseMetaData(databaseName);
+            addFederationDatabaseMetaData(databaseName);
+            persistMetaData(metaDataContexts);
         }
-        MetaDataContexts newMetaDataContexts = createMetaDataContext(databaseName);
-        FederationDatabaseMetaData federationDatabaseMetaData = newMetaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName);
-        metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().put(databaseName, federationDatabaseMetaData);
-        metaDataContexts.getOptimizerContext().getPlannerContexts().put(databaseName, OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
-        metaDataContexts.getMetaData().getDatabases().put(databaseName, newMetaDataContexts.getMetaData().getDatabases().get(databaseName));
-        persistMetaData(metaDataContexts);
-        metaDataContexts.getMetaData().getGlobalRuleMetaData()
-                .findRules(ResourceHeldRule.class).forEach(each -> each.addResource(newMetaDataContexts.getMetaData().getDatabases().get(databaseName)));
-        metaDataContexts.getMetaData().getDatabases().get(databaseName).getRuleMetaData()
-                .findRules(ResourceHeldRule.class).forEach(each -> each.addResource(newMetaDataContexts.getMetaData().getDatabases().get(databaseName)));
     }
     
-    private MetaDataContexts createMetaDataContext(final String databaseName) throws SQLException {
-        ConfigurationProperties props = metaDataContexts.getMetaData().getProps();
-        Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(
-                Collections.singletonMap(databaseName, new DataSourceProvidedDatabaseConfiguration(new HashMap<>(), new LinkedList<>())), props);
-        ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(
-                GlobalRulesBuilder.buildRules(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), databases));
-        return new MetaDataContexts(
-                metaDataContexts.getPersistService().orElse(null), new ShardingSphereMetaData(databases, globalMetaData, props), OptimizerContextFactory.create(databases, globalMetaData));
+    private void addDatabaseMetaData(final String databaseName) throws SQLException {
+        ShardingSphereDatabase database = ShardingSphereDatabase.create(databaseName, DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), metaDataContexts.getMetaData().getProps()));
+        metaDataContexts.getMetaData().getDatabases().put(databaseName, database);
+        metaDataContexts.getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class).forEach(each -> each.addResource(database));
+    }
+    
+    private void addFederationDatabaseMetaData(final String databaseName) {
+        FederationDatabaseMetaData federationDatabaseMetaData = new FederationDatabaseMetaData(databaseName, Collections.emptyMap());
+        metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().put(databaseName, federationDatabaseMetaData);
+        metaDataContexts.getOptimizerContext().getPlannerContexts().put(databaseName, OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
     }
     
     /**

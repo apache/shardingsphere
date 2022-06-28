@@ -29,7 +29,6 @@ import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.junit.Test;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -56,7 +55,7 @@ public class ShowTrafficRulesHandlerTest extends ProxyContextRestorer {
         ProxyContext.init(contextManager);
         handler.execute();
         handler.next();
-        List<Object> data = new ArrayList<>(handler.getRowData());
+        List<Object> data = handler.getRowData().getData();
         assertThat(data.size(), is(6));
         assertThat(data.get(0), is("rule_name_1"));
         assertThat(data.get(1), is("olap,order_by"));

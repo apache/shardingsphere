@@ -69,7 +69,7 @@ public final class ReactiveMySQLComQueryPacketExecutor implements ReactiveComman
             try {
                 if (ResponseType.QUERY == responseType) {
                     while (textProtocolBackendHandler.next()) {
-                        result.add(new MySQLTextResultSetRowPacket(++currentSequenceId, textProtocolBackendHandler.getRowData()));
+                        result.add(new MySQLTextResultSetRowPacket(++currentSequenceId, textProtocolBackendHandler.getRowData().getData()));
                     }
                     result.add(new MySQLEofPacket(++currentSequenceId, ServerStatusFlagCalculator.calculateFor(connectionSession)));
                 }

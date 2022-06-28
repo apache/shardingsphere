@@ -59,21 +59,21 @@ public final class DistributedLockContext extends AbstractLockContext {
     
     @Override
     protected boolean tryLock(final DatabaseLockNameDefinition lockNameDefinition) {
-        return lockManager.tryLock(lockNameDefinition.getDatabaseName(), lockNameDefinition.getLockMode());
+        return lockManager.tryLock(lockNameDefinition);
     }
     
     @Override
     protected boolean tryLock(final DatabaseLockNameDefinition lockNameDefinition, final long timeoutMilliseconds) {
-        return lockManager.tryLock(lockNameDefinition.getDatabaseName(), lockNameDefinition.getLockMode(), timeoutMilliseconds);
+        return lockManager.tryLock(lockNameDefinition, timeoutMilliseconds);
     }
     
     @Override
     protected void releaseLock(final DatabaseLockNameDefinition lockNameDefinition) {
-        lockManager.releaseLock(lockNameDefinition.getDatabaseName());
+        lockManager.releaseLock(lockNameDefinition);
     }
     
     @Override
     protected boolean isLocked(final DatabaseLockNameDefinition lockNameDefinition) {
-        return lockManager.isLocked(lockNameDefinition.getDatabaseName());
+        return lockManager.isLocked(lockNameDefinition);
     }
 }

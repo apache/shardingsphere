@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager;
 
-import org.apache.shardingsphere.infra.lock.LockMode;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.ShardingSphereInterMutexLockHolder;
+import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDefinition;
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.required.RequiredSPI;
 
@@ -46,34 +46,32 @@ public interface ShardingSphereLockManager extends RequiredSPI {
     /**
      * Try lock for database.
      *
-     * @param databaseName database name
-     * @param lockMode lock mode
+     * @param lockNameDefinition lock name definition
      * @return is locked or not
      */
-    boolean tryLock(String databaseName, LockMode lockMode);
+    boolean tryLock(DatabaseLockNameDefinition lockNameDefinition);
     
     /**
      * Try lock write for database.
      *
-     * @param databaseName database name
-     * @param lockMode lock mode
+     * @param lockNameDefinition lock name definition
      * @param timeoutMilliseconds timeout milliseconds
      * @return is locked or not
      */
-    boolean tryLock(String databaseName, LockMode lockMode, long timeoutMilliseconds);
+    boolean tryLock(DatabaseLockNameDefinition lockNameDefinition, long timeoutMilliseconds);
     
     /**
      * Release lock for database.
      *
-     * @param databaseName database name
+     * @param lockNameDefinition lock name definition
      */
-    void releaseLock(String databaseName);
+    void releaseLock(DatabaseLockNameDefinition lockNameDefinition);
     
     /**
      * Is locked database.
      *
-     * @param databaseName database name
+     * @param lockNameDefinition lock name definition
      * @return is locked or not
      */
-    boolean isLocked(String databaseName);
+    boolean isLocked(DatabaseLockNameDefinition lockNameDefinition);
 }

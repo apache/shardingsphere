@@ -21,7 +21,6 @@ import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKey
 import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertSelectContext;
 import org.apache.shardingsphere.infra.binder.segment.insert.values.InsertValueContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.route.engine.condition.ShardingCondition;
 import org.apache.shardingsphere.sharding.route.engine.condition.engine.impl.InsertClauseShardingConditionEngine;
@@ -98,14 +97,14 @@ public final class InsertClauseShardingConditionEngineTest {
         assertTrue(shardingConditions.get(0).getValues().isEmpty());
     }
     
-    @Test(expected = ShardingSphereException.class)
+    @Test
     public void assertCreateShardingConditionsInsertStatementWithGeneratedKeyContextUsingCommonExpressionSegmentEmpty() {
         when(insertStatementContext.getInsertValueContexts()).thenReturn(Collections.singletonList(createInsertValueContextAsCommonExpressionSegmentEmptyText()));
         when(insertStatementContext.getGeneratedKeyContext()).thenReturn(Optional.of(mock(GeneratedKeyContext.class)));
         when(shardingRule.findShardingColumn(any(), any())).thenReturn(Optional.of("foo_sharding_col"));
         List<ShardingCondition> shardingConditions = shardingConditionEngine.createShardingConditions(insertStatementContext, Collections.emptyList());
         assertThat(shardingConditions.get(0).getStartIndex(), is(0));
-        assertTrue(shardingConditions.get(0).getValues().isEmpty());
+        assertThat(shardingConditions.get(0).getValues().size(), is(1));
     }
     
     @Test

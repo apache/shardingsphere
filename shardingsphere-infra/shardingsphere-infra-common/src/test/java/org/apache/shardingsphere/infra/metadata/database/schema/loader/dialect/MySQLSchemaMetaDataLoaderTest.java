@@ -88,12 +88,12 @@ public final class MySQLSchemaMetaDataLoaderTest {
     
     private ResultSet mockTableMetaDataResultSet() throws SQLException {
         ResultSet result = mock(ResultSet.class);
-        when(result.next()).thenReturn(true, true, true, true, true, false);
+        when(result.next()).thenReturn(true, true, true, true, true, true, false);
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
-        when(result.getString("COLUMN_NAME")).thenReturn("id", "name", "doc", "geo", "t_year");
-        when(result.getString("DATA_TYPE")).thenReturn("int", "varchar", "json", "geometry", "year");
-        when(result.getString("COLUMN_KEY")).thenReturn("PRI", "", "", "", "");
-        when(result.getString("EXTRA")).thenReturn("auto_increment", "", "", "", "");
+        when(result.getString("COLUMN_NAME")).thenReturn("id", "name", "doc", "geo", "t_year", "mp");
+        when(result.getString("DATA_TYPE")).thenReturn("int", "varchar", "json", "geometry", "year", "multipolygon");
+        when(result.getString("COLUMN_KEY")).thenReturn("PRI", "", "", "", "", "");
+        when(result.getString("EXTRA")).thenReturn("auto_increment", "", "", "", "", "");
         when(result.getString("COLLATION_NAME")).thenReturn("utf8", "utf8_general_ci");
         return result;
     }
@@ -115,13 +115,14 @@ public final class MySQLSchemaMetaDataLoaderTest {
     private void assertTableMetaDataMap(final Collection<SchemaMetaData> schemaMetaDataList) {
         assertThat(schemaMetaDataList.size(), is(1));
         TableMetaData actualTableMetaData = schemaMetaDataList.iterator().next().getTables().iterator().next();
-        assertThat(actualTableMetaData.getColumns().size(), is(5));
+        assertThat(actualTableMetaData.getColumns().size(), is(6));
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
         assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, true, true, true)));
         assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false)));
         assertThat(columnsIterator.next(), is(new ColumnMetaData("doc", -1, false, false, false)));
         assertThat(columnsIterator.next(), is(new ColumnMetaData("geo", -2, false, false, false)));
         assertThat(columnsIterator.next(), is(new ColumnMetaData("t_year", 91, false, false, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("mp", -2, false, false, false)));
         assertThat(actualTableMetaData.getIndexes().size(), is(1));
         Iterator<IndexMetaData> indexesIterator = actualTableMetaData.getIndexes().iterator();
         assertThat(indexesIterator.next(), is(new IndexMetaData("id")));

@@ -22,7 +22,6 @@
     <sql-case id="assert_select_with_json_unquote_extract_sign_with_parameter_marker" value="SELECT * FROM t_order WHERE order_id -&gt;&gt; ?" db-types="MySQL" />
     <sql-case id="assert_insert_with_first" value="INSERT FIRST INTO TABLE_XXX (field1) VALUES (field1) SELECT field1 FROM TABLE_XXX2" db-types="Oracle" />
     <sql-case id="assert_dist_SQL_show_rule_parse_conflict" value="SHOW REPLICA_QUERY RULE FROM schema_name" />
-    <sql-case id="create_bit_xor_table" value="create table BIT_XOR (a int);" db-types="MySQL" />
     <sql-case id="select_with_comment1" value="select 2 as expected, /*!01000/**/*/ 2 as result;" db-types="MySQL" />
     <sql-case id="select_with_comment2" value="select 1 as expected, /*!99998/**/*/ 1 as result;" db-types="MySQL" />
     <sql-case id="select_with_comment5" value="select 7 as expected, /*!01000 1 + /* 8 + */ 2 + */ 4 as result;" db-types="MySQL" />
@@ -697,10 +696,6 @@
     <sql-case id="create_by_mysql_source_test_case1221" value="create procedure test_signal() begin DECLARE aaa VARCHAR(64); DECLARE bbb VARCHAR(64); DECLARE ccc VARCHAR(64); DECLARE ddd VARCHAR(64); DECLARE eee VARCHAR(64); DECLARE fff VARCHAR(64); DECLARE ggg VARCHAR(64); DECLARE hhh VARCHAR(64); DECLARE iii VARCHAR(64); DECLARE jjj VARCHAR(64); DECLARE kkk VARCHAR(64); DECLARE warn CONDITION FOR SQLSTATE &quot;01234&quot;; set aaa= repeat(&quot;A&quot;, 64); set bbb= repeat(&quot;B&quot;, 64); set ccc= repeat(&quot;C&quot;, 64); set ddd= repeat(&quot;D&quot;, 64); set eee= repeat(&quot;E&quot;, 64); set fff= repeat(&quot;F&quot;, 64); set ggg= repeat(&quot;G&quot;, 64); set hhh= repeat(&quot;H&quot;, 64); set iii= repeat(&quot;I&quot;, 64); set jjj= repeat(&quot;J&quot;, 64); set kkk= repeat(&quot;K&quot;, 64); SIGNAL warn SET CLASS_ORIGIN = aaa, SUBCLASS_ORIGIN = bbb, CONSTRAINT_CATALOG = ccc, CONSTRAINT_SCHEMA = ddd, CONSTRAINT_NAME = eee, CATALOG_NAME = fff, SCHEMA_NAME = ggg, TABLE_NAME = hhh, COLUMN_NAME = iii, CURSOR_NAME = jjj, MESSAGE_TEXT = kkk, MYSQL_ERRNO = 65535; end" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1222" value="create procedure test_signal() begin DECLARE céèçà foo CONDITION FOR SQLSTATE &apos;12345&apos;; SIGNAL céèçà SET MYSQL_ERRNO = 1000; end" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1224" value="create procedure u() use sptmp" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case1230" value="create table BIT_XOR (a int)" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case1231" value="create table BIT_XOR (a int)" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case1232" value="create table BIT_XOR(a int)" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case1233" value="create table BIT_XOR(a int)" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1234" value="create table `#mysql50#abc``def` ( id int )" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1235" value="create table `` (a int)" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1236" value="create table ```a` (i int)" db-types="MySQL" />
@@ -3044,7 +3039,6 @@
     <sql-case id="low_call_by_mysql_source_test_case206" value="call test.longprocedure(@value); select @value" db-types="MySQL" />
     <sql-case id="low_default-character-set=koi8r_by_mysql_source_test_case1" value="default-character-set=koi8r default-collation=koi8r_bin let $MYSQLD_LOG= $MYSQLTEST_VARDIR/log/save_dd_upgrade_1.log" db-types="MySQL" />
     <sql-case id="low_drop_by_mysql_source_test_case1" value="drop function `f``1`" db-types="MySQL" />
-    <sql-case id="low_drop_by_mysql_source_test_case3" value="drop table BIT_XOR" db-types="MySQL" />
     <sql-case id="low_drop_by_mysql_source_test_case4" value="drop table ```a`" db-types="MySQL" />
     <sql-case id="low_drop_by_mysql_source_test_case5" value="drop table `t1a``b`" db-types="MySQL" />
     <sql-case id="low_drop_by_mysql_source_test_case6" value="drop table `t``1`, `t 1`" db-types="MySQL" />

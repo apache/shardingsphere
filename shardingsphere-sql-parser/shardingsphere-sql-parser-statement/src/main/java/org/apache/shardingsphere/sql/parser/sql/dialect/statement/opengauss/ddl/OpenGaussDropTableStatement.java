@@ -32,4 +32,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 public final class OpenGaussDropTableStatement extends DropTableStatement implements OpenGaussStatement {
     
     private final boolean ifExists;
+    
+    private final boolean containsCascade;
 }
