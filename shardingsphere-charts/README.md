@@ -3,13 +3,10 @@
 Use [Helm](https://helm.sh/) to provide guidance for the installation of ShardingSphere-Proxy instance in Kubernetes cluster.
 
 ## Quick Start
-
+Attention: The following installation method will start ShardingSphere-Proxy with the default server.yaml configuration
 ```shell
 helm repo add shardingsphere https://shardingsphere.apache.org/charts
-helm pull shardingsphere/apache-shardingsphere-proxy
-tar -zxvf apache-shardingsphere-proxy-1.1.0-chart.tgz
-Modify the serverConfig section in values.yaml
-helm install shardingsphere-proxy apache-shardingsphere-proxy
+helm install shardingsphere-proxy shardingsphere/apache-shardingsphere-proxy
 ```
 
 ## Step By Step

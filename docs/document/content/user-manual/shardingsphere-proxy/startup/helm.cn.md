@@ -6,13 +6,10 @@ weight = 3
 使用 [Helm](https://helm.sh/) 在 Kubernetes 集群中引导 ShardingSphere-Proxy 实例进行安装。
 
 ## 快速入门
-
+注意️：以下安装方式将使用默认的 server.yaml 配置启动 ShardingSphere-Proxy
 ```shell
 helm repo add shardingsphere https://shardingsphere.apache.org/charts
-helm pull shardingsphere/apache-shardingsphere-proxy
-tar -zxvf apache-shardingsphere-proxy-1.1.0-chart.tgz
-# 修改 apache-shardingsphere-proxy/values.yaml 中 serverConfig 部分
-helm install shardingsphere-proxy apache-shardingsphere-proxy
+helm install shardingsphere-proxy shardingsphere/apache-shardingsphere-proxy
 ```
 
 ## 操作步骤
