@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.response.data.impl;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Text query response cell.
+ * Listen statement.
  */
-@RequiredArgsConstructor
 @Getter
-public final class TextQueryResponseCell implements QueryResponseCell {
+@Setter
+public abstract class ListenStatement extends AbstractSQLStatement implements DDLStatement {
     
-    private final Object data;
+    private String channelName;
 }

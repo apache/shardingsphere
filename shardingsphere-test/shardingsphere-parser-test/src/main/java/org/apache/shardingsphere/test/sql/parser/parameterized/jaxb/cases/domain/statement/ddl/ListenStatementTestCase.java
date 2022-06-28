@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.response.data.impl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Binary query response cell.
+ * Listen statement test case.
  */
-@RequiredArgsConstructor
 @Getter
-public final class BinaryQueryResponseCell implements QueryResponseCell {
+@Setter
+public final class ListenStatementTestCase extends SQLParserTestCase {
     
-    private final int jdbcType;
-    
-    private final Object data;
+    @XmlAttribute(name = "channel-name")
+    private String channelName;
 }

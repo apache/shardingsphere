@@ -151,7 +151,7 @@ public final class ExportDatabaseConfigurationHandlerTest extends ProxyContextRe
         handler.init(new ExportDatabaseConfigurationStatement(new DatabaseSegment(0, 0, new IdentifierValue("normal_db")), null), mock(ConnectionSession.class));
         assertQueryResponseHeader((QueryResponseHeader) handler.execute());
         assertTrue(handler.next());
-        assertRowData(handler.getRowData());
+        assertRowData(handler.getRowData().getData());
         assertFalse(handler.next());
     }
     
@@ -203,7 +203,7 @@ public final class ExportDatabaseConfigurationHandlerTest extends ProxyContextRe
         handler.init(new ExportDatabaseConfigurationStatement(new DatabaseSegment(0, 0, new IdentifierValue("empty_db")), null), mock(ConnectionSession.class));
         assertQueryResponseHeader((QueryResponseHeader) handler.execute());
         assertTrue(handler.next());
-        Collection<Object> rowData = handler.getRowData();
+        Collection<Object> rowData = handler.getRowData().getData();
         assertThat(rowData.size(), is(1));
         assertThat(rowData.iterator().next(), is("databaseName: empty_db\n"));
         assertFalse(handler.next());

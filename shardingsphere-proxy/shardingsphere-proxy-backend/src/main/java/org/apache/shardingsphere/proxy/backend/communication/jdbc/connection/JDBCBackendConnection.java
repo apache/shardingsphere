@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
@@ -64,10 +65,13 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     
     private final ResourceLock resourceLock = new ResourceLock();
     
+    private final AtomicBoolean closed;
+    
     private volatile int connectionReferenceCount;
     
     public JDBCBackendConnection(final ConnectionSession connectionSession) {
         this.connectionSession = connectionSession;
+        closed = new AtomicBoolean(false);
     }
     
     @Override
@@ -203,6 +207,9 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
             if (!connectionSession.getTransactionStatus().isInConnectionHeldTransaction()) {
                 result.addAll(closeDatabaseCommunicationEngines(true));
                 result.addAll(closeConnections(false));
+            } else if (closed.get()) {
+                result.addAll(closeDatabaseCommunicationEngines(true));
+                result.addAll(closeConnections(true));
             }
             if (result.isEmpty()) {
                 return null;
@@ -214,6 +221,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     @Override
     public Void closeAllResources() {
         synchronized (this) {
+            closed.set(true);
             closeDatabaseCommunicationEngines(true);
             closeConnections(true);
             closeFederationExecutor();

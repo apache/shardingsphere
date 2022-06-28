@@ -15,33 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.response.data;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.ListenStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Query response row.
+ * PostgreSQL listen statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class QueryResponseRow {
-    
-    private final List<QueryResponseCell> cells;
-    
-    /**
-     * Get row data.
-     * 
-     * @return row data
-     */
-    public List<Object> getData() {
-        List<Object> result = new ArrayList<>(cells.size());
-        for (QueryResponseCell cell : cells) {
-            result.add(cell.getData());
-        }
-        return result;
-    }
+@ToString
+public class PostgreSQLListenStatement extends ListenStatement implements PostgreSQLStatement {
 }

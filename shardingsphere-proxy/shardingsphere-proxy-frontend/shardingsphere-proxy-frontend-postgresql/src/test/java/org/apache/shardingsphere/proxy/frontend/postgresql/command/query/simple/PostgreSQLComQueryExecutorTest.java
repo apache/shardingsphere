@@ -24,6 +24,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.Pos
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.simple.PostgreSQLComQueryPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -120,6 +121,7 @@ public final class PostgreSQLComQueryExecutorTest {
     
     @Test
     public void assertGetQueryRowPacket() throws SQLException {
+        when(textProtocolBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.emptyList()));
         PostgreSQLPacket actual = queryExecutor.getQueryRowPacket();
         assertThat(actual, is(instanceOf(PostgreSQLDataRowPacket.class)));
     }

@@ -128,7 +128,7 @@ public final class SchemaAssignedDatabaseBackendHandlerTest extends ProxyContext
     public void assertDatabaseUsingStream() throws SQLException {
         schemaAssignedDatabaseBackendHandler.execute();
         while (schemaAssignedDatabaseBackendHandler.next()) {
-            assertThat(schemaAssignedDatabaseBackendHandler.getRowData().size(), is(1));
+            assertThat(schemaAssignedDatabaseBackendHandler.getRowData().getData().size(), is(1));
         }
     }
 }
