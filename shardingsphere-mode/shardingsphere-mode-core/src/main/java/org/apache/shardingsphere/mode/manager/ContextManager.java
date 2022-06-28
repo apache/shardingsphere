@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
+import org.apache.shardingsphere.infra.federation.optimizer.context.parser.OptimizerParserContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -118,22 +119,25 @@ public final class ContextManager implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public synchronized void addDatabase(final String databaseName) throws SQLException {
-        if (!metaDataContexts.getMetaData().getDatabases().containsKey(databaseName)) {
-            addDatabaseMetaData(databaseName);
-            addFederationDatabaseMetaData(databaseName);
-            persistMetaData(metaDataContexts);
+        if (metaDataContexts.getMetaData().getDatabases().containsKey(databaseName)) {
+            return;
         }
+        DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), metaDataContexts.getMetaData().getProps());
+        addDatabaseMetaData(databaseName, protocolType);
+        addFederationDatabaseMetaData(databaseName, protocolType);
+        persistMetaData(metaDataContexts);
     }
     
-    private void addDatabaseMetaData(final String databaseName) throws SQLException {
-        ShardingSphereDatabase database = ShardingSphereDatabase.create(databaseName, DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), metaDataContexts.getMetaData().getProps()));
+    private void addDatabaseMetaData(final String databaseName, final DatabaseType protocolType) throws SQLException {
+        ShardingSphereDatabase database = ShardingSphereDatabase.create(databaseName, protocolType);
         metaDataContexts.getMetaData().getDatabases().put(databaseName, database);
         metaDataContexts.getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class).forEach(each -> each.addResource(database));
     }
     
-    private void addFederationDatabaseMetaData(final String databaseName) {
+    private void addFederationDatabaseMetaData(final String databaseName, final DatabaseType protocolType) {
         FederationDatabaseMetaData federationDatabaseMetaData = new FederationDatabaseMetaData(databaseName, Collections.emptyMap());
         metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().put(databaseName, federationDatabaseMetaData);
+        metaDataContexts.getOptimizerContext().getParserContexts().put(databaseName, OptimizerParserContextFactory.create(protocolType));
         metaDataContexts.getOptimizerContext().getPlannerContexts().put(databaseName, OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
     }
     

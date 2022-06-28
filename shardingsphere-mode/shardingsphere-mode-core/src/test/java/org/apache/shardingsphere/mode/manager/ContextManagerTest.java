@@ -82,6 +82,8 @@ public final class ContextManagerTest {
         when(metaDataContexts.getMetaData().getDatabases().get("foo_db").getSchemas()).thenReturn(Collections.singletonMap("foo_db", new ShardingSphereSchema()));
         when(metaDataContexts.getMetaData().getDatabases().get("foo_db").getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
         when(metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases()).thenReturn(new LinkedHashMap<>());
+        when(metaDataContexts.getOptimizerContext().getParserContexts()).thenReturn(new LinkedHashMap<>());
+        when(metaDataContexts.getOptimizerContext().getPlannerContexts()).thenReturn(new LinkedHashMap<>());
         contextManager = new ContextManager(metaDataContexts, mock(InstanceContext.class));
     }
     
@@ -107,6 +109,8 @@ public final class ContextManagerTest {
         contextManager.addDatabase("foo_db");
         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabases().containsKey("foo_db"));
         assertTrue(contextManager.getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabases().containsKey("foo_db"));
+        assertTrue(contextManager.getMetaDataContexts().getOptimizerContext().getParserContexts().containsKey("foo_db"));
+        assertTrue(contextManager.getMetaDataContexts().getOptimizerContext().getPlannerContexts().containsKey("foo_db"));
     }
     
     @Test
