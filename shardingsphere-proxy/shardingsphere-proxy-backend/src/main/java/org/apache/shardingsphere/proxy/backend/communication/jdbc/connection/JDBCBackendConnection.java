@@ -71,7 +71,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     
     public JDBCBackendConnection(final ConnectionSession connectionSession) {
         this.connectionSession = connectionSession;
-        this.closed = new AtomicBoolean(false);
+        closed = new AtomicBoolean(false);
     }
     
     @Override
@@ -207,11 +207,10 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
             if (!connectionSession.getTransactionStatus().isInConnectionHeldTransaction()) {
                 result.addAll(closeDatabaseCommunicationEngines(true));
                 result.addAll(closeConnections(false));
-            } else if (this.closed.get()) {
+            } else if (closed.get()) {
                 result.addAll(closeDatabaseCommunicationEngines(true));
                 result.addAll(closeConnections(true));
             }
-            
             if (result.isEmpty()) {
                 return null;
             }
@@ -222,7 +221,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     @Override
     public Void closeAllResources() {
         synchronized (this) {
-            this.closed.set(true);
+            closed.set(true);
             closeDatabaseCommunicationEngines(true);
             closeConnections(true);
             closeFederationExecutor();

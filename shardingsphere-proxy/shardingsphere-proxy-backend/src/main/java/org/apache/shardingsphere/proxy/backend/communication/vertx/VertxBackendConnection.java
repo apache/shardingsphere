@@ -59,7 +59,7 @@ public final class VertxBackendConnection implements BackendConnection<Future<Vo
         if (TransactionType.LOCAL != connectionSession.getTransactionStatus().getTransactionType()) {
             throw new UnsupportedOperationException("Vert.x backend supports LOCAL transaction only for now.");
         }
-        this.closed = new AtomicBoolean(false);
+        closed = new AtomicBoolean(false);
         this.connectionSession = connectionSession;
     }
     
@@ -135,7 +135,7 @@ public final class VertxBackendConnection implements BackendConnection<Future<Vo
     public Future<Void> closeExecutionResources() {
         if (!connectionSession.getTransactionStatus().isInTransaction()) {
             return closeAllConnections(false);
-        } else if (this.closed.get()) {
+        } else if (closed.get()) {
             return closeAllConnections(true);
         }
         return Future.succeededFuture();
@@ -143,7 +143,7 @@ public final class VertxBackendConnection implements BackendConnection<Future<Vo
     
     @Override
     public Future<Void> closeAllResources() {
-        this.closed.set(true);
+        closed.set(true);
         return closeAllConnections(true);
     }
     
