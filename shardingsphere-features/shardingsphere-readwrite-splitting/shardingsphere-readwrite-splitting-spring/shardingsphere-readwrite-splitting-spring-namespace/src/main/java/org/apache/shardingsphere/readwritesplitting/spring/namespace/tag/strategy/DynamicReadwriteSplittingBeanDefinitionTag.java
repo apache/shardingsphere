@@ -15,22 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.spring.namespace.tag;
+package org.apache.shardingsphere.readwritesplitting.spring.namespace.tag.strategy;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
 /**
- * Readwrite-splitting rule bean definition tag.
+ * Readwrite-splitting Dynamic bean definition tag.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReadwriteSplittingRuleBeanDefinitionTag {
+public class DynamicReadwriteSplittingBeanDefinitionTag {
     
-    public static final String ROOT_TAG = "rule";
+    public static final String DYNAMIC_STRATEGY_ROOT_TAG = "dynamic-strategy";
     
-    public static final String DATA_SOURCE_TAG = "data-source-rule";
+    public static final String AUTO_AWARE_DATA_SOURCE_NAME = "auto-aware-data-source-name";
     
-    public static final String READWRITE_SPLITTING_DATA_SOURCE_ID_ATTRIBUTE = "id";
-    
-    public static final String LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE = "load-balance-algorithm-ref";
+    public static final String WRITE_DATA_SOURCE_QUERY_ENABLED = "write-data-source-query-enabled";
 }

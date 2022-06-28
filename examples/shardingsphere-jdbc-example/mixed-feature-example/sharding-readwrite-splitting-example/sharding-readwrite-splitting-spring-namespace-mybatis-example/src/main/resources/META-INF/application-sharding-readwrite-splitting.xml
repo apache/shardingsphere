@@ -121,17 +121,11 @@
         </sharding:broadcast-table-rules>
     </sharding:rule>
     <readwrite-splitting:rule id="readWriteSplittingRule">
-        <readwrite-splitting:data-source-rule id="demo_readwrite_ds_0" type="Static" load-balance-algorithm-ref="randomStrategy">
-            <props>
-                <prop key="write-data-source-name">demo_write_ds_0</prop>
-                <prop key="read-data-source-names">demo_write_ds_0_read_0, demo_write_ds_0_read_1</prop>
-            </props>
+        <readwrite-splitting:data-source-rule id="demo_readwrite_ds_0" load-balance-algorithm-ref="randomStrategy">
+            <readwrite-splitting:static-strategy id="StaticStrategyWithDs0" write-data-source-name="demo_write_ds_0" read-data-source-names="demo_write_ds_0_read_0, demo_write_ds_0_read_1"/>
         </readwrite-splitting:data-source-rule>
-        <readwrite-splitting:data-source-rule id="demo_readwrite_ds_1" type="Static" load-balance-algorithm-ref="randomStrategy">
-            <props>
-                <prop key="write-data-source-name">demo_write_ds_1</prop>
-                <prop key="read-data-source-names">demo_write_ds_1_read_0, demo_write_ds_1_read_1</prop>
-            </props>
+        <readwrite-splitting:data-source-rule id="demo_readwrite_ds_1" load-balance-algorithm-ref="randomStrategy">
+            <readwrite-splitting:static-strategy id="StaticStrategyWithDs1" write-data-source-name="demo_write_ds_1" read-data-source-names="demo_write_ds_1_read_0, demo_write_ds_1_read_1"/>
         </readwrite-splitting:data-source-rule>
     </readwrite-splitting:rule>
     
