@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.parser.OptimizerParserContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
@@ -105,12 +106,12 @@ public final class ContextManagerTest {
     
     @Test
     public void assertAddDatabase() throws SQLException {
+        OptimizerContext optimizerContext = mock(OptimizerContext.class);
+        when(metaDataContexts.getOptimizerContext()).thenReturn(optimizerContext);
         when(metaDataContexts.getMetaData().getDatabases()).thenReturn(new LinkedHashMap<>());
         contextManager.addDatabase("foo_db");
+        verify(optimizerContext).addDatabase(eq("foo_db"), any(DatabaseType.class));
         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabases().containsKey("foo_db"));
-        assertTrue(contextManager.getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabases().containsKey("foo_db"));
-        assertTrue(contextManager.getMetaDataContexts().getOptimizerContext().getParserContexts().containsKey("foo_db"));
-        assertTrue(contextManager.getMetaDataContexts().getOptimizerContext().getPlannerContexts().containsKey("foo_db"));
     }
     
     @Test
