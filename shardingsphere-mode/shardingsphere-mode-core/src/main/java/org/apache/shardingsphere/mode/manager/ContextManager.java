@@ -31,7 +31,6 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
-import org.apache.shardingsphere.infra.federation.optimizer.context.parser.OptimizerParserContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -124,7 +123,7 @@ public final class ContextManager implements AutoCloseable {
         }
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), metaDataContexts.getMetaData().getProps());
         addDatabaseMetaData(databaseName, protocolType);
-        addFederationDatabaseMetaData(databaseName, protocolType);
+        metaDataContexts.getOptimizerContext().addFederationDatabaseMetaData(databaseName, protocolType);
         persistMetaData(metaDataContexts);
     }
     
@@ -132,13 +131,6 @@ public final class ContextManager implements AutoCloseable {
         ShardingSphereDatabase database = ShardingSphereDatabase.create(databaseName, protocolType);
         metaDataContexts.getMetaData().getDatabases().put(databaseName, database);
         metaDataContexts.getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class).forEach(each -> each.addResource(database));
-    }
-    
-    private void addFederationDatabaseMetaData(final String databaseName, final DatabaseType protocolType) {
-        FederationDatabaseMetaData federationDatabaseMetaData = new FederationDatabaseMetaData(databaseName, Collections.emptyMap());
-        metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().put(databaseName, federationDatabaseMetaData);
-        metaDataContexts.getOptimizerContext().getParserContexts().put(databaseName, OptimizerParserContextFactory.create(protocolType));
-        metaDataContexts.getOptimizerContext().getPlannerContexts().put(databaseName, OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
     }
     
     /**
