@@ -15,33 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.reset;
+package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.reset.MySQLComStmtResetPacket;
-import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
+import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLComStmtSendLongDataPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
-import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
-import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLPreparedStatement;
 
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 
 /**
- * COM_STMT_RESET command executor for MySQL.
+ * COM_STMT_SEND_LONG_DATA command executor for MySQL.
  */
 @RequiredArgsConstructor
-public final class MySQLComStmtResetExecutor implements CommandExecutor {
+public final class MySQLComStmtSendLongDataExecutor implements CommandExecutor {
     
-    private final MySQLComStmtResetPacket packet;
+    private final MySQLComStmtSendLongDataPacket packet;
     
     private final ConnectionSession connectionSession;
     
     @Override
-    public Collection<DatabasePacket<?>> execute() {
-        connectionSession.getPreparedStatementRegistry().<MySQLPreparedStatement>getPreparedStatement(packet.getStatementId()).getLongData().clear();
-        return Collections.singleton(new MySQLOKPacket(1, ServerStatusFlagCalculator.calculateFor(connectionSession)));
+    public Collection<DatabasePacket<?>> execute() throws SQLException {
+        MySQLPreparedStatement preparedStatement = connectionSession.getPreparedStatementRegistry().getPreparedStatement(packet.getStatementId());
+        preparedStatement.getLongData().put(packet.getParamId(), packet.getData());
+        return Collections.emptyList();
     }
 }
