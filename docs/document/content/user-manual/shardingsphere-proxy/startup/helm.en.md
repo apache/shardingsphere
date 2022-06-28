@@ -11,7 +11,7 @@ Use [Helm](https://helm.sh/) to provide guidance for the installation of Shardin
 helm repo add shardingsphere https://shardingsphere.apache.org/charts
 helm pull shardingsphere/apache-shardingsphere-proxy
 tar -zxvf apache-shardingsphere-proxy-1.1.0-chart.tgz
-Modify the serverConfig section in values.yaml
+# Modify the serverConfig section in apache-shardingsphere-proxy/values.yaml
 helm install shardingsphere-proxy apache-shardingsphere-proxy
 ```
 
@@ -37,11 +37,18 @@ helm repo add shardingsphere https://shardingsphere.apache.org/charts
 ```
 
 2. Install ShardingSphere-Proxy charts:
+⚠️: The following installation method will start ShardingSphere-Proxy with the default server.yaml configuration
+
+```shell
+helm install shardingsphere-proxy shardingsphere/apache-shardingsphere-proxy
+```
+
+To modify the configuration:
 
 ```shell
 helm pull shardingsphere/apache-shardingsphere-proxy
 tar -zxvf apache-shardingsphere-proxy-1.1.0-chart.tgz
-Modify the serverConfig section in values.yaml
+# Modify the serverConfig section in apache-shardingsphere-proxy/values.yaml
 helm install shardingsphere-proxy apache-shardingsphere-proxy
 ```
 
