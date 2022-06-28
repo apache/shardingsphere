@@ -344,6 +344,7 @@ rules:
           writeDataSourceName: encrypt_write_ds_8
           readDataSourceNames:
             - encrypt_read_ds_8
+      loadBalancerName: roundRobin
     readwrite_ds_9:
       dataSourceStrategy:
         staticStrategy:
