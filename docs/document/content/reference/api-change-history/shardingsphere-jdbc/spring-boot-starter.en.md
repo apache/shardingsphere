@@ -49,9 +49,9 @@ spring.shardingsphere.rules.sharding.broadcast-tables[0]= # Broadcast tables
 spring.shardingsphere.rules.sharding.broadcast-tables[1]= # Broadcast tables
 spring.shardingsphere.rules.sharding.broadcast-tables[x]= # Broadcast tables
 
-spring.shardingsphere.rules.sharding.default-database-strategy.xxx= # Default strategy for database sharding
-spring.shardingsphere.rules.sharding.default-table-strategy.xxx= # Default strategy for table sharding
-spring.shardingsphere.rules.sharding.default-key-generate-strategy.xxx= # Default Key generator strategy
+spring.shardingsphere.sharding.default-database-strategy.xxx= # Default strategy for database sharding
+spring.shardingsphere.sharding.default-table-strategy.xxx= # Default strategy for table sharding
+spring.shardingsphere.sharding.default-key-generate-strategy.xxx= # Default Key generator strategy
 
 # Sharding algorithm configuration
 spring.shardingsphere.rules.sharding.sharding-algorithms.<sharding-algorithm-name>.type= # Sharding algorithm type
@@ -221,46 +221,46 @@ spring.shardingsphere.datasource.<data-source-name>.username= #Database username
 spring.shardingsphere.datasource.<data-source-name>.password= #Database password
 spring.shardingsphere.datasource.<data-source-name>.xxx= #Other properties of database connection pool
 
-spring.shardingsphere.rules.sharding.tables.<logic-table-name>.actual-data-nodes= #It is consisted of data source name + table name, separated by decimal points; multiple tables are separated by commas and support inline expressions; default means using existing data sources and logic table names to generate data nodes; it can be applied in broadcast tables (each database needs a same table for relevance query, dictionary table mostly) or the situation with sharding database but without sharding table (table structures of all the databases are consistent)
+spring.shardingsphere.sharding.tables.<logic-table-name>.actual-data-nodes= #It is consisted of data source name + table name, separated by decimal points; multiple tables are separated by commas and support inline expressions; default means using existing data sources and logic table names to generate data nodes; it can be applied in broadcast tables (each database needs a same table for relevance query, dictionary table mostly) or the situation with sharding database but without sharding table (table structures of all the databases are consistent)
 
 #Database sharding strategy; default means using default database sharding strategy; it can only choose one of the following sharding strategies
 
 #It is applied in standard sharding situation of single-sharding key
-spring.shardingsphere.rules.sharding.tables.<logic-table-name>.database-strategy.standard.sharding-column= #Sharding column name
-spring.shardingsphere.rules.sharding.tables.<logic-table-name>.database-strategy.standard.precise-algorithm-class-name= #Precise algorithm class name, applied in = and IN; the class needs to implement PreciseShardingAlgorithm interface and provide parameter-free constructor
-spring.shardingsphere.rules.sharding.tables.<logic-table-name>.database-strategy.standard.range-algorithm-class-name= #Range sharding algorithm class name, applied in BETWEEN, optional; the class should implement RangeShardingAlgorithm interface and provide parameter-free constructor
+spring.shardingsphere.sharding.tables.<logic-table-name>.database-strategy.standard.sharding-column= #Sharding column name
+spring.shardingsphere.sharding.tables.<logic-table-name>.database-strategy.standard.precise-algorithm-class-name= #Precise algorithm class name, applied in = and IN; the class needs to implement PreciseShardingAlgorithm interface and provide parameter-free constructor
+spring.shardingsphere.sharding.tables.<logic-table-name>.database-strategy.standard.range-algorithm-class-name= #Range sharding algorithm class name, applied in BETWEEN, optional; the class should implement RangeShardingAlgorithm interface and provide parameter-free constructor
 
 #It is applied in complex sharding situations with multiple sharding keys
-spring.shardingsphere.rules.sharding.tables.<logic-table-name>.database-strategy.complex.sharding-columns= #Sharding column name, with multiple columns separated by commas
-spring.shardingsphere.rules.sharding.tables.<logic-table-name>.database-strategy.complex.algorithm-class-name= #Complex sharding algorithm class name; the class needs to implement ComplexKeysShardingAlgorithm interface and provide parameter-free constructor
+spring.shardingsphere.sharding.tables.<logic-table-name>.database-strategy.complex.sharding-columns= #Sharding column name, with multiple columns separated by commas
+spring.shardingsphere.sharding.tables.<logic-table-name>.database-strategy.complex.algorithm-class-name= #Complex sharding algorithm class name; the class needs to implement ComplexKeysShardingAlgorithm interface and provide parameter-free constructor
 
 #Inline expression sharding strategy
-spring.shardingsphere.rules.sharding.tables.<logic-table-name>.database-strategy.inline.sharding-column= #Sharding column name
-spring.shardingsphere.rules.sharding.tables.<logic-table-name>.database-strategy.inline.algorithm-expression= #Inline expression of sharding algorithm, which needs to conform to groovy statements
+spring.shardingsphere.sharding.tables.<logic-table-name>.database-strategy.inline.sharding-column= #Sharding column name
+spring.shardingsphere.sharding.tables.<logic-table-name>.database-strategy.inline.algorithm-expression= #Inline expression of sharding algorithm, which needs to conform to groovy statements
 
 #Hint Sharding Strategy
-spring.shardingsphere.rules.sharding.tables.<logic-table-name>.database-strategy.hint.algorithm-class-name= #Hint algorithm class name;  the class needs to implement HintShardingAlgorithm interface and provide parameter-free constructor
+spring.shardingsphere.sharding.tables.<logic-table-name>.database-strategy.hint.algorithm-class-name= #Hint algorithm class name;  the class needs to implement HintShardingAlgorithm interface and provide parameter-free constructor
 
 #Table sharding strategy, same as database sharding strategy
-spring.shardingsphere.rules.sharding.tables.<logic-table-name>.table-strategy.xxx= #Omitted
+spring.shardingsphere.sharding.tables.<logic-table-name>.table-strategy.xxx= #Omitted
 
-spring.shardingsphere.rules.sharding.tables.<logic-table-name>.key-generator.column= #Auto-increment column name; default means not using auto-increment key generator
-spring.shardingsphere.rules.sharding.tables.<logic-table-name>.key-generator.type= #Auto-increament key generator type; default means using default auto-increament key generator; user defined generator or internal generator (SNOWFLAKE, UUID) can both be selected
-spring.shardingsphere.rules.sharding.tables.<logic-table-name>.key-generator.props.<property-name>= #Properties, Notice: when use SNOWFLAKE, `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` need to be set. To use the generated value of this algorithm as sharding value, it is recommended to configure `max.vibration.offset`
+spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.column= #Auto-increment column name; default means not using auto-increment key generator
+spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.type= #Auto-increament key generator type; default means using default auto-increament key generator; user defined generator or internal generator (SNOWFLAKE, UUID) can both be selected
+spring.shardingsphere.sharding.tables.<logic-table-name>.key-generator.props.<property-name>= #Properties, Notice: when use SNOWFLAKE, `max.tolerate.time.difference.milliseconds` for `SNOWFLAKE` need to be set. To use the generated value of this algorithm as sharding value, it is recommended to configure `max.vibration.offset`
 
-spring.shardingsphere.rules.sharding.binding-tables[0]= #Binding table rule list
-spring.shardingsphere.rules.sharding.binding-tables[1]= #Binding table rule list
-spring.shardingsphere.rules.sharding.binding-tables[x]= #Binding table rule list
+spring.shardingsphere.sharding.binding-tables[0]= #Binding table rule list
+spring.shardingsphere.sharding.binding-tables[1]= #Binding table rule list
+spring.shardingsphere.sharding.binding-tables[x]= #Binding table rule list
 
-spring.shardingsphere.rules.sharding.broadcast-tables[0]= #Broadcast table rule list
-spring.shardingsphere.rules.sharding.broadcast-tables[1]= #Broadcast table rule list
-spring.shardingsphere.rules.sharding.broadcast-tables[x]= #Broadcast table rule list
+spring.shardingsphere.sharding.broadcast-tables[0]= #Broadcast table rule list
+spring.shardingsphere.sharding.broadcast-tables[1]= #Broadcast table rule list
+spring.shardingsphere.sharding.broadcast-tables[x]= #Broadcast table rule list
 
-spring.shardingsphere.rules.sharding.default-data-source-name= #Tables without sharding rules will be located through default data source
-spring.shardingsphere.rules.sharding.default-database-strategy.xxx= #Default database sharding strategy
-spring.shardingsphere.rules.sharding.default-table-strategy.xxx= #Default table sharding strategy
-spring.shardingsphere.rules.sharding.default-key-generator.type= #Default auto-increament key generator of type; it will use org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator in default; user defined generator or internal generator (SNOWFLAKE or UUID) can both be used
-spring.shardingsphere.rules.sharding.default-key-generator.props.<property-name>= #Auto-increament key generator property configuration, such as max.tolerate.time.difference.milliseconds of SNOWFLAKE algorithm
+spring.shardingsphere.sharding.default-data-source-name= #Tables without sharding rules will be located through default data source
+spring.shardingsphere.sharding.default-database-strategy.xxx= #Default database sharding strategy
+spring.shardingsphere.sharding.default-table-strategy.xxx= #Default table sharding strategy
+spring.shardingsphere.sharding.default-key-generator.type= #Default auto-increament key generator of type; it will use org.apache.shardingsphere.core.keygen.generator.impl.SnowflakeKeyGenerator in default; user defined generator or internal generator (SNOWFLAKE or UUID) can both be used
+spring.shardingsphere.sharding.default-key-generator.props.<property-name>= #Auto-increament key generator property configuration, such as max.tolerate.time.difference.milliseconds of SNOWFLAKE algorithm
 
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.master-data-source-name= #Refer to readwrite-splitting part for more details
 spring.shardingsphere.sharding.master-slave-rules.<master-slave-data-source-name>.slave-data-source-names[0]= #Refer to readwrite-splitting part for more details
