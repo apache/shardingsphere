@@ -154,6 +154,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Ta
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ValidateConstraintSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ListenContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.UnlistenContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.DirectionType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
@@ -276,6 +277,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLPrepareStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLTruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLListenStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLUnlistenStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -1259,5 +1261,10 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
         PostgreSQLListenStatement result = new PostgreSQLListenStatement();
         result.setChannelName(channelName);
         return result;
+    }
+    
+    @Override
+    public ASTNode visitUnlisten(final UnlistenContext ctx) {
+        return new PostgreSQLUnlistenStatement();
     }
 }

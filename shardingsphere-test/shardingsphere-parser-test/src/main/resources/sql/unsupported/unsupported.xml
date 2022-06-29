@@ -6051,10 +6051,6 @@
     <sql-case id="select_by_postgresql_source_test_case1290" value="SELECT ||/ float8 &apos;27&apos; AS three;" db-types="PostgreSQL" />
     <sql-case id="true	null	false	null_by_postgresql_source_test_case1" value="TRUE	null	FALSE	null FALSE	TRUE	null	null null	TRUE	FALSE	null SELECT   BOOL_AND(b1)     AS &quot;f&quot;,   BOOL_AND(b2)     AS &quot;t&quot;,   BOOL_AND(b3)     AS &quot;f&quot;,   BOOL_AND(b4)     AS &quot;n&quot;,   BOOL_AND(NOT b2) AS &quot;f&quot;,   BOOL_AND(NOT b3) AS &quot;t&quot; FROM bool_test;" db-types="PostgreSQL" />
     <sql-case id="truncate_by_postgresql_source_test_case1" value="TRUNCATE ONLY trunc_fb, ONLY trunc_fa;" db-types="PostgreSQL" />
-    <sql-case id="unlisten_by_postgresql_source_test_case1" value="UNLISTEN *;" db-types="PostgreSQL" />
-    <sql-case id="unlisten_by_postgresql_source_test_case2" value="UNLISTEN *;" db-types="PostgreSQL" />
-    <sql-case id="unlisten_by_postgresql_source_test_case3" value="UNLISTEN a;" db-types="PostgreSQL" />
-    <sql-case id="unlisten_by_postgresql_source_test_case4" value="UNLISTEN notify_async2;" db-types="PostgreSQL" />
     <sql-case id="update_by_postgresql_source_test_case1" value="UPDATE arrtest   SET a[1:2] = &apos;{16,25}&apos;   WHERE NOT a = &apos;{}&apos;::_int2;" db-types="PostgreSQL" />
     <sql-case id="update_by_postgresql_source_test_case2" value="UPDATE arrtest   SET b[1:1][1:1][1:2] = &apos;{113, 117}&apos;,       b[1:1][1:2][2:2] = &apos;{142, 147}&apos;   WHERE array_dims(b) = &apos;[1:1][1:2][1:2]&apos;;" db-types="PostgreSQL" />
     <sql-case id="update_by_postgresql_source_test_case3" value="UPDATE arrtest   SET c[1:NULL] = &apos;{&quot;can&apos;&apos;t assign&quot;}&apos;   WHERE array_dims(c) is not null;" db-types="PostgreSQL" />
