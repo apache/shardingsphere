@@ -551,10 +551,10 @@ public final class SelectStatementContextTest {
     }
 
     private void assertContainsPartialDistinctAggregation(final SelectStatement selectStatement) {
-        ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
-        when(projectionsSegment.getProjections()).thenReturn(Lists.newArrayList(new ParameterMarkerExpressionSegment(0, 0, 0, ParameterMarkerType.DOLLAR)));
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "(*)"));
+        projectionsSegment.getProjections().add(new AggregationDistinctProjectionSegment(0, 10, AggregationType.COUNT, "(1)", "distinctExpression"));
         selectStatement.setProjections(projectionsSegment);
-        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("table"))));
 
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class)), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
