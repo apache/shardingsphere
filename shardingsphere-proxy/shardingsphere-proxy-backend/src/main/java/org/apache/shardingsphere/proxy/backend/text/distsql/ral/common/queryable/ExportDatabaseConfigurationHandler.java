@@ -91,14 +91,14 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
         if (database.getResource().getDataSources().isEmpty()) {
             return;
         }
-        stringBuilder.append("dataSources").append(":\n");
+        stringBuilder.append("dataSources:").append(System.lineSeparator());
         for (Entry<String, DataSource> entry : database.getResource().getDataSources().entrySet()) {
             appendDataSourceConfiguration(entry.getKey(), entry.getValue(), stringBuilder);
         }
     }
     
     private void appendDataSourceConfiguration(final String name, final DataSource dataSource, final StringBuilder stringBuilder) {
-        stringBuilder.append("  ").append(name).append(":\n");
+        stringBuilder.append("  ").append(name).append(":").append(System.lineSeparator());
         DataSourceProperties dataSourceProps = DataSourcePropertiesCreator.create(dataSource);
         dataSourceProps.getConnectionPropertySynonyms().getStandardProperties()
                 .forEach((key, value) -> stringBuilder.append("    ").append(key).append(": ").append(value).append(System.lineSeparator()));
