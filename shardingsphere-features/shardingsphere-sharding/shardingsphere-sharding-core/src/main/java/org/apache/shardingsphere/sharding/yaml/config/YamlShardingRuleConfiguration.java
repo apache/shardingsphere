@@ -55,19 +55,19 @@ public final class YamlShardingRuleConfiguration implements YamlRuleConfiguratio
     
     private YamlKeyGenerateStrategyConfiguration defaultKeyGenerateStrategy;
     
+    private Map<String, YamlShardingAuditStrategyConfiguration> auditStrategies = new LinkedHashMap<>();
+    
     private Map<String, YamlShardingSphereAlgorithmConfiguration> shardingAlgorithms = new LinkedHashMap<>();
     
     private Map<String, YamlShardingSphereAlgorithmConfiguration> keyGenerators = new LinkedHashMap<>();
     
-    private Map<String, YamlShardingSphereAlgorithmConfiguration> shardingAuditAlgorithms = new LinkedHashMap<>();
+    private Map<String, YamlShardingSphereAlgorithmConfiguration> auditAlgorithms = new LinkedHashMap<>();
     
     private String defaultShardingColumn;
     
     private String scalingName;
     
     private Map<String, YamlOnRuleAlteredActionConfiguration> scaling = new LinkedHashMap<>();
-    
-    private Map<String, YamlShardingAuditStrategyConfiguration> shardingAudits = new LinkedHashMap<>();
     
     @Override
     public Class<ShardingRuleConfiguration> getRuleConfigurationType() {

@@ -29,16 +29,16 @@ import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
  * Sharding audit algorithm factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class ShardingAuditAlgorithmFactory {
+public final class ShardingAuditAlgorithmFactory {
     
     static {
         ShardingSphereServiceLoader.register(ShardingAuditAlgorithm.class);
     }
     
     /**
-     * Create new instance of sharding audit check algorithm.
+     * Create new instance of sharding audit algorithm.
      *
-     * @param shardingAuditAlgorithmConfig sharding algorithm configuration
+     * @param shardingAuditAlgorithmConfig sharding audit algorithm configuration
      * @return created instance
      */
     public static ShardingAuditAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration shardingAuditAlgorithmConfig) {

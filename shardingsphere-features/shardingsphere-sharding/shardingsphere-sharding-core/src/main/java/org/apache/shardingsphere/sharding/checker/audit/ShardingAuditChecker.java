@@ -44,8 +44,8 @@ public final class ShardingAuditChecker implements SQLChecker<ShardingRule> {
     @Override
     public SQLCheckResult check(final SQLStatement sqlStatement, final List<Object> parameters, final Grantee grantee,
                                 final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final ShardingRule rule) {
-        for (Entry<String, ShardingAuditStrategyConfiguration> entry : rule.getShardingAudits().entrySet()) {
-            SQLCheckResult result = rule.getShardingAuditAlgorithms().get(entry.getValue().getShardingAuditAlgorithmName()).check(sqlStatement, parameters, grantee, currentDatabase, databases, rule);
+        for (Entry<String, ShardingAuditStrategyConfiguration> entry : rule.getAuditStrategies().entrySet()) {
+            SQLCheckResult result = rule.getShardingAuditAlgorithms().get(entry.getValue().getAuditAlgorithmName()).check(sqlStatement, parameters, grantee, currentDatabase, databases, rule);
             if (!result.isPassed()) {
                 return result;
             }
@@ -65,7 +65,7 @@ public final class ShardingAuditChecker implements SQLChecker<ShardingRule> {
     
     @Override
     public int getOrder() {
-        return ShardingOrder.AUDIT_ORDER;
+        return ShardingOrder.ORDER;
     }
     
     @Override
