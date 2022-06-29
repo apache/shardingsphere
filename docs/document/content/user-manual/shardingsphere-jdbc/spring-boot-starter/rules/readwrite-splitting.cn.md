@@ -5,14 +5,15 @@ weight = 2
 
 ## 配置项说明
 
+spring.shardingsphere.rules.readwrite-splitting.data-sources.readwrite_ds.static-strategy.write-data-source-name=write_ds
+spring.shardingsphere.rules.readwrite-splitting.data-sources.readwrite_ds.static-strategy.read-data-source-names=read_ds_0, read_ds_1
 ```properties
 spring.shardingsphere.datasource.names= # 省略数据源配置，请参考使用手册
 
-spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.type= # 读写分离类型，如: Static，Dynamic
-spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.props.auto-aware-data-source-name= # 自动发现数据源名称（与数据库发现配合使用）
-spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.props.write-data-source-query-enabled= # 从库全部宕机、主库是否承担读流量（与数据库发现配合使用）
-spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.props.write-data-source-name= # 写数据源名称
-spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.props.read-data-source-names= # 读数据源名称，多个从数据源用逗号分隔
+spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.static-strategy.write-data-source-name= # 写库数据源名称
+spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.static-strategy.read-data-source-names= # 读库数据源列表，多个从数据源用逗号分隔
+spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.dynamic-strategy.auto-aware-data-source-name= # 数据库发现逻辑数据源名称
+spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.dynamic-strategy.write-data-source-query-enabled= # 读库全部下线，主库是否承担读流量
 spring.shardingsphere.rules.readwrite-splitting.data-sources.<readwrite-splitting-data-source-name>.load-balancer-name= # 负载均衡算法名称
 
 # 负载均衡算法配置
