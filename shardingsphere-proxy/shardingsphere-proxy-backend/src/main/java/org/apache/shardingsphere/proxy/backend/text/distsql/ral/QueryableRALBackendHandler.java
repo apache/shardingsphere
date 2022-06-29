@@ -68,12 +68,12 @@ public abstract class QueryableRALBackendHandler<E extends RALStatement> extends
     }
     
     @Override
-    public final Collection<Object> getRowData() throws SQLException {
+    public final QueryResponseRow getRowData() throws SQLException {
         List<QueryResponseCell> cells = new ArrayList<>(queryHeaders.size());
         for (int i = 0; i < queryHeaders.size(); i++) {
             cells.add(new QueryResponseCell(queryHeaders.get(i).getColumnType(), mergedResult.getValue(i + 1, Object.class)));
         }
-        return new QueryResponseRow(cells).getData();
+        return new QueryResponseRow(cells);
     }
     
     protected abstract Collection<String> getColumnNames();

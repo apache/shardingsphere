@@ -34,12 +34,28 @@
 
     <xsd:element name="data-source-rule">
         <xsd:complexType>
-            <xsd:all>
-                <xsd:element ref="beans:props" minOccurs="0" />
-            </xsd:all>
+            <xsd:sequence>
+                <xsd:element ref="static-strategy" minOccurs="0" />
+                <xsd:element ref="dynamic-strategy" minOccurs="0" />
+            </xsd:sequence>
             <xsd:attribute name="id" type="xsd:string" use="required" />
-            <xsd:attribute name="type" type="xsd:string" />
             <xsd:attribute name="load-balance-algorithm-ref" type="xsd:string" />
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="static-strategy">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="write-data-source-name" type="xsd:string" use="required" />
+            <xsd:attribute name="read-data-source-names" type="xsd:string" use="required" />
+        </xsd:complexType>
+    </xsd:element>
+
+    <xsd:element name="dynamic-strategy">
+        <xsd:complexType>
+            <xsd:attribute name="id" type="xsd:string" use="required" />
+            <xsd:attribute name="auto-aware-data-source-name" type="xsd:string" use="required" />
+            <xsd:attribute name="write-data-source-query-enabled" type="xsd:string" />
         </xsd:complexType>
     </xsd:element>
     

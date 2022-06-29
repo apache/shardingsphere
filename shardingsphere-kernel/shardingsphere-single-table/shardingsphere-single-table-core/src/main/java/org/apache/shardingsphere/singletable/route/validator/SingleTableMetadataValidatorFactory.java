@@ -20,8 +20,10 @@ package org.apache.shardingsphere.singletable.route.validator;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.singletable.route.validator.ddl.SingleTableDropSchemaMetadataValidator;
+import org.apache.shardingsphere.singletable.route.validator.ddl.SingleTableDropTableValidator;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 
 import java.util.Optional;
 
@@ -39,6 +41,12 @@ public final class SingleTableMetadataValidatorFactory {
      */
     @SuppressWarnings("rawtypes")
     public static Optional<SingleTableMetadataValidator> newInstance(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof DropSchemaStatement ? Optional.of(new SingleTableDropSchemaMetadataValidator()) : Optional.empty();
+        if (sqlStatement instanceof DropSchemaStatement) {
+            return Optional.of(new SingleTableDropSchemaMetadataValidator());
+        }
+        if (sqlStatement instanceof DropTableStatement) {
+            return Optional.of(new SingleTableDropTableValidator());
+        }
+        return Optional.empty();
     }
 }

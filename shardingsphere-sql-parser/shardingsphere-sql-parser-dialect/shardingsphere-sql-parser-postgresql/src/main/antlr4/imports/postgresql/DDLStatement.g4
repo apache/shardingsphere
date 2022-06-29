@@ -1795,6 +1795,10 @@ listen
     : LISTEN channelName
     ;
 
+unlisten
+    : UNLISTEN (channelName | ASTERISK_)
+    ;
+
 direction
     : NEXT #next
     | PRIOR #prior
@@ -1893,10 +1897,6 @@ securityLabelClausces
     | (AGGREGATE | FUNCTION) aggregateWithArgtypes
     | LARGE OBJECT numericOnly
     | (PROCEDURE | ROUTINE) functionWithArgtypes
-    ;
-
-unlisten
-    : UNLISTEN (colId | ASTERISK_)
     ;
 
 createSchema

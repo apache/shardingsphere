@@ -39,6 +39,9 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -67,7 +70,7 @@ public final class AlterTrafficRuleHandlerTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecute() throws SQLException {
-        mockContextManager();
+        ContextManager contextManager = mockContextManager();
         TrafficRuleSegment trafficRuleSegment1 = new TrafficRuleSegment(
                 "rule_name_1", Arrays.asList("olap", "order_by"), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()));
         TrafficRuleSegment trafficRuleSegment2 = new TrafficRuleSegment(
@@ -75,15 +78,23 @@ public final class AlterTrafficRuleHandlerTest extends ProxyContextRestorer {
         AlterTrafficRuleHandler handler = new AlterTrafficRuleHandler();
         handler.init(new AlterTrafficRuleStatement(Arrays.asList(trafficRuleSegment1, trafficRuleSegment2)), null);
         handler.execute();
+        TrafficRuleConfiguration alteredConfig = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class).getConfiguration();
+        assertThat(alteredConfig.getTrafficStrategies().size(), is(2));
+        assertThat(alteredConfig.getLoadBalancers().size(), is(2));
+        assertThat(alteredConfig.getTrafficAlgorithms().size(), is(2));
+        assertThat(alteredConfig.getTrafficStrategies().iterator().next().getName(), is("rule_name_1"));
+        assertNotNull(alteredConfig.getTrafficAlgorithms().get("rule_name_1_distsql.fixture"));
+        assertNotNull(alteredConfig.getLoadBalancers().get("rule_name_2_distsql.fixture"));
     }
     
-    private void mockContextManager() {
-        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+    private ContextManager mockContextManager() {
+        ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         TrafficRule rule = mockTrafficRule();
         when(rule.getConfiguration()).thenReturn(createTrafficRuleConfiguration());
         ShardingSphereRuleMetaData globalRuleMetaData = new ShardingSphereRuleMetaData(new LinkedList<>(Collections.singleton(rule)));
-        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
-        ProxyContext.init(contextManager);
+        when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        ProxyContext.init(result);
+        return result;
     }
     
     private TrafficRule mockTrafficRule() {

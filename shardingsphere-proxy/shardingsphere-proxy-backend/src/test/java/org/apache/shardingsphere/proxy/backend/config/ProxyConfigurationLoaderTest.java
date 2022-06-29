@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfigurat
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.Optional;
 
@@ -92,9 +93,9 @@ public final class ProxyConfigurationLoaderTest {
     }
     
     private void assertReadwriteSplittingRuleConfiguration(final YamlReadwriteSplittingDataSourceRuleConfiguration actual) {
-        assertNotNull(actual.getProps());
-        assertThat(actual.getProps().getProperty("write-data-source-name"), is("write_ds"));
-        assertThat(actual.getProps().getProperty("read-data-source-names"), is("read_ds_0,read_ds_1"));
+        assertNotNull(actual.getStaticStrategy());
+        assertThat(actual.getStaticStrategy().getWriteDataSourceName(), is("write_ds"));
+        assertThat(actual.getStaticStrategy().getReadDataSourceNames(), is(Arrays.asList("read_ds_0", "read_ds_1")));
     }
     
     private void assertEncryptRuleConfiguration(final YamlProxyDatabaseConfiguration actual) {

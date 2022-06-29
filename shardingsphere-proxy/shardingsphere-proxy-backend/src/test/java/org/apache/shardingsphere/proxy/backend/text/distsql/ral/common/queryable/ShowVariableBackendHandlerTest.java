@@ -37,7 +37,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -68,7 +67,7 @@ public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
         backendHandler.next();
-        List<Object> rowData = new ArrayList<>(backendHandler.getRowData());
+        List<Object> rowData = backendHandler.getRowData().getData();
         assertThat(rowData.get(0), is("transaction_type"));
         assertThat(rowData.get(1), is("LOCAL"));
     }
@@ -82,7 +81,7 @@ public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
         backendHandler.next();
-        List<Object> rowData = new ArrayList<>(backendHandler.getRowData());
+        List<Object> rowData = backendHandler.getRowData().getData();
         assertThat(rowData.get(0), is("cached_connections"));
         assertThat(rowData.get(1), is("0"));
     }
@@ -105,7 +104,7 @@ public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
         backendHandler.next();
-        List<Object> rowData = new ArrayList<>(backendHandler.getRowData());
+        List<Object> rowData = backendHandler.getRowData().getData();
         assertThat(rowData.get(0), is("agent_plugins_enabled"));
         assertThat(rowData.get(1), is(Boolean.TRUE.toString()));
     }
@@ -126,7 +125,7 @@ public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
         backendHandler.next();
-        List<Object> rowData = new ArrayList<>(backendHandler.getRowData());
+        List<Object> rowData = backendHandler.getRowData().getData();
         assertThat(rowData.get(0), is("sql_show"));
         assertThat(rowData.get(1), is(Boolean.TRUE.toString()));
     }
@@ -145,7 +144,7 @@ public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
         assertThat(actual, instanceOf(QueryResponseHeader.class));
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
         backendHandler.next();
-        List<Object> rowData = new ArrayList<>(backendHandler.getRowData());
+        List<Object> rowData = backendHandler.getRowData().getData();
         assertThat(rowData.get(0), is("sql_show"));
         assertThat(rowData.get(1), is(Boolean.FALSE.toString()));
     }

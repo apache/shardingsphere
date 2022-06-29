@@ -122,7 +122,7 @@ public final class UnicastDatabaseBackendHandlerTest extends ProxyContextRestore
     public void assertDatabaseUsingStream() throws SQLException {
         unicastDatabaseBackendHandler.execute();
         while (unicastDatabaseBackendHandler.next()) {
-            assertThat(unicastDatabaseBackendHandler.getRowData().size(), is(1));
+            assertThat(unicastDatabaseBackendHandler.getRowData().getData().size(), is(1));
         }
     }
 }

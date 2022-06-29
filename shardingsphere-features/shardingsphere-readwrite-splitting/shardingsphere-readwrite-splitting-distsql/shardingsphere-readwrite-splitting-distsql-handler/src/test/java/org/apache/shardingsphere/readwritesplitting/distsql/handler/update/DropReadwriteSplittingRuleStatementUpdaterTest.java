@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRul
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.DropReadwriteSplittingRuleStatement;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -109,20 +110,24 @@ public final class DropReadwriteSplittingRuleStatementUpdaterTest {
     }
     
     private ReadwriteSplittingRuleConfiguration createCurrentRuleConfiguration() {
-        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds", "Static", new Properties(), "TEST");
+        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds",
+                new StaticReadwriteSplittingStrategyConfiguration("", Collections.emptyList()), null, "TEST");
         Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = Collections.singletonMap("readwrite_ds", new ShardingSphereAlgorithmConfiguration("TEST", new Properties()));
         return new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)), loadBalancers);
     }
     
     private ReadwriteSplittingRuleConfiguration createCurrentRuleConfigurationWithoutLoadBalancerName() {
-        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds", "Static", new Properties(), null);
+        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds",
+                new StaticReadwriteSplittingStrategyConfiguration("", Collections.emptyList()), null, null);
         Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = Collections.singletonMap("readwrite_ds", new ShardingSphereAlgorithmConfiguration("TEST", new Properties()));
         return new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)), loadBalancers);
     }
     
     private ReadwriteSplittingRuleConfiguration createMultipleCurrentRuleConfigurations() {
-        ReadwriteSplittingDataSourceRuleConfiguration fooDataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("foo_ds", "Static", new Properties(), "TEST");
-        ReadwriteSplittingDataSourceRuleConfiguration barDataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("bar_ds", "Static", new Properties(), "TEST");
+        ReadwriteSplittingDataSourceRuleConfiguration fooDataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("foo_ds",
+                new StaticReadwriteSplittingStrategyConfiguration("", Collections.emptyList()), null, "TEST");
+        ReadwriteSplittingDataSourceRuleConfiguration barDataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("bar_ds",
+                new StaticReadwriteSplittingStrategyConfiguration("", Collections.emptyList()), null, "TEST");
         Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = Collections.singletonMap("foo_ds", new ShardingSphereAlgorithmConfiguration("TEST", new Properties()));
         return new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Arrays.asList(fooDataSourceRuleConfig, barDataSourceRuleConfig)), loadBalancers);
     }

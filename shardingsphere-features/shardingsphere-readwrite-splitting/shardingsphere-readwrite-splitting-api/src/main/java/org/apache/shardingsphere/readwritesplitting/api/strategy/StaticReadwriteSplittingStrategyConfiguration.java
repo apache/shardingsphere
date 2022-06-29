@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.check;
+package org.apache.shardingsphere.readwritesplitting.api.strategy;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
+import lombok.RequiredArgsConstructor;
+
+import java.util.List;
 
 /**
- * SQL check exception.
+ * Static Readwrite-splitting strategy configuration.
  */
+@RequiredArgsConstructor
 @Getter
-public final class SQLCheckException extends ShardingSphereException {
+public final class StaticReadwriteSplittingStrategyConfiguration {
     
-    private static final long serialVersionUID = 4183020614721058122L;
+    private final String writeDataSourceName;
     
-    public SQLCheckException(final String errorMessage) {
-        super("SQL checking failed. Error message: %s.", errorMessage);
-    }
+    private final List<String> readDataSourceNames;
 }
