@@ -21,8 +21,8 @@ import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * UnListen statement.
+ * Unlisten statement.
  */
 @ToString
-public class UnlistenStatement extends AbstractSQLStatement implements DDLStatement {
+public abstract class UnlistenStatement extends AbstractSQLStatement implements DDLStatement {
 }

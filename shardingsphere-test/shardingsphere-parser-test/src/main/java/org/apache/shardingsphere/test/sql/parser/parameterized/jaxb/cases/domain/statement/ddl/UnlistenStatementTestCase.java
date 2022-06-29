@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * UnListen statement test case.
+ * Unlisten statement test case.
  */
 public final class UnlistenStatementTestCase extends SQLParserTestCase {
 }
