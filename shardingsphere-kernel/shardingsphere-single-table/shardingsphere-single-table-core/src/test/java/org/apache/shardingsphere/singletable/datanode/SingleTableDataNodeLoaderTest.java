@@ -83,20 +83,32 @@ public final class SingleTableDataNodeLoaderTest {
     @Test
     public void assertLoad() {
         Collection<String> excludedTables = Arrays.asList("salary", "employee", "student");
-        Map<String, Collection<DataNode>> dataNodeMap = SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), dataSourceMap, excludedTables);
-        assertFalse(dataNodeMap.containsKey("employee"));
-        assertFalse(dataNodeMap.containsKey("salary"));
-        assertFalse(dataNodeMap.containsKey("student"));
-        assertTrue(dataNodeMap.containsKey("dept"));
-        assertTrue(dataNodeMap.containsKey("teacher"));
-        assertTrue(dataNodeMap.containsKey("class"));
-        assertThat(dataNodeMap.get("dept").iterator().next().getDataSourceName(), is("ds0"));
-        assertThat(dataNodeMap.get("teacher").iterator().next().getDataSourceName(), is("ds1"));
-        assertThat(dataNodeMap.get("class").iterator().next().getDataSourceName(), is("ds1"));
+        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), dataSourceMap, excludedTables);
+        assertFalse(actual.containsKey("employee"));
+        assertFalse(actual.containsKey("salary"));
+        assertFalse(actual.containsKey("student"));
+        assertTrue(actual.containsKey("dept"));
+        assertTrue(actual.containsKey("teacher"));
+        assertTrue(actual.containsKey("class"));
+        assertThat(actual.get("dept").iterator().next().getDataSourceName(), is("ds0"));
+        assertThat(actual.get("teacher").iterator().next().getDataSourceName(), is("ds1"));
+        assertThat(actual.get("class").iterator().next().getDataSourceName(), is("ds1"));
     }
     
-    @Test(expected = IllegalStateException.class)
+    @Test
     public void assertLoadWithConflictTables() {
-        SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), dataSourceMap, Collections.emptyList());
+        Map<String, Collection<DataNode>> actual = SingleTableDataNodeLoader.load(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), dataSourceMap, Collections.emptyList());
+        assertTrue(actual.containsKey("employee"));
+        assertTrue(actual.containsKey("salary"));
+        assertTrue(actual.containsKey("student"));
+        assertTrue(actual.containsKey("dept"));
+        assertTrue(actual.containsKey("teacher"));
+        assertTrue(actual.containsKey("class"));
+        assertThat(actual.get("employee").iterator().next().getDataSourceName(), is("ds0"));
+        assertThat(actual.get("salary").iterator().next().getDataSourceName(), is("ds0"));
+        assertThat(actual.get("student").iterator().next().getDataSourceName(), is("ds1"));
+        assertThat(actual.get("dept").iterator().next().getDataSourceName(), is("ds0"));
+        assertThat(actual.get("teacher").iterator().next().getDataSourceName(), is("ds1"));
+        assertThat(actual.get("class").iterator().next().getDataSourceName(), is("ds1"));
     }
 }
