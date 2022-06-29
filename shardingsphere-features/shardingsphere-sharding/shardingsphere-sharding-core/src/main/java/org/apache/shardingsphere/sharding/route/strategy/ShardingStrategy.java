@@ -22,12 +22,13 @@ import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
  * Sharding strategy.
  */
-public interface ShardingStrategy {
+public interface ShardingStrategy extends Comparable {
     
     /**
      * Get sharding columns.
@@ -53,4 +54,19 @@ public interface ShardingStrategy {
      * @return sharding results for data source or table names
      */
     Collection<String> doSharding(Collection<String> availableTargetNames, Collection<ShardingConditionValue> shardingConditionValues, DataNodeInfo dataNodeInfo, ConfigurationProperties props);
+    
+    @Override
+    default int compareTo(final Object other) {
+        if (!(other instanceof ShardingStrategy)) {
+            return -1;
+        }
+        ShardingStrategy otherShardingStrategy = (ShardingStrategy) other;
+        if (!new ArrayList(this.getShardingColumns()).equals(new ArrayList(otherShardingStrategy.getShardingColumns()))) {
+            return -1;
+        }
+        if (0 != this.getShardingAlgorithm().compareTo(otherShardingStrategy.getShardingAlgorithm())) {
+            return -1;
+        }
+        return 0;
+    }
 }

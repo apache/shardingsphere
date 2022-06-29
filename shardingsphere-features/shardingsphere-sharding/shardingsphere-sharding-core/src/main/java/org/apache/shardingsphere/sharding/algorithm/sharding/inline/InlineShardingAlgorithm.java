@@ -29,12 +29,13 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingVal
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
 import java.util.Collection;
+import java.util.Objects;
 import java.util.Properties;
 
 /**
  * Inline sharding algorithm.
  */
-public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>> {
+public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<Comparable<?>>, Comparable {
     
     private static final String ALGORITHM_EXPRESSION_KEY = "algorithm-expression";
     
@@ -100,5 +101,21 @@ public final class InlineShardingAlgorithm implements StandardShardingAlgorithm<
     @Override
     public String getType() {
         return "INLINE";
+    }
+    
+    @Override
+    public int compareTo(final Object other) {
+        if (!(other instanceof InlineShardingAlgorithm)) {
+            return -1;
+        }
+        InlineShardingAlgorithm otherShardingAlgorithm = (InlineShardingAlgorithm) other;
+        if (!Objects.equals(InlineExpressionParser.extractExpression(this.algorithmExpression), 
+                InlineExpressionParser.extractExpression(otherShardingAlgorithm.algorithmExpression))) {
+            return -1;
+        }
+        if (this.allowRangeQuery != otherShardingAlgorithm.allowRangeQuery) {
+            return -1;
+        }
+        return 0;
     }
 }

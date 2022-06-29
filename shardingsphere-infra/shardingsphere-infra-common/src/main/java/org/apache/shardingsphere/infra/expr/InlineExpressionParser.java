@@ -31,8 +31,11 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -57,6 +60,20 @@ public final class InlineExpressionParser {
      */
     public static boolean isInlineExpression(final String expression) {
         return expression.contains("${") || expression.contains("$->{");
+    }
+    
+    /**
+     * Extract the expression within {@code ${}}.
+     *
+     * @param expression inline expression with {@code ${}}
+     * @return result the expression without {@code ${}}
+     */
+    public static Optional<String> extractExpression(final String expression) {
+        Matcher matcher = Pattern.compile("\\$\\{.*\\}").matcher(handlePlaceHolder(expression));
+        if (matcher.matches()) {
+            return Optional.of(matcher.group(0));
+        }
+        return Optional.empty();
     }
     
     /**

@@ -47,6 +47,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -194,9 +195,28 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
                                         final ShardingStrategy databaseShardingStrategy, final List<ShardingConditionValue> databaseShardingValues,
                                         final ShardingStrategy tableShardingStrategy, final List<ShardingConditionValue> tableShardingValues) {
         Collection<String> routedDataSources = routeDataSources(tableRule, databaseShardingStrategy, databaseShardingValues);
+        boolean theSameShardingStrategy = 0 == databaseShardingStrategy.compareTo(tableShardingStrategy);
+        String dataSourcePrefix = tableRule.getDataSourceDataNode().getPrefix();
+        String tablePrefix = tableRule.getTableDataNode().getPrefix();
         Collection<DataNode> result = new LinkedList<>();
         for (String each : routedDataSources) {
-            result.addAll(routeTables(tableRule, each, tableShardingStrategy, tableShardingValues));
+            Collection<DataNode> routedDataNodes = routeTables(tableRule, each, tableShardingStrategy, tableShardingValues);
+            result.addAll(reduceOnTheSameShardingStrategy(theSameShardingStrategy, routedDataNodes, each, dataSourcePrefix, tablePrefix));
+        }
+        return result;
+    }
+    
+    private Collection<DataNode> reduceOnTheSameShardingStrategy(final boolean theSameShardingStrategy, final Collection<DataNode> routedDataNodes, 
+                                                                 final String routedDataSource, final String dataSourcePrefix, final String tablePrefix) {
+        if (!theSameShardingStrategy) {
+            return routedDataNodes;
+        }
+        Collection<DataNode> result = new LinkedList<>();
+        for (DataNode dataNode : routedDataNodes) {
+            if (Objects.equals(routedDataSource.replace(dataSourcePrefix, ""), dataNode.getTableName().replace(tablePrefix, ""))) {
+                result.add(dataNode);
+                break;
+            }
         }
         return result;
     }

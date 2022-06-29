@@ -82,6 +82,20 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
         assertThat(routeUnits.get(0).getTableMappers().iterator().next().getLogicName(), is("t_order"));
     }
     
+    @Test
+    public void assertRouteByTheSameConditionsOnDatabaseAndTable() {
+        ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", createMultiShardingConditions("t_order"));
+        RouteContext routeContext = standardRoutingEngine.route(createBasedAndTheSameShardingRule());
+        List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
+        assertThat(routeContext.getRouteUnits().size(), is(2));
+        assertThat(routeUnits.get(0).getDataSourceMapper().getActualName(), is("ds_0"));
+        assertThat(routeUnits.get(0).getTableMappers().size(), is(1));
+        assertThat(routeUnits.get(0).getTableMappers().iterator().next().getActualName(), is("t_order_0"));
+        assertThat(routeUnits.get(1).getDataSourceMapper().getActualName(), is("ds_1"));
+        assertThat(routeUnits.get(1).getTableMappers().size(), is(1));
+        assertThat(routeUnits.get(1).getTableMappers().iterator().next().getActualName(), is("t_order_1"));
+    }
+    
     @Test(expected = ShardingSphereException.class)
     public void assertRouteByErrorShardingTableStrategy() {
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_order", createErrorShardingConditions("t_order"));
