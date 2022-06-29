@@ -196,8 +196,8 @@ public final class ShardingStandardRoutingEngine implements ShardingRouteEngine 
                                         final ShardingStrategy tableShardingStrategy, final List<ShardingConditionValue> tableShardingValues) {
         Collection<String> routedDataSources = routeDataSources(tableRule, databaseShardingStrategy, databaseShardingValues);
         boolean theSameShardingStrategy = 0 == databaseShardingStrategy.compareTo(tableShardingStrategy);
-        String dataSourcePrefix = tableRule.getDataSourceDataNode().getPrefix();
-        String tablePrefix = tableRule.getTableDataNode().getPrefix();
+        String dataSourcePrefix = null == tableRule.getDataSourceDataNode() ? "" : tableRule.getDataSourceDataNode().getPrefix();
+        String tablePrefix = null == tableRule.getTableDataNode() ? "" : tableRule.getTableDataNode().getPrefix();
         Collection<DataNode> result = new LinkedList<>();
         for (String each : routedDataSources) {
             Collection<DataNode> routedDataNodes = routeTables(tableRule, each, tableShardingStrategy, tableShardingValues);
