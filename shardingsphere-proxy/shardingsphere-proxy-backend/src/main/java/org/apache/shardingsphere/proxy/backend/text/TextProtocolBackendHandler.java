@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.proxy.backend.text;
 
 import io.vertx.core.Future;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
 
 /**
@@ -66,8 +66,8 @@ public interface TextProtocolBackendHandler {
      * @return row data
      * @throws SQLException SQL exception
      */
-    default Collection<Object> getRowData() throws SQLException {
-        return Collections.emptyList();
+    default QueryResponseRow getRowData() throws SQLException {
+        return new QueryResponseRow(Collections.emptyList());
     }
     
     /**

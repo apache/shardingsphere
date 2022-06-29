@@ -15,19 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.check;
+package org.apache.shardingsphere.readwritesplitting.yaml.config.strategy;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 
 /**
- * SQL check result.
+ * Readwrite-splitting strategy configuration for YAML.
  */
-@RequiredArgsConstructor
 @Getter
-public final class SQLCheckResult {
+@Setter
+public final class YamlReadwriteSplittingStrategyConfiguration implements YamlConfiguration {
     
-    private final boolean isPassed;
+    private YamlStaticReadwriteSplittingStrategyConfiguration staticStrategy;
     
-    private final String errorMessage;
+    private YamlDynamicReadwriteSplittingStrategyConfiguration dynamicStrategy;
 }

@@ -763,8 +763,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     @Override
     public void setInstanceContext(final InstanceContext instanceContext) {
-        keyGenerators.values().stream().filter(each -> each instanceof InstanceAwareAlgorithm)
-                .forEach(each -> ((InstanceAwareAlgorithm) each).setInstanceContext(instanceContext));
+        keyGenerators.values().stream().filter(each -> each instanceof InstanceAwareAlgorithm).forEach(each -> ((InstanceAwareAlgorithm) each).setInstanceContext(instanceContext));
         if (defaultKeyGenerateAlgorithm instanceof InstanceAwareAlgorithm) {
             ((InstanceAwareAlgorithm) defaultKeyGenerateAlgorithm).setInstanceContext(instanceContext);
         }

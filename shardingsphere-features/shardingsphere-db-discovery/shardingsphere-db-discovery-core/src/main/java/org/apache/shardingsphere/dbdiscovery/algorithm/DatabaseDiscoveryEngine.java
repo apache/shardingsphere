@@ -98,9 +98,9 @@ public final class DatabaseDiscoveryEngine {
         }
         return result;
     }
-
+    
     private void postReplicaDataSourceDisabledEvent(final String databaseName, final String groupName, final String primaryDataSourceName,
-            final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
+                                                    final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
         int enabledReplicasCount = dataSourceMap.size() - disabledDataSourceNames.size() - 1;
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             if (!entry.getKey().equals(primaryDataSourceName)) {

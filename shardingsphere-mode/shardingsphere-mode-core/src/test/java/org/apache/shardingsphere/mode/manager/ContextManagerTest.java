@@ -82,6 +82,8 @@ public final class ContextManagerTest {
         when(metaDataContexts.getMetaData().getDatabases().get("foo_db").getSchemas()).thenReturn(Collections.singletonMap("foo_db", new ShardingSphereSchema()));
         when(metaDataContexts.getMetaData().getDatabases().get("foo_db").getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
         when(metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases()).thenReturn(new LinkedHashMap<>());
+        when(metaDataContexts.getOptimizerContext().getParserContexts()).thenReturn(new LinkedHashMap<>());
+        when(metaDataContexts.getOptimizerContext().getPlannerContexts()).thenReturn(new LinkedHashMap<>());
         contextManager = new ContextManager(metaDataContexts, mock(InstanceContext.class));
     }
     
@@ -103,10 +105,17 @@ public final class ContextManagerTest {
     
     @Test
     public void assertAddDatabase() throws SQLException {
-        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(new LinkedHashMap<>());
         contextManager.addDatabase("foo_db");
-        assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabases().containsKey("foo_db"));
-        assertTrue(contextManager.getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabases().containsKey("foo_db"));
+        verify(metaDataContexts.getMetaData()).addDatabase(eq("foo_db"), any(DatabaseType.class));
+        verify(metaDataContexts.getOptimizerContext()).addDatabase(eq("foo_db"), any(DatabaseType.class));
+    }
+    
+    @Test
+    public void assertAddExistedDatabase() throws SQLException {
+        when(metaDataContexts.getMetaData().getDatabases().containsKey("foo_db")).thenReturn(true);
+        contextManager.addDatabase("foo_db");
+        verify(metaDataContexts.getMetaData(), times(0)).addDatabase(eq("foo_db"), any(DatabaseType.class));
+        verify(metaDataContexts.getOptimizerContext(), times(0)).addDatabase(eq("foo_db"), any(DatabaseType.class));
     }
     
     @Test

@@ -19,11 +19,16 @@ package org.apache.shardingsphere.infra.federation.optimizer.context;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.parser.OptimizerParserContext;
+import org.apache.shardingsphere.infra.federation.optimizer.context.parser.OptimizerParserContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
+import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationMetaData;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -40,4 +45,17 @@ public final class OptimizerContext {
     private final Map<String, OptimizerParserContext> parserContexts;
     
     private final Map<String, OptimizerPlannerContext> plannerContexts;
+    
+    /**
+     * Add database.
+     *
+     * @param databaseName database name
+     * @param protocolType protocol database type
+     */
+    public void addDatabase(final String databaseName, final DatabaseType protocolType) {
+        FederationDatabaseMetaData federationDatabaseMetaData = new FederationDatabaseMetaData(databaseName, Collections.emptyMap());
+        federationMetaData.getDatabases().put(databaseName, federationDatabaseMetaData);
+        parserContexts.put(databaseName, OptimizerParserContextFactory.create(protocolType));
+        plannerContexts.put(databaseName, OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
+    }
 }

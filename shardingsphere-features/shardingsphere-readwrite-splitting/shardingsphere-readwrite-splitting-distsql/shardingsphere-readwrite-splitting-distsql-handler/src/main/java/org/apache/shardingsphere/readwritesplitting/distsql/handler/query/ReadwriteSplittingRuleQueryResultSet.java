@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
@@ -78,10 +79,10 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
     
     private Collection<Object> buildDataItem(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig, final Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers) {
         String name = dataSourceRuleConfig.getName();
-        Map<String, String> exportDataSources = DYNAMIC.equalsIgnoreCase(dataSourceRuleConfig.getType()) ? exportableAutoAwareDataSource.get(name) : exportableDataSourceMap.get(name);
+        Map<String, String> exportDataSources = null != dataSourceRuleConfig.getDynamicStrategy() ? exportableAutoAwareDataSource.get(name) : exportableDataSourceMap.get(name);
         Optional<ShardingSphereAlgorithmConfiguration> loadBalancer = Optional.ofNullable(loadBalancers.get(dataSourceRuleConfig.getLoadBalancerName()));
         return Arrays.asList(name,
-                dataSourceRuleConfig.getAutoAwareDataSourceName().orElse(""),
+                getAutoAwareDataSourceName(dataSourceRuleConfig),
                 getWriteDataSourceName(dataSourceRuleConfig, exportDataSources),
                 getReadDataSourceNames(dataSourceRuleConfig, exportDataSources),
                 loadBalancer.map(ShardingSphereAlgorithmConfiguration::getType).orElse(""),
@@ -93,18 +94,25 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
         return null != loadBalancers ? loadBalancers : Collections.emptyMap();
     }
     
+    private String getAutoAwareDataSourceName(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig) {
+        if (null == dataSourceRuleConfig.getDynamicStrategy()) {
+            return "";
+        }
+        return dataSourceRuleConfig.getDynamicStrategy().getAutoAwareDataSourceName();
+    }
+    
     private String getWriteDataSourceName(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig, final Map<String, String> exportDataSources) {
         if (null != exportDataSources) {
             return exportDataSources.get(ExportableItemConstants.PRIMARY_DATA_SOURCE_NAME);
         }
-        return dataSourceRuleConfig.getWriteDataSourceName().orElse("");
+        return dataSourceRuleConfig.getStaticStrategy().getWriteDataSourceName();
     }
     
     private String getReadDataSourceNames(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig, final Map<String, String> exportDataSources) {
         if (null != exportDataSources) {
             return exportDataSources.get(ExportableItemConstants.REPLICA_DATA_SOURCE_NAMES);
         }
-        return dataSourceRuleConfig.getReadDataSourceNames().orElse("");
+        return Joiner.on(",").join(dataSourceRuleConfig.getStaticStrategy().getReadDataSourceNames());
     }
     
     @Override

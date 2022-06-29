@@ -49,6 +49,7 @@ customKeyword
     | LAST_VALUE
     | PRIMARY
     | MAXVALUE
+    | BIT_XOR
     ;
     
 literals

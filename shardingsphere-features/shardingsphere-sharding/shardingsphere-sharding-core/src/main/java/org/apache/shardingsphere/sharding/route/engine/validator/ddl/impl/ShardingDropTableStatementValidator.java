@@ -52,6 +52,9 @@ public final class ShardingDropTableStatementValidator extends ShardingDDLStatem
                     .map(optional -> database.getSchemas().get(optional)).orElseGet(() -> database.getSchemas().get(defaultSchemaName));
             validateTableExist(schema, sqlStatementContext.getTablesContext().getTables());
         }
+        if (DropTableStatementHandler.containsCascade(sqlStatementContext.getSqlStatement())) {
+            throw new ShardingSphereException("DROP TABLE ... CASCADE statement is not supported yet.");
+        }
     }
     
     @Override

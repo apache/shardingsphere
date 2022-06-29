@@ -29,7 +29,6 @@ import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.junit.Test;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -51,7 +50,7 @@ public final class ShowAuthorityRuleHandlerTest extends ProxyContextRestorer {
         handler.init(new ShowAuthorityRuleStatement(), null);
         handler.execute();
         handler.next();
-        List<Object> data = new ArrayList<>(handler.getRowData());
+        List<Object> data = handler.getRowData().getData();
         assertThat(data.size(), is(3));
         assertThat(data.get(0), is("root@localhost"));
         assertThat(data.get(1), is("ALL_PERMITTED"));
