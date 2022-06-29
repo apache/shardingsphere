@@ -76,6 +76,19 @@ public final class MySQLQueryHeaderBuilderTest {
     }
     
     @Test
+    public void assertBuildWithNullSchema() throws SQLException {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getSchemas()).thenReturn(Collections.emptyMap());
+        DataNodeContainedRule containedRule = mock(DataNodeContainedRule.class);
+        when(containedRule.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_order"));
+        when(database.getRuleMetaData().findRules(DataNodeContainedRule.class)).thenReturn(Collections.singletonList(containedRule));
+        QueryResultMetaData queryResultMetaData = createQueryResultMetaData();
+        QueryHeader actual = new MySQLQueryHeaderBuilder().build(queryResultMetaData, database, queryResultMetaData.getColumnName(1), queryResultMetaData.getColumnLabel(1), 1);
+        assertFalse(actual.isPrimaryKey());
+        assertThat(actual.getTable(), is("t_order"));
+    }
+    
+    @Test
     public void assertBuildWithoutDataNodeContainedRule() throws SQLException {
         QueryResultMetaData queryResultMetaData = createQueryResultMetaData();
         QueryHeader actual = new MySQLQueryHeaderBuilder().build(
