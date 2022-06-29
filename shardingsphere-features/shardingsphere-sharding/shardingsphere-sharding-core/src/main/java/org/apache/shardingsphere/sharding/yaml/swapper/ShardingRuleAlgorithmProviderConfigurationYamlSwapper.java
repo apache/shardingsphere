@@ -53,6 +53,7 @@ public final class ShardingRuleAlgorithmProviderConfigurationYamlSwapper impleme
         result.getBroadcastTables().addAll(data.getBroadcastTables());
         setYamlDefaultStrategies(data, result);
         setYamlAlgorithms(data, result);
+        result.getShardingAudits().addAll(data.getShardingAudits());
         return result;
     }
     
@@ -73,6 +74,7 @@ public final class ShardingRuleAlgorithmProviderConfigurationYamlSwapper impleme
         result.getBroadcastTables().addAll(yamlConfig.getBroadcastTables());
         setDefaultStrategies(yamlConfig, result);
         result.setDefaultShardingColumn(yamlConfig.getDefaultShardingColumn());
+        result.getShardingAudits().addAll(yamlConfig.getShardingAudits());
         return result;
     }
     
@@ -121,6 +123,10 @@ public final class ShardingRuleAlgorithmProviderConfigurationYamlSwapper impleme
         }
         if (null != data.getKeyGenerators()) {
             data.getKeyGenerators().forEach((key, value) -> yamlConfig.getKeyGenerators().put(key, new YamlShardingSphereAlgorithmConfiguration(value.getType(), value.getProps())));
+        }
+        if (null != data.getShardingAuditAlgorithms()) {
+            data.getShardingAuditAlgorithms().forEach(
+                    (key, value) -> yamlConfig.getShardingAuditAlgorithms().put(key, new YamlShardingSphereAlgorithmConfiguration(value.getType(), value.getProps())));
         }
     }
 }

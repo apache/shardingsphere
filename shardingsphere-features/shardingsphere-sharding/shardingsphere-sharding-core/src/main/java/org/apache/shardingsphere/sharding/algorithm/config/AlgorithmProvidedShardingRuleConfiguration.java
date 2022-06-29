@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerate
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -59,4 +60,8 @@ public final class AlgorithmProvidedShardingRuleConfiguration implements Databas
     private Map<String, ShardingAlgorithm> shardingAlgorithms = new LinkedHashMap<>();
     
     private Map<String, KeyGenerateAlgorithm> keyGenerators = new LinkedHashMap<>();
+    
+    private Map<String, ShardingAuditAlgorithm> shardingAuditAlgorithms = new LinkedHashMap<>();
+    
+    private Collection<String> shardingAudits = new LinkedList<>();
 }
