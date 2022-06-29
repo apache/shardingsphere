@@ -71,4 +71,17 @@ public final class OptimizerContext {
         // TODO add schema only
         plannerContexts.put(databaseName, OptimizerPlannerContextFactory.create(federationMetaData.getDatabases().get(databaseName)));
     }
+    
+    /**
+     * Alter table.
+     * 
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param changedTable changed table
+     */
+    public void alterTable(final String databaseName, final String schemaName, final ShardingSphereTable changedTable) {
+        FederationDatabaseMetaData federationDatabaseMetaData = federationMetaData.getDatabases().get(databaseName);
+        federationDatabaseMetaData.putTable(schemaName, changedTable);
+        plannerContexts.put(databaseName, OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
+    }
 }

@@ -142,6 +142,48 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
+     * Alter schema.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param changedTable changed table
+     * @param deletedTableName deleted table name
+     */
+    public void alterSchema(final String databaseName, final String schemaName, final ShardingSphereTable changedTable, final String deletedTableName) {
+        if (metaDataContexts.getMetaData().getDatabases().containsKey(databaseName)) {
+            Optional.ofNullable(changedTable).ifPresent(optional -> alterTableSchema(databaseName, schemaName, optional));
+            Optional.ofNullable(deletedTableName).ifPresent(optional -> deleteTable(databaseName, schemaName, optional));
+        }
+    }
+    
+    private void alterTableSchema(final String databaseName, final String schemaName, final ShardingSphereTable changedTable) {
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(databaseName);
+        alterSingleTableDataNodes(databaseName, database, changedTable);
+        database.getSchemas().get(schemaName).put(changedTable.getName(), changedTable);
+        metaDataContexts.getOptimizerContext().alterTable(databaseName, schemaName, changedTable);
+    }
+    
+    private void alterSingleTableDataNodes(final String databaseName, final ShardingSphereDatabase database, final ShardingSphereTable changedTableMetaData) {
+        if (!containsInImmutableDataNodeContainedRule(changedTableMetaData.getName(), database)) {
+            refreshRules(databaseName, database);
+        }
+    }
+    
+    private boolean containsInImmutableDataNodeContainedRule(final String tableName, final ShardingSphereDatabase database) {
+        return database.getRuleMetaData().findRules(DataNodeContainedRule.class).stream()
+                .filter(each -> !(each instanceof MutableDataNodeRule)).anyMatch(each -> each.getAllTables().contains(tableName));
+    }
+    
+    private void deleteTable(final String databaseName, final String schemaName, final String deletedTableName) {
+        if (null != metaDataContexts.getMetaData().getDatabases().get(databaseName).getSchemas().get(schemaName)) {
+            metaDataContexts.getMetaData().getDatabases().get(databaseName).getSchemas().get(schemaName).remove(deletedTableName);
+            FederationDatabaseMetaData databaseMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName);
+            databaseMetaData.removeTableMetadata(schemaName, deletedTableName);
+            metaDataContexts.getOptimizerContext().getPlannerContexts().put(databaseName, OptimizerPlannerContextFactory.create(databaseMetaData));
+        }
+    }
+    
+    /**
      * Alter schemas.
      *
      * @param databaseName database name
@@ -159,39 +201,9 @@ public final class ContextManager implements AutoCloseable {
                 rebuildMetaDataContexts(new ShardingSphereMetaData(alteredDatabases, metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps())));
     }
     
-    /**
-     * Alter schema.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param changedTableMetaData changed table meta data
-     * @param deletedTable deleted table
-     */
-    public void alterSchema(final String databaseName, final String schemaName, final ShardingSphereTable changedTableMetaData, final String deletedTable) {
-        if (null != metaDataContexts.getMetaData().getDatabases().get(databaseName)) {
-            Optional.ofNullable(changedTableMetaData).ifPresent(optional -> alterTableSchema(databaseName, schemaName, optional));
-            Optional.ofNullable(deletedTable).ifPresent(optional -> deleteTable(databaseName, schemaName, optional));
-        }
-    }
-    
     private void persistMetaData(final MetaDataContexts metaDataContexts) {
         metaDataContexts.getMetaData().getDatabases().forEach((databaseName, schemas) -> schemas.getSchemas()
                 .forEach((schemaName, tables) -> metaDataContexts.getPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persistMetaData(databaseName, schemaName, tables))));
-    }
-    
-    private void alterTableSchema(final String databaseName, final String schemaName, final ShardingSphereTable changedTableMetaData) {
-        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(databaseName);
-        alterSingleTableDataNodes(databaseName, database, changedTableMetaData);
-        FederationDatabaseMetaData federationDatabaseMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName);
-        database.getSchemas().get(schemaName).put(changedTableMetaData.getName(), changedTableMetaData);
-        federationDatabaseMetaData.putTable(schemaName, changedTableMetaData);
-        metaDataContexts.getOptimizerContext().getPlannerContexts().put(databaseName, OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
-    }
-    
-    private void alterSingleTableDataNodes(final String databaseName, final ShardingSphereDatabase database, final ShardingSphereTable changedTableMetaData) {
-        if (!containsInImmutableDataNodeContainedRule(changedTableMetaData.getName(), database)) {
-            refreshRules(databaseName, database);
-        }
     }
     
     private void refreshRules(final String databaseName, final ShardingSphereDatabase database) {
@@ -199,20 +211,6 @@ public final class ContextManager implements AutoCloseable {
                 databaseName, new DataSourceProvidedDatabaseConfiguration(database.getResource().getDataSources(), database.getRuleMetaData().getConfigurations()));
         database.getRuleMetaData().getRules().clear();
         database.getRuleMetaData().getRules().addAll(databaseRules);
-    }
-    
-    private void deleteTable(final String databaseName, final String schemaName, final String deletedTable) {
-        if (null != metaDataContexts.getMetaData().getDatabases().get(databaseName).getSchemas().get(schemaName)) {
-            metaDataContexts.getMetaData().getDatabases().get(databaseName).getSchemas().get(schemaName).remove(deletedTable);
-            FederationDatabaseMetaData databaseMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName);
-            databaseMetaData.removeTableMetadata(schemaName, deletedTable);
-            metaDataContexts.getOptimizerContext().getPlannerContexts().put(databaseName, OptimizerPlannerContextFactory.create(databaseMetaData));
-        }
-    }
-    
-    private boolean containsInImmutableDataNodeContainedRule(final String tableName, final ShardingSphereDatabase schemaMetaData) {
-        return schemaMetaData.getRuleMetaData().findRules(DataNodeContainedRule.class).stream()
-                .filter(each -> !(each instanceof MutableDataNodeRule)).anyMatch(each -> each.getAllTables().contains(tableName));
     }
     
     /**
