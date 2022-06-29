@@ -79,7 +79,7 @@ public final class ContextManagerTest {
         when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
         when(metaDataContexts.getMetaData().getDatabases().get("foo_db").getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(metaDataContexts.getMetaData().getDatabases().get("foo_db").getProtocolType()).thenReturn(new MySQLDatabaseType());
-        when(metaDataContexts.getMetaData().getDatabases().get("foo_db").getSchemas()).thenReturn(Collections.singletonMap("foo_db", new ShardingSphereSchema()));
+        when(metaDataContexts.getMetaData().getDatabases().get("foo_db").getSchemas()).thenReturn(new HashMap<>(Collections.singletonMap("foo_schema", new ShardingSphereSchema())));
         when(metaDataContexts.getMetaData().getDatabases().get("foo_db").getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
         when(metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases()).thenReturn(new LinkedHashMap<>());
         when(metaDataContexts.getOptimizerContext().getParserContexts()).thenReturn(new LinkedHashMap<>());
@@ -116,6 +116,19 @@ public final class ContextManagerTest {
         contextManager.addDatabase("foo_db");
         verify(metaDataContexts.getMetaData(), times(0)).addDatabase(eq("foo_db"), any(DatabaseType.class));
         verify(metaDataContexts.getOptimizerContext(), times(0)).addDatabase(eq("foo_db"), any(DatabaseType.class));
+    }
+    
+    @Test
+    public void assertAddSchema() {
+        contextManager.addSchema("foo_db", "bar_schema");
+        assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("foo_db").getSchemas().containsKey("bar_schema"));
+        verify(metaDataContexts.getOptimizerContext()).addSchema("foo_db", "bar_schema");
+    }
+    
+    @Test
+    public void assertAddExistedSchema() {
+        contextManager.addSchema("foo_db", "foo_schema");
+        verify(metaDataContexts.getOptimizerContext(), times(0)).addSchema("foo_db", "foo_schema");
     }
     
     @Test
