@@ -15,8 +15,8 @@
 -- limitations under the License.
 --
 
-CREATE DATABASE ds_0;
-CREATE DATABASE ds_1;
-CREATE DATABASE ds_2;
-CREATE DATABASE ds_3;
-CREATE DATABASE ds_4;
+CREATE DATABASE scaling_it_0;
+CREATE DATABASE scaling_it_1;
+CREATE DATABASE scaling_it_2;
+CREATE DATABASE scaling_it_3;
+CREATE DATABASE scaling_it_4;

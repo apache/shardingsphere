@@ -15,38 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.util;
+package org.apache.shardingsphere.integration.data.pipeline.env.enums;
 
-import lombok.RequiredArgsConstructor;
-
-import java.util.concurrent.TimeUnit;
-
-/**
- * Execute util.
- */
-@RequiredArgsConstructor
-public final class ExecuteUtil {
+public enum ScalingITTypeEnum {
     
-    private final Executor executor;
-    
-    private final int retryCount;
-    
-    private final long waitMs;
-    
-    /**
-     * Execute.
-     *
-     * @return execute result
-     */
-    public boolean execute() {
-        int count = 0;
-        while (!executor.execute() && retryCount > count) {
-            try {
-                TimeUnit.MILLISECONDS.sleep(waitMs);
-            } catch (final InterruptedException ignored) {
-            }
-            count++;
-        }
-        return retryCount > count;
-    }
+    NONE, DOCKER, NATIVE;
 }

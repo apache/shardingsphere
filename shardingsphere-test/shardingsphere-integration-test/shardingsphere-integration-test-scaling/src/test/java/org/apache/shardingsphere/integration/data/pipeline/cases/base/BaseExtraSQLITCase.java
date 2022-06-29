@@ -18,15 +18,24 @@
 package org.apache.shardingsphere.integration.data.pipeline.cases.base;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.ExtraSQLCommand;
+import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
+import org.junit.Before;
 
 import javax.xml.bind.JAXB;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+@Slf4j
 public abstract class BaseExtraSQLITCase extends BaseITCase {
     
     @Getter
@@ -34,7 +43,33 @@ public abstract class BaseExtraSQLITCase extends BaseITCase {
     
     public BaseExtraSQLITCase(final ScalingParameterized parameterized) {
         super(parameterized);
-        extraSQLCommand = JAXB.unmarshal(BaseExtraSQLITCase.class.getClassLoader().getResource(parameterized.getScenario()), ExtraSQLCommand.class);
+        extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseExtraSQLITCase.class.getClassLoader().getResource(parameterized.getScenario())), ExtraSQLCommand.class);
+    }
+    
+    @Before
+    @SneakyThrows(SQLException.class)
+    public void setUp() {
+        if (ENV.getItType() != ScalingITTypeEnum.NATIVE) {
+            return;
+        }
+        try (Connection connection = ENV.getActualDataSourceConnection(getDatabaseType())) {
+            for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {
+                try {
+                    connection.createStatement().execute(String.format("DROP DATABASE %s", each));
+                } catch (final SQLException ex) {
+                    log.error("Error occurred when drop database. error msg={}", ex.getMessage());
+                }
+            }
+        }
+        try (Connection connection = ENV.getActualDataSourceConnection(getDatabaseType())) {
+            for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {
+                try {
+                    connection.createStatement().execute(String.format("CREATE DATABASE %s", each));
+                } catch (final SQLException ex) {
+                    log.error("Error occurred when create database. error msg={}", ex.getMessage());
+                }
+            }
+        }
     }
     
     protected void createNoUseTable() {

@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
+import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITTypeEnum;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.framework.container.wait.JDBCConnectionWaitStrategy;
 import org.testcontainers.containers.BindMode;
@@ -30,7 +30,7 @@ import java.sql.DriverManager;
 import java.util.Arrays;
 import java.util.Properties;
 
-public final class MySQLContainer extends DockerDatabaseContainer {
+public final class MySQLContainer extends DatabaseContainer {
     
     private static final DatabaseType DATABASE_TYPE = new MySQLDatabaseType();
     
@@ -45,15 +45,15 @@ public final class MySQLContainer extends DockerDatabaseContainer {
         setEnv(Arrays.asList("LANG=C.UTF-8", "MYSQL_ROOT_PASSWORD=root", "MYSQL_ROOT_HOST=%"));
         withClasspathResourceMapping("/env/mysql/my.cnf", "/etc/mysql/my.cnf", BindMode.READ_ONLY);
         withExposedPorts(getPort());
-        if (ITEnvTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItEnvType()) {
+        if (ScalingITTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItType()) {
             addFixedExposedPort(3306, 3306);
         }
         setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(DATABASE_TYPE, "localhost", getFirstMappedPort()), "root", "root")));
     }
     
     @Override
-    public String getJdbcUrl(final String host, final int port, final String databaseName) {
-        String jdbcUrl = DataSourceEnvironment.getURL(DATABASE_TYPE, host, port, databaseName);
+    public String getJdbcUrl(final String databaseName) {
+        String jdbcUrl = DataSourceEnvironment.getURL(DATABASE_TYPE, this.getHost(), getFirstMappedPort(), databaseName);
         return new JdbcUrlAppender().appendQueryProperties(jdbcUrl, createQueryProperties());
     }
     

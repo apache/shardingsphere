@@ -26,11 +26,11 @@ import org.testcontainers.containers.BindMode;
  * Docker storage container.
  */
 @Getter
-public abstract class DockerDatabaseContainer extends DockerITContainer {
+public abstract class DatabaseContainer extends DockerITContainer {
     
     private final DatabaseType databaseType;
     
-    public DockerDatabaseContainer(final DatabaseType databaseType, final String dockerImageName) {
+    public DatabaseContainer(final DatabaseType databaseType, final String dockerImageName) {
         super(databaseType.getType().toLowerCase(), dockerImageName);
         this.databaseType = databaseType;
     }
@@ -43,12 +43,10 @@ public abstract class DockerDatabaseContainer extends DockerITContainer {
     /**
      * Get jdbc url.
      *
-     * @param host host
-     * @param port port
      * @param databaseName database name
      * @return jdbc url
      */
-    public abstract String getJdbcUrl(String host, int port, String databaseName);
+    public abstract String getJdbcUrl(String databaseName);
     
     /**
      * Get database port.
