@@ -84,7 +84,7 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
     }
     
     private void appendDatabaseName(final String databaseName, final StringBuilder stringBuilder) {
-        stringBuilder.append("databaseName").append(": ").append(databaseName).append("\n");
+        stringBuilder.append("databaseName").append(": ").append(databaseName).append(System.lineSeparator());
     }
     
     private void appendDataSourceConfigurations(final ShardingSphereDatabase database, final StringBuilder stringBuilder) {
@@ -100,8 +100,9 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
     private void appendDataSourceConfiguration(final String name, final DataSource dataSource, final StringBuilder stringBuilder) {
         stringBuilder.append("  ").append(name).append(":\n");
         DataSourceProperties dataSourceProps = DataSourcePropertiesCreator.create(dataSource);
-        dataSourceProps.getConnectionPropertySynonyms().getStandardProperties().forEach((key, value) -> stringBuilder.append("    ").append(key).append(": ").append(value).append("\n"));
-        dataSourceProps.getPoolPropertySynonyms().getStandardProperties().forEach((key, value) -> stringBuilder.append("    ").append(key).append(": ").append(value).append("\n"));
+        dataSourceProps.getConnectionPropertySynonyms().getStandardProperties()
+                .forEach((key, value) -> stringBuilder.append("    ").append(key).append(": ").append(value).append(System.lineSeparator()));
+        dataSourceProps.getPoolPropertySynonyms().getStandardProperties().forEach((key, value) -> stringBuilder.append("    ").append(key).append(": ").append(value).append(System.lineSeparator()));
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -109,7 +110,7 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
         if (ruleConfigs.isEmpty()) {
             return;
         }
-        stringBuilder.append("rules").append(":\n");
+        stringBuilder.append("rules:").append(System.lineSeparator());
         for (Entry<RuleConfiguration, YamlRuleConfigurationSwapper> entry : YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurations(ruleConfigs).entrySet()) {
             stringBuilder.append(YamlEngine.marshal(Collections.singletonList(entry.getValue().swapToYamlConfiguration(entry.getKey()))));
         }
