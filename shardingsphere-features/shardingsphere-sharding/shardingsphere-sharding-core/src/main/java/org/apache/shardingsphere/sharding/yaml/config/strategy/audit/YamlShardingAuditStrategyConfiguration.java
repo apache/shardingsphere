@@ -15,29 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.constant;
+package org.apache.shardingsphere.sharding.yaml.config.strategy.audit;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 
 /**
- * Sharding order.
+ * Sharing audit strategy configuration for YAML.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingOrder {
+@Getter
+@Setter
+public final class YamlShardingAuditStrategyConfiguration implements YamlConfiguration {
     
-    /**
-     * Sharding order.
-     */
-    public static final int ORDER = -10;
+    private String shardingAuditAlgorithmName;
     
-    /**
-     * Algorithm provider sharding order.
-     */
-    public static final int ALGORITHM_PROVIDER_ORDER = ORDER + 1;
-    
-    /**
-     * Sharding audit order.
-     */
-    public static final int AUDIT_ORDER = 1000;
+    private boolean allowHintDisable;
 }

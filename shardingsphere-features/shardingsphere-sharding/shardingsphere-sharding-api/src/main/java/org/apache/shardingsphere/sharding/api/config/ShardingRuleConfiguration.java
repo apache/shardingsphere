@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionCon
 import org.apache.shardingsphere.infra.config.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 
@@ -60,7 +61,11 @@ public final class ShardingRuleConfiguration implements DatabaseRuleConfiguratio
     
     private Map<String, ShardingSphereAlgorithmConfiguration> keyGenerators = new LinkedHashMap<>();
     
+    private Map<String, ShardingSphereAlgorithmConfiguration> shardingAuditAlgorithms = new LinkedHashMap<>();
+    
     private String scalingName;
     
     private Map<String, OnRuleAlteredActionConfiguration> scaling = new LinkedHashMap<>();
+    
+    private Map<String, ShardingAuditStrategyConfiguration> shardingAudits = new LinkedHashMap<>();
 }

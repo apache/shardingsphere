@@ -15,29 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.constant;
+package org.apache.shardingsphere.sharding.api.config.strategy.audit;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import com.google.common.base.Preconditions;
+import lombok.Getter;
 
 /**
- * Sharding order.
+ * Sharding audit strategy configuration.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingOrder {
+@Getter
+public final class ShardingAuditStrategyConfiguration {
     
-    /**
-     * Sharding order.
-     */
-    public static final int ORDER = -10;
+    private final String shardingAuditAlgorithmName;
     
-    /**
-     * Algorithm provider sharding order.
-     */
-    public static final int ALGORITHM_PROVIDER_ORDER = ORDER + 1;
+    private final boolean allowHintDisable;
     
-    /**
-     * Sharding audit order.
-     */
-    public static final int AUDIT_ORDER = 1000;
+    public ShardingAuditStrategyConfiguration(final String shardingAuditAlgorithmName, final boolean allowHintDisable) {
+        Preconditions.checkNotNull(shardingAuditAlgorithmName, "Sharding algorithm name is required.");
+        this.shardingAuditAlgorithmName = shardingAuditAlgorithmName;
+        this.allowHintDisable = allowHintDisable;
+    }
 }

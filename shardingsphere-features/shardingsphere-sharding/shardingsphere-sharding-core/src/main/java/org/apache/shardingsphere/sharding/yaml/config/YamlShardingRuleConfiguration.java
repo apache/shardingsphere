@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rulealtered.YamlOnRuleAl
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
 
@@ -58,11 +59,15 @@ public final class YamlShardingRuleConfiguration implements YamlRuleConfiguratio
     
     private Map<String, YamlShardingSphereAlgorithmConfiguration> keyGenerators = new LinkedHashMap<>();
     
+    private Map<String, YamlShardingSphereAlgorithmConfiguration> shardingAuditAlgorithms = new LinkedHashMap<>();
+    
     private String defaultShardingColumn;
     
     private String scalingName;
     
     private Map<String, YamlOnRuleAlteredActionConfiguration> scaling = new LinkedHashMap<>();
+    
+    private Map<String, YamlShardingAuditStrategyConfiguration> shardingAudits = new LinkedHashMap<>();
     
     @Override
     public Class<ShardingRuleConfiguration> getRuleConfigurationType() {
