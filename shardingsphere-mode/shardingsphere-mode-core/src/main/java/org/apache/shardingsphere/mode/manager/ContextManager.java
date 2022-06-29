@@ -146,21 +146,21 @@ public final class ContextManager implements AutoCloseable {
      *
      * @param databaseName database name
      * @param schemaName schema name
-     * @param changedTable changed table
-     * @param deletedTableName deleted table name
+     * @param beBoChangedTable to be changed table
+     * @param toBeDeletedTableName to be deleted table name
      */
-    public void alterSchema(final String databaseName, final String schemaName, final ShardingSphereTable changedTable, final String deletedTableName) {
+    public void alterSchema(final String databaseName, final String schemaName, final ShardingSphereTable beBoChangedTable, final String toBeDeletedTableName) {
         if (metaDataContexts.getMetaData().getDatabases().containsKey(databaseName)) {
-            Optional.ofNullable(changedTable).ifPresent(optional -> alterTableSchema(databaseName, schemaName, optional));
-            Optional.ofNullable(deletedTableName).ifPresent(optional -> deleteTable(databaseName, schemaName, optional));
+            Optional.ofNullable(beBoChangedTable).ifPresent(optional -> alterTable(databaseName, schemaName, optional));
+            Optional.ofNullable(toBeDeletedTableName).ifPresent(optional -> dropTable(databaseName, schemaName, optional));
         }
     }
     
-    private void alterTableSchema(final String databaseName, final String schemaName, final ShardingSphereTable changedTable) {
+    private void alterTable(final String databaseName, final String schemaName, final ShardingSphereTable beBoChangedTable) {
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(databaseName);
-        alterSingleTableDataNodes(databaseName, database, changedTable);
-        database.getSchemas().get(schemaName).put(changedTable.getName(), changedTable);
-        metaDataContexts.getOptimizerContext().alterTable(databaseName, schemaName, changedTable);
+        alterSingleTableDataNodes(databaseName, database, beBoChangedTable);
+        database.getSchemas().get(schemaName).put(beBoChangedTable.getName(), beBoChangedTable);
+        metaDataContexts.getOptimizerContext().alterTable(databaseName, schemaName, beBoChangedTable);
     }
     
     private void alterSingleTableDataNodes(final String databaseName, final ShardingSphereDatabase database, final ShardingSphereTable changedTableMetaData) {
@@ -174,12 +174,10 @@ public final class ContextManager implements AutoCloseable {
                 .filter(each -> !(each instanceof MutableDataNodeRule)).anyMatch(each -> each.getAllTables().contains(tableName));
     }
     
-    private void deleteTable(final String databaseName, final String schemaName, final String deletedTableName) {
-        if (null != metaDataContexts.getMetaData().getDatabases().get(databaseName).getSchemas().get(schemaName)) {
-            metaDataContexts.getMetaData().getDatabases().get(databaseName).getSchemas().get(schemaName).remove(deletedTableName);
-            FederationDatabaseMetaData databaseMetaData = metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName);
-            databaseMetaData.removeTableMetadata(schemaName, deletedTableName);
-            metaDataContexts.getOptimizerContext().getPlannerContexts().put(databaseName, OptimizerPlannerContextFactory.create(databaseMetaData));
+    private void dropTable(final String databaseName, final String schemaName, final String toBeDeletedTableName) {
+        if (metaDataContexts.getMetaData().getDatabases().get(databaseName).getSchemas().containsKey(schemaName)) {
+            metaDataContexts.getMetaData().getDatabases().get(databaseName).getSchemas().get(schemaName).remove(toBeDeletedTableName);
+            metaDataContexts.getOptimizerContext().dropTable(databaseName, schemaName, toBeDeletedTableName);
         }
     }
     
