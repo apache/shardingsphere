@@ -17,10 +17,23 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.available.FromDatabaseAvailable;
+
+import java.util.Optional;
 
 /**
  * Count single table rule statement.
  */
-public final class CountSingleTableRuleStatement extends QueryableRALStatement {
+@RequiredArgsConstructor
+public final class CountSingleTableRuleStatement extends QueryableRALStatement implements FromDatabaseAvailable {
+    
+    private final DatabaseSegment database;
+    
+    @Override
+    public Optional<DatabaseSegment> getDatabase() {
+        return Optional.ofNullable(database);
+    }
 }

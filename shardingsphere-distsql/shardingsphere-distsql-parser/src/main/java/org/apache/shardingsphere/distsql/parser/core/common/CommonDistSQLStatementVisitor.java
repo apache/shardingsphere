@@ -219,7 +219,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitCountSingleTableRule(final CountSingleTableRuleContext ctx) {
-        return new CountSingleTableRuleStatement();
+        return new CountSingleTableRuleStatement(null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
     
     @Override
