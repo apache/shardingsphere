@@ -20,9 +20,12 @@ package org.apache.shardingsphere.infra.metadata;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -35,6 +38,7 @@ import java.util.Properties;
 @Getter
 public final class ShardingSphereMetaData {
     
+    // TODO should be concurrentHashMap, but some times throw NPE, need to investigate
     private final Map<String, ShardingSphereDatabase> databases;
     
     private final ShardingSphereRuleMetaData globalRuleMetaData;
@@ -43,5 +47,18 @@ public final class ShardingSphereMetaData {
     
     public ShardingSphereMetaData() {
         this(new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
+    }
+    
+    /**
+     * Add database.
+     * 
+     * @param databaseName database name
+     * @param protocolType protocol database type
+     * @throws SQLException SQL exception
+     */
+    public void addDatabase(final String databaseName, final DatabaseType protocolType) throws SQLException {
+        ShardingSphereDatabase database = ShardingSphereDatabase.create(databaseName, protocolType);
+        databases.put(databaseName, database);
+        globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.addResource(database));
     }
 }

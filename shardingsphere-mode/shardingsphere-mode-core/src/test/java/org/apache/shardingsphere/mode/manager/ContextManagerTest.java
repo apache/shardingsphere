@@ -105,12 +105,17 @@ public final class ContextManagerTest {
     
     @Test
     public void assertAddDatabase() throws SQLException {
-        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(new LinkedHashMap<>());
         contextManager.addDatabase("foo_db");
-        assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabases().containsKey("foo_db"));
-        assertTrue(contextManager.getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabases().containsKey("foo_db"));
-        assertTrue(contextManager.getMetaDataContexts().getOptimizerContext().getParserContexts().containsKey("foo_db"));
-        assertTrue(contextManager.getMetaDataContexts().getOptimizerContext().getPlannerContexts().containsKey("foo_db"));
+        verify(metaDataContexts.getMetaData()).addDatabase(eq("foo_db"), any(DatabaseType.class));
+        verify(metaDataContexts.getOptimizerContext()).addDatabase(eq("foo_db"), any(DatabaseType.class));
+    }
+    
+    @Test
+    public void assertAddExistedDatabase() throws SQLException {
+        when(metaDataContexts.getMetaData().getDatabases().containsKey("foo_db")).thenReturn(true);
+        contextManager.addDatabase("foo_db");
+        verify(metaDataContexts.getMetaData(), times(0)).addDatabase(eq("foo_db"), any(DatabaseType.class));
+        verify(metaDataContexts.getOptimizerContext(), times(0)).addDatabase(eq("foo_db"), any(DatabaseType.class));
     }
     
     @Test
