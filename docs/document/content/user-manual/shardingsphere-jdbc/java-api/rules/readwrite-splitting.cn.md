@@ -20,12 +20,30 @@ weight = 2
 
 可配置属性：
 
-| *名称*                     | *数据类型*             | *说明*                                                                                                                                 | *默认值*       |
-| -------------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------| ---------------|
-| name                       | String               | 读写分离数据源名称                                                                                                                       | -             |
-| type                       | String               | 读写分离类型，分为静态和动态。如 Static、Dynamic                                                                                           | -             |
-| props                      | Properties           | 读写分离所需属性，如静态：write-data-source-name、read-data-source-names，动态：auto-aware-data-source-name、write-data-source-query-enabled  | -             |
-| loadBalancerName (?)       | String               | 读库负载均衡算法名称                                                                                                                     | 轮询负载均衡算法 |
+| *名称*                     | *数据类型*                                          | *说明*            | *默认值*       |
+| -------------------------- | ------------------------------------------------- | ------------------| ---------------|
+| name                       | String                                            | 读写分离数据源名称   | -             |
+| staticStrategy             | StaticReadwriteSplittingStrategyConfiguration     | 静态读写分离配置     | -             |
+| dynamicStrategy            | DynamicReadwriteSplittingStrategyConfiguration    | 动态读写分离配置     | -             |
+| loadBalancerName (?)       | String                                            | 读库负载均衡算法名称  | 轮询负载均衡算法 |
+
+类名称：org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration
+
+可配置属性：
+
+| *名称*                     | *数据类型*           | *说明*            | *默认值*       |
+| -------------------------- | -------------------| ------------------| --------------|
+| writeDataSourceName        | String             | 写库数据源名称      | -             |
+| readDataSourceNames        | List\<String\>     | 读库数据源列表      | -             |
+
+类名称：org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration
+
+可配置属性：
+
+| *名称*                          | *数据类型*          | *说明*                         | *默认值*       |
+| ------------------------------- | -------------------| -------------------------------| --------------|
+| autoAwareDataSourceName         | String             | 数据库发现的逻辑数据源名称         | -             |
+| writeDataSourceQueryEnabled (?) | String             | 读库全部下线，主库是否承担读流量    | true          |
 
 算法类型的详情，请参见[内置负载均衡算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/load-balance)。
 查询一致性路由的详情，请参见[使用规范](/cn/features/readwrite-splitting/use-norms)。
