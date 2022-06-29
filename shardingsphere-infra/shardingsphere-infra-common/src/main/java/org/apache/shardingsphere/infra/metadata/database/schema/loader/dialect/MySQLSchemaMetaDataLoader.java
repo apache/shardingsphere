@@ -125,6 +125,7 @@ public final class MySQLSchemaMetaDataLoader implements DialectSchemaMetaDataLoa
         dataTypes.putIfAbsent("JSON", Types.LONGVARCHAR);
         dataTypes.putIfAbsent("GEOMETRY", Types.BINARY);
         dataTypes.putIfAbsent("YEAR", Types.DATE);
+        dataTypes.putIfAbsent("POINT", Types.BINARY);
         dataTypes.putIfAbsent("MULTIPOINT", Types.BINARY);
         dataTypes.putIfAbsent("POLYGON", Types.BINARY);
         dataTypes.putIfAbsent("MULTIPOLYGON", Types.BINARY);
