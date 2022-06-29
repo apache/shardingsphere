@@ -41,6 +41,7 @@ import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShar
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
@@ -94,11 +95,11 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     private final Map<String, KeyGenerateAlgorithm> keyGenerators = new LinkedHashMap<>();
     
+    private final Map<String, ShardingAuditAlgorithm> shardingAuditAlgorithms = new LinkedHashMap<>();
+    
     private final Map<String, TableRule> tableRules = new LinkedHashMap<>();
     
     private final Map<String, BindingTableRule> bindingTableRules = new LinkedHashMap<>();
-    
-    private final Map<String, ShardingAuditAlgorithm> shardingAuditAlgorithms = new LinkedHashMap<>();
     
     private final Collection<String> broadcastTables;
     
@@ -112,7 +113,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     private final Map<String, Collection<DataNode>> shardingTableDataNodes;
     
-    private final Collection<String> shardingAudits;
+    private final Map<String, ShardingAuditStrategyConfiguration> shardingAudits;
     
     public ShardingRule(final ShardingRuleConfiguration config, final Collection<String> dataSourceNames) {
         configuration = config;
@@ -168,16 +169,13 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         return result;
     }
     
-    private Collection<String> createShardingAudits(final Collection<String> shardingAudits) {
-        Collection<String> result = new LinkedHashSet<>(shardingAudits.size(), 1);
-        for (String audit : shardingAudits) {
-            if (!shardingAuditAlgorithms.containsKey(audit)) {
-                throw new ShardingSphereConfigurationException("Cannot find sharding audit algorithm with audit: '%s'", audit);
-            } else {
-                result.add(audit);
-            }
+    private Map<String, ShardingAuditStrategyConfiguration> createShardingAudits(final Map<String, ShardingAuditStrategyConfiguration> shardingAudits) {
+        if (null == shardingAudits) {
+            return new LinkedHashMap<>(0, 1);
         }
-        return result;
+        Preconditions.checkArgument(shardingAudits.values().stream().allMatch(each -> shardingAuditAlgorithms.containsKey(each.getShardingAuditAlgorithmName())),
+                "Cannot find sharding audit algorithm");
+        return shardingAudits;
     }
     
     private Collection<String> getDataSourceNames(final Collection<ShardingTableRuleConfiguration> tableRuleConfigs,

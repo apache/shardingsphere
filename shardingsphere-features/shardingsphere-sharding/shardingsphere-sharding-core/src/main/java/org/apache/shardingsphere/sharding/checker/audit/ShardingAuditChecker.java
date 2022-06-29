@@ -21,14 +21,19 @@ import org.apache.shardingsphere.infra.check.SQLCheckResult;
 import org.apache.shardingsphere.infra.executor.check.SQLChecker;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.sharding.constant.ShardingAuditOrder;
+import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
+import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.BiPredicate;
 
+/**
+ * Sharding audit checker.
+ */
 public final class ShardingAuditChecker implements SQLChecker<ShardingRule> {
     
     @Override
@@ -38,12 +43,11 @@ public final class ShardingAuditChecker implements SQLChecker<ShardingRule> {
     
     @Override
     public SQLCheckResult check(final SQLStatement sqlStatement, final List<Object> parameters, final Grantee grantee,
-                                final String currentDatabase, final Map<String, ShardingSphereDatabase> databases,
-                                final ShardingRule rule) {
-        for (String shardingAudit : rule.getShardingAudits()) {
-            SQLCheckResult sqlCheckResult = rule.getShardingAuditAlgorithms().get(shardingAudit).check(sqlStatement, parameters, grantee, currentDatabase, databases, rule);
-            if (!sqlCheckResult.isPassed()) {
-                return sqlCheckResult;
+                                final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final ShardingRule rule) {
+        for (Entry<String, ShardingAuditStrategyConfiguration> entry : rule.getShardingAudits().entrySet()) {
+            SQLCheckResult result = rule.getShardingAuditAlgorithms().get(entry.getValue().getShardingAuditAlgorithmName()).check(sqlStatement, parameters, grantee, currentDatabase, databases, rule);
+            if (!result.isPassed()) {
+                return result;
             }
         }
         return new SQLCheckResult(true, "");
@@ -55,14 +59,13 @@ public final class ShardingAuditChecker implements SQLChecker<ShardingRule> {
     }
     
     @Override
-    public boolean check(final Grantee grantee, final BiPredicate<Object, Object> validator, final Object cipher,
-                         final ShardingRule rule) {
+    public boolean check(final Grantee grantee, final BiPredicate<Object, Object> validator, final Object cipher, final ShardingRule rule) {
         return true;
     }
     
     @Override
     public int getOrder() {
-        return ShardingAuditOrder.ORDER;
+        return ShardingOrder.AUDIT_ORDER;
     }
     
     @Override
