@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.checker;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
@@ -52,6 +53,7 @@ import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.apache.shardingsphere.sharding.rule.BindingTableCheckedConfiguration;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -108,7 +110,7 @@ public final class ShardingTableRuleStatementChecker {
     private static void check(final ShardingSphereDatabase database,
                               final Collection<AbstractTableRuleSegment> rules, final ShardingRuleConfiguration currentRuleConfig, final boolean isCreate) throws DistSQLException {
         String databaseName = database.getName();
-        checkShardingTables(databaseName, rules, currentRuleConfig, isCreate);
+        checkTables(databaseName, rules, currentRuleConfig, isCreate);
         checkResources(databaseName, rules, database);
         checkKeyGenerators(rules, currentRuleConfig);
         Map<String, List<AbstractTableRuleSegment>> groupedTableRule = groupingByClassType(rules);
@@ -183,12 +185,12 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     private static Collection<String> getDataSourceNames(final ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig) {
-        List<String> actualDataSources = new InlineExpressionParser(shardingAutoTableRuleConfig.getActualDataSources()).splitAndEvaluate();
+        Collection<String> actualDataSources = new InlineExpressionParser(shardingAutoTableRuleConfig.getActualDataSources()).splitAndEvaluate();
         return new HashSet<>(actualDataSources);
     }
     
     private static Collection<String> getDataSourceNames(final ShardingTableRuleConfiguration shardingTableRuleConfig) {
-        List<String> actualDataNodes = new InlineExpressionParser(shardingTableRuleConfig.getActualDataNodes()).splitAndEvaluate();
+        Collection<String> actualDataNodes = new InlineExpressionParser(shardingTableRuleConfig.getActualDataNodes()).splitAndEvaluate();
         return actualDataNodes.stream().map(each -> new DataNode(each).getDataSourceName()).collect(Collectors.toList());
     }
     
@@ -196,28 +198,28 @@ public final class ShardingTableRuleStatementChecker {
         return dataNodeStr.contains(DELIMITER) && 2 == Splitter.on(DELIMITER).omitEmptyStrings().splitToList(dataNodeStr).size();
     }
     
-    private static void checkShardingTables(final String databaseName, final Collection<AbstractTableRuleSegment> rules,
-                                            final ShardingRuleConfiguration currentRuleConfig, final boolean isCreate) throws DistSQLException {
-        Collection<String> requiredShardingTables = rules.stream().map(AbstractTableRuleSegment::getLogicTable).collect(Collectors.toList());
-        Collection<String> duplicatedShardingTables = getDuplicate(requiredShardingTables);
-        DistSQLException.predictionThrow(duplicatedShardingTables.isEmpty(), () -> new DuplicateRuleException("sharding", databaseName, duplicatedShardingTables));
+    private static void checkTables(final String databaseName, final Collection<AbstractTableRuleSegment> rules,
+                                    final ShardingRuleConfiguration currentRuleConfig, final boolean isCreate) throws DistSQLException {
+        Collection<String> requiredTables = rules.stream().map(AbstractTableRuleSegment::getLogicTable).collect(Collectors.toList());
+        Collection<String> duplicatedTables = getDuplicate(requiredTables);
+        DistSQLException.predictionThrow(duplicatedTables.isEmpty(), () -> new DuplicateRuleException("sharding", databaseName, duplicatedTables));
         Collection<String> currentShardingTables = null == currentRuleConfig ? Collections.emptyList() : getCurrentShardingTables(currentRuleConfig);
         if (isCreate) {
-            Set<String> identical = getIdentical(requiredShardingTables, currentShardingTables);
+            Collection<String> identical = getIdentical(requiredTables, currentShardingTables);
             DistSQLException.predictionThrow(identical.isEmpty(), () -> new DuplicateRuleException("sharding", databaseName, identical));
         } else {
-            Set<String> different = getDifferent(requiredShardingTables, currentShardingTables);
+            Collection<String> different = getDifferent(requiredTables, currentShardingTables);
             DistSQLException.predictionThrow(different.isEmpty(), () -> new RequiredRuleMissedException("sharding", databaseName, different));
         }
     }
     
-    private static Set<String> getDuplicate(final Collection<String> collection) {
+    private static Collection<String> getDuplicate(final Collection<String> collection) {
         Collection<String> duplicate = collection.stream().collect(Collectors.groupingBy(String::toLowerCase, Collectors.counting())).entrySet().stream()
                 .filter(each -> each.getValue() > 1).map(Entry::getKey).collect(Collectors.toSet());
         return collection.stream().filter(each -> containsIgnoreCase(duplicate, each)).collect(Collectors.toSet());
     }
     
-    private static Set<String> getIdentical(final Collection<String> require, final Collection<String> current) {
+    private static Collection<String> getIdentical(final Collection<String> require, final Collection<String> current) {
         return require.stream().filter(each -> containsIgnoreCase(current, each)).collect(Collectors.toSet());
     }
     
@@ -252,15 +254,18 @@ public final class ShardingTableRuleStatementChecker {
         Collection<AutoTableRuleSegment> autoTableRules = rules.stream().map(each -> (AutoTableRuleSegment) each).collect(Collectors.toList());
         Optional<AlgorithmSegment> anyAutoTableRule = autoTableRules.stream().map(AutoTableRuleSegment::getShardingAlgorithmSegment).filter(Objects::nonNull).findAny();
         if (anyAutoTableRule.isPresent()) {
-            checkShardingAlgorithms(autoTableRules);
+            checkAutoTableShardingAlgorithms(autoTableRules);
         }
     }
     
-    private static void checkShardingAlgorithms(final Collection<AutoTableRuleSegment> rules) throws DistSQLException {
+    private static void checkAutoTableShardingAlgorithms(final Collection<AutoTableRuleSegment> rules) throws DistSQLException {
         Collection<AutoTableRuleSegment> incompleteShardingRules = rules.stream().filter(each -> !each.isCompleteShardingAlgorithm()).collect(Collectors.toList());
         DistSQLException.predictionThrow(incompleteShardingRules.isEmpty(), () -> new InvalidAlgorithmConfigurationException("sharding"));
         Collection<String> invalidShardingAlgorithms = rules.stream().map(each -> each.getShardingAlgorithmSegment().getName()).distinct()
                 .filter(each -> !ShardingAlgorithmFactory.contains(each)).collect(Collectors.toList());
+        DistSQLException.predictionThrow(invalidShardingAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException("sharding", invalidShardingAlgorithms));
+        invalidShardingAlgorithms.addAll(rules.stream().map(AutoTableRuleSegment::getShardingAlgorithmSegment).map(each -> new ShardingSphereAlgorithmConfiguration(each.getName(), each.getProps()))
+                .map(ShardingAlgorithmFactory::newInstance).filter(each -> !(each instanceof ShardingAutoTableAlgorithm)).map(TypedSPI::getType).collect(Collectors.toList()));
         DistSQLException.predictionThrow(invalidShardingAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException("sharding", invalidShardingAlgorithms));
     }
     

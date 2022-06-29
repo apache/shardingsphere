@@ -96,7 +96,7 @@ shardingTableRuleDefinition
     ;
 
 shardingAutoTableRule
-    : tableName LP resources COMMA shardingColumnDefinition COMMA algorithmDefinition (COMMA keyGenerateDeclaration)? RP
+    : tableName LP resources COMMA autoShardingColumnDefinition COMMA algorithmDefinition (COMMA keyGenerateDeclaration)? RP
     ;
 
 shardingTableRule
@@ -125,6 +125,10 @@ dataNodes
 
 dataNode
     : IDENTIFIER | STRING
+    ;
+
+autoShardingColumnDefinition
+    : shardingColumn
     ;
 
 shardingColumnDefinition
