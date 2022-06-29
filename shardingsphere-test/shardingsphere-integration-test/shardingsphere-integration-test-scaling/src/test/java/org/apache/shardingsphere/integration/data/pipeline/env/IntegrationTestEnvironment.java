@@ -54,7 +54,7 @@ public final class IntegrationTestEnvironment {
     
     private IntegrationTestEnvironment() {
         props = loadProperties();
-        itType = ScalingITTypeEnum.valueOf(props.getProperty("scaling.it.type", ScalingITTypeEnum.NONE.name()).toUpperCase());
+        itType = ScalingITTypeEnum.valueOf(StringUtils.defaultIfBlank(props.getProperty("scaling.it.type").toUpperCase(), ScalingITTypeEnum.NONE.name()));
         mysqlVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.mysql.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         postgresVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.postgresql.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         openGaussVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.opengauss.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
@@ -153,7 +153,6 @@ public final class IntegrationTestEnvironment {
         }
         return username;
     }
-    
     
     /**
      * Get actual data source password.
