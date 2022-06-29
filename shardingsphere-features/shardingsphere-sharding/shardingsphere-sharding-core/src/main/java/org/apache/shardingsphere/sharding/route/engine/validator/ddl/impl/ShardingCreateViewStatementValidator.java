@@ -22,8 +22,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
-import org.apache.shardingsphere.infra.route.context.RouteMapper;
-import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
@@ -36,10 +34,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatem
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -54,8 +50,14 @@ public final class ShardingCreateViewStatementValidator extends ShardingDDLState
         if (!selectStatement.isPresent()) {
             return;
         }
-        if (isShardingTablesWithoutBinding(shardingRule, sqlStatementContext, selectStatement.get())) {
+        TableExtractor extractor = new TableExtractor();
+        extractor.extractTablesFromSelect(selectStatement.get());
+        Collection<SimpleTableSegment> tableSegments = extractor.getRewriteTables();
+        if (isShardingTablesWithoutBinding(shardingRule, sqlStatementContext, tableSegments)) {
             throw new ShardingSphereException("View name has to bind to sharding tables!");
+        }
+        if (isAllBroadcastTablesWithoutConfigView(shardingRule, sqlStatementContext, tableSegments)) {
+            throw new ShardingSphereException("View name has to config as broadcast table!");
         }
     }
     
@@ -69,15 +71,10 @@ public final class ShardingCreateViewStatementValidator extends ShardingDDLState
         if (isContainsNotSupportedViewStatement(selectStatement.get(), routeContext)) {
             throw new ShardingSphereException("This view statement contains not supported query statement!");
         }
-        if (isMultiRouteUnitWithoutRule(shardingRule, sqlStatementContext.getSqlStatement().getView(), routeContext)) {
-            throw new ShardingSphereException("Please check the rule config of this view!");
-        }
     }
     
-    private boolean isShardingTablesWithoutBinding(final ShardingRule shardingRule, final SQLStatementContext<CreateViewStatement> sqlStatementContext, final SelectStatement selectStatement) {
-        TableExtractor extractor = new TableExtractor();
-        extractor.extractTablesFromSelect(selectStatement);
-        Collection<SimpleTableSegment> tableSegments = extractor.getRewriteTables();
+    private boolean isShardingTablesWithoutBinding(final ShardingRule shardingRule, final SQLStatementContext<CreateViewStatement> sqlStatementContext,
+                                                   final Collection<SimpleTableSegment> tableSegments) {
         for (SimpleTableSegment each : tableSegments) {
             String logicTable = each.getTableName().getIdentifier().getValue();
             if (shardingRule.isShardingTable(logicTable) && !isBindingTables(shardingRule, sqlStatementContext.getSqlStatement().getView().getTableName().getIdentifier().getValue(), logicTable)) {
@@ -90,6 +87,15 @@ public final class ShardingCreateViewStatementValidator extends ShardingDDLState
     private boolean isBindingTables(final ShardingRule shardingRule, final String logicViewName, final String logicTable) {
         Collection<String> bindTables = Arrays.asList(logicTable, logicViewName);
         return shardingRule.isAllBindingTables(bindTables);
+    }
+    
+    private boolean isAllBroadcastTablesWithoutConfigView(final ShardingRule shardingRule, final SQLStatementContext<CreateViewStatement> sqlStatementContext,
+                                                          final Collection<SimpleTableSegment> tableSegments) {
+        Collection<String> tables = new LinkedList<>();
+        for (SimpleTableSegment each : tableSegments) {
+            tables.add(each.getTableName().getIdentifier().getValue());
+        }
+        return shardingRule.isAllBroadcastTables(tables) && !shardingRule.isBroadcastTable(sqlStatementContext.getSqlStatement().getView().getTableName().getIdentifier().getValue());
     }
     
     private boolean isContainsNotSupportedViewStatement(final SelectStatement selectStatement, final RouteContext routeContext) {
@@ -118,44 +124,5 @@ public final class ShardingCreateViewStatementValidator extends ShardingDDLState
     
     private boolean hasLimit(final SelectStatement selectStatement) {
         return SelectStatementHandler.getLimitSegment(selectStatement).isPresent();
-    }
-    
-    private boolean isMultiRouteUnitWithoutRule(final ShardingRule shardingRule, final SimpleTableSegment view, final RouteContext routeContext) {
-        if (routeContext.getRouteUnits().size() <= 1) {
-            return false;
-        }
-        String viewName = view.getTableName().getIdentifier().getValue();
-        if (shardingRule.isShardingTable(viewName)) {
-            return false;
-        }
-        if (shardingRule.isBroadcastTable(viewName)) {
-            Map<String, List<String>> actualViewGroups = getActualDataSourceGroup(routeContext, viewName);
-            return isBroadcastViewWithWrongRoute(shardingRule, viewName, actualViewGroups);
-        }
-        return true;
-    }
-    
-    private Map<String, List<String>> getActualDataSourceGroup(final RouteContext routeContext, final String viewName) {
-        Map<String, List<String>> result = new LinkedHashMap<>();
-        for (RouteUnit each : routeContext.getRouteUnits()) {
-            for (RouteMapper routeMapper : each.getTableMappers()) {
-                if (viewName.equals(routeMapper.getLogicName())) {
-                    result.computeIfAbsent(each.getDataSourceMapper().getActualName(), key -> new LinkedList<>()).add(routeMapper.getActualName());
-                }
-            }
-        }
-        return result;
-    }
-    
-    private boolean isBroadcastViewWithWrongRoute(final ShardingRule shardingRule, final String viewName, final Map<String, List<String>> actualViewGroups) {
-        if (!shardingRule.isBroadcastTable(viewName)) {
-            return false;
-        }
-        for (List<String> each : actualViewGroups.values()) {
-            if (1 != each.size() || !each.iterator().next().equals(viewName)) {
-                return true;
-            }
-        }
-        return false;
     }
 }
