@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
@@ -43,6 +44,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -54,19 +56,19 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class CountSingleTableRuleHandlerTest extends ProxyContextRestorer {
-
+    
     @Mock
     private ShardingSphereDatabase database1;
-
+    
     @Mock
     private ShardingSphereDatabase database2;
-
+    
     @Mock
     private ConnectionSession connectionSession;
-
+    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ContextManager contextManager;
-
+    
     @Before
     public void before() {
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
@@ -82,13 +84,13 @@ public final class CountSingleTableRuleHandlerTest extends ProxyContextRestorer 
         when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(databases);
         ProxyContext.init(contextManager);
     }
-
+    
     private SingleTableRule mockSingleTableRule() {
         SingleTableRule result = mock(SingleTableRule.class);
         when(result.getAllTables()).thenReturn(Arrays.asList("single_table_1", "single_table_2"));
         return result;
     }
-
+    
     @Test
     public void assertGetRowData() throws SQLException {
         CountSingleTableRuleHandler handler = new CountSingleTableRuleHandler();
@@ -96,7 +98,8 @@ public final class CountSingleTableRuleHandlerTest extends ProxyContextRestorer 
         handler.execute();
         boolean hasNext = handler.next();
         assertTrue(hasNext);
-        Collection<Object> actual = handler.getRowData();
+        QueryResponseRow row = handler.getRowData();
+        List<Object> actual = row.getData();
         assertThat(actual.size(), is(3));
         Iterator<Object> rowData = actual.iterator();
         assertThat(rowData.next(), is("single_table"));
@@ -105,7 +108,7 @@ public final class CountSingleTableRuleHandlerTest extends ProxyContextRestorer 
         hasNext = handler.next();
         assertFalse(hasNext);
     }
-
+    
     @Test
     public void assertGetRowDataWithDefaultDatabase() throws SQLException {
         when(connectionSession.getDatabaseName()).thenReturn("db_2");
@@ -114,7 +117,8 @@ public final class CountSingleTableRuleHandlerTest extends ProxyContextRestorer 
         handler.execute();
         boolean hasNext = handler.next();
         assertTrue(hasNext);
-        Collection<Object> actual = handler.getRowData();
+        QueryResponseRow row = handler.getRowData();
+        List<Object> actual = row.getData();
         assertThat(actual.size(), is(3));
         Iterator<Object> rowData = actual.iterator();
         assertThat(rowData.next(), is("single_table"));
@@ -123,14 +127,14 @@ public final class CountSingleTableRuleHandlerTest extends ProxyContextRestorer 
         hasNext = handler.next();
         assertFalse(hasNext);
     }
-
+    
     @Test(expected = DatabaseNotExistedException.class)
     public void assertGetRowDataWithNotExistedDatabase() throws SQLException {
         CountSingleTableRuleHandler handler = new CountSingleTableRuleHandler();
         handler.init(new CountSingleTableRuleStatement(new DatabaseSegment(0, 0, new IdentifierValue("not_exist_db"))), connectionSession);
         handler.execute();
     }
-
+    
     @Test(expected = NoDatabaseSelectedException.class)
     public void assertGetRowDataWithNoDatabaseSelectedException() throws SQLException {
         CountSingleTableRuleHandler handler = new CountSingleTableRuleHandler();
