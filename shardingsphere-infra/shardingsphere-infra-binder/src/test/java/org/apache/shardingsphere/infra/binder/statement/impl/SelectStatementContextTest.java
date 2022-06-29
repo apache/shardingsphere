@@ -491,38 +491,37 @@ public final class SelectStatementContextTest {
     }
 
     @Test
-    public void assertContainsDollarForMySQL() {
-        assertContainsDollar(new MySQLSelectStatement());
+    public void ContainsDollarParameterMarkerForMySQL() {
+        assertContainsDollarParameterMarker(new MySQLSelectStatement());
     }
-
+    
     @Test
-    public void assertContainsDollarForOracle() {
-        assertContainsDollar(new OracleSelectStatement());
+    public void ContainsDollarParameterMarkerForOracle() {
+        assertContainsDollarParameterMarker(new OracleSelectStatement());
     }
-
+    
     @Test
-    public void assertContainsDollarForPostgreSQL() {
-        assertContainsDollar(new PostgreSQLSelectStatement());
+    public void ContainsDollarParameterMarkerForPostgreSQL() {
+        assertContainsDollarParameterMarker(new PostgreSQLSelectStatement());
     }
-
+    
     @Test
-    public void assertContainsDollarForSQL92() {
-        assertContainsDollar(new SQL92SelectStatement());
+    public void ContainsDollarParameterMarkerForSQL92() {
+        assertContainsDollarParameterMarker(new SQL92SelectStatement());
     }
-
+    
     @Test
-    public void assertContainsDollarForSQLServer() {
-        assertContainsDollar(new SQLServerSelectStatement());
+    public void ContainsDollarParameterMarkerForSQLServer() {
+        assertContainsDollarParameterMarker(new SQLServerSelectStatement());
     }
-
-    private void assertContainsDollar(final SelectStatement selectStatement) {
+    
+    private void assertContainsDollarParameterMarker(final SelectStatement selectStatement) {
         ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
         when(projectionsSegment.getProjections()).thenReturn(Lists.newArrayList(new ParameterMarkerExpressionSegment(0, 0, 0, ParameterMarkerType.DOLLAR)));
         selectStatement.setProjections(projectionsSegment);
-        SelectStatementContext selectStatementContext = new SelectStatementContext(
-                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class)), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
+        SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class)), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         assertTrue(selectStatementContext.isContainsDollarParameterMarker());
-
+        
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         JoinTableSegment joinTableSegment = new JoinTableSegment();
         joinTableSegment.setCondition(new ParameterMarkerExpressionSegment(0, 0, 0, ParameterMarkerType.DOLLAR));
