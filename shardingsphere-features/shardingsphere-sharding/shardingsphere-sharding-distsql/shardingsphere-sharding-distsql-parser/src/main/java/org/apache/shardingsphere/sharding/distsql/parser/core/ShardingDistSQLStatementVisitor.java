@@ -466,7 +466,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     }
     
     private String buildShardingColumn(final AutoShardingColumnDefinitionContext ctx) {
-        String result = null != ctx.shardingColumn() ? getIdentifierValue(ctx.shardingColumn()) : "";
+        String result = null != ctx.shardingColumn() ? getIdentifierValue(ctx.shardingColumn().columnName()) : "";
         return result.isEmpty() ? null : result;
     }
     
