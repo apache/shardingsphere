@@ -27,12 +27,12 @@ public final class JDBCInstanceDefinitionBuilder implements InstanceDefinitionBu
     
     @Override
     public InstanceDefinition build(final String instanceId, final int port) {
-        return new JDBCInstanceDefinition(instanceId);
+        return new InstanceDefinition(instanceId, getType(), -1);
     }
     
     @Override
     public InstanceDefinition build(final String instanceId, final String attributes) {
-        return new JDBCInstanceDefinition(instanceId);
+        return new InstanceDefinition(instanceId, getType(), attributes);
     }
     
     @Override

@@ -17,43 +17,56 @@
 
 package org.apache.shardingsphere.infra.instance.definition;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
+import lombok.Getter;
+import org.apache.shardingsphere.infra.instance.utils.IpUtils;
+
+import java.util.List;
+
 /**
  * Instance definition.
  */
-public interface InstanceDefinition {
+@Getter
+public final class InstanceDefinition {
+    
+    private static final String DELIMITER = "@";
+    
+    private final String instanceId;
+    
+    private final String instanceType;
+    
+    private final String ip;
+    
+    private final int port;
+    
+    public InstanceDefinition(final String instanceId, final String instanceType, final int port) {
+        this.instanceId = instanceId;
+        this.instanceType = instanceType;
+        ip = IpUtils.getIp();
+        this.port = port;
+    }
+    
+    public InstanceDefinition(final String instanceId, final String instanceType, final String attributes) {
+        this.instanceId = instanceId;
+        this.instanceType = instanceType;
+        if (!Strings.isNullOrEmpty(attributes) && attributes.contains(DELIMITER)) {
+            List<String> attributesList = Splitter.on(DELIMITER).splitToList(attributes);
+            ip = attributesList.get(0);
+            port = Integer.parseInt(attributesList.get(1));
+        } else {
+            ip = IpUtils.getIp();
+            port = -1;
+        }
+    }
     
     /**
-     * Get instance ID.
+     * Get attributes.
      * 
-     * @return instance ID
+     * @return attributes
      */
-    String getInstanceId();
-    
-    /**
-     * Get IP.
-     * 
-     * @return IP
-     */
-    String getIp();
-    
-    /**
-     * Get port.
-     * 
-     * @return port
-     */
-    int getPort();
-    
-    /**
-     * Get instance attributes.
-     *
-     * @return got instance attributes, format is ip@uniqueSign
-     */
-    String getAttributes();
-    
-    /**
-     * Get type.
-     * 
-     * @return type
-     */
-    String getInstanceType();
+    public String getAttributes() {
+        return Joiner.on(DELIMITER).join(ip, port);
+    }
 }

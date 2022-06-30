@@ -52,7 +52,7 @@ public final class TrafficEngine {
         if (!strategyRule.isPresent() || isInvalidStrategyRule(strategyRule.get())) {
             return result;
         }
-        List<InstanceDefinition> instances = instanceContext.getComputeNodeInstances("PROXY", strategyRule.get().getLabels());
+        List<InstanceDefinition> instances = instanceContext.getComputeNodeInstances("Proxy", strategyRule.get().getLabels());
         if (!instances.isEmpty()) {
             TrafficLoadBalanceAlgorithm loadBalancer = strategyRule.get().getLoadBalancer();
             InstanceDefinition instanceDefinition = 1 == instances.size() ? instances.iterator().next() : loadBalancer.getInstanceId(strategyRule.get().getName(), instances);

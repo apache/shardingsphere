@@ -91,7 +91,7 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
         Preconditions.checkState(!dataSourcePropsMap.isEmpty(), "Can not get data source properties from meta data.");
         DataSourceProperties dataSourcePropsSample = dataSourcePropsMap.values().iterator().next();
         Collection<ShardingSphereUser> users = metaDataPersistService.get().getGlobalRuleService().loadUsers();
-        Collection<InstanceDefinition> instances = contextManager.getInstanceContext().getComputeNodeInstances("PROXY", trafficRule.getLabels());
+        Collection<InstanceDefinition> instances = contextManager.getInstanceContext().getComputeNodeInstances("Proxy", trafficRule.getLabels());
         return DataSourcePoolCreator.create(createDataSourcePropertiesMap(instances, users, dataSourcePropsSample, schema));
     }
     

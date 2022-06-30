@@ -26,13 +26,13 @@ public final class ComputeNodeTest {
     
     @Test
     public void assertGetOnlineNodePath() {
-        assertThat(ComputeNode.getOnlineNodePath("PROXY"), is("/nodes/compute_nodes/online/proxy"));
+        assertThat(ComputeNode.getOnlineNodePath("Proxy"), is("/nodes/compute_nodes/online/proxy"));
         assertThat(ComputeNode.getOnlineNodePath("JDBC"), is("/nodes/compute_nodes/online/jdbc"));
     }
     
     @Test
     public void assertGetOnlineInstanceNodePath() {
-        assertThat(ComputeNode.getOnlineInstanceNodePath("foo_instance_1", "PROXY"), is("/nodes/compute_nodes/online/proxy/foo_instance_1"));
+        assertThat(ComputeNode.getOnlineInstanceNodePath("foo_instance_1", "Proxy"), is("/nodes/compute_nodes/online/proxy/foo_instance_1"));
         assertThat(ComputeNode.getOnlineInstanceNodePath("foo_instance_2", "JDBC"), is("/nodes/compute_nodes/online/jdbc/foo_instance_2"));
     }
     

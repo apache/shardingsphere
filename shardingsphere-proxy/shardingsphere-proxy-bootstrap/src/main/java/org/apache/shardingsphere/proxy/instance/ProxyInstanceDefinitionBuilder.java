@@ -27,12 +27,12 @@ public final class ProxyInstanceDefinitionBuilder implements InstanceDefinitionB
     
     @Override
     public InstanceDefinition build(final String instanceId, final int port) {
-        return new ProxyInstanceDefinition(instanceId, port);
+        return new InstanceDefinition(instanceId, getType(), port);
     }
     
     @Override
     public InstanceDefinition build(final String instanceId, final String attributes) {
-        return new ProxyInstanceDefinition(instanceId, attributes);
+        return new InstanceDefinition(instanceId, getType(), attributes);
     }
     
     @Override
