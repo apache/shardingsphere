@@ -48,7 +48,6 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -115,10 +114,17 @@ public final class ContextManagerTest {
     
     @Test
     public void assertDropDatabase() {
-        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(new HashMap<>(Collections.singletonMap("foo_db", mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS))));
+        when(metaDataContexts.getMetaData().getDatabases().containsKey("foo_db")).thenReturn(true);
         contextManager.dropDatabase("foo_db");
-        assertFalse(contextManager.getMetaDataContexts().getMetaData().getDatabases().containsKey("foo_db"));
+        verify(metaDataContexts.getMetaData()).dropDatabase("foo_db");
         verify(metaDataContexts.getOptimizerContext()).dropDatabase("foo_db");
+    }
+    
+    @Test
+    public void assertDropNotExistedDatabase() {
+        contextManager.dropDatabase("foo_db");
+        verify(metaDataContexts.getMetaData(), times(0)).dropDatabase("foo_db");
+        verify(metaDataContexts.getOptimizerContext(), times(0)).dropDatabase("foo_db");
     }
     
     @Test

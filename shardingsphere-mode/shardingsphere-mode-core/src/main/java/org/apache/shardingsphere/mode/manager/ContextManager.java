@@ -135,9 +135,7 @@ public final class ContextManager implements AutoCloseable {
         if (!metaDataContexts.getMetaData().getDatabases().containsKey(databaseName)) {
             return;
         }
-        ShardingSphereDatabase tobeRemovedDatabase = metaDataContexts.getMetaData().getDatabases().remove(databaseName);
-        closeDataSources(tobeRemovedDatabase);
-        removeAndCloseResource(databaseName, tobeRemovedDatabase);
+        metaDataContexts.getMetaData().dropDatabase(databaseName);
         metaDataContexts.getOptimizerContext().dropDatabase(databaseName);
         metaDataContexts.getPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().deleteDatabase(databaseName));
     }
