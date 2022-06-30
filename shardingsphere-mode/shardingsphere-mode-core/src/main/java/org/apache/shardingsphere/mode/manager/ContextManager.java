@@ -127,6 +127,22 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
+     * Drop database.
+     *
+     * @param databaseName database name
+     */
+    public void dropDatabase(final String databaseName) {
+        if (!metaDataContexts.getMetaData().getDatabases().containsKey(databaseName)) {
+            return;
+        }
+        ShardingSphereDatabase tobeRemovedDatabase = metaDataContexts.getMetaData().getDatabases().remove(databaseName);
+        closeDataSources(tobeRemovedDatabase);
+        removeAndCloseResource(databaseName, tobeRemovedDatabase);
+        metaDataContexts.getOptimizerContext().dropDatabase(databaseName);
+        metaDataContexts.getPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().deleteDatabase(databaseName));
+    }
+    
+    /**
      * Add schema.
      *
      * @param databaseName database name
@@ -188,23 +204,6 @@ public final class ContextManager implements AutoCloseable {
                 database.getName(), new DataSourceProvidedDatabaseConfiguration(database.getResource().getDataSources(), database.getRuleMetaData().getConfigurations()));
         database.getRuleMetaData().getRules().clear();
         database.getRuleMetaData().getRules().addAll(databaseRules);
-    }
-    
-    /**
-     * Delete database.
-     *
-     * @param databaseName database name
-     */
-    public void deleteDatabase(final String databaseName) {
-        if (metaDataContexts.getMetaData().getDatabases().containsKey(databaseName)) {
-            metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().remove(databaseName);
-            metaDataContexts.getOptimizerContext().getParserContexts().remove(databaseName);
-            metaDataContexts.getOptimizerContext().getPlannerContexts().remove(databaseName);
-            ShardingSphereDatabase removeMetaData = metaDataContexts.getMetaData().getDatabases().remove(databaseName);
-            closeDataSources(removeMetaData);
-            removeAndCloseResource(databaseName, removeMetaData);
-            metaDataContexts.getPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().deleteDatabase(databaseName));
-        }
     }
     
     /**
@@ -607,9 +606,9 @@ public final class ContextManager implements AutoCloseable {
         return DataSourcePoolCreator.create(getChangedDataSourceConfiguration(originalDatabase, newDataSourcePropsMap));
     }
     
-    private void closeDataSources(final ShardingSphereDatabase removeMetaData) {
-        if (null != removeMetaData.getResource()) {
-            removeMetaData.getResource().getDataSources().values().forEach(each -> removeMetaData.getResource().close(each));
+    private void closeDataSources(final ShardingSphereDatabase toBeRemovedDatabase) {
+        if (null != toBeRemovedDatabase.getResource()) {
+            toBeRemovedDatabase.getResource().getDataSources().values().forEach(each -> toBeRemovedDatabase.getResource().close(each));
         }
     }
     
@@ -618,10 +617,10 @@ public final class ContextManager implements AutoCloseable {
         dataSources.forEach(resource::close);
     }
     
-    private void removeAndCloseResource(final String databaseName, final ShardingSphereDatabase removeMetaData) {
+    private void removeAndCloseResource(final String databaseName, final ShardingSphereDatabase database) {
         metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().stream()
                 .filter(each -> each instanceof ResourceHeldRule).map(each -> (ResourceHeldRule<?>) each).forEach(each -> each.closeStaleResource(databaseName));
-        removeMetaData.getRuleMetaData().getRules().stream()
+        database.getRuleMetaData().getRules().stream()
                 .filter(each -> each instanceof ResourceHeldRule).map(each -> (ResourceHeldRule<?>) each).forEach(each -> each.closeStaleResource(databaseName));
     }
     
