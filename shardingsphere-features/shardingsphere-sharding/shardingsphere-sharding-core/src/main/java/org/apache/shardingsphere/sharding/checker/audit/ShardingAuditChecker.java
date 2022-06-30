@@ -45,7 +45,7 @@ public final class ShardingAuditChecker implements SQLChecker<ShardingRule> {
     public SQLCheckResult check(final SQLStatement sqlStatement, final List<Object> parameters, final Grantee grantee,
                                 final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final ShardingRule rule) {
         for (Entry<String, ShardingAuditStrategyConfiguration> entry : rule.getAuditStrategies().entrySet()) {
-            SQLCheckResult result = rule.getShardingAuditAlgorithms().get(entry.getValue().getAuditAlgorithmName()).check(sqlStatement, parameters, grantee, currentDatabase, databases, rule);
+            SQLCheckResult result = rule.getAuditAlgorithms().get(entry.getValue().getAuditAlgorithmName()).check(sqlStatement, parameters, grantee, databases.get(currentDatabase));
             if (!result.isPassed()) {
                 return result;
             }
