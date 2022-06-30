@@ -59,7 +59,7 @@ public final class InstanceDefinition {
         if (!Strings.isNullOrEmpty(attributes) && attributes.contains(DELIMITER)) {
             List<String> attributesList = Splitter.on(DELIMITER).splitToList(attributes);
             ip = attributesList.get(0);
-            port = Integer.valueOf(attributesList.get(1));
+            port = Integer.parseInt(attributesList.get(1));
         }
     }
     
