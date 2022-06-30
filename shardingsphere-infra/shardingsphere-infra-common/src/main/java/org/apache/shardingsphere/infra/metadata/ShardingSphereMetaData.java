@@ -61,4 +61,22 @@ public final class ShardingSphereMetaData {
         databases.put(databaseName, database);
         globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.addResource(database));
     }
+    
+    /**
+     * Drop database.
+     *
+     * @param databaseName database name
+     */
+    public void dropDatabase(final String databaseName) {
+        closeResources(databases.remove(databaseName));
+    }
+    
+    private void closeResources(final ShardingSphereDatabase database) {
+        if (null != database.getResource()) {
+            database.getResource().getDataSources().values().forEach(each -> database.getResource().close(each));
+        }
+        String databaseName = database.getName();
+        globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.closeStaleResource(databaseName));
+        database.getRuleMetaData().findRules(ResourceHeldRule.class).forEach(each -> each.closeStaleResource(databaseName));
+    }
 }

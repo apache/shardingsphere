@@ -488,7 +488,7 @@ public final class SelectStatementContextTest {
         assertTrue(new SelectStatementContext(
                 Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class)), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME).isContainsSubquery());
     }
-
+    
     @Test
     public void assertContainsDollarParameterMarkerForMySQL() {
         assertContainsDollarParameterMarker(new MySQLSelectStatement());
@@ -529,32 +529,32 @@ public final class SelectStatementContextTest {
                 Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class)), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         assertTrue(selectStatementContext.isContainsDollarParameterMarker());
     }
-
+    
     @Test
     public void assertContainsPartialDistinctAggregationForMySQL() {
         assertContainsPartialDistinctAggregation(new MySQLSelectStatement());
     }
-
+    
     @Test
     public void assertContainsPartialDistinctAggregationForOracle() {
         assertContainsPartialDistinctAggregation(new OracleSelectStatement());
     }
-
+    
     @Test
     public void assertContainsPartialDistinctAggregationForPostgreSQL() {
         assertContainsPartialDistinctAggregation(new PostgreSQLSelectStatement());
     }
-
+    
     @Test
     public void assertContainsPartialDistinctAggregationForSQL92() {
         assertContainsPartialDistinctAggregation(new SQL92SelectStatement());
     }
-
+    
     @Test
     public void assertContainsPartialDistinctAggregationForSQLServer() {
         assertContainsPartialDistinctAggregation(new SQLServerSelectStatement());
     }
-
+    
     private void assertContainsPartialDistinctAggregation(final SelectStatement selectStatement) {
         ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
         projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "(*)"));
@@ -564,7 +564,7 @@ public final class SelectStatementContextTest {
                 Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class)), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         assertTrue(selectStatementContext.isContainsPartialDistinctAggregation());
     }
-
+    
     private OrderByItemSegment createOrderByItemSegment(final String type) {
         switch (type) {
             case INDEX_ORDER_BY:
