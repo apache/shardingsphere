@@ -66,6 +66,6 @@ public final class ShowInstanceHandler extends QueryableRALBackendHandler<ShowIn
     private LocalDataQueryResultRow buildRow(final ComputeNodeInstance instance, final String modeType) {
         String labels = null == instance.getLabels() ? "" : String.join(",", instance.getLabels());
         return new LocalDataQueryResultRow(instance.getInstanceDefinition().getInstanceId(),
-                instance.getInstanceDefinition().getIp(), instance.getInstanceDefinition().getUniqueSign(), instance.getState().getCurrentState().name(), modeType, labels);
+                instance.getInstanceDefinition().getIp(), instance.getInstanceDefinition().getPort(), instance.getState().getCurrentState().name(), modeType, labels);
     }
 }
