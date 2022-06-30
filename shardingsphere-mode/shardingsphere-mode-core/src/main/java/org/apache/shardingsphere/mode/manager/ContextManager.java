@@ -37,7 +37,6 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
-import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
@@ -190,11 +189,6 @@ public final class ContextManager implements AutoCloseable {
             metaDataContexts.getMetaData().getDatabases().get(databaseName).getSchemas().get(schemaName).remove(toBeDeletedTableName);
             metaDataContexts.getOptimizerContext().dropTable(databaseName, schemaName, toBeDeletedTableName);
         }
-    }
-    
-    private void persistMetaData(final MetaDataContexts metaDataContexts) {
-        metaDataContexts.getMetaData().getDatabases().forEach((databaseName, schemas) -> schemas.getSchemas()
-                .forEach((schemaName, tables) -> metaDataContexts.getPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persistMetaData(databaseName, schemaName, tables))));
     }
     
     private void refreshRules(final ShardingSphereDatabase database) {
@@ -523,7 +517,7 @@ public final class ContextManager implements AutoCloseable {
         metaDataContexts.getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResources);
         metaDataContexts.getMetaData().getDatabases().get(databaseName).getRuleMetaData().findRules(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResources);
         renewMetaDataContexts(newMetaDataContexts);
-        closeDataSources(databaseName, pendingClosedDataSources);
+        pendingClosedDataSources.forEach(metaDataContexts.getMetaData().getDatabases().get(databaseName).getResource()::close);
     }
     
     private MetaDataContexts buildChangedMetaDataContextWithAddedDataSource(final ShardingSphereDatabase originalDatabase,
@@ -604,22 +598,9 @@ public final class ContextManager implements AutoCloseable {
         return DataSourcePoolCreator.create(getChangedDataSourceConfiguration(originalDatabase, newDataSourcePropsMap));
     }
     
-    private void closeDataSources(final ShardingSphereDatabase toBeRemovedDatabase) {
-        if (null != toBeRemovedDatabase.getResource()) {
-            toBeRemovedDatabase.getResource().getDataSources().values().forEach(each -> toBeRemovedDatabase.getResource().close(each));
-        }
-    }
-    
-    private void closeDataSources(final String databaseName, final Collection<DataSource> dataSources) {
-        ShardingSphereResource resource = metaDataContexts.getMetaData().getDatabases().get(databaseName).getResource();
-        dataSources.forEach(resource::close);
-    }
-    
-    private void removeAndCloseResource(final String databaseName, final ShardingSphereDatabase database) {
-        metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules().stream()
-                .filter(each -> each instanceof ResourceHeldRule).map(each -> (ResourceHeldRule<?>) each).forEach(each -> each.closeStaleResource(databaseName));
-        database.getRuleMetaData().getRules().stream()
-                .filter(each -> each instanceof ResourceHeldRule).map(each -> (ResourceHeldRule<?>) each).forEach(each -> each.closeStaleResource(databaseName));
+    private void persistMetaData(final MetaDataContexts metaDataContexts) {
+        metaDataContexts.getMetaData().getDatabases().forEach((databaseName, schemas) -> schemas.getSchemas()
+                .forEach((schemaName, tables) -> metaDataContexts.getPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persistMetaData(databaseName, schemaName, tables))));
     }
     
     @Override
