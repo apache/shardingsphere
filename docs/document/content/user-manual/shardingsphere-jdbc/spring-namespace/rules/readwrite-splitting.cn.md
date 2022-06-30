@@ -16,12 +16,30 @@ weight = 2
 
 \<readwrite-splitting:data-source-rule />
 
-| *名称*                     | *类型* | *说明*                                        |
-| -------------------------- | ----- | -------------------------------------------- |
-| id                         | 属性  | 读写分离数据源规则名称                           |
-| type                       | 属性  | 读写分离类型，分为静态和动态。如 Static、Dynamic  |
-| props                      | 标签  | 读写分离所需属性，如静态：write-data-source-name、read-data-source-names，动态：auto-aware-data-source-name、write-data-source-query-enabled  |
-| load-balance-algorithm-ref | 属性  | 负载均衡算法名称                               |
+| *名称*                     | *类型* | *说明*                 |
+| -------------------------- | ----- | --------------------- |
+| id                         | 属性  | 读写分离数据源规则名称    |
+| static-strategy            | 标签  | 静态读写分离类型         |
+| dynamic-strategy           | 标签  | 动态读写分离类型         |
+| load-balance-algorithm-ref | 属性  | 负载均衡算法名称         |
+
+\<readwrite-splitting:static-strategy />
+
+| *名称*                     | *类型* | *说明*                             |
+| -------------------------- | ----- | --------------------------------- |
+| id                         | 属性  | 静态读写分离名称                     |
+| write-data-source-name     | 属性  | 写库数据源名称                       |
+| read-data-source-names     | 属性  | 读库数据源列表，多个从数据源用逗号分隔  |
+| load-balance-algorithm-ref | 属性  | 负载均衡算法名称                     |
+
+\<readwrite-splitting:dynamic-strategy />
+
+| *名称*                            | *类型* | *说明*                            |
+| -------------------------------- | ----- | --------------------------------- |
+| id                               | 属性  | 动态读写分离名称                     |
+| auto-aware-data-source-name      | 属性  | 数据库发现逻辑数据源名称              |
+| write-data-source-query-enabled  | 属性  | 读库全部下线，主库是否承担读流量       |
+| load-balance-algorithm-ref       | 属性  | 负载均衡算法名称                     |
 
 
 \<readwrite-splitting:load-balance-algorithm />
