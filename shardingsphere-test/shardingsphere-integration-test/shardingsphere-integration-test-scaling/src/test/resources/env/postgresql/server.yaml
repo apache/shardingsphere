@@ -20,7 +20,7 @@ mode:
   repository:
     type: ZooKeeper
     props:
-      namespace: it_pgdb
+      namespace: it_db_postgresql
       server-lists: zk.host:2181
       retryIntervalMilliseconds: 500
       timeToLiveSeconds: 60

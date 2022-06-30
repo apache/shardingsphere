@@ -15,29 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.framework.container.compose;
+package org.apache.shardingsphere.integration.data.pipeline.cases.entity;
 
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
-/**
- * Native composed container, you need start ShardingSphere-Proxy at firstly.
- */
-public final class NativeComposedContainer extends BaseComposedContainer {
+@RequiredArgsConstructor
+@Data
+public final class JdbcInfoEntity {
     
-    private final DatabaseType databaseType;
+    private final String username;
     
-    public NativeComposedContainer(final DatabaseType databaseType) {
-        this.databaseType = databaseType;
-    }
+    private final String password;
     
-    @Override
-    public void start() {
-        
-    }
-    
-    @Override
-    public String getProxyJdbcUrl(final String databaseName) {
-        return DataSourceEnvironment.getURL(databaseType, "localhost", 3307, databaseName);
-    }
+    private final int port;
 }

@@ -18,15 +18,18 @@
 package org.apache.shardingsphere.integration.data.pipeline.cases.base;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.ExtraSQLCommand;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 
 import javax.xml.bind.JAXB;
 import java.util.List;
+import java.util.Objects;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
+@Slf4j
 public abstract class BaseExtraSQLITCase extends BaseITCase {
     
     @Getter
@@ -34,7 +37,7 @@ public abstract class BaseExtraSQLITCase extends BaseITCase {
     
     public BaseExtraSQLITCase(final ScalingParameterized parameterized) {
         super(parameterized);
-        extraSQLCommand = JAXB.unmarshal(BaseExtraSQLITCase.class.getClassLoader().getResource(parameterized.getScenario()), ExtraSQLCommand.class);
+        extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseExtraSQLITCase.class.getClassLoader().getResource(parameterized.getScenario())), ExtraSQLCommand.class);
     }
     
     protected void createNoUseTable() {
