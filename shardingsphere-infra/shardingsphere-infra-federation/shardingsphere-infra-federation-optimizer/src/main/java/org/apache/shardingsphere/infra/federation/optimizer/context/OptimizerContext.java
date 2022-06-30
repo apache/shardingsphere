@@ -61,6 +61,17 @@ public final class OptimizerContext {
     }
     
     /**
+     * Drop database.
+     *
+     * @param databaseName database name
+     */
+    public void dropDatabase(final String databaseName) {
+        federationMetaData.getDatabases().remove(databaseName);
+        parserContexts.remove(databaseName);
+        plannerContexts.remove(databaseName);
+    }
+    
+    /**
      * Add schema.
      *
      * @param databaseName database name

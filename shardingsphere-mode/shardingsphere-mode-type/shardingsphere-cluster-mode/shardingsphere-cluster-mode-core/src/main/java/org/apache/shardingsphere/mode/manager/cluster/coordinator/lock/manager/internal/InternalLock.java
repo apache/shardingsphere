@@ -15,9 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal;
 
-public interface MutexLock {
+/**
+ * Internal lock.
+ */
+public interface InternalLock {
     
     /**
      * Try lock.

@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.ShardingSphereDistributedDatabaseLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.ShardingSphereDistributedLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.state.LockStateContextFactory;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.ShardingSphereInterMutexLockHolder;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal.ShardingSphereInternalLockHolder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDefinition;
 
@@ -39,7 +39,7 @@ public final class ShardingSphereDistributedLockManager implements ShardingSpher
     private ShardingSphereLock databaseLock;
     
     @Override
-    public void init(final ShardingSphereInterMutexLockHolder lockHolder) {
+    public void init(final ShardingSphereInternalLockHolder lockHolder) {
         distributedLock = new ShardingSphereDistributedLock(lockHolder);
         databaseLock = new ShardingSphereDistributedDatabaseLock(lockHolder, LockStateContextFactory.getLockStateContext());
     }

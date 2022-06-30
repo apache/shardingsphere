@@ -113,7 +113,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     private final Map<String, Collection<DataNode>> shardingTableDataNodes;
     
-    private final Map<String, ShardingAuditStrategyConfiguration> auditStrategies;
+    private final ShardingAuditStrategyConfiguration auditStrategyConfig;
     
     public ShardingRule(final ShardingRuleConfiguration config, final Collection<String> dataSourceNames) {
         configuration = config;
@@ -135,8 +135,8 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         Preconditions.checkArgument(isValidBindingTableConfiguration(tableRules, new BindingTableCheckedConfiguration(this.dataSourceNames, shardingAlgorithms, config.getBindingTableGroups(),
                 broadcastTables, defaultDatabaseShardingStrategyConfig, defaultTableShardingStrategyConfig, defaultShardingColumn)),
                 "Invalid binding table configuration in ShardingRuleConfiguration.");
-        auditStrategies = null == config.getAuditStrategies() ? Collections.emptyMap() : config.getAuditStrategies();
-        Preconditions.checkArgument(auditStrategies.values().stream().allMatch(each -> auditAlgorithms.containsKey(each.getAuditAlgorithmName())), "Cannot find sharding audit algorithm");
+        auditStrategyConfig = null == config.getAuditStrategy() ? new ShardingAuditStrategyConfiguration(Collections.emptyList(), true) : config.getAuditStrategy();
+        Preconditions.checkArgument(auditStrategyConfig.getAuditAlgorithmNames().stream().allMatch(auditAlgorithms::containsKey), "Cannot find sharding audit algorithm");
     }
     
     public ShardingRule(final AlgorithmProvidedShardingRuleConfiguration config, final Collection<String> dataSourceNames) {
@@ -159,8 +159,8 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         Preconditions.checkArgument(isValidBindingTableConfiguration(tableRules, new BindingTableCheckedConfiguration(this.dataSourceNames, shardingAlgorithms, config.getBindingTableGroups(),
                 broadcastTables, defaultDatabaseShardingStrategyConfig, defaultTableShardingStrategyConfig, defaultShardingColumn)),
                 "Invalid binding table configuration in ShardingRuleConfiguration.");
-        auditStrategies = null == config.getAuditStrategies() ? Collections.emptyMap() : config.getAuditStrategies();
-        Preconditions.checkArgument(auditStrategies.values().stream().allMatch(each -> auditAlgorithms.containsKey(each.getAuditAlgorithmName())), "Cannot find sharding audit algorithm");
+        auditStrategyConfig = null == config.getAuditStrategy() ? new ShardingAuditStrategyConfiguration(Collections.emptyList(), true) : config.getAuditStrategy();
+        Preconditions.checkArgument(auditStrategyConfig.getAuditAlgorithmNames().stream().allMatch(auditAlgorithms::containsKey), "Cannot find sharding audit algorithm");
     }
     
     private Map<String, Collection<DataNode>> createShardingTableDataNodes(final Map<String, TableRule> tableRules) {

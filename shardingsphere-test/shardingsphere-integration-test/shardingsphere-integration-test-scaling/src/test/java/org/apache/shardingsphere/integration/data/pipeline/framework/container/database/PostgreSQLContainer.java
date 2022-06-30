@@ -20,16 +20,22 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.container.
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
+import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.framework.container.wait.JDBCConnectionWaitStrategy;
 import org.testcontainers.containers.BindMode;
 
 import java.sql.DriverManager;
 
-public final class PostgreSQLContainer extends DockerDatabaseContainer {
+public final class PostgreSQLContainer extends DatabaseContainer {
     
     private static final DatabaseType DATABASE_TYPE = new PostgreSQLDatabaseType();
+    
+    private final String username = "root";
+    
+    private final String password = "root";
+    
+    private final int port = 5432;
     
     public PostgreSQLContainer(final String dockerImageName) {
         super(DATABASE_TYPE, dockerImageName);
@@ -37,27 +43,36 @@ public final class PostgreSQLContainer extends DockerDatabaseContainer {
     
     @Override
     protected void configure() {
-        super.configure();
         withCommand("--max_connections=600");
         withCommand("--wal_level=logical");
-        addEnv("POSTGRES_USER", "root");
-        addEnv("POSTGRES_PASSWORD", "root");
+        addEnv("POSTGRES_USER", username);
+        addEnv("POSTGRES_PASSWORD", password);
         withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/etc/postgresql/postgresql.conf", BindMode.READ_ONLY);
-        withExposedPorts(5432);
-        if (ITEnvTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItEnvType()) {
-            addFixedExposedPort(5432, 5432);
+        withExposedPorts(port);
+        if (ScalingITEnvTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItEnvType()) {
+            addFixedExposedPort(port, port);
         }
         setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(DATABASE_TYPE, "localhost", getFirstMappedPort(), "postgres"),
-                "root", "root")));
+                username, password)));
     }
     
     @Override
-    public String getJdbcUrl(final String host, final int port, final String databaseName) {
-        return DataSourceEnvironment.getURL(DATABASE_TYPE, host, port, databaseName);
+    public String getJdbcUrl(final String databaseName) {
+        return DataSourceEnvironment.getURL(DATABASE_TYPE, getHost(), getFirstMappedPort(), databaseName);
+    }
+    
+    @Override
+    public String getUsername() {
+        return username;
+    }
+    
+    @Override
+    public String getPassword() {
+        return password;
     }
     
     @Override
     public int getPort() {
-        return 5432;
+        return port;
     }
 }

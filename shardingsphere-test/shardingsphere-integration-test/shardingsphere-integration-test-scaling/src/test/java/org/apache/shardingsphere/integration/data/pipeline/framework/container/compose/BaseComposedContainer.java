@@ -18,23 +18,16 @@
 package org.apache.shardingsphere.integration.data.pipeline.framework.container.compose;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.factory.DatabaseContainerFactory;
-import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.DockerDatabaseContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.ITContainers;
-import org.apache.shardingsphere.test.integration.util.NetworkAliasUtil;
 import org.testcontainers.lifecycle.Startable;
 
-@Getter
 public abstract class BaseComposedContainer implements Startable {
     
+    @Getter
     private final ITContainers containers;
     
-    private final DockerDatabaseContainer databaseContainer;
-    
-    public BaseComposedContainer(final DatabaseType databaseType, final String dockerImageName) {
+    public BaseComposedContainer() {
         this.containers = new ITContainers("");
-        this.databaseContainer = containers.registerContainer(DatabaseContainerFactory.newInstance(databaseType, dockerImageName), NetworkAliasUtil.getNetworkAlias("db"));
     }
     
     /**

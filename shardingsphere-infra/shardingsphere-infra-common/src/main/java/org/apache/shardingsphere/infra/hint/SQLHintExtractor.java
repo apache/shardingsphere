@@ -22,7 +22,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSe
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -46,16 +45,6 @@ public final class SQLHintExtractor {
             props.putAll(SQLHintUtils.getSQLHintProps(each.getText()));
         }
         return new SQLHintProperties(props);
-    }
-    
-    /**
-     * Find hint data source name.
-     *
-     * @return data source name
-     */
-    public Optional<String> findHintDataSourceName() {
-        String result = sqlHintProperties.getValue(SQLHintPropertiesKey.DATASOURCE_NAME_KEY);
-        return result.isEmpty() ? Optional.empty() : Optional.of(result);
     }
     
     /**
