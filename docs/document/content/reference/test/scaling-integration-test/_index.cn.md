@@ -46,8 +46,8 @@ weight = 4
 所有的属性值都可以通过 Maven 命令行 `-D` 的方式动态注入。
 
 `${image-name}` 表示合法 Docker image 名称，比如：mysql:5.7， 多个的话用逗号隔开。
-`-Dscaling.it.env.postgresql.version=${image-name}` 表示需要测试的 PostgreSQL 版本。
-`-Dscaling.it.env.mysql.version=${image-name}` 表示需要测试的 MySQL 版本。
+`-Dscaling.it.docker.postgresql.version=${image-name}` 表示需要测试的 PostgreSQL 版本。
+`-Dscaling.it.docker.mysql.version=${image-name}` 表示需要测试的 MySQL 版本。
 
 #### Native 环境启动
 
@@ -57,7 +57,7 @@ Native 环境要求本地自行启动 ShardingSphere-Proxy（以及其自身依�
 启动方式如下：找到需要测试的 Case，比如 MySQLGeneralScalingIT，在启动之前配置对应的 VM Option，新增如下配置。
 
 ```
--Dscaling.it.env.type=native -Dscaling.it.env.mysql.version=${image-name}
+-Dscaling.it.env.type=native -Dscaling.it.docker.mysql.version=${image-name}
 ```
 
 在 IDE 下使用 Junit 的方式启动即可。
@@ -87,7 +87,7 @@ Native 环境要求本地自行启动 ShardingSphere-Proxy（以及其自身依�
 可以和 Native 一样使用 IDE 的方式运行用例，或者使用 Maven 的方式运行用例。
 
 ```bash
-./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dscaling.it.env.type=DOCKER -Dscaling.it.env.mysql.version=${image-name}
+./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dscaling.it.env.type=DOCKER -Dscaling.it.docker.mysql.version=${image-name}
 ```
 
 #### 注意事项

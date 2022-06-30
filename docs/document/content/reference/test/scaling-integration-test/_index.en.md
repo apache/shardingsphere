@@ -45,8 +45,8 @@ Catalog：`resources/env/`
 All property values can be dynamically injected by means of the Maven command line `-D`.
 
 `${image-name}` Indicates a legal docker image name, e.g., mysql:5.7, separated by commas if multiple.
-`-Dscaling.it.env.postgresql.version=${image-name}` Indicates the version of PostgreSQL that needs to be tested.
-`-Dscaling.it.env.mysql.version=${image-name}` Indicates the version of MySQL that needs to be tested.
+`-Dscaling.it.docker.postgresql.version=${image-name}` Indicates the version of PostgreSQL that needs to be tested.
+`-Dscaling.it.docker.mysql.version=${image-name}` Indicates the version of MySQL that needs to be tested.
 
 #### Native Environment Startup
 
@@ -56,7 +56,7 @@ The database port can be configured in it-env.properties, or not if it is the de
 The startup method is as follows: Find the Case you need to test, such as MySQLGeneralScalingIT, and configure the corresponding VM Option before startup, add the following configuration.
 
 ```
--Dscaling.it.env.type=native -Dscaling.it.env.mysql.version=${image-name}
+-Dscaling.it.env.type=native -Dscaling.it.docker.mysql.version=${image-name}
 ```
 
 Just start it under the IDE using the Junit.
@@ -86,7 +86,7 @@ As with Native, only one parameter needs to be changed.
 You can run the use case using the same IDE as Native, or you can run it using maven.
 
 ```shell
-./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dscaling.it.env.type=DOCKER -Dscaling.it.env.mysql.version=${image-name}
+./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dscaling.it.env.type=DOCKER -Dscaling.it.docker.mysql.version=${image-name}
 ```
 
 #### Attentions
