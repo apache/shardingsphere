@@ -19,9 +19,9 @@ Obtain the binary release package of ShardingSphere-Proxy on the [download page]
 
 2. Configure `conf/server.yaml`
 
-ShardingSphere-Proxy's operational mode is configured on `server.yaml`，and its configuration mode is the same with that of ShardingSphere-JDBC. Refer to [mode of configuration](/cn/user-manual/shardingsphere-jdbc/yaml-config/mode/).
+ShardingSphere-Proxy's operational mode is configured on `server.yaml`, and its configuration mode is the same with that of ShardingSphere-JDBC. Refer to [mode of configuration](/cn/user-manual/shardingsphere-jdbc/yaml-config/mode/).
 
-Please refer to the following links for other configuration items：
+Please refer to the following links for other configuration items:
 * [Permission configuration](/cn/user-manual/shardingsphere-proxy/yaml-config/authentication/)
 * [Property configuration](/cn/user-manual/shardingsphere-proxy/yaml-config/props/)
 
@@ -74,17 +74,17 @@ bin/start.sh [port] [/path/to/conf]
 
 Run the MySQL/PostgreSQL/openGauss client command to directly operate ShardingSphere-Proxy.
 
-Connect ShardingSphere-Proxy with MySQL client：
+Connect ShardingSphere-Proxy with MySQL client:
 ```bash
 mysql -h${proxy_host} -P${proxy_port} -u${proxy_username} -p${proxy_password}
 ```
 
-Connect ShardingSphere-Proxy with PostgreSQL：
+Connect ShardingSphere-Proxy with PostgreSQL:
 ```bash 
 psql -h ${proxy_host} -p ${proxy_port} -U ${proxy_username}
 ```
 
-Connect ShardingSphere-Proxy with openGauss client：
+Connect ShardingSphere-Proxy with openGauss client:
 ```bash 
 gsql -r -h ${proxy_host} -p ${proxy_port} -U ${proxy_username} -W ${proxy_password}
 ```
