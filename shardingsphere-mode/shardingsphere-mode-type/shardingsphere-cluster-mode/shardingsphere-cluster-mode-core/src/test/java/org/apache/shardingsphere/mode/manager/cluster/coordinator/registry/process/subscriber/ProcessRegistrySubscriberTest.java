@@ -62,7 +62,7 @@ public final class ProcessRegistrySubscriberTest {
     
     @Test
     public void assertLoadShowProcessListData() {
-        when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath("JDBC"))).thenReturn(Collections.singletonList("abc"));
+        when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath("FIXTURE"))).thenReturn(Collections.singletonList("abc"));
         when(repository.get(any())).thenReturn(null);
         ShowProcessListRequestEvent showProcessListRequestEvent = mock(ShowProcessListRequestEvent.class);
         processRegistrySubscriber.loadShowProcessListData(showProcessListRequestEvent);

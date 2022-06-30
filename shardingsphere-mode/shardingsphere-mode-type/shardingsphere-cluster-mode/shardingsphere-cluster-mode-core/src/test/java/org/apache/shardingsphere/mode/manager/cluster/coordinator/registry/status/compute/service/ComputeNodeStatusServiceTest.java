@@ -96,12 +96,10 @@ public final class ComputeNodeStatusServiceTest {
     
     @Test
     public void assertLoadAllComputeNodeInstances() {
-        when(repository.getChildrenKeys("/nodes/compute_nodes/online/proxy")).thenReturn(Collections.singletonList("foo_instance_3307"));
-        when(repository.getChildrenKeys("/nodes/compute_nodes/online/jdbc")).thenReturn(Collections.singletonList("foo_instance_3308"));
-        when(repository.get("/nodes/compute_nodes/online/proxy/foo_instance_3307")).thenReturn("127.0.0.1@3307");
-        when(repository.get("/nodes/compute_nodes/online/jdbc/foo_instance_3308")).thenReturn("127.0.0.1@3308");
+        when(repository.getChildrenKeys("/nodes/compute_nodes/online/fixture")).thenReturn(Collections.singletonList("foo_instance_3307"));
+        when(repository.get("/nodes/compute_nodes/online/fixture/foo_instance_3307")).thenReturn("127.0.0.1@3307");
         Collection<ComputeNodeInstance> actual = new ComputeNodeStatusService(repository).loadAllComputeNodeInstances();
-        assertThat(actual.size(), is(2));
+        assertThat(actual.size(), is(1));
     }
     
     @Test
