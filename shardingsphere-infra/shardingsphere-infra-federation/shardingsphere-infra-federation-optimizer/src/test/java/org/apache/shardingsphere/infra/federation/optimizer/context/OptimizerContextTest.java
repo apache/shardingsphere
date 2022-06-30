@@ -48,7 +48,8 @@ public final class OptimizerContextTest {
     public void assertDropTable() {
         Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1);
         tables.put(tableName, mock(ShardingSphereTable.class, RETURNS_DEEP_STUBS));
-        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, new H2DatabaseType(), mock(ShardingSphereResource.class), null, Collections.singletonMap(schemaName, new ShardingSphereSchema(tables)));
+        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, new H2DatabaseType(), mock(ShardingSphereResource.class), null, Collections.singletonMap(schemaName,
+              new ShardingSphereSchema(tables)));
         OptimizerContext optimizerContext = OptimizerContextFactory.create(Collections.singletonMap(databaseName, database), mock(ShardingSphereRuleMetaData.class));
         SqlToRelConverter converterHashCodeBefore = optimizerContext.getPlannerContexts().get(databaseName).getConverters().get(schemaName);
         SqlValidator validatorHashCodeBefore = optimizerContext.getPlannerContexts().get(databaseName).getValidators().get(schemaName);
