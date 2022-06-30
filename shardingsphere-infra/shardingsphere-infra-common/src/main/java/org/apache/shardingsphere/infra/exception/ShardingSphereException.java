@@ -58,5 +58,7 @@ public class ShardingSphereException extends RuntimeException {
      *
      * @param message error message
      */
-    public ShardingSphereException(final String message) { super(message); }
+    public ShardingSphereException(final String message) {
+        super(message);
+    }
 }
