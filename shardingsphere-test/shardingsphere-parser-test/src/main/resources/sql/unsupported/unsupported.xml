@@ -4705,7 +4705,6 @@
     <sql-case id="lock_by_postgresql_source_test_case39" value="LOCK hs1;" db-types="PostgreSQL" />
     <sql-case id="lock_by_postgresql_source_test_case40" value="LOCK lock_tbl1 IN ROW SHARE MODE;" db-types="PostgreSQL" />
     <sql-case id="lock_by_postgresql_source_test_case41" value="LOCK lock_tbl1 IN SHARE ROW EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="notify_by_postgresql_source_test_case1" value="NOTIFY notify_async2;" db-types="PostgreSQL" />
     <sql-case id="prepare_by_postgresql_source_test_case1" value="PREPARE TRANSACTION &apos;foo1&apos;;" db-types="PostgreSQL" />
     <sql-case id="prepare_by_postgresql_source_test_case2" value="PREPARE TRANSACTION &apos;foo2&apos;;" db-types="PostgreSQL" />
     <sql-case id="prepare_by_postgresql_source_test_case3" value="PREPARE TRANSACTION &apos;foo3&apos;;" db-types="PostgreSQL" />
@@ -6949,7 +6948,6 @@
     <sql-case id="low_lock_by_postgresql_source_test_case1" value="lock table pxtest3 in access share mode nowait;" db-types="PostgreSQL" />
     <sql-case id="low_lock_by_postgresql_source_test_case2" value="lock table pxtest3 in access share mode nowait;" db-types="PostgreSQL" />
     <sql-case id="low_lock_by_postgresql_source_test_case3" value="lock twophase_tab in access exclusive mode;" db-types="PostgreSQL" />
-    <sql-case id="low_notify_by_postgresql_source_test_case1" value="notify a;" db-types="PostgreSQL" />
     <sql-case id="low_prepare_by_postgresql_source_test_case1" value="prepare q as   select &apos;some&quot;text&apos; as &quot;a&amp;title&quot;, E&apos;  &lt;foo&gt;\n&lt;bar&gt;&apos; as &quot;junk&quot;,          &apos;   &apos; as &quot;empty&quot;, n as int   from generate_series(1,2) as n;" db-types="PostgreSQL" />
     <sql-case id="low_prepare_by_postgresql_source_test_case2" value="prepare q as   select &apos;some\more_text&apos; as &quot;a$title&quot;, E&apos;  #&lt;foo&gt;%&amp;^~|\n{bar}&apos; as &quot;junk&quot;,          &apos;   &apos; as &quot;empty&quot;, n as int   from generate_series(1,2) as n;" db-types="PostgreSQL" />
     <sql-case id="low_prepare_by_postgresql_source_test_case3" value="prepare q as   select &apos;some\more_text&apos; as &quot;a$title&quot;, E&apos;  #&lt;foo&gt;%&amp;^~|\n{bar}&apos; as &quot;junk&quot;,          &apos;   &apos; as &quot;empty&quot;, n as int   from generate_series(1,2) as n;" db-types="PostgreSQL" />
