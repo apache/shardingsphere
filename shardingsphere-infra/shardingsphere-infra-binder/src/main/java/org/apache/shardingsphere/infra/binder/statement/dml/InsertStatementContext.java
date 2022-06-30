@@ -98,6 +98,9 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private ShardingSphereSchema getSchema(final Map<String, ShardingSphereDatabase> databases, final String defaultDatabaseName) {
         String databaseName = tablesContext.getDatabaseName().orElse(defaultDatabaseName);
+        if (null == databaseName) {
+            throw new DatabaseNotExistedException(null);
+        }
         ShardingSphereDatabase database = databases.get(databaseName);
         if (null == database) {
             throw new DatabaseNotExistedException(databaseName);
