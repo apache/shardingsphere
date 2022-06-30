@@ -125,9 +125,11 @@ public final class MySQLSchemaMetaDataLoader implements DialectSchemaMetaDataLoa
         dataTypes.putIfAbsent("JSON", Types.LONGVARCHAR);
         dataTypes.putIfAbsent("GEOMETRY", Types.BINARY);
         dataTypes.putIfAbsent("YEAR", Types.DATE);
-        dataTypes.putIfAbsent("MULTIPOINT", -2);
-        dataTypes.putIfAbsent("MULTIPOLYGON", -2);
-        dataTypes.putIfAbsent("MULTILINESTRING", -2);
+        dataTypes.putIfAbsent("POINT", Types.BINARY);
+        dataTypes.putIfAbsent("MULTIPOINT", Types.BINARY);
+        dataTypes.putIfAbsent("POLYGON", Types.BINARY);
+        dataTypes.putIfAbsent("MULTIPOLYGON", Types.BINARY);
+        dataTypes.putIfAbsent("MULTILINESTRING", Types.BINARY);
     }
     
     private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final ResultSet resultSet) throws SQLException {

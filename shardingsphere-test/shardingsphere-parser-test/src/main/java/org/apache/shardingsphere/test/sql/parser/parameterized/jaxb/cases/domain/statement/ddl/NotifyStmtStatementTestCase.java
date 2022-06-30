@@ -15,34 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.natived.model.privilege.database;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.authority.model.PrivilegeType;
-
-import java.util.Collection;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Table privileges.
+ * Notify statement test case.
  */
-@RequiredArgsConstructor
-@EqualsAndHashCode
-@Getter
-public final class TablePrivileges {
-    
-    private final String tableName;
-    
-    private final Collection<PrivilegeType> privileges;
-    
-    /**
-     * Has privileges.
-     *
-     * @param privileges privileges
-     * @return has privileges or not
-     */
-    public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
-        return this.privileges.containsAll(privileges);
-    }
+public final class NotifyStmtStatementTestCase extends SQLParserTestCase {
 }

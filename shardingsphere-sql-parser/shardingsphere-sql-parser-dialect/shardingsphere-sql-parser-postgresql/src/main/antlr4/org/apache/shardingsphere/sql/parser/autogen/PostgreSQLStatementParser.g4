@@ -105,6 +105,7 @@ execute
     | explain
     | analyzeTable
     | listen
+    | notifyStmt
     | unlisten
     | load
     | createTablespace

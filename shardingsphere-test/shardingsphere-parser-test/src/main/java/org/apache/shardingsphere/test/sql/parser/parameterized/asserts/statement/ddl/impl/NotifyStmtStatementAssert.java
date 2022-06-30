@@ -15,32 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.natived.builder;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.ddl.impl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.NotifyStmtStatement;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.NotifyStmtStatementTestCase;
 
-import java.util.Optional;
-
-/**
- * Storage privilege handler factory.
- */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class StoragePrivilegeHandlerFactory {
-    
-    static {
-        ShardingSphereServiceLoader.register(StoragePrivilegeHandler.class);
-    }
+public final class NotifyStmtStatementAssert {
     
     /**
-     * Find instance of storage privilege handler.
-     * 
-     * @param type type of storage privilege handler
-     * @return found instance
+     * Assert notify statement is correct with expected parser result.
+     *
+     * @param assertContext assert context
+     * @param actual actual notify statement
+     * @param expected expected notify statement test case
      */
-    public static Optional<StoragePrivilegeHandler> findInstance(final String type) {
-        return TypedSPIRegistry.findRegisteredService(StoragePrivilegeHandler.class, type);
+    public static void assertIs(final SQLCaseAssertContext assertContext, final NotifyStmtStatement actual, final NotifyStmtStatementTestCase expected) {
     }
 }

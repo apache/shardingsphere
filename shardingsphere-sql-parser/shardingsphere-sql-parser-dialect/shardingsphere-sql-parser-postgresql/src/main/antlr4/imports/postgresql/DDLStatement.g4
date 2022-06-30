@@ -1491,10 +1491,6 @@ ruleActionMulti
     : ruleActionStmt? (SEMI_ ruleActionStmt?)*
     ;
 
-notifyStmt
-    : NOTIFY colId (COMMA_ STRING_)?
-    ;
-
 createTrigger
     : CREATE TRIGGER name triggerActionTime triggerEvents ON qualifiedName triggerReferencing? triggerForSpec? triggerWhen? EXECUTE (FUNCTION | PROCEDURE) funcName LP_ triggerFuncArgs? RP_
     | CREATE CONSTRAINT TRIGGER (FROM qualifiedName)? constraintAttributeSpec FOR EACH ROW triggerWhen EXECUTE (FUNCTION | PROCEDURE) funcName LP_ triggerFuncArgs RP_
@@ -1797,6 +1793,10 @@ listen
 
 unlisten
     : UNLISTEN (channelName | ASTERISK_)
+    ;
+
+notifyStmt
+    : NOTIFY colId (COMMA_ STRING_)?
     ;
 
 direction
