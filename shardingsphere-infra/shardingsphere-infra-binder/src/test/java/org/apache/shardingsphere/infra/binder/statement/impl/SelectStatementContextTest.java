@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.binder.statement.impl;
 
-import com.google.common.collect.Lists;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -516,13 +515,12 @@ public final class SelectStatementContextTest {
     }
     
     private void assertContainsDollarParameterMarker(final SelectStatement selectStatement) {
-        ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
-        when(projectionsSegment.getProjections()).thenReturn(Lists.newArrayList(new ParameterMarkerExpressionSegment(0, 0, 0, ParameterMarkerType.DOLLAR)));
+        ProjectionsSegment projectionsSegment = new ProjectionsSegment(0, 0);
+        projectionsSegment.getProjections().add(new ParameterMarkerExpressionSegment(0, 0, 0, ParameterMarkerType.DOLLAR));
         selectStatement.setProjections(projectionsSegment);
         SelectStatementContext selectStatementContext = new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class)), Collections.emptyList(),
                 selectStatement, DefaultDatabase.LOGIC_NAME);
         assertTrue(selectStatementContext.isContainsDollarParameterMarker());
-        
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
         JoinTableSegment joinTableSegment = new JoinTableSegment();
         joinTableSegment.setCondition(new ParameterMarkerExpressionSegment(0, 0, 0, ParameterMarkerType.DOLLAR));
@@ -562,7 +560,6 @@ public final class SelectStatementContextTest {
         projectionsSegment.getProjections().add(new AggregationProjectionSegment(0, 0, AggregationType.COUNT, "(*)"));
         projectionsSegment.getProjections().add(new AggregationDistinctProjectionSegment(0, 10, AggregationType.COUNT, "(1)", "distinctExpression"));
         selectStatement.setProjections(projectionsSegment);
-
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereDatabase.class)), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         assertTrue(selectStatementContext.isContainsPartialDistinctAggregation());
