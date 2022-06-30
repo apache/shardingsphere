@@ -15,37 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.instance.definition;
+package org.apache.shardingsphere.proxy.instance;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBuilder;
 
 /**
- * JDBC Instance definition.
+ * Proxy instance definition builder.
  */
-@RequiredArgsConstructor
-@Getter
-public final class JDBCInstanceDefinition implements InstanceDefinition {
-    
-    private final String instanceId;
+public final class ProxyInstanceDefinitionBuilder implements InstanceDefinitionBuilder {
     
     @Override
-    public String getIp() {
-        return "";
+    public InstanceDefinition build(final String instanceId, final int port) {
+        return new ProxyInstanceDefinition(instanceId, port);
     }
     
     @Override
-    public int getPort() {
-        return -1;
+    public InstanceDefinition build(final String instanceId, final String attributes) {
+        return new ProxyInstanceDefinition(instanceId, attributes);
     }
     
     @Override
-    public String getAttributes() {
-        return "";
-    }
-    
-    @Override
-    public String getInstanceType() {
-        return "JDBC";
+    public String getType() {
+        return "Proxy";
     }
 }

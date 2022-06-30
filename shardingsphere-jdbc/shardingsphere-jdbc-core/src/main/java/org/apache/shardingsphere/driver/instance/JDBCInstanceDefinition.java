@@ -15,25 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.instance.definition;
+package org.apache.shardingsphere.driver.instance;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 
 /**
- * JDBC instance definition builder.
+ * JDBC Instance definition.
  */
-public final class JDBCInstanceDefinitionBuilder implements InstanceDefinitionBuilder {
+@RequiredArgsConstructor
+@Getter
+public final class JDBCInstanceDefinition implements InstanceDefinition {
+    
+    private final String instanceId;
     
     @Override
-    public InstanceDefinition build(final String instanceId, final int port) {
-        return new JDBCInstanceDefinition(instanceId);
+    public String getIp() {
+        return "";
     }
     
     @Override
-    public InstanceDefinition build(final String instanceId, final String attributes) {
-        return new JDBCInstanceDefinition(instanceId);
+    public int getPort() {
+        return -1;
     }
     
     @Override
-    public String getType() {
+    public String getAttributes() {
+        return "";
+    }
+    
+    @Override
+    public String getInstanceType() {
         return "JDBC";
     }
 }
