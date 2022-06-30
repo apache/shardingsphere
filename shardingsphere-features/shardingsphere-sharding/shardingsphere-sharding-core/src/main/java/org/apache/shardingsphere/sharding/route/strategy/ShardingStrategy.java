@@ -64,7 +64,10 @@ public interface ShardingStrategy extends Comparable {
         if (!new ArrayList(this.getShardingColumns()).equals(new ArrayList(otherShardingStrategy.getShardingColumns()))) {
             return -1;
         }
-        if (null != this.getShardingAlgorithm() && 0 != this.getShardingAlgorithm().compareTo(otherShardingStrategy.getShardingAlgorithm())) {
+        if (null == this.getShardingAlgorithm() || null == otherShardingStrategy.getShardingAlgorithm()) {
+            return -1;
+        }
+        if (0 != this.getShardingAlgorithm().compareTo(otherShardingStrategy.getShardingAlgorithm())) {
             return -1;
         }
         return 0;
