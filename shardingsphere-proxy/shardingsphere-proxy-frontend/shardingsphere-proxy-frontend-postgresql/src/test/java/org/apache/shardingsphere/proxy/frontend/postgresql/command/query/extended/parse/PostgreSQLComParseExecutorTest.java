@@ -125,7 +125,7 @@ public final class PostgreSQLComParseExecutorTest extends ProxyContextRestorer {
         assertThat(actualPreparedStatement.getParameterTypes(), is(Arrays.asList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4, PostgreSQLColumnType.POSTGRESQL_TYPE_UNSPECIFIED)));
     }
     
-    @SneakyThrows
+    @SneakyThrows({NoSuchFieldException.class, SecurityException.class, IllegalArgumentException.class, IllegalAccessException.class})
     private void setConnectionSession() {
         Field field = PostgreSQLComParseExecutor.class.getDeclaredField("connectionSession");
         field.setAccessible(true);
