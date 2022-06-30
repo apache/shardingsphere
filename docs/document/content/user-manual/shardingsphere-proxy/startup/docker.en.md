@@ -51,7 +51,7 @@ For details, please refer to [ShardingSphere-Proxy quick start manual - binary d
 3. (Optional) Introduce third-party dependencies or customized algorithms
 
 If you have any of the following requirements:
-* ShardingSphere-Proxy Backend use MySQL / openGauss Database;
+* ShardingSphere-Proxy Backend use MySQL Database;
 * Implement customized algorithms;
 * Use Etcd as Registry Center in cluster mode.
 

@@ -51,7 +51,7 @@ docker rm tmp
 3. （可选）引入第三方依赖或自定义算法
 
 如果存在以下任意需求：
-* ShardingSphere-Proxy 后端使用 MySQL / openGauss 数据库；
+* ShardingSphere-Proxy 后端使用 MySQL 数据库；
 * 使用自定义算法；
 * 使用 Etcd 作为集群模式的注册中心。
 
