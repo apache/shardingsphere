@@ -154,7 +154,7 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
     
     private RuleConfiguration createRuleConfigurationWithAutoAwareDataSource() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds", null,
-                new DynamicReadwriteSplittingStrategyConfiguration("rd_rs"), "");
+                new DynamicReadwriteSplittingStrategyConfiguration("rd_rs", "false"), "");
         return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceRuleConfig), null);
     }
 }

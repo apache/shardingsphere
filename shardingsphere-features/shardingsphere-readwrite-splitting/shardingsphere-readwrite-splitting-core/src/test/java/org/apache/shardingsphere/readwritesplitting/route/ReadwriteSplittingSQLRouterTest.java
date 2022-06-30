@@ -91,7 +91,7 @@ public final class ReadwriteSplittingSQLRouterTest {
         sqlRouter = (ReadwriteSplittingSQLRouter) SQLRouterFactory.getInstances(Collections.singleton(rule)).get(rule);
         dynamicRule = new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(Collections.singleton(
                 new ReadwriteSplittingDataSourceRuleConfiguration(DATASOURCE_NAME, null,
-                        new DynamicReadwriteSplittingStrategyConfiguration("readwrite_ds"), "")),
+                        new DynamicReadwriteSplittingStrategyConfiguration("readwrite_ds", "false"), "")),
                 Collections.emptyMap()));
         dynamicSqlRouter = (ReadwriteSplittingSQLRouter) SQLRouterFactory.getInstances(Collections.singleton(dynamicRule)).get(dynamicRule);
     }
