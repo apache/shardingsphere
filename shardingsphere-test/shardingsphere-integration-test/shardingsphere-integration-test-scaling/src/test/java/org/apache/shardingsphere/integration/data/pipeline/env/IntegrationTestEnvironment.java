@@ -143,7 +143,7 @@ public final class IntegrationTestEnvironment {
             username = "root";
         }
         if (itType == ScalingITEnvTypeEnum.NATIVE) {
-            return String.valueOf(props.getOrDefault(String.format("it.native.%s.username", databaseType.getType().toLowerCase()), username));
+            username = String.valueOf(props.getOrDefault(String.format("scaling.it.native.%s.username", databaseType.getType().toLowerCase()), username));
         }
         return username;
     }
@@ -162,7 +162,7 @@ public final class IntegrationTestEnvironment {
             password = "root";
         }
         if (itType == ScalingITEnvTypeEnum.NATIVE) {
-            return props.getOrDefault(String.format("it.native.%s.password", databaseType.getType().toLowerCase()), password).toString();
+            password = props.getOrDefault(String.format("scaling.it.native.%s.password", databaseType.getType().toLowerCase()), password).toString();
         }
         return password;
     }

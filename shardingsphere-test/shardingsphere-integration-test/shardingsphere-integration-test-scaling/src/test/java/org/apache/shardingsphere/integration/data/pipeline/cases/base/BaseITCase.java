@@ -152,7 +152,11 @@ public abstract class BaseITCase {
         if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
             defaultDatabaseName = "postgres";
         }
-        try (Connection connection = DriverManager.getConnection(composedContainer.getProxyJdbcUrl(defaultDatabaseName), "root", "root")) {
+        String jdbcUrl = composedContainer.getProxyJdbcUrl(defaultDatabaseName);
+        if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
+            jdbcUrl = JDBC_URL_APPENDER.appendQueryProperties(jdbcUrl, ScalingCaseHelper.getPostgreSQLQueryProperties());
+        }
+        try (Connection connection = DriverManager.getConnection(jdbcUrl, "root", "root")) {
             if (ENV.getItType() == ScalingITEnvTypeEnum.NATIVE) {
                 try {
                     executeWithLog(connection, "DROP DATABASE sharding_db");
