@@ -36,6 +36,7 @@ public interface ShardingAuditAlgorithm extends ShardingSphereAlgorithm {
      * @param sqlStatement SQL statement
      * @param parameters SQL parameters
      * @param grantee grantee
+     * @param database database
      * @return SQL check result
      */
     SQLCheckResult check(SQLStatement sqlStatement, List<Object> parameters, Grantee grantee, ShardingSphereDatabase database);
