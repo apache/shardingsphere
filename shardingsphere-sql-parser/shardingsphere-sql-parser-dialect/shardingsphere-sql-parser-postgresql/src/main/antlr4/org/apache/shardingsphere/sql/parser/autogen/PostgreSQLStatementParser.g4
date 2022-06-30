@@ -104,6 +104,9 @@ execute
     | deallocate
     | explain
     | analyzeTable
+    | listen
+    | notifyStmt
+    | unlisten
     | load
     | createTablespace
     | alterTablespace
@@ -155,5 +158,6 @@ execute
     | alterPublication
     | createAggregate
     | createCast
+    | alterRoutine
     ) SEMI_? EOF
     ;

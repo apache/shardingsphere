@@ -59,8 +59,8 @@ public final class SingleTableSQLRouterTest {
     
     @Test
     public void assertCreateRouteContextWithSingleDataSource() throws SQLException {
-        SingleTableRule rule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME,
-                Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection())), Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        SingleTableRule rule = new SingleTableRule(new SingleTableRuleConfiguration(),
+                DefaultDatabase.LOGIC_NAME, Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection())), Collections.emptyList());
         rule.getSingleTableDataNodes().put("t_order", Collections.singletonList(createDataNode("foo_ds")));
         ShardingSphereDatabase database = mockSingleDatabase();
         RouteContext actual = new SingleTableSQLRouter().createRouteContext(createLogicSQL(), database, rule, new ConfigurationProperties(new Properties()));
@@ -80,8 +80,8 @@ public final class SingleTableSQLRouterTest {
     
     @Test
     public void assertCreateRouteContextWithReadwriteSplittingDataSource() throws SQLException {
-        SingleTableRule rule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME,
-                Collections.singletonMap("readwrite_ds", new MockedDataSource(mockConnection())), Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        SingleTableRule rule = new SingleTableRule(new SingleTableRuleConfiguration(),
+                DefaultDatabase.LOGIC_NAME, Collections.singletonMap("readwrite_ds", new MockedDataSource(mockConnection())), Collections.emptyList());
         rule.getSingleTableDataNodes().put("t_order", Collections.singletonList(createDataNode("write_ds")));
         ShardingSphereDatabase database = mockReadwriteSplittingDatabase();
         RouteContext actual = new SingleTableSQLRouter().createRouteContext(createLogicSQL(), database, rule, new ConfigurationProperties(new Properties()));
@@ -101,8 +101,7 @@ public final class SingleTableSQLRouterTest {
     
     @Test
     public void assertCreateRouteContextWithMultiDataSource() throws SQLException {
-        SingleTableRule rule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME,
-                createMultiDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        SingleTableRule rule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createMultiDataSourceMap(), Collections.emptyList());
         rule.getSingleTableDataNodes().put("t_order", Collections.singleton(createDataNode("ds_0")));
         ShardingSphereDatabase database = mockDatabaseWithMultipleResources();
         RouteContext actual = new SingleTableSQLRouter().createRouteContext(createLogicSQL(), database, rule, new ConfigurationProperties(new Properties()));

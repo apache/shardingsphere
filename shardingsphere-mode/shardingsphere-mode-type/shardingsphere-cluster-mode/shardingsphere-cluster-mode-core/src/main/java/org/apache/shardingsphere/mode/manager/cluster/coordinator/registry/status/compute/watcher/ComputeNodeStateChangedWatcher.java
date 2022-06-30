@@ -57,6 +57,7 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
         return Arrays.asList(Type.ADDED, Type.UPDATED, Type.DELETED);
     }
     
+    @SuppressWarnings("unchecked")
     @Override
     public Optional<GovernanceEvent> createGovernanceEvent(final DataChangedEvent event) {
         String instanceId = ComputeNode.getInstanceIdByComputeNode(event.getKey());
@@ -64,9 +65,11 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
             if (event.getKey().equals(ComputeNode.getInstanceStatusNodePath(instanceId))) {
                 Collection<String> status = Strings.isNullOrEmpty(event.getValue()) ? new ArrayList<>() : YamlEngine.unmarshal(event.getValue(), Collection.class);
                 return Optional.of(new StateEvent(instanceId, status));
-            } else if (event.getKey().equals(ComputeNode.getInstanceWorkerIdNodePath(instanceId))) {
+            }
+            if (event.getKey().equals(ComputeNode.getInstanceWorkerIdNodePath(instanceId))) {
                 return Optional.of(new WorkerIdEvent(instanceId, Strings.isNullOrEmpty(event.getValue()) ? null : Long.valueOf(event.getValue())));
-            } else if (event.getKey().equals(ComputeNode.getInstanceLabelsNodePath(instanceId))) {
+            }
+            if (event.getKey().equals(ComputeNode.getInstanceLabelsNodePath(instanceId))) {
                 return Optional.of(new LabelsEvent(instanceId, Strings.isNullOrEmpty(event.getValue()) ? new ArrayList<>() : YamlEngine.unmarshal(event.getValue(), Collection.class)));
             }
         } else if (event.getKey().startsWith(ComputeNode.getOnlineInstanceNodePath())) {
@@ -84,24 +87,25 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
         }
         if (Type.ADDED == event.getType()) {
             return Optional.of(new ShowProcessListTriggerEvent(matcher.group(1), matcher.group(2)));
-        } else if (Type.DELETED == event.getType()) {
+        }
+        if (Type.DELETED == event.getType()) {
             return Optional.of(new ShowProcessListUnitCompleteEvent(matcher.group(2)));
         }
         return Optional.empty();
     }
     
     private static Matcher getShowProcessTriggerMatcher(final DataChangedEvent event) {
-        Pattern pattern = Pattern.compile(ComputeNode.getProcessTriggerNodePatch() + "/([\\S]+):([\\S]+)$", Pattern.CASE_INSENSITIVE);
-        return pattern.matcher(event.getKey());
+        return Pattern.compile(ComputeNode.getProcessTriggerNodePatch() + "/([\\S]+):([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(event.getKey());
     }
     
     private Optional<GovernanceEvent> createInstanceEvent(final DataChangedEvent event) {
         Matcher matcher = matchInstanceOnlinePath(event.getKey());
         if (matcher.find()) {
-            InstanceDefinition instanceDefinition = new InstanceDefinition(getInstanceType(matcher.group(1)), matcher.group(2), event.getValue());
+            InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.valueOf(matcher.group(1).toUpperCase()), matcher.group(2), event.getValue());
             if (Type.ADDED == event.getType()) {
                 return Optional.of(new InstanceOnlineEvent(instanceDefinition));
-            } else if (Type.DELETED == event.getType()) {
+            }
+            if (Type.DELETED == event.getType()) {
                 return Optional.of(new InstanceOfflineEvent(instanceDefinition));
             }
         }
@@ -109,11 +113,6 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
     }
     
     private Matcher matchInstanceOnlinePath(final String onlineInstancePath) {
-        Pattern pattern = Pattern.compile(ComputeNode.getOnlineInstanceNodePath() + "/" + "(proxy|jdbc)" + "/([\\S]+)$", Pattern.CASE_INSENSITIVE);
-        return pattern.matcher(onlineInstancePath);
-    }
-    
-    private InstanceType getInstanceType(final String instanceType) {
-        return InstanceType.PROXY.name().equalsIgnoreCase(instanceType) ? InstanceType.PROXY : InstanceType.JDBC;
+        return Pattern.compile(ComputeNode.getOnlineInstanceNodePath() + "/" + "(proxy|jdbc)" + "/([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(onlineInstancePath);
     }
 }

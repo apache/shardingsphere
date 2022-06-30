@@ -74,8 +74,8 @@ public final class ParseDistSQLHandlerTest extends ProxyContextRestorer {
         parseDistSQLHandler.execute();
         parseDistSQLHandler.next();
         SQLStatement statement = sqlParserRule.getSQLParserEngine("MySQL").parse(sql, false);
-        assertThat(new LinkedList<>(parseDistSQLHandler.getRowData()).getFirst(), is("MySQLSelectStatement"));
-        assertThat(new LinkedList<>(parseDistSQLHandler.getRowData()).getLast(), is(new Gson().toJson(statement)));
+        assertThat(new LinkedList<>(parseDistSQLHandler.getRowData().getData()).getFirst(), is("MySQLSelectStatement"));
+        assertThat(new LinkedList<>(parseDistSQLHandler.getRowData().getData()).getLast(), is(new Gson().toJson(statement)));
     }
     
     @Test(expected = SQLParsingException.class)

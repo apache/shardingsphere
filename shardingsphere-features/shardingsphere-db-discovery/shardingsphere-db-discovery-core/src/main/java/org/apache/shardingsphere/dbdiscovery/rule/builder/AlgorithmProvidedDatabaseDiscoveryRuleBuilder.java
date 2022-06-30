@@ -20,7 +20,6 @@ package org.apache.shardingsphere.dbdiscovery.rule.builder;
 import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.constant.DatabaseDiscoveryOrder;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilder;
 
@@ -35,7 +34,7 @@ public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilder implements Data
     
     @Override
     public DatabaseDiscoveryRule build(final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration config, final String databaseName,
-                                       final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
+                                       final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules) {
         return new DatabaseDiscoveryRule(databaseName, dataSources, config);
     }
     

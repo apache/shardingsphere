@@ -108,5 +108,6 @@ execute
     | dropRestorePoint
     | dropOperator
     | alterLibrary
+    | alterMaterializedZonemap
     ) SEMI_?
     ;

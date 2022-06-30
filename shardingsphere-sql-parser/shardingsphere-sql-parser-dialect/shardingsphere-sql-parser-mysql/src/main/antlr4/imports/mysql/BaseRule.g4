@@ -48,6 +48,8 @@ customKeyword
     | REDO_LOG
     | LAST_VALUE
     | PRIMARY
+    | MAXVALUE
+    | BIT_XOR
     ;
     
 literals

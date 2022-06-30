@@ -21,11 +21,11 @@ import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.config.checker.RuleConfigurationCheckerFactory;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
 import org.junit.Test;
 
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -48,15 +48,8 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
     private ReadwriteSplittingRuleConfiguration createValidConfiguration() {
         ReadwriteSplittingRuleConfiguration result = mock(ReadwriteSplittingRuleConfiguration.class);
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = mock(ReadwriteSplittingDataSourceRuleConfiguration.class);
-        when(dataSourceConfig.getType()).thenReturn("Dynamic");
-        when(dataSourceConfig.getProps()).thenReturn(getProperties());
+        when(dataSourceConfig.getDynamicStrategy()).thenReturn(new DynamicReadwriteSplittingStrategyConfiguration("ds0"));
         when(result.getDataSources()).thenReturn(Collections.singletonList(dataSourceConfig));
-        return result;
-    }
-    
-    private Properties getProperties() {
-        Properties result = new Properties();
-        result.setProperty("auto-aware-data-source-name", "ds0");
         return result;
     }
     
@@ -73,8 +66,6 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
     private ReadwriteSplittingRuleConfiguration createInvalidConfiguration() {
         ReadwriteSplittingRuleConfiguration result = mock(ReadwriteSplittingRuleConfiguration.class);
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = mock(ReadwriteSplittingDataSourceRuleConfiguration.class);
-        when(dataSourceConfig.getType()).thenReturn("Dynamic");
-        when(dataSourceConfig.getProps()).thenReturn(new Properties());
         when(result.getDataSources()).thenReturn(Collections.singleton(dataSourceConfig));
         return result;
     }

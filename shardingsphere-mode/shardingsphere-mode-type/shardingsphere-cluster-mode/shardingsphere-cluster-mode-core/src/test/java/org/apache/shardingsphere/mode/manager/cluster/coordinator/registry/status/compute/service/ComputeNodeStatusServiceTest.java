@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -47,7 +46,7 @@ public final class ComputeNodeStatusServiceTest {
     
     @Test
     public void assertRegisterOnline() {
-        InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.PROXY, 3307, "foo_instance_id");
+        InstanceDefinition instanceDefinition = new InstanceDefinition(3307, "foo_instance_id");
         new ComputeNodeStatusService(repository).registerOnline(instanceDefinition);
         verify(repository).persistEphemeral(eq("/nodes/compute_nodes/online/proxy/" + instanceDefinition.getInstanceId()), anyString());
     }
@@ -55,7 +54,7 @@ public final class ComputeNodeStatusServiceTest {
     @Test
     public void assertPersistInstanceLabels() {
         ComputeNodeStatusService computeNodeStatusService = new ComputeNodeStatusService(repository);
-        InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.PROXY, 3307, "foo_instance_id");
+        InstanceDefinition instanceDefinition = new InstanceDefinition(3307, "foo_instance_id");
         final String instanceId = instanceDefinition.getInstanceId();
         computeNodeStatusService.persistInstanceLabels(instanceId, Collections.singletonList("test"));
         verify(repository, times(1)).persistEphemeral(ComputeNode.getInstanceLabelsNodePath(instanceId), YamlEngine.marshal(Collections.singletonList("test")));
@@ -65,7 +64,7 @@ public final class ComputeNodeStatusServiceTest {
     
     @Test
     public void assertPersistInstanceWorkerId() {
-        InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.PROXY, 3307, "foo_instance_id");
+        InstanceDefinition instanceDefinition = new InstanceDefinition(3307, "foo_instance_id");
         final String instanceId = instanceDefinition.getInstanceId();
         new ComputeNodeStatusService(repository).persistInstanceWorkerId(instanceId, 100L);
         verify(repository).persistEphemeral(ComputeNode.getInstanceWorkerIdNodePath(instanceId), String.valueOf(100L));
@@ -73,7 +72,7 @@ public final class ComputeNodeStatusServiceTest {
     
     @Test
     public void assertLoadInstanceLabels() {
-        InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.PROXY, 3307, "foo_instance_id");
+        InstanceDefinition instanceDefinition = new InstanceDefinition(3307, "foo_instance_id");
         final String instanceId = instanceDefinition.getInstanceId();
         new ComputeNodeStatusService(repository).loadInstanceLabels(instanceId);
         verify(repository).get(ComputeNode.getInstanceLabelsNodePath(instanceId));
@@ -81,7 +80,7 @@ public final class ComputeNodeStatusServiceTest {
     
     @Test
     public void assertLoadInstanceStatus() {
-        InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.PROXY, 3307, "foo_instance_id");
+        InstanceDefinition instanceDefinition = new InstanceDefinition(3307, "foo_instance_id");
         final String instanceId = instanceDefinition.getInstanceId();
         new ComputeNodeStatusService(repository).loadInstanceStatus(instanceId);
         verify(repository).get(ComputeNode.getInstanceStatusNodePath(instanceId));
@@ -89,7 +88,7 @@ public final class ComputeNodeStatusServiceTest {
     
     @Test
     public void assertLoadInstanceWorkerId() {
-        InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.PROXY, 3307, "foo_instance_id");
+        InstanceDefinition instanceDefinition = new InstanceDefinition(3307, "foo_instance_id");
         final String instanceId = instanceDefinition.getInstanceId();
         new ComputeNodeStatusService(repository).loadInstanceWorkerId(instanceId);
         verify(repository).get(ComputeNode.getInstanceWorkerIdNodePath(instanceId));
@@ -107,7 +106,7 @@ public final class ComputeNodeStatusServiceTest {
     
     @Test
     public void assertLoadComputeNodeInstance() {
-        InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceType.PROXY, 3307, "foo_instance_id");
+        InstanceDefinition instanceDefinition = new InstanceDefinition(3307, "foo_instance_id");
         ComputeNodeInstance actual = new ComputeNodeStatusService(repository).loadComputeNodeInstance(instanceDefinition);
         assertThat(actual.getInstanceDefinition(), is(instanceDefinition));
     }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.integration.data.pipeline.factory;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.DockerDatabaseContainer;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.DatabaseContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.MySQLContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.OpenGaussContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.PostgreSQLContainer;
@@ -38,7 +38,7 @@ public final class DatabaseContainerFactory {
      * @param dockerImageName database ver
      * @return created instance
      */
-    public static DockerDatabaseContainer newInstance(final DatabaseType databaseType, final String dockerImageName) {
+    public static DatabaseContainer newInstance(final DatabaseType databaseType, final String dockerImageName) {
         switch (databaseType.getType()) {
             case "MySQL":
                 return new MySQLContainer(dockerImageName);

@@ -107,16 +107,16 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     readwrite_ds_0:
-      type: Static
-      props:
-        write-data-source-name: write_ds_0
-        read-data-source-names: read_ds_0
+      staticStrategy:
+        writeDataSourceName: write_ds_0
+        readDataSourceNames:
+          - read_ds_0
       loadBalancerName: random
     readwrite_ds_1:
-      type: Static
-      props:
-        write-data-source-name: write_ds_1
-        read-data-source-names: read_ds_1
+      staticStrategy:
+        writeDataSourceName: write_ds_1
+        readDataSourceNames:
+          - read_ds_1
       loadBalancerName: roundRobin
   loadBalancers:
     random:

@@ -36,7 +36,7 @@ public final class DropTableStatementHandlerTest {
     
     @Test
     public void assertContainsIfExistsForPostgreSQL() {
-        assertTrue(DropTableStatementHandler.ifExists(new PostgreSQLDropTableStatement(true)));
+        assertTrue(DropTableStatementHandler.ifExists(new PostgreSQLDropTableStatement(true, false)));
     }
     
     @Test
@@ -56,7 +56,7 @@ public final class DropTableStatementHandlerTest {
     
     @Test
     public void assertNotContainsIfExistsForPostgreSQL() {
-        assertFalse(DropTableStatementHandler.ifExists(new PostgreSQLDropTableStatement(false)));
+        assertFalse(DropTableStatementHandler.ifExists(new PostgreSQLDropTableStatement(false, false)));
     }
     
     @Test

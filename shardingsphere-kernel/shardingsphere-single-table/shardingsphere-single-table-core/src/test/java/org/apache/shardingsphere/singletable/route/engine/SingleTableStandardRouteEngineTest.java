@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.singletable.route.engine;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedTable;
@@ -41,7 +40,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -56,8 +54,7 @@ public final class SingleTableStandardRouteEngineTest {
     @Test
     public void assertRouteInSameDataSource() throws SQLException {
         SingleTableStandardRouteEngine engine = new SingleTableStandardRouteEngine(mockQualifiedTables(), null);
-        SingleTableRule singleTableRule = new SingleTableRule(
-                new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList());
         singleTableRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(mockDataNode("ds_0", "t_order")));
         singleTableRule.getSingleTableDataNodes().put("t_order_item", Collections.singletonList(mockDataNode("ds_0", "t_order_item")));
         RouteContext routeContext = new RouteContext();
@@ -89,8 +86,7 @@ public final class SingleTableStandardRouteEngineTest {
     @Test
     public void assertRouteInDifferentDataSource() throws SQLException {
         SingleTableStandardRouteEngine engine = new SingleTableStandardRouteEngine(mockQualifiedTables(), null);
-        SingleTableRule singleTableRule = new SingleTableRule(
-                new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList());
         singleTableRule.getSingleTableDataNodes().put("t_order", Collections.singletonList(mockDataNode("ds_0", "t_order")));
         singleTableRule.getSingleTableDataNodes().put("t_order_item", Collections.singletonList(mockDataNode("ds_1", "t_order_item")));
         RouteContext routeContext = new RouteContext();
@@ -113,8 +109,7 @@ public final class SingleTableStandardRouteEngineTest {
     @Test
     public void assertRouteWithoutSingleTableRule() throws SQLException {
         SingleTableStandardRouteEngine engine = new SingleTableStandardRouteEngine(mockQualifiedTables(), new MySQLCreateTableStatement(false));
-        SingleTableRule singleTableRule = new SingleTableRule(
-                new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         engine.route(routeContext, singleTableRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());
@@ -129,8 +124,7 @@ public final class SingleTableStandardRouteEngineTest {
     @Test
     public void assertRouteWithDefaultSingleTableRule() throws SQLException {
         SingleTableStandardRouteEngine engine = new SingleTableStandardRouteEngine(mockQualifiedTables(), new MySQLCreateTableStatement(false));
-        SingleTableRule singleTableRule = new SingleTableRule(
-                new SingleTableRuleConfiguration("ds_0"), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList(), new ConfigurationProperties(new Properties()));
+        SingleTableRule singleTableRule = new SingleTableRule(new SingleTableRuleConfiguration("ds_0"), DefaultDatabase.LOGIC_NAME, createDataSourceMap(), Collections.emptyList());
         RouteContext routeContext = new RouteContext();
         engine.route(routeContext, singleTableRule);
         List<RouteUnit> routeUnits = new ArrayList<>(routeContext.getRouteUnits());

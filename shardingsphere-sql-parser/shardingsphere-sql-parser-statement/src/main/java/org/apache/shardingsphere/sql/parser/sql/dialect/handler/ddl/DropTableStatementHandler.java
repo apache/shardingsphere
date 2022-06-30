@@ -57,4 +57,20 @@ public final class DropTableStatementHandler implements SQLStatementHandler {
         }
         return false;
     }
+    
+    /**
+     * Judge whether contains cascade.
+     *
+     * @param dropTableStatement drop table statement
+     * @return contains cascade or not
+     */
+    public static boolean containsCascade(final DropTableStatement dropTableStatement) {
+        if (dropTableStatement instanceof PostgreSQLStatement) {
+            return ((PostgreSQLDropTableStatement) dropTableStatement).isContainsCascade();
+        }
+        if (dropTableStatement instanceof OpenGaussStatement) {
+            return ((OpenGaussDropTableStatement) dropTableStatement).isContainsCascade();
+        }
+        return false;
+    }
 }

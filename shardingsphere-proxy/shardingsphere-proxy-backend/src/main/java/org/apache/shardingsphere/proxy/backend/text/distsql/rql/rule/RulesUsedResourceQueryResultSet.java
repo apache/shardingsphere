@@ -100,11 +100,13 @@ public final class RulesUsedResourceQueryResultSet implements DistSQLResultSet {
         Collection<Collection<Object>> result = new LinkedList<>();
         ReadwriteSplittingRuleConfiguration config = (ReadwriteSplittingRuleConfiguration) rule.get().getConfiguration();
         for (ReadwriteSplittingDataSourceRuleConfiguration each : config.getDataSources()) {
-            if (each.getWriteDataSourceName().isPresent() && each.getWriteDataSourceName().get().equalsIgnoreCase(resourceName)) {
-                result.add(buildRow(READWRITE_SPLITTING, each.getName()));
-            }
-            if (each.getReadDataSourceNames().isPresent() && Arrays.asList(each.getReadDataSourceNames().get().split(",")).contains(resourceName)) {
-                result.add(buildRow(READWRITE_SPLITTING, each.getName()));
+            if (null != each.getStaticStrategy()) {
+                if (each.getStaticStrategy().getWriteDataSourceName().equalsIgnoreCase(resourceName)) {
+                    result.add(buildRow(READWRITE_SPLITTING, each.getName()));
+                }
+                if (each.getStaticStrategy().getReadDataSourceNames().contains(resourceName)) {
+                    result.add(buildRow(READWRITE_SPLITTING, each.getName()));
+                }
             }
         }
         return result;

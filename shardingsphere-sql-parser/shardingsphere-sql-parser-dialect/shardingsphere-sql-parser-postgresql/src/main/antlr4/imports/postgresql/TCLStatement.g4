@@ -87,4 +87,3 @@ constraintsSetMode
 constraintsSetList
     : ALL | qualifiedNameList
     ;
-
