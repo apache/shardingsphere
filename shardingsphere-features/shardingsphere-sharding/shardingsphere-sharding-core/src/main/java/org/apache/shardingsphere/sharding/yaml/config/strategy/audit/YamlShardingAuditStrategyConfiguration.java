@@ -21,6 +21,8 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 
+import java.util.Collection;
+
 /**
  * Sharing audit strategy configuration for YAML.
  */
@@ -28,7 +30,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 @Setter
 public final class YamlShardingAuditStrategyConfiguration implements YamlConfiguration {
     
-    private String auditAlgorithmName;
+    private Collection<String> auditAlgorithmNames;
     
-    private boolean allowHintDisable;
+    private boolean allowHintDisable = true;
 }

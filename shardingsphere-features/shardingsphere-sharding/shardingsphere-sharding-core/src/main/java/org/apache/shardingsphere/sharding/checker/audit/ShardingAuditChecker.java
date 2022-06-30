@@ -21,14 +21,12 @@ import org.apache.shardingsphere.infra.check.SQLCheckResult;
 import org.apache.shardingsphere.infra.executor.check.SQLChecker;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.function.BiPredicate;
 
 /**
@@ -44,8 +42,8 @@ public final class ShardingAuditChecker implements SQLChecker<ShardingRule> {
     @Override
     public SQLCheckResult check(final SQLStatement sqlStatement, final List<Object> parameters, final Grantee grantee,
                                 final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final ShardingRule rule) {
-        for (Entry<String, ShardingAuditStrategyConfiguration> entry : rule.getAuditStrategies().entrySet()) {
-            SQLCheckResult result = rule.getAuditAlgorithms().get(entry.getValue().getAuditAlgorithmName()).check(sqlStatement, parameters, grantee, databases.get(currentDatabase));
+        for (String each : rule.getAuditStrategyConfig().getAuditAlgorithmNames()) {
+            SQLCheckResult result = rule.getAuditAlgorithms().get(each).check(sqlStatement, parameters, grantee, databases.get(currentDatabase));
             if (!result.isPassed()) {
                 return result;
             }
