@@ -15,8 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.instance.definition;
+package org.apache.shardingsphere.proxy.instance;
 
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBuilderFactory;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.endsWith;
@@ -28,7 +30,7 @@ public final class ProxyInstanceDefinitionTest {
     
     @Test
     public void assertNew() {
-        InstanceDefinition actual = new ProxyInstanceDefinition("foo_id", 3307);
+        InstanceDefinition actual = InstanceDefinitionBuilderFactory.newInstance("Proxy", "foo_id", 3307);
         assertThat(actual.getInstanceId(), is("foo_id"));
         assertNotNull(actual.getIp());
         assertThat(actual.getPort(), is(3307));
@@ -38,7 +40,7 @@ public final class ProxyInstanceDefinitionTest {
     
     @Test
     public void assertNewWithAttributes() {
-        InstanceDefinition actual = new ProxyInstanceDefinition("foo_id", "127.0.0.1@3307");
+        InstanceDefinition actual = InstanceDefinitionBuilderFactory.newInstance("Proxy", "foo_id", "127.0.0.1@3307");
         assertThat(actual.getInstanceId(), is("foo_id"));
         assertThat(actual.getIp(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(3307));
