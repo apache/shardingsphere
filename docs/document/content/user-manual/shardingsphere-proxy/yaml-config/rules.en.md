@@ -13,6 +13,6 @@ Rules configuration of ShardingSphere-Proxy is the same as that of ShardingSpher
 
 ## Notice
 
-Unlike ShardingSphere-JDBC，the following rules need to be configured in `server.yaml` of ShardingSphere-Proxy：
+Unlike ShardingSphere-JDBC, the following rules need to be configured in `server.yaml` of ShardingSphere-Proxy：
 * [SQL Parsing](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/sql-parser/)
 * [Distributed Operations](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/transaction/)
