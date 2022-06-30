@@ -20,7 +20,6 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.container.
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
-import org.testcontainers.containers.BindMode;
 
 /**
  * Docker storage container.
@@ -35,11 +34,6 @@ public abstract class DatabaseContainer extends DockerITContainer {
         this.databaseType = databaseType;
     }
     
-    @Override
-    protected void configure() {
-        withClasspathResourceMapping(String.format("/env/%s/initdb.sql", databaseType.getType().toLowerCase()), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
-    }
-    
     /**
      * Get jdbc url.
      *
@@ -47,6 +41,20 @@ public abstract class DatabaseContainer extends DockerITContainer {
      * @return jdbc url
      */
     public abstract String getJdbcUrl(String databaseName);
+    
+    /**
+     * Get database username.
+     *
+     * @return database username
+     */
+    public abstract String getUsername();
+    
+    /**
+     * Get database password.
+     *
+     * @return database username
+     */
+    public abstract String getPassword();
     
     /**
      * Get database port.

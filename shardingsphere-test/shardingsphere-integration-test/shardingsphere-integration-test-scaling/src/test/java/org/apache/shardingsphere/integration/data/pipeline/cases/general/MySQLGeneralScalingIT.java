@@ -23,7 +23,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseExtraSQLITCase;
 import org.apache.shardingsphere.integration.data.pipeline.cases.task.MySQLIncrementTask;
-import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITTypeEnum;
+import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
@@ -57,15 +57,15 @@ public final class MySQLGeneralScalingIT extends BaseExtraSQLITCase {
     @Parameters(name = "{0}")
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
-        if (ENV.getItType() == ScalingITTypeEnum.NONE) {
+        if (ENV.getItType() == ScalingITEnvTypeEnum.NONE) {
             return result;
         }
-        if (ENV.getItType() == ScalingITTypeEnum.DOCKER) {
+        if (ENV.getItType() == ScalingITEnvTypeEnum.DOCKER) {
             for (String version : ENV.getMysqlVersions()) {
                 result.add(new ScalingParameterized(new MySQLDatabaseType(), version, "env/scenario/general/mysql.xml"));
             }
         }
-        if (ENV.getItType() == ScalingITTypeEnum.NATIVE && StringUtils.equalsIgnoreCase(ENV.getNativeDatabaseType(), "MySQL")) {
+        if (ENV.getItType() == ScalingITEnvTypeEnum.NATIVE && StringUtils.equalsIgnoreCase(ENV.getNativeDatabaseType(), "MySQL")) {
             result.add(new ScalingParameterized(new MySQLDatabaseType(), "", "env/scenario/general/mysql.xml"));
         }
         return result;
@@ -98,6 +98,5 @@ public final class MySQLGeneralScalingIT extends BaseExtraSQLITCase {
         assertPreviewTableSuccess("t_order_item", Arrays.asList("ds_2", "ds_3", "ds_4"));
         restoreScalingSourceWriting(jobId);
         assertRestoreScalingSourceWriting();
-        getJdbcTemplate().execute(String.format("DROP SCALING %s", jobId));
     }
 }

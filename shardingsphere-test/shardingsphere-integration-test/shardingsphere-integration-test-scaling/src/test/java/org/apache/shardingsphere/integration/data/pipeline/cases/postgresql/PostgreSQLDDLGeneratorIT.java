@@ -26,7 +26,7 @@ import org.apache.shardingsphere.integration.data.pipeline.cases.entity.DDLGener
 import org.apache.shardingsphere.integration.data.pipeline.cases.entity.DDLGeneratorAssertionsRootEntity;
 import org.apache.shardingsphere.integration.data.pipeline.cases.entity.DDLGeneratorOutputEntity;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITTypeEnum;
+import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.factory.DatabaseContainerFactory;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.DatabaseContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
@@ -80,7 +80,7 @@ public final class PostgreSQLDDLGeneratorIT {
     @Parameters(name = "{0}")
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
-        if (ENV.getItType() == ScalingITTypeEnum.NONE) {
+        if (ENV.getItType() == ScalingITEnvTypeEnum.NONE) {
             return result;
         }
         for (String each : ENV.getPostgresVersions()) {

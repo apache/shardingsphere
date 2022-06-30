@@ -20,7 +20,7 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.container.
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITTypeEnum;
+import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.framework.container.wait.JDBCConnectionWaitStrategy;
 import org.testcontainers.containers.BindMode;
@@ -38,20 +38,21 @@ public final class OpenGaussContainer extends DatabaseContainer {
     
     private final String password = "Root@123";
     
+    private final int port = 5432;
+    
     public OpenGaussContainer(final String dockerImageName) {
         super(DATABASE_TYPE, dockerImageName);
     }
     
     @Override
     protected void configure() {
-        super.configure();
         withCommand("--max_connections=600");
         addEnv("GS_PASSWORD", password);
         withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/usr/local/opengauss/share/postgresql/postgresql.conf.sample", BindMode.READ_ONLY);
         withPrivilegedMode(true);
-        withExposedPorts(5432);
-        if (ScalingITTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItType()) {
-            addFixedExposedPort(5432, 5432);
+        withExposedPorts(port);
+        if (ScalingITEnvTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItType()) {
+            addFixedExposedPort(port, port);
         }
         setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(DATABASE_TYPE, "localhost", getFirstMappedPort(), "postgres"),
                 username, password)));
@@ -63,7 +64,17 @@ public final class OpenGaussContainer extends DatabaseContainer {
     }
     
     @Override
+    public String getUsername() {
+        return username;
+    }
+    
+    @Override
+    public String getPassword() {
+        return password;
+    }
+    
+    @Override
     public int getPort() {
-        return 5432;
+        return port;
     }
 }

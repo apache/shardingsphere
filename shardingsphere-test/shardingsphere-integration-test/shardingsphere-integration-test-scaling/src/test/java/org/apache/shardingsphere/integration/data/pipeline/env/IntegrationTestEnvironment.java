@@ -18,19 +18,15 @@
 package org.apache.shardingsphere.integration.data.pipeline.env;
 
 import lombok.Getter;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITTypeEnum;
-import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
+import org.apache.shardingsphere.integration.data.pipeline.cases.entity.JdbcInfoEntity;
+import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
@@ -44,7 +40,7 @@ public final class IntegrationTestEnvironment {
     
     private final Properties props;
     
-    private final ScalingITTypeEnum itType;
+    private final ScalingITEnvTypeEnum itType;
     
     private final List<String> mysqlVersions;
     
@@ -54,7 +50,7 @@ public final class IntegrationTestEnvironment {
     
     private IntegrationTestEnvironment() {
         props = loadProperties();
-        itType = ScalingITTypeEnum.valueOf(StringUtils.defaultIfBlank(props.getProperty("scaling.it.type").toUpperCase(), ScalingITTypeEnum.NONE.name()));
+        itType = ScalingITEnvTypeEnum.valueOf(StringUtils.defaultIfBlank(props.getProperty("scaling.it.env.type").toUpperCase(), ScalingITEnvTypeEnum.NONE.name()));
         mysqlVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.mysql.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         postgresVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.postgresql.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         openGaussVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.opengauss.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
@@ -79,8 +75,7 @@ public final class IntegrationTestEnvironment {
      * @param databaseType database type.
      * @return jdbc connection
      */
-    @SneakyThrows(SQLException.class)
-    public Connection getActualDataSourceConnection(final DatabaseType databaseType) {
+    public JdbcInfoEntity getActualDatabaseJdbcInfo(final DatabaseType databaseType) {
         String username;
         String password;
         int port;
@@ -103,8 +98,7 @@ public final class IntegrationTestEnvironment {
             default:
                 throw new UnsupportedOperationException("Unsupported database type: " + databaseType.getType());
         }
-        String jdbcUrl = DataSourceEnvironment.getURL(databaseType, "localhost", port);
-        return DriverManager.getConnection(jdbcUrl, username, password);
+        return new JdbcInfoEntity(username, password, port);
     }
     
     /**
@@ -118,9 +112,9 @@ public final class IntegrationTestEnvironment {
             case "MySQL":
                 return Integer.parseInt(props.getOrDefault("scaling.it.native.mysql.port", 3306).toString());
             case "PostgreSQL":
-                return Integer.parseInt(props.getOrDefault("scaling.it.native.postgresql.port", 3306).toString());
+                return Integer.parseInt(props.getOrDefault("scaling.it.native.postgresql.port", 5432).toString());
             case "openGauss":
-                return Integer.parseInt(props.getOrDefault("scaling.it.native.opengauss.port", 3306).toString());
+                return Integer.parseInt(props.getOrDefault("scaling.it.native.opengauss.port", 5432).toString());
             default:
                 throw new IllegalArgumentException("Unsupported database type: " + databaseType.getType());
         }
@@ -148,7 +142,7 @@ public final class IntegrationTestEnvironment {
         } else {
             username = "root";
         }
-        if (itType == ScalingITTypeEnum.NATIVE) {
+        if (itType == ScalingITEnvTypeEnum.NATIVE) {
             return String.valueOf(props.getOrDefault(String.format("it.native.%s.username", databaseType.getType().toLowerCase()), username));
         }
         return username;
@@ -167,7 +161,7 @@ public final class IntegrationTestEnvironment {
         } else {
             password = "root";
         }
-        if (itType == ScalingITTypeEnum.NATIVE) {
+        if (itType == ScalingITEnvTypeEnum.NATIVE) {
             return props.getOrDefault(String.format("it.native.%s.password", databaseType.getType().toLowerCase()), password).toString();
         }
         return password;

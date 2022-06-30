@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseTy
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseExtraSQLITCase;
 import org.apache.shardingsphere.integration.data.pipeline.cases.task.PostgreSQLIncrementTask;
-import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITTypeEnum;
+import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
@@ -58,10 +58,10 @@ public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
     @Parameters(name = "{0}")
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
-        if (ENV.getItType() == ScalingITTypeEnum.NONE) {
+        if (ENV.getItType() == ScalingITEnvTypeEnum.NONE) {
             return result;
         }
-        if (ENV.getItType() == ScalingITTypeEnum.DOCKER) {
+        if (ENV.getItType() == ScalingITEnvTypeEnum.DOCKER) {
             for (String dockerImageName : ENV.getPostgresVersions()) {
                 result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), dockerImageName, "env/scenario/general/postgresql.xml"));
             }
@@ -69,7 +69,7 @@ public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
                 result.add(new ScalingParameterized(new OpenGaussDatabaseType(), dockerImageName, "env/scenario/general/postgresql.xml"));
             }
         }
-        if (ENV.getItType() == ScalingITTypeEnum.NATIVE) {
+        if (ENV.getItType() == ScalingITEnvTypeEnum.NATIVE) {
             if (StringUtils.equalsIgnoreCase(ENV.getNativeDatabaseType(), "PostgreSQL")) {
                 result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), "", "env/scenario/general/postgresql.xml"));
             }
@@ -106,6 +106,5 @@ public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
         assertPreviewTableSuccess("t_order_item", Arrays.asList("ds_2", "ds_3", "ds_4"));
         restoreScalingSourceWriting(jobId);
         assertRestoreScalingSourceWriting();
-        getJdbcTemplate().execute(String.format("DROP SCALING %s", jobId));
     }
 }

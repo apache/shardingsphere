@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseExtraSQLITCase;
-import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITTypeEnum;
+import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm;
 import org.junit.Test;
@@ -52,10 +52,10 @@ public class TextPrimaryKeyScalingIT extends BaseExtraSQLITCase {
     @Parameters(name = "{0}")
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
-        if (ENV.getItType() == ScalingITTypeEnum.NONE) {
+        if (ENV.getItType() == ScalingITEnvTypeEnum.NONE) {
             return result;
         }
-        if (ENV.getItType() == ScalingITTypeEnum.DOCKER) {
+        if (ENV.getItType() == ScalingITEnvTypeEnum.DOCKER) {
             for (String version : ENV.getMysqlVersions()) {
                 result.add(new ScalingParameterized(new MySQLDatabaseType(), version, "env/scenario/primarykey/text_primary_key/mysql.xml"));
             }
@@ -66,7 +66,7 @@ public class TextPrimaryKeyScalingIT extends BaseExtraSQLITCase {
                 result.add(new ScalingParameterized(new OpenGaussDatabaseType(), version, "env/scenario/primarykey/text_primary_key/postgresql.xml"));
             }
         }
-        if (ENV.getItType() == ScalingITTypeEnum.NATIVE) {
+        if (ENV.getItType() == ScalingITEnvTypeEnum.NATIVE) {
             if (StringUtils.equalsIgnoreCase(ENV.getNativeDatabaseType(), "MySQL")) {
                 result.add(new ScalingParameterized(new MySQLDatabaseType(), "", "env/scenario/primarykey/text_primary_key/mysql.xml"));
             }
@@ -96,7 +96,6 @@ public class TextPrimaryKeyScalingIT extends BaseExtraSQLITCase {
         assertCheckScalingSuccess(jobId);
         applyScaling(jobId);
         assertPreviewTableSuccess("t_order", Arrays.asList("ds_2", "ds_3", "ds_4"));
-        getJdbcTemplate().execute(String.format("DROP SCALING %s", jobId));
     }
     
     private void batchInsertOrder() {

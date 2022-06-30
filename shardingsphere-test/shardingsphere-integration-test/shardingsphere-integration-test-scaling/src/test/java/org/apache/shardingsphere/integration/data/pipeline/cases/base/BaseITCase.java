@@ -30,8 +30,9 @@ import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.CommonSQLCommand;
+import org.apache.shardingsphere.integration.data.pipeline.cases.entity.JdbcInfoEntity;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITTypeEnum;
+import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.BaseComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.DockerComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.NativeComposedContainer;
@@ -101,26 +102,58 @@ public abstract class BaseITCase {
     
     public BaseITCase(final ScalingParameterized parameterized) {
         databaseType = parameterized.getDatabaseType();
-        if (ENV.getItType() == ScalingITTypeEnum.DOCKER) {
+        if (ENV.getItType() == ScalingITEnvTypeEnum.DOCKER) {
             composedContainer = new DockerComposedContainer(parameterized.getDatabaseType(), parameterized.getDockerImageName());
         } else {
             composedContainer = new NativeComposedContainer(parameterized.getDatabaseType());
         }
         composedContainer.start();
-        commonSQLCommand = JAXB.unmarshal(BaseITCase.class.getClassLoader().getResource("env/common/command.xml"), CommonSQLCommand.class);
+        initActualDataSources();
+        commonSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseITCase.class.getClassLoader().getResource("env/common/command.xml")), CommonSQLCommand.class);
         createProxyDatabase(parameterized.getDatabaseType());
         scalingWatcher = new ScalingWatcher(composedContainer, jdbcTemplate);
     }
     
+    @SneakyThrows(SQLException.class)
+    private void initActualDataSources() {
+        String jdbcUrl;
+        JdbcInfoEntity jdbcInfo;
+        if (ENV.getItType() == ScalingITEnvTypeEnum.DOCKER) {
+            DockerComposedContainer dockerComposedContainer = (DockerComposedContainer) composedContainer;
+            DatabaseContainer databaseContainer = dockerComposedContainer.getDatabaseContainer();
+            jdbcUrl = databaseContainer.getJdbcUrl("");
+            jdbcInfo = new JdbcInfoEntity(databaseContainer.getUsername(), databaseContainer.getPassword(), databaseContainer.getPort());
+        } else {
+            jdbcInfo = ENV.getActualDatabaseJdbcInfo(getDatabaseType());
+            jdbcUrl = DataSourceEnvironment.getURL(databaseType, "localhost", jdbcInfo.getPort());
+            try (Connection connection = DriverManager.getConnection(jdbcUrl, jdbcInfo.getUsername(), jdbcInfo.getPassword())) {
+                for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {
+                    try {
+                        connection.createStatement().execute(String.format("DROP DATABASE %s", each));
+                    } catch (final SQLException ex) {
+                        log.error("Error occurred when drop database. error msg={}", ex.getMessage());
+                    }
+                }
+            }
+        }
+        try (Connection connection = DriverManager.getConnection(jdbcUrl, jdbcInfo.getUsername(), jdbcInfo.getPassword())) {
+            for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {
+                try {
+                    connection.createStatement().execute(String.format("CREATE DATABASE %s", each));
+                } catch (final SQLException ex) {
+                    log.error("Error occurred when create database. error msg={}", ex.getMessage());
+                }
+            }
+        }
+    }
+    
     protected void createProxyDatabase(final DatabaseType databaseType) {
-        JdbcUrlAppender jdbcUrlAppender = new JdbcUrlAppender();
-        Properties queryProps = ScalingCaseHelper.getQueryPropertiesByDatabaseType(databaseType);
         String defaultDatabaseName = "";
         if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
             defaultDatabaseName = "postgres";
         }
-        try (Connection connection = DriverManager.getConnection(jdbcUrlAppender.appendQueryProperties(composedContainer.getProxyJdbcUrl(defaultDatabaseName), queryProps), "root", "root")) {
-            if (ENV.getItType() == ScalingITTypeEnum.NATIVE) {
+        try (Connection connection = DriverManager.getConnection(composedContainer.getProxyJdbcUrl(defaultDatabaseName), "root", "root")) {
+            if (ENV.getItType() == ScalingITEnvTypeEnum.NATIVE) {
                 try {
                     executeWithLog(connection, "DROP DATABASE sharding_db");
                 } catch (final SQLException ex) {
@@ -134,7 +167,7 @@ public abstract class BaseITCase {
         jdbcTemplate = new JdbcTemplate(getProxyDataSource("sharding_db"));
     }
     
-    private DataSource getProxyDataSource(final String databaseName) {
+    protected DataSource getProxyDataSource(final String databaseName) {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(getDatabaseType()));
         result.setJdbcUrl(composedContainer.getProxyJdbcUrl(databaseName));
@@ -162,14 +195,14 @@ public abstract class BaseITCase {
     
     @SneakyThrows
     protected void addSourceResource() {
-        Properties queryProps = ScalingCaseHelper.getQueryPropertiesByDatabaseType(databaseType);
         // TODO if mysql can append database firstly, they can be combined
         if (databaseType instanceof MySQLDatabaseType) {
-            try (Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl(""), queryProps), "root", "root")) {
+            try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl(""), "root", "root")) {
                 connection.createStatement().execute("USE sharding_db");
                 addSourceResource0(connection);
             }
         } else {
+            Properties queryProps = ScalingCaseHelper.getPostgreSQLQueryProperties();
             try (Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl("sharding_db"), queryProps), "root", "root")) {
                 addSourceResource0(connection);
             }
@@ -200,15 +233,12 @@ public abstract class BaseITCase {
     }
     
     private String getActualJdbcUrlTemplate(final String databaseName) {
-        Properties queryProps = ScalingCaseHelper.getQueryPropertiesByDatabaseType(databaseType);
-        String result;
-        if (ENV.getItType() == ScalingITTypeEnum.DOCKER) {
+        if (ENV.getItType() == ScalingITEnvTypeEnum.DOCKER) {
             final DatabaseContainer databaseContainer = ((DockerComposedContainer) composedContainer).getDatabaseContainer();
-            result = String.format("jdbc:%s://%s:%s/%s", getDatabaseType().getType().toLowerCase(), "db.host", databaseContainer.getPort(), databaseName);
+            return DataSourceEnvironment.getURL(getDatabaseType(), "db.host", databaseContainer.getPort(), databaseName);
         } else {
-            return String.format("jdbc:%s://%s:%s/%s", getDatabaseType().getType().toLowerCase(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), databaseName);
+            return DataSourceEnvironment.getURL(getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), databaseName);
         }
-        return JDBC_URL_APPENDER.appendQueryProperties(result, queryProps);
     }
     
     protected void initShardingAlgorithm() {
@@ -231,6 +261,17 @@ public abstract class BaseITCase {
     }
     
     protected void createScalingRule() {
+        if (ENV.getItType() == ScalingITEnvTypeEnum.NATIVE) {
+            try {
+                List<Map<String, Object>> scalingList = jdbcTemplate.queryForList("SHOW SCALING LIST");
+                for (Map<String, Object> each : scalingList) {
+                    String id = each.get("id").toString();
+                    jdbcTemplate.execute(String.format("DROP SCALING %s", id));
+                }
+            } catch (final DataAccessException ex) {
+                log.error("Failed to show scaling list. {}", ex.getMessage());
+            }
+        }
         executeWithLog("CREATE SHARDING SCALING RULE scaling_manual (INPUT(SHARDING_SIZE=1000), DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH)))");
     }
     
