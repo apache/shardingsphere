@@ -31,7 +31,7 @@ public interface InstanceDefinitionBuilder extends TypedSPI {
      * @param port port
      * @return built instance definition
      */
-    InstanceDefinition build(final String instanceId, final int port);
+    InstanceDefinition build(String instanceId, int port);
     
     /**
      * Build instance definition.
@@ -40,5 +40,5 @@ public interface InstanceDefinitionBuilder extends TypedSPI {
      * @param attributes attributes
      * @return built instance definition
      */
-    InstanceDefinition build(final String instanceId, final String attributes);
+    InstanceDefinition build(String instanceId, String attributes);
 }
