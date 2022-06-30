@@ -61,6 +61,9 @@ public interface ShardingStrategy extends Comparable {
             return -1;
         }
         ShardingStrategy otherShardingStrategy = (ShardingStrategy) other;
+        if (this.getShardingColumns().isEmpty() || otherShardingStrategy.getShardingColumns().isEmpty()) {
+            return -1;
+        }
         if (!new ArrayList(this.getShardingColumns()).equals(new ArrayList(otherShardingStrategy.getShardingColumns()))) {
             return -1;
         }
