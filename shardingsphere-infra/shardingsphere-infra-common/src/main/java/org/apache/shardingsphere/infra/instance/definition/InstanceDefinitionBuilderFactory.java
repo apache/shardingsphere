@@ -61,9 +61,9 @@ public final class InstanceDefinitionBuilderFactory {
     }
     
     /**
-     * Get all types.
+     * Get all builder types.
      * 
-     * @return all types
+     * @return got all builder types
      */
     public static Collection<String> getAllTypes() {
         return ShardingSphereServiceLoader.getServiceInstances(InstanceDefinitionBuilder.class).stream().map(TypedSPI::getType).collect(Collectors.toList());
