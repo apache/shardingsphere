@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.node;
 
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -47,8 +45,8 @@ public final class ComputeNode {
      * @param instanceType instance type
      * @return path of online compute node
      */
-    public static String getOnlineNodePath(final InstanceType instanceType) {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ONLINE_NODE, instanceType.name().toLowerCase());
+    public static String getOnlineNodePath(final String instanceType) {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ONLINE_NODE, instanceType.toLowerCase());
     }
     
     /**
@@ -58,8 +56,8 @@ public final class ComputeNode {
      * @param instanceType instance type
      * @return path of online compute node instance
      */
-    public static String getOnlineInstanceNodePath(final String instanceId, final InstanceType instanceType) {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ONLINE_NODE, instanceType.name().toLowerCase(), instanceId);
+    public static String getOnlineInstanceNodePath(final String instanceId, final String instanceType) {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, ONLINE_NODE, instanceType.toLowerCase(), instanceId);
     }
     
     /**

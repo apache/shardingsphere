@@ -33,7 +33,7 @@ public final class ProxyInstanceDefinitionTest {
         assertNotNull(actual.getIp());
         assertThat(actual.getPort(), is(3307));
         assertThat(actual.getAttributes(), endsWith("@3307"));
-        assertThat(actual.getInstanceType(), is(InstanceType.PROXY));
+        assertThat(actual.getInstanceType(), is("PROXY"));
     }
     
     @Test
@@ -43,6 +43,6 @@ public final class ProxyInstanceDefinitionTest {
         assertThat(actual.getIp(), is("127.0.0.1"));
         assertThat(actual.getPort(), is(3307));
         assertThat(actual.getAttributes(), is("127.0.0.1@3307"));
-        assertThat(actual.getInstanceType(), is(InstanceType.PROXY));
+        assertThat(actual.getInstanceType(), is("PROXY"));
     }
 }

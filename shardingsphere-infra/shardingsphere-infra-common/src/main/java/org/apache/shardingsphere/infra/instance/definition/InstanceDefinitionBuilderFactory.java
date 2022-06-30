@@ -20,7 +20,11 @@ package org.apache.shardingsphere.infra.instance.definition;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 /**
  * Instance definition builder factory.
@@ -40,8 +44,8 @@ public final class InstanceDefinitionBuilderFactory {
      * @param port port 
      * @return created instance of instance definition
      */
-    public static InstanceDefinition newInstance(final InstanceType type, final String instanceId, final int port) {
-        return TypedSPIRegistry.getRegisteredService(InstanceDefinitionBuilder.class, type.name()).build(instanceId, port);
+    public static InstanceDefinition newInstance(final String type, final String instanceId, final int port) {
+        return TypedSPIRegistry.getRegisteredService(InstanceDefinitionBuilder.class, type).build(instanceId, port);
     }
     
     /**
@@ -52,7 +56,16 @@ public final class InstanceDefinitionBuilderFactory {
      * @param attributes attributes 
      * @return created instance of instance definition
      */
-    public static InstanceDefinition newInstance(final InstanceType type, final String instanceId, final String attributes) {
-        return TypedSPIRegistry.getRegisteredService(InstanceDefinitionBuilder.class, type.name()).build(instanceId, attributes);
+    public static InstanceDefinition newInstance(final String type, final String instanceId, final String attributes) {
+        return TypedSPIRegistry.getRegisteredService(InstanceDefinitionBuilder.class, type).build(instanceId, attributes);
+    }
+    
+    /**
+     * Get all types.
+     * 
+     * @return all types
+     */
+    public static Collection<String> getAllTypes() {
+        return ShardingSphereServiceLoader.getServiceInstances(InstanceDefinitionBuilder.class).stream().map(TypedSPI::getType).collect(Collectors.toList());
     }
 }

@@ -45,7 +45,7 @@ public final class JDBCInstanceDefinition implements InstanceDefinition {
     }
     
     @Override
-    public InstanceType getInstanceType() {
-        return InstanceType.JDBC;
+    public String getInstanceType() {
+        return "JDBC";
     }
 }

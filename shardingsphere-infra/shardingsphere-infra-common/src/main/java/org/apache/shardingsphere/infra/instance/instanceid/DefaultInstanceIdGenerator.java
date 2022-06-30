@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.infra.instance.instanceid;
 
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
-
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -28,7 +26,7 @@ import java.util.concurrent.ThreadLocalRandom;
 public final class DefaultInstanceIdGenerator implements InstanceIdGenerator {
     
     @Override
-    public String generate(final InstanceType instanceType) {
+    public String generate(final String instanceType) {
         return new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString();
     }
     

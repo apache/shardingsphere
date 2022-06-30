@@ -20,7 +20,6 @@ package org.apache.shardingsphere.traffic.algorithm.engine;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.instance.definition.ProxyInstanceDefinition;
 import org.apache.shardingsphere.traffic.context.TrafficContext;
 import org.apache.shardingsphere.traffic.engine.TrafficEngine;
@@ -96,7 +95,7 @@ public final class TrafficEngineTest {
         when(loadBalancer.getInstanceId("traffic", instanceIds)).thenReturn(new ProxyInstanceDefinition("127.0.0.1@3307", 3307));
         when(strategyRule.getLoadBalancer()).thenReturn(loadBalancer);
         when(strategyRule.getName()).thenReturn("traffic");
-        when(instanceContext.getComputeNodeInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(instanceIds);
+        when(instanceContext.getComputeNodeInstances("PROXY", Arrays.asList("OLTP", "OLAP"))).thenReturn(instanceIds);
         TrafficContext actual = trafficEngine.dispatch(logicSQL, false);
         assertThat(actual.getInstanceId(), is("127.0.0.1@3307"));
     }

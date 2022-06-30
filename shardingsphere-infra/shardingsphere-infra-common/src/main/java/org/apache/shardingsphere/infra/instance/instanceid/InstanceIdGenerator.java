@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.instance.instanceid;
 
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.spi.type.required.RequiredSPI;
 import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
@@ -27,10 +26,10 @@ import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 public interface InstanceIdGenerator extends TypedSPI, RequiredSPI {
     
     /**
-     * Generate instance id.
+     * Generate instance ID.
      * 
      * @param instanceType instance type
-     * @return instance id
+     * @return instance ID
      */
-    String generate(InstanceType instanceType);
+    String generate(String instanceType);
 }

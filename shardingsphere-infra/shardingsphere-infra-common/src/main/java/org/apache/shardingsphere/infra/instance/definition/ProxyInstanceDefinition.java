@@ -60,7 +60,7 @@ public final class ProxyInstanceDefinition implements InstanceDefinition {
     }
     
     @Override
-    public InstanceType getInstanceType() {
-        return InstanceType.PROXY;
+    public String getInstanceType() {
+        return "PROXY";
     }
 }

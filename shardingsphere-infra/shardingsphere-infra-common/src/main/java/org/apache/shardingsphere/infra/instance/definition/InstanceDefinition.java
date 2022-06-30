@@ -55,5 +55,5 @@ public interface InstanceDefinition {
      * 
      * @return type
      */
-    InstanceType getInstanceType();
+    String getInstanceType();
 }
