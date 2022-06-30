@@ -21,7 +21,6 @@ import com.google.common.base.Joiner;
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 
 import java.util.List;
@@ -29,7 +28,6 @@ import java.util.List;
 /**
  * Proxy Instance definition.
  */
-@RequiredArgsConstructor
 @Getter
 public final class ProxyInstanceDefinition implements InstanceDefinition {
     
@@ -41,7 +39,7 @@ public final class ProxyInstanceDefinition implements InstanceDefinition {
     
     private int port;
     
-    public ProxyInstanceDefinition(final int port, final String instanceId) {
+    public ProxyInstanceDefinition(final String instanceId, final int port) {
         this.instanceId = instanceId;
         ip = IpUtils.getIp();
         this.port = port;
