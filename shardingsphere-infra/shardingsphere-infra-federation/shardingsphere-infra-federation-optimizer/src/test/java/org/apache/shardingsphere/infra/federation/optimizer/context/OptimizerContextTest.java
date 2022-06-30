@@ -20,6 +20,8 @@ package org.apache.shardingsphere.infra.federation.optimizer.context;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import org.apache.calcite.sql.validate.SqlValidator;
+import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
@@ -28,8 +30,9 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
@@ -45,16 +48,15 @@ public final class OptimizerContextTest {
     public void assertDropTable() {
         Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1);
         tables.put(tableName, mock(ShardingSphereTable.class, RETURNS_DEEP_STUBS));
-        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, new H2DatabaseType(), mock(ShardingSphereResource.class), null,
-                Collections.singletonMap(schemaName, new ShardingSphereSchema(tables)));
+        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, new H2DatabaseType(), mock(ShardingSphereResource.class), null, Collections.singletonMap(schemaName, new ShardingSphereSchema(tables)));
         OptimizerContext optimizerContext = OptimizerContextFactory.create(Collections.singletonMap(databaseName, database), mock(ShardingSphereRuleMetaData.class));
-        int converterHashCodeBefore = optimizerContext.getPlannerContexts().get(databaseName).getConverters().get(schemaName).hashCode();
-        int validatorHashCodeBefore = optimizerContext.getPlannerContexts().get(databaseName).getValidators().get(schemaName).hashCode();
+        SqlToRelConverter converterHashCodeBefore = optimizerContext.getPlannerContexts().get(databaseName).getConverters().get(schemaName);
+        SqlValidator validatorHashCodeBefore = optimizerContext.getPlannerContexts().get(databaseName).getValidators().get(schemaName);
         optimizerContext.dropTable(databaseName, schemaName, tableName);
-        int converterHashCodeAfter = optimizerContext.getPlannerContexts().get(databaseName).getConverters().get(schemaName).hashCode();
-        int validatorHashCodeAfter = optimizerContext.getPlannerContexts().get(databaseName).getValidators().get(schemaName).hashCode();
-        assertNotEquals(converterHashCodeBefore, converterHashCodeAfter);
-        assertNotEquals(validatorHashCodeBefore, validatorHashCodeAfter);
+        SqlToRelConverter converterHashCodeAfter = optimizerContext.getPlannerContexts().get(databaseName).getConverters().get(schemaName);
+        SqlValidator validatorHashCodeAfter = optimizerContext.getPlannerContexts().get(databaseName).getValidators().get(schemaName);
+        assertThat(converterHashCodeBefore, not(converterHashCodeAfter));
+        assertThat(validatorHashCodeBefore, not(validatorHashCodeAfter));
         assertFalse(optimizerContext.getFederationMetaData().getDatabases().get(databaseName).getSchemaMetadata(schemaName).get().getTables().containsKey(tableName));
     }
 }
