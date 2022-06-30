@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.infra.instance.definition;
 
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 /**
  * Instance definition builder.
  */
+@SingletonSPI
 public interface InstanceDefinitionBuilder extends TypedSPI {
     
     /**
