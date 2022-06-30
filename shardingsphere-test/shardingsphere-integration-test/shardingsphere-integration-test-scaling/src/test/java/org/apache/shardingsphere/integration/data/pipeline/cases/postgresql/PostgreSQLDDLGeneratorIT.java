@@ -80,7 +80,7 @@ public final class PostgreSQLDDLGeneratorIT {
     @Parameters(name = "{0}")
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
-        if (ENV.getItType() == ScalingITEnvTypeEnum.NONE) {
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NONE) {
             return result;
         }
         for (String each : ENV.getPostgresVersions()) {

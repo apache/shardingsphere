@@ -49,7 +49,7 @@ public final class MySQLContainer extends DatabaseContainer {
         addEnv("MYSQL_ROOT_HOST", "%");
         withClasspathResourceMapping("/env/mysql/my.cnf", "/etc/mysql/my.cnf", BindMode.READ_ONLY);
         withExposedPorts(getPort());
-        if (ScalingITEnvTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItType()) {
+        if (ScalingITEnvTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItEnvType()) {
             addFixedExposedPort(port, port);
         }
         setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(DATABASE_TYPE, "localhost", getFirstMappedPort()), "root", "root")));

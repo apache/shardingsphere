@@ -51,7 +51,7 @@ public final class OpenGaussContainer extends DatabaseContainer {
         withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/usr/local/opengauss/share/postgresql/postgresql.conf.sample", BindMode.READ_ONLY);
         withPrivilegedMode(true);
         withExposedPorts(port);
-        if (ScalingITEnvTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItType()) {
+        if (ScalingITEnvTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItEnvType()) {
             addFixedExposedPort(port, port);
         }
         setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(DATABASE_TYPE, "localhost", getFirstMappedPort(), "postgres"),

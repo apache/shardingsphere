@@ -52,10 +52,10 @@ public class TextPrimaryKeyScalingIT extends BaseExtraSQLITCase {
     @Parameters(name = "{0}")
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
-        if (ENV.getItType() == ScalingITEnvTypeEnum.NONE) {
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NONE) {
             return result;
         }
-        if (ENV.getItType() == ScalingITEnvTypeEnum.DOCKER) {
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
             for (String version : ENV.getMysqlVersions()) {
                 result.add(new ScalingParameterized(new MySQLDatabaseType(), version, "env/scenario/primarykey/text_primary_key/mysql.xml"));
             }
@@ -66,7 +66,7 @@ public class TextPrimaryKeyScalingIT extends BaseExtraSQLITCase {
                 result.add(new ScalingParameterized(new OpenGaussDatabaseType(), version, "env/scenario/primarykey/text_primary_key/postgresql.xml"));
             }
         }
-        if (ENV.getItType() == ScalingITEnvTypeEnum.NATIVE) {
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
             if (StringUtils.equalsIgnoreCase(ENV.getNativeDatabaseType(), "MySQL")) {
                 result.add(new ScalingParameterized(new MySQLDatabaseType(), "", "env/scenario/primarykey/text_primary_key/mysql.xml"));
             }

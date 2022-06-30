@@ -80,13 +80,13 @@ You can change it yourself in ShardingSphereProxyDockerContainer.
 As with Native, only one parameter needs to be changed.
 
 ```
--Dscaling.it.cluster.env.type=docker
+-Dscaling.it.env.type=docker
 ```
 
 You can run the use case using the same IDE as Native, or you can run it using maven.
 
 ```shell
-./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dscaling.it.cluster.env.type=DOCKER -Dscaling.it.env.mysql.version=${image-name}
+./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dscaling.it.env.type=DOCKER -Dscaling.it.env.mysql.version=${image-name}
 ```
 
 #### Attentions

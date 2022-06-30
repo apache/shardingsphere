@@ -81,13 +81,13 @@ Native 环境要求本地自行启动 ShardingSphere-Proxy（以及其自身依�
 和 Native 一样，只需要改一个参数。
 
 ```
--Dscaling.it.cluster.env.type=docker
+-Dscaling.it.env.type=docker
 ```
 
 可以和 Native 一样使用 IDE 的方式运行用例，或者使用 Maven 的方式运行用例。
 
 ```bash
-./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dscaling.it.cluster.env.type=DOCKER -Dscaling.it.env.mysql.version=${image-name}
+./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dscaling.it.env.type=DOCKER -Dscaling.it.env.mysql.version=${image-name}
 ```
 
 #### 注意事项

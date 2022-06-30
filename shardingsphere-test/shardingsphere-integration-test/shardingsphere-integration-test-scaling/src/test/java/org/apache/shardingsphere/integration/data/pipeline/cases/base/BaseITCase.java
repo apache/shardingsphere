@@ -102,7 +102,7 @@ public abstract class BaseITCase {
     
     public BaseITCase(final ScalingParameterized parameterized) {
         databaseType = parameterized.getDatabaseType();
-        if (ENV.getItType() == ScalingITEnvTypeEnum.DOCKER) {
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
             composedContainer = new DockerComposedContainer(parameterized.getDatabaseType(), parameterized.getDockerImageName());
         } else {
             composedContainer = new NativeComposedContainer(parameterized.getDatabaseType());
@@ -118,7 +118,7 @@ public abstract class BaseITCase {
     private void initActualDataSources() {
         String jdbcUrl;
         JdbcInfoEntity jdbcInfo;
-        if (ENV.getItType() == ScalingITEnvTypeEnum.DOCKER) {
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
             DockerComposedContainer dockerComposedContainer = (DockerComposedContainer) composedContainer;
             DatabaseContainer databaseContainer = dockerComposedContainer.getDatabaseContainer();
             jdbcUrl = databaseContainer.getJdbcUrl("");
@@ -157,7 +157,7 @@ public abstract class BaseITCase {
             jdbcUrl = JDBC_URL_APPENDER.appendQueryProperties(jdbcUrl, ScalingCaseHelper.getPostgreSQLQueryProperties());
         }
         try (Connection connection = DriverManager.getConnection(jdbcUrl, "root", "root")) {
-            if (ENV.getItType() == ScalingITEnvTypeEnum.NATIVE) {
+            if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
                 try {
                     executeWithLog(connection, "DROP DATABASE sharding_db");
                 } catch (final SQLException ex) {
@@ -237,7 +237,7 @@ public abstract class BaseITCase {
     }
     
     private String getActualJdbcUrlTemplate(final String databaseName) {
-        if (ENV.getItType() == ScalingITEnvTypeEnum.DOCKER) {
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
             final DatabaseContainer databaseContainer = ((DockerComposedContainer) composedContainer).getDatabaseContainer();
             return DataSourceEnvironment.getURL(getDatabaseType(), "db.host", databaseContainer.getPort(), databaseName);
         } else {
@@ -265,7 +265,7 @@ public abstract class BaseITCase {
     }
     
     protected void createScalingRule() {
-        if (ENV.getItType() == ScalingITEnvTypeEnum.NATIVE) {
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
             try {
                 List<Map<String, Object>> scalingList = jdbcTemplate.queryForList("SHOW SCALING LIST");
                 for (Map<String, Object> each : scalingList) {

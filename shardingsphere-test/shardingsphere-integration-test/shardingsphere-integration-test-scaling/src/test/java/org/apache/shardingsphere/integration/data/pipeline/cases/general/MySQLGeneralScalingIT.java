@@ -57,15 +57,15 @@ public final class MySQLGeneralScalingIT extends BaseExtraSQLITCase {
     @Parameters(name = "{0}")
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
-        if (ENV.getItType() == ScalingITEnvTypeEnum.NONE) {
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NONE) {
             return result;
         }
-        if (ENV.getItType() == ScalingITEnvTypeEnum.DOCKER) {
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
             for (String version : ENV.getMysqlVersions()) {
                 result.add(new ScalingParameterized(new MySQLDatabaseType(), version, "env/scenario/general/mysql.xml"));
             }
         }
-        if (ENV.getItType() == ScalingITEnvTypeEnum.NATIVE && StringUtils.equalsIgnoreCase(ENV.getNativeDatabaseType(), "MySQL")) {
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE && StringUtils.equalsIgnoreCase(ENV.getNativeDatabaseType(), "MySQL")) {
             result.add(new ScalingParameterized(new MySQLDatabaseType(), "", "env/scenario/general/mysql.xml"));
         }
         return result;

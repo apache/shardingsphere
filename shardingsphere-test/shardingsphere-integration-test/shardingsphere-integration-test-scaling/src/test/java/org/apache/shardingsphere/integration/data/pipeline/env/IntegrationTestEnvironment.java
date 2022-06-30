@@ -40,7 +40,7 @@ public final class IntegrationTestEnvironment {
     
     private final Properties props;
     
-    private final ScalingITEnvTypeEnum itType;
+    private final ScalingITEnvTypeEnum itEnvType;
     
     private final List<String> mysqlVersions;
     
@@ -50,7 +50,7 @@ public final class IntegrationTestEnvironment {
     
     private IntegrationTestEnvironment() {
         props = loadProperties();
-        itType = ScalingITEnvTypeEnum.valueOf(StringUtils.defaultIfBlank(props.getProperty("scaling.it.env.type").toUpperCase(), ScalingITEnvTypeEnum.NONE.name()));
+        itEnvType = ScalingITEnvTypeEnum.valueOf(StringUtils.defaultIfBlank(props.getProperty("scaling.it.env.type").toUpperCase(), ScalingITEnvTypeEnum.NONE.name()));
         mysqlVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.mysql.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         postgresVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.postgresql.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         openGaussVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.opengauss.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
@@ -142,7 +142,7 @@ public final class IntegrationTestEnvironment {
         } else {
             username = "root";
         }
-        if (itType == ScalingITEnvTypeEnum.NATIVE) {
+        if (itEnvType == ScalingITEnvTypeEnum.NATIVE) {
             username = String.valueOf(props.getOrDefault(String.format("scaling.it.native.%s.username", databaseType.getType().toLowerCase()), username));
         }
         return username;
@@ -161,7 +161,7 @@ public final class IntegrationTestEnvironment {
         } else {
             password = "root";
         }
-        if (itType == ScalingITEnvTypeEnum.NATIVE) {
+        if (itEnvType == ScalingITEnvTypeEnum.NATIVE) {
             password = props.getOrDefault(String.format("scaling.it.native.%s.password", databaseType.getType().toLowerCase()), password).toString();
         }
         return password;
