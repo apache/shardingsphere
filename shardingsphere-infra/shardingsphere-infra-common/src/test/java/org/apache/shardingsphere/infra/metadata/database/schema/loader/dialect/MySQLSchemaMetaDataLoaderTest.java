@@ -29,6 +29,7 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -82,7 +83,7 @@ public final class MySQLSchemaMetaDataLoaderTest {
         ResultSet result = mock(ResultSet.class);
         when(result.next()).thenReturn(true, true, true, true, false);
         when(result.getString("TYPE_NAME")).thenReturn("int", "varchar");
-        when(result.getInt("DATA_TYPE")).thenReturn(4, 12);
+        when(result.getInt("DATA_TYPE")).thenReturn(Types.INTEGER, Types.VARCHAR);
         return result;
     }
     
@@ -117,15 +118,15 @@ public final class MySQLSchemaMetaDataLoaderTest {
         TableMetaData actualTableMetaData = schemaMetaDataList.iterator().next().getTables().iterator().next();
         assertThat(actualTableMetaData.getColumns().size(), is(9));
         Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, true, true, true)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("doc", -1, false, false, false)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("geo", -2, false, false, false)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("t_year", 91, false, false, false)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("pg", -2, false, false, false)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("mpg", -2, false, false, false)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("pt", -2, false, false, false)));
-        assertThat(columnsIterator.next(), is(new ColumnMetaData("mpt", -2, false, false, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", Types.INTEGER, true, true, true)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", Types.VARCHAR, false, false, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("doc", Types.LONGVARCHAR, false, false, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("geo", Types.BINARY, false, false, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("t_year", Types.DATE, false, false, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("pg", Types.BINARY, false, false, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("mpg", Types.BINARY, false, false, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("pt", Types.BINARY, false, false, false)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("mpt", Types.BINARY, false, false, false)));
         assertThat(actualTableMetaData.getIndexes().size(), is(1));
         Iterator<IndexMetaData> indexesIterator = actualTableMetaData.getIndexes().iterator();
         assertThat(indexesIterator.next(), is(new IndexMetaData("id")));
