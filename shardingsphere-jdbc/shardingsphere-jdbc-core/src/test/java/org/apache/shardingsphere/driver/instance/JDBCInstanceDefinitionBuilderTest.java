@@ -15,36 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.instance;
+package org.apache.shardingsphere.driver.instance;
 
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBuilderFactory;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-public final class ProxyInstanceDefinitionTest {
+public final class JDBCInstanceDefinitionBuilderTest {
     
     @Test
-    public void assertNew() {
-        InstanceDefinition actual = InstanceDefinitionBuilderFactory.newInstance("Proxy", "foo_id", 3307);
+    public void assertNewInstance() {
+        InstanceDefinition actual = InstanceDefinitionBuilderFactory.newInstance("JDBC", "foo_id", -1);
         assertThat(actual.getInstanceId(), is("foo_id"));
-        assertNotNull(actual.getIp());
-        assertThat(actual.getPort(), is(3307));
-        assertThat(actual.getAttributes(), endsWith("@3307"));
-        assertThat(actual.getInstanceType(), is("Proxy"));
+        assertThat(actual.getIp(), is(""));
+        assertThat(actual.getPort(), is(-1));
+        assertThat(actual.getAttributes(), is(""));
+        assertThat(actual.getInstanceType(), is("JDBC"));
     }
     
     @Test
-    public void assertNewWithAttributes() {
-        InstanceDefinition actual = InstanceDefinitionBuilderFactory.newInstance("Proxy", "foo_id", "127.0.0.1@3307");
+    public void assertNewInstanceWithAttributes() {
+        InstanceDefinition actual = InstanceDefinitionBuilderFactory.newInstance("JDBC", "foo_id", "");
         assertThat(actual.getInstanceId(), is("foo_id"));
-        assertThat(actual.getIp(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(3307));
-        assertThat(actual.getAttributes(), is("127.0.0.1@3307"));
-        assertThat(actual.getInstanceType(), is("Proxy"));
+        assertThat(actual.getIp(), is(""));
+        assertThat(actual.getPort(), is(-1));
+        assertThat(actual.getAttributes(), is(""));
+        assertThat(actual.getInstanceType(), is("JDBC"));
     }
 }
