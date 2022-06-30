@@ -23,8 +23,7 @@ chapter = true
 | -------------------------------  | ------------------------------ |
 | AuthorityProviderAlgorithm       | User authority loading logic   |
 
-| *Implementation Class*                              | *Type*           | *Description*                                                                                                         |
-|-----------------------------------------------------| ---------------- | --------------------------------------------------------------------------------------------------------------------- |
-| NativeAuthorityProviderAlgorithm (Deprecated)       | NATIVE           | Persist user authority defined in server.yaml into the backend database. An admin user will be created if not existed |
-| AllPermittedPrivilegesProviderAlgorithm             | ALL_PERMITTED    | All privileges granted to user by default (No authentication). Will not interact with the actual database             |
-| SchemaPermittedPrivilegesProviderAlgorithm          | DATABASE_PERMITTED | Permissions configured through the attribute user-database-mappings                                                     |
+| *Implementation Class*                       | *Type*           | *Description*                                                                                                         |
+|----------------------------------------------| ---------------- | --------------------------------------------------------------------------------------------------------------------- |
+| AllPermittedProviderAlgorithm      | ALL_PERMITTED    | All privileges granted to user by default (No authentication). Will not interact with the actual database             |
+| DatabasePermittedProviderAlgorithm | DATABASE_PERMITTED | Permissions configured through the attribute user-database-mappings                                                     |

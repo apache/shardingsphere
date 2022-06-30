@@ -15,23 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.natived.builder;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.authority.provider.fixture.FixtureStoragePrivilegeHandler;
-import org.junit.Test;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.NotifyStmtStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
-import java.util.Optional;
-
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-public final class StoragePrivilegeHandlerFactoryTest {
-    
-    @Test
-    public void assertFindInstance() {
-        Optional<StoragePrivilegeHandler> actual = StoragePrivilegeHandlerFactory.findInstance("FIXTURE");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(FixtureStoragePrivilegeHandler.class));
-    }
+/**
+ * PostgreSQL notify statement.
+ */
+@ToString
+public final class PostgreSQLNotifyStmtStatement extends NotifyStmtStatement implements PostgreSQLStatement {
 }

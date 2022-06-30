@@ -236,6 +236,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.FlashbackTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.MoveStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.NoAuditStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.NotifyStmtStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.PreparedStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.PurgeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.RenameStatementTestCase;
@@ -1333,6 +1334,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "listen")
     private final List<ListenStatementTestCase> listenTestCases = new LinkedList<>();
     
+    @XmlElement(name = "notify")
+    private final List<NotifyStmtStatementTestCase> notifyTestCases = new LinkedList<>();
+    
     @XmlElement(name = "unlisten")
     private final List<UnlistenStatementTestCase> unlistenTestCases = new LinkedList<>();
     
@@ -1847,6 +1851,7 @@ public final class SQLParserTestCases {
         putAll(createRollbackSegmentTestCases, result);
         putAll(dropRollbackSegmentTestCases, result);
         putAll(listenTestCases, result);
+        putAll(notifyTestCases, result);
         putAll(unlistenTestCases, result);
         putAll(createLockdownProfileTestCases, result);
         putAll(dropLockdownProfileTestCases, result);
