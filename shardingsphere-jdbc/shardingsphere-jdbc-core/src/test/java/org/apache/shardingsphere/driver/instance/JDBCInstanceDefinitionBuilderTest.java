@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBui
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class JDBCInstanceDefinitionBuilderTest {
@@ -30,7 +31,7 @@ public final class JDBCInstanceDefinitionBuilderTest {
     public void assertNewInstance() {
         InstanceDefinition actual = InstanceDefinitionBuilderFactory.newInstance("JDBC", "foo_id", -1);
         assertThat(actual.getInstanceId(), is("foo_id"));
-        assertThat(actual.getIp(), is(""));
+        assertNotNull(actual.getIp());
         assertThat(actual.getPort(), is(-1));
         assertThat(actual.getAttributes(), is(""));
         assertThat(actual.getInstanceType(), is("JDBC"));
@@ -40,7 +41,7 @@ public final class JDBCInstanceDefinitionBuilderTest {
     public void assertNewInstanceWithAttributes() {
         InstanceDefinition actual = InstanceDefinitionBuilderFactory.newInstance("JDBC", "foo_id", "");
         assertThat(actual.getInstanceId(), is("foo_id"));
-        assertThat(actual.getIp(), is(""));
+        assertNotNull(actual.getIp());
         assertThat(actual.getPort(), is(-1));
         assertThat(actual.getAttributes(), is(""));
         assertThat(actual.getInstanceType(), is("JDBC"));

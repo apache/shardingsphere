@@ -67,6 +67,6 @@ public final class InstanceDefinition {
      * @return attributes
      */
     public String getAttributes() {
-        return Joiner.on(DELIMITER).join(ip, port);
+        return -1 == port ? "" : Joiner.on(DELIMITER).join(ip, port);
     }
 }
