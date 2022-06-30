@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager;
 
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.ShardingSphereInterMutexLockHolder;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal.ShardingSphereInternalLockHolder;
 import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDefinition;
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.required.RequiredSPI;
@@ -34,7 +34,7 @@ public interface ShardingSphereLockManager extends RequiredSPI {
      *
      * @param lockHolder lock holder
      */
-    void init(ShardingSphereInterMutexLockHolder lockHolder);
+    void init(ShardingSphereInternalLockHolder lockHolder);
     
     /**
      * Get distributed lock.
