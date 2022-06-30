@@ -491,27 +491,27 @@ public final class SelectStatementContextTest {
     }
 
     @Test
-    public void ContainsDollarParameterMarkerForMySQL() {
+    public void assertContainsDollarParameterMarkerForMySQL() {
         assertContainsDollarParameterMarker(new MySQLSelectStatement());
     }
     
     @Test
-    public void ContainsDollarParameterMarkerForOracle() {
+    public void assertContainsDollarParameterMarkerForOracle() {
         assertContainsDollarParameterMarker(new OracleSelectStatement());
     }
     
     @Test
-    public void ContainsDollarParameterMarkerForPostgreSQL() {
+    public void assertContainsDollarParameterMarkerForPostgreSQL() {
         assertContainsDollarParameterMarker(new PostgreSQLSelectStatement());
     }
     
     @Test
-    public void ContainsDollarParameterMarkerForSQL92() {
+    public void assertContainsDollarParameterMarkerForSQL92() {
         assertContainsDollarParameterMarker(new SQL92SelectStatement());
     }
     
     @Test
-    public void ContainsDollarParameterMarkerForSQLServer() {
+    public void assertContainsDollarParameterMarkerForSQLServer() {
         assertContainsDollarParameterMarker(new SQLServerSelectStatement());
     }
     
