@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
 @Setter
 public final class YamlShardingAuditStrategyConfiguration implements YamlConfiguration {
     
-    private String shardingAuditAlgorithmName;
+    private String auditAlgorithmName;
     
     private boolean allowHintDisable;
 }

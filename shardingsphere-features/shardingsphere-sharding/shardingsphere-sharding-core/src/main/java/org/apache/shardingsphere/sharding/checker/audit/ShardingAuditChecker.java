@@ -66,7 +66,7 @@ public final class ShardingAuditChecker implements SQLChecker<ShardingRule> {
     
     @Override
     public int getOrder() {
-        return ShardingOrder.AUDIT_ORDER;
+        return ShardingOrder.ORDER;
     }
     
     @Override

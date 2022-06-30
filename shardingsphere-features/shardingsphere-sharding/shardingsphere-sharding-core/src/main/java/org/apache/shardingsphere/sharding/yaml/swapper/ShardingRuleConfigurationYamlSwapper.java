@@ -49,7 +49,7 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
     
     private final OnRuleAlteredActionConfigurationYamlSwapper onRuleAlteredActionYamlSwapper = new OnRuleAlteredActionConfigurationYamlSwapper();
     
-    private final ShardingAuditStrategyConfigurationYamlSwapper shardingAuditStrategyYamlSwapper = new ShardingAuditStrategyConfigurationYamlSwapper();
+    private final ShardingAuditStrategyConfigurationYamlSwapper auditStrategyYamlSwapper = new ShardingAuditStrategyConfigurationYamlSwapper();
     
     @Override
     public YamlShardingRuleConfiguration swapToYamlConfiguration(final ShardingRuleConfiguration data) {
@@ -63,7 +63,7 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
         setYamlAlgorithms(data, result);
         result.setDefaultShardingColumn(data.getDefaultShardingColumn());
         result.setScalingName(data.getScalingName());
-        data.getShardingAudits().forEach((key, value) -> result.getShardingAudits().put(key, shardingAuditStrategyYamlSwapper.swapToYamlConfiguration(value)));
+        data.getAuditStrategies().forEach((key, value) -> result.getAuditStrategies().put(key, auditStrategyYamlSwapper.swapToYamlConfiguration(value)));
         return result;
     }
     
@@ -110,7 +110,7 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
         setAlgorithms(yamlConfig, result);
         result.setDefaultShardingColumn(yamlConfig.getDefaultShardingColumn());
         result.setScalingName(yamlConfig.getScalingName());
-        yamlConfig.getShardingAudits().forEach((key, value) -> result.getShardingAudits().put(key, shardingAuditStrategyYamlSwapper.swapToObject(value)));
+        yamlConfig.getAuditStrategies().forEach((key, value) -> result.getAuditStrategies().put(key, auditStrategyYamlSwapper.swapToObject(value)));
         return result;
     }
     
@@ -133,8 +133,8 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
         if (null != yamlConfig.getKeyGenerators()) {
             yamlConfig.getKeyGenerators().forEach((key, value) -> ruleConfig.getKeyGenerators().put(key, algorithmSwapper.swapToObject(value)));
         }
-        if (null != yamlConfig.getShardingAuditAlgorithms()) {
-            yamlConfig.getShardingAuditAlgorithms().forEach((key, value) -> ruleConfig.getShardingAuditAlgorithms().put(key, algorithmSwapper.swapToObject(value)));
+        if (null != yamlConfig.getAuditAlgorithms()) {
+            yamlConfig.getAuditAlgorithms().forEach((key, value) -> ruleConfig.getAuditAlgorithms().put(key, algorithmSwapper.swapToObject(value)));
         }
         if (null != yamlConfig.getScaling()) {
             yamlConfig.getScaling().forEach((key, value) -> ruleConfig.getScaling().put(key, onRuleAlteredActionYamlSwapper.swapToObject(value)));

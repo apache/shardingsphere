@@ -57,15 +57,15 @@ public final class ShardingRuleConfiguration implements DatabaseRuleConfiguratio
     
     private String defaultShardingColumn;
     
+    private Map<String, ShardingAuditStrategyConfiguration> auditStrategies = new LinkedHashMap<>();
+    
     private Map<String, ShardingSphereAlgorithmConfiguration> shardingAlgorithms = new LinkedHashMap<>();
     
     private Map<String, ShardingSphereAlgorithmConfiguration> keyGenerators = new LinkedHashMap<>();
     
-    private Map<String, ShardingSphereAlgorithmConfiguration> shardingAuditAlgorithms = new LinkedHashMap<>();
+    private Map<String, ShardingSphereAlgorithmConfiguration> auditAlgorithms = new LinkedHashMap<>();
     
     private String scalingName;
     
     private Map<String, OnRuleAlteredActionConfiguration> scaling = new LinkedHashMap<>();
-    
-    private Map<String, ShardingAuditStrategyConfiguration> shardingAudits = new LinkedHashMap<>();
 }
