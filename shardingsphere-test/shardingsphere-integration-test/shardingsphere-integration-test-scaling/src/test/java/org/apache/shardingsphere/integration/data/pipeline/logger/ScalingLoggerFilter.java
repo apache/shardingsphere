@@ -27,7 +27,7 @@ import java.util.List;
 
 public class ScalingLoggerFilter extends Filter<ILoggingEvent> {
     
-    private static final List<String> IGNORE_LOGGER_NAMES = Arrays.asList(":mysql", ":zookeeper", ":postgresql");
+    private static final List<String> IGNORE_LOGGER_NAMES = Arrays.asList(":mysql", ":zookeeper", ":postgresql", ":opengauss");
     
     private static final String[] IGNORE_ATOMIKOS_ARGS = new String[]{"- tips & advice", "- working demos", "- access to the full documentation",
             "- special exclusive bonus offers not available to others"};

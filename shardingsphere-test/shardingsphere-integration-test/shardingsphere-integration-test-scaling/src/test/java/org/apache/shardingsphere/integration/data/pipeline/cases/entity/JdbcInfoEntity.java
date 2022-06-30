@@ -15,26 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.config.strategy.audit;
+package org.apache.shardingsphere.integration.data.pipeline.cases.entity;
 
-import com.google.common.base.Preconditions;
-import java.util.Collection;
-import lombok.Getter;
+import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
-/**
- * Sharding audit strategy configuration.
- */
-
-@Getter
-public final class ShardingAuditStrategyConfiguration {
+@RequiredArgsConstructor
+@Data
+public final class JdbcInfoEntity {
     
-    private final Collection<String> auditAlgorithmNames;
+    private final String username;
     
-    private final boolean allowHintDisable;
+    private final String password;
     
-    public ShardingAuditStrategyConfiguration(final Collection<String> auditAlgorithmNames, final boolean allowHintDisable) {
-        Preconditions.checkNotNull(auditAlgorithmNames, "Sharding audit algorithm names is required.");
-        this.auditAlgorithmNames = auditAlgorithmNames;
-        this.allowHintDisable = allowHintDisable;
-    }
+    private final int port;
 }

@@ -29,11 +29,6 @@ import org.apache.shardingsphere.infra.properties.TypedPropertyKey;
 public enum SQLHintPropertiesKey implements TypedPropertyKey {
     
     /**
-     * Hint data source name.
-     */
-    DATASOURCE_NAME_KEY("dataSourceName", "", String.class),
-    
-    /**
      * Whether hint route write data source or not.
      */
     WRITE_ROUTE_ONLY_KEY("writeRouteOnly", String.valueOf(Boolean.FALSE), boolean.class),

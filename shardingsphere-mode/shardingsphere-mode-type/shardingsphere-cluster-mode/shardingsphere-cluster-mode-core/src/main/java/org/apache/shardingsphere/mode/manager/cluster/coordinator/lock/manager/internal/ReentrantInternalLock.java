@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
@@ -27,7 +27,7 @@ import java.util.concurrent.locks.Lock;
  * Inter mutex reentrant lock.
  */
 @RequiredArgsConstructor
-public final class InterReentrantMutexLock implements MutexLock {
+public final class ReentrantInternalLock implements InternalLock {
     
     private final Lock internalLock;
     

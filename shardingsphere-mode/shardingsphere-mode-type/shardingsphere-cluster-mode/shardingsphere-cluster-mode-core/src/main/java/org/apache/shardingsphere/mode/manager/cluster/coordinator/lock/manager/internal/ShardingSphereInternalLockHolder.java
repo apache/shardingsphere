@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal;
 
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
@@ -31,11 +31,11 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * Inter mutex lock holder of ShardingSphere.
+ * Lock holder of ShardingSphere.
  */
-public final class ShardingSphereInterMutexLockHolder {
+public final class ShardingSphereInternalLockHolder {
     
-    private final Map<String, MutexLock> mutexLocks = new LinkedHashMap<>();
+    private final Map<String, InternalLock> internalLocks = new LinkedHashMap<>();
     
     private final ClusterPersistRepository clusterRepository;
     
@@ -45,7 +45,7 @@ public final class ShardingSphereInterMutexLockHolder {
     
     private final LockRegistryService mutexLockRegistryService;
     
-    public ShardingSphereInterMutexLockHolder(final ClusterPersistRepository repository, final ComputeNodeInstance instance, final Collection<ComputeNodeInstance> nodeInstances) {
+    public ShardingSphereInternalLockHolder(final ClusterPersistRepository repository, final ComputeNodeInstance instance, final Collection<ComputeNodeInstance> nodeInstances) {
         clusterRepository = repository;
         currentInstance = instance;
         computeNodeInstances = nodeInstances;
@@ -58,22 +58,22 @@ public final class ShardingSphereInterMutexLockHolder {
      * @param locksName locks name
      * @return inter mutex lock
      */
-    public synchronized InterMutexLock getOrCreateInterMutexLock(final String locksName) {
-        MutexLock result = mutexLocks.get(locksName);
+    public synchronized ExclusiveInternalLock getOrCreateInterMutexLock(final String locksName) {
+        InternalLock result = internalLocks.get(locksName);
         if (null == result) {
             result = createInterMutexLock(locksName);
-            mutexLocks.put(locksName, result);
+            internalLocks.put(locksName, result);
         }
-        return (InterMutexLock) result;
+        return (ExclusiveInternalLock) result;
     }
     
-    private InterMutexLock createInterMutexLock(final String locksName) {
-        InterReentrantMutexLock interReentrantMutexLock = createInterReentrantMutexLock(LockNodeUtil.generateLockSequenceNodePath(locksName));
-        return new InterMutexLock(locksName, interReentrantMutexLock, mutexLockRegistryService, currentInstance, computeNodeInstances);
+    private ExclusiveInternalLock createInterMutexLock(final String locksName) {
+        ReentrantInternalLock reentrantExclusiveLock = createInterReentrantMutexLock(LockNodeUtil.generateLockSequenceNodePath(locksName));
+        return new ExclusiveInternalLock(locksName, reentrantExclusiveLock, mutexLockRegistryService, currentInstance, computeNodeInstances);
     }
     
-    private InterReentrantMutexLock createInterReentrantMutexLock(final String lockNodePath) {
-        return new InterReentrantMutexLock(clusterRepository.getInternalReentrantMutexLock(lockNodePath));
+    private ReentrantInternalLock createInterReentrantMutexLock(final String lockNodePath) {
+        return new ReentrantInternalLock(clusterRepository.getInternalReentrantMutexLock(lockNodePath));
     }
     
     /**
@@ -82,11 +82,11 @@ public final class ShardingSphereInterMutexLockHolder {
      * @param locksName locks name
      * @return inter mutex lock
      */
-    public Optional<InterMutexLock> getInterMutexLock(final String locksName) {
-        if (mutexLocks.isEmpty()) {
+    public Optional<ExclusiveInternalLock> getInterMutexLock(final String locksName) {
+        if (internalLocks.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.ofNullable((InterMutexLock) mutexLocks.get(locksName));
+        return Optional.ofNullable((ExclusiveInternalLock) internalLocks.get(locksName));
     }
     
     /**
@@ -95,13 +95,13 @@ public final class ShardingSphereInterMutexLockHolder {
      * @param locksName locks name
      * @return inter reentrant mutex lock
      */
-    public synchronized InterReentrantMutexLock getOrCreateInterReentrantMutexLock(final String locksName) {
-        MutexLock result = mutexLocks.get(locksName);
+    public synchronized ReentrantInternalLock getOrCreateInterReentrantMutexLock(final String locksName) {
+        InternalLock result = internalLocks.get(locksName);
         if (null == result) {
             result = createInterReentrantMutexLock(locksName);
-            mutexLocks.put(locksName, result);
+            internalLocks.put(locksName, result);
         }
-        return (InterReentrantMutexLock) result;
+        return (ReentrantInternalLock) result;
     }
     
     /**
@@ -110,11 +110,11 @@ public final class ShardingSphereInterMutexLockHolder {
      * @param locksName locks name
      * @return inter mutex lock
      */
-    public Optional<InterReentrantMutexLock> getInterReentrantMutexLock(final String locksName) {
-        if (mutexLocks.isEmpty()) {
+    public Optional<ReentrantInternalLock> getInterReentrantMutexLock(final String locksName) {
+        if (internalLocks.isEmpty()) {
             return Optional.empty();
         }
-        return Optional.ofNullable((InterReentrantMutexLock) mutexLocks.get(locksName));
+        return Optional.ofNullable((ReentrantInternalLock) internalLocks.get(locksName));
     }
     
     /**
@@ -133,7 +133,7 @@ public final class ShardingSphereInterMutexLockHolder {
         }
         for (String each : allGlobalLock) {
             Optional<String> generalLock = lockNodeService.parseLocksNodePath(each);
-            generalLock.ifPresent(optional -> mutexLocks.put(optional, createInterMutexLock(optional)));
+            generalLock.ifPresent(optional -> internalLocks.put(optional, createInterMutexLock(optional)));
         }
     }
     

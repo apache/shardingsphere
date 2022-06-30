@@ -315,7 +315,7 @@ public final class ClusterContextManagerCoordinatorTest {
     @Test
     public void assertRenewInstanceOfflineEvent() {
         coordinator.renew(new InstanceOfflineEvent(contextManager.getInstanceContext().getInstance().getInstanceDefinition()));
-        assertThat(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getUniqueSign(), is("3307"));
+        assertThat(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getPort(), is(3307));
     }
     
     @Test

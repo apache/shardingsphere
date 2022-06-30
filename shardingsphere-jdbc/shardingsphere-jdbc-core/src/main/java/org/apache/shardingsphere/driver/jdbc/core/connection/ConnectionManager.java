@@ -119,7 +119,7 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
         String jdbcUrl = String.valueOf(props.get("jdbcUrl"));
         String jdbcUrlPrefix = jdbcUrl.substring(0, jdbcUrl.indexOf("//"));
         String jdbcUrlSuffix = jdbcUrl.contains("?") ? jdbcUrl.substring(jdbcUrl.indexOf("?")) : "";
-        return String.format("%s//%s:%s/%s%s", jdbcUrlPrefix, instanceDefinition.getIp(), instanceDefinition.getUniqueSign(), schema, jdbcUrlSuffix);
+        return String.format("%s//%s:%s/%s%s", jdbcUrlPrefix, instanceDefinition.getIp(), instanceDefinition.getPort(), schema, jdbcUrlSuffix);
     }
     
     private ConnectionTransaction createConnectionTransaction(final String databaseName, final ContextManager contextManager) {

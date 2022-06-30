@@ -51,7 +51,7 @@ public final class DropDatabaseBackendHandler implements TextProtocolBackendHand
         if (isDropCurrentDatabase(sqlStatement.getDatabaseName())) {
             connectionSession.setCurrentDatabase(null);
         }
-        ProxyContext.getInstance().getContextManager().deleteDatabase(sqlStatement.getDatabaseName());
+        ProxyContext.getInstance().getContextManager().dropDatabase(sqlStatement.getDatabaseName());
         return new UpdateResponseHeader(sqlStatement);
     }
     

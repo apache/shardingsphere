@@ -57,7 +57,7 @@ public final class ShardingRuleConfiguration implements DatabaseRuleConfiguratio
     
     private String defaultShardingColumn;
     
-    private Map<String, ShardingAuditStrategyConfiguration> auditStrategies = new LinkedHashMap<>();
+    private ShardingAuditStrategyConfiguration auditStrategy;
     
     private Map<String, ShardingSphereAlgorithmConfiguration> shardingAlgorithms = new LinkedHashMap<>();
     
