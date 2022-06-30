@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Sharding audit algorithm.
@@ -37,10 +36,8 @@ public interface ShardingAuditAlgorithm extends ShardingSphereAlgorithm {
      *
      * @param sqlStatementContext SQL statement context
      * @param parameters SQL parameters
-     * @param currentDatabase current database
-     * @param databases databases
      * @param grantee grantee
-     * @param rule shardingSphereRule
+     * @param database database
      * @return SQL check result
      */
     SQLCheckResult check(SQLStatementContext<?> sqlStatementContext, List<Object> parameters, Grantee grantee, String currentDatabase,
