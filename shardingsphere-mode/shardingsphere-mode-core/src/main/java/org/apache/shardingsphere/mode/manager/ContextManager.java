@@ -156,19 +156,18 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private void alterTable(final String databaseName, final String schemaName, final ShardingSphereTable beBoChangedTable) {
-        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(databaseName);
-        alterSingleTableDataNodes(database, schemaName, beBoChangedTable);
-        database.getSchemas().get(schemaName).put(beBoChangedTable.getName(), beBoChangedTable);
+        alterTable(metaDataContexts.getMetaData().getDatabases().get(databaseName), schemaName, beBoChangedTable);
         metaDataContexts.getOptimizerContext().alterTable(databaseName, schemaName, beBoChangedTable);
     }
     
-    private void alterSingleTableDataNodes(final ShardingSphereDatabase database, final String schemaName, final ShardingSphereTable changedTableMetaData) {
-        if (containsMutableDataNodeContainedRule(database, schemaName, changedTableMetaData.getName())) {
+    private void alterTable(final ShardingSphereDatabase database, final String schemaName, final ShardingSphereTable beBoChangedTable) {
+        if (containsMutableDataNodeRule(database, schemaName, beBoChangedTable.getName())) {
             refreshRules(database);
         }
+        database.getSchemas().get(schemaName).put(beBoChangedTable.getName(), beBoChangedTable);
     }
     
-    private boolean containsMutableDataNodeContainedRule(final ShardingSphereDatabase database, final String schemaName, final String tableName) {
+    private boolean containsMutableDataNodeRule(final ShardingSphereDatabase database, final String schemaName, final String tableName) {
         return database.getRuleMetaData().findRules(MutableDataNodeRule.class).stream().anyMatch(each -> each.findSingleTableDataNode(schemaName, tableName).isPresent());
     }
     
