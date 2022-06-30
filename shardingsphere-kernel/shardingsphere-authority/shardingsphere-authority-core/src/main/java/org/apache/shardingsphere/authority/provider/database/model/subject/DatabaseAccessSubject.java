@@ -15,34 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex;
+package org.apache.shardingsphere.authority.provider.database.model.subject;
 
-public interface MutexLock {
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.authority.model.AccessSubject;
+
+/**
+ * Database access subject.
+ */
+@RequiredArgsConstructor
+@Getter
+public final class DatabaseAccessSubject implements AccessSubject {
     
-    /**
-     * Try lock.
-     *
-     * @return is locked or not.
-     */
-    boolean tryLock();
-    
-    /**
-     * Try lock.
-     *
-     * @param timeout timeout
-     * @return is locked or not.
-     */
-    boolean tryLock(long timeout);
-    
-    /**
-     * Unlock.
-     */
-    void unlock();
-    
-    /**
-     * Is locked.
-     *
-     * @return is locked or not
-     */
-    boolean isLocked();
+    private final String database;
 }

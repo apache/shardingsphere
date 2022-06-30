@@ -15,34 +15,45 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.natived.model.privilege.database;
-
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.authority.model.PrivilegeType;
-
-import java.util.Collection;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal;
 
 /**
- * Table privileges.
+ * Lock ack able.
  */
-@RequiredArgsConstructor
-@EqualsAndHashCode
-@Getter
-public final class TablePrivileges {
-    
-    private final String tableName;
-    
-    private final Collection<PrivilegeType> privileges;
+public interface LockAckAble {
     
     /**
-     * Has privileges.
+     * Ack locked.
      *
-     * @param privileges privileges
-     * @return has privileges or not
+     * @param ackLockName ack lock name
+     * @param instanceId instance id
      */
-    public boolean hasPrivileges(final Collection<PrivilegeType> privileges) {
-        return this.privileges.containsAll(privileges);
-    }
+    void ackLock(String ackLockName, String instanceId);
+    
+    /**
+     * Release ack lock.
+     *
+     * @param ackLockName ack lock name
+     * @param instanceId instance id
+     */
+    void releaseAckLock(String ackLockName, String instanceId);
+    
+    /**
+     * Add locked instance id.
+     *
+     * @param instanceId instance id
+     */
+    void addLockedInstance(String instanceId);
+    
+    /**
+     * Remove locked instance id.
+     *
+     * @param instanceId instance id
+     */
+    void removeLockedInstance(String instanceId);
+    
+    /**
+     * Re-set lock state.
+     */
+    void reSetLockState();
 }

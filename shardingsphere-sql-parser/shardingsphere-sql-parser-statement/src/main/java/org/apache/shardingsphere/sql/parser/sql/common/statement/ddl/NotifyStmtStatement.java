@@ -15,20 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.natived.model.subject;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.authority.model.AccessSubject;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Table access subject.
+ * Notify statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class TableAccessSubject implements AccessSubject {
-    
-    private final String schema;
-    
-    private final String table;
+@ToString
+public abstract class NotifyStmtStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -101,7 +101,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         }
         String databaseName = connectionSession.getDatabaseName();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        SQLCheckEngine.check(sqlStatement, Collections.emptyList(), getRules(databaseName), databaseName, metaDataContexts.getMetaData().getDatabases(), connectionSession.getGrantee());
+        SQLCheckEngine.check(sqlStatementContext, Collections.emptyList(), getRules(databaseName), databaseName, metaDataContexts.getMetaData().getDatabases(), connectionSession.getGrantee());
         // TODO Refactor the following branch
         if (sqlStatement instanceof TCLStatement) {
             textProtocolBackendHandler =

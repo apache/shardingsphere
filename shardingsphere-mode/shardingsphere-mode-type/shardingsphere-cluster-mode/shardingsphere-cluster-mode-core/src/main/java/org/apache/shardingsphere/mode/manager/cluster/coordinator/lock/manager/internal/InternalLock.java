@@ -15,42 +15,37 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal;
 
-public interface LockAckAble {
+/**
+ * Internal lock.
+ */
+public interface InternalLock {
     
     /**
-     * Ack locked.
+     * Try lock.
      *
-     * @param ackLockName ack lock name
-     * @param instanceId instance id
+     * @return is locked or not.
      */
-    void ackLock(String ackLockName, String instanceId);
+    boolean tryLock();
     
     /**
-     * Release ack lock.
+     * Try lock.
      *
-     * @param ackLockName ack lock name
-     * @param instanceId instance id
+     * @param timeout timeout
+     * @return is locked or not.
      */
-    void releaseAckLock(String ackLockName, String instanceId);
+    boolean tryLock(long timeout);
     
     /**
-     * Add locked instance id.
+     * Unlock.
+     */
+    void unlock();
+    
+    /**
+     * Is locked.
      *
-     * @param instanceId instance id
+     * @return is locked or not
      */
-    void addLockedInstance(String instanceId);
-    
-    /**
-     * Remove locked instance id.
-     *
-     * @param instanceId instance id
-     */
-    void removeLockedInstance(String instanceId);
-    
-    /**
-     * Re-set lock state.
-     */
-    void reSetLockState();
+    boolean isLocked();
 }

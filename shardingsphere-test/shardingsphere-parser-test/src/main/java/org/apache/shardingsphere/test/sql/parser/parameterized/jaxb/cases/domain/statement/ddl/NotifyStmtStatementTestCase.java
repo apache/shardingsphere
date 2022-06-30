@@ -15,23 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.natived.builder;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import org.apache.shardingsphere.authority.provider.fixture.FixtureStoragePrivilegeHandler;
-import org.junit.Test;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import java.util.Optional;
-
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-public final class StoragePrivilegeHandlerFactoryTest {
-    
-    @Test
-    public void assertFindInstance() {
-        Optional<StoragePrivilegeHandler> actual = StoragePrivilegeHandlerFactory.findInstance("FIXTURE");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(FixtureStoragePrivilegeHandler.class));
-    }
+/**
+ * Notify statement test case.
+ */
+public final class NotifyStmtStatementTestCase extends SQLParserTestCase {
 }

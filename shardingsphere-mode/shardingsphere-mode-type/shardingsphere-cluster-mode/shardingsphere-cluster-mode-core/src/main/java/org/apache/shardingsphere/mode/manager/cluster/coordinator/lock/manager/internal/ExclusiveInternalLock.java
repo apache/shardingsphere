@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,15 +32,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * Inter mutex lock.
+ * Exclusive lock.
  */
 @Slf4j
 @RequiredArgsConstructor
-public final class InterMutexLock implements MutexLock, LockAckAble {
+public final class ExclusiveInternalLock implements InternalLock, LockAckAble {
     
     private final String lockName;
     
-    private final MutexLock sequence;
+    private final InternalLock sequencedInternalLock;
     
     private final LockRegistryService lockService;
     
@@ -61,32 +61,32 @@ public final class InterMutexLock implements MutexLock, LockAckAble {
     
     @Override
     public boolean tryLock(final long timeoutMillis) {
-        if (!sequence.tryLock(TimeoutMilliseconds.DEFAULT_REGISTRY)) {
-            log.debug("Inter mutex sequence lock acquire sequenced failed, lock name: {}", lockName);
+        if (!sequencedInternalLock.tryLock(TimeoutMilliseconds.DEFAULT_REGISTRY)) {
+            log.debug("Exclusive lock acquire sequenced failed, lock name: {}", lockName);
             return false;
         }
         try {
             long timeoutMilliseconds = Math.max(timeoutMillis, TimeoutMilliseconds.MIN_TRY_LOCK);
-            log.debug("Inter mutex sequence lock acquire sequenced success, lock name: {}, timeout milliseconds: {}ms", lockName, timeoutMilliseconds);
+            log.debug("Exclusive lock acquire sequenced success, lock name: {}, timeout milliseconds: {}ms", lockName, timeoutMilliseconds);
             return innerTryLock(lockName, timeoutMilliseconds);
         } finally {
-            sequence.unlock();
-            log.debug("Inter mutex sequence lock release sequenced success, database name: {}", lockName);
+            sequencedInternalLock.unlock();
+            log.debug("Exclusive lock release sequenced success, database name: {}", lockName);
         }
     }
     
     private boolean innerTryLock(final String lockName, final long timeout) {
         if (!synchronizedLockState.compareAndSet(LockState.UNLOCKED, LockState.LOCKING)) {
-            log.debug("Inter mutex lock try Lock set lock state failed, lock name: {}, lock state: {}", lockName, synchronizedLockState.get().name());
+            log.debug("Exclusive lock try Lock set lock state failed, lock name: {}, lock state: {}", lockName, synchronizedLockState.get().name());
             return false;
         }
         if (!isOwner.compareAndSet(false, true)) {
-            log.debug("Inter mutex lock try Lock set lock owner failed, lock name: {}, lock is owner: {}", lockName, isOwner.get());
+            log.debug("Exclusive lock try Lock set lock owner failed, lock name: {}, lock is owner: {}", lockName, isOwner.get());
             return false;
         }
         if (acquire(lockName, timeout)) {
             if (synchronizedLockState.compareAndSet(LockState.LOCKING, LockState.LOCKED)) {
-                log.debug("Inter mutex lock try Lock acquire lock success, lock name: {}", lockName);
+                log.debug("Exclusive lock try Lock acquire lock success, lock name: {}", lockName);
                 return true;
             }
         }

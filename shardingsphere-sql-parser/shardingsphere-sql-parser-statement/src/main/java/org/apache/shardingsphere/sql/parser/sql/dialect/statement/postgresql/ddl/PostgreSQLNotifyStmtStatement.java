@@ -15,18 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.authority.provider.natived.model.subject;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.authority.model.AccessSubject;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.NotifyStmtStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Database access subject.
+ * PostgreSQL notify statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DatabaseAccessSubject implements AccessSubject {
-    
-    private final String database;
+@ToString
+public final class PostgreSQLNotifyStmtStatement extends NotifyStmtStatement implements PostgreSQLStatement {
 }
