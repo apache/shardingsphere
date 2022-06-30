@@ -17,20 +17,28 @@
 
 package org.apache.shardingsphere.infra.instance.definition;
 
-import org.junit.Test;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class JDBCInstanceDefinitionTest {
+/**
+ * Instance definition builder.
+ */
+public interface InstanceDefinitionBuilder extends TypedSPI {
     
-    @Test
-    public void assertNew() {
-        InstanceDefinition actual = InstanceDefinitionBuilderFactory.newInstance(InstanceType.JDBC, "foo_id", -1);
-        assertThat(actual.getInstanceId(), is("foo_id"));
-        assertThat(actual.getIp(), is(""));
-        assertThat(actual.getPort(), is(-1));
-        assertThat(actual.getAttributes(), is(""));
-        assertThat(actual.getInstanceType(), is(InstanceType.JDBC));
-    }
+    /**
+     * Build instance definition.
+     * 
+     * @param instanceId instance id
+     * @param port port
+     * @return built instance definition
+     */
+    InstanceDefinition build(final String instanceId, final int port);
+    
+    /**
+     * Build instance definition.
+     * 
+     * @param instanceId instance id
+     * @param attributes attributes
+     * @return built instance definition
+     */
+    InstanceDefinition build(final String instanceId, final String attributes);
 }

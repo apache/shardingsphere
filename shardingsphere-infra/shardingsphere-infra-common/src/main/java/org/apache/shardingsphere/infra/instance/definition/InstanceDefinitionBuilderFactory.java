@@ -19,12 +19,30 @@ package org.apache.shardingsphere.infra.instance.definition;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 /**
- * Instance definition factory.
+ * Instance definition builder factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class InstanceDefinitionFactory {
+public final class InstanceDefinitionBuilderFactory {
+    
+    static {
+        ShardingSphereServiceLoader.register(InstanceDefinitionBuilder.class);
+    }
+    
+    /**
+     * Create instance of instance definition.
+     *
+     * @param type type
+     * @param instanceId instance ID
+     * @param port port 
+     * @return created instance of instance definition
+     */
+    public static InstanceDefinition newInstance(final InstanceType type, final String instanceId, final int port) {
+        return TypedSPIRegistry.getRegisteredService(InstanceDefinitionBuilder.class, type.name()).build(instanceId, port);
+    }
     
     /**
      * Create instance of instance definition.
@@ -35,12 +53,6 @@ public final class InstanceDefinitionFactory {
      * @return created instance of instance definition
      */
     public static InstanceDefinition newInstance(final InstanceType type, final String instanceId, final String attributes) {
-        if (InstanceType.JDBC == type) {
-            return new JDBCInstanceDefinition(instanceId);
-        }
-        if (InstanceType.PROXY == type) {
-            return new ProxyInstanceDefinition(instanceId, attributes);
-        }
-        throw new UnsupportedOperationException(type.name());
+        return TypedSPIRegistry.getRegisteredService(InstanceDefinitionBuilder.class, type.name()).build(instanceId, attributes);
     }
 }

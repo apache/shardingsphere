@@ -28,7 +28,7 @@ public final class ProxyInstanceDefinitionTest {
     
     @Test
     public void assertNew() {
-        InstanceDefinition actual = new ProxyInstanceDefinition(3307, "foo_id");
+        InstanceDefinition actual = new ProxyInstanceDefinition("foo_id", 3307);
         assertThat(actual.getInstanceId(), is("foo_id"));
         assertNotNull(actual.getIp());
         assertThat(actual.getPort(), is(3307));
