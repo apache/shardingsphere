@@ -17,43 +17,20 @@
 
 package org.apache.shardingsphere.infra.instance.definition;
 
-/**
- * Instance definition.
- */
-public interface InstanceDefinition {
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class JDBCInstanceDefinitionTest {
     
-    /**
-     * Get instance ID.
-     * 
-     * @return instance ID
-     */
-    String getInstanceId();
-    
-    /**
-     * Get IP.
-     * 
-     * @return IP
-     */
-    String getIp();
-    
-    /**
-     * Get port.
-     * 
-     * @return port
-     */
-    int getPort();
-    
-    /**
-     * Get instance attributes.
-     *
-     * @return got instance attributes, format is ip@uniqueSign
-     */
-    String getAttributes();
-    
-    /**
-     * Get type.
-     * 
-     * @return type
-     */
-    InstanceType getInstanceType();
+    @Test
+    public void assertNew() {
+        InstanceDefinition actual = new JDBCInstanceDefinition("foo_id");
+        assertThat(actual.getInstanceId(), is("foo_id"));
+        assertThat(actual.getIp(), is(""));
+        assertThat(actual.getPort(), is(-1));
+        assertThat(actual.getAttributes(), is(""));
+        assertThat(actual.getInstanceType(), is(InstanceType.JDBC));
+    }
 }

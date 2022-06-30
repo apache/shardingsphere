@@ -17,43 +17,35 @@
 
 package org.apache.shardingsphere.infra.instance.definition;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
- * Instance definition.
+ * JDBC Instance definition.
  */
-public interface InstanceDefinition {
+@RequiredArgsConstructor
+@Getter
+public final class JDBCInstanceDefinition implements InstanceDefinition {
     
-    /**
-     * Get instance ID.
-     * 
-     * @return instance ID
-     */
-    String getInstanceId();
+    private final String instanceId;
     
-    /**
-     * Get IP.
-     * 
-     * @return IP
-     */
-    String getIp();
+    @Override
+    public String getIp() {
+        return "";
+    }
     
-    /**
-     * Get port.
-     * 
-     * @return port
-     */
-    int getPort();
+    @Override
+    public int getPort() {
+        return -1;
+    }
     
-    /**
-     * Get instance attributes.
-     *
-     * @return got instance attributes, format is ip@uniqueSign
-     */
-    String getAttributes();
+    @Override
+    public String getAttributes() {
+        return "";
+    }
     
-    /**
-     * Get type.
-     * 
-     * @return type
-     */
-    InstanceType getInstanceType();
+    @Override
+    public InstanceType getInstanceType() {
+        return InstanceType.JDBC;
+    }
 }

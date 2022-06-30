@@ -17,43 +17,30 @@
 
 package org.apache.shardingsphere.infra.instance.definition;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
- * Instance definition.
+ * Instance definition factory.
  */
-public interface InstanceDefinition {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class InstanceDefinitionFactory {
     
     /**
-     * Get instance ID.
+     * Create instance of instance definition.
      * 
-     * @return instance ID
+     * @param type type
+     * @param instanceId instance ID
+     * @param attributes attributes 
+     * @return created instance of instance definition
      */
-    String getInstanceId();
-    
-    /**
-     * Get IP.
-     * 
-     * @return IP
-     */
-    String getIp();
-    
-    /**
-     * Get port.
-     * 
-     * @return port
-     */
-    int getPort();
-    
-    /**
-     * Get instance attributes.
-     *
-     * @return got instance attributes, format is ip@uniqueSign
-     */
-    String getAttributes();
-    
-    /**
-     * Get type.
-     * 
-     * @return type
-     */
-    InstanceType getInstanceType();
+    public static InstanceDefinition newInstance(final InstanceType type, final String instanceId, final String attributes) {
+        if (InstanceType.JDBC == type) {
+            return new JDBCInstanceDefinition(instanceId);
+        }
+        if (InstanceType.PROXY == type) {
+            return new ProxyInstanceDefinition(instanceId, attributes);
+        }
+        throw new UnsupportedOperationException(type.name());
+    }
 }

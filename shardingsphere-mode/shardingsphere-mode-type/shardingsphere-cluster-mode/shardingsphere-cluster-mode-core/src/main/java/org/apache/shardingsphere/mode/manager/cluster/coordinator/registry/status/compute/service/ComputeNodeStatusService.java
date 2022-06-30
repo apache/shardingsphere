@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionFactory;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
@@ -128,8 +129,8 @@ public final class ComputeNodeStatusService {
     
     private Collection<ComputeNodeInstance> loadComputeNodeInstances(final InstanceType type) {
         Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(type));
-        return onlineComputeNodes.stream()
-                .map(each -> loadComputeNodeInstance(new InstanceDefinition(type, each, repository.get(ComputeNode.getOnlineInstanceNodePath(each, type))))).collect(Collectors.toList());
+        return onlineComputeNodes.stream().map(
+                each -> loadComputeNodeInstance(InstanceDefinitionFactory.newInstance(type, each, repository.get(ComputeNode.getOnlineInstanceNodePath(each, type))))).collect(Collectors.toList());
     }
     
     /**
