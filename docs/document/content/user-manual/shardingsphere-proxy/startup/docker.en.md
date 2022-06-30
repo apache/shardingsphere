@@ -46,7 +46,7 @@ docker rm tmp
 
 Since the network conditions inside the container may differ from those of the host, if errors such as "cannot connect to the database" occurs, please make sure that the IP of the database specified in the `conf/config-*.yaml` configuration file can be accessed from inside the Docker container.
 
-For details, please refer to [ShardingSphere-Proxy quick start manual - binary distribution packages](/cn/user-manual/shardingsphere-proxy/startup/bin/).
+For details, please refer to [ShardingSphere-Proxy quick start manual - binary distribution packages](/en/user-manual/shardingsphere-proxy/startup/bin/).
 
 3. (Optional) Introduce third-party dependencies or customized algorithms
 
@@ -55,7 +55,7 @@ If you have any of the following requirements:
 * Implement customized algorithms;
 * Use Etcd as Registry Center in cluster mode.
 
-Please create `ext-lib` directory anywhere inside the host and refer to the steps in [ShardingSphere-Proxy quick start manual - binary distribution packages](/cn/user-manual/shardingsphere-proxy/startup/bin/).
+Please create `ext-lib` directory anywhere inside the host and refer to the steps in [ShardingSphere-Proxy quick start manual - binary distribution packages](/en/user-manual/shardingsphere-proxy/startup/bin/).
 
 4. Start ShardingSphere-Proxy container
 
@@ -74,7 +74,7 @@ Customized JVM related parameters can be set according to environment variable `
 
 5. Use Client to connect to ShardingSphere-Proxy
 
-Please refer to [ShardingSphere-Proxy quick start manual - binary distribution packages](/cn/user-manual/shardingsphere-proxy/startup/bin/).
+Please refer to [ShardingSphere-Proxy quick start manual - binary distribution packages](/en/user-manual/shardingsphere-proxy/startup/bin/).
 
 ## Configuration Example
 

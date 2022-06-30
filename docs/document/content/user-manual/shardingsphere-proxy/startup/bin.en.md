@@ -19,15 +19,15 @@ Obtain the binary release package of ShardingSphere-Proxy on the [download page]
 
 2. Configure `conf/server.yaml`
 
-ShardingSphere-Proxy's operational mode is configured on `server.yaml`, and its configuration mode is the same with that of ShardingSphere-JDBC. Refer to [mode of configuration](/cn/user-manual/shardingsphere-jdbc/yaml-config/mode/).
+ShardingSphere-Proxy's operational mode is configured on `server.yaml`, and its configuration mode is the same with that of ShardingSphere-JDBC. Refer to [mode of configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/mode/).
 
 Please refer to the following links for other configuration items:
-* [Permission configuration](/cn/user-manual/shardingsphere-proxy/yaml-config/authentication/)
-* [Property configuration](/cn/user-manual/shardingsphere-proxy/yaml-config/props/)
+* [Permission configuration](/en/user-manual/shardingsphere-proxy/yaml-config/authentication/)
+* [Property configuration](/en/user-manual/shardingsphere-proxy/yaml-config/props/)
 
 3. Configure `conf/config-*.yaml`
 
-Modify files named with the prefix `config-` in the `conf` directory, such as `conf/config-sharding.yaml` file and configure sharding rules and read/write splitting rules. See [Confuguration Mannual](/cn/user-manual/shardingsphere-proxy/yaml-config/) for configuration methods. The `*` part of the `config-*.yaml` file can be named whatever you want.
+Modify files named with the prefix `config-` in the `conf` directory, such as `conf/config-sharding.yaml` file and configure sharding rules and read/write splitting rules. See [Confuguration Mannual](/en/user-manual/shardingsphere-proxy/yaml-config/) for configuration methods. The `*` part of the `config-*.yaml` file can be named whatever you want.
 
 ShardingSphere-Proxy supports multiple logical data sources. Each YAML configuration file named with the prefix `config-` is a logical data source.
 
@@ -48,7 +48,7 @@ If the cluster mode uses Etcd, the client drivers of Etcd [jetcd-core 0.5.0](htt
 6. Introduce dependencies required by distributed transactions (Optional)
 
 It is the same with ShardingSphere-JDBC.
-Please refer to [Distributed Transaction](/cn/user-manual/shardingsphere-jdbc/special-api/transaction/) for more details.
+Please refer to [Distributed Transaction](/en/user-manual/shardingsphere-jdbc/special-api/transaction/) for more details.
 
 7. Introduce custom algorithm (Optional)
 
@@ -60,7 +60,7 @@ If you need to use a user-defined algorithm class, you can configure custom algo
     4. Writes the fully qualified class name of the implementation class to a file `org.apache.shardingsphere.sharding.spi.ShardingAlgorithm`
     5. Package the above Java files into jar packages.
     6. Copy the above jar package to the `ext-lib` directory.
-    7. Configure the Java file reference of the above custom algorithm implementation class in a YAML file, see [Configuration rule](/cn/user-manual/shardingsphere-proxy/yaml-config/) for more details.
+    7. Configure the Java file reference of the above custom algorithm implementation class in a YAML file, see [Configuration rule](/en/user-manual/shardingsphere-proxy/yaml-config/) for more details.
 
 8. Start ShardingSphere-Proxy
 

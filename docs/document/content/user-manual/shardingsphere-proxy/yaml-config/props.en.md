@@ -31,7 +31,7 @@ Apache ShardingSphere can configure system-level configuration through property 
 | proxy-default-port (?)              | String  | Proxy specifies the default window through configuration files.                                                                                                                 | 3307     | False      |
 | proxy-netty-backlog (?)             | int     | Proxy specifies the default netty back_log parameter through configuration files.                                                                                                     | 1024     | False      |
 
-Property configuration can be modified according to [DistSQL#RAL](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/).
+Property configuration can be modified according to [DistSQL#RAL](/en/user-manual/shardingsphere-proxy/distsql/syntax/ral/).
 Properties that support dynamic change can take effect immediately. Properties that do not support dynamic change take effect after a restart.
 
 ## Sample
