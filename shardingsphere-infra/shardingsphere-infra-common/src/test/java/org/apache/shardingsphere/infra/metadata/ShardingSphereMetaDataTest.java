@@ -65,11 +65,11 @@ public final class ShardingSphereMetaDataTest {
     
     @Before
     public void setUp() throws SQLException {
-        when(globalRuleMetaData.findRules(ResourceHeldRule.class)).thenReturn(Collections.singletonList(globalRuleMedataResourceHeldRule));
         when(shardingSphereDatabase.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         when(shardingSphereDatabase.getResource()).thenReturn(shardingSphereResource);
         when(shardingSphereDatabase.getResource().getDataSources()).thenReturn(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mockedDataSource));
         when(shardingSphereDatabase.getRuleMetaData().findRules(ResourceHeldRule.class)).thenReturn(Collections.singletonList(shardingRuleMetaDataResourceHeldRule));
+        when(globalRuleMetaData.findRules(ResourceHeldRule.class)).thenReturn(Collections.singletonList(globalRuleMedataResourceHeldRule));
         shardingSphereMetaData = new ShardingSphereMetaData(new LinkedHashMap<>(), globalRuleMetaData, new ConfigurationProperties(new Properties()));
     }
     
