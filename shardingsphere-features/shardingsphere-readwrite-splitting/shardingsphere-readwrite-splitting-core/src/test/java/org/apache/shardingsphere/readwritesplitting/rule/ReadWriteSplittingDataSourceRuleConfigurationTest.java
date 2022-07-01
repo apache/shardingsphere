@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.readwritesplitting.rule;
 
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
-
 import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.junit.Before;
@@ -41,7 +40,7 @@ public final class ReadWriteSplittingDataSourceRuleConfigurationTest {
         readwriteSplittingDataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("ds",
                 new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds_0", "read_ds_1")), null, "");
         readwriteSplittingDataSourceRuleConfigDynamic = new ReadwriteSplittingDataSourceRuleConfiguration("ds", null,
-                new DynamicReadwriteSplittingStrategyConfiguration("readwrite_ds"), "");
+                new DynamicReadwriteSplittingStrategyConfiguration("readwrite_ds", "false"), "");
     }
     
     @Test
