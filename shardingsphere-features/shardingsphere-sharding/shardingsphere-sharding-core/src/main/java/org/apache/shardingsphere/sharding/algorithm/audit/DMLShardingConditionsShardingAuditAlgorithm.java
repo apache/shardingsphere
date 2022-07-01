@@ -33,6 +33,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatemen
 import java.util.List;
 import java.util.Properties;
 
+/**
+ * DML sharding conditions sharding audit algorithm.
+ */
 public final class DMLShardingConditionsShardingAuditAlgorithm implements ShardingAuditAlgorithm {
 
     @Getter
