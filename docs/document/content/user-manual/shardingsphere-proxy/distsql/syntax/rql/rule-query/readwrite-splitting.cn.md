@@ -15,6 +15,7 @@ SHOW READWRITE_SPLITTING RULES [FROM databaseName]
 | --------------------------- | ------------------------------------ |
 | name                        | 规则名称                               |
 | auto_aware_data_source_name | 自动发现数据源名称（配置动态读写分离规则显示）|
+| write_data_source_query_enabled | 读库全部下线，主库是否承担读流量      |
 | write_data_source_name      | 写数据源名称                            |
 | read_data_source_names      | 读数据源名称列表                         |
 | load_balancer_type          | 负载均衡算法类型                         |
@@ -37,9 +38,9 @@ mysql> show readwrite_splitting rules;
 ```sql
 mysql> show readwrite_splitting rules from readwrite_splitting_db;
 +--------------+-----------------------------+------------------------+------------------------+--------------------+---------------------+
-| name         | auto_aware_data_source_name | write_data_source_name | read_data_source_names | load_balancer_type | load_balancer_props |
+| name         | auto_aware_data_source_name | write_data_source_query_enabled | write_data_source_name | read_data_source_names | load_balancer_type | load_balancer_props |
 +--------------+-----------------------------+------------------------+------------------------+--------------------+---------------------+
-| readwrite_ds | ms_group_0                  |                        |                        | random             | read_weight=2:1     |
+| readwrite_ds | ms_group_0                  |                                 |                        |                        | random             | read_weight=2:1     |
 +-------+-----------------------------+------------------------+------------------------+--------------------+---------------------+
 1 row in set (0.01 sec)
 ```
@@ -48,9 +49,9 @@ mysql> show readwrite_splitting rules from readwrite_splitting_db;
 ```sql
 mysql> show readwrite_splitting rules from readwrite_splitting_db;
 +--------------+-----------------------------+------------------------+------------------------+--------------------+---------------------+
-| name         | auto_aware_data_source_name | write_data_source_name | read_data_source_names | load_balancer_type | load_balancer_props |
+| name         | auto_aware_data_source_name | write_data_source_query_enabled | write_data_source_name | read_data_source_names | load_balancer_type | load_balancer_props |
 +--------------+-----------------------------+------------------------+------------------------+--------------------+---------------------+
-| readwrite_ds | ms_group_0                  | write_ds               | read_ds_0, read_ds_1   | random             | read_weight=2:1     |
+| readwrite_ds | ms_group_0                  |                                 | write_ds               | read_ds_0, read_ds_1   | random             | read_weight=2:1     |
 +-------+-----------------------------+------------------------+------------------------+--------------------+---------------------+
 1 row in set (0.00 sec)
 ```
