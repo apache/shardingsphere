@@ -27,4 +27,5 @@
     <create-function sql-case-id="create_function_call_spec_java" />
     <create-function sql-case-id="create_function_call_spec_c" />
     <create-function sql-case-id="create_function_with_set_var" />
+    <create-function sql-case-id="create_function_with_create_view" />
 </sql-parser-test-cases>
