@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfiguratio
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
-import org.apache.shardingsphere.mode.manager.instance.InstanceIdGeneratorFactory;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListener;
 import org.apache.shardingsphere.mode.manager.listener.ContextManagerLifecycleListenerFactory;
 import org.apache.shardingsphere.proxy.backend.config.ProxyConfiguration;
@@ -61,8 +60,7 @@ public final class BootstrapInitializer {
     
     private ContextManager createContextManager(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig, final int port) throws SQLException {
         ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
-        InstanceDefinition instanceDefinition = InstanceDefinitionBuilderFactory.newInstance(
-                "Proxy", InstanceIdGeneratorFactory.getInstance(modeConfig).generate("Proxy"), port);
+        InstanceDefinition instanceDefinition = InstanceDefinitionBuilderFactory.newInstance("Proxy", port);
         ContextManagerBuilderParameter parameter = new ContextManagerBuilderParameter(modeConfig, proxyConfig.getDatabaseConfigurations(),
                 proxyConfig.getGlobalConfiguration().getRules(), proxyConfig.getGlobalConfiguration().getProperties(), proxyConfig.getGlobalConfiguration().getLabels(), instanceDefinition);
         return ContextManagerBuilderFactory.getInstance(modeConfig).build(parameter);

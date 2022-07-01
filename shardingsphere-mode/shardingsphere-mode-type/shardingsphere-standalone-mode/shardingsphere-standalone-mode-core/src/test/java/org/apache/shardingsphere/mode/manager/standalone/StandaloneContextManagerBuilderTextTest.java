@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
-import org.apache.shardingsphere.mode.manager.instance.InstanceIdGeneratorFactory;
 import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
@@ -37,6 +36,8 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -61,7 +62,7 @@ public final class StandaloneContextManagerBuilderTextTest {
         Map<String, DatabaseConfiguration> databaseConfigs = Collections.singletonMap(
                 "foo_db", new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singleton(mock(RuleConfiguration.class))));
         Collection<RuleConfiguration> globalRuleConfigs = Collections.singleton(mock(RuleConfiguration.class));
-        InstanceDefinition instanceDefinition = new InstanceDefinition(InstanceIdGeneratorFactory.getInstance(null).generate("Proxy"), "Proxy", 3307);
+        InstanceDefinition instanceDefinition = new InstanceDefinition(new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString(), "Proxy", 3307);
         return new ContextManagerBuilderParameter(modeConfig, databaseConfigs, globalRuleConfigs, new Properties(), Collections.emptyList(), instanceDefinition);
     }
 }
