@@ -17,43 +17,31 @@
 
 package org.apache.shardingsphere.infra.instance.definition;
 
-import com.google.common.base.Joiner;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 
 /**
- * Server instance definition.
+ * JDBC instance definition.
  */
 @Getter
-public final class ServerInstanceDefinition implements InstanceDefinition {
-    
-    private static final String DELIMITER = "@";
+public final class JDBCInstanceDefinition implements InstanceDefinition {
     
     private final String instanceId;
     
-    private final String instanceType;
-    
     private final String ip;
     
-    private final int port;
-    
-    public ServerInstanceDefinition(final String instanceId, final String instanceType, final int port) {
+    public JDBCInstanceDefinition(final String instanceId) {
         this.instanceId = instanceId;
-        this.instanceType = instanceType;
         ip = IpUtils.getIp();
-        this.port = port;
     }
     
-    public ServerInstanceDefinition(final String instanceId, final String instanceType, final String attributes) {
-        this.instanceId = instanceId;
-        this.instanceType = instanceType;
-        String[] attributesList = attributes.split(DELIMITER);
-        ip = attributesList[0];
-        port = Integer.parseInt(attributesList[1]);
+    @Override
+    public InstanceType getInstanceType() {
+        return InstanceType.JDBC;
     }
     
     @Override
     public String getAttributes() {
-        return Joiner.on(DELIMITER).join(ip, port);
+        return "";
     }
 }

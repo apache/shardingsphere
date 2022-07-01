@@ -18,7 +18,8 @@
 package org.apache.shardingsphere.proxy.instance;
 
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBuilderFactory;
-import org.apache.shardingsphere.infra.instance.definition.ServerInstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.infra.instance.definition.ProxyInstanceDefinition;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.endsWith;
@@ -30,11 +31,11 @@ public final class ProxyInstanceDefinitionBuilderTest {
     
     @Test
     public void assertNewInstance() {
-        ServerInstanceDefinition actual = (ServerInstanceDefinition) InstanceDefinitionBuilderFactory.newInstance("Proxy", 3307);
+        ProxyInstanceDefinition actual = (ProxyInstanceDefinition) InstanceDefinitionBuilderFactory.newInstance("Proxy", 3307);
         assertNotNull(actual.getInstanceId());
         assertNotNull(actual.getIp());
         assertThat(actual.getPort(), is(3307));
         assertThat(actual.getAttributes(), endsWith("@3307"));
-        assertThat(actual.getInstanceType(), is("Proxy"));
+        assertThat(actual.getInstanceType(), is(InstanceType.PROXY));
     }
 }

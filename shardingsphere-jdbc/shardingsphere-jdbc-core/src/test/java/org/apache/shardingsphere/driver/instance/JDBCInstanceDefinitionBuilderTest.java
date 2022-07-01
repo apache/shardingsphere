@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.instance;
 
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBuilderFactory;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -33,6 +34,6 @@ public final class JDBCInstanceDefinitionBuilderTest {
         assertNotNull(actual.getInstanceId());
         assertNotNull(actual.getIp());
         assertThat(actual.getAttributes(), is(""));
-        assertThat(actual.getInstanceType(), is("JDBC"));
+        assertThat(actual.getInstanceType(), is(InstanceType.JDBC));
     }
 }

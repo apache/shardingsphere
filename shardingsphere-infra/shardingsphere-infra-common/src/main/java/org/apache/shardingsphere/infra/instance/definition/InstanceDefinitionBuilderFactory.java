@@ -20,11 +20,7 @@ package org.apache.shardingsphere.infra.instance.definition;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
-
-import java.util.Collection;
-import java.util.stream.Collectors;
 
 /**
  * Instance definition builder factory.
@@ -45,14 +41,5 @@ public final class InstanceDefinitionBuilderFactory {
      */
     public static InstanceDefinition newInstance(final String type, final int port) {
         return TypedSPIRegistry.getRegisteredService(InstanceDefinitionBuilder.class, type).build(port);
-    }
-    
-    /**
-     * Get all builder types.
-     * 
-     * @return got all builder types
-     */
-    public static Collection<String> getAllTypes() {
-        return ShardingSphereServiceLoader.getServiceInstances(InstanceDefinitionBuilder.class).stream().map(TypedSPI::getType).collect(Collectors.toList());
     }
 }

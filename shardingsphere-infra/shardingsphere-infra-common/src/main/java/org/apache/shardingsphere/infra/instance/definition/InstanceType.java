@@ -15,26 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.instance;
-
-import org.apache.shardingsphere.infra.instance.definition.JDBCInstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBuilder;
-
-import java.util.UUID;
+package org.apache.shardingsphere.infra.instance.definition;
 
 /**
- * JDBC instance definition builder.
+ * Instance type.
  */
-public final class JDBCInstanceDefinitionBuilder implements InstanceDefinitionBuilder {
+public enum InstanceType {
     
-    @Override
-    public InstanceDefinition build(final int port) {
-        return new JDBCInstanceDefinition(UUID.randomUUID().toString());
-    }
-    
-    @Override
-    public String getType() {
-        return "JDBC";
-    }
+    JDBC, PROXY
 }

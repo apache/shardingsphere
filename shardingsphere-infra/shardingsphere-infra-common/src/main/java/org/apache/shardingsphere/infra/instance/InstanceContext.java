@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.instance;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.lock.LockContext;
 
@@ -139,10 +140,10 @@ public final class InstanceContext {
      * @param labels collection of contained label
      * @return compute node instances
      */
-    public List<InstanceDefinition> getComputeNodeInstances(final String instanceType, final Collection<String> labels) {
+    public List<InstanceDefinition> getComputeNodeInstances(final InstanceType instanceType, final Collection<String> labels) {
         List<InstanceDefinition> result = new ArrayList<>(computeNodeInstances.size());
         for (ComputeNodeInstance each : computeNodeInstances) {
-            if (each.getInstanceDefinition().getInstanceType().equals(instanceType) && labels.stream().anyMatch(((Collection<String>) each.getLabels())::contains)) {
+            if (each.getInstanceDefinition().getInstanceType() == instanceType && labels.stream().anyMatch(((Collection<String>) each.getLabels())::contains)) {
                 result.add(each.getInstanceDefinition());
             }
         }

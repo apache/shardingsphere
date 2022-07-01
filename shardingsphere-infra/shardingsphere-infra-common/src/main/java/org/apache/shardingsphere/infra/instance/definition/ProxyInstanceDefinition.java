@@ -17,29 +17,44 @@
 
 package org.apache.shardingsphere.infra.instance.definition;
 
+import com.google.common.base.Joiner;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 
 /**
- * Client instance definition.
+ * Proxy instance definition.
  */
 @Getter
-public final class ClientInstanceDefinition implements InstanceDefinition {
+public final class ProxyInstanceDefinition implements InstanceDefinition {
+    
+    private static final String DELIMITER = "@";
     
     private final String instanceId;
     
-    private final String instanceType;
-    
     private final String ip;
     
-    public ClientInstanceDefinition(final String instanceId, final String instanceType) {
+    private final int port;
+    
+    public ProxyInstanceDefinition(final String instanceId, final int port) {
         this.instanceId = instanceId;
-        this.instanceType = instanceType;
         ip = IpUtils.getIp();
+        this.port = port;
+    }
+    
+    public ProxyInstanceDefinition(final String instanceId, final String attributes) {
+        this.instanceId = instanceId;
+        String[] attributesList = attributes.split(DELIMITER);
+        ip = attributesList[0];
+        port = Integer.parseInt(attributesList[1]);
+    }
+    
+    @Override
+    public InstanceType getInstanceType() {
+        return InstanceType.PROXY;
     }
     
     @Override
     public String getAttributes() {
-        return "";
+        return Joiner.on(DELIMITER).join(ip, port);
     }
 }

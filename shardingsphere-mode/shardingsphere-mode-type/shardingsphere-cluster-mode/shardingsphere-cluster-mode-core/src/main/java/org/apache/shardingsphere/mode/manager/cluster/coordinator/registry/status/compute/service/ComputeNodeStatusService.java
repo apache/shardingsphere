@@ -21,10 +21,10 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.definition.ClientInstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBuilderFactory;
-import org.apache.shardingsphere.infra.instance.definition.ServerInstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.infra.instance.definition.JDBCInstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.ProxyInstanceDefinition;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -122,21 +122,21 @@ public final class ComputeNodeStatusService {
      */
     public Collection<ComputeNodeInstance> loadAllComputeNodeInstances() {
         Collection<ComputeNodeInstance> result = new LinkedList<>();
-        for (String each : InstanceDefinitionBuilderFactory.getAllTypes()) {
+        for (InstanceType each : InstanceType.values()) {
             result.addAll(loadComputeNodeInstances(each));
         }
         return result;
     }
     
-    private Collection<ComputeNodeInstance> loadComputeNodeInstances(final String type) {
-        Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(type));
-        return onlineComputeNodes.stream().map(each -> loadComputeNodeInstance(createInstanceDefinition(each, type))).collect(Collectors.toList());
+    private Collection<ComputeNodeInstance> loadComputeNodeInstances(final InstanceType instanceType) {
+        Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType));
+        return onlineComputeNodes.stream().map(each -> loadComputeNodeInstance(createInstanceDefinition(each, instanceType))).collect(Collectors.toList());
     }
     
-    private InstanceDefinition createInstanceDefinition(final String instanceId, final String type) {
-        return "JDBC".equalsIgnoreCase(type)
-                ? new ClientInstanceDefinition(instanceId, "JDBC")
-                : new ServerInstanceDefinition(instanceId, "Proxy", repository.get(ComputeNode.getOnlineInstanceNodePath(instanceId, type)));
+    private InstanceDefinition createInstanceDefinition(final String instanceId, final InstanceType type) {
+        return InstanceType.JDBC == type
+                ? new JDBCInstanceDefinition(instanceId)
+                : new ProxyInstanceDefinition(instanceId, repository.get(ComputeNode.getOnlineInstanceNodePath(instanceId, type)));
     }
     
     /**

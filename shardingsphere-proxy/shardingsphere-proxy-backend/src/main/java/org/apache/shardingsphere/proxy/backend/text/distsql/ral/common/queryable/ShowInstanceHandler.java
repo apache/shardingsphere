@@ -20,7 +20,8 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryabl
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowInstanceStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.ServerInstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.infra.instance.definition.ProxyInstanceDefinition;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
@@ -60,7 +61,7 @@ public final class ShowInstanceHandler extends QueryableRALBackendHandler<ShowIn
             return Collections.singletonList(buildRow(contextManager.getInstanceContext().getInstance(), modeType));
         }
         Collection<ComputeNodeInstance> instances = contextManager.getInstanceContext().getComputeNodeInstances().stream()
-                .filter(each -> "Proxy".equals(each.getInstanceDefinition().getInstanceType())).collect(Collectors.toList());
+                .filter(each -> InstanceType.PROXY == each.getInstanceDefinition().getInstanceType()).collect(Collectors.toList());
         return instances.isEmpty() ? Collections.emptyList() : instances.stream().filter(Objects::nonNull).map(each -> buildRow(each, modeType)).collect(Collectors.toList());
     }
     
@@ -68,7 +69,7 @@ public final class ShowInstanceHandler extends QueryableRALBackendHandler<ShowIn
         String labels = null == instance.getLabels() ? "" : String.join(",", instance.getLabels());
         InstanceDefinition instanceDefinition = instance.getInstanceDefinition();
         return new LocalDataQueryResultRow(instanceDefinition.getInstanceId(), instanceDefinition.getIp(),
-                instanceDefinition instanceof ServerInstanceDefinition ? ((ServerInstanceDefinition) instanceDefinition).getPort() : -1,
+                instanceDefinition instanceof ProxyInstanceDefinition ? ((ProxyInstanceDefinition) instanceDefinition).getPort() : -1,
                 instance.getState().getCurrentState().name(), modeType, labels);
     }
 }

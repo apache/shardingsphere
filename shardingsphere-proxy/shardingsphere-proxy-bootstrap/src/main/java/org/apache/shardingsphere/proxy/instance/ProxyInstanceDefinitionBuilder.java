@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.instance;
 
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBuilder;
-import org.apache.shardingsphere.infra.instance.definition.ServerInstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.ProxyInstanceDefinition;
 
 import java.util.UUID;
 
@@ -30,12 +30,7 @@ public final class ProxyInstanceDefinitionBuilder implements InstanceDefinitionB
     
     @Override
     public InstanceDefinition build(final int port) {
-        return new ServerInstanceDefinition(UUID.randomUUID().toString(), getType(), port);
-    }
-    
-    @Override
-    public InstanceDefinition build(final String instanceId, final String attributes) {
-        return new ServerInstanceDefinition(instanceId, getType(), attributes);
+        return new ProxyInstanceDefinition(UUID.randomUUID().toString(), port);
     }
     
     @Override

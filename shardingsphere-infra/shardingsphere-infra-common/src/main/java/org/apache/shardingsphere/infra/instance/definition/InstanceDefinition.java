@@ -34,7 +34,7 @@ public interface InstanceDefinition {
      * 
      * @return instance type
      */
-    String getInstanceType();
+    InstanceType getInstanceType();
     
     /**
      * Get IP.
