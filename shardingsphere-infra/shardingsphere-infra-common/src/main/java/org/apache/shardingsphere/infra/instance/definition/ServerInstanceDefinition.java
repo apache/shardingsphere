@@ -53,7 +53,7 @@ public final class ServerInstanceDefinition implements InstanceDefinition {
     }
     
     @Override
-    public final String getAttributes() {
+    public String getAttributes() {
         return Joiner.on(DELIMITER).join(ip, port);
     }
 }
