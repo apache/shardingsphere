@@ -21,6 +21,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCConnectionManager;
@@ -47,6 +48,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * JDBC backend connection.
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
 public final class JDBCBackendConnection implements BackendConnection<Void>, ExecutorJDBCConnectionManager {
@@ -65,12 +67,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     
     private final ResourceLock resourceLock = new ResourceLock();
     
-    private final AtomicBoolean closed;
-    
-    public JDBCBackendConnection(final ConnectionSession connectionSession) {
-        this.connectionSession = connectionSession;
-        closed = new AtomicBoolean(false);
-    }
+    private final AtomicBoolean closed = new AtomicBoolean(false);
     
     @Override
     public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
