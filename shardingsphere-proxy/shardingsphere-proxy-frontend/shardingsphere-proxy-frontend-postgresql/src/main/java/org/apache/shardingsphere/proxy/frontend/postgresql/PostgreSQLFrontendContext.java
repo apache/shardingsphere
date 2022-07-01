@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.context;
+package org.apache.shardingsphere.proxy.frontend.postgresql;
+
+import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
 
 /**
- * Frontend context.
+ * {@link FrontendContext} implementations for PostgreSQL.
  */
-public interface FrontendContext {
+public final class PostgreSQLFrontendContext implements FrontendContext {
     
-    /**
-     * Whether Proxy should use same thread to execute tasks.
-     *
-     * @param message message
-     * @return is same thread required
-     */
-    boolean isRequiredSameThreadForConnection(Object message);
+    @Override
+    public boolean isRequiredSameThreadForConnection(final Object message) {
+        return true;
+    }
 }

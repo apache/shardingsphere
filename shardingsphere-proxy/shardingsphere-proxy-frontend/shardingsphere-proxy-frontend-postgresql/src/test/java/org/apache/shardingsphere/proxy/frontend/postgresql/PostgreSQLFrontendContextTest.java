@@ -15,18 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.context;
+package org.apache.shardingsphere.proxy.frontend.postgresql;
 
-/**
- * Frontend context.
- */
-public interface FrontendContext {
+import org.junit.Test;
+
+import static org.junit.Assert.assertTrue;
+
+public final class PostgreSQLFrontendContextTest {
     
-    /**
-     * Whether Proxy should use same thread to execute tasks.
-     *
-     * @param message message
-     * @return is same thread required
-     */
-    boolean isRequiredSameThreadForConnection(Object message);
+    @Test
+    public void assertIsRequiredSameThreadForConnection() {
+        assertTrue(new PostgreSQLFrontendContext().isRequiredSameThreadForConnection(null));
+    }
 }

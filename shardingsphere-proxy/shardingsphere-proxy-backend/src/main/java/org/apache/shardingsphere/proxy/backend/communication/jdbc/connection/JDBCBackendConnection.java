@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
@@ -43,6 +42,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * JDBC backend connection.
@@ -66,8 +66,6 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     private final ResourceLock resourceLock = new ResourceLock();
     
     private final AtomicBoolean closed;
-    
-    private volatile int connectionReferenceCount;
     
     public JDBCBackendConnection(final ConnectionSession connectionSession) {
         this.connectionSession = connectionSession;
@@ -180,10 +178,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     
     @Override
     public Void prepareForTaskExecution() {
-        synchronized (this) {
-            connectionReferenceCount++;
-            return null;
-        }
+        return null;
     }
     
     @Override
@@ -198,9 +193,6 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     @Override
     public Void closeExecutionResources() throws BackendConnectionException {
         synchronized (this) {
-            if (connectionReferenceCount > 0 && connectionReferenceCount-- > 1) {
-                return null;
-            }
             Collection<Exception> result = new LinkedList<>();
             result.addAll(closeDatabaseCommunicationEngines(false));
             result.addAll(closeFederationExecutor());
