@@ -29,15 +29,15 @@ public final class MySQLFrontendContextTest {
     
     @Test
     public void assertIsRequiredSameThreadForConnection() {
-        ByteBuf comStmtExecuteMessage = Unpooled.wrappedBuffer(new byte[]{0x00, (byte) MySQLCommandPacketType.COM_STMT_EXECUTE.getValue()});
-        ByteBuf comStmtCloseMessage = Unpooled.wrappedBuffer(new byte[]{0x00, (byte) MySQLCommandPacketType.COM_STMT_CLOSE.getValue()});
-        ByteBuf comStmtSendLongData = Unpooled.wrappedBuffer(new byte[]{0x00, (byte) MySQLCommandPacketType.COM_STMT_SEND_LONG_DATA.getValue()});
         MySQLFrontendContext actual = new MySQLFrontendContext();
+        ByteBuf comStmtExecuteMessage = Unpooled.wrappedBuffer(new byte[]{0x00, (byte) MySQLCommandPacketType.COM_STMT_EXECUTE.getValue()});
+        ByteBuf comStmtSendLongData = Unpooled.wrappedBuffer(new byte[]{0x00, (byte) MySQLCommandPacketType.COM_STMT_SEND_LONG_DATA.getValue()});
         assertFalse(actual.isRequiredSameThreadForConnection(comStmtExecuteMessage));
         assertTrue(actual.isRequiredSameThreadForConnection(comStmtSendLongData));
         assertTrue(actual.isRequiredSameThreadForConnection(comStmtSendLongData));
         assertTrue(actual.isRequiredSameThreadForConnection(comStmtExecuteMessage));
         assertFalse(actual.isRequiredSameThreadForConnection(comStmtExecuteMessage));
+        ByteBuf comStmtCloseMessage = Unpooled.wrappedBuffer(new byte[]{0x00, (byte) MySQLCommandPacketType.COM_STMT_CLOSE.getValue()});
         assertTrue(actual.isRequiredSameThreadForConnection(comStmtCloseMessage));
         assertTrue(actual.isRequiredSameThreadForConnection(comStmtCloseMessage));
         assertTrue(actual.isRequiredSameThreadForConnection(comStmtExecuteMessage));
