@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.infra.federation.optimizer.context;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import org.apache.calcite.sql.validate.SqlValidator;
-import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -30,34 +27,30 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.junit.Test;
 
+import java.util.Collections;
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class OptimizerContextTest {
-
-    private final String databaseName = "sharding_db";
-
-    private final String schemaName = "federate_jdbc";
-
-    private final String tableName = "t_order_federate";
-
+    
     @Test
     public void assertDropTable() {
-        Map<String, ShardingSphereTable> tables = new HashMap<>(2, 1);
-        tables.put(tableName, mock(ShardingSphereTable.class, RETURNS_DEEP_STUBS));
-        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, new H2DatabaseType(), mock(ShardingSphereResource.class), null, Collections.singletonMap(schemaName,
-              new ShardingSphereSchema(tables)));
+        String databaseName = "foo_db";
+        String schemaName = "foo_schema";
+        String tableName = "t_order";
+        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, new H2DatabaseType(), mock(ShardingSphereResource.class),
+                null, Collections.singletonMap(schemaName, new ShardingSphereSchema(Collections.singletonMap(tableName, mock(ShardingSphereTable.class)))));
         OptimizerContext optimizerContext = OptimizerContextFactory.create(Collections.singletonMap(databaseName, database), mock(ShardingSphereRuleMetaData.class));
-        SqlToRelConverter converterHashCodeBefore = optimizerContext.getPlannerContexts().get(databaseName).getConverters().get(schemaName);
-        SqlValidator validatorHashCodeBefore = optimizerContext.getPlannerContexts().get(databaseName).getValidators().get(schemaName);
+        OptimizerPlannerContext beforeDroppedPlannerContext = optimizerContext.getPlannerContexts().get(databaseName);
         optimizerContext.dropTable(databaseName, schemaName, tableName);
-        SqlToRelConverter converterHashCodeAfter = optimizerContext.getPlannerContexts().get(databaseName).getConverters().get(schemaName);
-        SqlValidator validatorHashCodeAfter = optimizerContext.getPlannerContexts().get(databaseName).getValidators().get(schemaName);
-        assertThat(converterHashCodeBefore, not(converterHashCodeAfter));
-        assertThat(validatorHashCodeBefore, not(validatorHashCodeAfter));
-        assertFalse(optimizerContext.getFederationMetaData().getDatabases().get(databaseName).getSchemaMetadata(schemaName).get().getTables().containsKey(tableName));
+        Optional<FederationSchemaMetaData> schemaMetadata = optimizerContext.getFederationMetaData().getDatabases().get(databaseName).getSchemaMetadata(schemaName);
+        assertTrue(schemaMetadata.isPresent());
+        assertFalse(schemaMetadata.get().getTables().containsKey(tableName));
+        assertThat(beforeDroppedPlannerContext, not(optimizerContext.getPlannerContexts().get(databaseName)));
     }
 }
