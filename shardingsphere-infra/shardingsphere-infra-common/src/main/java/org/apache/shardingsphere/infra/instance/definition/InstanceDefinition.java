@@ -33,42 +33,40 @@ public final class InstanceDefinition {
     
     private static final String DELIMITER = "@";
     
-    private final InstanceType instanceType;
-    
     private final String instanceId;
     
-    private String ip;
+    private final String instanceType;
     
-    private int port;
+    private final String ip;
     
-    public InstanceDefinition(final String instanceId) {
-        instanceType = InstanceType.JDBC;
+    private final int port;
+    
+    public InstanceDefinition(final String instanceId, final String instanceType, final int port) {
         this.instanceId = instanceId;
-    }
-    
-    public InstanceDefinition(final int port, final String instanceId) {
-        instanceType = InstanceType.PROXY;
-        this.instanceId = instanceId;
+        this.instanceType = instanceType;
         ip = IpUtils.getIp();
         this.port = port;
     }
     
-    public InstanceDefinition(final InstanceType instanceType, final String instanceId, final String attributes) {
-        this.instanceType = instanceType;
+    public InstanceDefinition(final String instanceId, final String instanceType, final String attributes) {
         this.instanceId = instanceId;
+        this.instanceType = instanceType;
         if (!Strings.isNullOrEmpty(attributes) && attributes.contains(DELIMITER)) {
             List<String> attributesList = Splitter.on(DELIMITER).splitToList(attributes);
             ip = attributesList.get(0);
-            port = Integer.valueOf(attributesList.get(1));
+            port = Integer.parseInt(attributesList.get(1));
+        } else {
+            ip = IpUtils.getIp();
+            port = -1;
         }
     }
     
     /**
-     * Get instance attributes.
+     * Get attributes.
      * 
-     * @return got instance attributes, format is ip@uniqueSign
+     * @return attributes
      */
     public String getAttributes() {
-        return instanceType == InstanceType.JDBC ? "" : Joiner.on(DELIMITER).join(ip, port);
+        return -1 == port ? "" : Joiner.on(DELIMITER).join(ip, port);
     }
 }

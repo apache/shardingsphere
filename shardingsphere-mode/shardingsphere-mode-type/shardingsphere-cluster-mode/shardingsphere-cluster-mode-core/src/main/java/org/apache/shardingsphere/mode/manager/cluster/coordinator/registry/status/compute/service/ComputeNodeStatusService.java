@@ -22,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBuilderFactory;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -120,16 +120,16 @@ public final class ComputeNodeStatusService {
      */
     public Collection<ComputeNodeInstance> loadAllComputeNodeInstances() {
         Collection<ComputeNodeInstance> result = new LinkedList<>();
-        for (InstanceType each : InstanceType.values()) {
+        for (String each : InstanceDefinitionBuilderFactory.getAllTypes()) {
             result.addAll(loadComputeNodeInstances(each));
         }
         return result;
     }
     
-    private Collection<ComputeNodeInstance> loadComputeNodeInstances(final InstanceType type) {
+    private Collection<ComputeNodeInstance> loadComputeNodeInstances(final String type) {
         Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(type));
-        return onlineComputeNodes.stream()
-                .map(each -> loadComputeNodeInstance(new InstanceDefinition(type, each, repository.get(ComputeNode.getOnlineInstanceNodePath(each, type))))).collect(Collectors.toList());
+        return onlineComputeNodes.stream().map(each -> loadComputeNodeInstance(
+                InstanceDefinitionBuilderFactory.newInstance(type, each, repository.get(ComputeNode.getOnlineInstanceNodePath(each, type))))).collect(Collectors.toList());
     }
     
     /**

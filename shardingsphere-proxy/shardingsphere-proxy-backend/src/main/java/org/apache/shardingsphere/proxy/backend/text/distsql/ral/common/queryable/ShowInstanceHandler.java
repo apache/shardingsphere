@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryabl
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowInstanceStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
@@ -59,7 +58,7 @@ public final class ShowInstanceHandler extends QueryableRALBackendHandler<ShowIn
             return Collections.singletonList(buildRow(contextManager.getInstanceContext().getInstance(), modeType));
         }
         Collection<ComputeNodeInstance> instances = contextManager.getInstanceContext().getComputeNodeInstances().stream()
-                .filter(each -> InstanceType.PROXY.equals(each.getInstanceDefinition().getInstanceType())).collect(Collectors.toList());
+                .filter(each -> "Proxy".equals(each.getInstanceDefinition().getInstanceType())).collect(Collectors.toList());
         return instances.isEmpty() ? Collections.emptyList() : instances.stream().filter(Objects::nonNull).map(each -> buildRow(each, modeType)).collect(Collectors.toList());
     }
     

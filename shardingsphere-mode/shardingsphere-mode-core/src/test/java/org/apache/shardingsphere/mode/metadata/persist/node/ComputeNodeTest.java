@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.node;
 
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,14 +26,14 @@ public final class ComputeNodeTest {
     
     @Test
     public void assertGetOnlineNodePath() {
-        assertThat(ComputeNode.getOnlineNodePath(InstanceType.PROXY), is("/nodes/compute_nodes/online/proxy"));
-        assertThat(ComputeNode.getOnlineNodePath(InstanceType.JDBC), is("/nodes/compute_nodes/online/jdbc"));
+        assertThat(ComputeNode.getOnlineNodePath("Proxy"), is("/nodes/compute_nodes/online/proxy"));
+        assertThat(ComputeNode.getOnlineNodePath("JDBC"), is("/nodes/compute_nodes/online/jdbc"));
     }
     
     @Test
     public void assertGetOnlineInstanceNodePath() {
-        assertThat(ComputeNode.getOnlineInstanceNodePath("foo_instance_1", InstanceType.PROXY), is("/nodes/compute_nodes/online/proxy/foo_instance_1"));
-        assertThat(ComputeNode.getOnlineInstanceNodePath("foo_instance_2", InstanceType.JDBC), is("/nodes/compute_nodes/online/jdbc/foo_instance_2"));
+        assertThat(ComputeNode.getOnlineInstanceNodePath("foo_instance_1", "Proxy"), is("/nodes/compute_nodes/online/proxy/foo_instance_1"));
+        assertThat(ComputeNode.getOnlineInstanceNodePath("foo_instance_2", "JDBC"), is("/nodes/compute_nodes/online/jdbc/foo_instance_2"));
     }
     
     @Test

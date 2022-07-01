@@ -15,23 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.instance.instanceid;
+package org.apache.shardingsphere.infra.instance.definition;
 
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 /**
- * Default instance id generator.
+ * Instance definition builder.
  */
-public final class DefaultInstanceIdGenerator implements InstanceIdGenerator {
+@SingletonSPI
+public interface InstanceDefinitionBuilder extends TypedSPI {
     
-    @Override
-    public String generate(final String instanceType) {
-        return new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString();
-    }
+    /**
+     * Build instance definition.
+     * 
+     * @param instanceId instance ID
+     * @param port port
+     * @return built instance definition
+     */
+    InstanceDefinition build(String instanceId, int port);
     
-    @Override
-    public boolean isDefault() {
-        return true;
-    }
+    /**
+     * Build instance definition.
+     * 
+     * @param instanceId instance ID
+     * @param attributes attributes
+     * @return built instance definition
+     */
+    InstanceDefinition build(String instanceId, String attributes);
 }

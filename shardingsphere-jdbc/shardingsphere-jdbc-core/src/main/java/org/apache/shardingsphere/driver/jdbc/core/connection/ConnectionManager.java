@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCConnectionManager;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -92,7 +91,7 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
         Preconditions.checkState(!dataSourcePropsMap.isEmpty(), "Can not get data source properties from meta data.");
         DataSourceProperties dataSourcePropsSample = dataSourcePropsMap.values().iterator().next();
         Collection<ShardingSphereUser> users = metaDataPersistService.get().getGlobalRuleService().loadUsers();
-        Collection<InstanceDefinition> instances = contextManager.getInstanceContext().getComputeNodeInstances(InstanceType.PROXY, trafficRule.getLabels());
+        Collection<InstanceDefinition> instances = contextManager.getInstanceContext().getComputeNodeInstances("Proxy", trafficRule.getLabels());
         return DataSourcePoolCreator.create(createDataSourcePropertiesMap(instances, users, dataSourcePropsSample, schema));
     }
     

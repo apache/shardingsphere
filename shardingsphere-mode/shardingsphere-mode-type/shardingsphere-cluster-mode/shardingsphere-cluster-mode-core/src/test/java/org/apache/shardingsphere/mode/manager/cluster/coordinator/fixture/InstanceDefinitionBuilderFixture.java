@@ -15,12 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.instance.definition;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator.fixture;
 
-/**
- * Instance type.
- */
-public enum InstanceType {
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBuilder;
+
+public final class InstanceDefinitionBuilderFixture implements InstanceDefinitionBuilder {
     
-    PROXY, JDBC
+    @Override
+    public InstanceDefinition build(final String instanceId, final int port) {
+        return new InstanceDefinition(instanceId, getType(), port);
+    }
+    
+    @Override
+    public InstanceDefinition build(final String instanceId, final String attributes) {
+        return new InstanceDefinition(instanceId, getType(), attributes);
+    }
+    
+    @Override
+    public String getType() {
+        return "FIXTURE";
+    }
 }

@@ -15,23 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.instance.instanceid;
+package org.apache.shardingsphere.proxy.instance;
 
-import java.util.UUID;
-import java.util.concurrent.ThreadLocalRandom;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBuilder;
 
 /**
- * Default instance id generator.
+ * Proxy instance definition builder.
  */
-public final class DefaultInstanceIdGenerator implements InstanceIdGenerator {
+public final class ProxyInstanceDefinitionBuilder implements InstanceDefinitionBuilder {
     
     @Override
-    public String generate(final String instanceType) {
-        return new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString();
+    public InstanceDefinition build(final String instanceId, final int port) {
+        return new InstanceDefinition(instanceId, getType(), port);
     }
     
     @Override
-    public boolean isDefault() {
-        return true;
+    public InstanceDefinition build(final String instanceId, final String attributes) {
+        return new InstanceDefinition(instanceId, getType(), attributes);
+    }
+    
+    @Override
+    public String getType() {
+        return "Proxy";
     }
 }

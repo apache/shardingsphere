@@ -48,6 +48,6 @@ public final class InstanceIdGeneratorFactory {
             return RequiredSPIRegistry.getRegisteredService(InstanceIdGenerator.class);
         }
         Optional<InstanceIdGenerator> instanceIdGenerator = TypedSPIRegistry.findRegisteredService(InstanceIdGenerator.class, modeConfig.getType());
-        return instanceIdGenerator.isPresent() ? instanceIdGenerator.get() : RequiredSPIRegistry.getRegisteredService(InstanceIdGenerator.class);
+        return instanceIdGenerator.orElseGet(() -> RequiredSPIRegistry.getRegisteredService(InstanceIdGenerator.class));
     }
 }

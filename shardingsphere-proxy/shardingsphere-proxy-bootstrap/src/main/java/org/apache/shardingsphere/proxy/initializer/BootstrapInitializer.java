@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBuilderFactory;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
@@ -61,7 +61,8 @@ public final class BootstrapInitializer {
     
     private ContextManager createContextManager(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig, final int port) throws SQLException {
         ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
-        InstanceDefinition instanceDefinition = new InstanceDefinition(port, InstanceIdGeneratorFactory.getInstance(modeConfig).generate(InstanceType.PROXY));
+        InstanceDefinition instanceDefinition = InstanceDefinitionBuilderFactory.newInstance(
+                "Proxy", InstanceIdGeneratorFactory.getInstance(modeConfig).generate("Proxy"), port);
         ContextManagerBuilderParameter parameter = new ContextManagerBuilderParameter(modeConfig, proxyConfig.getDatabaseConfigurations(),
                 proxyConfig.getGlobalConfiguration().getRules(), proxyConfig.getGlobalConfiguration().getProperties(), proxyConfig.getGlobalConfiguration().getLabels(), instanceDefinition);
         return ContextManagerBuilderFactory.getInstance(modeConfig).build(parameter);
