@@ -262,19 +262,23 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
      */
     public Collection<SQLException> closeConnections(final boolean forceRollback) {
         Collection<SQLException> result = new LinkedList<>();
-        for (Connection each : cachedConnections.values()) {
-            try {
-                if (forceRollback && connectionSession.getTransactionStatus().isInTransaction()) {
-                    each.rollback();
+        synchronized (cachedConnections) {
+            for (Connection each : cachedConnections.values()) {
+                try {
+                    if (forceRollback && connectionSession.getTransactionStatus().isInTransaction()) {
+                        each.rollback();
+                    }
+                    resetConnection(each);
+                    each.close();
+                } catch (final SQLException ex) {
+                    result.add(ex);
                 }
-                resetConnection(each);
-                each.close();
-            } catch (final SQLException ex) {
-                result.add(ex);
             }
+            cachedConnections.clear();
         }
-        cachedConnections.clear();
-        connectionPostProcessors.clear();
+        if (!forceRollback) {
+            connectionPostProcessors.clear();
+        }
         return result;
     }
     
