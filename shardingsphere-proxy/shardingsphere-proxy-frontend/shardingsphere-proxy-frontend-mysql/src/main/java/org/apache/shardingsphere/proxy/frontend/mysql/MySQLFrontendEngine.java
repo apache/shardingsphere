@@ -39,7 +39,7 @@ import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngi
 @Getter
 public final class MySQLFrontendEngine implements DatabaseProtocolFrontendEngine {
     
-    private final FrontendContext frontendContext = new FrontendContext(false);
+    private final FrontendContext frontendContext = new MySQLFrontendContext();
     
     private final AuthenticationEngine authenticationEngine = new MySQLAuthenticationEngine();
     

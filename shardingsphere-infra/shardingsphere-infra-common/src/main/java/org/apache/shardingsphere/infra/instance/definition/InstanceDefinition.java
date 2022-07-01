@@ -17,61 +17,36 @@
 
 package org.apache.shardingsphere.infra.instance.definition;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import lombok.Getter;
-import org.apache.shardingsphere.infra.instance.utils.IpUtils;
-
-import java.lang.management.ManagementFactory;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
-
 /**
  * Instance definition.
  */
-@Getter
-public final class InstanceDefinition {
-    
-    private static final String DELIMITER = "@";
-    
-    private static final AtomicLong COUNTER = new AtomicLong();
-    
-    private final InstanceType instanceType;
-    
-    private final String instanceId;
-    
-    private final String ip;
-    
-    private final String uniqueSign;
-    
-    public InstanceDefinition(final String instanceId) {
-        instanceType = InstanceType.JDBC;
-        this.instanceId = instanceId;
-        ip = IpUtils.getIp();
-        uniqueSign = String.join("", ManagementFactory.getRuntimeMXBean().getName().split(DELIMITER)[0], String.valueOf(COUNTER.incrementAndGet()));
-    }
-    
-    public InstanceDefinition(final int port, final String instanceId) {
-        instanceType = InstanceType.PROXY;
-        this.instanceId = instanceId;
-        ip = IpUtils.getIp();
-        uniqueSign = String.valueOf(port);
-    }
-    
-    public InstanceDefinition(final InstanceType instanceType, final String instanceId, final String attributes) {
-        this.instanceType = instanceType;
-        this.instanceId = instanceId;
-        List<String> attributesList = Splitter.on(DELIMITER).splitToList(attributes);
-        ip = attributesList.get(0);
-        uniqueSign = attributesList.get(1);
-    }
+public interface InstanceDefinition {
     
     /**
-     * Get instance attributes.
+     * Get instance ID.
      * 
-     * @return got instance attributes, format is ip@uniqueSign
+     * @return instance ID
      */
-    public String getAttributes() {
-        return Joiner.on(DELIMITER).join(ip, uniqueSign);
-    }
+    String getInstanceId();
+    
+    /**
+     * Get instance type.
+     * 
+     * @return instance type
+     */
+    InstanceType getInstanceType();
+    
+    /**
+     * Get IP.
+     * 
+     * @return IP
+     */
+    String getIp();
+    
+    /**
+     * Get attributes.
+     * 
+     * @return attributes
+     */
+    String getAttributes();
 }

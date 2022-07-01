@@ -21,6 +21,7 @@ import org.apache.shardingsphere.authority.constant.AuthorityOrder;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.check.SQLCheckResult;
 import org.apache.shardingsphere.infra.executor.check.SQLChecker;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -64,7 +65,7 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
     }
     
     @Override
-    public SQLCheckResult check(final SQLStatement sqlStatement, final List<Object> parameters, final Grantee grantee,
+    public SQLCheckResult check(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, final Grantee grantee,
                                 final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final AuthorityRule authorityRule) {
         if (null == grantee) {
             return new SQLCheckResult(true, "");
@@ -76,7 +77,7 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
         if (null != currentDatabase && !privileges.filter(optional -> optional.hasPrivileges(currentDatabase)).isPresent()) {
             return new SQLCheckResult(false, String.format("Unknown database '%s'", currentDatabase));
         }
-        PrivilegeType privilegeType = getPrivilege(sqlStatement);
+        PrivilegeType privilegeType = getPrivilege(sqlStatementContext.getSqlStatement());
         String errorMessage = Objects.isNull(privilegeType) ? "" : String.format("Access denied for operation %s", privilegeType.name());
         return privileges.map(optional -> new SQLCheckResult(optional.hasPrivileges(Collections.singletonList(privilegeType)), errorMessage)).orElseGet(() -> new SQLCheckResult(false, ""));
     }

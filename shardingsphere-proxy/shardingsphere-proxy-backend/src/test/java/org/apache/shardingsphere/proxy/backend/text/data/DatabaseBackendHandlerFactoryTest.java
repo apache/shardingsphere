@@ -19,12 +19,10 @@ package org.apache.shardingsphere.proxy.backend.text.data;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.data.impl.BroadcastDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.SchemaAssignedDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.UnicastDatabaseBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.junit.Test;
 
@@ -34,15 +32,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class DatabaseBackendHandlerFactoryTest {
-    
-    @Test
-    public void assertNewInstanceReturnedBroadcastDatabaseBackendHandler() {
-        String sql = "SET a=1";
-        SQLStatementContext<SetStatement> context = mock(SQLStatementContext.class);
-        when(context.getSqlStatement()).thenReturn(mock(SetStatement.class));
-        DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(context, sql, mock(ConnectionSession.class));
-        assertThat(actual, instanceOf(BroadcastDatabaseBackendHandler.class));
-    }
     
     @Test
     public void assertNewInstanceReturnedUnicastDatabaseBackendHandlerWithDAL() {

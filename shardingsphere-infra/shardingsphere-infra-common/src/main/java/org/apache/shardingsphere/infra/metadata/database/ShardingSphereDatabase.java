@@ -118,4 +118,13 @@ public final class ShardingSphereDatabase {
     public boolean hasDataSource() {
         return !resource.getDataSources().isEmpty();
     }
+    
+    /**
+     * Reload rules.
+     */
+    public synchronized void reloadRules() {
+        Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(name, new DataSourceProvidedDatabaseConfiguration(resource.getDataSources(), ruleMetaData.getConfigurations()));
+        ruleMetaData.getRules().clear();
+        ruleMetaData.getRules().addAll(databaseRules);
+    }
 }

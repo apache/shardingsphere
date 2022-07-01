@@ -1491,10 +1491,6 @@ ruleActionMulti
     : ruleActionStmt? (SEMI_ ruleActionStmt?)*
     ;
 
-notifyStmt
-    : NOTIFY colId (COMMA_ STRING_)?
-    ;
-
 createTrigger
     : CREATE TRIGGER name triggerActionTime triggerEvents ON qualifiedName triggerReferencing? triggerForSpec? triggerWhen? EXECUTE (FUNCTION | PROCEDURE) funcName LP_ triggerFuncArgs? RP_
     | CREATE CONSTRAINT TRIGGER (FROM qualifiedName)? constraintAttributeSpec FOR EACH ROW triggerWhen EXECUTE (FUNCTION | PROCEDURE) funcName LP_ triggerFuncArgs RP_
@@ -1795,6 +1791,14 @@ listen
     : LISTEN channelName
     ;
 
+unlisten
+    : UNLISTEN (channelName | ASTERISK_)
+    ;
+
+notifyStmt
+    : NOTIFY colId (COMMA_ STRING_)?
+    ;
+
 direction
     : NEXT #next
     | PRIOR #prior
@@ -1893,10 +1897,6 @@ securityLabelClausces
     | (AGGREGATE | FUNCTION) aggregateWithArgtypes
     | LARGE OBJECT numericOnly
     | (PROCEDURE | ROUTINE) functionWithArgtypes
-    ;
-
-unlisten
-    : UNLISTEN (colId | ASTERISK_)
     ;
 
 createSchema

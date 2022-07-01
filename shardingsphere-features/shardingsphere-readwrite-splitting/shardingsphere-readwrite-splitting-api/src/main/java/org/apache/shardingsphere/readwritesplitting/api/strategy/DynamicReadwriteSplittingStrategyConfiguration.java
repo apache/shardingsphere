@@ -29,10 +29,5 @@ public final class DynamicReadwriteSplittingStrategyConfiguration {
     
     private final String autoAwareDataSourceName;
     
-    private String writeDataSourceQueryEnabled;
-    
-    public DynamicReadwriteSplittingStrategyConfiguration(final String autoAwareDataSourceName, final String writeDataSourceQueryEnabled) {
-        this.autoAwareDataSourceName = autoAwareDataSourceName;
-        this.writeDataSourceQueryEnabled = writeDataSourceQueryEnabled;
-    }
+    private final String writeDataSourceQueryEnabled;
 }

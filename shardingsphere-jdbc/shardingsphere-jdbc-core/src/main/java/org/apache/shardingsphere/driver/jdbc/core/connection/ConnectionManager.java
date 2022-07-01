@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMod
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCConnectionManager;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.infra.instance.definition.proxy.ProxyInstanceDefinition;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -100,12 +101,12 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
                                                                             final DataSourceProperties dataSourcePropsSample, final String schema) {
         Map<String, DataSourceProperties> result = new LinkedHashMap<>();
         for (InstanceDefinition each : instances) {
-            result.put(each.getInstanceId(), createDataSourceProperties(each, users, dataSourcePropsSample, schema));
+            result.put(each.getInstanceId(), createDataSourceProperties((ProxyInstanceDefinition) each, users, dataSourcePropsSample, schema));
         }
         return result;
     }
     
-    private DataSourceProperties createDataSourceProperties(final InstanceDefinition instanceDefinition, final Collection<ShardingSphereUser> users,
+    private DataSourceProperties createDataSourceProperties(final ProxyInstanceDefinition instanceDefinition, final Collection<ShardingSphereUser> users,
                                                             final DataSourceProperties dataSourcePropsSample, final String schema) {
         Map<String, Object> props = dataSourcePropsSample.getAllLocalProperties();
         props.put("jdbcUrl", createJdbcUrl(instanceDefinition, schema, props));
@@ -115,11 +116,11 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
         return new DataSourceProperties("com.zaxxer.hikari.HikariDataSource", props);
     }
     
-    private String createJdbcUrl(final InstanceDefinition instanceDefinition, final String schema, final Map<String, Object> props) {
+    private String createJdbcUrl(final ProxyInstanceDefinition instanceDefinition, final String schema, final Map<String, Object> props) {
         String jdbcUrl = String.valueOf(props.get("jdbcUrl"));
         String jdbcUrlPrefix = jdbcUrl.substring(0, jdbcUrl.indexOf("//"));
         String jdbcUrlSuffix = jdbcUrl.contains("?") ? jdbcUrl.substring(jdbcUrl.indexOf("?")) : "";
-        return String.format("%s//%s:%s/%s%s", jdbcUrlPrefix, instanceDefinition.getIp(), instanceDefinition.getUniqueSign(), schema, jdbcUrlSuffix);
+        return String.format("%s//%s:%s/%s%s", jdbcUrlPrefix, instanceDefinition.getIp(), instanceDefinition.getPort(), schema, jdbcUrlSuffix);
     }
     
     private ConnectionTransaction createConnectionTransaction(final String databaseName, final ContextManager contextManager) {

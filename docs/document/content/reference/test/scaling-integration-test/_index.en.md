@@ -9,7 +9,7 @@ Verify the correctness of Scaling's own functionality and dependent modules.
 
 ## Environment
 
-There are two types of environment preparation: Native and Docker, either of which requires Docker to be pre-installed locally.
+There are two types of environment preparation: Native and Docker
 
 - Native Environment: For local debugging, you can use the IDE's debug mode for debugging
 - Docker Environment: Environment run by Maven for cloud compiled environments and testing ShardingSphere-Proxy scenarios, e.g. GitHub Action
@@ -38,25 +38,25 @@ Catalog：`resources/env/`
 - /common: The Dist SQL used in the Scaling process.
 - /{SQL-TYPE}: database-level configuration files.
 - /scenario: The configuration file for the test scenario, mainly SQL, may be written differently for different databases.
+- it-env.properties: Stores the corresponding configuration information.
 
 ### Run Test Cases
 
 All property values can be dynamically injected by means of the Maven command line `-D`.
 
 `${image-name}` Indicates a legal docker image name, e.g., mysql:5.7, separated by commas if multiple.
-`-Dit.env.postgresql.version=${image-name}` Indicates the version of PostgreSQL that needs to be tested.
-`-Dit.env.mysql.version=${image-name}` Indicates the version of MySQL that needs to be tested.
+`-Dscaling.it.docker.postgresql.version=${image-name}` Indicates the version of PostgreSQL that needs to be tested.
+`-Dscaling.it.docker.mysql.version=${image-name}` Indicates the version of MySQL that needs to be tested.
 
 #### Native Environment Startup
 
-Native environments require that ShardingSphere-Proxy (and its own dependent Cluster, such as Zookeeper) be started locally, and that ShardingSphere-Proxy be started on port 3307, while the database will be started according to the user's configuration, but the corresponding ports are the default ports for the database (MySQL=3306, PostgreSQL=5432).
-
-Therefore, Native mode does not support running multiple cases, and you need to clean up the information in Zookeeper and restart ShardingSphere-Proxy after each run.
+Native environments require that ShardingSphere-Proxy (and its own dependent Cluster, such as Zookeeper) and the database be started locally, and that ShardingSphere-Proxy's port be 3307, modify the properties in the it-env.properties file ` scaling.it.env.type=native`
+The database port can be configured in it-env.properties, or not if it is the default port.
 
 The startup method is as follows: Find the Case you need to test, such as MySQLGeneralScalingIT, and configure the corresponding VM Option before startup, add the following configuration.
 
 ```
--Dit.cluster.env.type=native -Dit.env.mysql.version=${image-name}
+-Dscaling.it.env.type=native -Dscaling.it.docker.mysql.version=${image-name}
 ```
 
 Just start it under the IDE using the Junit.
@@ -80,13 +80,13 @@ You can change it yourself in ShardingSphereProxyDockerContainer.
 As with Native, only one parameter needs to be changed.
 
 ```
--Dit.cluster.env.type=docker
+-Dscaling.it.env.type=docker
 ```
 
 You can run the use case using the same IDE as Native, or you can run it using maven.
 
 ```shell
-./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dit.cluster.env.type=DOCKER -Dit.env.mysql.version=${image-name}
+./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dscaling.it.env.type=DOCKER -Dscaling.it.docker.mysql.version=${image-name}
 ```
 
 #### Attentions

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.command.executor.CommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLPreparedStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -40,7 +41,7 @@ public final class MySQLComStmtResetExecutor implements CommandExecutor {
     
     @Override
     public Collection<DatabasePacket<?>> execute() {
-        // TODO we should implement the stmt reset after supporting COM_STMT_SEND_LONG_DATA
+        connectionSession.getPreparedStatementRegistry().<MySQLPreparedStatement>getPreparedStatement(packet.getStatementId()).getLongData().clear();
         return Collections.singleton(new MySQLOKPacket(1, ServerStatusFlagCalculator.calculateFor(connectionSession)));
     }
 }

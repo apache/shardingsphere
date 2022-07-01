@@ -205,7 +205,7 @@ public final class ExportDatabaseConfigurationHandlerTest extends ProxyContextRe
         assertTrue(handler.next());
         Collection<Object> rowData = handler.getRowData().getData();
         assertThat(rowData.size(), is(1));
-        assertThat(rowData.iterator().next(), is("databaseName: empty_db\n"));
+        assertThat(rowData.iterator().next(), is("databaseName: empty_db" + System.lineSeparator()));
         assertFalse(handler.next());
     }
     

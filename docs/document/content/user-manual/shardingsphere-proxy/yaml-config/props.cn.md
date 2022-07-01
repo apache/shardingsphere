@@ -4,11 +4,11 @@ weight = 2
 chapter = true
 +++
 
-## 简介
+## 背景信息
 
-Apache ShardingSphere 提供属性配置的方式配置系统级配置。
+Apache ShardingSphere 提供属性配置的方式配置系统级配置。本节介绍 `server.yaml` 中的配置项。
 
-## 配置项说明
+## 参数解释
 
 | *名称*                                | *数据类型*  | *说明*                                                                                                                                   | *默认值*    | *动态生效* |             
 |-------------------------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------|----------|--------| 
@@ -21,6 +21,7 @@ Apache ShardingSphere 提供属性配置的方式配置系统级配置。
 | proxy-opentracing-enabled (?)       | boolean | 是否允许在 ShardingSphere-Proxy 中使用 OpenTracing。                                                                                            | false    | 是      |
 | proxy-hint-enabled (?)              | boolean | 是否允许在 ShardingSphere-Proxy 中使用 Hint。使用 Hint 会将 Proxy 的线程处理模型由 IO 多路复用变更为每个请求一个独立的线程，会降低 Proxy 的吞吐量。                                    | false    | 是      |
 | proxy-backend-query-fetch-size (?)  | int     | Proxy 后端与数据库交互的每次获取数据行数（使用游标的情况下）。数值增大可能会增加 ShardingSphere Proxy 的内存使用。默认值为 -1，代表设置为 JDBC 驱动的最小值。                                      | -1       | 是      |
+| check-duplicate-table-enabled (?)   | boolean | 在程序启动和更新时，是否检查重复表。                                                                                                                     | false    | 是      |
 | proxy-frontend-executor-size (?)    | int     | Proxy 前端 Netty 线程池线程数量，默认值 0 代表使用 Netty 默认值。                                                                                           | 0        | 否      |
 | proxy-backend-executor-suitable (?) | String  | 可选选项：OLAP、OLTP。OLTP 选项可能会减少向客户端写入数据包的时间开销，但如果客户端连接数超过 `proxy-frontend-executor-size`，尤其是执行慢 SQL 时，它可能会增加 SQL 执行的延迟甚至阻塞其他客户端的连接。        | OLAP     | 是      |
 | proxy-frontend-max-connections (?)  | int     | 允许连接 Proxy 的最大客户端数量，默认值 0 代表不限制。                                                                                                       | 0        | 是      |
@@ -32,3 +33,7 @@ Apache ShardingSphere 提供属性配置的方式配置系统级配置。
 
 属性配置可以通过 [DistSQL#RAL](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/) 修改。
 支持动态修改的属性可以立即生效，不支持动态修改的属性需要重启后生效。
+
+## 配置示例
+
+完整配置示例请参考 ShardingSphere 仓库内的 `server.yaml`：<https://github.com/apache/shardingsphere/blob/aac0d3026e00575114701be603ec189a02a45747/shardingsphere-proxy/shardingsphere-proxy-bootstrap/src/main/resources/conf/server.yaml#L71-L93>

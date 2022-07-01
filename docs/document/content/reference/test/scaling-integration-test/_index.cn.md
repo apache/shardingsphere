@@ -9,7 +9,7 @@ weight = 4
 
 ## 测试环境
 
-环境准备方式分为 Native 和 Docker，不论哪种环境，本地都需要预先安装 Docker。
+环境准备方式分为 Native 和 Docker
 
 - Native 环境：用于本地调试，可以使用 IDE 的 debug 模式进行调试。
 - Docker 环境：环境由 Maven 运行，适用于云编译环境和测试 ShardingSphere-Proxy 的场景，如：GitHub Action。
@@ -39,25 +39,25 @@ weight = 4
 - /common: 存放 Scaling 过程中用到的 DistSQL。
 - /{SQL-TYPE}: 存放数据库级别的配置文件。
 - /scenario: 存放测试的场景的配置文件，主要是 SQL，不同数据库可能写法不一样。
+- it-env.properties：存放对应的配置信息。
 
 ### 运行测试引擎
 
 所有的属性值都可以通过 Maven 命令行 `-D` 的方式动态注入。
 
 `${image-name}` 表示合法 Docker image 名称，比如：mysql:5.7， 多个的话用逗号隔开。
-`-Dit.env.postgresql.version=${image-name}` 表示需要测试的 PostgreSQL 版本。
-`-Dit.env.mysql.version=${image-name}` 表示需要测试的 MySQL 版本。
+`-Dscaling.it.docker.postgresql.version=${image-name}` 表示需要测试的 PostgreSQL 版本。
+`-Dscaling.it.docker.mysql.version=${image-name}` 表示需要测试的 MySQL 版本。
 
 #### Native 环境启动
 
-Native 环境要求本地自行启动 ShardingSphere-Proxy（以及其自身依赖的 Cluster，比如 Zookeeper），同时要求 ShardingSphere-Proxy 的端口是 3307，数据库会根据用户的配置自行启动，但是对应的端口都是数据库的默认端口（MySQL=3306, PostgreSQL=5432）。
-
-因此 Native 模式下不支持运行多个 Case，每次跑完需要自行清理 Zookeeper 中的信息，以及重启 ShardingSphere-Proxy。
+Native 环境要求本地自行启动 ShardingSphere-Proxy（以及其自身依赖的 Cluster，比如 Zookeeper）和数据库，同时要求 ShardingSphere-Proxy 的端口是 3307，修改 it-env.properties 文件中的属性 `scaling.it.env.type=native`
+数据库的端口可以在 it-env.properties 中配置，如果是默认端口可以不配置。
 
 启动方式如下：找到需要测试的 Case，比如 MySQLGeneralScalingIT，在启动之前配置对应的 VM Option，新增如下配置。
 
 ```
--Dit.cluster.env.type=native -Dit.env.mysql.version=${image-name}
+-Dscaling.it.env.type=native -Dscaling.it.docker.mysql.version=${image-name}
 ```
 
 在 IDE 下使用 Junit 的方式启动即可。
@@ -81,13 +81,13 @@ Native 环境要求本地自行启动 ShardingSphere-Proxy（以及其自身依�
 和 Native 一样，只需要改一个参数。
 
 ```
--Dit.cluster.env.type=docker
+-Dscaling.it.env.type=docker
 ```
 
 可以和 Native 一样使用 IDE 的方式运行用例，或者使用 Maven 的方式运行用例。
 
 ```bash
-./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dit.cluster.env.type=DOCKER -Dit.env.mysql.version=${image-name}
+./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dscaling.it.env.type=DOCKER -Dscaling.it.docker.mysql.version=${image-name}
 ```
 
 #### 注意事项

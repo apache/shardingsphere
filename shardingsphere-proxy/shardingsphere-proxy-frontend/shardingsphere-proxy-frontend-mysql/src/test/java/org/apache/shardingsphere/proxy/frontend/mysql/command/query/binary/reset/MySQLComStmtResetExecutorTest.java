@@ -21,6 +21,10 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.r
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.PreparedStatementRegistry;
+import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLPreparedStatement;
+import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -28,16 +32,26 @@ import java.util.Collection;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class MySQLComStmtResetExecutorTest {
     
     @Test
     public void assertExecute() {
-        MySQLComStmtResetExecutor mysqlComStmtResetExecutor = new MySQLComStmtResetExecutor(mock(MySQLComStmtResetPacket.class), mock(ConnectionSession.class, RETURNS_DEEP_STUBS));
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        when(connectionSession.getPreparedStatementRegistry()).thenReturn(new PreparedStatementRegistry());
+        when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
+        MySQLPreparedStatement preparedStatement = new MySQLPreparedStatement("", null, null);
+        preparedStatement.getLongData().put(0, new byte[0]);
+        connectionSession.getPreparedStatementRegistry().addPreparedStatement(1, preparedStatement);
+        MySQLComStmtResetPacket packet = mock(MySQLComStmtResetPacket.class);
+        when(packet.getStatementId()).thenReturn(1);
+        MySQLComStmtResetExecutor mysqlComStmtResetExecutor = new MySQLComStmtResetExecutor(packet, connectionSession);
         Collection<DatabasePacket<?>> actual = mysqlComStmtResetExecutor.execute();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), instanceOf(MySQLOKPacket.class));
+        assertTrue(preparedStatement.getLongData().isEmpty());
     }
 }

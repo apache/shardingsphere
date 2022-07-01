@@ -20,7 +20,7 @@ mode:
   repository:
     type: ZooKeeper
     props:
-      namespace: opengauss_db
+      namespace: it_db_opengauss
       server-lists: zk.host:2181
       retryIntervalMilliseconds: 500
       timeToLiveSeconds: 60
