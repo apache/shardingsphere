@@ -113,6 +113,6 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
     }
     
     private Matcher matchInstanceOnlinePath(final String onlineInstancePath) {
-        return Pattern.compile(ComputeNode.getOnlineInstanceNodePath() + "/" + "(proxy|jdbc)" + "/([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(onlineInstancePath);
+        return Pattern.compile(ComputeNode.getOnlineInstanceNodePath() + "/[\\S]+/([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(onlineInstancePath);
     }
 }
