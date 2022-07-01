@@ -37,15 +37,15 @@ import java.util.Properties;
  * DML sharding conditions sharding audit algorithm.
  */
 public final class DMLShardingConditionsShardingAuditAlgorithm implements ShardingAuditAlgorithm {
-
+    
     @Getter
     private Properties props;
-
+    
     @Override
     public void init(final Properties props) {
         this.props = props;
     }
-
+    
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public SQLCheckResult check(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, final Grantee grantee, final ShardingSphereDatabase database) {
@@ -64,7 +64,7 @@ public final class DMLShardingConditionsShardingAuditAlgorithm implements Shardi
         }
         return new SQLCheckResult(true, "");
     }
-
+    
     @Override
     public String getType() {
         return "DML_SHARDING_CONDITIONS";
