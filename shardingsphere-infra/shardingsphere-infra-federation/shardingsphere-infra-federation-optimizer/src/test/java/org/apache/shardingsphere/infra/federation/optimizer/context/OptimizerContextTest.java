@@ -48,9 +48,9 @@ public final class OptimizerContextTest {
         OptimizerContext optimizerContext = OptimizerContextFactory.create(Collections.singletonMap(databaseName, database), mock(ShardingSphereRuleMetaData.class));
         OptimizerPlannerContext beforeDroppedPlannerContext = optimizerContext.getPlannerContexts().get(databaseName);
         optimizerContext.dropTable(databaseName, schemaName, tableName);
+        assertThat(beforeDroppedPlannerContext, not(optimizerContext.getPlannerContexts().get(databaseName)));
         Optional<FederationSchemaMetaData> schemaMetadata = optimizerContext.getFederationMetaData().getDatabases().get(databaseName).getSchemaMetadata(schemaName);
         assertTrue(schemaMetadata.isPresent());
         assertFalse(schemaMetadata.get().getTables().containsKey(tableName));
-        assertThat(beforeDroppedPlannerContext, not(optimizerContext.getPlannerContexts().get(databaseName)));
     }
 }
