@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.instance;
+package org.apache.shardingsphere.infra.instance.definition.proxy;
 
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBuilderFactory;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.endsWith;
@@ -30,21 +30,11 @@ public final class ProxyInstanceDefinitionBuilderTest {
     
     @Test
     public void assertNewInstance() {
-        InstanceDefinition actual = InstanceDefinitionBuilderFactory.newInstance("Proxy", 3307);
+        ProxyInstanceDefinition actual = (ProxyInstanceDefinition) InstanceDefinitionBuilderFactory.newInstance("Proxy", 3307);
         assertNotNull(actual.getInstanceId());
         assertNotNull(actual.getIp());
         assertThat(actual.getPort(), is(3307));
         assertThat(actual.getAttributes(), endsWith("@3307"));
-        assertThat(actual.getInstanceType(), is("Proxy"));
-    }
-    
-    @Test
-    public void assertNewInstanceWithAttributes() {
-        InstanceDefinition actual = InstanceDefinitionBuilderFactory.newInstance("Proxy", "foo_id", "127.0.0.1@3307");
-        assertThat(actual.getInstanceId(), is("foo_id"));
-        assertThat(actual.getIp(), is("127.0.0.1"));
-        assertThat(actual.getPort(), is(3307));
-        assertThat(actual.getAttributes(), is("127.0.0.1@3307"));
-        assertThat(actual.getInstanceType(), is("Proxy"));
+        assertThat(actual.getInstanceType(), is(InstanceType.PROXY));
     }
 }

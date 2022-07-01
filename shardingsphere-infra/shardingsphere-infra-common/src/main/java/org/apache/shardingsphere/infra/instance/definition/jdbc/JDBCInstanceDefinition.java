@@ -15,25 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.fixture;
+package org.apache.shardingsphere.infra.instance.definition.jdbc;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBuilder;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 
-public final class InstanceDefinitionBuilderFixture implements InstanceDefinitionBuilder {
+/**
+ * JDBC instance definition.
+ */
+@Getter
+public final class JDBCInstanceDefinition implements InstanceDefinition {
     
-    @Override
-    public InstanceDefinition build(final int port) {
-        return new InstanceDefinition("1", getType(), port);
+    private final String instanceId;
+    
+    private final String ip;
+    
+    public JDBCInstanceDefinition(final String instanceId) {
+        this.instanceId = instanceId;
+        ip = IpUtils.getIp();
     }
     
     @Override
-    public InstanceDefinition build(final String instanceId, final String attributes) {
-        return new InstanceDefinition(instanceId, getType(), attributes);
+    public InstanceType getInstanceType() {
+        return InstanceType.JDBC;
     }
     
     @Override
-    public String getType() {
-        return "FIXTURE";
+    public String getAttributes() {
+        return "";
     }
 }

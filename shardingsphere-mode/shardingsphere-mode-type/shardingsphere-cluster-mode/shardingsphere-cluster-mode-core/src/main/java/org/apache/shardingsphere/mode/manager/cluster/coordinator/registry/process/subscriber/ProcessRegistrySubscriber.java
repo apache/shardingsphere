@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcess
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessUnit;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBuilderFactory;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ShowProcessListManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessReportEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessSummaryReportEvent;
@@ -43,6 +43,7 @@ import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Process registry subscriber.
@@ -79,7 +80,7 @@ public final class ProcessRegistrySubscriber {
     }
     
     private Collection<String> getTriggerPaths(final String showProcessListId) {
-        return InstanceDefinitionBuilderFactory.getAllTypes().stream()
+        return Stream.of(InstanceType.values())
                 .flatMap(each -> repository.getChildrenKeys(ComputeNode.getOnlineNodePath(each)).stream()
                         .map(onlinePath -> ComputeNode.getProcessTriggerInstanceIdNodePath(onlinePath, showProcessListId)))
                 .collect(Collectors.toList());

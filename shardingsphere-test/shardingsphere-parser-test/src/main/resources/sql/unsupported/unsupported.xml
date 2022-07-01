@@ -82,7 +82,6 @@
     <sql-case id="create_by_mysql_source_test_case38" value="CREATE FUNCTION bug_13627_f() returns int BEGIN create index t1_i on t1 (a); return 1; END" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case39" value="CREATE FUNCTION bug_13627_f() returns int BEGIN create trigger tr2 before insert on t1 for each row do select 1; return 1; END" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case40" value="CREATE FUNCTION bug_13627_f() returns int BEGIN create user &apos;mysqltest_1&apos;; return 1; END" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case41" value="CREATE FUNCTION bug_13627_f() returns int BEGIN create view v1 as select 1; return 1; END" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case42" value="CREATE FUNCTION bug_13627_f() returns int BEGIN drop database mysqltest; return 1; END" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case43" value="CREATE FUNCTION bug_13627_f() returns int BEGIN drop function bug_13627_f; return 1; END" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case44" value="CREATE FUNCTION bug_13627_f() returns int BEGIN drop index t1_i on t1; return 1; END" db-types="MySQL" />
@@ -114,12 +113,6 @@
     <sql-case id="create_by_mysql_source_test_case115" value="CREATE PROCEDURE bug13012_1() REPAIR TABLE t1" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case116" value="CREATE PROCEDURE bug13095(tbl_name varchar(32)) BEGIN SET @str = CONCAT(&quot;CREATE TABLE &quot;, tbl_name, &quot;(stuff char(15))&quot;); SELECT @str; PREPARE stmt FROM @str; EXECUTE stmt; SET @str = CONCAT(&quot;INSERT INTO &quot;, tbl_name, &quot; VALUES(&apos;row1&apos;),(&apos;row2&apos;),(&apos;row3&apos;)&quot; ); SELECT @str; PREPARE stmt FROM @str; EXECUTE stmt; SET @str = CONCAT(&quot;CREATE VIEW bug13095_v1(c1) AS SELECT stuff FROM &quot;, tbl_name); SELECT @str; PREPARE stmt FROM @str; EXECUTE stmt; SELECT * FROM bug13095_v1; SET @str = &quot;DROP VIEW bug13095_v1&quot;; SELECT @str; PREPARE stmt FROM @str; EXECUTE stmt; END" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case120" value="CREATE PROCEDURE bug15231_4() BEGIN DECLARE x DECIMAL(2,1); SET x = &apos;zap&apos;; SHOW WARNINGS; END" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case124" value="CREATE PROCEDURE bug20953() BEGIN DECLARE i INT; CREATE VIEW v AS SELECT i; END" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case125" value="CREATE PROCEDURE bug20953() CREATE VIEW v AS SELECT 1 FROM (SELECT 1) AS d1" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case126" value="CREATE PROCEDURE bug20953() CREATE VIEW v AS SELECT 1 INTO @a" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case127" value="CREATE PROCEDURE bug20953() CREATE VIEW v AS SELECT 1 INTO DUMPFILE &quot;file&quot;" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case128" value="CREATE PROCEDURE bug20953() CREATE VIEW v AS SELECT 1 INTO OUTFILE &quot;file&quot;" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case129" value="CREATE PROCEDURE bug20953(i INT) CREATE VIEW v AS SELECT i" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case131" value="CREATE PROCEDURE bug22580_proc_1() BEGIN CALL bug22580_proc_2(); END|" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case132" value="CREATE PROCEDURE bug22580_proc_2() BEGIN DROP TABLE IF EXISTS bug22580_tmp; CREATE TEMPORARY TABLE bug22580_tmp (a INT); DROP TABLE bug22580_tmp; END|" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case133" value="CREATE PROCEDURE bug24117() BEGIN DECLARE t3c1 ENUM(&apos;abc&apos;); DECLARE mycursor CURSOR FOR SELECT c1 FROM t3; OPEN mycursor; FLUSH TABLES; FETCH mycursor INTO t3c1; CLOSE mycursor; END" db-types="MySQL" />
@@ -159,7 +152,6 @@
     <sql-case id="create_by_mysql_source_test_case213" value="CREATE PROCEDURE p1() BEGIN SHOW CREATE PROCEDURE p1; SELECT get_lock(&quot;test&quot;, 100000); SHOW CREATE PROCEDURE p1; END" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case214" value="CREATE PROCEDURE p1() BEGIN skip: LOOP LEAVE skip; END LOOP skip; END" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case215" value="CREATE PROCEDURE p1() CREATE INDEX idx ON t1 (c1)" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case216" value="CREATE PROCEDURE p1() CREATE VIEW v1 AS SELECT * FROM t1" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case217" value="CREATE PROCEDURE p1() LOAD DATA INFILE &apos;../../std_data/loaddata_utf8.dat&apos; INTO TABLE t1" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case218" value="CREATE PROCEDURE p1() RENAME TABLE t2 TO t3" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case220" value="CREATE PROCEDURE p1() SET PASSWORD FOR u1@h = &apos;12345&apos;" db-types="MySQL" />
@@ -459,7 +451,6 @@
     <sql-case id="create_by_mysql_source_test_case707" value="CREATE TRIGGER tr1 BEFORE INSERT ON t1 FOR EACH ROW BEGIN create index t1_i on t1 (a); END" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case708" value="CREATE TRIGGER tr1 BEFORE INSERT ON t1 FOR EACH ROW BEGIN create trigger tr2 before insert on t1 for each row do select 1; END" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case709" value="CREATE TRIGGER tr1 BEFORE INSERT ON t1 FOR EACH ROW BEGIN create user &apos;mysqltest_1&apos;; END" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case710" value="CREATE TRIGGER tr1 BEFORE INSERT ON t1 FOR EACH ROW BEGIN create view v1 as select 1; END" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case711" value="CREATE TRIGGER tr1 BEFORE INSERT ON t1 FOR EACH ROW BEGIN drop database mysqltest; END" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case712" value="CREATE TRIGGER tr1 BEFORE INSERT ON t1 FOR EACH ROW BEGIN drop function bug_13627_f; END" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case713" value="CREATE TRIGGER tr1 BEFORE INSERT ON t1 FOR EACH ROW BEGIN drop index t1_i on t1; END" db-types="MySQL" />
@@ -639,10 +630,8 @@
     <sql-case id="create_by_mysql_source_test_case1111" value="create procedure mysqltest2.p2(in psql text) begin declare lsql text; set @lsql= psql; prepare lstatement from @lsql; execute lstatement; deallocate prepare lstatement; end" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1112" value="create procedure mysqltest_1 () begin begin declare continue handler for sqlexception begin end; update ignore t1 set a = 1 where a = 0; end; prepare stmt1 from &apos;alter table t1&apos;; execute stmt1; end" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1115" value="create procedure p() begin declare c cursor for insert into test.t1 values (&quot;foo&quot;, 42); open c; close c; end" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case1117" value="create procedure p() begin declare continue handler for sqlexception begin end; create view a as select 1; end" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1118" value="create procedure p() begin declare utf8_var VARCHAR(128) CHARACTER SET UTF8; set utf8_var = concat(repeat(&apos;A&apos;, 128), &apos;X&apos;); select length(utf8_var), utf8_var; end" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1119" value="create procedure p() begin declare utf8_var VARCHAR(128) CHARACTER SET UTF8; set utf8_var = concat(repeat(&apos;A&apos;, 128), &apos;X&apos;); show warnings; select length(utf8_var), utf8_var; end" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case1129" value="create procedure p1 () deterministic begin create view v1 as select 1; end;" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1130" value="create procedure p1 (a int) language sql deterministic begin declare rsql varchar(100); drop table if exists t1, t2; set @rsql= &quot;create table t1 (a int)&quot;; select @rsql; prepare pst from @rsql; execute pst; set @rsql= null; set @rsql= &quot;create table t2 (a int)&quot;; select @rsql; prepare pst from @rsql; execute pst; drop table if exists t1, t2; end" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1131" value="create procedure p1() begin alter event e1 rename to e2; end" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1132" value="create procedure p1() begin create view v1 as select 1; drop view v1; select f1() into @var; set @exec_count=@exec_count+1; end" db-types="MySQL" />
@@ -663,7 +652,6 @@
     <sql-case id="create_by_mysql_source_test_case1152" value="create procedure p1() begin prepare stmt_drop from &quot;drop table if exists t1&quot;; execute stmt_drop; prepare stmt from &quot;create table t1 (a int)&quot;; execute stmt; insert into t1 (a) values (1); select * from t1; prepare stmt_alter from &quot;alter table t1 add (b int)&quot;; execute stmt_alter; insert into t1 (a,b) values (2,1); deallocate prepare stmt_alter; deallocate prepare stmt; deallocate prepare stmt_drop; end" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1153" value="create procedure p1() begin select f1() into @var; execute stmt; end" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1154" value="create procedure p1() begin set @tab_name=concat(&quot;tab_&quot;, replace(curdate(), &apos;-&apos;, &apos;_&apos;)); set @drop_sql=concat(&quot;drop table if exists &quot;, @tab_name); set @create_sql=concat(&quot;create table &quot;, @tab_name, &quot; (a int)&quot;); set @insert_sql=concat(&quot;insert into &quot;, @tab_name, &quot; values (1), (2), (3)&quot;); set @select_sql=concat(&quot;select * from &quot;, @tab_name); select @tab_name; select @drop_sql; select @create_sql; select @insert_sql; select @select_sql; prepare stmt_drop from @drop_sql; execute stmt_drop; prepare stmt from @create_sql; execute stmt; prepare stmt from @insert_sql; execute stmt; prepare stmt from @select_sql; execute stmt; execute stmt_drop; deallocate prepare stmt; deallocate prepare stmt_drop; end" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case1155" value="create procedure p1() create view v1 as select * from t1" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1156" value="create procedure p1() execute stmt" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1157" value="create procedure p1() flush hosts" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1158" value="create procedure p1() flush logs" db-types="MySQL" />

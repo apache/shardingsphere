@@ -34,6 +34,7 @@ import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerCon
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.proxy.ProxyInstanceDefinition;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
@@ -144,7 +145,7 @@ public final class ClusterContextManagerCoordinatorTest {
     
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {
         ModeConfiguration modeConfig = new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("FIXTURE", "", "", new Properties()), false);
-        InstanceDefinition instanceDefinition = new InstanceDefinition("foo_instance_id", "Proxy", 3307);
+        InstanceDefinition instanceDefinition = new ProxyInstanceDefinition("foo_instance_id", 3307);
         return new ContextManagerBuilderParameter(modeConfig, Collections.emptyMap(), Collections.emptyList(), new Properties(), Collections.emptyList(), instanceDefinition);
     }
     
@@ -315,7 +316,7 @@ public final class ClusterContextManagerCoordinatorTest {
     @Test
     public void assertRenewInstanceOfflineEvent() {
         coordinator.renew(new InstanceOfflineEvent(contextManager.getInstanceContext().getInstance().getInstanceDefinition()));
-        assertThat(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getPort(), is(3307));
+        assertThat(((ProxyInstanceDefinition) contextManager.getInstanceContext().getInstance().getInstanceDefinition()).getPort(), is(3307));
     }
     
     @Test
@@ -333,12 +334,12 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertRenewInstanceOnlineEvent() {
-        InstanceDefinition instanceDefinition1 = new InstanceDefinition("foo_instance_3307", "Proxy", 3307);
+        InstanceDefinition instanceDefinition1 = new ProxyInstanceDefinition("foo_instance_3307", 3307);
         InstanceOnlineEvent instanceOnlineEvent1 = new InstanceOnlineEvent(instanceDefinition1);
         coordinator.renew(instanceOnlineEvent1);
         assertThat(contextManager.getInstanceContext().getComputeNodeInstances().size(), is(1));
         assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getComputeNodeInstances()).get(0).getInstanceDefinition(), is(instanceDefinition1));
-        InstanceDefinition instanceDefinition2 = new InstanceDefinition("foo_instance_3308", "Proxy", 3308);
+        InstanceDefinition instanceDefinition2 = new ProxyInstanceDefinition("foo_instance_3308", 3308);
         InstanceOnlineEvent instanceOnlineEvent2 = new InstanceOnlineEvent(instanceDefinition2);
         coordinator.renew(instanceOnlineEvent2);
         assertThat(contextManager.getInstanceContext().getComputeNodeInstances().size(), is(2));

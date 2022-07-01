@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.definition.jdbc.JDBCInstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -78,7 +79,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private MetaDataContexts createMetaDataContexts(final MetaDataPersistService persistService, final ContextManagerBuilderParameter parameter) throws SQLException {
-        Collection<String> databaseNames = -1 == parameter.getInstanceDefinition().getPort()
+        Collection<String> databaseNames = parameter.getInstanceDefinition() instanceof JDBCInstanceDefinition
                 ? parameter.getDatabaseConfigs().keySet()
                 : persistService.getSchemaMetaDataService().loadAllDatabaseNames();
         Collection<RuleConfiguration> globalRuleConfigs = persistService.getGlobalRuleService().load();

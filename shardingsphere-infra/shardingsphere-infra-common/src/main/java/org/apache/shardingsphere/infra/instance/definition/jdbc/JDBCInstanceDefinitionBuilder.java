@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.instance.definition;
+package org.apache.shardingsphere.infra.instance.definition.jdbc;
 
-import org.apache.shardingsphere.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBuilder;
+
+import java.util.UUID;
 
 /**
- * Instance definition builder.
+ * JDBC instance definition builder.
  */
-@SingletonSPI
-public interface InstanceDefinitionBuilder extends TypedSPI {
+public final class JDBCInstanceDefinitionBuilder implements InstanceDefinitionBuilder {
     
-    /**
-     * Build instance definition.
-     * 
-     * @param port port
-     * @return built instance definition
-     */
-    InstanceDefinition build(int port);
+    @Override
+    public InstanceDefinition build(final int port) {
+        return new JDBCInstanceDefinition(UUID.randomUUID().toString());
+    }
+    
+    @Override
+    public String getType() {
+        return "JDBC";
+    }
 }

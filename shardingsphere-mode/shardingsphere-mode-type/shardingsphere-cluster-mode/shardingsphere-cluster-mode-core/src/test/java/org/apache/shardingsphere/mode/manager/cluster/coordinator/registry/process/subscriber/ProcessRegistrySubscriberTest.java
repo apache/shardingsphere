@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcess
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessUnit;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ShowProcessListManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessReportEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessSummaryReportEvent;
@@ -62,7 +63,7 @@ public final class ProcessRegistrySubscriberTest {
     
     @Test
     public void assertLoadShowProcessListData() {
-        when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath("FIXTURE"))).thenReturn(Collections.singletonList("abc"));
+        when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.PROXY))).thenReturn(Collections.singletonList("abc"));
         when(repository.get(any())).thenReturn(null);
         ShowProcessListRequestEvent showProcessListRequestEvent = mock(ShowProcessListRequestEvent.class);
         processRegistrySubscriber.loadShowProcessListData(showProcessListRequestEvent);

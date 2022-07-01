@@ -15,30 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.instance;
-
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBuilder;
-
-import java.util.UUID;
+package org.apache.shardingsphere.infra.instance.definition;
 
 /**
- * Proxy instance definition builder.
+ * Instance type.
  */
-public final class ProxyInstanceDefinitionBuilder implements InstanceDefinitionBuilder {
+public enum InstanceType {
     
-    @Override
-    public InstanceDefinition build(final int port) {
-        return new InstanceDefinition(UUID.randomUUID().toString(), getType(), port);
-    }
-    
-    @Override
-    public InstanceDefinition build(final String instanceId, final String attributes) {
-        return new InstanceDefinition(instanceId, getType(), attributes);
-    }
-    
-    @Override
-    public String getType() {
-        return "Proxy";
-    }
+    JDBC, PROXY
 }

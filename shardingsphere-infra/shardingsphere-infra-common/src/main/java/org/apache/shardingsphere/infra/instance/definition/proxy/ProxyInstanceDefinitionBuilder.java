@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.instance;
+package org.apache.shardingsphere.infra.instance.definition.proxy;
 
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBuilder;
@@ -23,22 +23,17 @@ import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBui
 import java.util.UUID;
 
 /**
- * JDBC instance definition builder.
+ * Proxy instance definition builder.
  */
-public final class JDBCInstanceDefinitionBuilder implements InstanceDefinitionBuilder {
+public final class ProxyInstanceDefinitionBuilder implements InstanceDefinitionBuilder {
     
     @Override
     public InstanceDefinition build(final int port) {
-        return new InstanceDefinition(UUID.randomUUID().toString(), getType(), -1);
-    }
-    
-    @Override
-    public InstanceDefinition build(final String instanceId, final String attributes) {
-        return new InstanceDefinition(instanceId, getType(), attributes);
+        return new ProxyInstanceDefinition(UUID.randomUUID().toString(), port);
     }
     
     @Override
     public String getType() {
-        return "JDBC";
+        return "Proxy";
     }
 }

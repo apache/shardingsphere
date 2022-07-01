@@ -17,56 +17,36 @@
 
 package org.apache.shardingsphere.infra.instance.definition;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Splitter;
-import com.google.common.base.Strings;
-import lombok.Getter;
-import org.apache.shardingsphere.infra.instance.utils.IpUtils;
-
-import java.util.List;
-
 /**
  * Instance definition.
  */
-@Getter
-public final class InstanceDefinition {
+public interface InstanceDefinition {
     
-    private static final String DELIMITER = "@";
+    /**
+     * Get instance ID.
+     * 
+     * @return instance ID
+     */
+    String getInstanceId();
     
-    private final String instanceId;
+    /**
+     * Get instance type.
+     * 
+     * @return instance type
+     */
+    InstanceType getInstanceType();
     
-    private final String instanceType;
-    
-    private final String ip;
-    
-    private final int port;
-    
-    public InstanceDefinition(final String instanceId, final String instanceType, final int port) {
-        this.instanceId = instanceId;
-        this.instanceType = instanceType;
-        ip = IpUtils.getIp();
-        this.port = port;
-    }
-    
-    public InstanceDefinition(final String instanceId, final String instanceType, final String attributes) {
-        this.instanceId = instanceId;
-        this.instanceType = instanceType;
-        if (!Strings.isNullOrEmpty(attributes) && attributes.contains(DELIMITER)) {
-            List<String> attributesList = Splitter.on(DELIMITER).splitToList(attributes);
-            ip = attributesList.get(0);
-            port = Integer.parseInt(attributesList.get(1));
-        } else {
-            ip = IpUtils.getIp();
-            port = -1;
-        }
-    }
+    /**
+     * Get IP.
+     * 
+     * @return IP
+     */
+    String getIp();
     
     /**
      * Get attributes.
      * 
      * @return attributes
      */
-    public String getAttributes() {
-        return -1 == port ? "" : Joiner.on(DELIMITER).join(ip, port);
-    }
+    String getAttributes();
 }
