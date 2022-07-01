@@ -15,10 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.instance;
+package org.apache.shardingsphere.infra.instance.definition.jdbc;
 
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBuilderFactory;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -32,18 +33,7 @@ public final class JDBCInstanceDefinitionBuilderTest {
         InstanceDefinition actual = InstanceDefinitionBuilderFactory.newInstance("JDBC", -1);
         assertNotNull(actual.getInstanceId());
         assertNotNull(actual.getIp());
-        assertThat(actual.getPort(), is(-1));
         assertThat(actual.getAttributes(), is(""));
-        assertThat(actual.getInstanceType(), is("JDBC"));
-    }
-    
-    @Test
-    public void assertNewInstanceWithAttributes() {
-        InstanceDefinition actual = InstanceDefinitionBuilderFactory.newInstance("JDBC", "foo_id", "");
-        assertThat(actual.getInstanceId(), is("foo_id"));
-        assertNotNull(actual.getIp());
-        assertThat(actual.getPort(), is(-1));
-        assertThat(actual.getAttributes(), is(""));
-        assertThat(actual.getInstanceType(), is("JDBC"));
+        assertThat(actual.getInstanceType(), is(InstanceType.JDBC));
     }
 }

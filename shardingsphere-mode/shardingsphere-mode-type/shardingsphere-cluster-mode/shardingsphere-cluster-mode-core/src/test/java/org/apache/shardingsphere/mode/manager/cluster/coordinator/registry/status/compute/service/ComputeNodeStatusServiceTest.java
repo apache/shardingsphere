@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.proxy.ProxyInstanceDefinition;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -27,8 +28,9 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -46,7 +48,7 @@ public final class ComputeNodeStatusServiceTest {
     
     @Test
     public void assertRegisterOnline() {
-        InstanceDefinition instanceDefinition = new InstanceDefinition("foo_instance_id", "Proxy", 3307);
+        InstanceDefinition instanceDefinition = new ProxyInstanceDefinition("foo_instance_id", 3307);
         new ComputeNodeStatusService(repository).registerOnline(instanceDefinition);
         verify(repository).persistEphemeral(eq("/nodes/compute_nodes/online/proxy/" + instanceDefinition.getInstanceId()), anyString());
     }
@@ -54,7 +56,7 @@ public final class ComputeNodeStatusServiceTest {
     @Test
     public void assertPersistInstanceLabels() {
         ComputeNodeStatusService computeNodeStatusService = new ComputeNodeStatusService(repository);
-        InstanceDefinition instanceDefinition = new InstanceDefinition("foo_instance_id", "Proxy", 3307);
+        InstanceDefinition instanceDefinition = new ProxyInstanceDefinition("foo_instance_id", 3307);
         final String instanceId = instanceDefinition.getInstanceId();
         computeNodeStatusService.persistInstanceLabels(instanceId, Collections.singletonList("test"));
         verify(repository, times(1)).persistEphemeral(ComputeNode.getInstanceLabelsNodePath(instanceId), YamlEngine.marshal(Collections.singletonList("test")));
@@ -64,7 +66,7 @@ public final class ComputeNodeStatusServiceTest {
     
     @Test
     public void assertPersistInstanceWorkerId() {
-        InstanceDefinition instanceDefinition = new InstanceDefinition("foo_instance_id", "Proxy", 3307);
+        InstanceDefinition instanceDefinition = new ProxyInstanceDefinition("foo_instance_id", 3307);
         final String instanceId = instanceDefinition.getInstanceId();
         new ComputeNodeStatusService(repository).persistInstanceWorkerId(instanceId, 100L);
         verify(repository).persistEphemeral(ComputeNode.getInstanceWorkerIdNodePath(instanceId), String.valueOf(100L));
@@ -72,7 +74,7 @@ public final class ComputeNodeStatusServiceTest {
     
     @Test
     public void assertLoadInstanceLabels() {
-        InstanceDefinition instanceDefinition = new InstanceDefinition("foo_instance_id", "Proxy", 3307);
+        InstanceDefinition instanceDefinition = new ProxyInstanceDefinition("foo_instance_id", 3307);
         final String instanceId = instanceDefinition.getInstanceId();
         new ComputeNodeStatusService(repository).loadInstanceLabels(instanceId);
         verify(repository).get(ComputeNode.getInstanceLabelsNodePath(instanceId));
@@ -80,7 +82,7 @@ public final class ComputeNodeStatusServiceTest {
     
     @Test
     public void assertLoadInstanceStatus() {
-        InstanceDefinition instanceDefinition = new InstanceDefinition("foo_instance_id", "Proxy", 3307);
+        InstanceDefinition instanceDefinition = new ProxyInstanceDefinition("foo_instance_id", 3307);
         final String instanceId = instanceDefinition.getInstanceId();
         new ComputeNodeStatusService(repository).loadInstanceStatus(instanceId);
         verify(repository).get(ComputeNode.getInstanceStatusNodePath(instanceId));
@@ -88,7 +90,7 @@ public final class ComputeNodeStatusServiceTest {
     
     @Test
     public void assertLoadInstanceWorkerId() {
-        InstanceDefinition instanceDefinition = new InstanceDefinition("foo_instance_id", "Proxy", 3307);
+        InstanceDefinition instanceDefinition = new ProxyInstanceDefinition("foo_instance_id", 3307);
         final String instanceId = instanceDefinition.getInstanceId();
         new ComputeNodeStatusService(repository).loadInstanceWorkerId(instanceId);
         verify(repository).get(ComputeNode.getInstanceWorkerIdNodePath(instanceId));
@@ -96,15 +98,17 @@ public final class ComputeNodeStatusServiceTest {
     
     @Test
     public void assertLoadAllComputeNodeInstances() {
-        when(repository.getChildrenKeys("/nodes/compute_nodes/online/fixture")).thenReturn(Collections.singletonList("foo_instance_3307"));
-        when(repository.get("/nodes/compute_nodes/online/fixture/foo_instance_3307")).thenReturn("127.0.0.1@3307");
-        Collection<ComputeNodeInstance> actual = new ComputeNodeStatusService(repository).loadAllComputeNodeInstances();
-        assertThat(actual.size(), is(1));
+        when(repository.getChildrenKeys("/nodes/compute_nodes/online/jdbc")).thenReturn(Collections.singletonList("foo_instance_3307"));
+        when(repository.getChildrenKeys("/nodes/compute_nodes/online/proxy")).thenReturn(Collections.singletonList("foo_instance_3308"));
+        when(repository.get("/nodes/compute_nodes/online/proxy/foo_instance_3308")).thenReturn("127.0.0.1@3308");
+        List<ComputeNodeInstance> actual = new ArrayList<>(new ComputeNodeStatusService(repository).loadAllComputeNodeInstances());
+        assertThat(actual.size(), is(2));
+        // TODO assert more
     }
     
     @Test
     public void assertLoadComputeNodeInstance() {
-        InstanceDefinition instanceDefinition = new InstanceDefinition("foo_instance_id", "Proxy", 3307);
+        InstanceDefinition instanceDefinition = new ProxyInstanceDefinition("foo_instance_id", 3307);
         ComputeNodeInstance actual = new ComputeNodeStatusService(repository).loadComputeNodeInstance(instanceDefinition);
         assertThat(actual.getInstanceDefinition(), is(instanceDefinition));
     }
