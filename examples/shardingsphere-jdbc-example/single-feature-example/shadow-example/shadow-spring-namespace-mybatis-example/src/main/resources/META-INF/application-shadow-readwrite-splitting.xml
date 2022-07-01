@@ -68,11 +68,8 @@
     <readwrite-splitting:load-balance-algorithm id="randomStrategy" type="RANDOM" />
 
     <readwrite-splitting:rule id="readWriteSplittingRule">
-        <readwrite-splitting:data-source-rule id="demo_ds" type="Static" load-balance-algorithm-ref="randomStrategy">
-            <props>
-                <prop key="write-data-source-name">write_ds</prop>
-                <prop key="read-data-source-names">read_ds</prop>
-            </props>
+        <readwrite-splitting:data-source-rule id="demo_ds" load-balance-algorithm-ref="randomStrategy">
+            <readwrite-splitting:static-strategy id="staticStrategy" write-data-source-name="write-ds" read-data-source-names="read-ds"/>
         </readwrite-splitting:data-source-rule>
     </readwrite-splitting:rule>
 

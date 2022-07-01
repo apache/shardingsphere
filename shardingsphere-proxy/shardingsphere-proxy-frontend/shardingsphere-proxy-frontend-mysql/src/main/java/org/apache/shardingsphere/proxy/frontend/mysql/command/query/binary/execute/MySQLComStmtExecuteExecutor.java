@@ -90,7 +90,8 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         if (AutoCommitUtils.needOpenTransaction(sqlStatement)) {
             connectionSession.getBackendConnection().handleAutoCommit();
         }
-        List<Object> parameters = packet.readParameters(preparedStatement.getParameterTypes());
+        List<Object> parameters = packet.readParameters(preparedStatement.getParameterTypes(), preparedStatement.getLongData().keySet());
+        preparedStatement.getLongData().forEach(parameters::set);
         SQLStatementContext<?> sqlStatementContext = preparedStatement.getSqlStatementContext();
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).setUpParameters(parameters);
@@ -101,7 +102,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         }
         String databaseName = connectionSession.getDatabaseName();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        SQLCheckEngine.check(sqlStatement, Collections.emptyList(), getRules(databaseName), databaseName, metaDataContexts.getMetaData().getDatabases(), connectionSession.getGrantee());
+        SQLCheckEngine.check(sqlStatementContext, Collections.emptyList(), getRules(databaseName), databaseName, metaDataContexts.getMetaData().getDatabases(), connectionSession.getGrantee());
         // TODO Refactor the following branch
         if (sqlStatement instanceof TCLStatement) {
             textProtocolBackendHandler =

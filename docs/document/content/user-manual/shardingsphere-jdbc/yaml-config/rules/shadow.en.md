@@ -1,6 +1,6 @@
 +++
 title = "Shadow DB"
-weight = 5
+weight = 6
 +++
 
 ## Configuration Item Explanation

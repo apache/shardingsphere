@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
@@ -86,9 +87,11 @@ public final class LocalShardingReadwriteSplittingConfiguration implements Examp
     
     private ReadwriteSplittingRuleConfiguration getReadwriteSplittingRuleConfiguration() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration1 = new ReadwriteSplittingDataSourceRuleConfiguration(
-                "ds_0", "Static", getReadWriteProperties("demo_write_ds_0", "demo_write_ds_0_read_0, demo_write_ds_0_read_1"), null);
+                "ds_0", new StaticReadwriteSplittingStrategyConfiguration("demo_write_ds_0",
+                Arrays.asList("demo_write_ds_0_read_0", "demo_write_ds_0_read_1")), null,null);
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration2 = new ReadwriteSplittingDataSourceRuleConfiguration(
-                "ds_1", "Static", getReadWriteProperties("demo_write_ds_1", "demo_write_ds_1_read_0, demo_write_ds_1_read_1"), null);
+                "ds_1", new StaticReadwriteSplittingStrategyConfiguration("demo_write_ds_1",
+                Arrays.asList("demo_write_ds_1_read_0", "demo_write_ds_1_read_1")), null,null);
         return new ReadwriteSplittingRuleConfiguration(Arrays.asList(dataSourceConfiguration1, dataSourceConfiguration2), Collections.emptyMap());
     }
     

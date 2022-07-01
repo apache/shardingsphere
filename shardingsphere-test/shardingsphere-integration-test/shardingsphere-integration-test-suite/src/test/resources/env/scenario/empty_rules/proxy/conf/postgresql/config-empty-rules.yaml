@@ -243,10 +243,10 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     readwrite_ds_0:
-      type: Static
-      props:
-        write-data-source-name: encrypt_write_ds_0
-        read-data-source-names: encrypt_read_ds_0
+      staticStrategy:
+        writeDataSourceName: encrypt_write_ds_0
+        readDataSourceNames:
+          - encrypt_read_ds_0
       loadBalancerName: roundRobin
   loadBalancers:
     roundRobin:

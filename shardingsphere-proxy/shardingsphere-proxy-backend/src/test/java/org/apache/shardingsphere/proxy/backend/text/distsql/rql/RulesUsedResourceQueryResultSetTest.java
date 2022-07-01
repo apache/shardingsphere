@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule.RulesUsedResourceQueryResultSet;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
@@ -47,7 +48,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Optional;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -94,15 +94,9 @@ public final class RulesUsedResourceQueryResultSetTest {
     private ReadwriteSplittingRule mockReadwriteSplittingRule() {
         ReadwriteSplittingRule result = mock(ReadwriteSplittingRule.class);
         ReadwriteSplittingRuleConfiguration config = mock(ReadwriteSplittingRuleConfiguration.class);
-        when(config.getDataSources()).thenReturn(Collections.singleton(new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_splitting_source", "", createReadwriteSplittingProperties(), "")));
+        when(config.getDataSources()).thenReturn(Collections.singleton(new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_splitting_source",
+                new StaticReadwriteSplittingStrategyConfiguration("foo_ds", Arrays.asList("foo_ds", "bar_ds")), null, "")));
         when(result.getConfiguration()).thenReturn(config);
-        return result;
-    }
-    
-    private Properties createReadwriteSplittingProperties() {
-        Properties result = new Properties();
-        result.setProperty("write-data-source-name", "foo_ds");
-        result.setProperty("read-data-source-names", "foo_ds,bar_ds");
         return result;
     }
     

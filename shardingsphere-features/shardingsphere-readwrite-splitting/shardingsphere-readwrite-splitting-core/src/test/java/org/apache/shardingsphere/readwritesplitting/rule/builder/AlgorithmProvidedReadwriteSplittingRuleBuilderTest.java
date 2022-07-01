@@ -21,11 +21,12 @@ import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilderFactory;
 import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
@@ -36,15 +37,10 @@ public final class AlgorithmProvidedReadwriteSplittingRuleBuilderTest {
     @Test
     public void assertBuild() {
         AlgorithmProvidedReadwriteSplittingRuleConfiguration ruleConfig = new AlgorithmProvidedReadwriteSplittingRuleConfiguration(
-                Collections.singletonList(new ReadwriteSplittingDataSourceRuleConfiguration("name", "Static", createProperties(), "loadBalancerName")), Collections.emptyMap());
+                Collections.singletonList(new ReadwriteSplittingDataSourceRuleConfiguration("name",
+                        new StaticReadwriteSplittingStrategyConfiguration("writeDataSourceName", Arrays.asList("readDataSourceName")), null, "loadBalancerName")),
+                Collections.emptyMap());
         DatabaseRuleBuilder builder = DatabaseRuleBuilderFactory.getInstanceMap(Collections.singletonList(ruleConfig)).get(ruleConfig);
         assertThat(builder.build(ruleConfig, "", Collections.emptyMap(), Collections.emptyList()), instanceOf(ReadwriteSplittingRule.class));
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("write-data-source-name", "writeDataSourceName");
-        result.setProperty("read-data-source-names", "readDataSourceName");
-        return result;
     }
 }

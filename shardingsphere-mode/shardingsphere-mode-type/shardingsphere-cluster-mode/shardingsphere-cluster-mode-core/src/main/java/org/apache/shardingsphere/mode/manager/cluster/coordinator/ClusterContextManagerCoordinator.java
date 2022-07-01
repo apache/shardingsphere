@@ -100,7 +100,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final DatabaseDeletedEvent event) {
-        contextManager.deleteDatabase(event.getDatabaseName());
+        contextManager.dropDatabase(event.getDatabaseName());
     }
     
     /**

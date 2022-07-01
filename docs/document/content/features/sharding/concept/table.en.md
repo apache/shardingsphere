@@ -60,3 +60,4 @@ It can be applied to the small data volume that needs to correlate with big data
 
 It refers to only one table that exists in all sharding database sources. 
 It is suitable for little data in table without sharding.
+Users need to ensure that single table is unique. If single table is repeated under the same schema in the same database, ShardingSphere will only load the first single table for sql route.

@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphere
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.readwritesplitting.factory.ReplicaLoadBalanceAlgorithmFactory;
@@ -98,7 +99,7 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
         ExportableRule exportableRule = mock(ExportableRule.class);
         when(exportableRule.getExportData()).thenReturn(Collections.singletonMap(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES, Collections.singletonMap("ms_group", "ds_0")));
         when(database.getRuleMetaData().findRules(ExportableRule.class)).thenReturn(Collections.singleton(exportableRule));
-        ReadwriteSplittingRuleSegment ruleSegment = new ReadwriteSplittingRuleSegment("dynamic_rule", "ha_group", "TEST", new Properties());
+        ReadwriteSplittingRuleSegment ruleSegment = new ReadwriteSplittingRuleSegment("dynamic_rule", "ha_group", "false", "TEST", new Properties());
         updater.checkSQLStatement(database, new CreateReadwriteSplittingRuleStatement(Collections.singleton(ruleSegment)), null);
     }
     
@@ -115,7 +116,7 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
         when(database.getRuleMetaData().findRules(ExportableRule.class)).thenReturn(Collections.singleton(exportableRule));
         MockedStatic<ReplicaLoadBalanceAlgorithmFactory> mockedFactory = mockStatic(ReplicaLoadBalanceAlgorithmFactory.class);
         mockedFactory.when(() -> ReplicaLoadBalanceAlgorithmFactory.contains("TEST")).thenReturn(true);
-        ReadwriteSplittingRuleSegment dynamicSegment = new ReadwriteSplittingRuleSegment("dynamic_rule", "ms_group", "TEST", new Properties());
+        ReadwriteSplittingRuleSegment dynamicSegment = new ReadwriteSplittingRuleSegment("dynamic_rule", "ms_group", "false", "TEST", new Properties());
         ReadwriteSplittingRuleSegment staticSegment = new ReadwriteSplittingRuleSegment("static_rule", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), "TEST", new Properties());
         ShardingSphereServiceLoader.register(ReadQueryLoadBalanceAlgorithm.class);
         CreateReadwriteSplittingRuleStatement statement = new CreateReadwriteSplittingRuleStatement(Arrays.asList(dynamicSegment, staticSegment));
@@ -137,14 +138,8 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
     }
     
     private ReadwriteSplittingRuleConfiguration createCurrentRuleConfiguration() {
-        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds", "Static", createProperties(), "TEST");
+        ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds",
+                new StaticReadwriteSplittingStrategyConfiguration("ds_write", Arrays.asList("read_ds_0", "read_ds_1")), null, "TEST");
         return new ReadwriteSplittingRuleConfiguration(new LinkedList<>(Collections.singleton(dataSourceRuleConfig)), Collections.emptyMap());
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("write-data-source-name", "ds_write");
-        result.setProperty("read-data-source-names", "read_ds_0,read_ds_1");
-        return result;
     }
 }

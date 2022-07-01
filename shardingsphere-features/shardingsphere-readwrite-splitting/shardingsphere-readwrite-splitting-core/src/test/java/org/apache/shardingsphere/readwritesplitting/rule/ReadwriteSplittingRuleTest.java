@@ -25,6 +25,7 @@ import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.metadata.storage.event.StorageNodeDataSourceChangedEvent;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -59,16 +60,9 @@ public final class ReadwriteSplittingRuleTest {
     
     private ReadwriteSplittingRule createReadwriteSplittingRule() {
         ReadwriteSplittingDataSourceRuleConfiguration config =
-                new ReadwriteSplittingDataSourceRuleConfiguration("test_pr", "Static", createProperties(), "random");
+                new ReadwriteSplittingDataSourceRuleConfiguration("test_pr", new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds_0", "read_ds_1")), null, "random");
         return new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(
                 Collections.singleton(config), Collections.singletonMap("random", new ShardingSphereAlgorithmConfiguration("RANDOM", new Properties()))));
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("write-data-source-name", "write_ds");
-        result.setProperty("read-data-source-names", "read_ds_0,read_ds_1");
-        return result;
     }
     
     private void assertDataSourceRule(final ReadwriteSplittingDataSourceRule actual) {

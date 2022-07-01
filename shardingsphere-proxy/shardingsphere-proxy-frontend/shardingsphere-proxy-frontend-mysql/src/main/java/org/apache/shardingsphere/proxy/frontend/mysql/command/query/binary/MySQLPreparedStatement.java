@@ -27,6 +27,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Binary prepared statement for MySQL.
@@ -43,4 +45,6 @@ public final class MySQLPreparedStatement implements PreparedStatement {
     private final SQLStatementContext<?> sqlStatementContext;
     
     private List<MySQLPreparedStatementParameterType> parameterTypes = Collections.emptyList();
+    
+    private final Map<Integer, byte[]> longData = new ConcurrentHashMap<>();
 }

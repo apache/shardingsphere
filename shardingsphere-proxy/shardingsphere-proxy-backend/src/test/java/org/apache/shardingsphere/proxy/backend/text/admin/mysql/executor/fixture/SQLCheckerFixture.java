@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.fixture;
 
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.check.SQLCheckResult;
 import org.apache.shardingsphere.infra.executor.check.SQLChecker;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.List;
 import java.util.Map;
@@ -39,7 +39,7 @@ public final class SQLCheckerFixture implements SQLChecker<AuthorityRule> {
     }
     
     @Override
-    public SQLCheckResult check(final SQLStatement sqlStatement, final List<Object> parameters, final Grantee grantee,
+    public SQLCheckResult check(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, final Grantee grantee,
                                 final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final AuthorityRule authorityRule) {
         return new SQLCheckResult(true, "");
     }

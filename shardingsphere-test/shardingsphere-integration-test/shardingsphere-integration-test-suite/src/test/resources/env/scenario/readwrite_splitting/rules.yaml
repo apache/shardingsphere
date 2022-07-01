@@ -45,7 +45,8 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     write-read-ds:
-      type: Static
-      props:
-        write-data-source-name: write_ds
-        read-data-source-names: read_0, read_1
+      staticStrategy:
+        writeDataSourceName: write_ds
+        readDataSourceNames:
+          - read_0
+          - read_1

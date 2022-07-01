@@ -23,6 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.infra.instance.definition.jdbc.JDBCInstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.proxy.ProxyInstanceDefinition;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -126,10 +128,15 @@ public final class ComputeNodeStatusService {
         return result;
     }
     
-    private Collection<ComputeNodeInstance> loadComputeNodeInstances(final InstanceType type) {
-        Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(type));
-        return onlineComputeNodes.stream()
-                .map(each -> loadComputeNodeInstance(new InstanceDefinition(type, each, repository.get(ComputeNode.getOnlineInstanceNodePath(each, type))))).collect(Collectors.toList());
+    private Collection<ComputeNodeInstance> loadComputeNodeInstances(final InstanceType instanceType) {
+        Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType));
+        return onlineComputeNodes.stream().map(each -> loadComputeNodeInstance(createInstanceDefinition(each, instanceType))).collect(Collectors.toList());
+    }
+    
+    private InstanceDefinition createInstanceDefinition(final String instanceId, final InstanceType type) {
+        return InstanceType.JDBC == type
+                ? new JDBCInstanceDefinition(instanceId)
+                : new ProxyInstanceDefinition(instanceId, repository.get(ComputeNode.getOnlineInstanceNodePath(instanceId, type)));
     }
     
     /**

@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContex
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
+import org.apache.shardingsphere.infra.exception.NoDatabaseException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
@@ -98,6 +99,9 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
     
     private ShardingSphereSchema getSchema(final Map<String, ShardingSphereDatabase> databases, final String defaultDatabaseName) {
         String databaseName = tablesContext.getDatabaseName().orElse(defaultDatabaseName);
+        if (null == databaseName) {
+            throw new NoDatabaseException();
+        }
         ShardingSphereDatabase database = databases.get(databaseName);
         if (null == database) {
             throw new DatabaseNotExistedException(databaseName);

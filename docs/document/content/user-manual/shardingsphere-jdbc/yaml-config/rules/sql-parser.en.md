@@ -1,6 +1,6 @@
 +++
 title = "SQL-parser"
-weight = 6
+weight = 7
 +++
 
 ## Configuration Item Explanation

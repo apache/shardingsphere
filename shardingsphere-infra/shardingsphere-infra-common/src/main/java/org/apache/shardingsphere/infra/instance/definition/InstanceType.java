@@ -22,5 +22,5 @@ package org.apache.shardingsphere.infra.instance.definition;
  */
 public enum InstanceType {
     
-    PROXY, JDBC
+    JDBC, PROXY
 }
