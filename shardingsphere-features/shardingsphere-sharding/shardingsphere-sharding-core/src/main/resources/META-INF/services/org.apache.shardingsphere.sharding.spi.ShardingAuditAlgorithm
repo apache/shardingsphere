@@ -15,4 +15,4 @@
 # limitations under the License.
 #
  
-org.apache.shardingsphere.sharding.algorithm.audit.EmptyShardingKeyDMLRejectionShardingAudioAlgorithm
+org.apache.shardingsphere.sharding.algorithm.audit.DMLShardingConditionsShardingAuditAlgorithm

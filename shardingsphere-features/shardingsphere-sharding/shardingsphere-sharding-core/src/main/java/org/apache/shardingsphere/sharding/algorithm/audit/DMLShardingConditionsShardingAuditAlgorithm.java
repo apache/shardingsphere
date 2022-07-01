@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sharding.algorithm.audit;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
 import org.apache.shardingsphere.infra.check.SQLCheckResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
@@ -34,7 +33,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatemen
 import java.util.List;
 import java.util.Properties;
 
-public final class EmptyShardingKeyDMLRejectionShardingAudioAlgorithm implements ShardingAuditAlgorithm {
+public final class DMLShardingConditionsShardingAuditAlgorithm implements ShardingAuditAlgorithm {
 
     @Getter
     private Properties props;
@@ -47,7 +46,7 @@ public final class EmptyShardingKeyDMLRejectionShardingAudioAlgorithm implements
     @SuppressWarnings({"rawtypes", "unchecked"})
     @Override
     public SQLCheckResult check(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, final Grantee grantee, final ShardingSphereDatabase database) {
-        if (sqlStatementContext.getSqlStatement() instanceof DMLStatement || sqlStatementContext.getSqlStatement() instanceof CursorAvailable) {
+        if (sqlStatementContext.getSqlStatement() instanceof DMLStatement) {
             ShardingRule rule = ((List<ShardingRule>) database.getRuleMetaData().findRules(ShardingRule.class)).get(0);
             if (rule.isAllBroadcastTables(sqlStatementContext.getTablesContext().getTableNames())
                     || sqlStatementContext.getTablesContext().getTableNames().stream().noneMatch(rule::isShardingTable)) {
@@ -57,7 +56,7 @@ public final class EmptyShardingKeyDMLRejectionShardingAudioAlgorithm implements
                     ? new InsertClauseShardingConditionEngine(rule, database)
                     : new WhereClauseShardingConditionEngine(rule, database);
             if (shardingConditionEngine.createShardingConditions(sqlStatementContext, parameters).isEmpty()) {
-                return new SQLCheckResult(false, "Not allow DML operation without sharding key");
+                return new SQLCheckResult(false, "Not allow DML operation without sharding conditions");
             }
         }
         return new SQLCheckResult(true, "");
@@ -65,6 +64,6 @@ public final class EmptyShardingKeyDMLRejectionShardingAudioAlgorithm implements
 
     @Override
     public String getType() {
-        return "EMPTY_SHARDING_KEY_DML_REJECTION";
+        return "DML_SHARDING_CONDITIONS";
     }
 }
