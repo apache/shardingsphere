@@ -30,8 +30,8 @@ public final class ProxyInstanceDefinitionBuilderTest {
     
     @Test
     public void assertNewInstance() {
-        InstanceDefinition actual = InstanceDefinitionBuilderFactory.newInstance("Proxy", "foo_id", 3307);
-        assertThat(actual.getInstanceId(), is("foo_id"));
+        InstanceDefinition actual = InstanceDefinitionBuilderFactory.newInstance("Proxy", 3307);
+        assertNotNull(actual.getInstanceId());
         assertNotNull(actual.getIp());
         assertThat(actual.getPort(), is(3307));
         assertThat(actual.getAttributes(), endsWith("@3307"));

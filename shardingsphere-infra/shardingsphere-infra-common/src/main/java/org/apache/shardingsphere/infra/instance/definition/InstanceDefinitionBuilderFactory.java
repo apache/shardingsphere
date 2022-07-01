@@ -24,6 +24,8 @@ import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.util.Collection;
+import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.stream.Collectors;
 
 /**
@@ -40,11 +42,11 @@ public final class InstanceDefinitionBuilderFactory {
      * Create instance of instance definition.
      *
      * @param type type
-     * @param instanceId instance ID
      * @param port port 
      * @return created instance of instance definition
      */
-    public static InstanceDefinition newInstance(final String type, final String instanceId, final int port) {
+    public static InstanceDefinition newInstance(final String type, final int port) {
+        String instanceId = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString();
         return TypedSPIRegistry.getRegisteredService(InstanceDefinitionBuilder.class, type).build(instanceId, port);
     }
     

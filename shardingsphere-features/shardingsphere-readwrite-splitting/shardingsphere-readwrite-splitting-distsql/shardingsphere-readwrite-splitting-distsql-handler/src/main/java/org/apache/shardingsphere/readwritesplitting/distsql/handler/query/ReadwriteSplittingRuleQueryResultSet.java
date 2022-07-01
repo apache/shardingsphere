@@ -108,7 +108,7 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
         }
         return dataSourceRuleConfig.getDynamicStrategy().getWriteDataSourceQueryEnabled();
     }
-
+    
     private String getWriteDataSourceName(final ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig, final Map<String, String> exportDataSources) {
         if (null != exportDataSources) {
             return exportDataSources.get(ExportableItemConstants.PRIMARY_DATA_SOURCE_NAME);
