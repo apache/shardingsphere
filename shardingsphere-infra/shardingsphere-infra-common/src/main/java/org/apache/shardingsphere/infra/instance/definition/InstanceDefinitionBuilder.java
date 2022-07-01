@@ -29,7 +29,7 @@ public interface InstanceDefinitionBuilder extends TypedSPI {
     /**
      * Build instance definition.
      * 
-     * @param instanceId instance id
+     * @param instanceId instance ID
      * @param port port
      * @return built instance definition
      */
@@ -38,7 +38,7 @@ public interface InstanceDefinitionBuilder extends TypedSPI {
     /**
      * Build instance definition.
      * 
-     * @param instanceId instance id
+     * @param instanceId instance ID
      * @param attributes attributes
      * @return built instance definition
      */
