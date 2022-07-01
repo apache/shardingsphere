@@ -960,7 +960,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
             result.setVariable(variable);
             result.setAssignValue(ctx.setExprOrDefault().getText());
             OptionTypeContext optionType = ctx.setSystemVariable().optionType();
-            variable.setScope(null != optionType ? optionType.getText() : "session");
+            variable.setScope(null != optionType ? optionType.getText() : "SESSION");
         }
         return result;
     }
