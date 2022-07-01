@@ -30,7 +30,6 @@ public final class JDBCInstanceDefinitionBuilderTest {
     @Test
     public void assertNewInstance() {
         InstanceDefinition actual = InstanceDefinitionBuilderFactory.newInstance("JDBC", -1);
-        assertThat(actual.getInstanceId(), is("foo_id"));
         assertNotNull(actual.getInstanceId());
         assertNotNull(actual.getIp());
         assertThat(actual.getPort(), is(-1));
