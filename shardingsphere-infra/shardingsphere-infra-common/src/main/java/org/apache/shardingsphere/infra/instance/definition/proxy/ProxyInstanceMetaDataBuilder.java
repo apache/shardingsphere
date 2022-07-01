@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.instance.definition;
+package org.apache.shardingsphere.infra.instance.definition.proxy;
 
-import org.apache.shardingsphere.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.instance.definition.InstanceMetaData;
+import org.apache.shardingsphere.infra.instance.definition.InstanceMetaDataBuilder;
+
+import java.util.UUID;
 
 /**
- * Instance definition builder.
+ * Proxy instance definition builder.
  */
-@SingletonSPI
-public interface InstanceDefinitionBuilder extends TypedSPI {
+public final class ProxyInstanceMetaDataBuilder implements InstanceMetaDataBuilder {
     
-    /**
-     * Build instance definition.
-     * 
-     * @param port port
-     * @return built instance definition
-     */
-    InstanceDefinition build(int port);
+    @Override
+    public InstanceMetaData build(final int port) {
+        return new ProxyInstanceMetaData(UUID.randomUUID().toString(), port);
+    }
+    
+    @Override
+    public String getType() {
+        return "Proxy";
+    }
 }

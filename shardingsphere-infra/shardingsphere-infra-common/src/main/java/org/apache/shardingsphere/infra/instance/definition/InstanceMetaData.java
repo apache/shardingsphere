@@ -17,29 +17,36 @@
 
 package org.apache.shardingsphere.infra.instance.definition;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
-
 /**
- * Instance definition builder factory.
+ * Instance meta data.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class InstanceDefinitionBuilderFactory {
-    
-    static {
-        ShardingSphereServiceLoader.register(InstanceDefinitionBuilder.class);
-    }
+public interface InstanceMetaData {
     
     /**
-     * Create instance of instance definition.
-     *
-     * @param type type
-     * @param port port 
-     * @return created instance of instance definition
+     * Get instance ID.
+     * 
+     * @return instance ID
      */
-    public static InstanceDefinition newInstance(final String type, final int port) {
-        return TypedSPIRegistry.getRegisteredService(InstanceDefinitionBuilder.class, type).build(port);
-    }
+    String getInstanceId();
+    
+    /**
+     * Get instance type.
+     * 
+     * @return instance type
+     */
+    InstanceType getInstanceType();
+    
+    /**
+     * Get IP.
+     * 
+     * @return IP
+     */
+    String getIp();
+    
+    /**
+     * Get attributes.
+     * 
+     * @return attributes
+     */
+    String getAttributes();
 }

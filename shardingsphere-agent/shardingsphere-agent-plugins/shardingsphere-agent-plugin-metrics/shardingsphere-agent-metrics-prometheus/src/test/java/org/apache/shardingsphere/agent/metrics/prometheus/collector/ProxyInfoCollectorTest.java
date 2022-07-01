@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceMetaData;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -41,7 +41,7 @@ public final class ProxyInfoCollectorTest extends ProxyContextRestorer {
     public void assertCollect() {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(), mock(OptimizerContext.class));
         InstanceContext instanceContext = new InstanceContext(
-                new ComputeNodeInstance(mock(InstanceDefinition.class)), new MemoryWorkerIdGenerator(), new ModeConfiguration("Memory", null, false), mock(LockContext.class));
+                new ComputeNodeInstance(mock(InstanceMetaData.class)), new MemoryWorkerIdGenerator(), new ModeConfiguration("Memory", null, false), mock(LockContext.class));
         ProxyContext.init(new ContextManager(metaDataContexts, instanceContext));
         assertFalse(new ProxyInfoCollector().collect().isEmpty());
     }

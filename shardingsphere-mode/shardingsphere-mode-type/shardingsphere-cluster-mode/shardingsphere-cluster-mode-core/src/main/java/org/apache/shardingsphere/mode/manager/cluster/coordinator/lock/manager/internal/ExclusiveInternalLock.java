@@ -137,7 +137,7 @@ public final class ExclusiveInternalLock implements InternalLock, LockAckAble {
             return false;
         }
         for (ComputeNodeInstance each : computeNodeInstances) {
-            if (!lockedInstances.contains(each.getInstanceDefinition().getInstanceId())) {
+            if (!lockedInstances.contains(each.getInstanceMetaData().getInstanceId())) {
                 return false;
             }
         }

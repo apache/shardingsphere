@@ -15,25 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.instance.definition.jdbc;
+package org.apache.shardingsphere.infra.instance.definition.proxy;
 
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBuilderFactory;
+import org.apache.shardingsphere.infra.instance.definition.InstanceMetaDataBuilderFactory;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
-public final class JDBCInstanceDefinitionBuilderTest {
+public final class ProxyInstanceMetaDataBuilderTest {
     
     @Test
     public void assertNewInstance() {
-        InstanceDefinition actual = InstanceDefinitionBuilderFactory.newInstance("JDBC", -1);
+        ProxyInstanceMetaData actual = (ProxyInstanceMetaData) InstanceMetaDataBuilderFactory.newInstance("Proxy", 3307);
         assertNotNull(actual.getInstanceId());
         assertNotNull(actual.getIp());
-        assertThat(actual.getAttributes(), is(""));
-        assertThat(actual.getInstanceType(), is(InstanceType.JDBC));
+        assertThat(actual.getPort(), is(3307));
+        assertThat(actual.getAttributes(), endsWith("@3307"));
+        assertThat(actual.getInstanceType(), is(InstanceType.PROXY));
     }
 }

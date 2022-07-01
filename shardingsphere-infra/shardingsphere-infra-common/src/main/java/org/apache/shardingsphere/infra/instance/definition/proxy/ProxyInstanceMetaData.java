@@ -19,15 +19,15 @@ package org.apache.shardingsphere.infra.instance.definition.proxy;
 
 import com.google.common.base.Joiner;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 
 /**
- * Proxy instance definition.
+ * Proxy instance meta data.
  */
 @Getter
-public final class ProxyInstanceDefinition implements InstanceDefinition {
+public final class ProxyInstanceMetaData implements InstanceMetaData {
     
     private static final String DELIMITER = "@";
     
@@ -37,13 +37,13 @@ public final class ProxyInstanceDefinition implements InstanceDefinition {
     
     private final int port;
     
-    public ProxyInstanceDefinition(final String instanceId, final int port) {
+    public ProxyInstanceMetaData(final String instanceId, final int port) {
         this.instanceId = instanceId;
         ip = IpUtils.getIp();
         this.port = port;
     }
     
-    public ProxyInstanceDefinition(final String instanceId, final String attributes) {
+    public ProxyInstanceMetaData(final String instanceId, final String attributes) {
         this.instanceId = instanceId;
         String[] attributesList = attributes.split(DELIMITER);
         ip = attributesList[0];

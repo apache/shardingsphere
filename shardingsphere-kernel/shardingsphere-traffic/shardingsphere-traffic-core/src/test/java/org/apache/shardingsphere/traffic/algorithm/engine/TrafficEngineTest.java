@@ -19,9 +19,9 @@ package org.apache.shardingsphere.traffic.algorithm.engine;
 
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
-import org.apache.shardingsphere.infra.instance.definition.proxy.ProxyInstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.traffic.context.TrafficContext;
 import org.apache.shardingsphere.traffic.engine.TrafficEngine;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
@@ -92,8 +92,8 @@ public final class TrafficEngineTest {
         when(trafficRule.findMatchedStrategyRule(logicSQL, false)).thenReturn(Optional.of(strategyRule));
         when(strategyRule.getLabels()).thenReturn(Arrays.asList("OLTP", "OLAP"));
         TrafficLoadBalanceAlgorithm loadBalancer = mock(TrafficLoadBalanceAlgorithm.class);
-        List<InstanceDefinition> instanceIds = mockComputeNodeInstances();
-        when(loadBalancer.getInstanceId("traffic", instanceIds)).thenReturn(new ProxyInstanceDefinition("127.0.0.1@3307", 3307));
+        List<InstanceMetaData> instanceIds = mockComputeNodeInstances();
+        when(loadBalancer.getInstanceId("traffic", instanceIds)).thenReturn(new ProxyInstanceMetaData("127.0.0.1@3307", 3307));
         when(strategyRule.getLoadBalancer()).thenReturn(loadBalancer);
         when(strategyRule.getName()).thenReturn("traffic");
         when(instanceContext.getComputeNodeInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(instanceIds);
@@ -101,10 +101,10 @@ public final class TrafficEngineTest {
         assertThat(actual.getInstanceId(), is("127.0.0.1@3307"));
     }
     
-    private List<InstanceDefinition> mockComputeNodeInstances() {
-        List<InstanceDefinition> result = new ArrayList<>();
-        result.add(new ProxyInstanceDefinition("127.0.0.1@3307", "127.0.0.1@3307"));
-        result.add(new ProxyInstanceDefinition("127.0.0.1@3308", "127.0.0.1@3308"));
+    private List<InstanceMetaData> mockComputeNodeInstances() {
+        List<InstanceMetaData> result = new ArrayList<>();
+        result.add(new ProxyInstanceMetaData("127.0.0.1@3307", "127.0.0.1@3307"));
+        result.add(new ProxyInstanceMetaData("127.0.0.1@3308", "127.0.0.1@3308"));
         return result;
     }
 }
