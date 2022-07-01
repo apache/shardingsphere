@@ -23,7 +23,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLComParsePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.parse.PostgreSQLParseCompletePacket;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowVariableStatement;
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -42,7 +41,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedConstruction;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
@@ -55,7 +53,6 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -81,17 +78,13 @@ public final class PostgreSQLComParseExecutorTest extends ProxyContextRestorer {
         when(connectionSession.getPreparedStatementRegistry()).thenReturn(new PreparedStatementRegistry());
     }
     
-    @SuppressWarnings("rawtypes")
     @Test
     public void assertExecuteWithEmptySQL() {
         final String expectedSQL = "";
         final String statementId = "S_1";
         when(parsePacket.getSql()).thenReturn(expectedSQL);
         when(parsePacket.getStatementId()).thenReturn(statementId);
-        Collection<DatabasePacket<?>> actualPackets;
-        try (MockedConstruction<CommonSQLStatementContext> ignored = mockConstruction(CommonSQLStatementContext.class)) {
-            actualPackets = executor.execute();
-        }
+        Collection<DatabasePacket<?>> actualPackets = executor.execute();
         assertThat(actualPackets.size(), is(1));
         assertThat(actualPackets.iterator().next(), is(PostgreSQLParseCompletePacket.getInstance()));
         PostgreSQLPreparedStatement actualPreparedStatement = connectionSession.getPreparedStatementRegistry().getPreparedStatement(statementId);
