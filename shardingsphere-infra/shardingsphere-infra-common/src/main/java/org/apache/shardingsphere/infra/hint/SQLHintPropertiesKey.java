@@ -41,7 +41,12 @@ public enum SQLHintPropertiesKey implements TypedPropertyKey {
     /**
      * Whether hint skip encrypt rewrite or not.
      */
-    SKIP_ENCRYPT_REWRITE_KEY("skipEncryptRewrite", String.valueOf(Boolean.FALSE), boolean.class);
+    SKIP_ENCRYPT_REWRITE_KEY("skipEncryptRewrite", String.valueOf(Boolean.FALSE), boolean.class),
+    
+    /**
+     * Hint disable audit names.
+     */
+    DISABLE_AUDIT_NAMES("disableAuditNames", "", String.class);
     
     private final String key;
     
