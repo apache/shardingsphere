@@ -20,14 +20,16 @@ package org.apache.shardingsphere.driver.instance;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBuilder;
 
+import java.util.UUID;
+
 /**
  * JDBC instance definition builder.
  */
 public final class JDBCInstanceDefinitionBuilder implements InstanceDefinitionBuilder {
     
     @Override
-    public InstanceDefinition build(final String instanceId, final int port) {
-        return new InstanceDefinition(instanceId, getType(), -1);
+    public InstanceDefinition build(final int port) {
+        return new InstanceDefinition(UUID.randomUUID().toString(), getType(), -1);
     }
     
     @Override

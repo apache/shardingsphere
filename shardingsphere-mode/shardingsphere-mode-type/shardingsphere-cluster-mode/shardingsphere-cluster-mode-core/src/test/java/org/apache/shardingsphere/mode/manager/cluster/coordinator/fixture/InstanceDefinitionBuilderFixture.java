@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBui
 public final class InstanceDefinitionBuilderFixture implements InstanceDefinitionBuilder {
     
     @Override
-    public InstanceDefinition build(final String instanceId, final int port) {
-        return new InstanceDefinition(instanceId, getType(), port);
+    public InstanceDefinition build(final int port) {
+        return new InstanceDefinition("1", getType(), port);
     }
     
     @Override
