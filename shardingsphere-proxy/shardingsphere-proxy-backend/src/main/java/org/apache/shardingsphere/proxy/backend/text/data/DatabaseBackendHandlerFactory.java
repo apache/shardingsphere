@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.proxy.backend.text.data;
 
+import io.vertx.core.Future;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.data.impl.BroadcastDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.SchemaAssignedDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.UnicastDatabaseBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -49,8 +51,20 @@ public final class DatabaseBackendHandlerFactory {
         if (sqlStatement instanceof DoStatement) {
             return new UnicastDatabaseBackendHandler(sqlStatementContext, sql, connectionSession);
         }
-        if (sqlStatement instanceof SetStatement) {
-            return new BroadcastDatabaseBackendHandler(sqlStatementContext, sql, connectionSession);
+        if (sqlStatement instanceof SetStatement && null == connectionSession.getDatabaseName()) {
+            // TODO Handle SET GLOBAL and SET SESSION differently
+            return new DatabaseBackendHandler() {
+                
+                @Override
+                public Future<ResponseHeader> executeFuture() {
+                    return Future.succeededFuture(new UpdateResponseHeader(sqlStatement));
+                }
+                
+                @Override
+                public ResponseHeader execute() {
+                    return new UpdateResponseHeader(sqlStatement);
+                }
+            };
         }
         if (sqlStatement instanceof DALStatement || (sqlStatement instanceof SelectStatement && null == ((SelectStatement) sqlStatement).getFrom())) {
             return new UnicastDatabaseBackendHandler(sqlStatementContext, sql, connectionSession);
