@@ -71,4 +71,5 @@
           PARAMETERS (CONTEXT)" db-types="Oracle" />
     
     <sql-case id="create_function_with_set_var" value="CREATE DEFINER = u1@localhost FUNCTION f2() RETURNS int BEGIN DECLARE n int; DECLARE m int; SET n:= (SELECT min(a) FROM t1); SET m:= (SELECT max(a) FROM t1); RETURN n &lt; m; END ;" db-types="MySQL" />
+    <sql-case id="create_function_with_create_view" value="CREATE FUNCTION bug_13627_f() returns int BEGIN create view v1 as select 1; return 1; END" db-types="MySQL" />
 </sql-cases>
