@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.driver.instance;
 
+import org.apache.shardingsphere.infra.instance.definition.ClientInstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBuilder;
 
@@ -29,12 +30,12 @@ public final class JDBCInstanceDefinitionBuilder implements InstanceDefinitionBu
     
     @Override
     public InstanceDefinition build(final int port) {
-        return new InstanceDefinition(UUID.randomUUID().toString(), getType(), -1);
+        return new ClientInstanceDefinition(UUID.randomUUID().toString(), getType());
     }
     
     @Override
     public InstanceDefinition build(final String instanceId, final String attributes) {
-        return new InstanceDefinition(instanceId, getType(), attributes);
+        return new ClientInstanceDefinition(instanceId, getType());
     }
     
     @Override

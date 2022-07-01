@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.watcher;
 
 import com.google.common.base.Strings;
+import org.apache.shardingsphere.infra.instance.definition.ClientInstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBuilderFactory;
+import org.apache.shardingsphere.infra.instance.definition.ServerInstanceDefinition;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
@@ -101,7 +102,7 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
     private Optional<GovernanceEvent> createInstanceEvent(final DataChangedEvent event) {
         Matcher matcher = matchInstanceOnlinePath(event.getKey());
         if (matcher.find()) {
-            InstanceDefinition instanceDefinition = InstanceDefinitionBuilderFactory.newInstance(matcher.group(1).toUpperCase(), matcher.group(2), event.getValue());
+            InstanceDefinition instanceDefinition = createInstanceDefinition(matcher.group(2), matcher.group(1).toUpperCase(), event.getValue());
             if (Type.ADDED == event.getType()) {
                 return Optional.of(new InstanceOnlineEvent(instanceDefinition));
             }
@@ -114,5 +115,9 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
     
     private Matcher matchInstanceOnlinePath(final String onlineInstancePath) {
         return Pattern.compile(ComputeNode.getOnlineInstanceNodePath() + "/[\\S]+/([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(onlineInstancePath);
+    }
+    
+    private InstanceDefinition createInstanceDefinition(final String instanceId, final String type, final String attributes) {
+        return "JDBC".equalsIgnoreCase(type) ? new ClientInstanceDefinition(instanceId, "JDBC") : new ServerInstanceDefinition(instanceId, "Proxy", attributes);
     }
 }

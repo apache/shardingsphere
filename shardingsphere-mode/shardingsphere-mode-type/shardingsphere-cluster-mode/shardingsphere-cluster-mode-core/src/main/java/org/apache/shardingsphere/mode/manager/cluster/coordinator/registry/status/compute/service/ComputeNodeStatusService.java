@@ -21,8 +21,10 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.instance.definition.ClientInstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBuilderFactory;
+import org.apache.shardingsphere.infra.instance.definition.ServerInstanceDefinition;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -128,8 +130,13 @@ public final class ComputeNodeStatusService {
     
     private Collection<ComputeNodeInstance> loadComputeNodeInstances(final String type) {
         Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(type));
-        return onlineComputeNodes.stream().map(each -> loadComputeNodeInstance(
-                InstanceDefinitionBuilderFactory.newInstance(type, each, repository.get(ComputeNode.getOnlineInstanceNodePath(each, type))))).collect(Collectors.toList());
+        return onlineComputeNodes.stream().map(each -> loadComputeNodeInstance(createInstanceDefinition(each, type))).collect(Collectors.toList());
+    }
+    
+    private InstanceDefinition createInstanceDefinition(final String instanceId, final String type) {
+        return "JDBC".equalsIgnoreCase(type)
+                ? new ClientInstanceDefinition(instanceId, "JDBC")
+                : new ServerInstanceDefinition(instanceId, "Proxy", repository.get(ComputeNode.getOnlineInstanceNodePath(instanceId, type)));
     }
     
     /**
