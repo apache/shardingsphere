@@ -21,8 +21,8 @@ import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.proxy.ProxyInstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceMetaData;
+import org.apache.shardingsphere.infra.instance.definition.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
@@ -62,7 +62,7 @@ public final class StandaloneContextManagerBuilderTextTest {
         Map<String, DatabaseConfiguration> databaseConfigs = Collections.singletonMap(
                 "foo_db", new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.singleton(mock(RuleConfiguration.class))));
         Collection<RuleConfiguration> globalRuleConfigs = Collections.singleton(mock(RuleConfiguration.class));
-        InstanceDefinition instanceDefinition = new ProxyInstanceDefinition(UUID.randomUUID().toString(), 3307);
-        return new ContextManagerBuilderParameter(modeConfig, databaseConfigs, globalRuleConfigs, new Properties(), Collections.emptyList(), instanceDefinition);
+        InstanceMetaData instanceMetaData = new ProxyInstanceMetaData(UUID.randomUUID().toString(), 3307);
+        return new ContextManagerBuilderParameter(modeConfig, databaseConfigs, globalRuleConfigs, new Properties(), Collections.emptyList(), instanceMetaData);
     }
 }

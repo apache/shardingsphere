@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceMetaData;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.sharding.cosid.algorithm.keygen.fixture.WorkerIdGeneratorFixture;
 import org.apache.shardingsphere.sharding.factory.KeyGenerateAlgorithmFactory;
@@ -53,7 +53,7 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
     public void assertGenerateKey() {
         CosIdSnowflakeKeyGenerateAlgorithm algorithm = (CosIdSnowflakeKeyGenerateAlgorithm) KeyGenerateAlgorithmFactory.newInstance(
                 new ShardingSphereAlgorithmConfiguration("COSID_SNOWFLAKE", new Properties()));
-        algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(FIXTURE_WORKER_ID),
+        algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(FIXTURE_WORKER_ID),
                 new ModeConfiguration("Memory", null, false), mock(LockContext.class)));
         long firstActualKey = (Long) algorithm.generateKey();
         long secondActualKey = (Long) algorithm.generateKey();
@@ -72,7 +72,7 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
         props.setProperty(CosIdSnowflakeKeyGenerateAlgorithm.AS_STRING_KEY, Boolean.TRUE.toString());
         CosIdSnowflakeKeyGenerateAlgorithm algorithm = (CosIdSnowflakeKeyGenerateAlgorithm) KeyGenerateAlgorithmFactory.newInstance(
                 new ShardingSphereAlgorithmConfiguration("COSID_SNOWFLAKE", props));
-        algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)),
+        algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)),
                 new WorkerIdGeneratorFixture(FIXTURE_WORKER_ID), new ModeConfiguration("Memory", null, false), mock(LockContext.class)));
         Comparable<?> actualKey = algorithm.generateKey();
         assertThat(actualKey, instanceOf(String.class));
@@ -93,7 +93,7 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
     public void assertGenerateKeyWhenNegative() {
         CosIdSnowflakeKeyGenerateAlgorithm algorithm = (CosIdSnowflakeKeyGenerateAlgorithm) KeyGenerateAlgorithmFactory.newInstance(
                 new ShardingSphereAlgorithmConfiguration("COSID_SNOWFLAKE", new Properties()));
-        algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(-1),
+        algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(-1),
                 new ModeConfiguration("Memory", null, false), mock(LockContext.class)));
         algorithm.generateKey();
     }
@@ -102,7 +102,7 @@ public final class CosIdSnowflakeKeyGenerateAlgorithmTest {
     public void assertGenerateKeyWhenGreaterThen1023() {
         CosIdSnowflakeKeyGenerateAlgorithm algorithm = (CosIdSnowflakeKeyGenerateAlgorithm) KeyGenerateAlgorithmFactory.newInstance(
                 new ShardingSphereAlgorithmConfiguration("COSID_SNOWFLAKE", new Properties()));
-        algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(1024),
+        algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(1024),
                 new ModeConfiguration("Memory", null, false), mock(LockContext.class)));
         algorithm.generateKey();
     }

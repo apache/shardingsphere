@@ -17,33 +17,23 @@
 
 package org.apache.shardingsphere.infra.instance.definition.jdbc;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceMetaData;
+import org.apache.shardingsphere.infra.instance.definition.InstanceMetaDataBuilderFactory;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
-import org.apache.shardingsphere.infra.instance.utils.IpUtils;
+import org.junit.Test;
 
-/**
- * JDBC instance definition.
- */
-@Getter
-public final class JDBCInstanceDefinition implements InstanceDefinition {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
+
+public final class JDBCInstanceMetaDataBuilderTest {
     
-    private final String instanceId;
-    
-    private final String ip;
-    
-    public JDBCInstanceDefinition(final String instanceId) {
-        this.instanceId = instanceId;
-        ip = IpUtils.getIp();
-    }
-    
-    @Override
-    public InstanceType getInstanceType() {
-        return InstanceType.JDBC;
-    }
-    
-    @Override
-    public String getAttributes() {
-        return "";
+    @Test
+    public void assertNewInstance() {
+        InstanceMetaData actual = InstanceMetaDataBuilderFactory.newInstance("JDBC", -1);
+        assertNotNull(actual.getInstanceId());
+        assertNotNull(actual.getIp());
+        assertThat(actual.getAttributes(), is(""));
+        assertThat(actual.getInstanceType(), is(InstanceType.JDBC));
     }
 }

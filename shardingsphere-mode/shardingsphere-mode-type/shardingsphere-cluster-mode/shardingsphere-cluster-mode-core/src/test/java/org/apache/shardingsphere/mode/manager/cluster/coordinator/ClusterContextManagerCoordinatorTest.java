@@ -33,8 +33,8 @@ import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecu
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.proxy.ProxyInstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceMetaData;
+import org.apache.shardingsphere.infra.instance.definition.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
@@ -145,8 +145,8 @@ public final class ClusterContextManagerCoordinatorTest {
     
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {
         ModeConfiguration modeConfig = new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("FIXTURE", "", "", new Properties()), false);
-        InstanceDefinition instanceDefinition = new ProxyInstanceDefinition("foo_instance_id", 3307);
-        return new ContextManagerBuilderParameter(modeConfig, Collections.emptyMap(), Collections.emptyList(), new Properties(), Collections.emptyList(), instanceDefinition);
+        InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3307);
+        return new ContextManagerBuilderParameter(modeConfig, Collections.emptyMap(), Collections.emptyList(), new Properties(), Collections.emptyList(), instanceMetaData);
     }
     
     private Map<String, ShardingSphereDatabase> createDatabases() {
@@ -291,7 +291,7 @@ public final class ClusterContextManagerCoordinatorTest {
     public void assertRenewInstanceStatus() {
         Collection<String> testStates = new LinkedList<>();
         testStates.add(StateType.OK.name());
-        StateEvent mockStateEvent = new StateEvent(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId(), testStates);
+        StateEvent mockStateEvent = new StateEvent(contextManager.getInstanceContext().getInstance().getInstanceMetaData().getInstanceId(), testStates);
         coordinator.renew(mockStateEvent);
         assertThat(contextManager.getInstanceContext().getInstance().getState().getCurrentState(), is(StateType.OK));
         testStates.add(StateType.CIRCUIT_BREAK.name());
@@ -301,7 +301,7 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertRenewWorkerIdChange() {
-        WorkerIdEvent mockWorkerIdEvent = new WorkerIdEvent(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId(), 12223L);
+        WorkerIdEvent mockWorkerIdEvent = new WorkerIdEvent(contextManager.getInstanceContext().getInstance().getInstanceMetaData().getInstanceId(), 12223L);
         coordinator.renew(mockWorkerIdEvent);
         assertThat(contextManager.getInstanceContext().getWorkerId(), is(12223L));
     }
@@ -309,14 +309,14 @@ public final class ClusterContextManagerCoordinatorTest {
     @Test
     public void assertRenewInstanceLabels() {
         Collection<String> labels = Collections.singleton("test");
-        coordinator.renew(new LabelsEvent(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId(), labels));
+        coordinator.renew(new LabelsEvent(contextManager.getInstanceContext().getInstance().getInstanceMetaData().getInstanceId(), labels));
         assertThat(contextManager.getInstanceContext().getInstance().getLabels(), is(labels));
     }
     
     @Test
     public void assertRenewInstanceOfflineEvent() {
-        coordinator.renew(new InstanceOfflineEvent(contextManager.getInstanceContext().getInstance().getInstanceDefinition()));
-        assertThat(((ProxyInstanceDefinition) contextManager.getInstanceContext().getInstance().getInstanceDefinition()).getPort(), is(3307));
+        coordinator.renew(new InstanceOfflineEvent(contextManager.getInstanceContext().getInstance().getInstanceMetaData()));
+        assertThat(((ProxyInstanceMetaData) contextManager.getInstanceContext().getInstance().getInstanceMetaData()).getPort(), is(3307));
     }
     
     @Test
@@ -334,19 +334,19 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertRenewInstanceOnlineEvent() {
-        InstanceDefinition instanceDefinition1 = new ProxyInstanceDefinition("foo_instance_3307", 3307);
-        InstanceOnlineEvent instanceOnlineEvent1 = new InstanceOnlineEvent(instanceDefinition1);
+        InstanceMetaData instanceMetaData1 = new ProxyInstanceMetaData("foo_instance_3307", 3307);
+        InstanceOnlineEvent instanceOnlineEvent1 = new InstanceOnlineEvent(instanceMetaData1);
         coordinator.renew(instanceOnlineEvent1);
         assertThat(contextManager.getInstanceContext().getComputeNodeInstances().size(), is(1));
-        assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getComputeNodeInstances()).get(0).getInstanceDefinition(), is(instanceDefinition1));
-        InstanceDefinition instanceDefinition2 = new ProxyInstanceDefinition("foo_instance_3308", 3308);
-        InstanceOnlineEvent instanceOnlineEvent2 = new InstanceOnlineEvent(instanceDefinition2);
+        assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getComputeNodeInstances()).get(0).getInstanceMetaData(), is(instanceMetaData1));
+        InstanceMetaData instanceMetaData2 = new ProxyInstanceMetaData("foo_instance_3308", 3308);
+        InstanceOnlineEvent instanceOnlineEvent2 = new InstanceOnlineEvent(instanceMetaData2);
         coordinator.renew(instanceOnlineEvent2);
         assertThat(contextManager.getInstanceContext().getComputeNodeInstances().size(), is(2));
-        assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getComputeNodeInstances()).get(1).getInstanceDefinition(), is(instanceDefinition2));
+        assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getComputeNodeInstances()).get(1).getInstanceMetaData(), is(instanceMetaData2));
         coordinator.renew(instanceOnlineEvent1);
         assertThat(contextManager.getInstanceContext().getComputeNodeInstances().size(), is(2));
-        assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getComputeNodeInstances()).get(1).getInstanceDefinition(), is(instanceDefinition1));
+        assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getComputeNodeInstances()).get(1).getInstanceMetaData(), is(instanceMetaData1));
     }
     
     @Test
@@ -372,7 +372,7 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertTriggerShowProcessList() throws NoSuchFieldException, IllegalAccessException {
-        String instanceId = contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId();
+        String instanceId = contextManager.getInstanceContext().getInstance().getInstanceMetaData().getInstanceId();
         ShowProcessListManager.getInstance().putProcessContext("foo_execution_id", new YamlExecuteProcessContext(mock(ExecuteProcessContext.class)));
         String showProcessListId = "foo_process_id";
         coordinator.triggerShowProcessList(new ShowProcessListTriggerEvent(instanceId, showProcessListId));

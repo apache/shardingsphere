@@ -15,26 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.instance.definition.proxy;
+package org.apache.shardingsphere.infra.instance.definition.jdbc;
 
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBuilderFactory;
+import lombok.Getter;
+import org.apache.shardingsphere.infra.instance.definition.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
-import org.junit.Test;
+import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 
-import static org.hamcrest.CoreMatchers.endsWith;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-
-public final class ProxyInstanceDefinitionBuilderTest {
+/**
+ * JDBC instance meta data.
+ */
+@Getter
+public final class JDBCInstanceMetaData implements InstanceMetaData {
     
-    @Test
-    public void assertNewInstance() {
-        ProxyInstanceDefinition actual = (ProxyInstanceDefinition) InstanceDefinitionBuilderFactory.newInstance("Proxy", 3307);
-        assertNotNull(actual.getInstanceId());
-        assertNotNull(actual.getIp());
-        assertThat(actual.getPort(), is(3307));
-        assertThat(actual.getAttributes(), endsWith("@3307"));
-        assertThat(actual.getInstanceType(), is(InstanceType.PROXY));
+    private final String instanceId;
+    
+    private final String ip;
+    
+    public JDBCInstanceMetaData(final String instanceId) {
+        this.instanceId = instanceId;
+        ip = IpUtils.getIp();
+    }
+    
+    @Override
+    public InstanceType getInstanceType() {
+        return InstanceType.JDBC;
+    }
+    
+    @Override
+    public String getAttributes() {
+        return "";
     }
 }

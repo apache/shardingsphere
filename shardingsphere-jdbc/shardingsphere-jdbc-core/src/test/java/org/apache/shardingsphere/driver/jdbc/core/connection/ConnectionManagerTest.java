@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCre
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
-import org.apache.shardingsphere.infra.instance.definition.proxy.ProxyInstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -96,7 +96,7 @@ public final class ConnectionManagerTest {
         when(globalRuleMetaData.getSingleRule(TransactionRule.class)).thenReturn(mock(TransactionRule.class, RETURNS_DEEP_STUBS));
         when(globalRuleMetaData.getSingleRule(TrafficRule.class)).thenReturn(mock(TrafficRule.class, RETURNS_DEEP_STUBS));
         when(result.getInstanceContext().getComputeNodeInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(
-                Collections.singletonList(new ProxyInstanceDefinition("127.0.0.1@3307", "127.0.0.1@3307")));
+                Collections.singletonList(new ProxyInstanceMetaData("127.0.0.1@3307", "127.0.0.1@3307")));
         dataSourcePoolCreator = mockStatic(DataSourcePoolCreator.class);
         Map<String, DataSource> trafficDataSourceMap = mockTrafficDataSourceMap();
         when(DataSourcePoolCreator.create((Map) any())).thenReturn(trafficDataSourceMap);

@@ -21,10 +21,10 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
-import org.apache.shardingsphere.infra.instance.definition.jdbc.JDBCInstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.proxy.ProxyInstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.jdbc.JDBCInstanceMetaData;
+import org.apache.shardingsphere.infra.instance.definition.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -47,10 +47,10 @@ public final class ComputeNodeStatusService {
     /**
      * Register online.
      * 
-     * @param instanceDefinition instance definition
+     * @param instanceMetaData instance definition
      */
-    public void registerOnline(final InstanceDefinition instanceDefinition) {
-        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceDefinition.getInstanceId(), instanceDefinition.getInstanceType()), instanceDefinition.getAttributes());
+    public void registerOnline(final InstanceMetaData instanceMetaData) {
+        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceMetaData.getInstanceId(), instanceMetaData.getInstanceType()), instanceMetaData.getAttributes());
     }
     
     /**
@@ -130,26 +130,26 @@ public final class ComputeNodeStatusService {
     
     private Collection<ComputeNodeInstance> loadComputeNodeInstances(final InstanceType instanceType) {
         Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType));
-        return onlineComputeNodes.stream().map(each -> loadComputeNodeInstance(createInstanceDefinition(each, instanceType))).collect(Collectors.toList());
+        return onlineComputeNodes.stream().map(each -> loadComputeNodeInstance(createInstanceMetaData(each, instanceType))).collect(Collectors.toList());
     }
     
-    private InstanceDefinition createInstanceDefinition(final String instanceId, final InstanceType type) {
+    private InstanceMetaData createInstanceMetaData(final String instanceId, final InstanceType type) {
         return InstanceType.JDBC == type
-                ? new JDBCInstanceDefinition(instanceId)
-                : new ProxyInstanceDefinition(instanceId, repository.get(ComputeNode.getOnlineInstanceNodePath(instanceId, type)));
+                ? new JDBCInstanceMetaData(instanceId)
+                : new ProxyInstanceMetaData(instanceId, repository.get(ComputeNode.getOnlineInstanceNodePath(instanceId, type)));
     }
     
     /**
      * Load compute node instance by instance definition.
      *
-     * @param instanceDefinition instance definition
+     * @param instanceMetaData instance definition
      * @return compute node instance
      */
-    public ComputeNodeInstance loadComputeNodeInstance(final InstanceDefinition instanceDefinition) {
-        ComputeNodeInstance result = new ComputeNodeInstance(instanceDefinition);
-        result.setLabels(loadInstanceLabels(instanceDefinition.getInstanceId()));
-        result.switchState(loadInstanceStatus(instanceDefinition.getInstanceId()));
-        loadInstanceWorkerId(instanceDefinition.getInstanceId()).ifPresent(result::setWorkerId);
+    public ComputeNodeInstance loadComputeNodeInstance(final InstanceMetaData instanceMetaData) {
+        ComputeNodeInstance result = new ComputeNodeInstance(instanceMetaData);
+        result.setLabels(loadInstanceLabels(instanceMetaData.getInstanceId()));
+        result.switchState(loadInstanceStatus(instanceMetaData.getInstanceId()));
+        loadInstanceWorkerId(instanceMetaData.getInstanceId()).ifPresent(result::setWorkerId);
         return result;
     }
 }

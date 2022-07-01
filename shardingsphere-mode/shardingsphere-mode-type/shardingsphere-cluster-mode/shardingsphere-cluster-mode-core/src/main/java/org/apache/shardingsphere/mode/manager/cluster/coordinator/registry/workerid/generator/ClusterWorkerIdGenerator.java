@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.generator;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.node.WorkerIdNode;
@@ -36,16 +36,16 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     
     private final RegistryCenter registryCenter;
     
-    private final InstanceDefinition instanceDefinition;
+    private final InstanceMetaData instanceMetaData;
     
     @Override
     public long generate() {
-        return registryCenter.getComputeNodeStatusService().loadInstanceWorkerId(instanceDefinition.getInstanceId()).orElseGet(this::reGenerate);
+        return registryCenter.getComputeNodeStatusService().loadInstanceWorkerId(instanceMetaData.getInstanceId()).orElseGet(this::reGenerate);
     }
     
     private Long reGenerate() {
-        Long result = Long.valueOf(Optional.ofNullable(repository.getSequentialId(WorkerIdNode.getWorkerIdGeneratorPath(instanceDefinition.getInstanceId()), "")).orElse("0"));
-        registryCenter.getComputeNodeStatusService().persistInstanceWorkerId(instanceDefinition.getInstanceId(), result);
+        Long result = Long.valueOf(Optional.ofNullable(repository.getSequentialId(WorkerIdNode.getWorkerIdGeneratorPath(instanceMetaData.getInstanceId()), "")).orElse("0"));
+        registryCenter.getComputeNodeStatusService().persistInstanceWorkerId(instanceMetaData.getInstanceId(), result);
         return result;
     }
 }
