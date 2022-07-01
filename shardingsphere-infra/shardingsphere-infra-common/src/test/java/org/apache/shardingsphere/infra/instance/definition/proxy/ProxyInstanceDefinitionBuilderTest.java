@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.instance;
+package org.apache.shardingsphere.infra.instance.definition.proxy;
 
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBuilderFactory;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
-import org.apache.shardingsphere.infra.instance.definition.ProxyInstanceDefinition;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.endsWith;

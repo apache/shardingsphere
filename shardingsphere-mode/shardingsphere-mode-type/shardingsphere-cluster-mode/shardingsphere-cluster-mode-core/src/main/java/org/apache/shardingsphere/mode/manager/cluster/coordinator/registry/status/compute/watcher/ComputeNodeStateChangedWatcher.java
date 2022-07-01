@@ -20,8 +20,8 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
-import org.apache.shardingsphere.infra.instance.definition.JDBCInstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.ProxyInstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.jdbc.JDBCInstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.proxy.ProxyInstanceDefinition;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;

@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.instance.definition;
+package org.apache.shardingsphere.infra.instance.definition.proxy;
 
 import com.google.common.base.Joiner;
 import lombok.Getter;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 
 /**

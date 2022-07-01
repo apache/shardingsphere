@@ -15,26 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.instance;
+package org.apache.shardingsphere.infra.instance.definition.jdbc;
 
 import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBuilder;
-import org.apache.shardingsphere.infra.instance.definition.ProxyInstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceDefinitionBuilderFactory;
+import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.junit.Test;
 
-import java.util.UUID;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
-/**
- * Proxy instance definition builder.
- */
-public final class ProxyInstanceDefinitionBuilder implements InstanceDefinitionBuilder {
+public final class JDBCInstanceDefinitionBuilderTest {
     
-    @Override
-    public InstanceDefinition build(final int port) {
-        return new ProxyInstanceDefinition(UUID.randomUUID().toString(), port);
-    }
-    
-    @Override
-    public String getType() {
-        return "Proxy";
+    @Test
+    public void assertNewInstance() {
+        InstanceDefinition actual = InstanceDefinitionBuilderFactory.newInstance("JDBC", -1);
+        assertNotNull(actual.getInstanceId());
+        assertNotNull(actual.getIp());
+        assertThat(actual.getAttributes(), is(""));
+        assertThat(actual.getInstanceType(), is(InstanceType.JDBC));
     }
 }
