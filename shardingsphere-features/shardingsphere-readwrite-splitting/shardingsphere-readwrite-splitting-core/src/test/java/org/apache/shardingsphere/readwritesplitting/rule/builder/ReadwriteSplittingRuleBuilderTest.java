@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.rule.builder;
 
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilderFactory;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
@@ -25,11 +26,11 @@ import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwrite
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
 public final class ReadwriteSplittingRuleBuilderTest {
     
@@ -38,10 +39,10 @@ public final class ReadwriteSplittingRuleBuilderTest {
     public void assertBuild() {
         ReadwriteSplittingRuleConfiguration ruleConfig = new ReadwriteSplittingRuleConfiguration(
                 Collections.singletonList(new ReadwriteSplittingDataSourceRuleConfiguration("name",
-                        new StaticReadwriteSplittingStrategyConfiguration("writeDataSourceName", Arrays.asList("readDataSourceName")),
+                        new StaticReadwriteSplittingStrategyConfiguration("writeDataSourceName", Collections.singletonList("readDataSourceName")),
                         null, "loadBalancerName")),
                 Collections.emptyMap());
         DatabaseRuleBuilder builder = DatabaseRuleBuilderFactory.getInstanceMap(Collections.singletonList(ruleConfig)).get(ruleConfig);
-        assertThat(builder.build(ruleConfig, "", Collections.emptyMap(), Collections.emptyList()), instanceOf(ReadwriteSplittingRule.class));
+        assertThat(builder.build(ruleConfig, "", Collections.emptyMap(), Collections.emptyList(), mock(InstanceContext.class)), instanceOf(ReadwriteSplittingRule.class));
     }
 }

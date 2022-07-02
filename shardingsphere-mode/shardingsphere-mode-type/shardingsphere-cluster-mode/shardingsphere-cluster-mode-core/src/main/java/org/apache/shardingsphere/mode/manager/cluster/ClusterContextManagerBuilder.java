@@ -64,10 +64,10 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
         persistConfigurations(persistService, parameter);
         RegistryCenter registryCenter = new RegistryCenter(repository);
-        MetaDataContexts metaDataContexts = buildMetaDataContexts(persistService, parameter);
-        persistMetaData(metaDataContexts);
         InstanceContext instanceContext = buildInstanceContext(registryCenter, parameter.getInstanceMetaData(), parameter.getModeConfig());
         registryCenter.getRepository().watchSessionConnection(instanceContext);
+        MetaDataContexts metaDataContexts = buildMetaDataContexts(persistService, parameter, instanceContext);
+        persistMetaData(metaDataContexts);
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);
         registerOnline(persistService, registryCenter, parameter, result);
         return result;
@@ -80,14 +80,15 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         }
     }
     
-    private MetaDataContexts buildMetaDataContexts(final MetaDataPersistService persistService, final ContextManagerBuilderParameter parameter) throws SQLException {
+    private MetaDataContexts buildMetaDataContexts(final MetaDataPersistService persistService,
+                                                   final ContextManagerBuilderParameter parameter, final InstanceContext instanceContext) throws SQLException {
         Collection<String> databaseNames = parameter.getInstanceMetaData() instanceof JDBCInstanceMetaData
                 ? parameter.getDatabaseConfigs().keySet()
                 : persistService.getSchemaMetaDataService().loadAllDatabaseNames();
         Collection<RuleConfiguration> globalRuleConfigs = persistService.getGlobalRuleService().load();
         ConfigurationProperties props = new ConfigurationProperties(persistService.getPropsService().load());
-        Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(buildDatabaseConfigMap(databaseNames, persistService, parameter), props);
-        ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases));
+        Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(buildDatabaseConfigMap(databaseNames, persistService, parameter), props, instanceContext);
+        ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases, instanceContext));
         return new MetaDataContexts(persistService, new ShardingSphereMetaData(databases, globalMetaData, props), OptimizerContextFactory.create(databases, globalMetaData));
     }
     

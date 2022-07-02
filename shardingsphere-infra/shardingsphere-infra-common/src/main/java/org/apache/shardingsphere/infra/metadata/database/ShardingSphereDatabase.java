@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilder;
@@ -65,12 +66,13 @@ public final class ShardingSphereDatabase {
      * @param storageType storage type
      * @param databaseConfig database configuration
      * @param props configuration properties
+     * @param instanceContext instance context
      * @return database meta data
      * @throws SQLException SQL exception
      */
     public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseType storageType,
-                                                final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) throws SQLException {
-        Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(name, databaseConfig);
+                                                final DatabaseConfiguration databaseConfig, final ConfigurationProperties props, final InstanceContext instanceContext) throws SQLException {
+        Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(name, databaseConfig, instanceContext);
         Map<String, ShardingSphereSchema> schemas = new ConcurrentHashMap<>();
         schemas.putAll(GenericSchemaBuilder.build(new GenericSchemaBuilderMaterials(protocolType, storageType, databaseConfig.getDataSources(), databaseRules, props, name)));
         schemas.putAll(SystemSchemaBuilder.build(name, protocolType));
@@ -121,9 +123,12 @@ public final class ShardingSphereDatabase {
     
     /**
      * Reload rules.
+     * 
+     * @param instanceContext instance context
      */
-    public synchronized void reloadRules() {
-        Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(name, new DataSourceProvidedDatabaseConfiguration(resource.getDataSources(), ruleMetaData.getConfigurations()));
+    public synchronized void reloadRules(final InstanceContext instanceContext) {
+        Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(
+                name, new DataSourceProvidedDatabaseConfiguration(resource.getDataSources(), ruleMetaData.getConfigurations()), instanceContext);
         ruleMetaData.getRules().clear();
         ruleMetaData.getRules().addAll(databaseRules);
     }

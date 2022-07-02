@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.singletable.rule.builder;
 
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilderFactory;
@@ -37,7 +38,7 @@ public final class SingleTableRuleBuilderTest {
     @Test
     public void assertBuild() {
         DatabaseRuleBuilder builder = DatabaseRuleBuilderFactory.getInstances().iterator().next();
-        DatabaseRule actual = builder.build(mock(SingleTableRuleConfiguration.class), "", Collections.emptyMap(), Collections.singleton(mock(ShardingSphereRule.class)));
+        DatabaseRule actual = builder.build(mock(SingleTableRuleConfiguration.class), "", Collections.emptyMap(), Collections.singleton(mock(ShardingSphereRule.class)), mock(InstanceContext.class));
         assertThat(actual, instanceOf(SingleTableRule.class));
     }
     
@@ -45,7 +46,8 @@ public final class SingleTableRuleBuilderTest {
     @Test
     public void assertBuildWithDefaultDataSource() {
         DatabaseRuleBuilder builder = DatabaseRuleBuilderFactory.getInstances().iterator().next();
-        DatabaseRule actual = builder.build(new SingleTableRuleConfiguration("foo_ds"), "", Collections.emptyMap(), Collections.singleton(mock(ShardingSphereRule.class)));
+        DatabaseRule actual = builder.build(
+                new SingleTableRuleConfiguration("foo_ds"), "", Collections.emptyMap(), Collections.singleton(mock(ShardingSphereRule.class)), mock(InstanceContext.class));
         assertThat(actual, instanceOf(SingleTableRule.class));
     }
 }
