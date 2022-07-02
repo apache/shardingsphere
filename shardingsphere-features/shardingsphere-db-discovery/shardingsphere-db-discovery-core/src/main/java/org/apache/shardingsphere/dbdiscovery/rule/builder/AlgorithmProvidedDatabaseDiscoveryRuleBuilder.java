@@ -36,7 +36,7 @@ public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilder implements Data
     @Override
     public DatabaseDiscoveryRule build(final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration config, final String databaseName,
                                        final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
-        return new DatabaseDiscoveryRule(databaseName, dataSources, config);
+        return new DatabaseDiscoveryRule(databaseName, dataSources, config, instanceContext);
     }
     
     @Override

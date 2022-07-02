@@ -44,7 +44,7 @@ public final class DatabaseDiscoveryRuleBuilder implements DatabaseRuleBuilder<D
                 realDataSourceMap.put(datasourceName, dataSources.get(datasourceName));
             }
         }
-        return new DatabaseDiscoveryRule(databaseName, realDataSourceMap, config);
+        return new DatabaseDiscoveryRule(databaseName, realDataSourceMap, config, instanceContext);
     }
     
     @Override

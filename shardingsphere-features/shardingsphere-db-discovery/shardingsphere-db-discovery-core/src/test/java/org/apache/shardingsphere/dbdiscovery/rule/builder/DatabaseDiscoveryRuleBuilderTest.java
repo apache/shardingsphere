@@ -33,7 +33,9 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class DatabaseDiscoveryRuleBuilderTest {
     
@@ -45,7 +47,9 @@ public final class DatabaseDiscoveryRuleBuilderTest {
                 Collections.singletonMap("ha_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
                 Collections.singletonMap("CORE.FIXTURE", new ShardingSphereAlgorithmConfiguration("CORE.FIXTURE", new Properties())));
         DatabaseRuleBuilder builder = DatabaseRuleBuilderFactory.getInstanceMap(Collections.singletonList(config)).get(config);
+        InstanceContext instanceContext = mock(InstanceContext.class, RETURNS_DEEP_STUBS);
+        when(instanceContext.getInstance().getCurrentInstanceId()).thenReturn("foo_id");
         assertThat(builder.build(config, "test_schema",
-                Collections.singletonMap("name", new MockedDataSource()), Collections.emptyList(), mock(InstanceContext.class)), instanceOf(DatabaseDiscoveryRule.class));
+                Collections.singletonMap("name", new MockedDataSource()), Collections.emptyList(), instanceContext), instanceOf(DatabaseDiscoveryRule.class));
     }
 }
