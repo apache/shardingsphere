@@ -22,9 +22,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilderFactory;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
-import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -130,13 +129,8 @@ public final class ComputeNodeStatusService {
     
     private Collection<ComputeNodeInstance> loadComputeNodeInstances(final InstanceType instanceType) {
         Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType));
-        return onlineComputeNodes.stream().map(each -> loadComputeNodeInstance(createInstanceMetaData(each, instanceType))).collect(Collectors.toList());
-    }
-    
-    private InstanceMetaData createInstanceMetaData(final String instanceId, final InstanceType type) {
-        return InstanceType.JDBC == type
-                ? new JDBCInstanceMetaData(instanceId)
-                : new ProxyInstanceMetaData(instanceId, repository.get(ComputeNode.getOnlineInstanceNodePath(instanceId, type)));
+        return onlineComputeNodes.stream().map(each -> loadComputeNodeInstance(
+                InstanceMetaDataBuilderFactory.create(each, instanceType, repository.get(ComputeNode.getOnlineInstanceNodePath(each, instanceType))))).collect(Collectors.toList());
     }
     
     /**
