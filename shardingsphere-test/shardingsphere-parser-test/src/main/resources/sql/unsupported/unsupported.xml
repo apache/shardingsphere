@@ -3353,11 +3353,6 @@
     <sql-case id="alter_by_postgresql_source_test_case214" value="ALTER OPERATOR FAMILY alt_opf7 USING btree DROP OPERATOR 1 (int4, int2, int8);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case215" value="ALTER OPERATOR FAMILY alt_opf8 USING btree ADD OPERATOR 1 &lt; (int4, int4);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case216" value="ALTER OPERATOR FAMILY alt_opf9 USING gist ADD OPERATOR 1 &lt; (int4, int4) FOR ORDER BY float_ops;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case286" value="ALTER RULE &quot;_RETURN&quot; ON rule_v1 RENAME TO abc;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case287" value="ALTER RULE InsertRule ON rule_v1 RENAME TO NewInsertRule;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case288" value="ALTER RULE InsertRule ON rule_v1 RENAME to NewInsertRule;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case289" value="ALTER RULE NewInsertRule ON rule_v1 RENAME TO &quot;_RETURN&quot;;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case290" value="ALTER RULE rules_parted_table_insert ON rules_parted_table RENAME TO rules_parted_table_insert_redirect;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case295" value="ALTER SEQUENCE itest6_a_seq OWNED BY NONE;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case296" value="ALTER SERVER alt_fserv1 RENAME TO alt_fserv2;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case297" value="ALTER SERVER alt_fserv1 RENAME TO alt_fserv3;" db-types="PostgreSQL" />
