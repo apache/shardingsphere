@@ -25,8 +25,8 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.instance.definition.jdbc.JDBCInstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.jdbc.JDBCInstanceMetaData;
+import org.apache.shardingsphere.infra.instance.definition.InstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
@@ -59,14 +59,14 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     @Override
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
-        ModeScheduleContextFactory.getInstance().init(parameter.getInstanceDefinition().getInstanceId(), parameter.getModeConfig());
+        ModeScheduleContextFactory.getInstance().init(parameter.getInstanceMetaData().getInstanceId(), parameter.getModeConfig());
         ClusterPersistRepository repository = ClusterPersistRepositoryFactory.getInstance((ClusterPersistRepositoryConfiguration) parameter.getModeConfig().getRepository());
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
         persistConfigurations(persistService, parameter);
         RegistryCenter registryCenter = new RegistryCenter(repository);
         MetaDataContexts metaDataContexts = createMetaDataContexts(persistService, parameter);
         persistMetaData(metaDataContexts);
-        ContextManager result = createContextManager(repository, registryCenter, parameter.getInstanceDefinition(), metaDataContexts, parameter.getModeConfig());
+        ContextManager result = createContextManager(repository, registryCenter, parameter.getInstanceMetaData(), metaDataContexts, parameter.getModeConfig());
         registerOnline(persistService, parameter, result, registryCenter);
         return result;
     }
@@ -79,7 +79,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private MetaDataContexts createMetaDataContexts(final MetaDataPersistService persistService, final ContextManagerBuilderParameter parameter) throws SQLException {
-        Collection<String> databaseNames = parameter.getInstanceDefinition() instanceof JDBCInstanceDefinition
+        Collection<String> databaseNames = parameter.getInstanceMetaData() instanceof JDBCInstanceMetaData
                 ? parameter.getDatabaseConfigs().keySet()
                 : persistService.getSchemaMetaDataService().loadAllDatabaseNames();
         Collection<RuleConfiguration> globalRuleConfigs = persistService.getGlobalRuleService().load();
@@ -109,11 +109,11 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private ContextManager createContextManager(final ClusterPersistRepository repository, final RegistryCenter registryCenter,
-                                                final InstanceDefinition instanceDefinition, final MetaDataContexts metaDataContexts,
+                                                final InstanceMetaData instanceMetaData, final MetaDataContexts metaDataContexts,
                                                 final ModeConfiguration modeConfig) {
-        ClusterWorkerIdGenerator clusterWorkerIdGenerator = new ClusterWorkerIdGenerator(repository, registryCenter, instanceDefinition);
+        ClusterWorkerIdGenerator clusterWorkerIdGenerator = new ClusterWorkerIdGenerator(repository, registryCenter, instanceMetaData);
         DistributedLockContext distributedLockContext = new DistributedLockContext(repository);
-        InstanceContext instanceContext = new InstanceContext(new ComputeNodeInstance(instanceDefinition), clusterWorkerIdGenerator, modeConfig, distributedLockContext);
+        InstanceContext instanceContext = new InstanceContext(new ComputeNodeInstance(instanceMetaData), clusterWorkerIdGenerator, modeConfig, distributedLockContext);
         repository.watchSessionConnection(instanceContext);
         return new ContextManager(metaDataContexts, instanceContext);
     }

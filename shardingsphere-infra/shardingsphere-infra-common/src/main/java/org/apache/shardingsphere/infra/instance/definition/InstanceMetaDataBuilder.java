@@ -17,36 +17,20 @@
 
 package org.apache.shardingsphere.infra.instance.definition;
 
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
+
 /**
- * Instance definition.
+ * Instance meta data builder.
  */
-public interface InstanceDefinition {
+@SingletonSPI
+public interface InstanceMetaDataBuilder extends TypedSPI {
     
     /**
-     * Get instance ID.
+     * Build instance meta data.
      * 
-     * @return instance ID
+     * @param port port
+     * @return built instance meta data
      */
-    String getInstanceId();
-    
-    /**
-     * Get instance type.
-     * 
-     * @return instance type
-     */
-    InstanceType getInstanceType();
-    
-    /**
-     * Get IP.
-     * 
-     * @return IP
-     */
-    String getIp();
-    
-    /**
-     * Get attributes.
-     * 
-     * @return attributes
-     */
-    String getAttributes();
+    InstanceMetaData build(int port);
 }

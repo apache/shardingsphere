@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.traffic.fixture;
 
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceMetaData;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
 import java.util.List;
@@ -35,7 +35,7 @@ public final class TrafficLoadBalanceAlgorithmFixture implements TrafficLoadBala
     }
     
     @Override
-    public InstanceDefinition getInstanceId(final String name, final List<InstanceDefinition> instances) {
+    public InstanceMetaData getInstanceId(final String name, final List<InstanceMetaData> instances) {
         return null;
     }
     

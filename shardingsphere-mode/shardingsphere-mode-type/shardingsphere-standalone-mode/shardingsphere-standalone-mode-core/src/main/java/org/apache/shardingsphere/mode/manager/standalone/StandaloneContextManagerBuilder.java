@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.instance.definition.jdbc.JDBCInstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.jdbc.JDBCInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
@@ -65,7 +65,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     }
     
     private MetaDataContexts createMetaDataContexts(final MetaDataPersistService persistService, final ContextManagerBuilderParameter parameter) throws SQLException {
-        Collection<String> databaseNames = parameter.getInstanceDefinition() instanceof JDBCInstanceDefinition
+        Collection<String> databaseNames = parameter.getInstanceMetaData() instanceof JDBCInstanceMetaData
                 ? parameter.getDatabaseConfigs().keySet()
                 : persistService.getSchemaMetaDataService().loadAllDatabaseNames();
         Map<String, DatabaseConfiguration> databaseConfigMap = getDatabaseConfigMap(databaseNames, persistService, parameter);
@@ -92,7 +92,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     
     private ContextManager createContextManager(final ContextManagerBuilderParameter parameter, final MetaDataContexts metaDataContexts) {
         InstanceContext instanceContext = new InstanceContext(
-                new ComputeNodeInstance(parameter.getInstanceDefinition()), new StandaloneWorkerIdGenerator(), parameter.getModeConfig(), new StandaloneLockContext());
+                new ComputeNodeInstance(parameter.getInstanceMetaData()), new StandaloneWorkerIdGenerator(), parameter.getModeConfig(), new StandaloneLockContext());
         return new ContextManager(metaDataContexts, instanceContext);
     }
     

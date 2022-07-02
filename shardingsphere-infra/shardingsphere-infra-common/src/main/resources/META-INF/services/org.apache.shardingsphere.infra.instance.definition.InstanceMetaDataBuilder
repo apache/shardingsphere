@@ -15,5 +15,5 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.instance.definition.jdbc.JDBCInstanceDefinitionBuilder
-org.apache.shardingsphere.infra.instance.definition.proxy.ProxyInstanceDefinitionBuilder
+org.apache.shardingsphere.infra.instance.definition.jdbc.JDBCInstanceMetaDataBuilder
+org.apache.shardingsphere.infra.instance.definition.proxy.ProxyInstanceMetaDataBuilder

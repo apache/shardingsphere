@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.instance;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.definition.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.lock.LockContext;
@@ -63,7 +63,7 @@ public final class InstanceContext {
      * @param status status
      */
     public void updateInstanceStatus(final String instanceId, final Collection<String> status) {
-        if (instance.getInstanceDefinition().getInstanceId().equals(instanceId)) {
+        if (instance.getInstanceMetaData().getInstanceId().equals(instanceId)) {
             instance.switchState(status);
         }
         updateRelatedComputeNodeInstancesStatus(instanceId, status);
@@ -71,7 +71,7 @@ public final class InstanceContext {
     
     private void updateRelatedComputeNodeInstancesStatus(final String instanceId, final Collection<String> status) {
         for (ComputeNodeInstance each : computeNodeInstances) {
-            if (each.getInstanceDefinition().getInstanceId().equals(instanceId)) {
+            if (each.getInstanceMetaData().getInstanceId().equals(instanceId)) {
                 each.switchState(status);
             }
         }
@@ -95,10 +95,10 @@ public final class InstanceContext {
      * @param labels collection of label
      */
     public void updateLabel(final String instanceId, final Collection<String> labels) {
-        if (instance.getInstanceDefinition().getInstanceId().equals(instanceId)) {
+        if (instance.getInstanceMetaData().getInstanceId().equals(instanceId)) {
             instance.setLabels(labels);
         }
-        computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().equals(instanceId)).forEach(each -> each.setLabels(labels));
+        computeNodeInstances.stream().filter(each -> each.getInstanceMetaData().getInstanceId().equals(instanceId)).forEach(each -> each.setLabels(labels));
     }
     
     /**
@@ -120,7 +120,7 @@ public final class InstanceContext {
      * @param instance compute node instance
      */
     public void addComputeNodeInstance(final ComputeNodeInstance instance) {
-        computeNodeInstances.removeIf(each -> each.getInstanceDefinition().getInstanceId().equalsIgnoreCase(instance.getInstanceDefinition().getInstanceId()));
+        computeNodeInstances.removeIf(each -> each.getInstanceMetaData().getInstanceId().equalsIgnoreCase(instance.getInstanceMetaData().getInstanceId()));
         computeNodeInstances.add(instance);
     }
     
@@ -130,7 +130,7 @@ public final class InstanceContext {
      * @param instance compute node instance
      */
     public void deleteComputeNodeInstance(final ComputeNodeInstance instance) {
-        computeNodeInstances.removeIf(each -> each.getInstanceDefinition().getInstanceId().equalsIgnoreCase(instance.getInstanceDefinition().getInstanceId()));
+        computeNodeInstances.removeIf(each -> each.getInstanceMetaData().getInstanceId().equalsIgnoreCase(instance.getInstanceMetaData().getInstanceId()));
     }
     
     /**
@@ -140,11 +140,11 @@ public final class InstanceContext {
      * @param labels collection of contained label
      * @return compute node instances
      */
-    public List<InstanceDefinition> getComputeNodeInstances(final InstanceType instanceType, final Collection<String> labels) {
-        List<InstanceDefinition> result = new ArrayList<>(computeNodeInstances.size());
+    public List<InstanceMetaData> getComputeNodeInstances(final InstanceType instanceType, final Collection<String> labels) {
+        List<InstanceMetaData> result = new ArrayList<>(computeNodeInstances.size());
         for (ComputeNodeInstance each : computeNodeInstances) {
-            if (each.getInstanceDefinition().getInstanceType() == instanceType && labels.stream().anyMatch(((Collection<String>) each.getLabels())::contains)) {
-                result.add(each.getInstanceDefinition());
+            if (each.getInstanceMetaData().getInstanceType() == instanceType && labels.stream().anyMatch(((Collection<String>) each.getLabels())::contains)) {
+                result.add(each.getInstanceMetaData());
             }
         }
         return result;
