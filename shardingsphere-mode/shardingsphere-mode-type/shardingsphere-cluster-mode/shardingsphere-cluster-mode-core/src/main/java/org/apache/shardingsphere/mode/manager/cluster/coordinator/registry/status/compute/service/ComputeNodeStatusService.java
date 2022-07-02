@@ -49,7 +49,7 @@ public final class ComputeNodeStatusService {
      * @param instanceMetaData instance definition
      */
     public void registerOnline(final InstanceMetaData instanceMetaData) {
-        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceMetaData.getInstanceId(), instanceMetaData.getInstanceType()), instanceMetaData.getAttributes());
+        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceMetaData.getId(), instanceMetaData.getType()), instanceMetaData.getAttributes());
     }
     
     /**
@@ -141,9 +141,9 @@ public final class ComputeNodeStatusService {
      */
     public ComputeNodeInstance loadComputeNodeInstance(final InstanceMetaData instanceMetaData) {
         ComputeNodeInstance result = new ComputeNodeInstance(instanceMetaData);
-        result.setLabels(loadInstanceLabels(instanceMetaData.getInstanceId()));
-        result.switchState(loadInstanceStatus(instanceMetaData.getInstanceId()));
-        loadInstanceWorkerId(instanceMetaData.getInstanceId()).ifPresent(result::setWorkerId);
+        result.setLabels(loadInstanceLabels(instanceMetaData.getId()));
+        result.switchState(loadInstanceStatus(instanceMetaData.getId()));
+        loadInstanceWorkerId(instanceMetaData.getId()).ifPresent(result::setWorkerId);
         return result;
     }
 }

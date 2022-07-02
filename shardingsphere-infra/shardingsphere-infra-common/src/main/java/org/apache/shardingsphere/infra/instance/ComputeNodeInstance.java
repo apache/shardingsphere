@@ -69,6 +69,6 @@ public final class ComputeNodeInstance {
      * @return current instance id
      */
     public String getCurrentInstanceId() {
-        return instanceMetaData.getInstanceId();
+        return instanceMetaData.getId();
     }
 }

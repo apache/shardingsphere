@@ -31,27 +31,27 @@ public final class ProxyInstanceMetaData implements InstanceMetaData {
     
     private static final String DELIMITER = "@";
     
-    private final String instanceId;
+    private final String id;
     
     private final String ip;
     
     private final int port;
     
-    public ProxyInstanceMetaData(final String instanceId, final int port) {
-        this.instanceId = instanceId;
+    public ProxyInstanceMetaData(final String id, final int port) {
+        this.id = id;
         ip = IpUtils.getIp();
         this.port = port;
     }
     
-    public ProxyInstanceMetaData(final String instanceId, final String attributes) {
-        this.instanceId = instanceId;
+    public ProxyInstanceMetaData(final String id, final String attributes) {
+        this.id = id;
         String[] attributesList = attributes.split(DELIMITER);
         ip = attributesList[0];
         port = Integer.parseInt(attributesList[1]);
     }
     
     @Override
-    public InstanceType getInstanceType() {
+    public InstanceType getType() {
         return InstanceType.PROXY;
     }
     

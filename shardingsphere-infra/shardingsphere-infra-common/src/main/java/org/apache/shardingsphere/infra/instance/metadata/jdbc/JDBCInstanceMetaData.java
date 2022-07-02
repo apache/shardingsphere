@@ -28,17 +28,17 @@ import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 @Getter
 public final class JDBCInstanceMetaData implements InstanceMetaData {
     
-    private final String instanceId;
+    private final String id;
     
     private final String ip;
     
-    public JDBCInstanceMetaData(final String instanceId) {
-        this.instanceId = instanceId;
+    public JDBCInstanceMetaData(final String id) {
+        this.id = id;
         ip = IpUtils.getIp();
     }
     
     @Override
-    public InstanceType getInstanceType() {
+    public InstanceType getType() {
         return InstanceType.JDBC;
     }
     

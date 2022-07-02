@@ -59,7 +59,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     @Override
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
-        ModeScheduleContextFactory.getInstance().init(parameter.getInstanceMetaData().getInstanceId(), parameter.getModeConfig());
+        ModeScheduleContextFactory.getInstance().init(parameter.getInstanceMetaData().getId(), parameter.getModeConfig());
         ClusterPersistRepository repository = ClusterPersistRepositoryFactory.getInstance((ClusterPersistRepositoryConfiguration) parameter.getModeConfig().getRepository());
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
         persistConfigurations(persistService, parameter);
@@ -89,15 +89,15 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         return new MetaDataContexts(persistService, new ShardingSphereMetaData(databases, globalMetaData, props), OptimizerContextFactory.create(databases, globalMetaData));
     }
     
-    private Map<String, DatabaseConfiguration> getDatabaseConfigMap(final Collection<String> databaseNames, final MetaDataPersistService metaDataPersistService,
-                                                                    final ContextManagerBuilderParameter parameter) {
+    private Map<String, DatabaseConfiguration> getDatabaseConfigMap(final Collection<String> databaseNames,
+                                                                    final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) {
         Map<String, DatabaseConfiguration> result = new HashMap<>(databaseNames.size(), 1);
         databaseNames.forEach(each -> result.put(each, createDatabaseConfiguration(each, metaDataPersistService, parameter)));
         return result;
     }
     
-    private DatabaseConfiguration createDatabaseConfiguration(final String databaseName, final MetaDataPersistService metaDataPersistService,
-                                                              final ContextManagerBuilderParameter parameter) {
+    private DatabaseConfiguration createDatabaseConfiguration(final String databaseName,
+                                                              final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) {
         Map<String, DataSource> dataSources = metaDataPersistService.getEffectiveDataSources(databaseName, parameter.getDatabaseConfigs());
         Collection<RuleConfiguration> databaseRuleConfigs = metaDataPersistService.getDatabaseRulePersistService().load(databaseName);
         return new DataSourceProvidedDatabaseConfiguration(dataSources, databaseRuleConfigs);
@@ -108,9 +108,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                 .forEach((schemaName, tables) -> metaDataContexts.getPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persistMetaData(databaseName, schemaName, tables))));
     }
     
-    private ContextManager createContextManager(final ClusterPersistRepository repository, final RegistryCenter registryCenter,
-                                                final InstanceMetaData instanceMetaData, final MetaDataContexts metaDataContexts,
-                                                final ModeConfiguration modeConfig) {
+    private ContextManager createContextManager(final ClusterPersistRepository repository, final RegistryCenter registryCenter, final InstanceMetaData instanceMetaData,
+                                                final MetaDataContexts metaDataContexts, final ModeConfiguration modeConfig) {
         ClusterWorkerIdGenerator clusterWorkerIdGenerator = new ClusterWorkerIdGenerator(repository, registryCenter, instanceMetaData);
         DistributedLockContext distributedLockContext = new DistributedLockContext(repository);
         InstanceContext instanceContext = new InstanceContext(new ComputeNodeInstance(instanceMetaData), clusterWorkerIdGenerator, modeConfig, distributedLockContext);
@@ -118,8 +117,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         return new ContextManager(metaDataContexts, instanceContext);
     }
     
-    private void registerOnline(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter, final ContextManager contextManager,
-                                final RegistryCenter registryCenter) {
+    private void registerOnline(final MetaDataPersistService metaDataPersistService,
+                                final ContextManagerBuilderParameter parameter, final ContextManager contextManager, final RegistryCenter registryCenter) {
         contextManager.getInstanceContext().getInstance().setLabels(parameter.getLabels());
         contextManager.getInstanceContext().getComputeNodeInstances().addAll(registryCenter.getComputeNodeStatusService().loadAllComputeNodeInstances());
         new ClusterContextManagerCoordinator(metaDataPersistService, contextManager, registryCenter);
