@@ -1,6 +1,6 @@
 +++
 title = "Mixed Rules"
-weight = 8
+weight = 9
 +++
 
 ## Configuration Item Explanation

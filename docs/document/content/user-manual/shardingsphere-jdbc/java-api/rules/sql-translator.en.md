@@ -1,6 +1,6 @@
 +++
 title = "SQL Translator"
-weight = 7
+weight = 8
 +++
 
 ## Root Configuration
