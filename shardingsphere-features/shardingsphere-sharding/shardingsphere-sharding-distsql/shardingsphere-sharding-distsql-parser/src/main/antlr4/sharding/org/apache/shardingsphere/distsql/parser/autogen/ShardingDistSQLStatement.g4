@@ -54,5 +54,6 @@ execute
     | dropDefaultShardingStrategy
     | showUnusedShardingAlgorithms
     | showUnusedShardingKeyGenerators
+    | countShardingRule
     ) SEMI?
     ;

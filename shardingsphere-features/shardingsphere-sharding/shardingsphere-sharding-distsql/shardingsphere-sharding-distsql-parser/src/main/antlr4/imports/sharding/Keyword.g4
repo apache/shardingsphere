@@ -210,3 +210,7 @@ EXISTS
 WITH
     : W I T H
     ;
+
+COUNT
+    : C O U N T
+    ;
