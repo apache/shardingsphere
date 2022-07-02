@@ -30,7 +30,7 @@ public final class ProxyInstanceMetaDataBuilderTest {
     
     @Test
     public void assertNewInstance() {
-        ProxyInstanceMetaData actual = (ProxyInstanceMetaData) InstanceMetaDataBuilderFactory.newInstance("Proxy", 3307);
+        ProxyInstanceMetaData actual = (ProxyInstanceMetaData) InstanceMetaDataBuilderFactory.create("Proxy", 3307);
         assertNotNull(actual.getInstanceId());
         assertNotNull(actual.getIp());
         assertThat(actual.getPort(), is(3307));
