@@ -87,3 +87,18 @@ constraintsSetMode
 constraintsSetList
     : ALL | qualifiedNameList
     ;
+
+lock
+    : LOCK TABLE? relationExprList (IN lockType MODE)? NOWAIT?
+    ;
+
+lockType
+    : ACCESS SHARE
+    | ROW SHARE
+    | ROW EXCLUSIVE
+    | SHARE UPDATE EXCLUSIVE
+    | SHARE
+    | SHARE ROW EXCLUSIVE
+    | EXCLUSIVE
+    | ACCESS EXCLUSIVE
+    ;

@@ -34,9 +34,11 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Sa
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetConstraintsContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.StartTransactionContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.LockContext;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLBeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLCommitPreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLCommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLLockStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLReleaseSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLRollbackPreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLRollbackStatement;
@@ -128,5 +130,10 @@ public final class PostgreSQLTCLStatementSQLVisitor extends PostgreSQLStatementS
     @Override
     public ASTNode visitRollbackPrepared(final RollbackPreparedContext ctx) {
         return new PostgreSQLRollbackPreparedStatement();
+    }
+    
+    @Override
+    public ASTNode visitLock(final LockContext ctx) {
+        return new PostgreSQLLockStatement();
     }
 }
