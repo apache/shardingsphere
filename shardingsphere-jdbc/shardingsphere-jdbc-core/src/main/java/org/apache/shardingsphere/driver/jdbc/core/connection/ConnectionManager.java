@@ -101,7 +101,7 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
                                                                             final DataSourceProperties dataSourcePropsSample, final String schema) {
         Map<String, DataSourceProperties> result = new LinkedHashMap<>();
         for (InstanceMetaData each : instances) {
-            result.put(each.getInstanceId(), createDataSourceProperties((ProxyInstanceMetaData) each, users, dataSourcePropsSample, schema));
+            result.put(each.getId(), createDataSourceProperties((ProxyInstanceMetaData) each, users, dataSourcePropsSample, schema));
         }
         return result;
     }

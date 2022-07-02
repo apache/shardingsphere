@@ -49,14 +49,14 @@ public final class InstanceContextTest {
     @Test
     public void assertUpdateInstanceStatus() {
         InstanceMetaData instanceMetaData = mock(InstanceMetaData.class);
-        when(instanceMetaData.getInstanceId()).thenReturn("foo_instance_id");
+        when(instanceMetaData.getId()).thenReturn("foo_instance_id");
         InstanceContext context = new InstanceContext(new ComputeNodeInstance(instanceMetaData), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfig, lockContext);
         StateType actual = context.getInstance().getState().getCurrentState();
         assertThat(actual, is(StateType.OK));
-        context.updateInstanceStatus(instanceMetaData.getInstanceId(), Collections.singleton(StateType.CIRCUIT_BREAK.name()));
+        context.updateInstanceStatus(instanceMetaData.getId(), Collections.singleton(StateType.CIRCUIT_BREAK.name()));
         actual = context.getInstance().getState().getCurrentState();
         assertThat(actual, is(StateType.CIRCUIT_BREAK));
-        context.updateInstanceStatus(instanceMetaData.getInstanceId(), Collections.emptyList());
+        context.updateInstanceStatus(instanceMetaData.getId(), Collections.emptyList());
         actual = context.getInstance().getState().getCurrentState();
         assertThat(actual, is(StateType.OK));
     }
@@ -76,7 +76,7 @@ public final class InstanceContextTest {
     @Test
     public void assertUpdateLabel() {
         InstanceMetaData instanceMetaData = mock(InstanceMetaData.class);
-        when(instanceMetaData.getInstanceId()).thenReturn("foo_instance_id");
+        when(instanceMetaData.getId()).thenReturn("foo_instance_id");
         InstanceContext context = new InstanceContext(new ComputeNodeInstance(instanceMetaData), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfig, lockContext);
         Set<String> expected = new LinkedHashSet<>(Arrays.asList("label_1", "label_2"));
         context.updateLabel("foo_instance_id", expected);

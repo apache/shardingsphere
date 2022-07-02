@@ -31,9 +31,9 @@ public final class JDBCInstanceMetaDataBuilderTest {
     @Test
     public void assertNewInstance() {
         InstanceMetaData actual = InstanceMetaDataBuilderFactory.create("JDBC", -1);
-        assertNotNull(actual.getInstanceId());
+        assertNotNull(actual.getId());
         assertNotNull(actual.getIp());
         assertThat(actual.getAttributes(), is(""));
-        assertThat(actual.getInstanceType(), is(InstanceType.JDBC));
+        assertThat(actual.getType(), is(InstanceType.JDBC));
     }
 }

@@ -61,14 +61,14 @@ public final class ShowInstanceHandler extends QueryableRALBackendHandler<ShowIn
             return Collections.singletonList(buildRow(contextManager.getInstanceContext().getInstance(), modeType));
         }
         Collection<ComputeNodeInstance> instances = contextManager.getInstanceContext().getComputeNodeInstances().stream()
-                .filter(each -> InstanceType.PROXY == each.getInstanceMetaData().getInstanceType()).collect(Collectors.toList());
+                .filter(each -> InstanceType.PROXY == each.getInstanceMetaData().getType()).collect(Collectors.toList());
         return instances.isEmpty() ? Collections.emptyList() : instances.stream().filter(Objects::nonNull).map(each -> buildRow(each, modeType)).collect(Collectors.toList());
     }
     
     private LocalDataQueryResultRow buildRow(final ComputeNodeInstance instance, final String modeType) {
         String labels = null == instance.getLabels() ? "" : String.join(",", instance.getLabels());
         InstanceMetaData instanceMetaData = instance.getInstanceMetaData();
-        return new LocalDataQueryResultRow(instanceMetaData.getInstanceId(), instanceMetaData.getIp(),
+        return new LocalDataQueryResultRow(instanceMetaData.getId(), instanceMetaData.getIp(),
                 instanceMetaData instanceof ProxyInstanceMetaData ? ((ProxyInstanceMetaData) instanceMetaData).getPort() : -1,
                 instance.getState().getCurrentState().name(), modeType, labels);
     }

@@ -27,14 +27,14 @@ public interface InstanceMetaData {
      * 
      * @return instance ID
      */
-    String getInstanceId();
+    String getId();
     
     /**
      * Get instance type.
      * 
      * @return instance type
      */
-    InstanceType getInstanceType();
+    InstanceType getType();
     
     /**
      * Get IP.
