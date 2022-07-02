@@ -15,38 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.instance.definition;
+package org.apache.shardingsphere.infra.instance.metadata;
 
 /**
- * Instance meta data.
+ * Instance type.
  */
-public interface InstanceMetaData {
+public enum InstanceType {
     
-    /**
-     * Get instance ID.
-     * 
-     * @return instance ID
-     */
-    String getInstanceId();
-    
-    /**
-     * Get instance type.
-     * 
-     * @return instance type
-     */
-    InstanceType getInstanceType();
-    
-    /**
-     * Get IP.
-     * 
-     * @return IP
-     */
-    String getIp();
-    
-    /**
-     * Get attributes.
-     * 
-     * @return attributes
-     */
-    String getAttributes();
+    JDBC, PROXY
 }

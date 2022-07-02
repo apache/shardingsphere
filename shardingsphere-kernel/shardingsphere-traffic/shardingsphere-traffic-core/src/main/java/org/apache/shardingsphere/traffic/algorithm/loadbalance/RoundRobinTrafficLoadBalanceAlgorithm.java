@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.traffic.algorithm.loadbalance;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.instance.definition.InstanceMetaData;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
 
 import java.util.List;

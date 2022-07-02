@@ -15,48 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.instance.definition.proxy;
+package org.apache.shardingsphere.infra.instance.metadata.jdbc;
 
-import com.google.common.base.Joiner;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.instance.definition.InstanceMetaData;
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 
 /**
- * Proxy instance meta data.
+ * JDBC instance meta data.
  */
 @Getter
-public final class ProxyInstanceMetaData implements InstanceMetaData {
-    
-    private static final String DELIMITER = "@";
+public final class JDBCInstanceMetaData implements InstanceMetaData {
     
     private final String instanceId;
     
     private final String ip;
     
-    private final int port;
-    
-    public ProxyInstanceMetaData(final String instanceId, final int port) {
+    public JDBCInstanceMetaData(final String instanceId) {
         this.instanceId = instanceId;
         ip = IpUtils.getIp();
-        this.port = port;
-    }
-    
-    public ProxyInstanceMetaData(final String instanceId, final String attributes) {
-        this.instanceId = instanceId;
-        String[] attributesList = attributes.split(DELIMITER);
-        ip = attributesList[0];
-        port = Integer.parseInt(attributesList[1]);
     }
     
     @Override
     public InstanceType getInstanceType() {
-        return InstanceType.PROXY;
+        return InstanceType.JDBC;
     }
     
     @Override
     public String getAttributes() {
-        return Joiner.on(DELIMITER).join(ip, port);
+        return "";
     }
 }

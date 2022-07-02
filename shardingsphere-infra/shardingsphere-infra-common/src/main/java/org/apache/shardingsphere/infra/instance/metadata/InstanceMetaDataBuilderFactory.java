@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.instance.definition;
+package org.apache.shardingsphere.infra.instance.metadata;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
