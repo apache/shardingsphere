@@ -38,7 +38,7 @@ public final class ShardingRuleBuilder implements DatabaseRuleBuilder<ShardingRu
     public ShardingRule build(final ShardingRuleConfiguration config, final String databaseName,
                               final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
         Preconditions.checkArgument(null != dataSources && !dataSources.isEmpty(), "Data source names cannot be empty.");
-        return new ShardingRule(config, dataSources.keySet());
+        return new ShardingRule(config, dataSources.keySet(), instanceContext);
     }
     
     @Override
