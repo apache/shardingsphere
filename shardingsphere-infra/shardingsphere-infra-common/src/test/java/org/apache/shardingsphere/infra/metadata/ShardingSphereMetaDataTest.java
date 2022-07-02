@@ -31,7 +31,6 @@ import java.util.HashMap;
 import java.util.Properties;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -55,7 +54,7 @@ public final class ShardingSphereMetaDataTest {
     }
     
     private ShardingSphereDatabase mockDatabase(final ShardingSphereResource resource, final DataSource dataSource, final ResourceHeldRule<?> databaseResourceHeldRule) {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
         when(result.getName()).thenReturn("foo_db");
         when(result.getResource()).thenReturn(resource);
         when(result.getResource().getDataSources()).thenReturn(Collections.singletonMap("foo_db", dataSource));
