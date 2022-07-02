@@ -33,7 +33,7 @@ public final class TransactionRuleBuilder implements GlobalRuleBuilder<Transacti
     
     @Override
     public TransactionRule build(final TransactionRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext) {
-        return new TransactionRule(ruleConfig, databases);
+        return new TransactionRule(ruleConfig, databases, instanceContext);
     }
     
     @Override
