@@ -64,42 +64,43 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
         persistConfigurations(persistService, parameter);
         RegistryCenter registryCenter = new RegistryCenter(repository);
-        MetaDataContexts metaDataContexts = createMetaDataContexts(persistService, parameter);
+        MetaDataContexts metaDataContexts = buildMetaDataContexts(persistService, parameter);
         persistMetaData(metaDataContexts);
-        ContextManager result = createContextManager(repository, registryCenter, parameter.getInstanceMetaData(), metaDataContexts, parameter.getModeConfig());
-        registerOnline(persistService, parameter, result, registryCenter);
+        InstanceContext instanceContext = buildInstanceContext(registryCenter, parameter.getInstanceMetaData(), parameter.getModeConfig());
+        registryCenter.getRepository().watchSessionConnection(instanceContext);
+        ContextManager result = new ContextManager(metaDataContexts, instanceContext);
+        registerOnline(persistService, registryCenter, parameter, result);
         return result;
     }
     
-    private void persistConfigurations(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) {
+    private void persistConfigurations(final MetaDataPersistService persistService, final ContextManagerBuilderParameter parameter) {
         boolean isOverwrite = parameter.getModeConfig().isOverwrite();
         if (!parameter.isEmpty()) {
-            metaDataPersistService.persistConfigurations(parameter.getDatabaseConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), isOverwrite);
+            persistService.persistConfigurations(parameter.getDatabaseConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), isOverwrite);
         }
     }
     
-    private MetaDataContexts createMetaDataContexts(final MetaDataPersistService persistService, final ContextManagerBuilderParameter parameter) throws SQLException {
+    private MetaDataContexts buildMetaDataContexts(final MetaDataPersistService persistService, final ContextManagerBuilderParameter parameter) throws SQLException {
         Collection<String> databaseNames = parameter.getInstanceMetaData() instanceof JDBCInstanceMetaData
                 ? parameter.getDatabaseConfigs().keySet()
                 : persistService.getSchemaMetaDataService().loadAllDatabaseNames();
         Collection<RuleConfiguration> globalRuleConfigs = persistService.getGlobalRuleService().load();
         ConfigurationProperties props = new ConfigurationProperties(persistService.getPropsService().load());
-        Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(getDatabaseConfigMap(databaseNames, persistService, parameter), props);
+        Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(buildDatabaseConfigMap(databaseNames, persistService, parameter), props);
         ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases));
         return new MetaDataContexts(persistService, new ShardingSphereMetaData(databases, globalMetaData, props), OptimizerContextFactory.create(databases, globalMetaData));
     }
     
-    private Map<String, DatabaseConfiguration> getDatabaseConfigMap(final Collection<String> databaseNames,
-                                                                    final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) {
+    private Map<String, DatabaseConfiguration> buildDatabaseConfigMap(final Collection<String> databaseNames,
+                                                                      final MetaDataPersistService persistService, final ContextManagerBuilderParameter parameter) {
         Map<String, DatabaseConfiguration> result = new HashMap<>(databaseNames.size(), 1);
-        databaseNames.forEach(each -> result.put(each, createDatabaseConfiguration(each, metaDataPersistService, parameter)));
+        databaseNames.forEach(each -> result.put(each, buildDatabaseConfiguration(each, persistService, parameter)));
         return result;
     }
     
-    private DatabaseConfiguration createDatabaseConfiguration(final String databaseName,
-                                                              final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) {
-        Map<String, DataSource> dataSources = metaDataPersistService.getEffectiveDataSources(databaseName, parameter.getDatabaseConfigs());
-        Collection<RuleConfiguration> databaseRuleConfigs = metaDataPersistService.getDatabaseRulePersistService().load(databaseName);
+    private DatabaseConfiguration buildDatabaseConfiguration(final String databaseName, final MetaDataPersistService persistService, final ContextManagerBuilderParameter parameter) {
+        Map<String, DataSource> dataSources = persistService.getEffectiveDataSources(databaseName, parameter.getDatabaseConfigs());
+        Collection<RuleConfiguration> databaseRuleConfigs = persistService.getDatabaseRulePersistService().load(databaseName);
         return new DataSourceProvidedDatabaseConfiguration(dataSources, databaseRuleConfigs);
     }
     
@@ -108,20 +109,17 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                 .forEach((schemaName, tables) -> metaDataContexts.getPersistService().ifPresent(optional -> optional.getSchemaMetaDataService().persistMetaData(databaseName, schemaName, tables))));
     }
     
-    private ContextManager createContextManager(final ClusterPersistRepository repository, final RegistryCenter registryCenter, final InstanceMetaData instanceMetaData,
-                                                final MetaDataContexts metaDataContexts, final ModeConfiguration modeConfig) {
-        ClusterWorkerIdGenerator clusterWorkerIdGenerator = new ClusterWorkerIdGenerator(repository, registryCenter, instanceMetaData);
-        DistributedLockContext distributedLockContext = new DistributedLockContext(repository);
-        InstanceContext instanceContext = new InstanceContext(new ComputeNodeInstance(instanceMetaData), clusterWorkerIdGenerator, modeConfig, distributedLockContext);
-        repository.watchSessionConnection(instanceContext);
-        return new ContextManager(metaDataContexts, instanceContext);
+    private InstanceContext buildInstanceContext(final RegistryCenter registryCenter, final InstanceMetaData instanceMetaData, final ModeConfiguration modeConfig) {
+        ClusterWorkerIdGenerator clusterWorkerIdGenerator = new ClusterWorkerIdGenerator(registryCenter.getRepository(), registryCenter, instanceMetaData);
+        DistributedLockContext distributedLockContext = new DistributedLockContext(registryCenter.getRepository());
+        return new InstanceContext(new ComputeNodeInstance(instanceMetaData), clusterWorkerIdGenerator, modeConfig, distributedLockContext);
     }
     
-    private void registerOnline(final MetaDataPersistService metaDataPersistService,
-                                final ContextManagerBuilderParameter parameter, final ContextManager contextManager, final RegistryCenter registryCenter) {
+    private void registerOnline(final MetaDataPersistService persistService, final RegistryCenter registryCenter,
+                                final ContextManagerBuilderParameter parameter, final ContextManager contextManager) {
         contextManager.getInstanceContext().getInstance().setLabels(parameter.getLabels());
         contextManager.getInstanceContext().getComputeNodeInstances().addAll(registryCenter.getComputeNodeStatusService().loadAllComputeNodeInstances());
-        new ClusterContextManagerCoordinator(metaDataPersistService, contextManager, registryCenter);
+        new ClusterContextManagerCoordinator(persistService, registryCenter, contextManager);
         registryCenter.onlineInstance(contextManager.getInstanceContext().getInstance());
     }
     

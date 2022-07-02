@@ -59,7 +59,7 @@ import java.util.stream.Collectors;
 /**
  * Database discovery rule.
  */
-public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceContainedRule, StatusContainedRule, ExportableRule, InstanceAwareRule {
+public final class DatabaseDiscoveryRule implements DatabaseRule, InstanceAwareRule, DataSourceContainedRule, StatusContainedRule, ExportableRule {
     
     @Getter
     private final RuleConfiguration configuration;
@@ -127,6 +127,26 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
         DynamicDataSourceStrategyFactory.findInstance().ifPresent(optional -> optional.init(this));
     }
     
+    @Override
+    public void setInstanceContext(final InstanceContext instanceContext) {
+        initHeartBeatJobs(instanceContext.getInstance().getInstanceMetaData().getId());
+    }
+    
+    private void initHeartBeatJobs(final String instanceId) {
+        Optional<ModeScheduleContext> modeScheduleContext = ModeScheduleContextFactory.getInstance().get(instanceId);
+        if (modeScheduleContext.isPresent()) {
+            for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
+                DatabaseDiscoveryDataSourceRule rule = entry.getValue();
+                Map<String, DataSource> dataSources = dataSourceMap.entrySet().stream().filter(each -> !rule.getDisabledDataSourceNames().contains(each.getKey()))
+                        .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+                String jobName = rule.getDatabaseDiscoveryProviderAlgorithm().getType() + "-" + databaseName + "-" + rule.getGroupName();
+                CronJob job = new CronJob(jobName, each -> new HeartbeatJob(databaseName, rule.getGroupName(), rule.getPrimaryDataSourceName(), dataSources,
+                        rule.getDatabaseDiscoveryProviderAlgorithm(), rule.getDisabledDataSourceNames()).execute(null), rule.getHeartbeatProps().getProperty("keep-alive-cron"));
+                modeScheduleContext.get().startCronJob(job);
+            }
+        }
+    }
+    
     /**
      * Get single data source rule.
      *
@@ -186,28 +206,8 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
         return result;
     }
     
-    private void initHeartBeatJobs(final InstanceContext instanceContext) {
-        Optional<ModeScheduleContext> modeScheduleContext = ModeScheduleContextFactory.getInstance().get(instanceContext.getInstance().getInstanceMetaData().getId());
-        if (modeScheduleContext.isPresent()) {
-            for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
-                DatabaseDiscoveryDataSourceRule rule = entry.getValue();
-                Map<String, DataSource> dataSources = dataSourceMap.entrySet().stream().filter(each -> !rule.getDisabledDataSourceNames().contains(each.getKey()))
-                        .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-                String jobName = rule.getDatabaseDiscoveryProviderAlgorithm().getType() + "-" + databaseName + "-" + rule.getGroupName();
-                CronJob job = new CronJob(jobName, each -> new HeartbeatJob(databaseName, rule.getGroupName(), rule.getPrimaryDataSourceName(), dataSources,
-                        rule.getDatabaseDiscoveryProviderAlgorithm(), rule.getDisabledDataSourceNames()).execute(null), rule.getHeartbeatProps().getProperty("keep-alive-cron"));
-                modeScheduleContext.get().startCronJob(job);
-            }
-        }
-    }
-    
     @Override
     public String getType() {
         return DatabaseDiscoveryRule.class.getSimpleName();
-    }
-    
-    @Override
-    public void setInstanceContext(final InstanceContext instanceContext) {
-        initHeartBeatJobs(instanceContext);
     }
 }

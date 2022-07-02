@@ -125,7 +125,7 @@ public final class ClusterContextManagerCoordinatorTest {
     private ContextManager contextManager;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
-    private MetaDataPersistService metaDataPersistService;
+    private MetaDataPersistService persistService;
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
@@ -140,7 +140,7 @@ public final class ClusterContextManagerCoordinatorTest {
         contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getPersistService().get(),
                 new ShardingSphereMetaData(createDatabases(), contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(new Properties())),
                 createOptimizerContext()));
-        coordinator = new ClusterContextManagerCoordinator(metaDataPersistService, contextManager, new RegistryCenter(mock(ClusterPersistRepository.class)));
+        coordinator = new ClusterContextManagerCoordinator(persistService, new RegistryCenter(mock(ClusterPersistRepository.class)), contextManager);
     }
     
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {
@@ -169,8 +169,8 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertDatabaseAdd() throws SQLException {
-        when(metaDataPersistService.getDataSourceService().load("db_add")).thenReturn(getDataSourcePropertiesMap());
-        when(metaDataPersistService.getDatabaseRulePersistService().load("db_add")).thenReturn(Collections.emptyList());
+        when(persistService.getDataSourceService().load("db_add")).thenReturn(getDataSourcePropertiesMap());
+        when(persistService.getDatabaseRulePersistService().load("db_add")).thenReturn(Collections.emptyList());
         coordinator.renew(new DatabaseAddedEvent("db_add"));
         assertNotNull(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("db_add").getResource().getDataSources());
     }
@@ -216,7 +216,7 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertRuleConfigurationsChanged() {
-        when(metaDataPersistService.getDatabaseVersionPersistService().isActiveVersion("db", "0")).thenReturn(true);
+        when(persistService.getDatabaseVersionPersistService().isActiveVersion("db", "0")).thenReturn(true);
         assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("db"), is(database));
         coordinator.renew(new RuleConfigurationsChangedEvent("db", "0", Collections.emptyList()));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("db"), not(database));
@@ -235,7 +235,7 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertDataSourceChanged() {
-        when(metaDataPersistService.getDatabaseVersionPersistService().isActiveVersion("db", "0")).thenReturn(true);
+        when(persistService.getDatabaseVersionPersistService().isActiveVersion("db", "0")).thenReturn(true);
         coordinator.renew(new DataSourceChangedEvent("db", "0", getChangedDataSourcePropertiesMap()));
         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("db").getResource().getDataSources().containsKey("ds_2"));
     }
@@ -321,8 +321,8 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertRenewDatabaseVersionChangedEvent() {
-        when(metaDataPersistService.getDataSourceService().load("db", "1")).thenReturn(getVersionChangedDataSourcePropertiesMap());
-        when(metaDataPersistService.getDatabaseRulePersistService().load("db", "1")).thenReturn(Collections.emptyList());
+        when(persistService.getDataSourceService().load("db", "1")).thenReturn(getVersionChangedDataSourcePropertiesMap());
+        when(persistService.getDatabaseRulePersistService().load("db", "1")).thenReturn(Collections.emptyList());
         Map<String, DataSource> dataSourceMap = initContextManager();
         coordinator.renew(new DatabaseVersionChangedEvent("db", "1"));
         assertThat(contextManager.getDataSourceMap("db").get("ds_0"), is(dataSourceMap.get("ds_0")));
