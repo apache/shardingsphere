@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.rule.builder;
 
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilder;
 import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
@@ -34,7 +35,7 @@ public final class AlgorithmProvidedReadwriteSplittingRuleBuilder implements Dat
     
     @Override
     public ReadwriteSplittingRule build(final AlgorithmProvidedReadwriteSplittingRuleConfiguration config, final String databaseName,
-                                        final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules) {
+                                        final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
         return new ReadwriteSplittingRule(config);
     }
     

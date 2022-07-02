@@ -35,7 +35,6 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -83,7 +82,7 @@ import java.util.stream.Collectors;
  * Sharding rule.
  */
 @Getter
-public final class ShardingRule implements DatabaseRule, InstanceAwareRule, DataNodeContainedRule, TableContainedRule {
+public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, TableContainedRule {
     
     private static final String ALGORITHM_EXPRESSION_KEY = "algorithm-expression";
     
@@ -115,7 +114,7 @@ public final class ShardingRule implements DatabaseRule, InstanceAwareRule, Data
     
     private final ShardingAuditStrategyConfiguration auditStrategyConfig;
     
-    public ShardingRule(final ShardingRuleConfiguration config, final Collection<String> dataSourceNames) {
+    public ShardingRule(final ShardingRuleConfiguration config, final Collection<String> dataSourceNames, final InstanceContext instanceContext) {
         configuration = config;
         this.dataSourceNames = getDataSourceNames(config.getTables(), config.getAutoTables(), dataSourceNames);
         config.getShardingAlgorithms().forEach((key, value) -> shardingAlgorithms.put(key, createShardingAlgorithm(key, value, config.getTables(), config.getAutoTables())));
@@ -137,9 +136,13 @@ public final class ShardingRule implements DatabaseRule, InstanceAwareRule, Data
                 "Invalid binding table configuration in ShardingRuleConfiguration.");
         auditStrategyConfig = null == config.getAuditStrategy() ? new ShardingAuditStrategyConfiguration(Collections.emptyList(), true) : config.getAuditStrategy();
         Preconditions.checkArgument(auditStrategyConfig.getAuditAlgorithmNames().stream().allMatch(auditAlgorithms::containsKey), "Cannot find sharding audit algorithm");
+        keyGenerators.values().stream().filter(each -> each instanceof InstanceAwareAlgorithm).forEach(each -> ((InstanceAwareAlgorithm) each).setInstanceContext(instanceContext));
+        if (defaultKeyGenerateAlgorithm instanceof InstanceAwareAlgorithm) {
+            ((InstanceAwareAlgorithm) defaultKeyGenerateAlgorithm).setInstanceContext(instanceContext);
+        }
     }
     
-    public ShardingRule(final AlgorithmProvidedShardingRuleConfiguration config, final Collection<String> dataSourceNames) {
+    public ShardingRule(final AlgorithmProvidedShardingRuleConfiguration config, final Collection<String> dataSourceNames, final InstanceContext instanceContext) {
         configuration = config;
         this.dataSourceNames = getDataSourceNames(config.getTables(), config.getAutoTables(), dataSourceNames);
         shardingAlgorithms.putAll(config.getShardingAlgorithms());
@@ -161,6 +164,10 @@ public final class ShardingRule implements DatabaseRule, InstanceAwareRule, Data
                 "Invalid binding table configuration in ShardingRuleConfiguration.");
         auditStrategyConfig = null == config.getAuditStrategy() ? new ShardingAuditStrategyConfiguration(Collections.emptyList(), true) : config.getAuditStrategy();
         Preconditions.checkArgument(auditStrategyConfig.getAuditAlgorithmNames().stream().allMatch(auditAlgorithms::containsKey), "Cannot find sharding audit algorithm");
+        keyGenerators.values().stream().filter(each -> each instanceof InstanceAwareAlgorithm).forEach(each -> ((InstanceAwareAlgorithm) each).setInstanceContext(instanceContext));
+        if (defaultKeyGenerateAlgorithm instanceof InstanceAwareAlgorithm) {
+            ((InstanceAwareAlgorithm) defaultKeyGenerateAlgorithm).setInstanceContext(instanceContext);
+        }
     }
     
     private Map<String, Collection<DataNode>> createShardingTableDataNodes(final Map<String, TableRule> tableRules) {
@@ -305,14 +312,6 @@ public final class ShardingRule implements DatabaseRule, InstanceAwareRule, Data
             shardingColumn = ((StandardShardingStrategyConfiguration) shardingStrategyConfig).getShardingColumn();
         }
         return null == shardingColumn ? "" : shardingColumn;
-    }
-    
-    @Override
-    public void setInstanceContext(final InstanceContext instanceContext) {
-        keyGenerators.values().stream().filter(each -> each instanceof InstanceAwareAlgorithm).forEach(each -> ((InstanceAwareAlgorithm) each).setInstanceContext(instanceContext));
-        if (defaultKeyGenerateAlgorithm instanceof InstanceAwareAlgorithm) {
-            ((InstanceAwareAlgorithm) defaultKeyGenerateAlgorithm).setInstanceContext(instanceContext);
-        }
     }
     
     @Override
