@@ -15,12 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.instance.definition;
+package org.apache.shardingsphere.infra.instance.metadata.proxy;
+
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilder;
+
+import java.util.UUID;
 
 /**
- * Instance type.
+ * Proxy instance definition builder.
  */
-public enum InstanceType {
+public final class ProxyInstanceMetaDataBuilder implements InstanceMetaDataBuilder {
     
-    JDBC, PROXY
+    @Override
+    public InstanceMetaData build(final int port) {
+        return new ProxyInstanceMetaData(UUID.randomUUID().toString(), port);
+    }
+    
+    @Override
+    public String getType() {
+        return "Proxy";
+    }
 }

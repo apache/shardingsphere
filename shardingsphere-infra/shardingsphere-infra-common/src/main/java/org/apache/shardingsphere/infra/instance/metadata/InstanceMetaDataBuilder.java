@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.instance.definition.jdbc;
+package org.apache.shardingsphere.infra.instance.metadata;
 
-import org.apache.shardingsphere.infra.instance.definition.InstanceMetaData;
-import org.apache.shardingsphere.infra.instance.definition.InstanceMetaDataBuilder;
-
-import java.util.UUID;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 /**
- * JDBC instance definition builder.
+ * Instance meta data builder.
  */
-public final class JDBCInstanceMetaDataBuilder implements InstanceMetaDataBuilder {
+@SingletonSPI
+public interface InstanceMetaDataBuilder extends TypedSPI {
     
-    @Override
-    public InstanceMetaData build(final int port) {
-        return new JDBCInstanceMetaData(UUID.randomUUID().toString());
-    }
-    
-    @Override
-    public String getType() {
-        return "JDBC";
-    }
+    /**
+     * Build instance meta data.
+     * 
+     * @param port port
+     * @return built instance meta data
+     */
+    InstanceMetaData build(int port);
 }
