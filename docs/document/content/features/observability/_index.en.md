@@ -14,7 +14,7 @@ Telemetry of system-observable data is the recommended way of operating and main
 ## Related Concepts
 
 ### Agent
-Based on bytecode enhancement and plug-in design to provide tracing, metrics and logging features.
+Based on bytecode enhancement and plugin design to provide tracing, metrics and logging features.
 
 Only after the plugin of the Agent is enabled, the monitoring indicator data can be output to the third-party APM for display.
 
@@ -40,7 +40,7 @@ Metrics, tracing and logging functions are integrated into the agent through plu
 ![Overview](https://shardingsphere.apache.org/document/current/img/apm/overview_v4.png)
 
 - The Metrics plugin is used to collect and display statistical indicators for the entire cluster. Apache ShardingSphere supports Prometheus by default.
-- The tracing plugin is used to obtain the link trace information of SQL parsing and SQL execution. Apache ShardingSphere provides support for Jaeger, OpenTelemetry, OpenTracing(SkyWalking) and Zipkin by default. It also supports users developing customized tracing components through plug-in.
+- The tracing plugin is used to obtain the link trace information of SQL parsing and SQL execution. Apache ShardingSphere provides support for Jaeger, OpenTelemetry, OpenTracing(SkyWalking) and Zipkin by default. It also supports users developing customized tracing components through plugin.
 - The default logging plugin shows how to record additional logs in ShardingSphere. In practical applications, users need to explore according to their own needs.
 
 ## Related References
