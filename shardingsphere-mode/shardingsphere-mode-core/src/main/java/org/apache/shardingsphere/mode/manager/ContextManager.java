@@ -504,6 +504,19 @@ public final class ContextManager implements AutoCloseable {
         metaDataContexts.getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class).forEach(each -> each.addResource(metaDataContexts.getMetaData().getDatabases().get(databaseName)));
     }
     
+    private void refreshMetaDataContext(final String databaseName, final MetaDataContexts changedMetaDataContexts, final Map<String, DataSourceProperties> dataSourcePropsMap) {
+        metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().putAll(changedMetaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases());
+        Map<String, ShardingSphereDatabase> databases = new HashMap<>(metaDataContexts.getMetaData().getDatabases());
+        databases.putAll(changedMetaDataContexts.getMetaData().getDatabases());
+        final Collection<DataSource> pendingClosedDataSources = getPendingClosedDataSources(databaseName, dataSourcePropsMap);
+        MetaDataContexts newMetaDataContexts = rebuildMetaDataContexts(
+                new ShardingSphereMetaData(databases, metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps()));
+        metaDataContexts.getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResources);
+        metaDataContexts.getMetaData().getDatabases().get(databaseName).getRuleMetaData().findRules(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResources);
+        renewMetaDataContexts(newMetaDataContexts);
+        pendingClosedDataSources.forEach(metaDataContexts.getMetaData().getDatabases().get(databaseName).getResource()::close);
+    }
+    
     private MetaDataContexts buildChangedMetaDataContextWithAddedDataSource(final String databaseName, final Map<String, DataSourceProperties> addedDataSourceProps) throws SQLException {
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(databaseName);
         Map<String, DataSource> dataSourceMap = new HashMap<>(database.getResource().getDataSources());
@@ -517,19 +530,6 @@ public final class ContextManager implements AutoCloseable {
         MetaDataContexts result = new MetaDataContexts(metaDataContexts.getPersistService().orElse(null), metaData, OptimizerContextFactory.create(databases, globalMetaData));
         persistMetaData(result);
         return result;
-    }
-    
-    private void refreshMetaDataContext(final String databaseName, final MetaDataContexts changedMetaDataContexts, final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().putAll(changedMetaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases());
-        Map<String, ShardingSphereDatabase> databases = new HashMap<>(metaDataContexts.getMetaData().getDatabases());
-        databases.putAll(changedMetaDataContexts.getMetaData().getDatabases());
-        final Collection<DataSource> pendingClosedDataSources = getPendingClosedDataSources(databaseName, dataSourcePropsMap);
-        MetaDataContexts newMetaDataContexts = rebuildMetaDataContexts(
-                new ShardingSphereMetaData(databases, metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps()));
-        metaDataContexts.getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResources);
-        metaDataContexts.getMetaData().getDatabases().get(databaseName).getRuleMetaData().findRules(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResources);
-        renewMetaDataContexts(newMetaDataContexts);
-        pendingClosedDataSources.forEach(metaDataContexts.getMetaData().getDatabases().get(databaseName).getResource()::close);
     }
     
     private MetaDataContexts buildChangedMetaDataContextWithChangedDataSource(final ShardingSphereDatabase originalDatabase,
