@@ -72,7 +72,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
                                                    final ContextManagerBuilderParameter parameter, final InstanceContext instanceContext) throws SQLException {
         Collection<String> databaseNames = parameter.getInstanceMetaData() instanceof JDBCInstanceMetaData
                 ? parameter.getDatabaseConfigs().keySet()
-                : persistService.getSchemaMetaDataService().loadAllDatabaseNames();
+                : persistService.getDatabaseMetaDataService().loadAllDatabaseNames();
         Map<String, DatabaseConfiguration> databaseConfigMap = buildDatabaseConfigMap(databaseNames, persistService, parameter);
         Collection<RuleConfiguration> globalRuleConfigs = persistService.getGlobalRuleService().load();
         ConfigurationProperties props = new ConfigurationProperties(persistService.getPropsService().load());

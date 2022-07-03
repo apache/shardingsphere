@@ -33,10 +33,10 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Schema meta data registry service.
+ * Database meta data registry service.
  */
 @RequiredArgsConstructor
-public final class SchemaMetaDataPersistService {
+public final class DatabaseMetaDataPersistService {
     
     private final PersistRepository repository;
     
