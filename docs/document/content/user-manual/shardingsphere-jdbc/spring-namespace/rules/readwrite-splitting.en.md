@@ -19,9 +19,28 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/readwrite-spl
 | *Name*                     | *Type*     | *Description*                                                           |
 | -------------------------- | ---------- | ----------------------------------------------------------------------- |
 | id                         | Attribute  | Readwrite-splitting data source rule name                               |
-| type                       | Attribute  | Readwrite-splitting type, such as: Static, Dynamic                      |
-| props                      | Tag        | Readwrite-splitting required properties. Static: write-data-source-name, read-data-source-names, Dynamic: auto-aware-data-source-name, write-data-source-query-enabled |
+| static-strategy            | Tag        | Static Readwrite-splitting type                                         |
+| dynamic-strategy           | Tag        | Dynamic Readwrite-splitting type                                        |
 | load-balance-algorithm-ref | Attribute  | Load balance algorithm name                                             |
+
+
+\<readwrite-splitting:static-strategy />
+
+| *Name*                     | *Type* | *Description*                                                          |
+| -------------------------- | ----- | ----------------------------------------------------------------------- |
+| id                         | Attribute  | Static readwrite-splitting name                                          |
+| write-data-source-name     | Attribute  | Write data source name                                                   |
+| read-data-source-names     | Attribute  | Read data source names, multiple data source names separated with comma  |
+| load-balance-algorithm-ref | Attribute  | Load balance algorithm name                                              |
+
+\<readwrite-splitting:dynamic-strategy />
+
+| *Name*                           | *Type*     | *Description*                                                                                               |
+| -------------------------------- | ---------- | ----------------------------------------------------------------------------------------------------------- |
+| id                               | Attribute  | Dynamic readwrite-splitting name                                                                            |
+| auto-aware-data-source-name      | Attribute  | Database discovery logic data source name                                                                   |
+| write-data-source-query-enabled  | Attribute  | All read data source are offline, write data source whether the data source is responsible for read traffic |
+| load-balance-algorithm-ref       | Attribute  | Load balance algorithm name                                                                                 |
 
 \<readwrite-splitting:load-balance-algorithm />
 

@@ -18,23 +18,26 @@
 package org.apache.shardingsphere.integration.data.pipeline.framework.container.compose;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 
 /**
  * Native composed container, you need start ShardingSphere-Proxy at firstly.
  */
 public final class NativeComposedContainer extends BaseComposedContainer {
     
-    public NativeComposedContainer(final DatabaseType databaseType, final String dockerImageName) {
-        super(databaseType, dockerImageName);
+    private final DatabaseType databaseType;
+    
+    public NativeComposedContainer(final DatabaseType databaseType) {
+        this.databaseType = databaseType;
     }
     
     @Override
     public void start() {
-        super.start();
+        
     }
     
     @Override
     public String getProxyJdbcUrl(final String databaseName) {
-        return getDatabaseContainer().getJdbcUrl("localhost", 3307, databaseName);
+        return DataSourceEnvironment.getURL(databaseType, "localhost", 3307, databaseName);
     }
 }

@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfigur
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.ShardingAutoTableRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.ShardingTableRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.KeyGenerateStrategyConfigurationYamlSwapper;
+import org.apache.shardingsphere.sharding.yaml.swapper.strategy.ShardingAuditStrategyConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.ShardingStrategyConfigurationYamlSwapper;
 
 import java.util.Collections;
@@ -43,6 +44,8 @@ public final class ShardingRuleAlgorithmProviderConfigurationYamlSwapper impleme
     
     private final KeyGenerateStrategyConfigurationYamlSwapper keyGenerateStrategyYamlSwapper = new KeyGenerateStrategyConfigurationYamlSwapper();
     
+    private final ShardingAuditStrategyConfigurationYamlSwapper auditStrategyYamlSwapper = new ShardingAuditStrategyConfigurationYamlSwapper();
+    
     @Override
     public YamlShardingRuleConfiguration swapToYamlConfiguration(final AlgorithmProvidedShardingRuleConfiguration data) {
         YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
@@ -51,9 +54,37 @@ public final class ShardingRuleAlgorithmProviderConfigurationYamlSwapper impleme
                 .swapToYamlConfiguration(each)));
         result.getBindingTables().addAll(data.getBindingTableGroups());
         result.getBroadcastTables().addAll(data.getBroadcastTables());
-        setYamlDefaultStrategies(data, result);
+        setYamlStrategies(data, result);
         setYamlAlgorithms(data, result);
         return result;
+    }
+    
+    private void setYamlStrategies(final AlgorithmProvidedShardingRuleConfiguration data, final YamlShardingRuleConfiguration yamlConfig) {
+        if (null != data.getDefaultDatabaseShardingStrategy()) {
+            yamlConfig.setDefaultDatabaseStrategy(shardingStrategyYamlSwapper.swapToYamlConfiguration(data.getDefaultDatabaseShardingStrategy()));
+        }
+        if (null != data.getDefaultTableShardingStrategy()) {
+            yamlConfig.setDefaultTableStrategy(shardingStrategyYamlSwapper.swapToYamlConfiguration(data.getDefaultTableShardingStrategy()));
+        }
+        if (null != data.getDefaultKeyGenerateStrategy()) {
+            yamlConfig.setDefaultKeyGenerateStrategy(keyGenerateStrategyYamlSwapper.swapToYamlConfiguration(data.getDefaultKeyGenerateStrategy()));
+        }
+        if (null != data.getAuditStrategy()) {
+            yamlConfig.setAuditStrategy(auditStrategyYamlSwapper.swapToYamlConfiguration(data.getAuditStrategy()));
+        }
+    }
+    
+    private void setYamlAlgorithms(final AlgorithmProvidedShardingRuleConfiguration data, final YamlShardingRuleConfiguration yamlConfig) {
+        if (null != data.getShardingAlgorithms()) {
+            data.getShardingAlgorithms().forEach((key, value) -> yamlConfig.getShardingAlgorithms().put(key, new YamlShardingSphereAlgorithmConfiguration(value.getType(), value.getProps())));
+        }
+        if (null != data.getKeyGenerators()) {
+            data.getKeyGenerators().forEach((key, value) -> yamlConfig.getKeyGenerators().put(key, new YamlShardingSphereAlgorithmConfiguration(value.getType(), value.getProps())));
+        }
+        if (null != data.getAuditAlgorithms()) {
+            data.getAuditAlgorithms().forEach(
+                    (key, value) -> yamlConfig.getAuditAlgorithms().put(key, new YamlShardingSphereAlgorithmConfiguration(value.getType(), value.getProps())));
+        }
     }
     
     @Override
@@ -71,12 +102,12 @@ public final class ShardingRuleAlgorithmProviderConfigurationYamlSwapper impleme
         }
         result.getBindingTableGroups().addAll(yamlConfig.getBindingTables());
         result.getBroadcastTables().addAll(yamlConfig.getBroadcastTables());
-        setDefaultStrategies(yamlConfig, result);
+        setStrategies(yamlConfig, result);
         result.setDefaultShardingColumn(yamlConfig.getDefaultShardingColumn());
         return result;
     }
     
-    private void setDefaultStrategies(final YamlShardingRuleConfiguration yamlConfig, final AlgorithmProvidedShardingRuleConfiguration ruleConfig) {
+    private void setStrategies(final YamlShardingRuleConfiguration yamlConfig, final AlgorithmProvidedShardingRuleConfiguration ruleConfig) {
         if (null != yamlConfig.getDefaultDatabaseStrategy()) {
             ruleConfig.setDefaultDatabaseShardingStrategy(shardingStrategyYamlSwapper.swapToObject(yamlConfig.getDefaultDatabaseStrategy()));
         }
@@ -85,6 +116,9 @@ public final class ShardingRuleAlgorithmProviderConfigurationYamlSwapper impleme
         }
         if (null != yamlConfig.getDefaultKeyGenerateStrategy()) {
             ruleConfig.setDefaultKeyGenerateStrategy(keyGenerateStrategyYamlSwapper.swapToObject(yamlConfig.getDefaultKeyGenerateStrategy()));
+        }
+        if (null != yamlConfig.getAuditStrategy()) {
+            ruleConfig.setAuditStrategy(auditStrategyYamlSwapper.swapToObject(yamlConfig.getAuditStrategy()));
         }
     }
     
@@ -101,26 +135,5 @@ public final class ShardingRuleAlgorithmProviderConfigurationYamlSwapper impleme
     @Override
     public int getOrder() {
         return ShardingOrder.ALGORITHM_PROVIDER_ORDER;
-    }
-    
-    private void setYamlDefaultStrategies(final AlgorithmProvidedShardingRuleConfiguration data, final YamlShardingRuleConfiguration yamlConfig) {
-        if (null != data.getDefaultDatabaseShardingStrategy()) {
-            yamlConfig.setDefaultDatabaseStrategy(shardingStrategyYamlSwapper.swapToYamlConfiguration(data.getDefaultDatabaseShardingStrategy()));
-        }
-        if (null != data.getDefaultTableShardingStrategy()) {
-            yamlConfig.setDefaultTableStrategy(shardingStrategyYamlSwapper.swapToYamlConfiguration(data.getDefaultTableShardingStrategy()));
-        }
-        if (null != data.getDefaultKeyGenerateStrategy()) {
-            yamlConfig.setDefaultKeyGenerateStrategy(keyGenerateStrategyYamlSwapper.swapToYamlConfiguration(data.getDefaultKeyGenerateStrategy()));
-        }
-    }
-    
-    private void setYamlAlgorithms(final AlgorithmProvidedShardingRuleConfiguration data, final YamlShardingRuleConfiguration yamlConfig) {
-        if (null != data.getShardingAlgorithms()) {
-            data.getShardingAlgorithms().forEach((key, value) -> yamlConfig.getShardingAlgorithms().put(key, new YamlShardingSphereAlgorithmConfiguration(value.getType(), value.getProps())));
-        }
-        if (null != data.getKeyGenerators()) {
-            data.getKeyGenerators().forEach((key, value) -> yamlConfig.getKeyGenerators().put(key, new YamlShardingSphereAlgorithmConfiguration(value.getType(), value.getProps())));
-        }
     }
 }

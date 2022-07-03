@@ -244,6 +244,12 @@ public enum SQLVisitorRule {
     
     DISCARD("Discard", SQLStatementType.DDL),
     
+    LISTEN("Listen", SQLStatementType.DDL),
+    
+    NOTIFY("NotifyStmt", SQLStatementType.DDL),
+    
+    UNLISTEN("Unlisten", SQLStatementType.DDL),
+    
     SET_CONSTRAINTS("SetConstraints", SQLStatementType.TCL),
     
     SET_TRANSACTION("SetTransaction", SQLStatementType.TCL),

@@ -51,7 +51,7 @@ public final class ReadwriteSplittingDataSourceRule {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getName()), "Name is required.");
         name = config.getName();
         this.loadBalancer = loadBalancer;
-        readwriteSplittingStrategy = ReadwriteSplittingStrategyFactory.newInstance(config.getType(), config.getProps());
+        readwriteSplittingStrategy = ReadwriteSplittingStrategyFactory.newInstance(config);
     }
     
     /**

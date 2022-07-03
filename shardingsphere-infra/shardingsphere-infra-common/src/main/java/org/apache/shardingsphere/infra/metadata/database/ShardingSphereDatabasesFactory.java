@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -37,25 +38,28 @@ public final class ShardingSphereDatabasesFactory {
      * 
      * @param databaseConfigMap database configuration map
      * @param props properties
+     * @param instanceContext instance context
      * @return databases
      * @throws SQLException SQL exception
      */
-    public static Map<String, ShardingSphereDatabase> create(final Map<String, DatabaseConfiguration> databaseConfigMap, final ConfigurationProperties props) throws SQLException {
+    public static Map<String, ShardingSphereDatabase> create(final Map<String, DatabaseConfiguration> databaseConfigMap,
+                                                             final ConfigurationProperties props, final InstanceContext instanceContext) throws SQLException {
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfigMap, props);
         DatabaseType storageType = DatabaseTypeEngine.getStorageType(databaseConfigMap);
         Map<String, ShardingSphereDatabase> result = new HashMap<>(databaseConfigMap.size() + protocolType.getSystemDatabaseSchemaMap().size(), 1);
-        result.putAll(createGenericDatabases(databaseConfigMap, protocolType, storageType, props));
+        result.putAll(createGenericDatabases(databaseConfigMap, protocolType, storageType, props, instanceContext));
         result.putAll(createSystemDatabases(databaseConfigMap, protocolType));
         return result;
     }
     
     private static Map<String, ShardingSphereDatabase> createGenericDatabases(final Map<String, DatabaseConfiguration> databaseConfigMap, final DatabaseType protocolType,
-                                                                              final DatabaseType storageType, final ConfigurationProperties props) throws SQLException {
+                                                                              final DatabaseType storageType, final ConfigurationProperties props,
+                                                                              final InstanceContext instanceContext) throws SQLException {
         Map<String, ShardingSphereDatabase> result = new HashMap<>(databaseConfigMap.size(), 1);
         for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
             String databaseName = entry.getKey();
             if (!entry.getValue().getDataSources().isEmpty() || !protocolType.getSystemSchemas().contains(databaseName)) {
-                result.put(databaseName, ShardingSphereDatabase.create(databaseName, protocolType, storageType, entry.getValue(), props));
+                result.put(databaseName, ShardingSphereDatabase.create(databaseName, protocolType, storageType, entry.getValue(), props, instanceContext));
             }
         }
         return result;

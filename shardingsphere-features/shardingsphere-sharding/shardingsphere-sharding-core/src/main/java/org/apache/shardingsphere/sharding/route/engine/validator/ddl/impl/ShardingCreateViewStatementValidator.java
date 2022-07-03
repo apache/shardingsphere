@@ -34,6 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.handler.dml.SelectStatem
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,8 +50,14 @@ public final class ShardingCreateViewStatementValidator extends ShardingDDLState
         if (!selectStatement.isPresent()) {
             return;
         }
-        if (isShardingTablesWithoutBinding(shardingRule, sqlStatementContext, selectStatement.get())) {
+        TableExtractor extractor = new TableExtractor();
+        extractor.extractTablesFromSelect(selectStatement.get());
+        Collection<SimpleTableSegment> tableSegments = extractor.getRewriteTables();
+        if (isShardingTablesWithoutBinding(shardingRule, sqlStatementContext, tableSegments)) {
             throw new ShardingSphereException("View name has to bind to sharding tables!");
+        }
+        if (isAllBroadcastTablesWithoutConfigView(shardingRule, sqlStatementContext, tableSegments)) {
+            throw new ShardingSphereException("View name has to config as broadcast table!");
         }
     }
     
@@ -66,10 +73,8 @@ public final class ShardingCreateViewStatementValidator extends ShardingDDLState
         }
     }
     
-    private boolean isShardingTablesWithoutBinding(final ShardingRule shardingRule, final SQLStatementContext<CreateViewStatement> sqlStatementContext, final SelectStatement selectStatement) {
-        TableExtractor extractor = new TableExtractor();
-        extractor.extractTablesFromSelect(selectStatement);
-        Collection<SimpleTableSegment> tableSegments = extractor.getRewriteTables();
+    private boolean isShardingTablesWithoutBinding(final ShardingRule shardingRule, final SQLStatementContext<CreateViewStatement> sqlStatementContext,
+                                                   final Collection<SimpleTableSegment> tableSegments) {
         for (SimpleTableSegment each : tableSegments) {
             String logicTable = each.getTableName().getIdentifier().getValue();
             if (shardingRule.isShardingTable(logicTable) && !isBindingTables(shardingRule, sqlStatementContext.getSqlStatement().getView().getTableName().getIdentifier().getValue(), logicTable)) {
@@ -82,6 +87,15 @@ public final class ShardingCreateViewStatementValidator extends ShardingDDLState
     private boolean isBindingTables(final ShardingRule shardingRule, final String logicViewName, final String logicTable) {
         Collection<String> bindTables = Arrays.asList(logicTable, logicViewName);
         return shardingRule.isAllBindingTables(bindTables);
+    }
+    
+    private boolean isAllBroadcastTablesWithoutConfigView(final ShardingRule shardingRule, final SQLStatementContext<CreateViewStatement> sqlStatementContext,
+                                                          final Collection<SimpleTableSegment> tableSegments) {
+        Collection<String> tables = new LinkedList<>();
+        for (SimpleTableSegment each : tableSegments) {
+            tables.add(each.getTableName().getIdentifier().getValue());
+        }
+        return shardingRule.isAllBroadcastTables(tables) && !shardingRule.isBroadcastTable(sqlStatementContext.getSqlStatement().getView().getTableName().getIdentifier().getValue());
     }
     
     private boolean isContainsNotSupportedViewStatement(final SelectStatement selectStatement, final RouteContext routeContext) {

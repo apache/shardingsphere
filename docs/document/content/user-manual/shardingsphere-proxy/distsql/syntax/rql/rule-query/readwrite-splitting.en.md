@@ -15,6 +15,7 @@ SHOW READWRITE_SPLITTING RULES [FROM databaseName]
 | --------------------------- | ------------------------------------ |
 | name                        | Rule name                            |
 | auto_aware_data_source_name | Auto-Aware discovery data source name (Display configuration dynamic readwrite splitting rules) |
+| write_data_source_query_enabled | All read data source are offline, write data source whether the data source is responsible for read traffic |
 | write_data_source_name      | Write data source name                |
 | read_data_source_names      | Read data source name list            |
 | load_balancer_type          | Load balance algorithm type           |
@@ -37,9 +38,9 @@ mysql> show readwrite_splitting rules;
 ```sql
 mysql> show readwrite_splitting rules from readwrite_splitting_db;
 +--------------+-----------------------------+------------------------+------------------------+--------------------+---------------------+
-| name         | auto_aware_data_source_name | write_data_source_name | read_data_source_names | load_balancer_type | load_balancer_props |
+| name         | auto_aware_data_source_name | write_data_source_query_enabled | write_data_source_name | read_data_source_names | load_balancer_type | load_balancer_props |
 +--------------+-----------------------------+------------------------+------------------------+--------------------+---------------------+
-| readwrite_ds | ms_group_0                  |                        |                        | random             | read_weight=2:1     |
+| readwrite_ds | ms_group_0                  |                                 |                        |                        | random             | read_weight=2:1     |
 +-------+-----------------------------+------------------------+------------------------+--------------------+---------------------+
 1 row in set (0.01 sec)
 ```
@@ -48,9 +49,9 @@ mysql> show readwrite_splitting rules from readwrite_splitting_db;
 ```sql
 mysql> show readwrite_splitting rules from readwrite_splitting_db;
 +--------------+-----------------------------+------------------------+------------------------+--------------------+---------------------+
-| name         | auto_aware_data_source_name | write_data_source_name | read_data_source_names | load_balancer_type | load_balancer_props |
+| name         | auto_aware_data_source_name | write_data_source_query_enabled | write_data_source_name | read_data_source_names | load_balancer_type | load_balancer_props |
 +--------------+-----------------------------+------------------------+------------------------+--------------------+---------------------+
-| readwrite_ds | ms_group_0                  | write_ds               | read_ds_0, read_ds_1   | random             | read_weight=2:1     |
+| readwrite_ds | ms_group_0                  |                                 | write_ds               | read_ds_0, read_ds_1   | random             | read_weight=2:1     |
 +-------+-----------------------------+------------------------+------------------------+--------------------+---------------------+
 1 row in set (0.00 sec)
 ```

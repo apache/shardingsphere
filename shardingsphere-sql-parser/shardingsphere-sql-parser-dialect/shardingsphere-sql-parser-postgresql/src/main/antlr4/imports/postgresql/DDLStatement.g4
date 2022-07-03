@@ -1030,7 +1030,7 @@ alterRoutine
     ;
 
 alterRule
-    : ALTER RULE ON qualifiedName RENAME TO name
+    : ALTER RULE name ON qualifiedName RENAME TO name
     ;
 
 alterSequence
@@ -1491,10 +1491,6 @@ ruleActionMulti
     : ruleActionStmt? (SEMI_ ruleActionStmt?)*
     ;
 
-notifyStmt
-    : NOTIFY colId (COMMA_ STRING_)?
-    ;
-
 createTrigger
     : CREATE TRIGGER name triggerActionTime triggerEvents ON qualifiedName triggerReferencing? triggerForSpec? triggerWhen? EXECUTE (FUNCTION | PROCEDURE) funcName LP_ triggerFuncArgs? RP_
     | CREATE CONSTRAINT TRIGGER (FROM qualifiedName)? constraintAttributeSpec FOR EACH ROW triggerWhen EXECUTE (FUNCTION | PROCEDURE) funcName LP_ triggerFuncArgs RP_
@@ -1767,9 +1763,6 @@ importQualificationType
     : LIMIT TO | EXCEPT
     ;
 
-listen
-    : LISTEN colId
-    ;
 
 declare
     : DECLARE cursorName cursorOptions CURSOR (WITH HOLD | WITHOUT HOLD)? FOR select
@@ -1792,6 +1785,18 @@ move
 
 fetch
     : FETCH direction? (FROM | IN)? cursorName
+    ;
+
+listen
+    : LISTEN channelName
+    ;
+
+unlisten
+    : UNLISTEN (channelName | ASTERISK_)
+    ;
+
+notifyStmt
+    : NOTIFY colId (COMMA_ STRING_)?
     ;
 
 direction
@@ -1892,10 +1897,6 @@ securityLabelClausces
     | (AGGREGATE | FUNCTION) aggregateWithArgtypes
     | LARGE OBJECT numericOnly
     | (PROCEDURE | ROUTINE) functionWithArgtypes
-    ;
-
-unlisten
-    : UNLISTEN (colId | ASTERISK_)
     ;
 
 createSchema

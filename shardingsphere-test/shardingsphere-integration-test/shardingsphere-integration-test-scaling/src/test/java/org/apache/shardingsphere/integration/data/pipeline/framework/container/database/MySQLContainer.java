@@ -17,22 +17,25 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.framework.container.database;
 
-import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
+import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.framework.container.wait.JDBCConnectionWaitStrategy;
 import org.testcontainers.containers.BindMode;
 
 import java.sql.DriverManager;
-import java.util.Arrays;
-import java.util.Properties;
 
-public final class MySQLContainer extends DockerDatabaseContainer {
+public final class MySQLContainer extends DatabaseContainer {
     
     private static final DatabaseType DATABASE_TYPE = new MySQLDatabaseType();
+    
+    private final String username = "root";
+    
+    private final String password = "root";
+    
+    private final int port = 3306;
     
     public MySQLContainer(final String dockerImageName) {
         super(DATABASE_TYPE, dockerImageName);
@@ -40,32 +43,35 @@ public final class MySQLContainer extends DockerDatabaseContainer {
     
     @Override
     protected void configure() {
-        super.configure();
         withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password");
-        setEnv(Arrays.asList("LANG=C.UTF-8", "MYSQL_ROOT_PASSWORD=root", "MYSQL_ROOT_HOST=%"));
+        addEnv("LANG", "C.UTF-8");
+        addEnv("MYSQL_ROOT_PASSWORD", username);
+        addEnv("MYSQL_ROOT_HOST", "%");
         withClasspathResourceMapping("/env/mysql/my.cnf", "/etc/mysql/my.cnf", BindMode.READ_ONLY);
         withExposedPorts(getPort());
-        if (ITEnvTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItEnvType()) {
-            addFixedExposedPort(3306, 3306);
+        if (ScalingITEnvTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItEnvType()) {
+            addFixedExposedPort(port, port);
         }
         setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(DATABASE_TYPE, "localhost", getFirstMappedPort()), "root", "root")));
     }
     
     @Override
-    public String getJdbcUrl(final String host, final int port, final String databaseName) {
-        String jdbcUrl = DataSourceEnvironment.getURL(DATABASE_TYPE, host, port, databaseName);
-        return new JdbcUrlAppender().appendQueryProperties(jdbcUrl, createQueryProperties());
+    public String getJdbcUrl(final String databaseName) {
+        return DataSourceEnvironment.getURL(DATABASE_TYPE, getHost(), getFirstMappedPort(), databaseName);
     }
     
-    private Properties createQueryProperties() {
-        Properties result = new Properties();
-        result.put("useSSL", Boolean.FALSE.toString());
-        result.put("rewriteBatchedStatements", Boolean.TRUE.toString());
-        return result;
+    @Override
+    public String getUsername() {
+        return username;
+    }
+    
+    @Override
+    public String getPassword() {
+        return password;
     }
     
     @Override
     public int getPort() {
-        return 3306;
+        return port;
     }
 }

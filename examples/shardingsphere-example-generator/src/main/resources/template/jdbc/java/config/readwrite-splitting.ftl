@@ -14,12 +14,9 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-    
+
     private ReadwriteSplittingRuleConfiguration createReadwriteSplittingRuleConfiguration() {
-        Properties props = new Properties();
-        props.setProperty("write-data-source-name", "ds_0");
-        props.setProperty("read-data-source-names", "ds_1, ds_2");
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = new ReadwriteSplittingDataSourceRuleConfiguration(
-                "ds_0", "Static", props, null);
+                "ds_0", new StaticReadwriteSplittingStrategyConfiguration("ds_0", Arrays.asList("ds_1", "ds_2")), null, null);
         return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap());
     }

@@ -1,6 +1,6 @@
 +++
 title = "高可用"
-weight = 3
+weight = 4
 +++
 
 ## 配置项说明

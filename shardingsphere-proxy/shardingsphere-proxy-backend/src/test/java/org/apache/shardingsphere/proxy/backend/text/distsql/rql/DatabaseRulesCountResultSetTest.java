@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.rule.DatabaseRulesCountResultSet;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -42,7 +43,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Optional;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -134,7 +134,8 @@ public final class DatabaseRulesCountResultSetTest {
     private ReadwriteSplittingRule mockReadwriteSplittingRule() {
         ReadwriteSplittingRule result = mock(ReadwriteSplittingRule.class);
         ReadwriteSplittingRuleConfiguration config = mock(ReadwriteSplittingRuleConfiguration.class);
-        when(config.getDataSources()).thenReturn(Collections.singletonList(new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_splitting", "", new Properties(), "")));
+        when(config.getDataSources()).thenReturn(Collections.singletonList(new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_splitting",
+                new StaticReadwriteSplittingStrategyConfiguration("", Collections.emptyList()), null, "")));
         when(result.getConfiguration()).thenReturn(config);
         return result;
     }

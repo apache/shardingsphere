@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sqltranslator.rule.builder;
 
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRuleBuilder;
 import org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration;
@@ -31,7 +32,7 @@ import java.util.Map;
 public final class SQLTranslatorRuleBuilder implements GlobalRuleBuilder<SQLTranslatorRuleConfiguration> {
     
     @Override
-    public SQLTranslatorRule build(final SQLTranslatorRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
+    public SQLTranslatorRule build(final SQLTranslatorRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext) {
         return new SQLTranslatorRule(ruleConfig);
     }
     

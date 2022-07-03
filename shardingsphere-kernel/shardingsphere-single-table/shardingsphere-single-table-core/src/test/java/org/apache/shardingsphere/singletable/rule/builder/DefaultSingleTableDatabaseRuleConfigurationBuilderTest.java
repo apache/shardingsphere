@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.singletable.rule.builder;
 
-import org.apache.shardingsphere.infra.rule.builder.schema.DefaultDatabaseRuleConfigurationBuilder;
-import org.apache.shardingsphere.infra.rule.builder.schema.DefaultDatabaseRuleConfigurationBuilderFactory;
+import org.apache.shardingsphere.infra.rule.builder.database.DefaultDatabaseRuleConfigurationBuilder;
+import org.apache.shardingsphere.infra.rule.builder.database.DefaultDatabaseRuleConfigurationBuilderFactory;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.junit.Test;
 
