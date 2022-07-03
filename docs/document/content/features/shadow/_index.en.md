@@ -1,11 +1,11 @@
 +++
-pre = "<b>7.6. </b>"
+pre = "<b>4.10. </b>"
 title = "Shadow"
-weight = 6
+weight = 10
 +++
 
 ## Definition
-Solution for stress testing data governance at the database level, under the online full link stress testing scenario of Apache Shardingsphere.
+Solution for stress testing data governance at the database level, under the online full link stress testing scenario of Apache ShardingSphere.
 
 ## Related Concepts
 
