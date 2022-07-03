@@ -160,5 +160,6 @@ execute
     | createCast
     | alterRoutine
     | alterRule
+    | createCollation
     ) SEMI_? EOF
     ;

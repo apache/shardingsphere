@@ -3520,26 +3520,6 @@
     <sql-case id="alter_by_postgresql_source_test_case459" value="ALTER TYPE test_typex DROP ATTRIBUTE a;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case460" value="ALTER TYPE tt_t0 DROP ATTRIBUTE z;" db-types="PostgreSQL" />
     <sql-case id="analyze_by_postgresql_source_test_case1" value="ANALYZE (nonexistent-arg) does_not_exist;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case104" value="CREATE COLLATION case_insensitive (provider = icu, locale = &apos;@colStrength=secondary&apos;, deterministic = false);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case105" value="CREATE COLLATION case_sensitive (provider = icu, locale = &apos;&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case106" value="CREATE COLLATION coll_icu_upgrade FROM &quot;und-x-icu&quot;;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case107" value="CREATE COLLATION ctest_det (provider = icu, locale = &apos;&apos;, deterministic = true);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case108" value="CREATE COLLATION ctest_nondet (provider = icu, locale = &apos;&apos;, deterministic = false);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case109" value="CREATE COLLATION ignore_accents (provider = icu, locale = &apos;@colStrength=primary;colCaseLevel=yes&apos;, deterministic = false);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case110" value="CREATE COLLATION test0 FROM &quot;C&quot;;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case111" value="CREATE COLLATION test0 FROM &quot;C&quot;;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case112" value="CREATE COLLATION test3 (provider = icu, lc_collate = &apos;en_US.utf8&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case113" value="CREATE COLLATION test4 FROM nonsense;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case114" value="CREATE COLLATION test5 FROM test0;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case115" value="CREATE COLLATION testcoll_backwards (provider = icu, locale = &apos;@colBackwards=yes&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case116" value="CREATE COLLATION testcoll_de_phonebook (provider = icu, locale = &apos;de@collation=phonebook&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case117" value="CREATE COLLATION testcoll_error1 (provider = icu, locale = &apos;@colNumeric=lower&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case118" value="CREATE COLLATION testcoll_ignore_accents (provider = icu, locale = &apos;@colStrength=primary;colCaseLevel=yes&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case119" value="CREATE COLLATION testcoll_lower_first (provider = icu, locale = &apos;@colCaseFirst=lower&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case120" value="CREATE COLLATION testcoll_numeric (provider = icu, locale = &apos;@colNumeric=yes&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case121" value="CREATE COLLATION testcoll_shifted (provider = icu, locale = &apos;@colAlternate=shifted&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case122" value="CREATE COLLATION testcoll_upper_first (provider = icu, locale = &apos;@colCaseFirst=upper&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case123" value="CREATE COLLATION testx (provider = icu, locale = &apos;nonsense&apos;); /* never fails with ICU */  DROP COLLATION testx;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case124" value="CREATE CONSTRAINT TRIGGER trigtest_constraint AFTER INSERT OR UPDATE OR DELETE ON foreign_schema.foreign_table_1 FOR EACH ROW EXECUTE PROCEDURE dummy_trigger();" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case125" value="CREATE EVENT TRIGGER end_rls_command ON ddl_command_end     WHEN TAG IN (&apos;CREATE POLICY&apos;, &apos;ALTER POLICY&apos;, &apos;DROP POLICY&apos;) EXECUTE PROCEDURE end_command();" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case126" value="CREATE EVENT TRIGGER has_volatile_rewrite                   ON table_rewrite    EXECUTE PROCEDURE log_rewrite();" db-types="PostgreSQL" />
