@@ -21,10 +21,9 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.definition.InstanceMetaData;
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
-import org.apache.shardingsphere.infra.instance.definition.jdbc.JDBCInstanceMetaData;
-import org.apache.shardingsphere.infra.instance.definition.proxy.ProxyInstanceMetaData;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilderFactory;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -50,7 +49,7 @@ public final class ComputeNodeStatusService {
      * @param instanceMetaData instance definition
      */
     public void registerOnline(final InstanceMetaData instanceMetaData) {
-        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceMetaData.getInstanceId(), instanceMetaData.getInstanceType()), instanceMetaData.getAttributes());
+        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceMetaData.getId(), instanceMetaData.getType()), instanceMetaData.getAttributes());
     }
     
     /**
@@ -130,13 +129,8 @@ public final class ComputeNodeStatusService {
     
     private Collection<ComputeNodeInstance> loadComputeNodeInstances(final InstanceType instanceType) {
         Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType));
-        return onlineComputeNodes.stream().map(each -> loadComputeNodeInstance(createInstanceMetaData(each, instanceType))).collect(Collectors.toList());
-    }
-    
-    private InstanceMetaData createInstanceMetaData(final String instanceId, final InstanceType type) {
-        return InstanceType.JDBC == type
-                ? new JDBCInstanceMetaData(instanceId)
-                : new ProxyInstanceMetaData(instanceId, repository.get(ComputeNode.getOnlineInstanceNodePath(instanceId, type)));
+        return onlineComputeNodes.stream().map(each -> loadComputeNodeInstance(
+                InstanceMetaDataBuilderFactory.create(each, instanceType, repository.get(ComputeNode.getOnlineInstanceNodePath(each, instanceType))))).collect(Collectors.toList());
     }
     
     /**
@@ -147,9 +141,9 @@ public final class ComputeNodeStatusService {
      */
     public ComputeNodeInstance loadComputeNodeInstance(final InstanceMetaData instanceMetaData) {
         ComputeNodeInstance result = new ComputeNodeInstance(instanceMetaData);
-        result.setLabels(loadInstanceLabels(instanceMetaData.getInstanceId()));
-        result.switchState(loadInstanceStatus(instanceMetaData.getInstanceId()));
-        loadInstanceWorkerId(instanceMetaData.getInstanceId()).ifPresent(result::setWorkerId);
+        result.setLabels(loadInstanceLabels(instanceMetaData.getId()));
+        result.switchState(loadInstanceStatus(instanceMetaData.getId()));
+        loadInstanceWorkerId(instanceMetaData.getId()).ifPresent(result::setWorkerId);
         return result;
     }
 }

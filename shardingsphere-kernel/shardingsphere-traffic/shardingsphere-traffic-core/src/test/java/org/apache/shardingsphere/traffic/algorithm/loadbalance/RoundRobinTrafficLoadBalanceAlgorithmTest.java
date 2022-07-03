@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.traffic.algorithm.loadbalance;
 
-import org.apache.shardingsphere.infra.instance.definition.InstanceMetaData;
-import org.apache.shardingsphere.infra.instance.definition.proxy.ProxyInstanceMetaData;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
+import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.junit.Test;
 
 import java.util.Arrays;

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.event.AddSchemaE
 import org.apache.shardingsphere.infra.metadata.database.schema.event.AlterSchemaEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.DropSchemaEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
-import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,7 +41,7 @@ import static org.mockito.Mockito.verify;
 public final class SchemaMetaDataRegistrySubscriberTest {
     
     @Mock
-    private SchemaMetaDataPersistService persistService;
+    private DatabaseMetaDataPersistService persistService;
     
     private SchemaMetaDataRegistrySubscriber schemaMetaDataRegistrySubscriber;
     

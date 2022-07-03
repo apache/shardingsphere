@@ -45,21 +45,22 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
     
     @Override
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
-        ConfigurationProperties props = new ConfigurationProperties(parameter.getProps());
-        Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(parameter.getDatabaseConfigs(), props);
-        ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(GlobalRulesBuilder.buildRules(parameter.getGlobalRuleConfigs(), databases));
-        MetaDataContexts metaDataContexts = new MetaDataContexts(null, new ShardingSphereMetaData(databases, globalMetaData, props), OptimizerContextFactory.create(databases, globalMetaData));
-        return new ContextManager(metaDataContexts, buildInstanceContext(parameter));
+        InstanceContext instanceContext = buildInstanceContext(parameter);
+        return new ContextManager(buildMetaDataContexts(parameter, instanceContext), instanceContext);
     }
     
     private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter parameter) {
         ComputeNodeInstance instance = new ComputeNodeInstance(parameter.getInstanceMetaData());
         instance.setLabels(parameter.getLabels());
-        return new InstanceContext(instance, new MemoryWorkerIdGenerator(), buildMemoryModeConfiguration(parameter.getModeConfig()), new MemoryLockContext());
+        return new InstanceContext(instance,
+                new MemoryWorkerIdGenerator(), Optional.ofNullable(parameter.getModeConfig()).orElseGet(() -> new ModeConfiguration(getType(), null, false)), new MemoryLockContext());
     }
     
-    private ModeConfiguration buildMemoryModeConfiguration(final ModeConfiguration modeConfiguration) {
-        return Optional.ofNullable(modeConfiguration).orElseGet(() -> new ModeConfiguration(getType(), null, false));
+    private MetaDataContexts buildMetaDataContexts(final ContextManagerBuilderParameter parameter, final InstanceContext instanceContext) throws SQLException {
+        ConfigurationProperties props = new ConfigurationProperties(parameter.getProps());
+        Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(parameter.getDatabaseConfigs(), props, instanceContext);
+        ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(GlobalRulesBuilder.buildRules(parameter.getGlobalRuleConfigs(), databases, instanceContext));
+        return new MetaDataContexts(null, new ShardingSphereMetaData(databases, globalMetaData, props), OptimizerContextFactory.create(databases, globalMetaData));
     }
     
     @Override

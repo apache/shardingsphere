@@ -160,5 +160,6 @@ execute
     | createAggregate
     | createCast
     | alterRoutine
+    | alterRule
     ) SEMI_? EOF
     ;
