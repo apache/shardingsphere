@@ -23,7 +23,7 @@ import org.apache.shardingsphere.dbdiscovery.constant.DatabaseDiscoveryOrder;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 
 import javax.sql.DataSource;
 import java.util.Collection;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.rule.builder.fixture;
 
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 
 import javax.sql.DataSource;
 import java.util.Collection;

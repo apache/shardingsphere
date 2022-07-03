@@ -31,7 +31,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericS
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilder;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRulesBuilder;
+import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.builder.schema;
+package org.apache.shardingsphere.infra.rule.builder.database;
 
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.fixture.TestRuleConfiguration;
