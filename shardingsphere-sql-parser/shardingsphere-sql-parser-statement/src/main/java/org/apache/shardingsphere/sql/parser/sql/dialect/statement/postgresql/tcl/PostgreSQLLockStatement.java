@@ -17,13 +17,23 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.LockStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * PostgreSQL lock statement.
  */
+@Getter
+@Setter
 @ToString
 public final class PostgreSQLLockStatement extends LockStatement implements PostgreSQLStatement {
+    
+    private Collection<SimpleTableSegment> tables = new LinkedList<>();
 }
