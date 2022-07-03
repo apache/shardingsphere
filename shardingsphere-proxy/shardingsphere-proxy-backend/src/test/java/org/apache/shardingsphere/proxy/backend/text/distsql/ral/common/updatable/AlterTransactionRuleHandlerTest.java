@@ -73,8 +73,7 @@ public final class AlterTransactionRuleHandlerTest extends ProxyContextRestorer 
     }
     
     private TransactionRule createTransactionRule() {
-        TransactionRule result = new TransactionRule(new TransactionRuleConfiguration("LOCAL", null, new Properties()), Collections.emptyMap());
-        result.setInstanceContext(mock(InstanceContext.class));
+        TransactionRule result = new TransactionRule(new TransactionRuleConfiguration("LOCAL", null, new Properties()), Collections.emptyMap(), mock(InstanceContext.class));
         result.getResources().put(DefaultDatabase.LOGIC_NAME, new ShardingSphereTransactionManagerEngine());
         return result;
     }

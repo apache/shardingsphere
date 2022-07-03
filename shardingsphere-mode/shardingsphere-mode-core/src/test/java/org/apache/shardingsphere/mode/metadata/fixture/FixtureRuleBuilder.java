@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.fixture;
 
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilder;
 
@@ -28,7 +29,7 @@ public final class FixtureRuleBuilder implements DatabaseRuleBuilder<FixtureRule
     
     @Override
     public FixtureRule build(final FixtureRuleConfiguration config, final String databaseName,
-                             final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules) {
+                             final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
         return new FixtureRule();
     }
     

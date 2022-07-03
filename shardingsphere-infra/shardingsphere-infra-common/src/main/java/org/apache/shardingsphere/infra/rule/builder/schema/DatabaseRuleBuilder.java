@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.rule.builder.schema;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.RuleBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
@@ -42,7 +43,8 @@ public interface DatabaseRuleBuilder<T extends RuleConfiguration> extends RuleBu
      * @param databaseName database name
      * @param dataSources data sources
      * @param builtRules built rules
+     * @param instanceContext instance context
      * @return built database rule
      */
-    DatabaseRule build(T config, String databaseName, Map<String, DataSource> dataSources, Collection<ShardingSphereRule> builtRules);
+    DatabaseRule build(T config, String databaseName, Map<String, DataSource> dataSources, Collection<ShardingSphereRule> builtRules, InstanceContext instanceContext);
 }
