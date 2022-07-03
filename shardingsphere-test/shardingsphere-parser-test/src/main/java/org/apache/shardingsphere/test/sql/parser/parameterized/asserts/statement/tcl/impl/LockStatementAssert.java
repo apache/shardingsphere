@@ -35,13 +35,13 @@ import static org.junit.Assert.assertTrue;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LockStatementAssert {
-    
+
     /**
      * Assert lock statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual        actual lock statement
-     * @param expected      expected lock statement test case
+     * @param actual actual lock statement
+     * @param expected expected lock statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final LockStatement actual, final LockStatementTestCase expected) {
         if (actual instanceof MySQLLockStatement) {
