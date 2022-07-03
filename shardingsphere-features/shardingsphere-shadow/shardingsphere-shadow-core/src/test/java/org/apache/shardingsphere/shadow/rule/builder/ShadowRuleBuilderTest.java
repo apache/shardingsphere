@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.shadow.rule.builder;
 
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilderFactory;
+import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilderFactory;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
 import org.junit.Test;

@@ -23,8 +23,8 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHe
 import org.apache.shardingsphere.dbdiscovery.fixture.CoreDatabaseDiscoveryProviderAlgorithmFixture;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilderFactory;
+import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilderFactory;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 

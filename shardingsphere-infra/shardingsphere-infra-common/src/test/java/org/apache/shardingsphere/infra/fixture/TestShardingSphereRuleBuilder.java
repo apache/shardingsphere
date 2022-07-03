@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.fixture;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 
 import javax.sql.DataSource;
