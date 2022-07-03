@@ -457,21 +457,20 @@ public final class ContextManager implements AutoCloseable {
         return result;
     }
     
-    private Map<String, DataSource> getDeletedDataSources(final ShardingSphereDatabase originalMetaData, final Map<String, DataSourceProperties> newDataSourcePropsMap) {
-        return originalMetaData.getResource().getDataSources().entrySet().stream().filter(entry -> !newDataSourcePropsMap.containsKey(entry.getKey()))
+    private Map<String, DataSource> getDeletedDataSources(final ShardingSphereDatabase database, final Map<String, DataSourceProperties> dataSourcePropsMap) {
+        return database.getResource().getDataSources().entrySet().stream().filter(entry -> !dataSourcePropsMap.containsKey(entry.getKey()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
     
-    private Map<String, DataSource> getChangedDataSources(final ShardingSphereDatabase originalMetaData, final Map<String, DataSourceProperties> newDataSourcePropsMap) {
-        Collection<String> changedDataSourceNames = getChangedDataSourceConfiguration(originalMetaData, newDataSourcePropsMap).keySet();
-        return originalMetaData.getResource().getDataSources().entrySet().stream().filter(entry -> changedDataSourceNames.contains(entry.getKey()))
+    private Map<String, DataSource> getChangedDataSources(final ShardingSphereDatabase database, final Map<String, DataSourceProperties> dataSourcePropsMap) {
+        Collection<String> changedDataSourceNames = getChangedDataSourceConfiguration(database, dataSourcePropsMap).keySet();
+        return database.getResource().getDataSources().entrySet().stream().filter(entry -> changedDataSourceNames.contains(entry.getKey()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
     }
     
-    private Map<String, DataSourceProperties> getChangedDataSourceConfiguration(final ShardingSphereDatabase originalMetaData,
-                                                                                final Map<String, DataSourceProperties> dataSourcePropsMap) {
+    private Map<String, DataSourceProperties> getChangedDataSourceConfiguration(final ShardingSphereDatabase database, final Map<String, DataSourceProperties> dataSourcePropsMap) {
         return dataSourcePropsMap.entrySet().stream()
-                .filter(entry -> isModifiedDataSource(originalMetaData.getResource().getDataSources(), entry.getKey(), entry.getValue()))
+                .filter(entry -> isModifiedDataSource(database.getResource().getDataSources(), entry.getKey(), entry.getValue()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, currentValue) -> oldValue, LinkedHashMap::new));
     }
     
@@ -558,15 +557,14 @@ public final class ContextManager implements AutoCloseable {
         return result;
     }
     
-    private MetaDataContexts buildChangedMetaDataContextWithChangedDataSource(final ShardingSphereDatabase originalDatabase,
-                                                                              final Map<String, DataSourceProperties> newDataSourceProps) throws SQLException {
-        Collection<String> deletedDataSources = getDeletedDataSources(originalDatabase, newDataSourceProps).keySet();
-        Map<String, DataSource> changedDataSources = buildChangedDataSources(originalDatabase, newDataSourceProps);
+    private MetaDataContexts buildChangedMetaDataContextWithChangedDataSource(final ShardingSphereDatabase database, final Map<String, DataSourceProperties> dataSourceProps) throws SQLException {
+        Collection<String> deletedDataSources = getDeletedDataSources(database, dataSourceProps).keySet();
+        Map<String, DataSource> changedDataSources = buildChangedDataSources(database, dataSourceProps);
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(
-                getNewDataSources(originalDatabase.getResource().getDataSources(), getAddedDataSources(originalDatabase, newDataSourceProps), changedDataSources, deletedDataSources),
-                originalDatabase.getRuleMetaData().getConfigurations());
+                getNewDataSources(database.getResource().getDataSources(), getAddedDataSources(database, dataSourceProps), changedDataSources, deletedDataSources),
+                database.getRuleMetaData().getConfigurations());
         ConfigurationProperties props = metaDataContexts.getMetaData().getProps();
-        Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(Collections.singletonMap(originalDatabase.getName(), databaseConfig), props, instanceContext);
+        Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(Collections.singletonMap(database.getName(), databaseConfig), props, instanceContext);
         ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(
                 GlobalRulesBuilder.buildRules(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), databases, instanceContext));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, globalMetaData, props);
@@ -575,14 +573,14 @@ public final class ContextManager implements AutoCloseable {
         return result;
     }
     
-    private MetaDataContexts buildChangedMetaDataContextWithChangedDataSourceAndRule(final ShardingSphereDatabase originalDatabase, final Map<String, DataSourceProperties> newDataSourceProps,
+    private MetaDataContexts buildChangedMetaDataContextWithChangedDataSourceAndRule(final ShardingSphereDatabase database, final Map<String, DataSourceProperties> dataSourceProps,
                                                                                      final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
-        Collection<String> deletedDataSources = getDeletedDataSources(originalDatabase, newDataSourceProps).keySet();
-        Map<String, DataSource> changedDataSources = buildChangedDataSources(originalDatabase, newDataSourceProps);
-        DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(getNewDataSources(originalDatabase.getResource().getDataSources(),
-                getAddedDataSources(originalDatabase, newDataSourceProps), changedDataSources, deletedDataSources), ruleConfigs);
+        Collection<String> deletedDataSources = getDeletedDataSources(database, dataSourceProps).keySet();
+        Map<String, DataSource> changedDataSources = buildChangedDataSources(database, dataSourceProps);
+        DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(getNewDataSources(database.getResource().getDataSources(),
+                getAddedDataSources(database, dataSourceProps), changedDataSources, deletedDataSources), ruleConfigs);
         ConfigurationProperties props = metaDataContexts.getMetaData().getProps();
-        Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(Collections.singletonMap(originalDatabase.getName(), databaseConfig), props, instanceContext);
+        Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(Collections.singletonMap(database.getName(), databaseConfig), props, instanceContext);
         ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(
                 GlobalRulesBuilder.buildRules(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), databases, instanceContext));
         ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, globalMetaData, props);
@@ -600,13 +598,13 @@ public final class ContextManager implements AutoCloseable {
         return result;
     }
     
-    private Map<String, DataSource> getAddedDataSources(final ShardingSphereDatabase originalDatabase, final Map<String, DataSourceProperties> newDataSourcePropsMap) {
-        return DataSourcePoolCreator.create(newDataSourcePropsMap.entrySet().stream()
-                .filter(entry -> !originalDatabase.getResource().getDataSources().containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue)));
+    private Map<String, DataSource> getAddedDataSources(final ShardingSphereDatabase database, final Map<String, DataSourceProperties> dataSourcePropsMap) {
+        return DataSourcePoolCreator.create(dataSourcePropsMap.entrySet().stream()
+                .filter(entry -> !database.getResource().getDataSources().containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue)));
     }
     
-    private Map<String, DataSource> buildChangedDataSources(final ShardingSphereDatabase originalDatabase, final Map<String, DataSourceProperties> newDataSourcePropsMap) {
-        return DataSourcePoolCreator.create(getChangedDataSourceConfiguration(originalDatabase, newDataSourcePropsMap));
+    private Map<String, DataSource> buildChangedDataSources(final ShardingSphereDatabase database, final Map<String, DataSourceProperties> dataSourcePropsMap) {
+        return DataSourcePoolCreator.create(getChangedDataSourceConfiguration(database, dataSourcePropsMap));
     }
     
     private void persistMetaData(final MetaDataContexts metaDataContexts) {
