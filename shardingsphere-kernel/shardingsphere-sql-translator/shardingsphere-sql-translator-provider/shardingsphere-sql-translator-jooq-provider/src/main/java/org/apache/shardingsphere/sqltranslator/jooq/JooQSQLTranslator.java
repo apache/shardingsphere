@@ -46,9 +46,4 @@ public final class JooQSQLTranslator implements SQLTranslator {
     public String getType() {
         return "JOOQ";
     }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
-    }
 }

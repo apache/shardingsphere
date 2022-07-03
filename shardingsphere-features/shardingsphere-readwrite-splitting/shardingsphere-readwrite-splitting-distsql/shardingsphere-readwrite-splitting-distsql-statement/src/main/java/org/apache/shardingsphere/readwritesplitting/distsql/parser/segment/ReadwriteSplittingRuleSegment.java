@@ -37,6 +37,8 @@ public final class ReadwriteSplittingRuleSegment implements ASTNode {
     
     private final String autoAwareResource;
     
+    private final String writeDataSourceQueryEnabled;
+    
     private final String writeDataSource;
     
     private final Collection<String> readDataSources;
@@ -45,17 +47,17 @@ public final class ReadwriteSplittingRuleSegment implements ASTNode {
     
     private final Properties props;
     
-    public ReadwriteSplittingRuleSegment(final String name, final String autoAwareResource, final String loadBalancer, final Properties props) {
-        this(name, autoAwareResource, null, null, loadBalancer, props);
+    public ReadwriteSplittingRuleSegment(final String name, final String autoAwareResource, final String writeDataSourceQueryEnabled, final String loadBalancer, final Properties props) {
+        this(name, autoAwareResource, writeDataSourceQueryEnabled, null, null, loadBalancer, props);
     }
     
     public ReadwriteSplittingRuleSegment(final String name, final String writeDataSource, final Collection<String> readDataSources, final String loadBalancer, final Properties props) {
-        this(name, null, writeDataSource, readDataSources, loadBalancer, props);
+        this(name, null, null, writeDataSource, readDataSources, loadBalancer, props);
     }
     
     /**
      * Is it an auto aware type.
-     * 
+     *
      * @return is auto ware or not
      */
     public boolean isAutoAware() {

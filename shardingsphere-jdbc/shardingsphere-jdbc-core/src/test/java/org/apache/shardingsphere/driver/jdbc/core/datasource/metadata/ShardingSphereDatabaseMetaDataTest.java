@@ -17,11 +17,12 @@
 
 package org.apache.shardingsphere.driver.jdbc.core.datasource.metadata;
 
+import org.apache.shardingsphere.driver.jdbc.context.CachedDatabaseMetaData;
 import org.apache.shardingsphere.driver.jdbc.core.connection.ShardingSphereConnection;
 import org.apache.shardingsphere.driver.jdbc.core.resultset.DatabaseMetaDataResultSet;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.driver.jdbc.context.CachedDatabaseMetaData;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -105,7 +106,7 @@ public final class ShardingSphereDatabaseMetaDataTest {
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration(TABLE_NAME, DATA_SOURCE_NAME + "." + TABLE_NAME);
         ruleConfig.setTables(Collections.singletonList(shardingTableRuleConfig));
-        return new ShardingRule(ruleConfig, Collections.singletonList(DATA_SOURCE_NAME));
+        return new ShardingRule(ruleConfig, Collections.singletonList(DATA_SOURCE_NAME), mock(InstanceContext.class));
     }
     
     @Test

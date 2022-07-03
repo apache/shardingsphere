@@ -22,6 +22,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSe
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
+import java.util.Collection;
 import java.util.Properties;
 
 /**
@@ -63,5 +64,14 @@ public final class SQLHintExtractor {
      */
     public boolean isHintSkipEncryptRewrite() {
         return sqlHintProperties.getValue(SQLHintPropertiesKey.SKIP_ENCRYPT_REWRITE_KEY);
+    }
+    
+    /**
+     * Find hint disable audit names.
+     *
+     * @return disable audit names
+     */
+    public Collection<String> findDisableAuditNames() {
+        return SQLHintUtils.getSplitterSQLHintValue(sqlHintProperties.getValue(SQLHintPropertiesKey.DISABLE_AUDIT_NAMES));
     }
 }

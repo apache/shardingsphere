@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sharding.merge.dal.show;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
@@ -60,7 +61,7 @@ public final class ShowTableStatusMergedResultTest {
     private ShardingRule buildShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("table", "ds.table_${0..2}"));
-        return new ShardingRule(shardingRuleConfig, Collections.singletonList("ds"));
+        return new ShardingRule(shardingRuleConfig, Collections.singletonList("ds"), mock(InstanceContext.class));
     }
     
     @Test

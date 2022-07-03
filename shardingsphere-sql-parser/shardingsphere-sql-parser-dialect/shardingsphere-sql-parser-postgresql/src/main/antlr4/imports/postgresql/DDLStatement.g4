@@ -1030,7 +1030,7 @@ alterRoutine
     ;
 
 alterRule
-    : ALTER RULE ON qualifiedName RENAME TO name
+    : ALTER RULE name ON qualifiedName RENAME TO name
     ;
 
 alterSequence

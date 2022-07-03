@@ -97,7 +97,7 @@ public final class MySQLComStmtPrepareExecutorTest extends ProxyContextRestorer 
     
     @Test
     public void assertPrepareSelectStatement() throws SQLException {
-        String sql = "select name from t where id = ?";
+        String sql = "select name from db.user where id = ?";
         when(packet.getSql()).thenReturn(sql);
         when(connectionSession.getConnectionId()).thenReturn(1);
         MySQLStatementIDGenerator.getInstance().registerConnection(1);

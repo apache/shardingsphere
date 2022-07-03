@@ -29,6 +29,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatement
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterShardingBroadcastTableRulesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterShardingKeyGeneratorContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AlterShardingTableRuleContext;
+import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.AutoShardingColumnDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.BindTableRulesDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.ClearShardingHintContext;
 import org.apache.shardingsphere.distsql.parser.autogen.ShardingDistSQLStatementParser.CreateDefaultShardingStrategyContext;
@@ -323,7 +324,7 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
         Collection<String> dataSources = getResources(ctx.resources());
         AutoTableRuleSegment result = new AutoTableRuleSegment(tableName, dataSources);
         Optional.ofNullable(ctx.keyGenerateDeclaration()).ifPresent(optional -> result.setKeyGenerateStrategySegment((KeyGenerateStrategySegment) visit(ctx.keyGenerateDeclaration())));
-        Optional.ofNullable(ctx.shardingColumnDefinition()).ifPresent(optional -> result.setShardingColumn(buildShardingColumn(ctx.shardingColumnDefinition())));
+        Optional.ofNullable(ctx.autoShardingColumnDefinition()).ifPresent(optional -> result.setShardingColumn(buildShardingColumn(ctx.autoShardingColumnDefinition())));
         Optional.ofNullable(ctx.algorithmDefinition()).ifPresent(optional -> result.setShardingAlgorithmSegment((AlgorithmSegment) visit(ctx.algorithmDefinition())));
         return result;
     }
@@ -458,6 +459,11 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
     @Override
     public ASTNode visitShowUnusedShardingAlgorithms(final ShowUnusedShardingAlgorithmsContext ctx) {
         return new ShowUnusedShardingAlgorithmsStatement(Objects.nonNull(ctx.databaseName()) ? (DatabaseSegment) visit(ctx.databaseName()) : null);
+    }
+    
+    private String buildShardingColumn(final AutoShardingColumnDefinitionContext ctx) {
+        String result = null != ctx.shardingColumn() ? getIdentifierValue(ctx.shardingColumn().columnName()) : "";
+        return result.isEmpty() ? null : result;
     }
     
     private String buildShardingColumn(final ShardingColumnDefinitionContext ctx) {

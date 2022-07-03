@@ -32,7 +32,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminUpdateBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.data.impl.BroadcastDatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.SchemaAssignedDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.UnicastDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
@@ -191,7 +191,7 @@ public final class TextProtocolBackendHandlerFactoryTest extends ProxyContextRes
         when(proxyContext.getContextManager().getMetaDataContexts().getMetaData().getDatabases().containsKey("schema")).thenReturn(true);
         when(proxyContext.getDatabase("schema").hasDataSource()).thenReturn(true);
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
-        assertThat(actual, instanceOf(BroadcastDatabaseBackendHandler.class));
+        assertThat(actual, instanceOf(DatabaseBackendHandler.class));
     }
     
     @Test
