@@ -4627,18 +4627,6 @@
     <sql-case id="insert_by_postgresql_source_test_case395" value="INSERT INTO truncate_b DEFAULT VALUES;" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case396" value="INSERT INTO truncate_b DEFAULT VALUES;" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case428" value="INSERT INTO y2 (SELECT x, md5(x::text) FROM generate_series(0,20) x);" db-types="PostgreSQL" />
-    <sql-case id="prepare_by_postgresql_source_test_case1" value="PREPARE TRANSACTION &apos;foo1&apos;;" db-types="PostgreSQL" />
-    <sql-case id="prepare_by_postgresql_source_test_case2" value="PREPARE TRANSACTION &apos;foo2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="prepare_by_postgresql_source_test_case3" value="PREPARE TRANSACTION &apos;foo3&apos;;" db-types="PostgreSQL" />
-    <sql-case id="prepare_by_postgresql_source_test_case4" value="PREPARE TRANSACTION &apos;foo3&apos;;" db-types="PostgreSQL" />
-    <sql-case id="prepare_by_postgresql_source_test_case5" value="PREPARE TRANSACTION &apos;foo4&apos;;" db-types="PostgreSQL" />
-    <sql-case id="prepare_by_postgresql_source_test_case6" value="PREPARE TRANSACTION &apos;foo5&apos;;" db-types="PostgreSQL" />
-    <sql-case id="prepare_by_postgresql_source_test_case7" value="PREPARE TRANSACTION &apos;foo6&apos;;" db-types="PostgreSQL" />
-    <sql-case id="prepare_by_postgresql_source_test_case8" value="PREPARE TRANSACTION &apos;foobar&apos;;" db-types="PostgreSQL" />
-    <sql-case id="prepare_by_postgresql_source_test_case9" value="PREPARE TRANSACTION &apos;foobar&apos;;" db-types="PostgreSQL" />
-    <sql-case id="prepare_by_postgresql_source_test_case10" value="PREPARE TRANSACTION &apos;regress-one&apos;;" db-types="PostgreSQL" />
-    <sql-case id="prepare_by_postgresql_source_test_case11" value="PREPARE TRANSACTION &apos;regress-two&apos;;" db-types="PostgreSQL" />
-    <sql-case id="prepare_by_postgresql_source_test_case12" value="PREPARE TRANSACTION &apos;twophase_search&apos;;" db-types="PostgreSQL" />
     <sql-case id="reassign_by_postgresql_source_test_case1" value="REASSIGN OWNED BY regress_dep_user0 TO regress_dep_user1;" db-types="PostgreSQL" />
     <sql-case id="reassign_by_postgresql_source_test_case2" value="REASSIGN OWNED BY regress_dep_user1 TO regress_dep_user0;" db-types="PostgreSQL" />
     <sql-case id="reassign_by_postgresql_source_test_case3" value="REASSIGN OWNED BY regress_dep_user1 TO regress_dep_user2;" db-types="PostgreSQL" />
@@ -6872,16 +6860,6 @@
     <sql-case id="low_prepare_by_postgresql_source_test_case3" value="prepare q as   select &apos;some\more_text&apos; as &quot;a$title&quot;, E&apos;  #&lt;foo&gt;%&amp;^~|\n{bar}&apos; as &quot;junk&quot;,          &apos;   &apos; as &quot;empty&quot;, n as int   from generate_series(1,2) as n;" db-types="PostgreSQL" />
     <sql-case id="low_prepare_by_postgresql_source_test_case4" value="prepare q as   select &apos;some\text&apos; as &quot;a\title&quot;, E&apos;  &lt;foo&gt;\n&lt;bar&gt;&apos; as &quot;junk&quot;,          &apos;   &apos; as &quot;empty&quot;, n as int   from generate_series(1,2) as n;" db-types="PostgreSQL" />
     <sql-case id="low_prepare_by_postgresql_source_test_case5" value="prepare q as   select &apos;some|text&apos; as &quot;a|title&quot;, &apos;        &apos; as &quot;empty &quot;, n as int   from generate_series(1,2) as n;" db-types="PostgreSQL" />
-    <sql-case id="low_prepare_by_postgresql_source_test_case6" value="prepare transaction &apos;twophase_func&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_prepare_by_postgresql_source_test_case7" value="prepare transaction &apos;twophase_func&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_prepare_by_postgresql_source_test_case8" value="prepare transaction &apos;twophase_operator&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_prepare_by_postgresql_source_test_case9" value="prepare transaction &apos;twophase_sequence&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_prepare_by_postgresql_source_test_case10" value="prepare transaction &apos;twophase_tab&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_prepare_by_postgresql_source_test_case11" value="prepare transaction &apos;twophase_tab&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_prepare_by_postgresql_source_test_case12" value="prepare transaction &apos;twophase_tab&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_prepare_by_postgresql_source_test_case13" value="prepare transaction &apos;twophase_tab&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_prepare_by_postgresql_source_test_case14" value="prepare transaction &apos;twophase_type&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_prepare_by_postgresql_source_test_case15" value="prepare transaction &apos;twophase_view&apos;;" db-types="PostgreSQL" />
     <sql-case id="low_refresh_by_postgresql_source_test_case1" value="refresh materialized view concurrently parallel_mat_view;" db-types="PostgreSQL" />
     <sql-case id="low_refresh_by_postgresql_source_test_case2" value="refresh materialized view mvtest_error;" db-types="PostgreSQL" />
     <sql-case id="low_refresh_by_postgresql_source_test_case3" value="refresh materialized view parallel_mat_view;" db-types="PostgreSQL" />
