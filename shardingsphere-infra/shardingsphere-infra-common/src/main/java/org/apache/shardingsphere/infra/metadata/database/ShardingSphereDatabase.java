@@ -113,11 +113,11 @@ public final class ShardingSphereDatabase {
     }
     
     /**
-     * Determine whether there is a data source.
+     * Judge whether contains data source.
      *
-     * @return has datasource or not
+     * @return contains data source or not
      */
-    public boolean hasDataSource() {
+    public boolean containsDataSource() {
         return !resource.getDataSources().isEmpty();
     }
     

@@ -174,7 +174,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
     }
     
     private boolean hasResources() {
-        return ProxyContext.getInstance().getAllDatabaseNames().stream().anyMatch(each -> ProxyContext.getInstance().getDatabase(each).hasDataSource());
+        return ProxyContext.getInstance().getAllDatabaseNames().stream().anyMatch(each -> ProxyContext.getInstance().getDatabase(each).containsDataSource());
     }
     
     private boolean isSetClientEncoding(final SetStatement setStatement) {

@@ -152,7 +152,7 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
      * @return has datasource or not
      */
     protected static Boolean hasDatasource(final String databaseName) {
-        return ProxyContext.getInstance().getDatabase(databaseName).hasDataSource();
+        return ProxyContext.getInstance().getDatabase(databaseName).containsDataSource();
     }
     
     /**

@@ -189,7 +189,7 @@ public final class TextProtocolBackendHandlerFactoryTest extends ProxyContextRes
         ProxyContext proxyContext = ProxyContext.getInstance();
         when(proxyContext.getAllDatabaseNames()).thenReturn(new HashSet<>(Collections.singletonList("schema")));
         when(proxyContext.getContextManager().getMetaDataContexts().getMetaData().getDatabases().containsKey("schema")).thenReturn(true);
-        when(proxyContext.getDatabase("schema").hasDataSource()).thenReturn(true);
+        when(proxyContext.getDatabase("schema").containsDataSource()).thenReturn(true);
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
         assertThat(actual, instanceOf(DatabaseBackendHandler.class));
     }
@@ -222,7 +222,7 @@ public final class TextProtocolBackendHandlerFactoryTest extends ProxyContextRes
         String sql = "select * from t_order limit 1";
         ProxyContext proxyContext = ProxyContext.getInstance();
         when(proxyContext.getAllDatabaseNames()).thenReturn(new HashSet<>(Collections.singletonList("db")));
-        when(proxyContext.getDatabase("db").hasDataSource()).thenReturn(true);
+        when(proxyContext.getDatabase("db").containsDataSource()).thenReturn(true);
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
         assertThat(actual, instanceOf(SchemaAssignedDatabaseBackendHandler.class));
         sql = "select * from information_schema.schemata limit 1";
