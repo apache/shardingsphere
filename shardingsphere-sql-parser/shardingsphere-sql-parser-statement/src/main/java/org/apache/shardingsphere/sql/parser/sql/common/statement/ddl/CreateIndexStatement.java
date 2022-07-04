@@ -40,5 +40,5 @@ public abstract class CreateIndexStatement extends AbstractSQLStatement implemen
     
     private SimpleTableSegment table;
     
-    private Collection<ColumnSegment> columns = new LinkedList<>();
+    private final Collection<ColumnSegment> columns = new LinkedList<>();
 }

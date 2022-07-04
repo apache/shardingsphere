@@ -37,7 +37,7 @@ import java.util.LinkedList;
 @Setter
 public final class MySQLCreateUserStatement extends CreateUserStatement implements MySQLStatement {
     
-    private Collection<String> defaultRoles = new LinkedList<>();
+    private final Collection<String> defaultRoles = new LinkedList<>();
     
     private TLSOptionSegment tlsOptionSegment;
     

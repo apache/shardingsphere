@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class LockStatementAssert {
-
+    
     /**
      * Assert lock statement is correct with expected parser result.
      *

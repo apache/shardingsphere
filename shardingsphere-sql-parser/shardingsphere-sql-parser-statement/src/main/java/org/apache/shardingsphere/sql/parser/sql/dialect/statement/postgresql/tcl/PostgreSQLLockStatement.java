@@ -35,5 +35,5 @@ import java.util.LinkedList;
 @ToString
 public final class PostgreSQLLockStatement extends LockStatement implements PostgreSQLStatement {
     
-    private Collection<SimpleTableSegment> tables = new LinkedList<>();
+    private final Collection<SimpleTableSegment> tables = new LinkedList<>();
 }
