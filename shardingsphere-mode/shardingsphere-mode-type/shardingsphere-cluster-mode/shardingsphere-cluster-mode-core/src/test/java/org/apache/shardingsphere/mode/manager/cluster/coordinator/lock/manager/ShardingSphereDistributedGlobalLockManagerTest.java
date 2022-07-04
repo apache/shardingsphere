@@ -19,8 +19,9 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager;
 
 import org.apache.shardingsphere.infra.lock.LockLevel;
 import org.apache.shardingsphere.infra.lock.LockMode;
+import org.apache.shardingsphere.infra.lock.LockScope;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.ShardingSphereDistributedDatabaseLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.ShardingSphereDistributedLock;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.ShardingSphereDistributedGlobalLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDefinition;
 import org.junit.Before;
@@ -34,14 +35,14 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShardingSphereDistributedLockManagerTest {
+public final class ShardingSphereDistributedGlobalLockManagerTest {
     
     private final ShardingSphereDistributedLockManager shardingSphereDistributedLockManager = new ShardingSphereDistributedLockManager();
     
     @Before
     public void init() throws ReflectiveOperationException {
-        ShardingSphereDistributedLock distributedLock = mock(ShardingSphereDistributedLock.class);
-        Field distributedLockField = shardingSphereDistributedLockManager.getClass().getDeclaredField("distributedLock");
+        ShardingSphereDistributedGlobalLock distributedLock = mock(ShardingSphereDistributedGlobalLock.class);
+        Field distributedLockField = shardingSphereDistributedLockManager.getClass().getDeclaredField("globalDistributedLock");
         distributedLockField.setAccessible(true);
         distributedLockField.set(shardingSphereDistributedLockManager, distributedLock);
         ShardingSphereDistributedDatabaseLock databaseLock = mock(ShardingSphereDistributedDatabaseLock.class);
@@ -53,7 +54,7 @@ public final class ShardingSphereDistributedLockManagerTest {
     
     @Test
     public void assertGetDistributedLock() {
-        assertNotNull(shardingSphereDistributedLockManager.getDistributedLock());
+        assertNotNull(shardingSphereDistributedLockManager.getDistributedLock(LockScope.GLOBAL));
     }
     
     @Test

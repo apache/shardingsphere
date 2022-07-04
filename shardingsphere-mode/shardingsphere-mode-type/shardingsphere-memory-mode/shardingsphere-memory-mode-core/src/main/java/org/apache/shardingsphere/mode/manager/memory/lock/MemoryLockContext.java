@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.memory.lock;
 
+import org.apache.shardingsphere.infra.lock.LockScope;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.lock.AbstractLockContext;
 import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDefinition;
@@ -29,7 +30,7 @@ public final class MemoryLockContext extends AbstractLockContext {
     private final ShardingSphereLock memoryLock = new ShardingSphereMemoryLock();
     
     @Override
-    public ShardingSphereLock getLock() {
+    public ShardingSphereLock getLock(final LockScope lockScope) {
         return memoryLock;
     }
     
