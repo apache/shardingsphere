@@ -45,7 +45,8 @@ public final class ResourceSwitchManager {
     }
     
     private Map<String, DataSource> createNewDataSources(final ShardingSphereResource resource, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
-        Map<String, DataSource> result = new LinkedHashMap<>(resource.getDataSources().size(), 1);
+        Map<String, DataSource> result = new LinkedHashMap<>(resource.getDataSources());
+        result.keySet().removeAll(getToBeDeletedDataSources(resource, toBeChangedDataSourceProps).keySet());
         result.putAll(createToBeChangedDataSources(resource, toBeChangedDataSourceProps));
         result.putAll(createToBeAddedDataSources(resource, toBeChangedDataSourceProps));
         return result;
