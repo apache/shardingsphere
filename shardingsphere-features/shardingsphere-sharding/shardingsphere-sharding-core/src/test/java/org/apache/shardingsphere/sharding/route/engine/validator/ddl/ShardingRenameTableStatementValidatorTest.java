@@ -109,7 +109,7 @@ public final class ShardingRenameTableStatementValidatorTest {
         RenameTableDefinitionSegment renameTableDefinitionSegment = new RenameTableDefinitionSegment(0, 0);
         renameTableDefinitionSegment.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(originTableName))));
         renameTableDefinitionSegment.setRenameTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(newTableName))));
-        sqlStatement.setRenameTables(Collections.singletonList(renameTableDefinitionSegment));
+        sqlStatement.getRenameTables().add(renameTableDefinitionSegment);
         return new RenameTableStatementContext(sqlStatement);
     }
 }
