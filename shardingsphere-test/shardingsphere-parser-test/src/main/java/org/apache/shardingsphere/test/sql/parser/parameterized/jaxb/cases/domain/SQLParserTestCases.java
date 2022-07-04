@@ -376,6 +376,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.BeginTransactionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.CommitStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.LockStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.PrepareTransactionTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.RollbackStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SavepointStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SetAutoCommitStatementTestCase;
@@ -1496,6 +1497,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "create-access-method")
     private final List<CreateAccessMethodStatementTestCase> createAccessMethodTestCases = new LinkedList<>();
     
+    @XmlElement(name = "prepare-transaction")
+    private final List<PrepareTransactionTestCase> prepareTransactionTestCases = new LinkedList<>();
+    
     /**
      * Get all SQL parser test cases.
      *
@@ -1869,6 +1873,7 @@ public final class SQLParserTestCases {
         putAll(checkpointTestCases, result);
         putAll(clusterStatementTestCases, result);
         putAll(createAccessMethodTestCases, result);
+        putAll(prepareTransactionTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON

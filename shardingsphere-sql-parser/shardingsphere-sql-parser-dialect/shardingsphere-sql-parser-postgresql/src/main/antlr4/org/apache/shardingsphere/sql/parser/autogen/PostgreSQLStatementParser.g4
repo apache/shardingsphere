@@ -160,5 +160,6 @@ execute
     | createCast
     | alterRoutine
     | alterRule
+    | prepareTransaction
     ) SEMI_? EOF
     ;

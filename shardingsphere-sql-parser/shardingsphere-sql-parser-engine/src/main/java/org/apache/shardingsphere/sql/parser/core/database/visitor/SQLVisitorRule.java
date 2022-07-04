@@ -588,7 +588,9 @@ public enum SQLVisitorRule {
     
     CREATE_ACCESS_METHOD("CreateAccessMethod", SQLStatementType.DDL),
     
-    DO("DoStatement", SQLStatementType.DML);
+    DO("DoStatement", SQLStatementType.DML),
+    
+    PREPARE_TRANSACTION("PrepareTransaction", SQLStatementType.TCL);
     
     private final String name;
     

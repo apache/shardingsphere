@@ -64,10 +64,6 @@ rollbackToSavepoint
     : ROLLBACK (WORK | TRANSACTION)? TO SAVEPOINT? colId
     ;
 
-prepareTransaction
-    : PREPARE TRANSACTION STRING_
-    ;
-
 commitPrepared
     : COMMIT PREPARED STRING_
     ;
@@ -86,4 +82,8 @@ constraintsSetMode
 
 constraintsSetList
     : ALL | qualifiedNameList
+    ;
+
+prepareTransaction
+    : PREPARE TRANSACTION STRING_
     ;
