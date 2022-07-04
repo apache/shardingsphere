@@ -141,7 +141,7 @@ public final class PostgreSQLTCLStatementSQLVisitor extends PostgreSQLStatementS
     public ASTNode visitLock(final LockContext ctx) {
         PostgreSQLLockStatement result = new PostgreSQLLockStatement();
         if (null != ctx.relationExprList()) {
-            result.setTables(getLockTables(ctx.relationExprList().relationExpr()));
+            result.getTables().addAll(getLockTables(ctx.relationExprList().relationExpr()));
         }
         return result;
     }

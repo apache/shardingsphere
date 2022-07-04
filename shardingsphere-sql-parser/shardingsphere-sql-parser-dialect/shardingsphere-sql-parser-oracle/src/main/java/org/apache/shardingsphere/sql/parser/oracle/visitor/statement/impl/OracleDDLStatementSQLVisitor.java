@@ -31,9 +31,10 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterD
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterDimensionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterFlashbackArchiveContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterInmemoryJoinGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterLibraryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterMaterializedZonemapContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterOutlineContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterPackageContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterSequenceContext;
@@ -43,7 +44,6 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterS
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterTriggerContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterViewContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterInmemoryJoinGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AnalyzeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AssociateStatisticsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AuditContext;
@@ -144,6 +144,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterDimensionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterFlashbackArchiveStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterInmemoryJoinGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterLibraryStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterMaterializedZonemapStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterOutlineStatement;
@@ -155,7 +156,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterTriggerStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterViewStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterInmemoryJoinGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAnalyzeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAssociateStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAuditStatement;
@@ -521,7 +521,7 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
         OracleCreateIndexStatement result = new OracleCreateIndexStatement();
         if (null != ctx.createIndexDefinitionClause().tableIndexClause()) {
             result.setTable((SimpleTableSegment) visit(ctx.createIndexDefinitionClause().tableIndexClause().tableName()));
-            result.setColumns(((CollectionValue) visit(ctx.createIndexDefinitionClause().tableIndexClause().indexExpressions())).getValue());
+            result.getColumns().addAll(((CollectionValue) visit(ctx.createIndexDefinitionClause().tableIndexClause().indexExpressions())).getValue());
         }
         result.setIndex((IndexSegment) visit(ctx.indexName()));
         return result;
