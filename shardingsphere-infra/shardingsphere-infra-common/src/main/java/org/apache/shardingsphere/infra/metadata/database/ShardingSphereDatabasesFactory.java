@@ -35,6 +35,23 @@ public final class ShardingSphereDatabasesFactory {
     
     /**
      * Create databases.
+     *
+     * @param databaseName database name
+     * @param databaseConfig database configuration
+     * @param props properties
+     * @param instanceContext instance context
+     * @return created database
+     * @throws SQLException SQL exception
+     */
+    public static ShardingSphereDatabase create(final String databaseName, final DatabaseConfiguration databaseConfig,
+                                                final ConfigurationProperties props, final InstanceContext instanceContext) throws SQLException {
+        DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfig, props);
+        DatabaseType storageType = DatabaseTypeEngine.getDatabaseType(databaseConfig.getDataSources().values());
+        return ShardingSphereDatabase.create(databaseName, protocolType, storageType, databaseConfig, props, instanceContext);
+    }
+    
+    /**
+     * Create databases.
      * 
      * @param databaseConfigMap database configuration map
      * @param props properties
