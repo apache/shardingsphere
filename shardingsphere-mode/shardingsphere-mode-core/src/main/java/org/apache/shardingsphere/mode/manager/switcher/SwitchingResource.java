@@ -15,26 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.adapter;
+package org.apache.shardingsphere.mode.manager.switcher;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 
 import javax.sql.DataSource;
-import java.io.PrintWriter;
-import java.util.logging.Logger;
+import java.util.Map;
 
 /**
- * Adapter for {@code DataSource}.
+ * Switching resource.
  */
-@Getter
-@Setter
-public abstract class AbstractDataSourceAdapter extends WrapperAdapter implements DataSource {
+@RequiredArgsConstructor
+public final class SwitchingResource {
     
-    private PrintWriter logWriter = new PrintWriter(System.out);
+    private final ShardingSphereResource resource;
     
-    @Override
-    public final Logger getParentLogger() {
-        return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+    @Getter
+    private final Map<String, DataSource> newDataSources;
+    
+    private final Map<String, DataSource> staleDataSources;
+    
+    /**
+     * Close stale data sources.
+     */
+    public void closeStaleDataSources() {
+        staleDataSources.values().forEach(resource::close);
     }
 }

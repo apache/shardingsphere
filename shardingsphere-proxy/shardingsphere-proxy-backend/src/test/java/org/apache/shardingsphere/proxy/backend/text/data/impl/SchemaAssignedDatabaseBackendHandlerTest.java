@@ -99,7 +99,7 @@ public final class SchemaAssignedDatabaseBackendHandlerTest extends ProxyContext
         for (int i = 0; i < 10; i++) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
             when(database.isComplete()).thenReturn(true);
-            when(database.hasDataSource()).thenReturn(true);
+            when(database.containsDataSource()).thenReturn(true);
             when(database.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
             result.put(String.format(DATABASE_PATTERN, i), database);
         }
