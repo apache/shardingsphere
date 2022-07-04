@@ -19,5 +19,8 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
+/**
+ * Prepare transaction statement test case.
+ */
 public final class PrepareTransactionTestCase extends SQLParserTestCase {
 }
