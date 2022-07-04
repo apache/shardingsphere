@@ -46,9 +46,9 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLInventoryDumperTest {
-
+    
     private MySQLInventoryDumper mysqlJdbcDumper;
-
+    
     @Before
     public void setUp() {
         PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
@@ -57,7 +57,7 @@ public final class MySQLInventoryDumperTest {
         mysqlJdbcDumper = new MySQLInventoryDumper(mockInventoryDumperConfiguration(), new SimpleMemoryPipelineChannel(100), dataSource, new PipelineTableMetaDataLoader(dataSource));
         initTableData(dataSource);
     }
-
+    
     private InventoryDumperConfiguration mockInventoryDumperConfiguration() {
         DumperConfiguration dumperConfig = mockDumperConfiguration();
         InventoryDumperConfiguration result = new InventoryDumperConfiguration(dumperConfig);
@@ -65,13 +65,13 @@ public final class MySQLInventoryDumperTest {
         result.setLogicTableName("t_order");
         return result;
     }
-
+    
     private DumperConfiguration mockDumperConfiguration() {
         DumperConfiguration result = new DumperConfiguration();
         result.setDataSourceConfig(new StandardPipelineDataSourceConfiguration("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL", "root", "root"));
         return result;
     }
-
+    
     @SneakyThrows(SQLException.class)
     private void initTableData(final DataSource dataSource) {
         try (Connection connection = dataSource.getConnection(); Statement statement = connection.createStatement()) {
@@ -80,7 +80,7 @@ public final class MySQLInventoryDumperTest {
             statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
         }
     }
-
+    
     @Test
     public void assertReadValue() throws SQLException {
         String mockDateString = "2022-6-30";
@@ -107,7 +107,7 @@ public final class MySQLInventoryDumperTest {
         verify(resultSet).getObject(2);
         verify(resultSet).getObject(3);
     }
-
+    
     @Test
     public void assertCreatePreparedStatement() throws SQLException {
         Connection connection = mock(Connection.class);
