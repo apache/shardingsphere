@@ -38,11 +38,9 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -81,7 +79,12 @@ public final class ShowDatabasesExecutorTest extends ProxyContextRestorer {
     public void assertExecute() throws SQLException {
         showDatabasesExecutor.execute(mockConnectionSession());
         assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
-        assertThat(getActual(), is(getExpected()));
+        int count = 0;
+        while (showDatabasesExecutor.getMergedResult().next()) {
+            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is(String.format(DATABASE_PATTERN, count)));
+            count++;
+        }
+        assertThat(count, is(10));
     }
     
     @Test
@@ -93,7 +96,12 @@ public final class ShowDatabasesExecutorTest extends ProxyContextRestorer {
         showDatabasesStatement.setFilter(showFilterSegment);
         showDatabasesExecutor = new ShowDatabasesExecutor(showDatabasesStatement);
         showDatabasesExecutor.execute(mockConnectionSession());
-        assertThat(getActual(), is(getExpected()));
+        int count = 0;
+        while (showDatabasesExecutor.getMergedResult().next()) {
+            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is(String.format(DATABASE_PATTERN, count)));
+            count++;
+        }
+        assertThat(count, is(10));
     }
     
     @Test
@@ -106,24 +114,12 @@ public final class ShowDatabasesExecutorTest extends ProxyContextRestorer {
         showDatabasesExecutor = new ShowDatabasesExecutor(showDatabasesStatement);
         showDatabasesExecutor.execute(mockConnectionSession());
         assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
-    }
-    
-    private Collection<String> getActual() throws SQLException {
-        Map<String, String> result = new ConcurrentHashMap<>(10, 1);
+        int count = 0;
         while (showDatabasesExecutor.getMergedResult().next()) {
-            String value = showDatabasesExecutor.getMergedResult().getValue(1, Object.class).toString();
-            result.put(value, value);
+            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is("database_1"));
+            count++;
         }
-        return result.keySet();
-    }
-    
-    private Collection<String> getExpected() {
-        Map<String, String> result = new ConcurrentHashMap<>(10, 1);
-        for (int i = 0; i < 10; i++) {
-            String value = String.format(DATABASE_PATTERN, i);
-            result.put(value, value);
-        }
-        return result.keySet();
+        assertThat(count, is(1));
     }
     
     @Test
