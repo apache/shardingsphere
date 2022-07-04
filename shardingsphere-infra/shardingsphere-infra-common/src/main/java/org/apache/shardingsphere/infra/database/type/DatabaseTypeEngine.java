@@ -69,7 +69,7 @@ public final class DatabaseTypeEngine {
             return configuredDatabaseType.get();
         }
         Collection<DataSource> dataSources = databaseConfigs.values().stream()
-                .filter(each -> each.getDataSources().isEmpty()).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList);
+                .filter(each -> !each.getDataSources().isEmpty()).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList);
         return getDatabaseType(dataSources);
     }
     
@@ -81,7 +81,7 @@ public final class DatabaseTypeEngine {
      */
     public static DatabaseType getStorageType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
         return getDatabaseType(
-                databaseConfigs.values().stream().filter(each -> each.getDataSources().isEmpty()).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList));
+                databaseConfigs.values().stream().filter(each -> !each.getDataSources().isEmpty()).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList));
     }
     
     /**
