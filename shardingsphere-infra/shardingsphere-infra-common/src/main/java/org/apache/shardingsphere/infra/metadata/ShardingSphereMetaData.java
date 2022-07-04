@@ -30,15 +30,14 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Meta data contexts.
  */
-@RequiredArgsConstructor
 @Getter
 public final class ShardingSphereMetaData {
     
-    // TODO should be concurrentHashMap, but some times throw NPE, need to investigate
     private final Map<String, ShardingSphereDatabase> databases;
     
     private final ShardingSphereRuleMetaData globalRuleMetaData;
@@ -47,6 +46,12 @@ public final class ShardingSphereMetaData {
     
     public ShardingSphereMetaData() {
         this(new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
+    }
+    
+    public ShardingSphereMetaData(final Map<String, ShardingSphereDatabase> databases, final ShardingSphereRuleMetaData globalRuleMetaData, final ConfigurationProperties props) {
+        this.databases = new ConcurrentHashMap<>(databases);
+        this.globalRuleMetaData = globalRuleMetaData;
+        this.props = props;
     }
     
     /**
