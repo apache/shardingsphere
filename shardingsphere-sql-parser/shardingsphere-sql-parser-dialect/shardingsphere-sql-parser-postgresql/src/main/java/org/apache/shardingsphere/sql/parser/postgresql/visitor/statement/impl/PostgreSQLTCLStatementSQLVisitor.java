@@ -26,6 +26,8 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Be
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CommitContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.CommitPreparedContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.EndContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.LockContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RelationExprContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ReleaseSavepointContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RollbackContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RollbackPreparedContext;
@@ -34,9 +36,11 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Sa
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetConstraintsContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SetTransactionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.StartTransactionContext;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLBeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLCommitPreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLCommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLLockStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLReleaseSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLRollbackPreparedStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLRollbackStatement;
@@ -45,6 +49,9 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLSetTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLStartTransactionStatement;
 
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 
 /**
@@ -128,5 +135,23 @@ public final class PostgreSQLTCLStatementSQLVisitor extends PostgreSQLStatementS
     @Override
     public ASTNode visitRollbackPrepared(final RollbackPreparedContext ctx) {
         return new PostgreSQLRollbackPreparedStatement();
+    }
+    
+    @Override
+    public ASTNode visitLock(final LockContext ctx) {
+        PostgreSQLLockStatement result = new PostgreSQLLockStatement();
+        if (null != ctx.relationExprList()) {
+            result.setTables(getLockTables(ctx.relationExprList().relationExpr()));
+        }
+        return result;
+    }
+    
+    private Collection<SimpleTableSegment> getLockTables(final List<RelationExprContext> relationExprContexts) {
+        Collection<SimpleTableSegment> result = new LinkedList<>();
+        for (RelationExprContext each : relationExprContexts) {
+            SimpleTableSegment tableSegment = (SimpleTableSegment) visit(each.qualifiedName());
+            result.add(tableSegment);
+        }
+        return result;
     }
 }

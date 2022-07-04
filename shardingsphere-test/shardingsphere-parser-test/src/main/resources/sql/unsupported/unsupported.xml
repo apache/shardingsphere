@@ -4627,47 +4627,6 @@
     <sql-case id="insert_by_postgresql_source_test_case395" value="INSERT INTO truncate_b DEFAULT VALUES;" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case396" value="INSERT INTO truncate_b DEFAULT VALUES;" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case428" value="INSERT INTO y2 (SELECT x, md5(x::text) FROM generate_series(0,20) x);" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case1" value="LOCK TABLE ONLY lock_tbl1;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case2" value="LOCK TABLE fast_emp4000;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case3" value="LOCK TABLE lock_tbl1 * IN ACCESS EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case4" value="LOCK TABLE lock_tbl1 * IN ACCESS EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case5" value="LOCK TABLE lock_tbl1 IN ACCESS EXCLUSIVE MODE NOWAIT;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case6" value="LOCK TABLE lock_tbl1 IN ACCESS EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case7" value="LOCK TABLE lock_tbl1 IN ACCESS SHARE MODE NOWAIT;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case8" value="LOCK TABLE lock_tbl1 IN ACCESS SHARE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case9" value="LOCK TABLE lock_tbl1 IN EXCLUSIVE MODE NOWAIT;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case10" value="LOCK TABLE lock_tbl1 IN EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case11" value="LOCK TABLE lock_tbl1 IN ROW EXCLUSIVE MODE NOWAIT;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case12" value="LOCK TABLE lock_tbl1 IN ROW EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case13" value="LOCK TABLE lock_tbl1 IN ROW SHARE MODE NOWAIT;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case14" value="LOCK TABLE lock_tbl1 IN SHARE MODE NOWAIT;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case15" value="LOCK TABLE lock_tbl1 IN SHARE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case16" value="LOCK TABLE lock_tbl1 IN SHARE ROW EXCLUSIVE MODE NOWAIT;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case17" value="LOCK TABLE lock_tbl1 IN SHARE UPDATE EXCLUSIVE MODE NOWAIT;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case18" value="LOCK TABLE lock_tbl1 IN SHARE UPDATE EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case19" value="LOCK TABLE lock_tbl2;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case20" value="LOCK TABLE lock_view1 IN EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case21" value="LOCK TABLE lock_view2 IN EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case22" value="LOCK TABLE lock_view2 IN EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case23" value="LOCK TABLE lock_view3 IN EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case24" value="LOCK TABLE lock_view4 IN EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case25" value="LOCK TABLE lock_view5 IN EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case26" value="LOCK TABLE lock_view6 IN EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case27" value="LOCK TABLE lock_view7 IN EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case28" value="LOCK atest1 IN ACCESS EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case29" value="LOCK atest2 IN ACCESS EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case30" value="LOCK atest2 IN ACCESS EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case31" value="LOCK hs1 IN ACCESS EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case32" value="LOCK hs1 IN ACCESS SHARE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case33" value="LOCK hs1 IN EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case34" value="LOCK hs1 IN ROW EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case35" value="LOCK hs1 IN ROW SHARE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case36" value="LOCK hs1 IN SHARE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case37" value="LOCK hs1 IN SHARE ROW EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case38" value="LOCK hs1 IN SHARE UPDATE EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case39" value="LOCK hs1;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case40" value="LOCK lock_tbl1 IN ROW SHARE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case41" value="LOCK lock_tbl1 IN SHARE ROW EXCLUSIVE MODE;" db-types="PostgreSQL" />
     <sql-case id="prepare_by_postgresql_source_test_case1" value="PREPARE TRANSACTION &apos;foo1&apos;;" db-types="PostgreSQL" />
     <sql-case id="prepare_by_postgresql_source_test_case2" value="PREPARE TRANSACTION &apos;foo2&apos;;" db-types="PostgreSQL" />
     <sql-case id="prepare_by_postgresql_source_test_case3" value="PREPARE TRANSACTION &apos;foo3&apos;;" db-types="PostgreSQL" />
@@ -6908,9 +6867,6 @@
     <sql-case id="low_insert_by_postgresql_source_test_case136" value="insert into trigtest default values;" db-types="PostgreSQL" />
     <sql-case id="low_insert_by_postgresql_source_test_case137" value="insert into trigtest default values;" db-types="PostgreSQL" />
     <sql-case id="low_insert_by_postgresql_source_test_case138" value="insert into trigtest default values;" db-types="PostgreSQL" />
-    <sql-case id="low_lock_by_postgresql_source_test_case1" value="lock table pxtest3 in access share mode nowait;" db-types="PostgreSQL" />
-    <sql-case id="low_lock_by_postgresql_source_test_case2" value="lock table pxtest3 in access share mode nowait;" db-types="PostgreSQL" />
-    <sql-case id="low_lock_by_postgresql_source_test_case3" value="lock twophase_tab in access exclusive mode;" db-types="PostgreSQL" />
     <sql-case id="low_prepare_by_postgresql_source_test_case1" value="prepare q as   select &apos;some&quot;text&apos; as &quot;a&amp;title&quot;, E&apos;  &lt;foo&gt;\n&lt;bar&gt;&apos; as &quot;junk&quot;,          &apos;   &apos; as &quot;empty&quot;, n as int   from generate_series(1,2) as n;" db-types="PostgreSQL" />
     <sql-case id="low_prepare_by_postgresql_source_test_case2" value="prepare q as   select &apos;some\more_text&apos; as &quot;a$title&quot;, E&apos;  #&lt;foo&gt;%&amp;^~|\n{bar}&apos; as &quot;junk&quot;,          &apos;   &apos; as &quot;empty&quot;, n as int   from generate_series(1,2) as n;" db-types="PostgreSQL" />
     <sql-case id="low_prepare_by_postgresql_source_test_case3" value="prepare q as   select &apos;some\more_text&apos; as &quot;a$title&quot;, E&apos;  #&lt;foo&gt;%&amp;^~|\n{bar}&apos; as &quot;junk&quot;,          &apos;   &apos; as &quot;empty&quot;, n as int   from generate_series(1,2) as n;" db-types="PostgreSQL" />

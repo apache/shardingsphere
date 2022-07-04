@@ -108,6 +108,7 @@ execute
     | notifyStmt
     | unlisten
     | load
+    | lock
     | createTablespace
     | alterTablespace
     | dropTablespace
