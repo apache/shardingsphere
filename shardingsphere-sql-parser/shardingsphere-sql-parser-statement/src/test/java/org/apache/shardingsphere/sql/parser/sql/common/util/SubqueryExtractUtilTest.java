@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.sql.parser.sql.common.util;
 
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.constant.CombineType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
@@ -163,5 +165,21 @@ public final class SubqueryExtractUtilTest {
         selectStatement.setWhere(new WhereSegment(0, 0, new InExpression(0, 0,
                 left, new SubqueryExpressionSegment(new SubquerySegment(0, 0, new MySQLSelectStatement())), false)));
         return new SubquerySegment(0, 0, selectStatement);
+    }
+    
+    @Test
+    public void assertGetSubquerySegmentsWithCombineSegment() {
+        SelectStatement selectStatement = new MySQLSelectStatement();
+        selectStatement.getCombines().add(new CombineSegment(0, 0, CombineType.UNION, createSelectStatementForCombineSegment()));
+        Collection<SubquerySegment> actual = SubqueryExtractUtil.getSubquerySegments(selectStatement);
+        assertThat(actual.size(), is(1));
+    }
+    
+    private SelectStatement createSelectStatementForCombineSegment() {
+        SelectStatement result = new MySQLSelectStatement();
+        ExpressionSegment left = new ColumnSegment(0, 0, new IdentifierValue("order_id"));
+        result.setWhere(new WhereSegment(0, 0, new InExpression(0, 0,
+                left, new SubqueryExpressionSegment(new SubquerySegment(0, 0, new MySQLSelectStatement())), false)));
+        return result;
     }
 }
