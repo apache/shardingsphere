@@ -250,6 +250,8 @@ public enum SQLVisitorRule {
     
     REFRESH_MATERIALIZED_VIEW("RefreshMatViewStmt", SQLStatementType.DDL),
     
+    REINDEX("Reindex", SQLStatementType.DDL),
+    
     UNLISTEN("Unlisten", SQLStatementType.DDL),
     
     SET_CONSTRAINTS("SetConstraints", SQLStatementType.TCL),
