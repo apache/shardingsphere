@@ -60,7 +60,7 @@ public final class ITContainers implements Startable {
             dockerContainer.setNetwork(network);
             dockerContainer.setNetworkAliases(Collections.singletonList(networkAlias));
             String loggerName = String.join(":", scenario, dockerContainer.getName());
-            dockerContainer.withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger(loggerName), true));
+            dockerContainer.withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger(loggerName), false));
             dockerContainers.add(dockerContainer);
         }
         return container;
