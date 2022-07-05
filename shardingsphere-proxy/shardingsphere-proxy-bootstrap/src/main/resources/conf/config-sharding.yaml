@@ -75,7 +75,7 @@
 #    none:
 #  auditStrategy:
 #    auditorNames:
-#      - sharding_key_required_audit_algorithm
+#      - sharding_key_required_auditor
 #    allowHintDisable: true
 #
 #  shardingAlgorithms:
@@ -97,7 +97,7 @@
 #      type: SNOWFLAKE
 #
 #  auditors:
-#    sharding_key_required_audit_algorithm:
+#    sharding_key_required_auditor:
 #      type: DML_SHARDING_CONDITIONS
 #
 #  scalingName: default_scaling
@@ -181,7 +181,7 @@
 #    none:
 #  auditStrategy:
 #    auditorNames:
-#      - sharding_key_required_audit_algorithm
+#      - sharding_key_required_auditor
 #    allowHintDisable: true
 #
 #  shardingAlgorithms:
@@ -203,7 +203,7 @@
 #      type: SNOWFLAKE
 #
 #  auditors:
-#    sharding_key_required_audit_algorithm:
+#    sharding_key_required_auditor:
 #      type: DML_SHARDING_CONDITIONS
 #
 #  scalingName: default_scaling

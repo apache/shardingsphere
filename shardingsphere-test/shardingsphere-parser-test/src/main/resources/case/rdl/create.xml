@@ -439,6 +439,12 @@
         </shardingKeyGenerator>
     </create-sharding-key-generator>
 
+    <create-sharding-auditor sql-case-id="create-sharding-auditor">
+        <shardingAuditor auditor-name="sharding_key_required_auditor">
+            <algorithm algorithm-name="DML_SHARDING_CONDITIONS" />
+        </shardingAuditor>
+    </create-sharding-auditor>
+
     <create-sharding-scaling-rule sql-case-id="create-sharding-scaling-rule-without-configuration" scaling-name="default_scaling"/>
 
     <create-sharding-scaling-rule sql-case-id="create-sharding-scaling-rule-with-minimal-auto-configuration" scaling-name="default_scaling">
