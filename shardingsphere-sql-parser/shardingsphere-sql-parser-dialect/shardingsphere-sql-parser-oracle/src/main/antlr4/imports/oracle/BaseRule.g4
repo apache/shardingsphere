@@ -1313,3 +1313,7 @@ restorePointName
 libraryName
     : identifier
     ;
+
+matchString
+    : STRING_ | ASTERISK_
+    ;

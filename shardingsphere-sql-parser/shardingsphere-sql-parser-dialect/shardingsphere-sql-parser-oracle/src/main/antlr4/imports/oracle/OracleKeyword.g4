@@ -2842,3 +2842,11 @@ PRUNING
 DEMAND
     : D E M A N D
     ;
+
+RESOLVE
+   : R E S O L V E
+   ;
+
+RESOLVER
+   : R E S O L V E R
+   ;
