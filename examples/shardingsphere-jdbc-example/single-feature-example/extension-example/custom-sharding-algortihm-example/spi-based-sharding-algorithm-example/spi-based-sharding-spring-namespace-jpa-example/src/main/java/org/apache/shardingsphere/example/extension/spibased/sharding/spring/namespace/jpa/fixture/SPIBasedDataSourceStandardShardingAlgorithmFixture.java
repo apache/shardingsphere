@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.extension.spibased.sharding.spring.boot.mybatis.fixture;
+package org.apache.shardingsphere.example.extension.spibased.sharding.spring.namespace.jpa.fixture;
 
 import lombok.Getter;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.Properties;
 
 @Getter
-public final class SPIBasedDatasourceStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
+public final class SPIBasedDataSourceStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
     
     private Properties props;
     
@@ -46,7 +46,7 @@ public final class SPIBasedDatasourceStandardShardingAlgorithmFixture implements
     }
     
     private String shardingSuffix(final Integer shardingValue) {
-        return "-" + (shardingValue % 2);
+        return "_" + (shardingValue % 2);
     }
     
     @Override

@@ -293,7 +293,7 @@ public final class ShardingRuleTest {
     }
     
     @Test(expected = IllegalArgumentException.class)
-    public void assertCreateInconsistentActualDatasourceNamesFailure() {
+    public void assertCreateInconsistentActualDataSourceNamesFailure() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..2}.table_${0..2}");
         shardingTableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("id", "uuid"));
