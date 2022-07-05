@@ -23,6 +23,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.RefreshMatV
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.RefreshMatViewStmtStatementTestCase;
 
+/**
+ * Refresh materialized view statement assert.
+ */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RefreshMatViewStmtStatementAssert {
     

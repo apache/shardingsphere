@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Reassign Owned statement test case.
+ * Reassign owned statement test case.
  */
 public final class ReassignOwnedStatementTestCase extends SQLParserTestCase {
 }
