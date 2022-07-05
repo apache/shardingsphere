@@ -81,6 +81,10 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
                 return null;
             case FORMAT_DESCRIPTION_EVENT:
                 new MySQLBinlogFormatDescriptionEventPacket(binlogEventHeader, payload);
+                // MySQL mgr checksum length is 0, but the event ends up with 4 extra bytes, need to skip them.
+                if (binlogEventHeader.getChecksumLength() <= 0 && payload.getByteBuf().readableBytes() > 0) {
+                    payload.getByteBuf().skipBytes(payload.getByteBuf().readableBytes());
+                }
                 return null;
             case TABLE_MAP_EVENT:
                 decodeTableMapEvent(binlogEventHeader, payload);
