@@ -353,6 +353,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShadowRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShadowTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingAlgorithmsStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingAuditAlgorithmsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingBindingTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingBroadcastTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingKeyGeneratorsStatementTestCase;
@@ -933,6 +934,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "show-sharding-algorithms")
     private final List<ShowShardingAlgorithmsStatementTestCase> showShardingAlgorithmsTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-sharding-audit-algorithms")
+    private final List<ShowShardingAuditAlgorithmsStatementTestCase> showShardingAuditAlgorithmsTestCases = new LinkedList<>();
     
     @XmlElement(name = "show-sharding-table-rules")
     private final List<ShowShardingTableRulesStatementTestCase> showShardingTableRulesTestCases = new LinkedList<>();
@@ -1673,6 +1677,7 @@ public final class SQLParserTestCases {
         putAll(showShardingBindingTableRulesTestCases, result);
         putAll(showShardingBroadcastTableRulesTestCases, result);
         putAll(showShardingAlgorithmsTestCases, result);
+        putAll(showShardingAuditAlgorithmsTestCases, result);
         putAll(showShardingTableRulesTestCases, result);
         putAll(showShardingTableRuleTestCases, result);
         putAll(showScalingListTestCases, result);
