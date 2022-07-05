@@ -63,9 +63,9 @@ public final class MySQLSetCharsetExecutor implements DatabaseSetCharsetExecutor
             default:
                 try {
                     return Charset.forName(value);
-                    // CHECKSTYLE:ON
-                } catch (Exception ex) {
                     // CHECKSTYLE:OFF
+                } catch (Exception ex) {
+                    // CHECKSTYLE:ON
                     throw new UnsupportedCharsetException(value.toLowerCase());
                 }
         }
