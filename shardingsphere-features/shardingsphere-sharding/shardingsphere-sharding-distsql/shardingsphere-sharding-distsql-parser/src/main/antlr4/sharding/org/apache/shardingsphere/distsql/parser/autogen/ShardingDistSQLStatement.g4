@@ -50,6 +50,7 @@ execute
     | showShardingKeyGenerators
     | dropShardingKeyGenerator
     | showShardingAuditors
+    | createShardingAuditor
     | showShardingDefaultShardingStrategy
     | alterDefaultShardingStrategy
     | dropDefaultShardingStrategy
