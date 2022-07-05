@@ -17,12 +17,15 @@
 
 package org.apache.shardingsphere.infra.database.type;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.dialect.MariaDBDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.junit.Test;
 
@@ -190,11 +193,15 @@ public final class DatabaseTypeEngineTest {
     }
     
     @Test
-    public void assertGetProtocolType() {
+    public void assertGetProtocolType() throws SQLException {
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "H2");
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration()));
         assertThat(DatabaseTypeEngine.getProtocolType(Collections.singletonMap("logic_db", databaseConfig), new ConfigurationProperties(props)), instanceOf(MySQLDatabaseType.class));
+        DataSource datasource = mockDataSource(DatabaseTypeFactory.getInstance("PostgreSQL"));
+        databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("", datasource), Collections.singleton(new FixtureRuleConfiguration()));
+        props = new Properties();
+        assertThat(DatabaseTypeEngine.getProtocolType(Collections.singletonMap("logic_db", databaseConfig), new ConfigurationProperties(props)), instanceOf(PostgreSQLDatabaseType.class));
     }
     
     @Test
