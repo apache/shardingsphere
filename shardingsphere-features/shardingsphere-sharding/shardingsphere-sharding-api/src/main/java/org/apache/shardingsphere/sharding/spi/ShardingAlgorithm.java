@@ -22,5 +22,13 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 /**
  * Sharding algorithm.
  */
-public interface ShardingAlgorithm extends ShardingSphereAlgorithm {
+public interface ShardingAlgorithm extends ShardingSphereAlgorithm, Comparable {
+    
+    @Override
+    default int compareTo(final Object other) {
+        if (!(other instanceof ShardingAlgorithm)) {
+            return -1;
+        }
+        return 1;
+    }
 }
