@@ -22,8 +22,15 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -38,7 +45,44 @@ public final class AlgorithmProvidedShardingRuleBuilder implements DatabaseRuleB
     public ShardingRule build(final AlgorithmProvidedShardingRuleConfiguration config, final String databaseName,
                               final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
         Preconditions.checkArgument(null != dataSources && !dataSources.isEmpty(), "Data sources cannot be empty.");
+        Preconditions.checkArgument(isValidRuleConfiguration(config), "Invalid sharding configuration in AlgorithmProvidedShardingRuleConfiguration.");
         return new ShardingRule(config, dataSources.keySet(), instanceContext);
+    }
+    
+    private boolean isValidRuleConfiguration(final AlgorithmProvidedShardingRuleConfiguration config) {
+        Map<String, KeyGenerateAlgorithm> keyGenerators = config.getKeyGenerators();
+        Map<String, ShardingAlgorithm> shardingAlgorithms = config.getShardingAlgorithms();
+        if (isInvalidKeyGenerateStrategy(config.getDefaultKeyGenerateStrategy(), keyGenerators)
+                || isInvalidShardingStrategy(config.getDefaultDatabaseShardingStrategy(), shardingAlgorithms)
+                || isInvalidShardingStrategy(config.getDefaultTableShardingStrategy(), shardingAlgorithms)) {
+            return false;
+        }
+        for (ShardingTableRuleConfiguration each : config.getTables()) {
+            if (isInvalidKeyGenerateStrategy(each.getKeyGenerateStrategy(), keyGenerators) || isInvalidShardingStrategy(each.getDatabaseShardingStrategy(), shardingAlgorithms)
+                    || isInvalidShardingStrategy(each.getTableShardingStrategy(), shardingAlgorithms)) {
+                return false;
+            }
+        }
+        for (ShardingAutoTableRuleConfiguration each : config.getAutoTables()) {
+            if (isInvalidKeyGenerateStrategy(each.getKeyGenerateStrategy(), keyGenerators) || isInvalidShardingStrategy(each.getShardingStrategy(), shardingAlgorithms)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    private boolean isInvalidKeyGenerateStrategy(final KeyGenerateStrategyConfiguration keyGenerateStrategy, final Map<String, KeyGenerateAlgorithm> keyGenerators) {
+        if (null == keyGenerateStrategy) {
+            return false;
+        }
+        return !keyGenerators.containsKey(keyGenerateStrategy.getKeyGeneratorName());
+    }
+    
+    private boolean isInvalidShardingStrategy(final ShardingStrategyConfiguration shardingStrategy, final Map<String, ShardingAlgorithm> shardingAlgorithms) {
+        if (null == shardingStrategy || shardingStrategy instanceof NoneShardingStrategyConfiguration) {
+            return false;
+        }
+        return !shardingAlgorithms.containsKey(shardingStrategy.getShardingAlgorithmName());
     }
     
     @Override
