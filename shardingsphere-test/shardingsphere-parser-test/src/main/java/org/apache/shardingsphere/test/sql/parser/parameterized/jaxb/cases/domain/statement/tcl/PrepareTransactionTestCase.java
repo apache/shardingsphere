@@ -15,26 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.adapter;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.sql.DataSource;
-import java.io.PrintWriter;
-import java.util.logging.Logger;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Adapter for {@code DataSource}.
+ * Prepare transaction statement test case.
  */
-@Getter
-@Setter
-public abstract class AbstractDataSourceAdapter extends WrapperAdapter implements DataSource {
-    
-    private PrintWriter logWriter = new PrintWriter(System.out);
-    
-    @Override
-    public final Logger getParentLogger() {
-        return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-    }
+public final class PrepareTransactionTestCase extends SQLParserTestCase {
 }

@@ -52,7 +52,7 @@ public enum MySQLServerErrorCode implements SQLErrorCode {
     
     ER_NOT_SUPPORTED_YET(1235, "42000", "This version of ShardingSphere-Proxy doesn't yet support this SQL. '%s'"),
     
-    ER_SP_DOES_NOT_EXIST(1305, "42000", "Message: Datasource or ShardingSphere rule does not exist"),
+    ER_SP_DOES_NOT_EXIST(1305, "42000", "Message: Data Source or ShardingSphere rule does not exist"),
     
     ER_CON_COUNT_ERROR(1040, "HY000", "Too many connections"),
     

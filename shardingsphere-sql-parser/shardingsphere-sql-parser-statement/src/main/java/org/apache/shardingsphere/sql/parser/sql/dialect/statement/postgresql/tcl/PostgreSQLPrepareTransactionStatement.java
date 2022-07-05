@@ -15,26 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.driver.jdbc.adapter;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.sql.DataSource;
-import java.io.PrintWriter;
-import java.util.logging.Logger;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.PrepareTransactionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Adapter for {@code DataSource}.
+ * PostgreSQL prepare transaction statement.
  */
-@Getter
-@Setter
-public abstract class AbstractDataSourceAdapter extends WrapperAdapter implements DataSource {
-    
-    private PrintWriter logWriter = new PrintWriter(System.out);
-    
-    @Override
-    public final Logger getParentLogger() {
-        return Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
-    }
+@ToString
+public final class PostgreSQLPrepareTransactionStatement extends PrepareTransactionStatement implements PostgreSQLStatement {
 }

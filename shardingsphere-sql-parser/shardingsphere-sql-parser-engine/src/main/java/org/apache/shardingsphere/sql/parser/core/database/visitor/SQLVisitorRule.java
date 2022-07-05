@@ -590,6 +590,8 @@ public enum SQLVisitorRule {
     
     DO("DoStatement", SQLStatementType.DML),
     
+    PREPARE_TRANSACTION("PrepareTransaction", SQLStatementType.TCL),
+    
     CREATE_COLLATION("CreateCollation", SQLStatementType.DDL);
     
     private final String name;
