@@ -715,7 +715,7 @@
         <values>
             <value>
                 <assignment-value>
-                    <common-expression text="null" />
+                    <common-expression text="null" start-index="44" stop-index="47" />
                 </assignment-value>
             </value>
         </values>
@@ -729,8 +729,7 @@
         <values>
             <value>
                 <assignment-value>
-    <!--            TODO StringLiteralValue should consider about _binary/_utf8mb4-->
-                    <literal-expression value="BINARY'This is a binary value." start-index="44" stop-index="75"/>
+                    <common-expression text="_BINARY'This is a binary value.'" start-index="44" stop-index="75"/>
                 </assignment-value>
             </value>
         </values>
