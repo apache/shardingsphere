@@ -211,3 +211,12 @@
 #        type: DATA_MATCH
 #        props:
 #          chunk-size: 1000
+
+#  When shard auditing is required, the following properties can be configured
+#  auditAlgorithms:
+#    audit_algorithm1:
+#      type: DML_SHARDING_CONDITIONS
+#  auditStrategy:
+#    auditAlgorithmNames:
+#      - audit_algorithm1
+#    allowHintDisable: true
