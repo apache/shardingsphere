@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.event.AlterSchem
 import org.apache.shardingsphere.infra.metadata.database.schema.event.DropIndexEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.DropSchemaEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
-import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
@@ -32,10 +32,10 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
  */
 public final class SchemaMetaDataRegistrySubscriber {
     
-    private final SchemaMetaDataPersistService persistService;
+    private final DatabaseMetaDataPersistService persistService;
     
     public SchemaMetaDataRegistrySubscriber(final ClusterPersistRepository repository) {
-        persistService = new SchemaMetaDataPersistService(repository);
+        persistService = new DatabaseMetaDataPersistService(repository);
         ShardingSphereEventBus.getInstance().register(this);
     }
     

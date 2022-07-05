@@ -20,7 +20,7 @@ staticReadwriteSplittingRuleDefinition:
     WRITE_RESOURCE=writeResourceName, READ_RESOURCES(resourceName [, resourceName] ... )
 
 dynamicReadwriteSplittingRuleDefinition:
-    AUTO_AWARE_RESOURCE=resourceName
+    AUTO_AWARE_RESOURCE=resourceName [, WRITE_DATA_SOURCE_QUERY_ENABLED=writeDataSourceQueryEnabled]
 
 loadBanlancerDefinition:
     TYPE(NAME=loadBanlancerType [, PROPERTIES([algorithmProperties] )] )
@@ -29,7 +29,10 @@ algorithmProperties:
     algorithmProperty [, algorithmProperty] ...
 
 algorithmProperty:
-    key=value                          
+    key=value
+
+writeDataSourceQueryEnabled:
+    TRUE | FALSE
 ```
 
 - 支持创建静态读写分离规则和动态读写分离规则；
@@ -50,6 +53,7 @@ TYPE(NAME=random)
 // Dynamic
 CREATE READWRITE_SPLITTING RULE ms_group_1 (
 AUTO_AWARE_RESOURCE=group_0,
+WRITE_DATA_SOURCE_QUERY_ENABLED=false,
 TYPE(NAME=random,PROPERTIES(read_weight='2:1'))
 );
 

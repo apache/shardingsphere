@@ -22,16 +22,16 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.data.impl.BroadcastDatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.data.impl.SchemaAssignedDatabaseBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OperationScope;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.BeginTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetTransactionStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.StartTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ReleaseSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetAutoCommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.SetTransactionStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.StartTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.XAStatement;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
@@ -78,6 +78,6 @@ public final class TransactionBackendHandlerFactory {
         if (tclStatement instanceof XAStatement) {
             return new TransactionXAHandler(sqlStatementContext, sql, connectionSession);
         }
-        return new BroadcastDatabaseBackendHandler(sqlStatementContext, sql, connectionSession);
+        return new SchemaAssignedDatabaseBackendHandler(sqlStatementContext, sql, connectionSession);
     }
 }

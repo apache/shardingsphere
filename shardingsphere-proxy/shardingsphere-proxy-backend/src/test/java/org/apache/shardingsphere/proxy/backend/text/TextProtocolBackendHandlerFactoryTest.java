@@ -32,7 +32,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminUpdateBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.data.impl.BroadcastDatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.SchemaAssignedDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.UnicastDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
@@ -189,9 +189,9 @@ public final class TextProtocolBackendHandlerFactoryTest extends ProxyContextRes
         ProxyContext proxyContext = ProxyContext.getInstance();
         when(proxyContext.getAllDatabaseNames()).thenReturn(new HashSet<>(Collections.singletonList("schema")));
         when(proxyContext.getContextManager().getMetaDataContexts().getMetaData().getDatabases().containsKey("schema")).thenReturn(true);
-        when(proxyContext.getDatabase("schema").hasDataSource()).thenReturn(true);
+        when(proxyContext.getDatabase("schema").containsDataSource()).thenReturn(true);
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
-        assertThat(actual, instanceOf(BroadcastDatabaseBackendHandler.class));
+        assertThat(actual, instanceOf(DatabaseBackendHandler.class));
     }
     
     @Test
@@ -222,7 +222,7 @@ public final class TextProtocolBackendHandlerFactoryTest extends ProxyContextRes
         String sql = "select * from t_order limit 1";
         ProxyContext proxyContext = ProxyContext.getInstance();
         when(proxyContext.getAllDatabaseNames()).thenReturn(new HashSet<>(Collections.singletonList("db")));
-        when(proxyContext.getDatabase("db").hasDataSource()).thenReturn(true);
+        when(proxyContext.getDatabase("db").containsDataSource()).thenReturn(true);
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
         assertThat(actual, instanceOf(SchemaAssignedDatabaseBackendHandler.class));
         sql = "select * from information_schema.schemata limit 1";

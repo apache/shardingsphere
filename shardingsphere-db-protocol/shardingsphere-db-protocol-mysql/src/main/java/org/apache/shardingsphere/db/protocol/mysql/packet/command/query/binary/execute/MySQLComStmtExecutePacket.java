@@ -33,6 +33,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * COM_STMT_EXECUTE command packet for MySQL.
@@ -95,12 +96,17 @@ public final class MySQLComStmtExecutePacket extends MySQLCommandPacket {
      * Read parameter values from packet.
      *
      * @param parameterTypes parameter type of values
+     * @param longDataIndexes indexes of long data
      * @return parameter values
      * @throws SQLException SQL exception
      */
-    public List<Object> readParameters(final List<MySQLPreparedStatementParameterType> parameterTypes) throws SQLException {
+    public List<Object> readParameters(final List<MySQLPreparedStatementParameterType> parameterTypes, final Set<Integer> longDataIndexes) throws SQLException {
         List<Object> result = new ArrayList<>(parameterTypes.size());
         for (int parameterIndex = 0; parameterIndex < parameterTypes.size(); parameterIndex++) {
+            if (longDataIndexes.contains(parameterIndex)) {
+                result.add(null);
+                continue;
+            }
             MySQLBinaryProtocolValue binaryProtocolValue = MySQLBinaryProtocolValueFactory.getBinaryProtocolValue(parameterTypes.get(parameterIndex).getColumnType());
             result.add(nullBitmap.isNullParameter(parameterIndex) ? null : binaryProtocolValue.read(payload));
         }

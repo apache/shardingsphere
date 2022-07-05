@@ -108,6 +108,7 @@ execute
     | notifyStmt
     | unlisten
     | load
+    | lock
     | createTablespace
     | alterTablespace
     | dropTablespace
@@ -159,5 +160,8 @@ execute
     | createAggregate
     | createCast
     | alterRoutine
+    | alterRule
+    | createCollation
+    | prepareTransaction
     ) SEMI_? EOF
     ;

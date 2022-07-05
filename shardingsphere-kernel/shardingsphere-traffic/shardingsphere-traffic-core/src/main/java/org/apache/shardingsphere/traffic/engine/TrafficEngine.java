@@ -20,7 +20,8 @@ package org.apache.shardingsphere.traffic.engine;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.traffic.context.TrafficContext;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.TrafficStrategyRule;
@@ -52,11 +53,11 @@ public final class TrafficEngine {
         if (!strategyRule.isPresent() || isInvalidStrategyRule(strategyRule.get())) {
             return result;
         }
-        List<InstanceDefinition> instances = instanceContext.getComputeNodeInstances("Proxy", strategyRule.get().getLabels());
+        List<InstanceMetaData> instances = instanceContext.getComputeNodeInstances(InstanceType.PROXY, strategyRule.get().getLabels());
         if (!instances.isEmpty()) {
             TrafficLoadBalanceAlgorithm loadBalancer = strategyRule.get().getLoadBalancer();
-            InstanceDefinition instanceDefinition = 1 == instances.size() ? instances.iterator().next() : loadBalancer.getInstanceId(strategyRule.get().getName(), instances);
-            result.setInstanceId(instanceDefinition.getInstanceId());
+            InstanceMetaData instanceMetaData = 1 == instances.size() ? instances.iterator().next() : loadBalancer.getInstanceId(strategyRule.get().getName(), instances);
+            result.setInstanceId(instanceMetaData.getId());
         }
         return result;
     }

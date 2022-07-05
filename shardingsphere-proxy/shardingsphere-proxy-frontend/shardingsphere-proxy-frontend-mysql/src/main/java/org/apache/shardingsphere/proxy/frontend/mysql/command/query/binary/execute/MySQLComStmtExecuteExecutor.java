@@ -90,7 +90,8 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         if (AutoCommitUtils.needOpenTransaction(sqlStatement)) {
             connectionSession.getBackendConnection().handleAutoCommit();
         }
-        List<Object> parameters = packet.readParameters(preparedStatement.getParameterTypes());
+        List<Object> parameters = packet.readParameters(preparedStatement.getParameterTypes(), preparedStatement.getLongData().keySet());
+        preparedStatement.getLongData().forEach(parameters::set);
         SQLStatementContext<?> sqlStatementContext = preparedStatement.getSqlStatementContext();
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).setUpParameters(parameters);

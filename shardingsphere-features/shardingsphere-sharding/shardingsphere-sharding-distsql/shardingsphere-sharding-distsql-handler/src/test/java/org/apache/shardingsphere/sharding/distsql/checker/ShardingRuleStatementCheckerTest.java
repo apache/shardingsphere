@@ -125,10 +125,21 @@ public final class ShardingRuleStatementCheckerTest {
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
-    public void assertCheckAutoTableWithInvalidShardingAlgorithms() throws DistSQLException {
+    public void assertCheckAutoTableWithNotExistShardingAlgorithms() throws DistSQLException {
         AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
         autoTableRuleSegment.setShardingColumn("product_id");
-        autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("invalid", newProperties("", "")));
+        autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("not_exist", newProperties("", "")));
+        List<AbstractTableRuleSegment> rules = Collections.singletonList(autoTableRuleSegment);
+        ShardingTableRuleStatementChecker.checkCreation(database, rules, shardingRuleConfig);
+        autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("complex", newProperties("", "")));
+        ShardingTableRuleStatementChecker.checkCreation(database, rules, shardingRuleConfig);
+    }
+    
+    @Test(expected = InvalidAlgorithmConfigurationException.class)
+    public void assertCheckAutoTableWithComplexShardingAlgorithms() throws DistSQLException {
+        AutoTableRuleSegment autoTableRuleSegment = new AutoTableRuleSegment("t_product", Arrays.asList("ds_0", "ds_1"));
+        autoTableRuleSegment.setShardingColumn("product_id");
+        autoTableRuleSegment.setShardingAlgorithmSegment(new AlgorithmSegment("complex", newProperties("", "")));
         List<AbstractTableRuleSegment> rules = Collections.singletonList(autoTableRuleSegment);
         ShardingTableRuleStatementChecker.checkCreation(database, rules, shardingRuleConfig);
     }

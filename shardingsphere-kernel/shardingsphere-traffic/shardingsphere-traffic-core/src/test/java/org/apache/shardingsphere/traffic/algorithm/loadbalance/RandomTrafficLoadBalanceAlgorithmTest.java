@@ -17,7 +17,8 @@
 
 package org.apache.shardingsphere.traffic.algorithm.loadbalance;
 
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
+import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -29,8 +30,8 @@ public final class RandomTrafficLoadBalanceAlgorithmTest {
     
     @Test
     public void assertGetInstanceId() {
-        List<InstanceDefinition> instances = Arrays.asList(new InstanceDefinition("127.0.0.1@3307", "Proxy", "127.0.0.1@3307"), new InstanceDefinition("127.0.0.1@3308", "Proxy", "127.0.0.1@3308"));
         RandomTrafficLoadBalanceAlgorithm randomAlgorithm = new RandomTrafficLoadBalanceAlgorithm();
+        List<InstanceMetaData> instances = Arrays.asList(new ProxyInstanceMetaData("foo_id", "127.0.0.1@3307"), new ProxyInstanceMetaData("bar_id", "127.0.0.1@3308"));
         assertTrue(instances.contains(randomAlgorithm.getInstanceId("simple_traffic", instances)));
         assertTrue(instances.contains(randomAlgorithm.getInstanceId("simple_traffic", instances)));
         assertTrue(instances.contains(randomAlgorithm.getInstanceId("simple_traffic", instances)));

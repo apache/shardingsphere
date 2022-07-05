@@ -35,5 +35,5 @@ import java.util.LinkedList;
 @ToString
 public final class MySQLLockStatement extends LockStatement implements MySQLStatement {
     
-    private Collection<SimpleTableSegment> tables = new LinkedList<>();
+    private final Collection<SimpleTableSegment> tables = new LinkedList<>();
 }
