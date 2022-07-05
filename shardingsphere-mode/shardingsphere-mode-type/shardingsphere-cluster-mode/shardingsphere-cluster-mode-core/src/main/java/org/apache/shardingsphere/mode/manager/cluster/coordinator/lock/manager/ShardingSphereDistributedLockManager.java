@@ -31,7 +31,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.Time
 import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDefinition;
 
 /**
- * Distribute lock manager.
+ * Distribute lock manager of ShardingSphere.
  */
 @Slf4j
 public final class ShardingSphereDistributedLockManager implements ShardingSphereLockManager {
