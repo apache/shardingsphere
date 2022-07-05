@@ -158,10 +158,8 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
     public void restart(final DataSourceStatusChangedEvent event, final InstanceContext instanceContext) {
         PrimaryDataSourceChangedEvent dataSourceEvent = (PrimaryDataSourceChangedEvent) event;
         QualifiedDatabase qualifiedDatabase = dataSourceEvent.getQualifiedDatabase();
-        DatabaseDiscoveryDataSourceRule dataSourceRule = dataSourceRules.get(qualifiedDatabase.getDatabaseName());
+        DatabaseDiscoveryDataSourceRule dataSourceRule = dataSourceRules.get(qualifiedDatabase.getGroupName());
         Preconditions.checkState(null != dataSourceRule, "Can 't find database discovery data source rule in database `%s`.", databaseName);
-        Preconditions.checkState(dataSourceRule.getGroupName().equals(qualifiedDatabase.getGroupName()),
-                "Can 't find database discovery group name `%s` in database `%s`.", qualifiedDatabase.getGroupName(), databaseName);
         dataSourceRule.changePrimaryDataSourceName(qualifiedDatabase.getDataSourceName());
         initAwareAndHeartBeatJobs(instanceContext);
     }
@@ -176,10 +174,8 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
         if (modeScheduleContext.isPresent()) {
             for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
                 DatabaseDiscoveryDataSourceRule rule = entry.getValue();
-                Map<String, DataSource> dataSources = dataSourceMap.entrySet().stream().filter(each -> !rule.getDisabledDataSourceNames().contains(each.getKey()))
-                        .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
                 String jobName = rule.getDatabaseDiscoveryProviderAlgorithm().getType() + "-" + databaseName + "-" + rule.getGroupName();
-                CronJob job = new CronJob(jobName, each -> new HeartbeatJob(databaseName, rule.getGroupName(), rule.getPrimaryDataSourceName(), dataSources,
+                CronJob job = new CronJob(jobName, each -> new HeartbeatJob(databaseName, rule.getGroupName(), rule.getPrimaryDataSourceName(), dataSourceMap,
                         rule.getDatabaseDiscoveryProviderAlgorithm(), rule.getDisabledDataSourceNames()).execute(null), rule.getHeartbeatProps().getProperty("keep-alive-cron"));
                 modeScheduleContext.get().startCronJob(job);
             }
