@@ -25,6 +25,7 @@ import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShar
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -78,7 +79,7 @@ public final class AlgorithmProvidedShardingRuleBuilder implements DatabaseRuleB
     }
     
     private boolean isInvalidShardingStrategy(final ShardingStrategyConfiguration shardingStrategy, final Map<String, ShardingAlgorithm> shardingAlgorithms) {
-        if (null == shardingStrategy) {
+        if (null == shardingStrategy || shardingStrategy instanceof NoneShardingStrategyConfiguration) {
             return false;
         }
         return !shardingAlgorithms.containsKey(shardingStrategy.getShardingAlgorithmName());
