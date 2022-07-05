@@ -308,7 +308,7 @@ public final class ShardingRouteEngineFactoryTest {
         when(sqlStatementContext.isContainsSubquery()).thenReturn(true);
         ShardingRule shardingRule = mock(ShardingRule.class, RETURNS_DEEP_STUBS);
         when(shardingRule.getShardingRuleTableNames(tableNames)).thenReturn(tableNames);
-        when(shardingRule.getTableRule("t_order").getActualDatasourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
+        when(shardingRule.getTableRule("t_order").getActualDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
         when(shardingConditions.isNeedMerge()).thenReturn(true);
         when(shardingConditions.isSameShardingCondition()).thenReturn(false);
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, sqlStatementContext, shardingConditions, createFederationConfigurationProperties());
@@ -328,7 +328,7 @@ public final class ShardingRouteEngineFactoryTest {
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(tableNames);
         ShardingRule shardingRule = mock(ShardingRule.class, RETURNS_DEEP_STUBS);
         when(shardingRule.getShardingLogicTableNames(tableNames)).thenReturn(tableNames);
-        when(shardingRule.getTableRule("t_order").getActualDatasourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
+        when(shardingRule.getTableRule("t_order").getActualDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
         when(shardingRule.isAllShardingTables(Collections.singletonList("t_order"))).thenReturn(true);
         when(shardingConditions.isNeedMerge()).thenReturn(true);
         when(shardingConditions.isSameShardingCondition()).thenReturn(true);

@@ -15,7 +15,7 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.example.extension.spibased.sharding.spring.namespace.jpa.fixture.SPIBasedDatasourceStandardShardingAlgorithmFixture
+org.apache.shardingsphere.example.extension.spibased.sharding.spring.namespace.jpa.fixture.SPIBasedDataSourceStandardShardingAlgorithmFixture
 org.apache.shardingsphere.example.extension.spibased.sharding.spring.namespace.jpa.fixture.SPIBasedAccountStandardShardingAlgorithmFixture
 org.apache.shardingsphere.example.extension.spibased.sharding.spring.namespace.jpa.fixture.SPIBasedOrderStandardShardingAlgorithmFixture
 org.apache.shardingsphere.example.extension.spibased.sharding.spring.namespace.jpa.fixture.SPIBasedOrderItemStandardShardingAlgorithmFixture

@@ -58,7 +58,7 @@ public final class DatabaseDiscoverySQLRouterTest {
     
     private static final String DATA_SOURCE_NAME = "ds";
     
-    private static final String NONE_DB_DISCOVERY_DATA_SOURCE_NAME = "noneDatabaseDiscoveryDatasource";
+    private static final String NONE_DB_DISCOVERY_DATA_SOURCE_NAME = "noneDatabaseDiscoveryDataSource";
     
     private static final String PRIMARY_DATA_SOURCE = "primary";
     

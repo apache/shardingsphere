@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
  * Table rule.
  */
 @Getter
-@ToString(exclude = {"dataNodeIndexMap", "actualTables", "actualTablePrefix", "actualDatasourceNames", "datasourceToTablesMap", "dataSourceDataNode", "tableDataNode"})
+@ToString(exclude = {"dataNodeIndexMap", "actualTables", "actualTablePrefix", "actualDataSourceNames", "datasourceToTablesMap", "dataSourceDataNode", "tableDataNode"})
 public final class TableRule {
     
     private static final Pattern DATA_NODE_SUFFIX_PATTERN = Pattern.compile("\\d+$");
@@ -80,9 +80,9 @@ public final class TableRule {
     
     private final String keyGeneratorName;
     
-    private final Collection<String> actualDatasourceNames = new LinkedHashSet<>();
+    private final Collection<String> actualDataSourceNames = new LinkedHashSet<>();
     
-    private final Map<String, Collection<String>> datasourceToTablesMap = new HashMap<>();
+    private final Map<String, Collection<String>> dataSourceToTablesMap = new HashMap<>();
     
     private final DataNodeInfo dataSourceDataNode;
     
@@ -168,7 +168,7 @@ public final class TableRule {
     }
     
     private void addActualTable(final String datasourceName, final String tableName) {
-        datasourceToTablesMap.computeIfAbsent(datasourceName, key -> new LinkedHashSet<>()).add(tableName);
+        dataSourceToTablesMap.computeIfAbsent(datasourceName, key -> new LinkedHashSet<>()).add(tableName);
     }
     
     private boolean isEmptyDataNodes(final List<String> dataNodes) {
@@ -183,7 +183,7 @@ public final class TableRule {
             DataNode dataNode = new DataNode(each, actualTable);
             result.add(dataNode);
             dataNodeIndexMap.put(dataNode, index);
-            actualDatasourceNames.add(each);
+            actualDataSourceNames.add(each);
             addActualTable(dataNode.getDataSourceName(), dataNode.getTableName());
             index++;
         }
@@ -200,7 +200,7 @@ public final class TableRule {
             }
             result.add(dataNode);
             dataNodeIndexMap.put(dataNode, index);
-            actualDatasourceNames.add(dataNode.getDataSourceName());
+            actualDataSourceNames.add(dataNode.getDataSourceName());
             addActualTable(dataNode.getDataSourceName(), dataNode.getTableName());
             index++;
         }
@@ -229,8 +229,8 @@ public final class TableRule {
      *
      * @return actual data source names
      */
-    public Collection<String> getActualDatasourceNames() {
-        return actualDatasourceNames;
+    public Collection<String> getActualDataSourceNames() {
+        return actualDataSourceNames;
     }
     
     /**
@@ -240,7 +240,7 @@ public final class TableRule {
      * @return names of actual tables
      */
     public Collection<String> getActualTableNames(final String targetDataSource) {
-        return datasourceToTablesMap.getOrDefault(targetDataSource, Collections.emptySet());
+        return dataSourceToTablesMap.getOrDefault(targetDataSource, Collections.emptySet());
     }
     
     int findActualTableIndex(final String dataSourceName, final String actualTableName) {
