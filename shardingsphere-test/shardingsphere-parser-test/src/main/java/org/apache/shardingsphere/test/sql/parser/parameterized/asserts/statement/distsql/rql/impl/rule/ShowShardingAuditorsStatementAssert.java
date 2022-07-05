@@ -19,10 +19,10 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingAuditAlgorithmsStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingAuditorsStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.database.DatabaseAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingAuditAlgorithmsStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowShardingAuditorsStatementTestCase;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -31,16 +31,16 @@ import static org.junit.Assert.assertTrue;
  * Show sharding audit algorithms statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShowShardingAuditAlgorithmsStatementAssert {
+public final class ShowShardingAuditorsStatementAssert {
     
     /**
-     * Assert show sharding audit algorithms statement is correct with expected parser result.
+     * Assert show sharding auditors statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual show sharding audit algorithms statement
-     * @param expected expected show sharding audit algorithms statement test case
+     * @param actual actual show sharding auditors statement
+     * @param expected expected show sharding auditors statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowShardingAuditAlgorithmsStatement actual, final ShowShardingAuditAlgorithmsStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ShowShardingAuditorsStatement actual, final ShowShardingAuditorsStatementTestCase expected) {
         if (null != expected.getDatabase()) {
             assertTrue(assertContext.getText("Actual database should exist."), actual.getDatabase().isPresent());
             DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());

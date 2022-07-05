@@ -61,7 +61,7 @@ public final class YamlShardingRuleConfiguration implements YamlRuleConfiguratio
     
     private Map<String, YamlShardingSphereAlgorithmConfiguration> keyGenerators = new LinkedHashMap<>();
     
-    private Map<String, YamlShardingSphereAlgorithmConfiguration> auditAlgorithms = new LinkedHashMap<>();
+    private Map<String, YamlShardingSphereAlgorithmConfiguration> auditors = new LinkedHashMap<>();
     
     private String defaultShardingColumn;
     

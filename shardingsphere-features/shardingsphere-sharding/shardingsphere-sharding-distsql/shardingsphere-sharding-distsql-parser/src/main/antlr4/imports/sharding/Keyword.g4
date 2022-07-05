@@ -211,6 +211,7 @@ WITH
     : W I T H
     ;
 
-AUDIT
-    : A U D I T
+
+AUDITORS
+    : A U D I T O R S
     ;
