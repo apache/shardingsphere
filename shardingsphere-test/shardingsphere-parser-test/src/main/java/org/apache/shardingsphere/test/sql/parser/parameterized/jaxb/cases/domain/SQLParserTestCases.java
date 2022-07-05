@@ -83,6 +83,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.DropRoleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.DropUserStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.GrantStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.ReassignOwnedStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.RenameUserStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.RevertStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.RevokeStatementTestCase;
@@ -240,6 +241,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.NotifyStmtStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.PreparedStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.PurgeStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.RefreshMatViewStmtStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.RenameStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.RenameTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.TruncateStatementTestCase;
@@ -1343,6 +1345,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "notify")
     private final List<NotifyStmtStatementTestCase> notifyTestCases = new LinkedList<>();
     
+    @XmlElement(name = "refresh-materialized-view")
+    private final List<RefreshMatViewStmtStatementTestCase> refreshMatViewStmtStatementTestCases = new LinkedList<>();
+    
     @XmlElement(name = "unlisten")
     private final List<UnlistenStatementTestCase> unlistenTestCases = new LinkedList<>();
     
@@ -1507,6 +1512,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "prepare-transaction")
     private final List<PrepareTransactionTestCase> prepareTransactionTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "reassign-owned")
+    private final List<ReassignOwnedStatementTestCase> reassignOwnedStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.
@@ -1865,6 +1873,7 @@ public final class SQLParserTestCases {
         putAll(dropRollbackSegmentTestCases, result);
         putAll(listenTestCases, result);
         putAll(notifyTestCases, result);
+        putAll(refreshMatViewStmtStatementTestCases, result);
         putAll(unlistenTestCases, result);
         putAll(createLockdownProfileTestCases, result);
         putAll(dropLockdownProfileTestCases, result);
@@ -1884,6 +1893,7 @@ public final class SQLParserTestCases {
         putAll(createAccessMethodTestCases, result);
         putAll(createCollationStatementTestCases, result);
         putAll(prepareTransactionTestCases, result);
+        putAll(reassignOwnedStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON

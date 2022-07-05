@@ -158,6 +158,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Ta
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.TruncateTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.UnlistenContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ValidateConstraintSpecificationContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RefreshMatViewStmtContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.DirectionType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
@@ -282,6 +283,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLMoveStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLNotifyStmtStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLPrepareStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLRefreshMatViewStmtStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLTruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLUnlistenStatement;
 
@@ -1287,5 +1289,10 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     @Override
     public ASTNode visitCreateCollation(final CreateCollationContext ctx) {
         return new PostgreSQLCreateCollationStatement();
+    }
+    
+    @Override
+    public ASTNode visitRefreshMatViewStmt(final RefreshMatViewStmtContext ctx) {
+        return new PostgreSQLRefreshMatViewStmtStatement();
     }
 }
