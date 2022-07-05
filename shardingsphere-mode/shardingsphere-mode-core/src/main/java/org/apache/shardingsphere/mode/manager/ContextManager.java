@@ -32,8 +32,6 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCrea
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
-import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -364,13 +362,13 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
-     * Reload meta data.
+     * Reload database meta data.
      *
-     * @param databaseName database name to be reloaded
+     * @param databaseName to be reloaded database name
      */
-    public synchronized void reloadMetaData(final String databaseName) {
+    public synchronized void reloadDatabaseMetaData(final String databaseName) {
         try {
-            Map<String, ShardingSphereSchema> schemas = loadActualSchema(databaseName);
+            Map<String, ShardingSphereSchema> schemas = loadSchemas(databaseName);
             deleteSchemas(databaseName, schemas);
             alterSchemas(databaseName, schemas);
             persistMetaData(metaDataContexts);
@@ -379,42 +377,36 @@ public final class ContextManager implements AutoCloseable {
         }
     }
     
-    /**
-     * Reload table meta data.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param tableName logic table name
-     */
-    public synchronized void reloadMetaData(final String databaseName, final String schemaName, final String tableName) {
-        try {
-            ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(databaseName);
-            GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(database.getProtocolType(),
-                    database.getResource().getDatabaseType(), database.getResource().getDataSources(), database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), schemaName);
-            loadTableMetaData(databaseName, schemaName, tableName, materials);
-        } catch (final SQLException ex) {
-            log.error("Reload table:{} meta data of database:{} schema:{} failed", tableName, databaseName, schemaName, ex);
-        }
+    private Map<String, ShardingSphereSchema> loadSchemas(final String databaseName) throws SQLException {
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(databaseName);
+        Map<String, DataSource> dataSourceMap = database.getResource().getDataSources();
+        database.reloadRules(instanceContext);
+        DatabaseType storageType = DatabaseTypeEngine.getDatabaseType(dataSourceMap.values());
+        Map<String, ShardingSphereSchema> result = new ConcurrentHashMap<>();
+        GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(database.getProtocolType(),
+                storageType, dataSourceMap, database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), databaseName);
+        result.putAll(GenericSchemaBuilder.build(materials));
+        result.putAll(SystemSchemaBuilder.build(databaseName, database.getProtocolType()));
+        return result;
     }
     
-    /**
-     * Reload single data source table meta data.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @param dataSourceName data source name
-     * @param tableName logic table name
-     */
-    public synchronized void reloadMetaData(final String databaseName, final String schemaName, final String dataSourceName, final String tableName) {
-        try {
-            ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(databaseName);
-            GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(database.getProtocolType(), database.getResource().getDatabaseType(),
-                    Collections.singletonMap(dataSourceName, database.getResource().getDataSources().get(dataSourceName)),
-                    database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), schemaName);
-            loadTableMetaData(databaseName, schemaName, tableName, materials);
-        } catch (final SQLException ex) {
-            log.error("Reload table:{} meta data of database:{} schema:{} with data source:{} failed", tableName, databaseName, schemaName, dataSourceName, ex);
-        }
+    private void deleteSchemas(final String databaseName, final Map<String, ShardingSphereSchema> schemas) {
+        Map<String, ShardingSphereSchema> originalSchemas = metaDataContexts.getMetaData().getDatabases().get(databaseName).getSchemas();
+        originalSchemas.forEach((key, value) -> {
+            if (!schemas.containsKey(key)) {
+                metaDataContexts.getPersistService().ifPresent(optional -> optional.getDatabaseMetaDataService().deleteSchema(databaseName, key));
+            }
+        });
+    }
+    
+    private synchronized void alterSchemas(final String databaseName, final Map<String, ShardingSphereSchema> schemas) {
+        ShardingSphereDatabase alteredMetaData = new ShardingSphereDatabase(databaseName, metaDataContexts.getMetaData().getDatabases().get(databaseName).getProtocolType(),
+                metaDataContexts.getMetaData().getDatabases().get(databaseName).getResource(), metaDataContexts.getMetaData().getDatabases().get(databaseName).getRuleMetaData(), schemas);
+        Map<String, ShardingSphereDatabase> alteredDatabases = new HashMap<>(metaDataContexts.getMetaData().getDatabases());
+        alteredDatabases.put(databaseName, alteredMetaData);
+        metaDataContexts.getOptimizerContext().alterDatabase(databaseName, schemas);
+        metaDataContexts = newMetaDataContexts(new ShardingSphereMetaData(alteredDatabases, metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps()),
+                metaDataContexts.getOptimizerContext());
     }
     
     /**
@@ -437,28 +429,42 @@ public final class ContextManager implements AutoCloseable {
         }
     }
     
-    private void alterSchemas(final String databaseName, final Map<String, ShardingSphereSchema> schemas) {
-        ShardingSphereDatabase alteredMetaData = new ShardingSphereDatabase(databaseName, metaDataContexts.getMetaData().getDatabases().get(databaseName).getProtocolType(),
-                metaDataContexts.getMetaData().getDatabases().get(databaseName).getResource(), metaDataContexts.getMetaData().getDatabases().get(databaseName).getRuleMetaData(), schemas);
-        Map<String, ShardingSphereDatabase> alteredDatabases = new HashMap<>(metaDataContexts.getMetaData().getDatabases());
-        alteredDatabases.put(databaseName, alteredMetaData);
-        FederationDatabaseMetaData alteredDatabaseMetaData = new FederationDatabaseMetaData(databaseName, schemas);
-        metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().put(databaseName, alteredDatabaseMetaData);
-        metaDataContexts.getOptimizerContext().getPlannerContexts().put(databaseName, OptimizerPlannerContextFactory.create(alteredDatabaseMetaData));
-        renewMetaDataContexts(newMetaDataContexts(new ShardingSphereMetaData(alteredDatabases, metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps()),
-                metaDataContexts.getOptimizerContext()));
+    /**
+     * Reload table meta data.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param tableName logic table name
+     */
+    public synchronized void reloadTableMetaData(final String databaseName, final String schemaName, final String tableName) {
+        try {
+            ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(databaseName);
+            GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(database.getProtocolType(),
+                    database.getResource().getDatabaseType(), database.getResource().getDataSources(), database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), schemaName);
+            loadTableMetaData(databaseName, schemaName, tableName, materials);
+        } catch (final SQLException ex) {
+            log.error("Reload table:{} meta data of database:{} schema:{} failed", tableName, databaseName, schemaName, ex);
+        }
     }
     
-    private void deleteSchemas(final String databaseName, final Map<String, ShardingSphereSchema> actualSchemas) {
-        Map<String, ShardingSphereSchema> originalSchemas = metaDataContexts.getMetaData().getDatabases().get(databaseName).getSchemas();
-        if (originalSchemas.isEmpty()) {
-            return;
+    /**
+     * Reload single data source table meta data.
+     *
+     * @param databaseName database name
+     * @param schemaName schema name
+     * @param dataSourceName data source name
+     * @param tableName logic table name
+     */
+    public synchronized void reloadTableMetaData(final String databaseName, final String schemaName, final String dataSourceName, final String tableName) {
+        try {
+            ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(databaseName);
+            GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(database.getProtocolType(), database.getResource().getDatabaseType(),
+                    Collections.singletonMap(dataSourceName, database.getResource().getDataSources().get(dataSourceName)),
+                    database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), schemaName);
+            loadTableMetaData(databaseName, schemaName, tableName, materials);
+        } catch (final SQLException ex) {
+            log.error("Reload table:{} meta data of database:{} schema:{} with data source:{} failed", tableName, databaseName, schemaName, dataSourceName, ex);
         }
-        originalSchemas.forEach((key, value) -> {
-            if (null == actualSchemas.get(key)) {
-                metaDataContexts.getPersistService().ifPresent(optional -> optional.getDatabaseMetaDataService().deleteSchema(databaseName, key));
-            }
-        });
     }
     
     private void loadTableMetaData(final String databaseName, final String schemaName, final GenericSchemaBuilderMaterials materials) throws SQLException {
@@ -477,19 +483,6 @@ public final class ContextManager implements AutoCloseable {
             metaDataContexts.getPersistService().ifPresent(optional -> optional.getDatabaseMetaDataService()
                     .persistMetaData(databaseName, schemaName, metaDataContexts.getMetaData().getDatabases().get(databaseName).getSchemas().get(schemaName)));
         }
-    }
-    
-    private Map<String, ShardingSphereSchema> loadActualSchema(final String databaseName) throws SQLException {
-        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(databaseName);
-        Map<String, DataSource> dataSourceMap = database.getResource().getDataSources();
-        database.reloadRules(instanceContext);
-        DatabaseType databaseType = DatabaseTypeEngine.getDatabaseType(dataSourceMap.values());
-        Map<String, ShardingSphereSchema> result = new ConcurrentHashMap<>();
-        GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(database.getProtocolType(),
-                databaseType, dataSourceMap, database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), databaseName);
-        result.putAll(GenericSchemaBuilder.build(materials));
-        result.putAll(SystemSchemaBuilder.build(databaseName, database.getProtocolType()));
-        return result;
     }
     
     private Map<String, DataSource> getChangedDataSources(final ShardingSphereDatabase database, final Map<String, DataSourceProperties> dataSourcePropsMap) {
