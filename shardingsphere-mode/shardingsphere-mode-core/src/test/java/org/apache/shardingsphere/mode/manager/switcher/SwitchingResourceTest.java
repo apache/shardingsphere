@@ -23,26 +23,16 @@ import org.junit.Test;
 
 import java.util.Collections;
 
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.times;
 
 public final class SwitchingResourceTest {
     
     @Test
-    public void assertCloseStaleDataSources() throws InterruptedException {
-        MockedDataSource dataSource = new MockedDataSource();
-        ShardingSphereResource shardingSphereResource = new ShardingSphereResource(Collections.singletonMap("foo_ds", dataSource));
-        ShardingSphereResource spyResource = spy(shardingSphereResource);
-        SwitchingResource switchingResource = new SwitchingResource(spyResource,
-                Collections.singletonMap("foo_ds", dataSource), Collections.singletonMap("foo_ds", dataSource));
-        switchingResource.closeStaleDataSources();
-        while (null == dataSource.getClosed() || !dataSource.getClosed()) {
-            Thread.sleep(10L);
-        }
-        assertTrue(dataSource.getClosed());
-        verify(spyResource, times(1)).close(dataSource);
+    public void assertCloseStaleDataSources() {
+        MockedDataSource staleDataSource = new MockedDataSource();
+        ShardingSphereResource resource = mock(ShardingSphereResource.class);
+        new SwitchingResource(resource, Collections.singletonMap("new_ds", new MockedDataSource()), Collections.singletonMap("stale_ds", staleDataSource)).closeStaleDataSources();
+        verify(resource).close(staleDataSource);
     }
-    
 }
