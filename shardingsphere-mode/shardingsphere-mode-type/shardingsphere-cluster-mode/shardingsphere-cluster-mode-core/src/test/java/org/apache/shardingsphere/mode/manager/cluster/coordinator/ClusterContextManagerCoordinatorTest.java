@@ -279,15 +279,15 @@ public final class ClusterContextManagerCoordinatorTest {
     @Test
     public void assertRenewPrimaryDataSourceName() {
         Collection<ShardingSphereRule> rules = new LinkedList<>();
-        RestartHeartBeatJobRule mockStatusContainedRule = mock(RestartHeartBeatJobRule.class);
-        rules.add(mockStatusContainedRule);
+        RestartHeartBeatJobRule mockRestartHeartBeatJobRule= mock(RestartHeartBeatJobRule.class);
+        rules.add(mockRestartHeartBeatJobRule);
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(rules);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
         contextManager.getMetaDataContexts().getMetaData().getDatabases().put("db", database);
         PrimaryStateChangedEvent mockPrimaryStateChangedEvent = new PrimaryStateChangedEvent(new QualifiedDatabase("db.readwrite_ds.test_ds"));
         coordinator.renew(mockPrimaryStateChangedEvent);
-        verify(mockStatusContainedRule).restart(any());
+        verify(mockRestartHeartBeatJobRule).restart(any(), any());
     }
     
     @Test

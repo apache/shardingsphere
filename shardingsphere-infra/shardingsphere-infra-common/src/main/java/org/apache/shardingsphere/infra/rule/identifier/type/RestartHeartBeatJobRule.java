@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.rule.identifier.type;
 
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 
 /**
  * Restart heart beat job rule.
@@ -27,8 +28,8 @@ public interface RestartHeartBeatJobRule extends ShardingSphereRule {
     
     /**
      * Restart heart beat job.
-     *
+     * @param event data source status changed event
      * @param instanceContext instance context
      */
-    void restart(InstanceContext instanceContext);
+    void restart(DataSourceStatusChangedEvent event, InstanceContext instanceContext);
 }

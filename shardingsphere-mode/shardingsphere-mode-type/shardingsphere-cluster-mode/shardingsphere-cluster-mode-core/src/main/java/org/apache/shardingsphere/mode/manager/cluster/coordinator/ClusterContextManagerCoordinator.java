@@ -55,6 +55,7 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
+import org.apache.shardingsphere.mode.metadata.storage.event.PrimaryDataSourceChangedEvent;
 import org.apache.shardingsphere.mode.metadata.storage.event.StorageNodeDataSourceChangedEvent;
 
 import java.sql.SQLException;
@@ -194,7 +195,7 @@ public final class ClusterContextManagerCoordinator {
                 .stream()
                 .filter(each -> each instanceof RestartHeartBeatJobRule)
                 .forEach(each -> ((RestartHeartBeatJobRule) each)
-                        .restart(contextManager.getInstanceContext()));
+                        .restart(new PrimaryDataSourceChangedEvent(qualifiedDatabase), contextManager.getInstanceContext()));
     }
     
     /**
