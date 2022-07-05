@@ -21,11 +21,15 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSe
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.hamcrest.CoreMatchers.is;
 
 public final class SQLHintExtractorTest {
     
@@ -36,4 +40,19 @@ public final class SQLHintExtractorTest {
         assertTrue(new SQLHintExtractor(statement).isHintWriteRouteOnly());
     }
     
+    @Test
+    public void assertSQLHintSkipEncryptRewrite() {
+        AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
+        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* ShardingSphere hint: skipEncryptRewrite=true */", 0, 0)));
+        assertTrue(new SQLHintExtractor(statement).isHintSkipEncryptRewrite());
+    }
+    
+    @Test
+    public void assertSQLHintDisableAuditNames() {
+        AbstractSQLStatement statement = mock(AbstractSQLStatement.class);
+        when(statement.getCommentSegments()).thenReturn(Collections.singletonList(new CommentSegment("/* ShardingSphere hint: disableAuditNames=sharding_audit1 sharding_audit2 */", 0, 0)));
+        Collection<String> actual = new SQLHintExtractor(statement).findDisableAuditNames();
+        assertThat(actual.size(), is(2));
+        assertTrue(actual.containsAll(Arrays.asList("sharding_audit1", "sharding_audit2")));
+    }
 }

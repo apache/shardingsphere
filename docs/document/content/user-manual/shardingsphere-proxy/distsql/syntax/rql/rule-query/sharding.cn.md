@@ -13,6 +13,8 @@ SHOW SHARDING TABLE tableRule | RULES [FROM databaseName]
 SHOW SHARDING ALGORITHMS [FROM databaseName]
 
 SHOW UNUSED SHARDING ALGORITHMS [FROM databaseName]
+    
+SHOW SHARDING AUDIT ALGORITHMS [FROM databaseName]
 
 SHOW SHARDING TABLE RULES USED ALGORITHM algorithmName [FROM databaseName]
 
@@ -30,7 +32,8 @@ tableRule:
     RULE tableName
 ```
 -  支持查询所有数据分片规则和指定表查询；
--  支持查询所有分片算法。
+-  支持查询所有分片算法；
+-  支持查询所有分片审计算法。
 
 ### Sharding Binding Table Rule
 
@@ -85,6 +88,14 @@ SHOW SHARDING SCALING RULES [FROM databaseName]
 | name  | 分片算法名称    |
 | type  | 分片算法类型    |
 | props | 分片算法参数    |
+
+### Sharding Audit Algorithms
+
+| 列     | 说明              |
+| ------|-------------------|
+| name  | 分片审计算法名称     |
+| type  | 分片审计算法类型     |
+| props | 分片审计算法参数     |
 
 ### Sharding Key Generators
 
@@ -192,6 +203,17 @@ mysql> SHOW UNUSED SHARDING ALGORITHMS;
 | t1_inline     | INLINE | algorithm-expression=t_order_${order_id % 2}        |
 +---------------+--------+-----------------------------------------------------+
 1 row in set (0.01 sec)
+```
+
+*SHOW SHARDING AUDIT ALGORITHMS*
+```sql
+mysql> SHOW SHARDING AUDIT ALGORITHMS;
++------------+-------------------------+-------+
+| name       | type                    | props |
++------------+-------------------------+-------+
+| dml_audit  | DML_SHARDING_CONDITIONS |       |
++------------+-------------------------+-------+
+2 row in set (0.01 sec)
 ```
 
 *SHOW SHARDING TABLE RULES USED ALGORITHM algorithmName*

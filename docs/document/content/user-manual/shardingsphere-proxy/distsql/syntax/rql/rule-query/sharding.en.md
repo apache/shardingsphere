@@ -13,6 +13,8 @@ SHOW SHARDING TABLE tableRule | RULES [FROM databaseName]
 SHOW SHARDING ALGORITHMS [FROM databaseName]
 
 SHOW UNUSED SHARDING ALGORITHMS [FROM databaseName]
+    
+SHOW SHARDING AUDIT ALGORITHMS [FROM databaseName]
 
 SHOW SHARDING TABLE RULES USED ALGORITHM algorithmName [FROM databaseName]
 
@@ -31,6 +33,7 @@ tableRule:
 ```
 -  Support query all data fragmentation rules and specified table query
 -  Support query all sharding algorithms
+-  Support query all sharding audit algorithms
 
 ### Sharding Binding Table Rule
 
@@ -85,6 +88,14 @@ SHOW SHARDING SCALING RULES [FROM databaseName]
 | name   | Sharding algorithm name       |
 | type   | Sharding algorithm type       |
 | props  | Sharding algorithm properties |
+
+### Sharding audit Algorithms
+
+| Column | Description                         |
+| ------ |-------------------------------------|
+| name   | Sharding audit algorithm name       |
+| type   | Sharding audit algorithm type       |
+| props  | Sharding audit algorithm properties |
 
 ### Sharding key generators
 
@@ -192,6 +203,17 @@ mysql> SHOW UNUSED SHARDING ALGORITHMS;
 | t1_inline     | INLINE | algorithm-expression=t_order_${order_id % 2}        |
 +---------------+--------+-----------------------------------------------------+
 1 row in set (0.01 sec)
+```
+
+*SHOW SHARDING AUDIT ALGORITHMS*
+```sql
+mysql> SHOW SHARDING AUDIT ALGORITHMS;
++------------+-------------------------+-------+
+| name       | type                    | props |
++------------+-------------------------+-------+
+| dml_audit  | DML_SHARDING_CONDITIONS |       |
++------------+-------------------------+-------+
+2 row in set (0.01 sec)
 ```
 
 *SHOW SHARDING TABLE RULES USED ALGORITHM algorithmName*

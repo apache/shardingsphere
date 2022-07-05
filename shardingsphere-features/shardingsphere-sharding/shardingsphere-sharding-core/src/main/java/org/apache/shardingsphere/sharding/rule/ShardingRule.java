@@ -258,7 +258,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
             TableRule sampleTableRule = getTableRule(iterator.next(), checkedConfig.getDataSourceNames(), tableRules, checkedConfig.getBroadcastTables());
             while (iterator.hasNext()) {
                 TableRule tableRule = getTableRule(iterator.next(), checkedConfig.getDataSourceNames(), tableRules, checkedConfig.getBroadcastTables());
-                if (!isValidActualDatasourceName(sampleTableRule, tableRule) || !isValidActualTableName(sampleTableRule, tableRule)) {
+                if (!isValidActualDataSourceName(sampleTableRule, tableRule) || !isValidActualTableName(sampleTableRule, tableRule)) {
                     return false;
                 }
                 if (!isValidShardingAlgorithm(sampleTableRule, tableRule, true, checkedConfig) || !isValidShardingAlgorithm(sampleTableRule, tableRule, false, checkedConfig)) {
@@ -269,12 +269,12 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         return true;
     }
     
-    private boolean isValidActualDatasourceName(final TableRule sampleTableRule, final TableRule tableRule) {
-        return sampleTableRule.getActualDatasourceNames().equals(tableRule.getActualDatasourceNames());
+    private boolean isValidActualDataSourceName(final TableRule sampleTableRule, final TableRule tableRule) {
+        return sampleTableRule.getActualDataSourceNames().equals(tableRule.getActualDataSourceNames());
     }
     
     private boolean isValidActualTableName(final TableRule sampleTableRule, final TableRule tableRule) {
-        for (String each : sampleTableRule.getActualDatasourceNames()) {
+        for (String each : sampleTableRule.getActualDataSourceNames()) {
             Collection<String> sampleActualTableNames =
                     sampleTableRule.getActualTableNames(each).stream().map(actualTableName -> actualTableName.replace(sampleTableRule.getTableDataNode().getPrefix(), "")).collect(Collectors.toSet());
             Collection<String> actualTableNames =
@@ -513,7 +513,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
      */
     public boolean isAllTablesInSameDataSource(final Collection<String> logicTableNames) {
         Collection<String> dataSourceNames = logicTableNames.stream().map(each -> tableRules.get(each.toLowerCase()))
-                .filter(Objects::nonNull).flatMap(each -> each.getActualDatasourceNames().stream()).collect(Collectors.toSet());
+                .filter(Objects::nonNull).flatMap(each -> each.getActualDataSourceNames().stream()).collect(Collectors.toSet());
         return 1 == dataSourceNames.size();
     }
     

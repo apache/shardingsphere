@@ -29,7 +29,7 @@ public final class ShardingAuditStrategyConfigurationYamlSwapper implements Yaml
     @Override
     public YamlShardingAuditStrategyConfiguration swapToYamlConfiguration(final ShardingAuditStrategyConfiguration data) {
         YamlShardingAuditStrategyConfiguration result = new YamlShardingAuditStrategyConfiguration();
-        result.getAuditAlgorithmNames().addAll(data.getAuditAlgorithmNames());
+        result.setAuditAlgorithmNames(data.getAuditAlgorithmNames());
         result.setAllowHintDisable(data.isAllowHintDisable());
         return result;
     }

@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.infra.lock.LockScope;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -68,7 +69,7 @@ public final class PipelineSimpleLock {
      */
     public boolean tryLock(final String lockName, final long timeoutMills) {
         String realLockName = decorateLockName(lockName);
-        boolean result = lockContext.getLock().tryLock(realLockName, timeoutMills);
+        boolean result = lockContext.getLock(LockScope.GLOBAL).tryLock(realLockName, timeoutMills);
         if (result) {
             lockNameLockedMap.put(realLockName, true);
         }
@@ -86,7 +87,7 @@ public final class PipelineSimpleLock {
         log.info("releaseLock, lockName={}", realLockName);
         if (lockNameLockedMap.getOrDefault(realLockName, false)) {
             lockNameLockedMap.remove(realLockName);
-            lockContext.getLock().releaseLock(realLockName);
+            lockContext.getLock(LockScope.GLOBAL).releaseLock(realLockName);
         }
     }
     

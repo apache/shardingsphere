@@ -149,9 +149,9 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
      * Determine whether the current database has a data source.
      *
      * @param databaseName database name
-     * @return has datasource or not
+     * @return has data source or not
      */
-    protected static Boolean hasDatasource(final String databaseName) {
+    protected static Boolean hasDataSource(final String databaseName) {
         return ProxyContext.getInstance().getDatabase(databaseName).containsDataSource();
     }
     
@@ -198,7 +198,7 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
         @Override
         protected List<String> getDatabaseNames(final ConnectionSession connectionSession) {
             String database = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee()))
-                    .filter(AbstractDatabaseMetadataExecutor::hasDatasource).findFirst().orElseThrow(ResourceNotExistedException::new);
+                    .filter(AbstractDatabaseMetadataExecutor::hasDataSource).findFirst().orElseThrow(ResourceNotExistedException::new);
             return Collections.singletonList(database);
         }
         

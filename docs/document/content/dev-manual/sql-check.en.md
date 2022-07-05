@@ -11,6 +11,7 @@ chapter = true
 | ---------------------- | ----------------- |
 | SQLChecker             | SQL checker       |
 
-| *Implementation Class* | *Description*     |
-| ---------------------- | ----------------- |
-| AuthorityChecker       | Authority checker |
+| *Implementation Class* | *Description*          |
+| ---------------------- | ---------------------- |
+| AuthorityChecker       | Authority checker      |
+| ShardingAuditChecker   | Sharding audit checker |
