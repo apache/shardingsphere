@@ -90,7 +90,7 @@ public final class ShardingRuleTest {
         assertThat(actual.getBindingTableRules().values().iterator().next().getTableRules().size(), is(2));
         assertThat(actual.getBroadcastTables(), is(new TreeSet<>(Collections.singletonList("BROADCAST_TABLE"))));
         assertThat(actual.getDefaultKeyGenerateAlgorithm(), instanceOf(UUIDKeyGenerateAlgorithm.class));
-        assertThat(actual.getAuditAlgorithms().get("audit_algorithm"), instanceOf(DMLShardingConditionsShardingAuditAlgorithm.class));
+        assertThat(actual.getAuditors().get("audit_algorithm"), instanceOf(DMLShardingConditionsShardingAuditAlgorithm.class));
         assertThat(actual.getDefaultShardingColumn(), is("table_id"));
     }
     
@@ -476,7 +476,7 @@ public final class ShardingRuleTest {
         shardingRuleConfig.getShardingAlgorithms().put("core_standard_fixture", new ShardingSphereAlgorithmConfiguration("CORE.STANDARD.FIXTURE", new Properties()));
         shardingRuleConfig.getKeyGenerators().put("uuid", new ShardingSphereAlgorithmConfiguration("UUID", new Properties()));
         shardingRuleConfig.getKeyGenerators().put("default", new ShardingSphereAlgorithmConfiguration("UUID", new Properties()));
-        shardingRuleConfig.getAuditAlgorithms().put("audit_algorithm", new ShardingSphereAlgorithmConfiguration("DML_SHARDING_CONDITIONS", new Properties()));
+        shardingRuleConfig.getAuditors().put("audit_algorithm", new ShardingSphereAlgorithmConfiguration("DML_SHARDING_CONDITIONS", new Properties()));
         return new ShardingRule(shardingRuleConfig, createDataSourceNames(), mock(InstanceContext.class));
     }
     

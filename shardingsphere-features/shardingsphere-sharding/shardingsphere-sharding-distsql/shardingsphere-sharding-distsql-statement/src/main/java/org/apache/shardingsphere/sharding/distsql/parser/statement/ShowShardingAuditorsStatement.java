@@ -15,26 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.config.strategy.audit;
+package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
-import com.google.common.base.Preconditions;
-import java.util.Collection;
-import lombok.Getter;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
- * Sharding audit strategy configuration.
+ * Show sharding audit algorithms statement.
  */
-
-@Getter
-public final class ShardingAuditStrategyConfiguration {
+public final class ShowShardingAuditorsStatement extends ShowRulesStatement {
     
-    private final Collection<String> auditorNames;
-    
-    private final boolean allowHintDisable;
-    
-    public ShardingAuditStrategyConfiguration(final Collection<String> auditorNames, final boolean allowHintDisable) {
-        Preconditions.checkNotNull(auditorNames, "Sharding audit algorithm names is required.");
-        this.auditorNames = auditorNames;
-        this.allowHintDisable = allowHintDisable;
+    public ShowShardingAuditorsStatement(final DatabaseSegment database) {
+        super(database);
     }
 }

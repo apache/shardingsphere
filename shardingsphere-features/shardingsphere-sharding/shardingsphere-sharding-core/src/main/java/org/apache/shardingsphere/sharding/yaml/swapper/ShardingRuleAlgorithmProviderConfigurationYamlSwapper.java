@@ -81,9 +81,8 @@ public final class ShardingRuleAlgorithmProviderConfigurationYamlSwapper impleme
         if (null != data.getKeyGenerators()) {
             data.getKeyGenerators().forEach((key, value) -> yamlConfig.getKeyGenerators().put(key, new YamlShardingSphereAlgorithmConfiguration(value.getType(), value.getProps())));
         }
-        if (null != data.getAuditAlgorithms()) {
-            data.getAuditAlgorithms().forEach(
-                    (key, value) -> yamlConfig.getAuditAlgorithms().put(key, new YamlShardingSphereAlgorithmConfiguration(value.getType(), value.getProps())));
+        if (null != data.getAuditors()) {
+            data.getAuditors().forEach((key, value) -> yamlConfig.getAuditors().put(key, new YamlShardingSphereAlgorithmConfiguration(value.getType(), value.getProps())));
         }
     }
     

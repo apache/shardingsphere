@@ -64,34 +64,34 @@ public final class ShardingAuditCheckerTest {
     @Before
     public void setUp() {
         when(sqlStatementContext.getSqlHintExtractor().findDisableAuditNames()).thenReturn(new HashSet<>(Collections.singletonList("audit_algorithm")));
-        when(rule.getAuditStrategyConfig().getAuditAlgorithmNames()).thenReturn(Collections.singleton("audit_algorithm"));
+        when(rule.getAuditStrategyConfig().getAuditorNames()).thenReturn(Collections.singleton("audit_algorithm"));
         databases.put("foo_db", mock(ShardingSphereDatabase.class));
     }
     
     @Test
     public void assertCheckSQLStatementPass() {
-        when(rule.getAuditAlgorithms().get("audit_algorithm").check(sqlStatementContext, parameters, grantee, databases.get("foo_db")))
+        when(rule.getAuditors().get("audit_algorithm").check(sqlStatementContext, parameters, grantee, databases.get("foo_db")))
                 .thenReturn(new SQLCheckResult(true, ""));
         asserCheckResult(checker.check(sqlStatementContext, Collections.emptyList(), grantee, "foo_db", databases, rule), true, "");
-        verify(rule.getAuditAlgorithms().get("audit_algorithm"), times(1)).check(sqlStatementContext, parameters, grantee, databases.get("foo_db"));
+        verify(rule.getAuditors().get("audit_algorithm"), times(1)).check(sqlStatementContext, parameters, grantee, databases.get("foo_db"));
     }
     
     @Test
     public void assertSQCheckPassByDisableAuditNames() {
-        when(rule.getAuditAlgorithms().get("audit_algorithm").check(sqlStatementContext, parameters, grantee, databases.get("foo_db")))
+        when(rule.getAuditors().get("audit_algorithm").check(sqlStatementContext, parameters, grantee, databases.get("foo_db")))
                 .thenReturn(new SQLCheckResult(false, ""));
         when(rule.getAuditStrategyConfig().isAllowHintDisable()).thenReturn(true);
         asserCheckResult(checker.check(sqlStatementContext, Collections.emptyList(), grantee, "foo_db", databases, rule), true, "");
         
-        verify(rule.getAuditAlgorithms().get("audit_algorithm"), times(0)).check(sqlStatementContext, parameters, grantee, databases.get("foo_db"));
+        verify(rule.getAuditors().get("audit_algorithm"), times(0)).check(sqlStatementContext, parameters, grantee, databases.get("foo_db"));
     }
     
     @Test
     public void assertSQLCheckNotPass() {
-        when(rule.getAuditAlgorithms().get("audit_algorithm").check(sqlStatementContext, parameters, grantee, databases.get("foo_db")))
+        when(rule.getAuditors().get("audit_algorithm").check(sqlStatementContext, parameters, grantee, databases.get("foo_db")))
                 .thenReturn(new SQLCheckResult(false, "Not allow DML operation without sharding conditions"));
         asserCheckResult(checker.check(sqlStatementContext, Collections.emptyList(), grantee, "foo_db", databases, rule), false, "Not allow DML operation without sharding conditions");
-        verify(rule.getAuditAlgorithms().get("audit_algorithm"), times(1)).check(sqlStatementContext, parameters, grantee, databases.get("foo_db"));
+        verify(rule.getAuditors().get("audit_algorithm"), times(1)).check(sqlStatementContext, parameters, grantee, databases.get("foo_db"));
     }
     
     private void asserCheckResult(final SQLCheckResult checkResult, final boolean isPassed, final String errorMessage) {

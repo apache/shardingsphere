@@ -15,17 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.distsql.parser.statement;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl;
 
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.RefreshMatViewStmtStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Show sharding audit algorithms statement.
+ * PostgreSQL refresh materialized view statement.
  */
-public final class ShowShardingAuditAlgorithmsStatement extends ShowRulesStatement {
-    
-    public ShowShardingAuditAlgorithmsStatement(final DatabaseSegment database) {
-        super(database);
-    }
+@ToString
+public final class PostgreSQLRefreshMatViewStmtStatement extends RefreshMatViewStmtStatement implements PostgreSQLStatement {
 }

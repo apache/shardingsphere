@@ -48,11 +48,11 @@ public final class ShardingAuditChecker implements SQLChecker<ShardingRule> {
         Collection<String> disableAuditNames = sqlStatementContext instanceof CommonSQLStatementContext
                 ? ((CommonSQLStatementContext<?>) sqlStatementContext).getSqlHintExtractor().findDisableAuditNames()
                 : Collections.emptyList();
-        for (String each : rule.getAuditStrategyConfig().getAuditAlgorithmNames()) {
+        for (String each : rule.getAuditStrategyConfig().getAuditorNames()) {
             if (rule.getAuditStrategyConfig().isAllowHintDisable() && disableAuditNames.contains(each.toLowerCase())) {
                 continue;
             }
-            SQLCheckResult result = rule.getAuditAlgorithms().get(each).check(sqlStatementContext, parameters, grantee, databases.get(currentDatabase));
+            SQLCheckResult result = rule.getAuditors().get(each).check(sqlStatementContext, parameters, grantee, databases.get(currentDatabase));
             if (!result.isPassed()) {
                 return result;
             }

@@ -15,26 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.config.strategy.audit;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
 
-import com.google.common.base.Preconditions;
-import java.util.Collection;
 import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedDatabase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Sharding audit strategy configuration.
+ * Show sharding audit algorithms statement test case.
  */
-
 @Getter
-public final class ShardingAuditStrategyConfiguration {
+@Setter
+public final class ShowShardingAuditorsStatementTestCase extends SQLParserTestCase {
     
-    private final Collection<String> auditorNames;
-    
-    private final boolean allowHintDisable;
-    
-    public ShardingAuditStrategyConfiguration(final Collection<String> auditorNames, final boolean allowHintDisable) {
-        Preconditions.checkNotNull(auditorNames, "Sharding audit algorithm names is required.");
-        this.auditorNames = auditorNames;
-        this.allowHintDisable = allowHintDisable;
-    }
+    @XmlElement
+    private ExpectedDatabase database;
 }

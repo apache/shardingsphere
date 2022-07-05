@@ -15,26 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.api.config.strategy.audit;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import com.google.common.base.Preconditions;
-import java.util.Collection;
-import lombok.Getter;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Sharding audit strategy configuration.
+ * Refresh materialized view statement.
  */
-
-@Getter
-public final class ShardingAuditStrategyConfiguration {
-    
-    private final Collection<String> auditorNames;
-    
-    private final boolean allowHintDisable;
-    
-    public ShardingAuditStrategyConfiguration(final Collection<String> auditorNames, final boolean allowHintDisable) {
-        Preconditions.checkNotNull(auditorNames, "Sharding audit algorithm names is required.");
-        this.auditorNames = auditorNames;
-        this.allowHintDisable = allowHintDisable;
-    }
+@ToString
+public abstract class RefreshMatViewStmtStatement extends AbstractSQLStatement implements DDLStatement {
 }

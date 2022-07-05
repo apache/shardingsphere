@@ -976,10 +976,6 @@ createMvTarget
     : qualifiedName optColumnList? tableAccessMethodClause (WITH reloptions)? (TABLESPACE name)?
     ;
 
-refreshMatViewStmt
-    : REFRESH MATERIALIZED VIEW CONCURRENTLY? qualifiedName (WITH DATA | WITH NO DATA)?
-    ;
-
 alterPolicy
     : ALTER POLICY name ON tableName alterPolicyClauses
     ;
@@ -987,6 +983,10 @@ alterPolicy
 alterPolicyClauses
     : (TO roleList)? (USING LP_ aExpr RP_)? (WITH CHECK LP_ aExpr RP_)?
     | RENAME TO name
+    ;
+
+refreshMatViewStmt
+    : REFRESH MATERIALIZED VIEW CONCURRENTLY? qualifiedName (WITH DATA | WITH NO DATA)?
     ;
 
 alterProcedure

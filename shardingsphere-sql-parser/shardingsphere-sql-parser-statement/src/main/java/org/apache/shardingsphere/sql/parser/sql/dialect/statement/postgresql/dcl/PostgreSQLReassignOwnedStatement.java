@@ -15,22 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dcl;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedDatabase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlElement;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.ReassignOwnedStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 
 /**
- * Show sharding audit algorithms statement test case.
+ * PostgreSQL reassign owned statement.
  */
-@Getter
-@Setter
-public final class ShowShardingAuditAlgorithmsStatementTestCase extends SQLParserTestCase {
-    
-    @XmlElement
-    private ExpectedDatabase database;
+@ToString
+public final class PostgreSQLReassignOwnedStatement extends ReassignOwnedStatement implements PostgreSQLStatement {
 }
