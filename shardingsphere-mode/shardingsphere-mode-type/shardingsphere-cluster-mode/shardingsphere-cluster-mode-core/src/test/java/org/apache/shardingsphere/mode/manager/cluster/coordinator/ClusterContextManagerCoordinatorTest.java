@@ -279,7 +279,7 @@ public final class ClusterContextManagerCoordinatorTest {
     @Test
     public void assertRenewPrimaryDataSourceName() {
         Collection<ShardingSphereRule> rules = new LinkedList<>();
-        RestartHeartBeatJobRule mockRestartHeartBeatJobRule= mock(RestartHeartBeatJobRule.class);
+        RestartHeartBeatJobRule mockRestartHeartBeatJobRule = mock(RestartHeartBeatJobRule.class);
         rules.add(mockRestartHeartBeatJobRule);
         ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(rules);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
