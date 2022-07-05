@@ -166,7 +166,7 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
         initAwareAndHeartBeatJobs(instanceContext);
     }
     
-    private void initAwareAndHeartBeatJobs(InstanceContext instanceContext) {
+    private void initAwareAndHeartBeatJobs(final InstanceContext instanceContext) {
         DynamicDataSourceStrategyFactory.findInstance().ifPresent(optional -> optional.init(this));
         initHeartBeatJobs(instanceContext.getInstance().getCurrentInstanceId());
     }
