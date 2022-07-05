@@ -198,9 +198,10 @@ public final class DatabaseTypeEngineTest {
         props.setProperty(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "H2");
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration()));
         assertThat(DatabaseTypeEngine.getProtocolType(Collections.singletonMap("logic_db", databaseConfig), new ConfigurationProperties(props)), instanceOf(MySQLDatabaseType.class));
+        props.setProperty(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "");
+        assertThat(DatabaseTypeEngine.getProtocolType(Collections.singletonMap("logic_db", databaseConfig), new ConfigurationProperties(props)), instanceOf(MySQLDatabaseType.class));
         DataSource datasource = mockDataSource(DatabaseTypeFactory.getInstance("PostgreSQL"));
         databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("", datasource), Collections.singleton(new FixtureRuleConfiguration()));
-        props = new Properties();
         assertThat(DatabaseTypeEngine.getProtocolType(Collections.singletonMap("logic_db", databaseConfig), new ConfigurationProperties(props)), instanceOf(PostgreSQLDatabaseType.class));
     }
     
