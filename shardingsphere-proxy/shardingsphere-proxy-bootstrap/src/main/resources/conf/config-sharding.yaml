@@ -73,7 +73,11 @@
 #      shardingAlgorithmName: database_inline
 #  defaultTableStrategy:
 #    none:
-#  
+#  auditStrategy:
+#    auditAlgorithmNames:
+#      - sharding_key_required_audit_algorithm
+#    allowHintDisable: true
+#
 #  shardingAlgorithms:
 #    database_inline:
 #      type: INLINE
@@ -91,6 +95,10 @@
 #  keyGenerators:
 #    snowflake:
 #      type: SNOWFLAKE
+#
+#  auditAlgorithms:
+#    sharding_key_required_audit_algorithm:
+#      type: DML_SHARDING_CONDITIONS
 #
 #  scalingName: default_scaling
 #  scaling:
@@ -113,6 +121,14 @@
 #        type: DATA_MATCH
 #        props:
 #          chunk-size: 1000
+#
+#  auditAlgorithms:
+#    sharding_key_required_audit_algorithm:
+#      type: DML_SHARDING_CONDITIONS
+#  auditStrategy:
+#    auditAlgorithmNames:
+#      - sharding_key_required_audit_algorithm
+#    allowHintDisable: true
 
 ######################################################################################################
 #
@@ -171,6 +187,10 @@
 #      shardingAlgorithmName: database_inline
 #  defaultTableStrategy:
 #    none:
+#  auditStrategy:
+#    auditAlgorithmNames:
+#      - sharding_key_required_audit_algorithm
+#    allowHintDisable: true
 #
 #  shardingAlgorithms:
 #    database_inline:
@@ -189,6 +209,10 @@
 #  keyGenerators:
 #    snowflake:
 #      type: SNOWFLAKE
+#
+#  auditAlgorithms:
+#    sharding_key_required_audit_algorithm:
+#      type: DML_SHARDING_CONDITIONS
 #
 #  scalingName: default_scaling
 #  scaling:
@@ -211,12 +235,3 @@
 #        type: DATA_MATCH
 #        props:
 #          chunk-size: 1000
-
-#  When shard auditing is required, the following properties can be configured
-#  auditAlgorithms:
-#    audit_algorithm1:
-#      type: DML_SHARDING_CONDITIONS
-#  auditStrategy:
-#    auditAlgorithmNames:
-#      - audit_algorithm1
-#    allowHintDisable: true
