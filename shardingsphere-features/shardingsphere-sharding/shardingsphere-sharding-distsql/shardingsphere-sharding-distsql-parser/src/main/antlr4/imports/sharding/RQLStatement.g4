@@ -35,8 +35,8 @@ showShardingAlgorithms
     : SHOW SHARDING ALGORITHMS (FROM databaseName)?
     ;
 
-showShardingAuditAlgorithms
-    : SHOW SHARDING AUDIT ALGORITHMS (FROM databaseName)?
+showShardingAuditors
+    : SHOW SHARDING AUDITORS (FROM databaseName)?
     ;
 
 showShardingTableNodes

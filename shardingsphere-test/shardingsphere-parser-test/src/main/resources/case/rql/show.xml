@@ -42,9 +42,9 @@
         <database name="databaseName" start-index="30" stop-index="41"/>
     </show-sharding-algorithms>
 
-    <show-sharding-audit-algorithms sql-case-id="show-sharding-audit-algorithms-from">
-        <database name="databaseName" start-index="36" stop-index="47"/>
-    </show-sharding-audit-algorithms>
+    <show-sharding-auditors sql-case-id="show-sharding-auditors-from">
+        <database name="databaseName" start-index="28" stop-index="39"/>
+    </show-sharding-auditors>
     
     <show-readwrite-splitting-rules sql-case-id="show-readwrite-splitting-rules">
         <database name="readwrite_splitting_db" start-index="36" stop-index="57"/>

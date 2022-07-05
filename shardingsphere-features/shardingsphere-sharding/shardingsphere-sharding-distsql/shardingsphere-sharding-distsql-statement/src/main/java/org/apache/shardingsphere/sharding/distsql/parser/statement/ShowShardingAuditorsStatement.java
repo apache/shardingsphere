@@ -15,22 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql;
+package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.schema.ExpectedDatabase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
-
-import javax.xml.bind.annotation.XmlElement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
- * Show sharding audit algorithms statement test case.
+ * Show sharding audit algorithms statement.
  */
-@Getter
-@Setter
-public final class ShowShardingAuditAlgorithmsStatementTestCase extends SQLParserTestCase {
+public final class ShowShardingAuditorsStatement extends ShowRulesStatement {
     
-    @XmlElement
-    private ExpectedDatabase database;
+    public ShowShardingAuditorsStatement(final DatabaseSegment database) {
+        super(database);
+    }
 }

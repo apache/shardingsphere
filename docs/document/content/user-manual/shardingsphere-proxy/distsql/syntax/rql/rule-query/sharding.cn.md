@@ -14,7 +14,7 @@ SHOW SHARDING ALGORITHMS [FROM databaseName]
 
 SHOW UNUSED SHARDING ALGORITHMS [FROM databaseName]
     
-SHOW SHARDING AUDIT ALGORITHMS [FROM databaseName]
+SHOW SHARDING AUDITORS [FROM databaseName]
 
 SHOW SHARDING TABLE RULES USED ALGORITHM algorithmName [FROM databaseName]
 
@@ -89,7 +89,7 @@ SHOW SHARDING SCALING RULES [FROM databaseName]
 | type  | 分片算法类型    |
 | props | 分片算法参数    |
 
-### Sharding Audit Algorithms
+### Sharding Auditors
 
 | 列     | 说明              |
 | ------|-------------------|
@@ -205,9 +205,9 @@ mysql> SHOW UNUSED SHARDING ALGORITHMS;
 1 row in set (0.01 sec)
 ```
 
-*SHOW SHARDING AUDIT ALGORITHMS*
+*SHOW SHARDING AUDITORS*
 ```sql
-mysql> SHOW SHARDING AUDIT ALGORITHMS;
+mysql> SHOW SHARDING AUDITORS;
 +------------+-------------------------+-------+
 | name       | type                    | props |
 +------------+-------------------------+-------+

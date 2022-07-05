@@ -37,7 +37,7 @@ execute
     | showShardingBindingTableRules
     | showShardingBroadcastTableRules
     | showShardingAlgorithms
-    | showShardingAuditAlgorithms
+    | showShardingAuditors
     | setShardingHintDatabaseValue
     | addShardingHintDatabaseValue
     | addShardingHintTableValue

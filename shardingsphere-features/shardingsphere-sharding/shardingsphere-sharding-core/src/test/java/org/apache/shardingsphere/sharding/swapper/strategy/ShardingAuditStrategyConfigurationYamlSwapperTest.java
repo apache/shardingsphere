@@ -35,19 +35,19 @@ public final class ShardingAuditStrategyConfigurationYamlSwapperTest {
     public void assertSwapToYaml() {
         YamlShardingAuditStrategyConfiguration actual = new ShardingAuditStrategyConfigurationYamlSwapper()
                 .swapToYamlConfiguration(new ShardingAuditStrategyConfiguration(Arrays.asList("audit_algorithm1", "audit_algorithm2"), false));
-        assertThat(actual.getAuditAlgorithmNames().size(), is(2));
-        assertTrue(actual.getAuditAlgorithmNames().containsAll(Arrays.asList("audit_algorithm1", "audit_algorithm2")));
+        assertThat(actual.getAuditorNames().size(), is(2));
+        assertTrue(actual.getAuditorNames().containsAll(Arrays.asList("audit_algorithm1", "audit_algorithm2")));
         assertFalse(actual.isAllowHintDisable());
     }
     
     @Test
     public void assertSwapToObject() {
         YamlShardingAuditStrategyConfiguration yamlShardingAuditStrategyConfig = new YamlShardingAuditStrategyConfiguration();
-        yamlShardingAuditStrategyConfig.setAuditAlgorithmNames(Arrays.asList("audit_algorithm1", "audit_algorithm2"));
+        yamlShardingAuditStrategyConfig.setAuditorNames(Arrays.asList("audit_algorithm1", "audit_algorithm2"));
         yamlShardingAuditStrategyConfig.setAllowHintDisable(false);
         ShardingAuditStrategyConfiguration actual = new ShardingAuditStrategyConfigurationYamlSwapper().swapToObject(yamlShardingAuditStrategyConfig);
-        assertThat(actual.getAuditAlgorithmNames().size(), is(2));
-        assertTrue(actual.getAuditAlgorithmNames().containsAll(Arrays.asList("audit_algorithm1", "audit_algorithm2")));
+        assertThat(actual.getAuditorNames().size(), is(2));
+        assertTrue(actual.getAuditorNames().containsAll(Arrays.asList("audit_algorithm1", "audit_algorithm2")));
         assertFalse(actual.isAllowHintDisable());
     }
     
