@@ -65,7 +65,7 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
     
     @Mock
     private KeyGenerateStrategyConfigurationYamlSwapper keyGenerateStrategyConfigurationYamlSwapper;
-
+    
     @Mock
     private ShardingAuditStrategyConfigurationYamlSwapper shardingAuditStrategyConfigurationYamlSwapper;
     
