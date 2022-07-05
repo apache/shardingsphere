@@ -284,7 +284,8 @@ public final class ContextManager implements AutoCloseable {
      * @param ruleConfigs rule configurations
      */
     @SuppressWarnings("rawtypes")
-    public synchronized void alterDataSourceAndRuleConfiguration(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap, final Collection<RuleConfiguration> ruleConfigs) {
+    public synchronized void alterDataSourceAndRuleConfiguration(final String databaseName,
+                                                                 final Map<String, DataSourceProperties> dataSourcePropsMap, final Collection<RuleConfiguration> ruleConfigs) {
         try {
             Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
             SwitchingResource switchingResource = new ResourceSwitchManager().create(metaDataContexts.getMetaData().getDatabases().get(databaseName).getResource(), dataSourcePropsMap);
