@@ -162,5 +162,6 @@ execute
     | alterRoutine
     | alterRule
     | createCollation
+    | prepareTransaction
     ) SEMI_? EOF
     ;

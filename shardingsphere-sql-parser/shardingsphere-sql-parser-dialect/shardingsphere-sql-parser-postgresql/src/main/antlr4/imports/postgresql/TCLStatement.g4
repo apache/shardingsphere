@@ -64,10 +64,6 @@ rollbackToSavepoint
     : ROLLBACK (WORK | TRANSACTION)? TO SAVEPOINT? colId
     ;
 
-prepareTransaction
-    : PREPARE TRANSACTION STRING_
-    ;
-
 commitPrepared
     : COMMIT PREPARED STRING_
     ;
@@ -101,4 +97,8 @@ lockType
     | SHARE ROW EXCLUSIVE
     | EXCLUSIVE
     | ACCESS EXCLUSIVE
+    ;
+
+prepareTransaction
+    : PREPARE TRANSACTION STRING_
     ;
