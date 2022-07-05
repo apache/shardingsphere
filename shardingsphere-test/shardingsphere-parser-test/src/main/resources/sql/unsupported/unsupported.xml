@@ -4627,33 +4627,6 @@
     <sql-case id="insert_by_postgresql_source_test_case395" value="INSERT INTO truncate_b DEFAULT VALUES;" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case396" value="INSERT INTO truncate_b DEFAULT VALUES;" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case428" value="INSERT INTO y2 (SELECT x, md5(x::text) FROM generate_series(0,20) x);" db-types="PostgreSQL" />
-    <sql-case id="reassign_by_postgresql_source_test_case1" value="REASSIGN OWNED BY regress_dep_user0 TO regress_dep_user1;" db-types="PostgreSQL" />
-    <sql-case id="reassign_by_postgresql_source_test_case2" value="REASSIGN OWNED BY regress_dep_user1 TO regress_dep_user0;" db-types="PostgreSQL" />
-    <sql-case id="reassign_by_postgresql_source_test_case3" value="REASSIGN OWNED BY regress_dep_user1 TO regress_dep_user2;" db-types="PostgreSQL" />
-    <sql-case id="reassign_by_postgresql_source_test_case4" value="REASSIGN OWNED BY regress_test_role TO regress_test_role2;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case1" value="REFRESH MATERIALIZED VIEW CONCURRENTLY mvtest_boxmv;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case2" value="REFRESH MATERIALIZED VIEW CONCURRENTLY mvtest_mv;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case3" value="REFRESH MATERIALIZED VIEW CONCURRENTLY mvtest_mv;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case4" value="REFRESH MATERIALIZED VIEW CONCURRENTLY mvtest_mv_foo;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case5" value="REFRESH MATERIALIZED VIEW CONCURRENTLY mvtest_mv_v;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case6" value="REFRESH MATERIALIZED VIEW CONCURRENTLY mvtest_tm;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case7" value="REFRESH MATERIALIZED VIEW CONCURRENTLY mvtest_tvmm WITH NO DATA;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case8" value="REFRESH MATERIALIZED VIEW CONCURRENTLY mvtest_tvmm;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case9" value="REFRESH MATERIALIZED VIEW matview_schema.mv_nodata2;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case10" value="REFRESH MATERIALIZED VIEW matview_schema.mv_withdata2;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case11" value="REFRESH MATERIALIZED VIEW mvtest_mv;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case12" value="REFRESH MATERIALIZED VIEW mvtest_mv;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case13" value="REFRESH MATERIALIZED VIEW mvtest_mv_foo;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case14" value="REFRESH MATERIALIZED VIEW mvtest_mv_v;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case15" value="REFRESH MATERIALIZED VIEW mvtest_mv_v_2;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case16" value="REFRESH MATERIALIZED VIEW mvtest_mv_v_3;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case17" value="REFRESH MATERIALIZED VIEW mvtest_mv_v_4;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case18" value="REFRESH MATERIALIZED VIEW mvtest_tm;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case19" value="REFRESH MATERIALIZED VIEW mvtest_tmm;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case20" value="REFRESH MATERIALIZED VIEW mvtest_tvm;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case21" value="REFRESH MATERIALIZED VIEW mvtest_tvmm;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case22" value="REFRESH MATERIALIZED VIEW mvtest_tvvm;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case23" value="REFRESH MATERIALIZED VIEW tid_matview;" db-types="PostgreSQL" />
     <sql-case id="reindex_by_postgresql_source_test_case1" value="REINDEX (CONCURRENTLY) TABLE concur_reindex_tab;" db-types="PostgreSQL" />
     <sql-case id="reindex_by_postgresql_source_test_case2" value="REINDEX (VERBOSE) TABLE reindex_verbose;" db-types="PostgreSQL" />
     <sql-case id="reindex_by_postgresql_source_test_case3" value="REINDEX INDEX CONCURRENTLY  concur_reindex_tab3_c2_excl;" db-types="PostgreSQL" />
@@ -6860,9 +6833,6 @@
     <sql-case id="low_prepare_by_postgresql_source_test_case3" value="prepare q as   select &apos;some\more_text&apos; as &quot;a$title&quot;, E&apos;  #&lt;foo&gt;%&amp;^~|\n{bar}&apos; as &quot;junk&quot;,          &apos;   &apos; as &quot;empty&quot;, n as int   from generate_series(1,2) as n;" db-types="PostgreSQL" />
     <sql-case id="low_prepare_by_postgresql_source_test_case4" value="prepare q as   select &apos;some\text&apos; as &quot;a\title&quot;, E&apos;  &lt;foo&gt;\n&lt;bar&gt;&apos; as &quot;junk&quot;,          &apos;   &apos; as &quot;empty&quot;, n as int   from generate_series(1,2) as n;" db-types="PostgreSQL" />
     <sql-case id="low_prepare_by_postgresql_source_test_case5" value="prepare q as   select &apos;some|text&apos; as &quot;a|title&quot;, &apos;        &apos; as &quot;empty &quot;, n as int   from generate_series(1,2) as n;" db-types="PostgreSQL" />
-    <sql-case id="low_refresh_by_postgresql_source_test_case1" value="refresh materialized view concurrently parallel_mat_view;" db-types="PostgreSQL" />
-    <sql-case id="low_refresh_by_postgresql_source_test_case2" value="refresh materialized view mvtest_error;" db-types="PostgreSQL" />
-    <sql-case id="low_refresh_by_postgresql_source_test_case3" value="refresh materialized view parallel_mat_view;" db-types="PostgreSQL" />
     <sql-case id="low_reindex_by_postgresql_source_test_case1" value="reindex index gist_pointidx;" db-types="PostgreSQL" />
     <sql-case id="low_reindex_by_postgresql_source_test_case2" value="reindex index spgist_point_idx;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case2" value="select &apos;&quot;\b\f\r\n\t\v\&quot;\&apos;&apos;\\&quot;&apos;::jsonpath;" db-types="PostgreSQL" />
