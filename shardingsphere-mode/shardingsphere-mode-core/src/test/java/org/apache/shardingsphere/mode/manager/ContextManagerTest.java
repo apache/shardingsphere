@@ -262,7 +262,7 @@ public final class ContextManagerTest {
         MetaDataPersistService metaDataPersistService = mock(MetaDataPersistService.class);
         when(metaDataPersistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataPersistService);
         when(metaDataContexts.getPersistService()).thenReturn(Optional.of(metaDataPersistService));
-        contextManager.reloadDatabaseMetaData("foo_db");
+        contextManager.reloadDatabase("foo_db");
         verify(databaseMetaDataPersistService, times(1)).deleteSchema(eq("foo_db"), eq("foo_schema"));
         verify(databaseMetaDataPersistService, times(1)).persistMetaData(eq("foo_db"), eq("foo_db"), any(ShardingSphereSchema.class));
     }

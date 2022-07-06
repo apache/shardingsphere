@@ -362,11 +362,11 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
-     * Reload database meta data.
+     * Reload database.
      *
      * @param databaseName to be reloaded database name
      */
-    public synchronized void reloadDatabaseMetaData(final String databaseName) {
+    public synchronized void reloadDatabase(final String databaseName) {
         try {
             ShardingSphereResource currentResource = metaDataContexts.getMetaData().getDatabases().get(databaseName).getResource();
             SwitchingResource switchingResource = new SwitchingResource(currentResource, currentResource.getDataSources(), Collections.emptyMap());
