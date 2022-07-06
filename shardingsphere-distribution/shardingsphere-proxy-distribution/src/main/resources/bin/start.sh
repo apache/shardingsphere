@@ -61,10 +61,29 @@ JAVA_MEM_OPTS=" -server -Xmx2g -Xms2g -Xmn1g -Xss1m -XX:AutoBoxCacheMax=4096 -XX
 
 MAIN_CLASS=org.apache.shardingsphere.proxy.Bootstrap
 
+#PORT=-1
+#ADDRESSES=""
+#CONF_PATH=""
+#
+unset -v PORT
+unset -v ADDRESSES
+unset -v CONF_PATH
+
+
 print_usage() {
-    echo "usage: start.sh [port] [config_dir]"
+    echo "usage:"
+    echo "start.sh [port] [config_dir]"
     echo "  port: proxy listen port, default is 3307"
-    echo "  config_dir: proxy config directory, default is conf"
+    echo "  config_dir: proxy config directory, default is 'conf"
+    echo ""
+    echo "start.sh [-h addresses] [-p port] [-c /path/to/conf]"
+    echo "The options are unordered."
+    echo "-h  Bind addresses, can be IPv4, IPv6, hostname. In"
+    echo "    case more than one address is specified in a"
+    echo "    comma-separated list. The default value is '0.0.0.0'."
+    echo "-p  Bind port, default is '3307', which could be changed in server.yaml"
+    echo "-c  Path to config directory of ShardingSphere-Proxy, default it 'conf'"
+
     exit 0
 }
 
@@ -87,18 +106,46 @@ if [ $# == 0 ]; then
     CLASS_PATH=${DEPLOY_DIR}/conf:${CLASS_PATH}
 fi
 
-if [ $# == 1 ]; then
-    MAIN_CLASS=${MAIN_CLASS}" "$1
-    echo "The port is $1"
-    CLASS_PATH=${DEPLOY_DIR}/conf:${CLASS_PATH}
-fi
+if [[ $1 == -* ]] ; then
+    while getopts ":a:p:c:" opt
+    do
+        case $opt in
+        a)
+          echo "The address is $OPTARG"
+          ADDRESSES=$OPTARG;;
+        p)
+          echo "The port is $OPTARG"
+          PORT=$OPTARG;;
+        c)
+          echo "The configuration path is $DEPLOY_DIR/$OPTARG"
+          CONF_PATH=$DEPLOY_DIR/$OPTARG;;
+        ?)
+          print_usage;;
+        esac
 
-if [ $# == 2 ]; then
-    MAIN_CLASS=${MAIN_CLASS}" "$1" "$2
+    done
+
+elif [ $# == 1 ]; then
+    PORT=$1
+    echo "The port is $1"
+
+elif [ $# == 2 ]; then
+    PORT=$1
+    CONF_PATH=$DEPLOY_DIR/$2
     echo "The port is $1"
     echo "The configuration path is $DEPLOY_DIR/$2"
-    CLASS_PATH=${DEPLOY_DIR}/$2:${CLASS_PATH}
 fi
+
+if [ -z "$CONF_PATH" ]; then
+    CONF_PATH=${DEPLOY_DIR}/conf
+fi
+
+if [ -z "$PORT" ]; then
+    PORT=-1
+fi
+
+CLASS_PATH=${CONF_PATH}:${CLASS_PATH}
+MAIN_CLASS=${MAIN_CLASS}" "${PORT}" "${CONF_PATH}" "${ADDRESSES}
 
 echo "The classpath is ${CLASS_PATH}"
 
