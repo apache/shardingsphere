@@ -134,7 +134,7 @@ jobs:
       matrix:
         env: [ docker ]
         adapter: [ proxy, jdbc ]
-        database: [ MySQL, PostgreSQL ]
+        database: [ MySQL ]
         scenario: [ db, tbl, encrypt, readwrite_splitting, shadow ]
     steps:
       - uses: actions/checkout@v2
