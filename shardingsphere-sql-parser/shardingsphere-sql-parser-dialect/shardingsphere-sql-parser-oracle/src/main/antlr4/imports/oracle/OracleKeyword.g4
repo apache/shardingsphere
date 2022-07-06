@@ -2842,3 +2842,19 @@ PRUNING
 DEMAND
     : D E M A N D
     ;
+
+ANCILLARY
+    : A N C I L L A R Y
+    ;
+
+BINDING
+    : B I N D I N G
+    ;
+
+SCAN
+    : S C A N
+    ;
+
+COMPUTE
+    : C O M P U T E
+    ;

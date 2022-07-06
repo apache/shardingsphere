@@ -2536,3 +2536,40 @@ zonemapRefreshClause
     : REFRESH (FAST | COMPLETE | FORCE)?
       (ON (DEMAND | COMMIT | LOAD | DATA MOVEMENT | LOAD DATA MOVEMENT) )?
     ;
+
+alterOperator
+    : ALTER OPERATOR operatorName (addBindingClause | dropBindingClause | COMPILE)
+    ;
+
+addBindingClause
+    : ADD BINDING LP_ parameterType (COMMA_ parameterType)* RP_
+      RETURN LP_ returnType RP_ implementationClause? usingFunctionClause
+    ;
+
+implementationClause
+    : (ANCILLARY TO primaryOperatorClause (COMMA_ primaryOperatorClause)*) | contextClauseWithOpeartor
+    ;
+
+primaryOperatorClause
+    : operatorName LP_ parameterType (COMMA_ parameterType) RP_
+    ;
+
+contextClauseWithOpeartor
+    : withIndexClause? withColumnClause?
+    ;
+
+withIndexClause
+    : WITH INDEX CONTEXT COMMA_ SCAN CONTEXT implementationType (COMPUTE ANCILLARY DATA)?
+    ;
+
+withColumnClause
+    : WITH COLUMN CONTEXT
+    ;
+
+usingFunctionClause
+    : USING (schemaName DOT_)? (packageName DOT_ | typeName DOT_)? functionName
+    ;
+
+dropBindingClause
+    : DROP BINDING LP_ parameterType (COMMA_ parameterType) RP_ FORCE?
+    ;

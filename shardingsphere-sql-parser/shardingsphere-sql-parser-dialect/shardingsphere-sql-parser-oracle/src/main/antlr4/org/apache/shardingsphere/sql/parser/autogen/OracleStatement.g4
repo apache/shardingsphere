@@ -109,5 +109,6 @@ execute
     | dropOperator
     | alterLibrary
     | alterMaterializedZonemap
+    | alterOperator
     ) SEMI_?
     ;

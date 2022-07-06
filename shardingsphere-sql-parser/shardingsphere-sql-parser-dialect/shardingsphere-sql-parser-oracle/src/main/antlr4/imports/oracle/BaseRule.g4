@@ -1313,3 +1313,11 @@ restorePointName
 libraryName
     : identifier
     ;
+
+parameterType
+    : identifier
+    ;
+
+returnType
+    : identifier
+    ;
