@@ -61,20 +61,15 @@ JAVA_MEM_OPTS=" -server -Xmx2g -Xms2g -Xmn1g -Xss1m -XX:AutoBoxCacheMax=4096 -XX
 
 MAIN_CLASS=org.apache.shardingsphere.proxy.Bootstrap
 
-#PORT=-1
-#ADDRESSES=""
-#CONF_PATH=""
-#
 unset -v PORT
 unset -v ADDRESSES
 unset -v CONF_PATH
-
 
 print_usage() {
     echo "usage:"
     echo "start.sh [port] [config_dir]"
     echo "  port: proxy listen port, default is 3307"
-    echo "  config_dir: proxy config directory, default is 'conf"
+    echo "  config_dir: proxy config directory, default is 'conf'"
     echo ""
     echo "start.sh [-h addresses] [-p port] [-c /path/to/conf]"
     echo "The options are unordered."
@@ -83,7 +78,6 @@ print_usage() {
     echo "    comma-separated list. The default value is '0.0.0.0'."
     echo "-p  Bind port, default is '3307', which could be changed in server.yaml"
     echo "-c  Path to config directory of ShardingSphere-Proxy, default it 'conf'"
-
     exit 0
 }
 
@@ -99,8 +93,6 @@ print_version() {
 if [ "$1" == "-v" ] || [ "$1" == "--version" ] ; then
     print_version
 fi
-
-echo "Starting the $SERVER_NAME ..."
 
 if [ $# == 0 ]; then
     CLASS_PATH=${DEPLOY_DIR}/conf:${CLASS_PATH}
@@ -147,6 +139,7 @@ fi
 CLASS_PATH=${CONF_PATH}:${CLASS_PATH}
 MAIN_CLASS=${MAIN_CLASS}" "${PORT}" "${CONF_PATH}" "${ADDRESSES}
 
+echo "Starting the $SERVER_NAME ..."
 echo "The classpath is ${CLASS_PATH}"
 
 nohup java ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &
