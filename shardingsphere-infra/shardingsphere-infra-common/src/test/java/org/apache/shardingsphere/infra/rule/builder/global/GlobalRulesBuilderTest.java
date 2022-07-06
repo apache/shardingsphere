@@ -43,12 +43,15 @@ public final class GlobalRulesBuilderTest {
     
     @Test
     public void assertBuildRules() {
-        assertThat(GlobalRulesBuilder.buildRules(Collections.singletonList(new FixtureGlobalRuleConfiguration()), Collections.singletonMap("logic_db", buildShardingSphereDatabase()), buildInstanceContext()).size(), is(1));
+        Collection<ShardingSphereRule> shardingSphereRules = GlobalRulesBuilder
+                .buildRules(Collections.singletonList(new FixtureGlobalRuleConfiguration()), Collections.singletonMap("logic_db", buildShardingSphereDatabase()), buildInstanceContext());
+        assertThat(shardingSphereRules.size(), is(1));
     }
     
     @Test
     public void assertBuildRulesClassType() {
-        Collection<ShardingSphereRule> shardingSphereRules = GlobalRulesBuilder.buildRules(Collections.singletonList(new FixtureGlobalRuleConfiguration()), Collections.singletonMap("logic_db", buildShardingSphereDatabase()), buildInstanceContext());
+        Collection<ShardingSphereRule> shardingSphereRules = GlobalRulesBuilder
+                .buildRules(Collections.singletonList(new FixtureGlobalRuleConfiguration()), Collections.singletonMap("logic_db", buildShardingSphereDatabase()), buildInstanceContext());
         assertTrue(shardingSphereRules.toArray()[0] instanceof FixtureGlobalRule);
     }
     
