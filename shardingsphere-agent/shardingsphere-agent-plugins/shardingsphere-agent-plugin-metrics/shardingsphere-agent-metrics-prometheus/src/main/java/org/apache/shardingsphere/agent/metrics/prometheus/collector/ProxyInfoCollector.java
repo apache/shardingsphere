@@ -36,30 +36,30 @@ import java.util.concurrent.ConcurrentHashMap;
  * Proxy information collector.
  */
 public final class ProxyInfoCollector extends Collector {
-    
+
     private static final String PROXY_STATE = "state";
-    
+
     private static final String PROXY_CLASS = "org.apache.shardingsphere.proxy.backend.context.ProxyContext";
-    
+
     private static final PrometheusWrapperFactory FACTORY = new PrometheusWrapperFactory();
-    
+
     private static final ConcurrentHashMap<StateType, Integer> PROXY_STATE_MAP = new ConcurrentHashMap<>();
-    
+
     static {
         PROXY_STATE_MAP.put(StateType.OK, 1);
         PROXY_STATE_MAP.put(StateType.CIRCUIT_BREAK, 2);
     }
-    
+
     @Override
     public List<MetricFamilySamples> collect() {
         if (!MetricsUtil.isClassExisted(PROXY_CLASS)) {
             return Collections.emptyList();
         }
         Optional<GaugeMetricFamily> proxyInfo = FACTORY.createGaugeMetricFamily(MetricIds.PROXY_INFO);
-        Optional<StateContext> stateContext = ProxyContext.getInstance().getStateContext();
-        if (!proxyInfo.isPresent() || !stateContext.isPresent()) {
+        if (ProxyContext.getInstance().getContextManager() == null || !proxyInfo.isPresent()) {
             return Collections.emptyList();
         }
+        Optional<StateContext> stateContext = ProxyContext.getInstance().getStateContext();
         List<MetricFamilySamples> result = new LinkedList<>();
         proxyInfo.get().addMetric(Collections.singletonList(PROXY_STATE), PROXY_STATE_MAP.get(stateContext.get().getCurrentState()));
         result.add(proxyInfo.get());

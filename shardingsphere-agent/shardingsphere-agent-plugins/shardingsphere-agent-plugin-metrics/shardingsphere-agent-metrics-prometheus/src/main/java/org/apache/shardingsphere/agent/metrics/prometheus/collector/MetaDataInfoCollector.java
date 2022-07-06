@@ -43,32 +43,32 @@ import java.util.Optional;
  */
 @Slf4j
 public final class MetaDataInfoCollector extends Collector {
-    
+
     private static final String LOGIC_DB_COUNT = "schema_count";
-    
+
     private static final String ACTUAL_DB_COUNT = "database_count";
-    
+
     private static final String PROXY_CONTEXT_CLASS = "org.apache.shardingsphere.proxy.backend.context.ProxyContext";
-    
+
     private static final PrometheusWrapperFactory FACTORY = new PrometheusWrapperFactory();
-    
+
     @Override
     public List<MetricFamilySamples> collect() {
         List<MetricFamilySamples> result = new LinkedList<>();
         Optional<GaugeMetricFamily> metaDataInfo = FACTORY.createGaugeMetricFamily(MetricIds.METADATA_INFO);
-        if (metaDataInfo.isPresent() && MetricsUtil.isClassExisted(PROXY_CONTEXT_CLASS)) {
+        if (ProxyContext.getInstance().getContextManager() != null && metaDataInfo.isPresent() && MetricsUtil.isClassExisted(PROXY_CONTEXT_CLASS)) {
             collectProxy(metaDataInfo.get());
             result.add(metaDataInfo.get());
         }
         return result;
     }
-    
+
     private void collectProxy(final GaugeMetricFamily metricFamily) {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         metricFamily.addMetric(Collections.singletonList(LOGIC_DB_COUNT), metaDataContexts.getMetaData().getDatabases().size());
         metricFamily.addMetric(Collections.singletonList(ACTUAL_DB_COUNT), getDatabaseNames(metaDataContexts).size());
     }
-    
+
     private Collection<String> getDatabaseNames(final MetaDataContexts metaDataContexts) {
         Collection<String> result = new HashSet<>();
         for (ShardingSphereDatabase each : metaDataContexts.getMetaData().getDatabases().values()) {
@@ -76,7 +76,7 @@ public final class MetaDataInfoCollector extends Collector {
         }
         return result;
     }
-    
+
     private Collection<String> getDatabaseNames(final ShardingSphereDatabase database) {
         Collection<String> result = new HashSet<>();
         for (DataSource each : database.getResource().getDataSources().values()) {
@@ -84,7 +84,7 @@ public final class MetaDataInfoCollector extends Collector {
         }
         return result;
     }
-    
+
     private Optional<String> getDatabaseName(final DataSource dataSource) {
         Object jdbcUrl = DataSourcePropertiesCreator.create(dataSource).getAllStandardProperties().get("url");
         if (null == jdbcUrl) {
