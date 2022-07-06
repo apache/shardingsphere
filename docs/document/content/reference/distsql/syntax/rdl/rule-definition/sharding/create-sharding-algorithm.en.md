@@ -5,7 +5,7 @@ weight = 2
 
 ## Description
 
-The `CREATE SHARDING ALGORITHM` syntax is used to create a sharding algorithm for the currently selected schema.
+The `CREATE SHARDING ALGORITHM` syntax is used to create a sharding algorithm for the currently selected database.
 
 ### Syntax
 

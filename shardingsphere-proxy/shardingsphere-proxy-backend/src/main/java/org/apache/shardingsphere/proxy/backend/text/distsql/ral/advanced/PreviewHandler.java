@@ -93,9 +93,8 @@ public final class PreviewHandler extends QueryableRALBackendHandler<PreviewStat
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         String databaseName = getDatabaseName();
         String databaseType = DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getMetaData().getDatabases().get(databaseName).getProtocolType());
-        Optional<SQLParserRule> sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class);
-        Preconditions.checkState(sqlParserRule.isPresent());
-        SQLStatement previewedStatement = sqlParserRule.get().getSQLParserEngine(databaseType).parse(getSqlStatement().getSql(), false);
+        SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
+        SQLStatement previewedStatement = sqlParserRule.getSQLParserEngine(databaseType).parse(getSqlStatement().getSql(), false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), previewedStatement, databaseName);
         // TODO optimize SQLStatementDatabaseHolder
         if (sqlStatementContext instanceof TableAvailable) {
@@ -109,7 +108,8 @@ public final class PreviewHandler extends QueryableRALBackendHandler<PreviewStat
             throw new RuleNotExistedException();
         }
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, getSqlStatement().getSql(), Collections.emptyList());
-        ExecutionContext executionContext = kernelProcessor.generateExecutionContext(logicSQL, database, metaDataContexts.getMetaData().getProps());
+        ExecutionContext executionContext = kernelProcessor.generateExecutionContext(
+                logicSQL, database, metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps());
         Collection<ExecutionUnit> executionUnits = executionContext.getRouteContext().isFederated()
                 ? getFederationExecutionUnits(logicSQL, databaseName, metaDataContexts)
                 : executionContext.getExecutionUnits();
@@ -117,7 +117,10 @@ public final class PreviewHandler extends QueryableRALBackendHandler<PreviewStat
     }
     
     private void setUpCursorDefinition(final SQLStatementContext<?> sqlStatementContext) {
-        String cursorName = ((CursorAvailable) sqlStatementContext).getCursorName().getIdentifier().getValue().toLowerCase();
+        if (!((CursorAvailable) sqlStatementContext).getCursorName().isPresent()) {
+            return;
+        }
+        String cursorName = ((CursorAvailable) sqlStatementContext).getCursorName().get().getIdentifier().getValue().toLowerCase();
         CursorStatementContext cursorStatementContext = getConnectionSession().getCursorDefinitions().get(cursorName);
         Preconditions.checkArgument(null != cursorStatementContext, "Cursor %s does not exist.", cursorName);
         ((CursorDefinitionAware) sqlStatementContext).setUpCursorDefinition(cursorStatementContext);
@@ -134,7 +137,7 @@ public final class PreviewHandler extends QueryableRALBackendHandler<PreviewStat
         FederationContext context = new FederationContext(true, logicSQL, metaDataContexts.getMetaData().getDatabases());
         DatabaseType databaseType = metaDataContexts.getMetaData().getDatabases().get(getDatabaseName()).getResource().getDatabaseType();
         String schemaName = logicSQL.getSqlStatementContext().getTablesContext().getSchemaName().orElse(DatabaseTypeEngine.getDefaultSchemaName(databaseType, databaseName));
-        FederationExecutor executor = FederationExecutorFactory.newInstance(databaseName, schemaName, metaDataContexts.getOptimizerContext(),
+        FederationExecutor executor = FederationExecutorFactory.newInstance(databaseName, schemaName, metaDataContexts.getOptimizerContext(), metaDataContexts.getMetaData().getGlobalRuleMetaData(),
                 metaDataContexts.getMetaData().getProps(), new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), false));
         executor.executeQuery(prepareEngine, createPreviewFederationCallback(sqlStatement, databaseType), context);
         return context.getExecutionUnits();

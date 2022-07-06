@@ -895,6 +895,10 @@ colId
     : identifier
     ;
 
+channelName
+    : identifier
+    ;
+
 typeFunctionName
     : identifier | unreservedWord | typeFuncNameKeyword
     ;
@@ -1384,6 +1388,7 @@ defArg
     | NUMBER_
     | STRING_
     | NONE
+    | funcName (LP_ funcArgsList RP_ | LP_ RP_)
     ;
 
 funcType
@@ -1808,10 +1813,8 @@ relationExprList
     ;
 
 relationExpr
-    : qualifiedName
-    | qualifiedName ASTERISK_
-    | ONLY qualifiedName
-    | ONLY LP_ qualifiedName RP_
+    : qualifiedName (ASTERISK_)?
+    | ONLY LP_? qualifiedName RP_?
     ;
 
 commonFuncOptItem
@@ -1850,12 +1853,12 @@ event
 typeNameList
     : typeName (COMMA_ typeName)*
     ;
-    
-notExistClause
+
+ifNotExists
     : IF NOT EXISTS
     ;
-    
-existClause
+
+ifExists
     : IF EXISTS
     ;
 

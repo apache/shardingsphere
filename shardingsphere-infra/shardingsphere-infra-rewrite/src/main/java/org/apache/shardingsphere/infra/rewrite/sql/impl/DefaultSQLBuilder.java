@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 public final class DefaultSQLBuilder extends AbstractSQLBuilder {
     
     public DefaultSQLBuilder(final SQLRewriteContext context) {
-        super(context);
+        super(context, null);
     }
     
     @Override

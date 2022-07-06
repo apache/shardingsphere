@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.advance;
 import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.ParseStatement;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
@@ -38,10 +39,10 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
 import java.util.LinkedList;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -57,9 +58,11 @@ public final class ParseDistSQLHandlerTest extends ProxyContextRestorer {
     
     @Before
     public void setUp() throws SQLException {
-        ProxyContext.init(contextManager);
-        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(SQLParserRule.class)).thenReturn(Optional.of(sqlParserRule));
+        ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(globalRuleMetaData.getSingleRule(SQLParserRule.class)).thenReturn(sqlParserRule);
         when(connectionSession.getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        ProxyContext.init(contextManager);
     }
     
     @Test
@@ -71,8 +74,8 @@ public final class ParseDistSQLHandlerTest extends ProxyContextRestorer {
         parseDistSQLHandler.execute();
         parseDistSQLHandler.next();
         SQLStatement statement = sqlParserRule.getSQLParserEngine("MySQL").parse(sql, false);
-        assertThat(new LinkedList<>(parseDistSQLHandler.getRowData()).getFirst(), is("MySQLSelectStatement"));
-        assertThat(new LinkedList<>(parseDistSQLHandler.getRowData()).getLast(), is(new Gson().toJson(statement)));
+        assertThat(new LinkedList<>(parseDistSQLHandler.getRowData().getData()).getFirst(), is("MySQLSelectStatement"));
+        assertThat(new LinkedList<>(parseDistSQLHandler.getRowData().getData()).getLast(), is(new Gson().toJson(statement)));
     }
     
     @Test(expected = SQLParsingException.class)

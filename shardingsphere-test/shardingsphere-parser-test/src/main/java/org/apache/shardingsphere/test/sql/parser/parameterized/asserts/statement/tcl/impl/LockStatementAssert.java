@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.LockStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.tcl.MySQLLockStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.tcl.PostgreSQLLockStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.LockStatementTestCase;
@@ -37,7 +38,7 @@ public final class LockStatementAssert {
     
     /**
      * Assert lock statement is correct with expected parser result.
-     * 
+     *
      * @param assertContext assert context
      * @param actual actual lock statement
      * @param expected expected lock statement test case
@@ -45,6 +46,18 @@ public final class LockStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final LockStatement actual, final LockStatementTestCase expected) {
         if (actual instanceof MySQLLockStatement) {
             MySQLLockStatement lockStatement = (MySQLLockStatement) actual;
+            if (null != expected.getTables() && !expected.getTables().isEmpty()) {
+                assertFalse(assertContext.getText("Actual lock statement should exist."), lockStatement.getTables().isEmpty());
+                int count = 0;
+                for (SimpleTableSegment each : lockStatement.getTables()) {
+                    TableAssert.assertIs(assertContext, each, expected.getTables().get(count));
+                    count++;
+                }
+            } else {
+                assertTrue(assertContext.getText("Actual lock statement should not exist."), lockStatement.getTables().isEmpty());
+            }
+        } else if (actual instanceof PostgreSQLLockStatement) {
+            PostgreSQLLockStatement lockStatement = (PostgreSQLLockStatement) actual;
             if (null != expected.getTables() && !expected.getTables().isEmpty()) {
                 assertFalse(assertContext.getText("Actual lock statement should exist."), lockStatement.getTables().isEmpty());
                 int count = 0;

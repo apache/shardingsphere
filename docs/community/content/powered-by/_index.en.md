@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 209 companies.
+Total: 214 companies.
 
 ### Infra Software
 <ul>
@@ -47,7 +47,8 @@ Total: 209 companies.
 ### FinTech
 <ul>
     <li><a href="http://jr.jd.com/" rel="nofollow">JD Finance</a>: <a href="https://www.mysql.com/customers/view/?id=1461" rel="nofollow">User Case</a></li>
-    <li><a href="http://www.sunline-i.com/" rel="nofollow">Sunline</a></li>    
+    <li><a href="https://tech.pingan.com/" rel="nofollow">PING AN TECHNOLOGY</a></li>
+    <li><a href="http://www.sunline-i.com/" rel="nofollow">Sunline</a></li> 
     <li><a href="https://www.360jinrong.net/" rel="nofollow">360 ShuKe</a></li>
     <li><a href="https://www.msxf.com/" rel="nofollow">MSXF</a></li>
     <li><a href="https://www.9fgroup.com/" rel="nofollow">9fgroup</a></li>
@@ -125,6 +126,7 @@ Total: 209 companies.
     <li><a href="https://www.teddymobile.cn/" rel="nofollow">Teddy Mobile</a></li>
     <li><a href="https://www.ecopiatech.com/" rel="nofollow">Ecopia</a></li>
     <li><a href="https://xiaoman.cn/" rel="nofollow">OKKI CRM</a></li>
+    <li><a href="https://www.wegooooo.com/" rel="nofollow">wegooooo.com</a></li>
 </ul>
 
 ### Transportation
@@ -207,6 +209,7 @@ Total: 209 companies.
 
 ### News
 <ul>
+    <li><a href="http://www.people.com.cn/" rel="nofollow">people.cn</a></li>
     <li><a href="https://ss.sohu.com/" rel="nofollow">Sohu News</a></li>
     <li><a href="https://www.tianya.cn/" rel="nofollow">TianYa</a></li>
     <li><a href="https://www.autohome.com.cn/" rel="nofollow">AutoHome</a></li>
@@ -291,6 +294,8 @@ Total: 209 companies.
     <li><a href="http://www.hzsun.com" rel="nofollow">hzsun</a></li>
     <li><a href="https://www.ywwl.com/" rel="nofollow">YOWANT</a></li>
     <li><a href="http://www.le7soft.com/" rel="nofollow">Le7Soft</a></li>
+    <li><a href="http://www.hylink.net.cn/" rel="nofollow">hyLink</a></li>
+    <li><a href="https://www.data4truth.com" rel="nofollow">data4truth</a></li>
 </ul>
 
 ### Health Care

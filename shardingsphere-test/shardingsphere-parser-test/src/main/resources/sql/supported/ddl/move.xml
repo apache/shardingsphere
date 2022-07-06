@@ -17,18 +17,20 @@
   -->
 
 <sql-cases>
-    <sql-case id="move_next" value="MOVE NEXT FROM t_order_cursor;" db-types="openGauss" />
-    <sql-case id="move_prior" value="MOVE PRIOR FROM t_order_cursor;" db-types="openGauss" />
-    <sql-case id="move_first" value="MOVE FIRST FROM t_order_cursor;" db-types="openGauss" />
-    <sql-case id="move_last" value="MOVE LAST FROM t_order_cursor;" db-types="openGauss" />
-    <sql-case id="move_absolute_count" value="MOVE ABSOLUTE 10 FROM t_order_cursor;" db-types="openGauss" />
-    <sql-case id="move_relative_count" value="MOVE RELATIVE 10 FROM t_order_cursor;" db-types="openGauss" />
-    <sql-case id="move_count" value="MOVE 10 FROM t_order_cursor;" db-types="openGauss" />
-    <sql-case id="move_all" value="MOVE ALL FROM t_order_cursor;" db-types="openGauss" />
-    <sql-case id="move_forward" value="MOVE FORWARD FROM t_order_cursor;" db-types="openGauss" />
-    <sql-case id="move_forward_count" value="MOVE FORWARD 10 FROM t_order_cursor;" db-types="openGauss" />
-    <sql-case id="move_forward_all" value="MOVE FORWARD ALL FROM t_order_cursor;" db-types="openGauss" />
-    <sql-case id="move_backward" value="MOVE BACKWARD FROM t_order_cursor;" db-types="openGauss" />
-    <sql-case id="move_backward_count" value="MOVE BACKWARD 10 FROM t_order_cursor;" db-types="openGauss" />
-    <sql-case id="move_backward_all" value="MOVE BACKWARD ALL FROM t_order_cursor;" db-types="openGauss" />
+    <sql-case id="move_cursor" value="MOVE t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="move_cursor_with_from" value="MOVE FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="move_cursor_with_next" value="MOVE NEXT FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="move_cursor_with_prior" value="MOVE PRIOR FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="move_cursor_with_first" value="MOVE FIRST FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="move_cursor_with_last" value="MOVE LAST FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="move_cursor_with_absolute_count" value="MOVE ABSOLUTE 10 FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="move_cursor_with_relative_count" value="MOVE RELATIVE 10 FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="move_cursor_with_count" value="MOVE 10 FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="move_cursor_with_all" value="MOVE ALL FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="move_cursor_with_forward" value="MOVE FORWARD FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="move_cursor_with_forward_count" value="MOVE FORWARD 10 FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="move_cursor_with_forward_all" value="MOVE FORWARD ALL FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="move_cursor_with_backward" value="MOVE BACKWARD FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="move_cursor_with_backward_count" value="MOVE BACKWARD 10 FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
+    <sql-case id="move_cursor_with_backward_all" value="MOVE BACKWARD ALL FROM t_order_cursor;" db-types="openGauss,PostgreSQL" />
 </sql-cases>

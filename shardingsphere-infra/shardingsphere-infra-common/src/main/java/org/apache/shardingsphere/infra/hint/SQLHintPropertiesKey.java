@@ -29,11 +29,6 @@ import org.apache.shardingsphere.infra.properties.TypedPropertyKey;
 public enum SQLHintPropertiesKey implements TypedPropertyKey {
     
     /**
-     * Hint data source name.
-     */
-    DATASOURCE_NAME_KEY("dataSourceName", "", String.class),
-    
-    /**
      * Whether hint route write data source or not.
      */
     WRITE_ROUTE_ONLY_KEY("writeRouteOnly", String.valueOf(Boolean.FALSE), boolean.class),
@@ -46,7 +41,12 @@ public enum SQLHintPropertiesKey implements TypedPropertyKey {
     /**
      * Whether hint skip encrypt rewrite or not.
      */
-    SKIP_ENCRYPT_REWRITE_KEY("skipEncryptRewrite", String.valueOf(Boolean.FALSE), boolean.class);
+    SKIP_ENCRYPT_REWRITE_KEY("skipEncryptRewrite", String.valueOf(Boolean.FALSE), boolean.class),
+    
+    /**
+     * Hint disable audit names.
+     */
+    DISABLE_AUDIT_NAMES("disableAuditNames", "", String.class);
     
     private final String key;
     

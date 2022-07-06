@@ -4,9 +4,11 @@ weight = 6
 chapter = true
 +++
 
+## 背景信息
+
 Apache ShardingSphere 提供属性配置的方式配置系统级配置。
 
-## 配置项说明
+## 参数解释
 
 | *名称*                              | *数据类型*  | *说明*                                                                                                                                                                      | *默认值*  |
 | ---------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
@@ -15,5 +17,17 @@ Apache ShardingSphere 提供属性配置的方式配置系统级配置。
 | kernel-executor-size (?)           | int        | 用于设置任务处理线程池的大小<br />每个 ShardingSphereDataSource 使用一个独立的线程池，同一个 JVM 的不同数据源不共享线程池                                                                  | infinite |
 | max-connections-size-per-query (?) | int        | 一次查询请求在每个数据库实例中所能使用的最大连接数                                                                                                                                   | 1        |
 | check-table-metadata-enabled (?)   | boolean    | 在程序启动和更新时，是否检查分片元数据的结构一致性                                                                                                                                   | false    |
-| check-duplicate-table-enabled (?)  | boolean    | 在程序启动和更新时，是否检查重复表                                                                                                                                                | false    |
 | sql-federation-enabled (?)         | boolean    | 是否开启联邦查询                                                                                                                                                               | false    |
+
+## 操作步骤
+
+属性配置直接配置在 ShardingSphere-JDBC 所使用的配置文件中，格式如下：
+
+```yaml
+props:
+    sql-show: true
+```
+
+## 配置示例
+
+ShardingSphere 仓库的示例中包含了多种不同场景的属性配置，请参考：<https://github.com/apache/shardingsphere/tree/master/examples/shardingsphere-jdbc-example>

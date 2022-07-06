@@ -60,3 +60,4 @@ SELECT i.* FROM t_order_1 o JOIN t_order_item_1 i ON o.order_id=i.order_id WHERE
 
 指所有的分片数据源中仅唯一存在的表。
 适用于数据量不大且无需分片的表。
+用户需要保证单表的唯一性，如果单表在同一个数据库的同一个 schema 下重复，ShardingSphere 只会加载第一个单表用于 SQL 路由。

@@ -28,11 +28,12 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShard
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableRuleQueryResultSet;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesStatement;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -45,10 +46,8 @@ public final class ShardingTableRuleQueryResultSetTest {
     
     @Test
     public void assertGetRowData() {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createRuleConfiguration()));
         DistSQLResultSet resultSet = new ShardingTableRuleQueryResultSet();
-        resultSet.init(database, mock(ShowShardingTableRulesStatement.class));
+        resultSet.init(mockDatabase(), mock(ShowShardingTableRulesStatement.class));
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(actual.size(), is(14));
         assertThat(actual.get(0), is("t_order"));
@@ -64,6 +63,14 @@ public final class ShardingTableRuleQueryResultSetTest {
         assertThat(actual.get(10), is("algorithm-expression=t_order_${order_id % 2}"));
         assertThat(actual.get(11), is("order_id"));
         assertThat(actual.get(12), is("SNOWFLAKE"));
+    }
+    
+    private ShardingSphereDatabase mockDatabase() {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
+        when(result.getRuleMetaData().findSingleRule(ShardingRule.class)).thenReturn(Optional.of(rule));
+        return result;
     }
     
     private RuleConfiguration createRuleConfiguration() {

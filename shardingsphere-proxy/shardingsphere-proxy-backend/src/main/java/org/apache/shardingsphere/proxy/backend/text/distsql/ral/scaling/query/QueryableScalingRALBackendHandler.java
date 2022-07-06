@@ -20,6 +20,8 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.scaling.query;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
@@ -59,7 +61,12 @@ public final class QueryableScalingRALBackendHandler extends DatabaseRequiredBac
     }
     
     @Override
-    public Collection<Object> getRowData() {
-        return resultSet.getRowData();
+    public QueryResponseRow getRowData() {
+        Collection<Object> rowData = resultSet.getRowData();
+        List<QueryResponseCell> result = new ArrayList<>(rowData.size());
+        for (Object each : rowData) {
+            result.add(new QueryResponseCell(Types.CHAR, each));
+        }
+        return new QueryResponseRow(result);
     }
 }

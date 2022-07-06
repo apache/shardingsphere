@@ -22,11 +22,11 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -40,21 +40,11 @@ public final class ScalingCaseHelper {
     /**
      * Get query properties by database type.
      *
-     * @param databaseType database type
      * @return query properties
      */
-    public static Properties getQueryPropertiesByDatabaseType(final DatabaseType databaseType) {
+    public static Properties getPostgreSQLQueryProperties() {
         Properties result = new Properties();
-        if (databaseType instanceof MySQLDatabaseType) {
-            result.put("useSSL", Boolean.FALSE.toString());
-            result.put("rewriteBatchedStatements", Boolean.TRUE.toString());
-            result.put("serverTimezone", "UTC");
-            return result;
-        }
-        if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
-            result.put("preferQueryMode", "extendedForPrepared");
-            return result;
-        }
+        result.put("preferQueryMode", "extendedForPrepared");
         return result;
     }
     
@@ -87,7 +77,7 @@ public final class ScalingCaseHelper {
             } else {
                 orderData.add(new Object[]{keyGenerateAlgorithm.generateKey(), orderId, userId, generateString(6), randomInt,
                         BigDecimal.valueOf(generateDouble(1, 100)), true, generateString(2), generateString(2), generateFloat(),
-                        generateDouble(0, 1000)});
+                        generateDouble(0, 1000), LocalDateTime.now(), OffsetDateTime.now()});
             }
             orderItemData.add(new Object[]{keyGenerateAlgorithm.generateKey(), orderId, userId, "SUCCESS"});
         }

@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.integration.data.pipeline.cases.general;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseExtraSQLITCase;
 import org.apache.shardingsphere.integration.data.pipeline.cases.task.MySQLIncrementTask;
-import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
@@ -31,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -44,8 +46,6 @@ import static org.junit.Assert.assertTrue;
 @RunWith(Parameterized.class)
 public final class MySQLGeneralScalingIT extends BaseExtraSQLITCase {
     
-    private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
-    
     private final ScalingParameterized parameterized;
     
     public MySQLGeneralScalingIT(final ScalingParameterized parameterized) {
@@ -57,8 +57,16 @@ public final class MySQLGeneralScalingIT extends BaseExtraSQLITCase {
     @Parameters(name = "{0}")
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
-        for (String version : ENV.getMysqlVersions()) {
-            result.add(new ScalingParameterized(new MySQLDatabaseType(), version, "env/scenario/general/mysql.xml"));
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NONE) {
+            return result;
+        }
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
+            for (String version : ENV.getMysqlVersions()) {
+                result.add(new ScalingParameterized(new MySQLDatabaseType(), version, "env/scenario/general/mysql.xml"));
+            }
+        }
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE && StringUtils.equalsIgnoreCase(ENV.getNativeDatabaseType(), "MySQL")) {
+            result.add(new ScalingParameterized(new MySQLDatabaseType(), "", "env/scenario/general/mysql.xml"));
         }
         return result;
     }
@@ -82,7 +90,13 @@ public final class MySQLGeneralScalingIT extends BaseExtraSQLITCase {
         startIncrementTask(new MySQLIncrementTask(getJdbcTemplate(), keyGenerateAlgorithm, true));
         addTargetResource();
         executeWithLog(getCommonSQLCommand().getAutoAlterOrderWithItemShardingTableRule());
-        assertCheckMatchConsistencySuccess();
+        String jobId = getScalingJobId();
+        waitScalingFinished(jobId);
+        assertCheckScalingSuccess(jobId);
+        applyScaling(jobId);
+        assertPreviewTableSuccess("t_order", Arrays.asList("ds_2", "ds_3", "ds_4"));
+        assertPreviewTableSuccess("t_order_item", Arrays.asList("ds_2", "ds_3", "ds_4"));
+        restoreScalingSourceWriting(jobId);
         assertRestoreScalingSourceWriting();
     }
 }

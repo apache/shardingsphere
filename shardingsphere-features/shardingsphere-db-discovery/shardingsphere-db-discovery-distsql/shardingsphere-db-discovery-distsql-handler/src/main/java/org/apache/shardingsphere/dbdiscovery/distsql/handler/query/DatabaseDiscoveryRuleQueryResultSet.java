@@ -40,7 +40,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Result set for show database discovery rule.
+ * Query result set for show database discovery rule.
  */
 public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultSet {
     

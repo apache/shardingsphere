@@ -51,7 +51,7 @@ public final class DropDatabaseBackendHandler implements TextProtocolBackendHand
         if (isDropCurrentDatabase(sqlStatement.getDatabaseName())) {
             connectionSession.setCurrentDatabase(null);
         }
-        ProxyContext.getInstance().getContextManager().deleteDatabase(sqlStatement.getDatabaseName());
+        ProxyContext.getInstance().getContextManager().dropDatabase(sqlStatement.getDatabaseName());
         return new UpdateResponseHeader(sqlStatement);
     }
     
@@ -60,7 +60,7 @@ public final class DropDatabaseBackendHandler implements TextProtocolBackendHand
         if (!SQLCheckEngine.check(databaseName, getRules(databaseName), grantee)) {
             throw new UnknownDatabaseException(databaseName);
         }
-        if (!sqlStatement.isContainsExistClause() && !ProxyContext.getInstance().getAllDatabaseNames().contains(databaseName)) {
+        if (!sqlStatement.isIfExists() && !ProxyContext.getInstance().getAllDatabaseNames().contains(databaseName)) {
             throw new DBDropNotExistsException(databaseName);
         }
     }

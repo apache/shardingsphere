@@ -39,7 +39,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
- * Result set for show encrypt rule.
+ * Query result set for show encrypt rule.
  */
 public final class EncryptRuleQueryResultSet implements DistSQLResultSet {
     

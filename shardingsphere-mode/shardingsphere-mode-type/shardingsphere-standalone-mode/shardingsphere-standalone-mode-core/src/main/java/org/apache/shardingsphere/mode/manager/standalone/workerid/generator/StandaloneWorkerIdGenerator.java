@@ -26,7 +26,7 @@ public final class StandaloneWorkerIdGenerator implements WorkerIdGenerator {
     
     @Override
     public long generate() {
-        // TODO
+        // TODO need to support custom configuration of worker-id
         return 0;
     }
 }

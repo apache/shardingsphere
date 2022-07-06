@@ -20,5 +20,5 @@
     <close sql-case-id="close_cursor">
         <cursor-name name="t_order_cursor" start-index="6" stop-index="19" />
     </close>
-    <close sql-case-id="close_all_cursor" />
+    <close sql-case-id="close_all_cursor" close-all="true" />
 </sql-parser-test-cases>

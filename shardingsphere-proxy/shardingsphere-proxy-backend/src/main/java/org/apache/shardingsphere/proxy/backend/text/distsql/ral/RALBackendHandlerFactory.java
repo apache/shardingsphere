@@ -34,7 +34,6 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.S
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowTrafficRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowTransactionRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowVariableStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.AlterInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.AlterTrafficRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.AlterTransactionRuleStatement;
@@ -68,7 +67,6 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ShowTrafficRulesHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ShowTransactionRuleHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ShowVariableHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.AlterInstanceHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.AlterSQLParserRuleHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.AlterTrafficRuleHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.AlterTransactionRuleHandler;
@@ -107,7 +105,6 @@ public final class RALBackendHandlerFactory {
         HANDLERS.put(UnlabelInstanceStatement.class, UnlabelInstanceHandler.class);
         HANDLERS.put(SetInstanceStatusStatement.class, SetInstanceStatusHandler.class);
         HANDLERS.put(SetVariableStatement.class, SetVariableHandler.class);
-        HANDLERS.put(AlterInstanceStatement.class, AlterInstanceHandler.class);
         HANDLERS.put(SetReadwriteSplittingStatusStatement.class, SetReadwriteSplittingStatusHandler.class);
         HANDLERS.put(RefreshTableMetadataStatement.class, RefreshTableMetadataHandler.class);
         HANDLERS.put(CreateTrafficRuleStatement.class, CreateTrafficRuleHandler.class);

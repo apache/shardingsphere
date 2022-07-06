@@ -19,22 +19,21 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.lock.LockMode;
+import org.apache.shardingsphere.infra.lock.LockScope;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.ShardingSphereLockManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.ShardingSphereInterMutexLockHolder;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal.ShardingSphereInternalLockHolder;
+import org.apache.shardingsphere.mode.manager.lock.AbstractLockContext;
+import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDefinition;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
-
-import java.util.Set;
 
 /**
  * Distributed lock context.
  */
 @RequiredArgsConstructor
-public final class DistributedLockContext implements LockContext {
+public final class DistributedLockContext extends AbstractLockContext {
     
     static {
         ShardingSphereServiceLoader.register(ShardingSphereLockManager.class);
@@ -46,56 +45,36 @@ public final class DistributedLockContext implements LockContext {
     
     @Override
     public void initLockState(final InstanceContext instanceContext) {
-        loadLockManager(new ShardingSphereInterMutexLockHolder(repository, instanceContext.getInstance(), instanceContext.getComputeNodeInstances()));
+        loadLockManager(new ShardingSphereInternalLockHolder(repository, instanceContext.getInstance(), instanceContext.getComputeNodeInstances()));
     }
     
-    private void loadLockManager(final ShardingSphereInterMutexLockHolder lockHolder) {
+    private void loadLockManager(final ShardingSphereInternalLockHolder lockHolder) {
         lockManager = RequiredSPIRegistry.getRegisteredService(ShardingSphereLockManager.class);
         lockManager.init(lockHolder);
     }
     
     @Override
-    public ShardingSphereLock getLock() {
-        return lockManager.getDistributedLock();
+    public ShardingSphereLock getLock(final LockScope lockScope) {
+        return lockManager.getDistributedLock(lockScope);
     }
     
     @Override
-    public boolean tryLock(final String databaseName, final LockMode lockMode) {
-        return lockManager.tryLock(databaseName, lockMode);
+    protected boolean tryLock(final DatabaseLockNameDefinition lockNameDefinition) {
+        return lockManager.tryLock(lockNameDefinition);
     }
     
     @Override
-    public boolean tryLock(final String databaseName, final Set<String> schemaNames, final LockMode lockMode) {
-        return lockManager.tryLock(databaseName, schemaNames, lockMode);
+    protected boolean tryLock(final DatabaseLockNameDefinition lockNameDefinition, final long timeoutMilliseconds) {
+        return lockManager.tryLock(lockNameDefinition, timeoutMilliseconds);
     }
     
     @Override
-    public boolean tryLock(final String databaseName, final LockMode lockMode, final long timeoutMilliseconds) {
-        return lockManager.tryLock(databaseName, lockMode, timeoutMilliseconds);
+    protected void releaseLock(final DatabaseLockNameDefinition lockNameDefinition) {
+        lockManager.releaseLock(lockNameDefinition);
     }
     
     @Override
-    public boolean tryLock(final String databaseName, final Set<String> schemaNames, final LockMode lockMode, final long timeoutMilliseconds) {
-        return lockManager.tryLock(databaseName, schemaNames, lockMode, timeoutMilliseconds);
-    }
-    
-    @Override
-    public void releaseLock(final String databaseName) {
-        lockManager.releaseLock(databaseName);
-    }
-    
-    @Override
-    public void releaseLock(final String databaseName, final String schemaName) {
-        lockManager.releaseLock(databaseName, schemaName);
-    }
-    
-    @Override
-    public boolean isLocked(final String databaseName) {
-        return lockManager.isLocked(databaseName);
-    }
-    
-    @Override
-    public boolean isLocked(final String databaseName, final String schemaName) {
-        return lockManager.isLocked(databaseName, schemaName);
+    protected boolean isLocked(final DatabaseLockNameDefinition lockNameDefinition) {
+        return lockManager.isLocked(lockNameDefinition);
     }
 }

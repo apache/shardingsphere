@@ -73,9 +73,8 @@ public final class RegistryCenter {
      * @param computeNodeInstance compute node instance
      */
     public void onlineInstance(final ComputeNodeInstance computeNodeInstance) {
-        computeNodeStatusService.registerOnline(computeNodeInstance.getInstanceDefinition());
+        computeNodeStatusService.registerOnline(computeNodeInstance.getInstanceMetaData());
         computeNodeStatusService.persistInstanceLabels(computeNodeInstance.getCurrentInstanceId(), computeNodeInstance.getLabels());
-        computeNodeStatusService.persistInstanceXaRecoveryId(computeNodeInstance.getCurrentInstanceId(), computeNodeInstance.getXaRecoveryIds());
         listenerFactory.watchListeners();
     }
 }

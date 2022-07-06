@@ -4,11 +4,11 @@ weight = 2
 chapter = true
 +++
 
-## 简介
+## 背景信息
 
-Apache ShardingSphere 提供属性配置的方式配置系统级配置。
+Apache ShardingSphere 提供属性配置的方式配置系统级配置。本节介绍 `server.yaml` 中的配置项。
 
-## 配置项说明
+## 参数解释
 
 | *名称*                                | *数据类型*  | *说明*                                                                                                                                   | *默认值*    | *动态生效* |             
 |-------------------------------------|---------|----------------------------------------------------------------------------------------------------------------------------------------|----------|--------| 
@@ -33,3 +33,7 @@ Apache ShardingSphere 提供属性配置的方式配置系统级配置。
 
 属性配置可以通过 [DistSQL#RAL](/cn/user-manual/shardingsphere-proxy/distsql/syntax/ral/) 修改。
 支持动态修改的属性可以立即生效，不支持动态修改的属性需要重启后生效。
+
+## 配置示例
+
+完整配置示例请参考 ShardingSphere 仓库内的 `server.yaml`：<https://github.com/apache/shardingsphere/blob/aac0d3026e00575114701be603ec189a02a45747/shardingsphere-proxy/shardingsphere-proxy-bootstrap/src/main/resources/conf/server.yaml#L71-L93>

@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended;
 
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatement;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLTypeUnspecifiedSQLParameter;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
@@ -124,10 +123,11 @@ public final class PostgreSQLBatchedStatementsExecutor {
     }
     
     private ExecutionContext createExecutionContext(final LogicSQL logicSQL) {
-        SQLCheckEngine.check(logicSQL.getSqlStatementContext().getSqlStatement(), logicSQL.getParameters(),
+        SQLCheckEngine.check(logicSQL.getSqlStatementContext(), logicSQL.getParameters(),
                 metaDataContexts.getMetaData().getDatabases().get(connectionSession.getDatabaseName()).getRuleMetaData().getRules(),
                 connectionSession.getDatabaseName(), metaDataContexts.getMetaData().getDatabases(), null);
-        return kernelProcessor.generateExecutionContext(logicSQL, metaDataContexts.getMetaData().getDatabases().get(connectionSession.getDatabaseName()), metaDataContexts.getMetaData().getProps());
+        return kernelProcessor.generateExecutionContext(logicSQL, metaDataContexts.getMetaData().getDatabases().get(connectionSession.getDatabaseName()),
+                metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps());
     }
     
     /**

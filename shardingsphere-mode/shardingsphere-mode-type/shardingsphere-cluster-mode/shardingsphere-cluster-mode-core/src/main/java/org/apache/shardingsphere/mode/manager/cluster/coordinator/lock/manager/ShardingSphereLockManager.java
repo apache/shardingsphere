@@ -17,13 +17,12 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager;
 
-import org.apache.shardingsphere.infra.lock.LockMode;
+import org.apache.shardingsphere.infra.lock.LockScope;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.ShardingSphereInterMutexLockHolder;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal.ShardingSphereInternalLockHolder;
+import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDefinition;
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.required.RequiredSPI;
-
-import java.util.Set;
 
 /**
  * Lock manager of ShardingSphere.
@@ -36,92 +35,45 @@ public interface ShardingSphereLockManager extends RequiredSPI {
      *
      * @param lockHolder lock holder
      */
-    void init(ShardingSphereInterMutexLockHolder lockHolder);
+    void init(ShardingSphereInternalLockHolder lockHolder);
     
     /**
      * Get distributed lock.
      *
+     * @param lockScope lock scope
      * @return distributed lock
      */
-    ShardingSphereLock getDistributedLock();
+    ShardingSphereLock getDistributedLock(LockScope lockScope);
     
     /**
      * Try lock for database.
      *
-     * @param databaseName database name
-     * @param lockMode lock mode
+     * @param lockNameDefinition lock name definition
      * @return is locked or not
      */
-    boolean tryLock(String databaseName, LockMode lockMode);
+    boolean tryLock(DatabaseLockNameDefinition lockNameDefinition);
     
     /**
      * Try lock write for database.
      *
-     * @param databaseName database name
-     * @param lockMode lock mode
+     * @param lockNameDefinition lock name definition
      * @param timeoutMilliseconds timeout milliseconds
      * @return is locked or not
      */
-    boolean tryLock(String databaseName, LockMode lockMode, long timeoutMilliseconds);
-    
-    /**
-     * Try lock for schemas.
-     *
-     * @param databaseName database name
-     * @param schemaNames schema names
-     * @param lockMode lock mode
-     * @return is locked or not
-     */
-    default boolean tryLock(String databaseName, Set<String> schemaNames, LockMode lockMode) {
-        throw new UnsupportedOperationException();
-    }
-    
-    /**
-     * Try lock for schemas.
-     *
-     * @param databaseName database name
-     * @param schemaNames schema names
-     * @param lockMode lock mode
-     * @param timeoutMilliseconds timeout milliseconds
-     * @return is locked or not
-     */
-    default boolean tryLock(String databaseName, Set<String> schemaNames, LockMode lockMode, long timeoutMilliseconds) {
-        throw new UnsupportedOperationException();
-    }
+    boolean tryLock(DatabaseLockNameDefinition lockNameDefinition, long timeoutMilliseconds);
     
     /**
      * Release lock for database.
      *
-     * @param databaseName database name
+     * @param lockNameDefinition lock name definition
      */
-    void releaseLock(String databaseName);
-    
-    /**
-     * Release lock for schemas.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     */
-    default void releaseLock(String databaseName, String schemaName) {
-        throw new UnsupportedOperationException();
-    }
+    void releaseLock(DatabaseLockNameDefinition lockNameDefinition);
     
     /**
      * Is locked database.
      *
-     * @param databaseName database name
+     * @param lockNameDefinition lock name definition
      * @return is locked or not
      */
-    boolean isLocked(String databaseName);
-    
-    /**
-     * Is locked schema.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @return is locked or not
-     */
-    default boolean isLocked(String databaseName, String schemaName) {
-        throw new UnsupportedOperationException();
-    }
+    boolean isLocked(DatabaseLockNameDefinition lockNameDefinition);
 }

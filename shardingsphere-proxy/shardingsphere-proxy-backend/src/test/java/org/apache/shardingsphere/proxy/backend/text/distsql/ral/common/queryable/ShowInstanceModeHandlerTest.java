@@ -27,7 +27,6 @@ import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.junit.Test;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -49,7 +48,7 @@ public final class ShowInstanceModeHandlerTest extends ProxyContextRestorer {
         ProxyContext.init(contextManager);
         handler.execute();
         handler.next();
-        List<Object> data = new ArrayList<>(handler.getRowData());
+        List<Object> data = handler.getRowData().getData();
         assertThat(data.size(), is(5));
         assertThat(data.get(0), is("127.0.0.1@3309"));
         assertThat(data.get(1), is("Cluster"));
@@ -60,7 +59,7 @@ public final class ShowInstanceModeHandlerTest extends ProxyContextRestorer {
     
     private InstanceContext createInstanceContext() {
         InstanceContext result = mock(InstanceContext.class, RETURNS_DEEP_STUBS);
-        when(result.getInstance().getInstanceDefinition().getInstanceId()).thenReturn("127.0.0.1@3309");
+        when(result.getInstance().getInstanceMetaData().getId()).thenReturn("127.0.0.1@3309");
         when(result.getModeConfiguration()).thenReturn(new ModeConfiguration("Cluster",
                 new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance_ds", "127.0.0.1:2181", createProperties("key", "value1,value2")), false));
         return result;

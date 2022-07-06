@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.federation.executor.original.database.Fil
 import org.apache.shardingsphere.infra.federation.executor.original.table.FilterableTableScanExecutor;
 import org.apache.shardingsphere.infra.federation.executor.original.table.FilterableTableScanExecutorContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
 import java.sql.Connection;
@@ -56,6 +57,8 @@ public final class OriginalFederationExecutor implements FederationExecutor {
     private final String schemaName;
     
     private final OptimizerContext optimizerContext;
+    
+    private final ShardingSphereRuleMetaData globalRuleMetaData;
     
     private final ConfigurationProperties props;
     
@@ -91,7 +94,7 @@ public final class OriginalFederationExecutor implements FederationExecutor {
     private void addSchema(final CalciteConnection connection, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                            final JDBCExecutorCallback<? extends ExecuteResult> callback, final FederationContext federationContext) throws SQLException {
         FilterableTableScanExecutorContext executorContext = new FilterableTableScanExecutorContext(databaseName, schemaName, props, federationContext);
-        FilterableTableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, executorContext);
+        FilterableTableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, globalRuleMetaData, executorContext);
         FilterableDatabase database = new FilterableDatabase(optimizerContext.getFederationMetaData().getDatabases().get(databaseName), executor);
         // TODO support database.schema.table query when switch to CustomizedFilterableExecutor, calcite jdbc just support schema.table query now
         connection.getRootSchema().add(schemaName, database.getSubSchema(schemaName));

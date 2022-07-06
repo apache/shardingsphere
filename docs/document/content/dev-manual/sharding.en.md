@@ -41,6 +41,16 @@ chapter = true
 | CosIdSnowflakeKeyGenerateAlgorithm | Snowflake key generate algorithm provided by CosId |
 | NanoIdKeyGenerateAlgorithm         | NanoId key generate algorithm                      |
 
+## ShardingAuditAlgorithm
+
+| *SPI Name*                    | *Description*                    |
+| ----------------------------- | -------------------------------- |
+| ShardingAuditAlgorithm        | Sharding audit algorithm         |
+
+| *Implementation Class*                           | *Description*                                                 |
+|------------------------------------------------- |-------------------------------------------------------------- |
+| DMLShardingConditionsShardingAuditAlgorithm      | Prohibit DML auditing algorithm without sharding conditions   |
+
 ## DatetimeService
 
 | *SPI Name*                      | *Description*                                                |

@@ -44,8 +44,6 @@ import java.util.Optional;
  */
 public final class AlterTableStatementSchemaRefresher implements MetaDataRefresher<AlterTableStatement> {
     
-    private static final String TYPE = AlterTableStatement.class.getName();
-    
     @Override
     public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData,
                                                     final Map<String, OptimizerPlannerContext> optimizerPlanners,
@@ -82,7 +80,7 @@ public final class AlterTableStatementSchemaRefresher implements MetaDataRefresh
         GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(database.getProtocolType(),
                 database.getResource().getDatabaseType(), database.getResource().getDataSources(), database.getRuleMetaData().getRules(), props, schemaName);
         Map<String, ShardingSphereSchema> schemaMap = GenericSchemaBuilder.build(Collections.singletonList(tableName), materials);
-        Optional<ShardingSphereTable> actualTableMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.getTables().get(tableName));
+        Optional<ShardingSphereTable> actualTableMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.get(tableName));
         actualTableMetaData.ifPresent(optional -> {
             database.getSchemas().get(schemaName).put(tableName, optional);
             federationDatabaseMetaData.putTable(schemaName, optional);
@@ -97,6 +95,6 @@ public final class AlterTableStatementSchemaRefresher implements MetaDataRefresh
     
     @Override
     public String getType() {
-        return TYPE;
+        return AlterTableStatement.class.getName();
     }
 }

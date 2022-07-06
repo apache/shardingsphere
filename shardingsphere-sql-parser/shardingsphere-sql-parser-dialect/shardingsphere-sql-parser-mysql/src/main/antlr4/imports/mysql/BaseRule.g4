@@ -48,6 +48,8 @@ customKeyword
     | REDO_LOG
     | LAST_VALUE
     | PRIMARY
+    | MAXVALUE
+    | BIT_XOR
     ;
     
 literals
@@ -1261,11 +1263,11 @@ fieldOrVarSpec
     : LP_ (identifier (COMMA_ identifier)*)? RP_
     ;
     
-notExistClause
+ifNotExists
     : IF NOT EXISTS
     ;
     
-existClause
+ifExists
     : IF EXISTS
     ;
     

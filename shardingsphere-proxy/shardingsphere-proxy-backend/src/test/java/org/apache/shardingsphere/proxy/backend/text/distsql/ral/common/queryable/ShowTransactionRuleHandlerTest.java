@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowTransactionRuleStatement;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -27,7 +28,6 @@ import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Test;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
@@ -51,7 +51,7 @@ public final class ShowTransactionRuleHandlerTest extends ProxyContextRestorer {
         ProxyContext.init(contextManager);
         handler.execute();
         handler.next();
-        List<Object> data = new ArrayList<>(handler.getRowData());
+        List<Object> data = handler.getRowData().getData();
         assertThat(data.size(), is(3));
         assertThat(data.get(0), is("XA"));
         assertThat(data.get(1), is("Atomikos"));
@@ -70,7 +70,7 @@ public final class ShowTransactionRuleHandlerTest extends ProxyContextRestorer {
         ProxyContext.init(contextManager);
         handler.execute();
         handler.next();
-        List<Object> data = new ArrayList<>(handler.getRowData());
+        List<Object> data = handler.getRowData().getData();
         assertThat(data.size(), is(3));
         assertThat(data.get(0), is("LOCAL"));
         assertThat(data.get(1), is(""));
@@ -78,7 +78,7 @@ public final class ShowTransactionRuleHandlerTest extends ProxyContextRestorer {
     }
     
     private ShardingSphereRuleMetaData createGlobalRuleMetaData(final String defaultType, final String providerType, final Properties props) {
-        TransactionRule rule = new TransactionRule(new TransactionRuleConfiguration(defaultType, providerType, props), Collections.emptyMap());
+        TransactionRule rule = new TransactionRule(new TransactionRuleConfiguration(defaultType, providerType, props), Collections.emptyMap(), mock(InstanceContext.class));
         return new ShardingSphereRuleMetaData(Collections.singleton(rule));
     }
     

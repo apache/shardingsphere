@@ -110,9 +110,9 @@ public final class TableRuleTest {
     }
     
     @Test
-    public void assertGetActualDatasourceNames() {
+    public void assertGetActualDataSourceNames() {
         TableRule actual = new TableRule(new ShardingTableRuleConfiguration("LOGIC_TABLE", "ds${0..1}.table_${0..2}"), Arrays.asList("ds0", "ds1"), null);
-        assertThat(actual.getActualDatasourceNames(), is(new LinkedHashSet<>(Arrays.asList("ds0", "ds1"))));
+        assertThat(actual.getActualDataSourceNames(), is(new LinkedHashSet<>(Arrays.asList("ds0", "ds1"))));
     }
     
     @Test

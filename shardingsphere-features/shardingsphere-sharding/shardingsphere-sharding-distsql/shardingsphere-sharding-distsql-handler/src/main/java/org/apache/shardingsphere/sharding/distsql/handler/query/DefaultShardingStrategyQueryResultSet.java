@@ -38,7 +38,7 @@ import java.util.Map.Entry;
 import java.util.Optional;
 
 /**
- * Result set for show default sharding strategy.
+ * Query result set for show default sharding strategy.
  */
 public final class DefaultShardingStrategyQueryResultSet implements DistSQLResultSet {
     

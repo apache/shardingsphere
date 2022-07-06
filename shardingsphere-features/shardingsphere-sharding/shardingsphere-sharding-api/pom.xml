@@ -22,12 +22,17 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-sharding</artifactId>
-        <version>5.1.2-SNAPSHOT</version>
+        <version>5.1.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-sharding-api</artifactId>
     <name>${project.artifactId}</name>
     
     <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-infra-binder</artifactId>
+            <version>${project.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-infra-common</artifactId>

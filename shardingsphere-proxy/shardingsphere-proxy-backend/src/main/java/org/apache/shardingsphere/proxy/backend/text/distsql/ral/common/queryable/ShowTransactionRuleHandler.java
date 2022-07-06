@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
-import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowTransactionRuleStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -29,7 +28,6 @@ import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 
 /**
  * Show transaction rule handler.
@@ -49,9 +47,8 @@ public final class ShowTransactionRuleHandler extends QueryableRALBackendHandler
     
     @Override
     protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
-        Optional<TransactionRule> rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
-        Preconditions.checkState(rule.isPresent());
-        return Collections.singleton(new LocalDataQueryResultRow(rule.get().getDefaultType().name(),
-                null == rule.get().getProviderType() ? "" : rule.get().getProviderType(), null == rule.get().getProps() ? "" : new Gson().toJson(rule.get().getProps())));
+        TransactionRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
+        return Collections.singleton(new LocalDataQueryResultRow(
+                rule.getDefaultType().name(), null == rule.getProviderType() ? "" : rule.getProviderType(), null == rule.getProps() ? "" : new Gson().toJson(rule.getProps())));
     }
 }

@@ -42,8 +42,6 @@ import java.util.Optional;
  */
 public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresher<AlterIndexStatement> {
     
-    private static final String TYPE = AlterIndexStatement.class.getName();
-    
     @Override
     public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData,
                                                     final Map<String, OptimizerPlannerContext> optimizerPlanners,
@@ -75,6 +73,6 @@ public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresh
     
     @Override
     public String getType() {
-        return TYPE;
+        return AlterIndexStatement.class.getName();
     }
 }

@@ -23,12 +23,10 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 import org.apache.shardingsphere.transaction.core.TransactionType;
-import org.apache.shardingsphere.transaction.spi.TransactionConfigurationFileGeneratorFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,7 +38,7 @@ import java.util.Properties;
  */
 @Getter
 @Slf4j
-public final class TransactionRule implements GlobalRule, InstanceAwareRule, ResourceHeldRule<ShardingSphereTransactionManagerEngine> {
+public final class TransactionRule implements GlobalRule, ResourceHeldRule<ShardingSphereTransactionManagerEngine> {
     
     private final TransactionRuleConfiguration configuration;
     
@@ -52,24 +50,19 @@ public final class TransactionRule implements GlobalRule, InstanceAwareRule, Res
     
     private final Map<String, ShardingSphereDatabase> databases;
     
-    private volatile Map<String, ShardingSphereTransactionManagerEngine> resources;
+    private final Map<String, ShardingSphereTransactionManagerEngine> resources;
     
-    public TransactionRule(final TransactionRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases) {
+    public TransactionRule(final TransactionRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext) {
         configuration = ruleConfig;
         defaultType = TransactionType.valueOf(ruleConfig.getDefaultType().toUpperCase());
         providerType = ruleConfig.getProviderType();
         props = ruleConfig.getProps();
         this.databases = databases;
-    }
-    
-    @Override
-    public synchronized void setInstanceContext(final InstanceContext instanceContext) {
         resources = createTransactionManagerEngines(databases, instanceContext);
     }
     
     private Map<String, ShardingSphereTransactionManagerEngine> createTransactionManagerEngines(final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext) {
         Map<String, ShardingSphereTransactionManagerEngine> result = new HashMap<>(databases.keySet().size(), 1);
-        TransactionConfigurationFileGeneratorFactory.findInstance(providerType).ifPresent(optional -> optional.generateFile(props, instanceContext));
         for (Entry<String, ShardingSphereDatabase> entry : databases.entrySet()) {
             result.put(entry.getKey(), createTransactionManagerEngine(entry.getValue()));
         }

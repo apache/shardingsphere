@@ -71,15 +71,13 @@ public final class ConnectionTransactionTest {
     }
     
     private TransactionRule getLocalTransactionRule() {
-        TransactionRule result = new TransactionRule(new TransactionRuleConfiguration("LOCAL", null, new Properties()), Collections.emptyMap());
-        result.setInstanceContext(mock(InstanceContext.class));
+        TransactionRule result = new TransactionRule(new TransactionRuleConfiguration("LOCAL", null, new Properties()), Collections.emptyMap(), mock(InstanceContext.class));
         result.getResources().put(DefaultDatabase.LOGIC_NAME, new ShardingSphereTransactionManagerEngine());
         return result;
     }
     
     private TransactionRule getXATransactionRule() {
-        TransactionRule result = new TransactionRule(new TransactionRuleConfiguration("XA", "Atomikos", new Properties()), Collections.emptyMap());
-        result.setInstanceContext(mock(InstanceContext.class));
+        TransactionRule result = new TransactionRule(new TransactionRuleConfiguration("XA", "Atomikos", new Properties()), Collections.emptyMap(), mock(InstanceContext.class));
         result.getResources().put(DefaultDatabase.LOGIC_NAME, new ShardingSphereTransactionManagerEngine());
         return result;
     }

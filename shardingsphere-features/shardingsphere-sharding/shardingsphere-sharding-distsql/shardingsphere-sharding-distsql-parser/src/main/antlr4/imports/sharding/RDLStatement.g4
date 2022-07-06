@@ -44,11 +44,15 @@ alterDefaultShardingStrategy
     ;
 
 dropDefaultShardingStrategy
-    : DROP DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY existsClause?
+    : DROP DEFAULT SHARDING type=(DATABASE | TABLE) STRATEGY ifExists?
     ;
 
 createShardingKeyGenerator
     : CREATE SHARDING KEY GENERATOR keyGeneratorDefinition (COMMA keyGeneratorDefinition)*
+    ;
+
+createShardingAuditor
+    : CREATE SHARDING AUDITOR auditorDefinition (COMMA auditorDefinition)*
     ;
 
 alterShardingTableRule
@@ -72,23 +76,23 @@ alterShardingKeyGenerator
     ;
 
 dropShardingTableRule
-    : DROP SHARDING TABLE RULE existsClause? tableName (COMMA tableName)* withUnusedAlgorithmsClause?
+    : DROP SHARDING TABLE RULE ifExists? tableName (COMMA tableName)* withUnusedAlgorithmsClause?
     ;
 
 dropShardingBindingTableRules
-    : DROP SHARDING BINDING TABLE RULES existsClause? (bindTableRulesDefinition (COMMA bindTableRulesDefinition)*)?
+    : DROP SHARDING BINDING TABLE RULES ifExists? (bindTableRulesDefinition (COMMA bindTableRulesDefinition)*)?
     ;
 
 dropShardingBroadcastTableRules
-    : DROP SHARDING BROADCAST TABLE RULES existsClause? (tableName (COMMA tableName)*)?
+    : DROP SHARDING BROADCAST TABLE RULES ifExists? (tableName (COMMA tableName)*)?
     ;
 
 dropShardingAlgorithm
-    : DROP SHARDING ALGORITHM existsClause? algorithmName (COMMA algorithmName)*
+    : DROP SHARDING ALGORITHM ifExists? algorithmName (COMMA algorithmName)*
     ;
 
 dropShardingKeyGenerator
-    : DROP SHARDING KEY GENERATOR existsClause? keyGeneratorName (COMMA keyGeneratorName)*
+    : DROP SHARDING KEY GENERATOR ifExists? keyGeneratorName (COMMA keyGeneratorName)*
     ;
 
 shardingTableRuleDefinition
@@ -96,7 +100,7 @@ shardingTableRuleDefinition
     ;
 
 shardingAutoTableRule
-    : tableName LP resources COMMA shardingColumnDefinition COMMA algorithmDefinition (COMMA keyGenerateDeclaration)? RP
+    : tableName LP resources COMMA autoShardingColumnDefinition COMMA algorithmDefinition (COMMA keyGenerateDeclaration)? RP
     ;
 
 shardingTableRule
@@ -108,6 +112,14 @@ keyGeneratorDefinition
     ;
 
 keyGeneratorName
+    : IDENTIFIER
+    ;
+
+auditorDefinition
+    : auditorName LP algorithmDefinition RP
+    ;
+
+auditorName
     : IDENTIFIER
     ;
 
@@ -125,6 +137,10 @@ dataNodes
 
 dataNode
     : IDENTIFIER | STRING
+    ;
+
+autoShardingColumnDefinition
+    : shardingColumn
     ;
 
 shardingColumnDefinition
@@ -215,7 +231,7 @@ algorithmProperty
     : key=(IDENTIFIER | STRING) EQ value=(NUMBER | INT | IDENTIFIER | STRING)
     ;
 
-existClause
+ifExists
     : IF EXISTS
     ;
 

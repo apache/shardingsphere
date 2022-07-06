@@ -60,6 +60,7 @@ import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationT
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.parser.sql.SQLStatementParserEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -89,6 +90,8 @@ public final class FilterableTableScanExecutor {
     
     private final OptimizerContext optimizerContext;
     
+    private final ShardingSphereRuleMetaData globalRuleMetaData;
+    
     private final FilterableTableScanExecutorContext executorContext;
     
     /**
@@ -107,7 +110,7 @@ public final class FilterableTableScanExecutor {
         FederationContext federationContext = executorContext.getFederationContext();
         LogicSQL logicSQL = createLogicSQL(federationContext.getDatabases(), sqlString, databaseType);
         ShardingSphereDatabase database = federationContext.getDatabases().get(databaseName);
-        ExecutionContext context = new KernelProcessor().generateExecutionContext(logicSQL, database, executorContext.getProps());
+        ExecutionContext context = new KernelProcessor().generateExecutionContext(logicSQL, database, globalRuleMetaData, executorContext.getProps());
         if (federationContext.isPreview() || databaseType.getSystemSchemas().contains(schemaName)) {
             federationContext.getExecutionUnits().addAll(context.getExecutionUnits());
             return createEmptyEnumerable();

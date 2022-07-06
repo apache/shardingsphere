@@ -22,7 +22,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSe
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
-import java.util.Optional;
+import java.util.Collection;
 import java.util.Properties;
 
 /**
@@ -49,16 +49,6 @@ public final class SQLHintExtractor {
     }
     
     /**
-     * Find hint data source name.
-     *
-     * @return data source name
-     */
-    public Optional<String> findHintDataSourceName() {
-        String result = sqlHintProperties.getValue(SQLHintPropertiesKey.DATASOURCE_NAME_KEY);
-        return result.isEmpty() ? Optional.empty() : Optional.of(result);
-    }
-    
-    /**
      * Judge whether is hint routed to write data source or not.
      *
      * @return whether is hint routed to write data source or not
@@ -74,5 +64,14 @@ public final class SQLHintExtractor {
      */
     public boolean isHintSkipEncryptRewrite() {
         return sqlHintProperties.getValue(SQLHintPropertiesKey.SKIP_ENCRYPT_REWRITE_KEY);
+    }
+    
+    /**
+     * Find hint disable audit names.
+     *
+     * @return disable audit names
+     */
+    public Collection<String> findDisableAuditNames() {
+        return SQLHintUtils.getSplitterSQLHintValue(sqlHintProperties.getValue(SQLHintPropertiesKey.DISABLE_AUDIT_NAMES));
     }
 }

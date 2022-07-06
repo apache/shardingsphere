@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.sharding.cosid.algorithm.keygen;
 
-import java.util.Properties;
 import me.ahoo.cosid.IdGenerator;
 import me.ahoo.cosid.StringIdGenerator;
 import me.ahoo.cosid.converter.PrefixIdConverter;
@@ -32,6 +31,8 @@ import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstant
 import org.apache.shardingsphere.sharding.factory.KeyGenerateAlgorithmFactory;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.junit.Test;
+
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -88,7 +89,7 @@ public final class CosIdKeyGenerateAlgorithmTest {
     private Properties createAsStringProperties(final String idName) {
         Properties result = new Properties();
         result.setProperty(CosIdAlgorithmConstants.ID_NAME_KEY, idName);
-        result.setProperty(CosIdKeyGenerateAlgorithm.AS_STRING_KEY, Boolean.TRUE.toString());
+        result.setProperty("as-string", Boolean.TRUE.toString());
         return result;
     }
 }

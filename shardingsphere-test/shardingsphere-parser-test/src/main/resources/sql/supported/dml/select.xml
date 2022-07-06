@@ -126,6 +126,7 @@
     <sql-case id="select_with_for_xml_clause_with_directive" value="SELECT user_id, status FROM t_order WHERE order_id = 1 FOR XML RAW, ELEMENTS XSINIL" db-types="SQLServer" />
     <sql-case id="select_with_for_json_clause" value="SELECT order_id, status FROM t_order FOR JSON AUTO, INCLUDE_NULL_VALUES" db-types="SQLServer" />
     <sql-case id="select_with_keyword_target" value="SELECT m.target FROM sys_menu m" />
+    <sql-case id="select_with_keyword_maxvalue" value="SELECT m.maxvalue FROM sys_menu m" />
     <sql-case id="select_with_xml_namespaces_clause" value="WITH XMLNAMESPACES ('uri' AS ns1) SELECT order_id AS 'ns1:order_id', status AS 'ns1:status' FROM t_order FOR XML RAW ('ns1:order'), ELEMENTS" db-types="SQLServer" />
     <sql-case id="select_with_xml_default_namespaces_clause" value="WITH XMLNAMESPACES ('uri1' AS ns1, 'uri2' AS ns2, DEFAULT 'uri2') SELECT order_id AS 'ns1:order_id', status AS 'ns1:status' FROM t_order FOR XML RAW ('ns1:order'), ELEMENTS XSINIL" db-types="SQLServer" />
 </sql-cases>

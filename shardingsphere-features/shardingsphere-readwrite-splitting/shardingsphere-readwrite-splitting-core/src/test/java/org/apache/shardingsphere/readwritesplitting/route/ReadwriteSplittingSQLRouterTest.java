@@ -33,6 +33,8 @@ import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -62,7 +64,7 @@ public final class ReadwriteSplittingSQLRouterTest {
     
     private static final String DATASOURCE_NAME = "ds";
     
-    private static final String NONE_READWRITE_SPLITTING_DATASOURCE_NAME = "noneReadwriteSplittingDatasource";
+    private static final String NONE_READWRITE_SPLITTING_DATASOURCE_NAME = "noneReadwriteSplittingDataSource";
     
     private static final String WRITE_DATASOURCE = "write";
     
@@ -70,23 +72,23 @@ public final class ReadwriteSplittingSQLRouterTest {
     
     private ReadwriteSplittingRule rule;
     
+    private ReadwriteSplittingRule dynamicRule;
+    
     @Mock
     private CommonSQLStatementContext<SQLStatement> sqlStatementContext;
     
     private ReadwriteSplittingSQLRouter sqlRouter;
     
+    private ReadwriteSplittingSQLRouter dynamicSqlRouter;
+    
     @Before
     public void setUp() {
-        rule = new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(Collections.singleton(
-                new ReadwriteSplittingDataSourceRuleConfiguration(DATASOURCE_NAME, "Static", createProperties(), "")), Collections.emptyMap()));
+        rule = new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(Collections.singleton(new ReadwriteSplittingDataSourceRuleConfiguration(DATASOURCE_NAME,
+                new StaticReadwriteSplittingStrategyConfiguration(WRITE_DATASOURCE, Collections.singletonList(READ_DATASOURCE)), null, "")), Collections.emptyMap()));
         sqlRouter = (ReadwriteSplittingSQLRouter) SQLRouterFactory.getInstances(Collections.singleton(rule)).get(rule);
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("write-data-source-name", WRITE_DATASOURCE);
-        result.setProperty("read-data-source-names", READ_DATASOURCE);
-        return result;
+        dynamicRule = new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(Collections.singleton(new ReadwriteSplittingDataSourceRuleConfiguration(DATASOURCE_NAME, null,
+                new DynamicReadwriteSplittingStrategyConfiguration("readwrite_ds", "true"), "")), Collections.emptyMap()));
+        dynamicSqlRouter = (ReadwriteSplittingSQLRouter) SQLRouterFactory.getInstances(Collections.singleton(dynamicRule)).get(dynamicRule);
     }
     
     @Test
@@ -226,6 +228,34 @@ public final class ReadwriteSplittingSQLRouterTest {
                 mock(DatabaseType.class), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyMap());
         RouteContext actual = sqlRouter.createRouteContext(logicSQL, database, rule, new ConfigurationProperties(new Properties()));
         Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
+        assertThat(routedDataSourceNames.next(), is(WRITE_DATASOURCE));
+    }
+    
+    @Test
+    public void assertCreateRouteContextToPrimaryDataSourceWithWriteDataSourceQueryEnabled() {
+        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
+        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, "", Collections.emptyList());
+        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(dynamicRule));
+        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
+                mock(DatabaseType.class), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyMap());
+        RouteContext actual = dynamicSqlRouter.createRouteContext(logicSQL, database, dynamicRule, new ConfigurationProperties(new Properties()));
+        Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
+        assertThat(routedDataSourceNames.next(), is(WRITE_DATASOURCE));
+    }
+    
+    @Test
+    public void assertDecorateRouteContextToPrimaryDataSourceWithWriteDataSourceQueryEnabled() {
+        RouteContext actual = mockRouteContext();
+        MySQLSelectStatement selectStatement = mock(MySQLSelectStatement.class);
+        when(sqlStatementContext.getSqlStatement()).thenReturn(selectStatement);
+        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, "", Collections.emptyList());
+        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(Collections.singleton(dynamicRule));
+        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
+                mock(DatabaseType.class), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), ruleMetaData, Collections.emptyMap());
+        dynamicSqlRouter.decorateRouteContext(actual, logicSQL, database, dynamicRule, new ConfigurationProperties(new Properties()));
+        Iterator<String> routedDataSourceNames = actual.getActualDataSourceNames().iterator();
+        assertThat(routedDataSourceNames.next(), is(NONE_READWRITE_SPLITTING_DATASOURCE_NAME));
         assertThat(routedDataSourceNames.next(), is(WRITE_DATASOURCE));
     }
     

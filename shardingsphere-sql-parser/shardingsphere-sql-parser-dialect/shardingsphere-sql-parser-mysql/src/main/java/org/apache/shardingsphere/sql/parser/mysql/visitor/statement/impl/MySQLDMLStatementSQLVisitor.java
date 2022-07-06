@@ -50,6 +50,8 @@ public final class MySQLDMLStatementSQLVisitor extends MySQLStatementSQLVisitor 
     
     @Override
     public ASTNode visitDoStatement(final DoStatementContext ctx) {
-        return new MySQLDoStatement();
+        List<ExpressionSegment> parameters = new ArrayList<>();
+        ctx.expr().forEach(each -> parameters.add((ExpressionSegment) visit(each)));
+        return new MySQLDoStatement(parameters);
     }
 }

@@ -36,7 +36,7 @@ public final class DropDefaultStrategyStatementUpdater implements RuleDefinition
     @Override
     public void checkSQLStatement(final ShardingSphereDatabase database, final DropDefaultShardingStrategyStatement sqlStatement,
                                   final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isContainsExistClause()) {
+        if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isIfExists()) {
             return;
         }
         String databaseName = database.getName();
@@ -45,7 +45,7 @@ public final class DropDefaultStrategyStatementUpdater implements RuleDefinition
     }
     
     private void checkExist(final String databaseName, final DropDefaultShardingStrategyStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        if (sqlStatement.isContainsExistClause()) {
+        if (sqlStatement.isIfExists()) {
             return;
         }
         Optional<ShardingStrategyConfiguration> strategyConfig = getStrategyConfiguration(currentRuleConfig, sqlStatement.getDefaultType());

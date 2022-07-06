@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.StorageConnectorReusableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.metadata.storage.event.StorageNodeDataSourceChangedEvent;
@@ -48,7 +49,7 @@ import java.util.Optional;
 /**
  * Readwrite-splitting rule.
  */
-public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceContainedRule, StatusContainedRule, ExportableRule {
+public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceContainedRule, StatusContainedRule, ExportableRule, StorageConnectorReusableRule {
     
     @Getter
     private final RuleConfiguration configuration;
@@ -115,12 +116,10 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     
     @Override
     public void updateStatus(final DataSourceStatusChangedEvent event) {
-        if (event instanceof StorageNodeDataSourceChangedEvent) {
-            for (Entry<String, ReadwriteSplittingDataSourceRule> entry : dataSourceRules.entrySet()) {
-                StorageNodeDataSourceChangedEvent dataSourceChangedEvent = (StorageNodeDataSourceChangedEvent) event;
-                entry.getValue().updateDisabledDataSourceNames(dataSourceChangedEvent.getQualifiedDatabase().getDataSourceName(),
-                        StorageNodeStatus.isDisable(dataSourceChangedEvent.getDataSource().getStatus()));
-            }
+        for (Entry<String, ReadwriteSplittingDataSourceRule> entry : dataSourceRules.entrySet()) {
+            StorageNodeDataSourceChangedEvent dataSourceChangedEvent = (StorageNodeDataSourceChangedEvent) event;
+            entry.getValue().updateDisabledDataSourceNames(dataSourceChangedEvent.getQualifiedDatabase().getDataSourceName(),
+                    StorageNodeStatus.isDisable(dataSourceChangedEvent.getDataSource().getStatus()));
         }
     }
     

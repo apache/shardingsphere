@@ -49,6 +49,8 @@ execute
     | alterShardingKeyGenerator
     | showShardingKeyGenerators
     | dropShardingKeyGenerator
+    | showShardingAuditors
+    | createShardingAuditor
     | showShardingDefaultShardingStrategy
     | alterDefaultShardingStrategy
     | dropDefaultShardingStrategy

@@ -197,7 +197,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     
     private Map<String, Map<String, String>> getExportedReadwriteSplittingRules(final ContextManager contextManager, final String databaseName) {
         Map<String, Map<String, String>> result = new HashMap<>();
-        contextManager.getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getRuleMetaData().findRules(ReadwriteSplittingRule.class).stream().findAny()
+        contextManager.getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class)
                 .filter(each -> new RuleExportEngine(each)
                         .containExportableKey(Arrays.asList(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE)))
                 .map(each -> new RuleExportEngine(each).export(Arrays.asList(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE)))

@@ -38,9 +38,11 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -50,7 +52,7 @@ import static org.mockito.Mockito.when;
 
 public final class ShowDatabasesExecutorTest extends ProxyContextRestorer {
     
-    private static final String SCHEMA_PATTERN = "schema_%s";
+    private static final String DATABASE_PATTERN = "database_%s";
     
     private ShowDatabasesExecutor showDatabasesExecutor;
     
@@ -70,7 +72,7 @@ public final class ShowDatabasesExecutorTest extends ProxyContextRestorer {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
             when(database.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
             when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-            result.put(String.format(SCHEMA_PATTERN, i), database);
+            result.put(String.format(DATABASE_PATTERN, i), database);
         }
         return result;
     }
@@ -79,29 +81,37 @@ public final class ShowDatabasesExecutorTest extends ProxyContextRestorer {
     public void assertExecute() throws SQLException {
         showDatabasesExecutor.execute(mockConnectionSession());
         assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
-        int count = 0;
-        while (showDatabasesExecutor.getMergedResult().next()) {
-            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is(String.format(SCHEMA_PATTERN, count)));
-            count++;
-        }
+        assertThat(getActual(), is(getExpected()));
     }
     
     @Test
     public void assertExecuteWithPrefixLike() throws SQLException {
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement();
         ShowFilterSegment showFilterSegment = new ShowFilterSegment(0, 0);
-        ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "schema%");
+        ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "database%");
         showFilterSegment.setLike(showLikeSegment);
         showDatabasesStatement.setFilter(showFilterSegment);
         showDatabasesExecutor = new ShowDatabasesExecutor(showDatabasesStatement);
         showDatabasesExecutor.execute(mockConnectionSession());
-        assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
-        int count = 0;
+        assertThat(getActual(), is(getExpected()));
+    }
+    
+    private Collection<String> getActual() throws SQLException {
+        Map<String, String> result = new ConcurrentHashMap<>(10, 1);
         while (showDatabasesExecutor.getMergedResult().next()) {
-            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is(String.format(SCHEMA_PATTERN, count)));
-            count++;
+            String value = showDatabasesExecutor.getMergedResult().getValue(1, Object.class).toString();
+            result.put(value, value);
         }
-        assertThat(count, is(10));
+        return result.keySet();
+    }
+    
+    private Collection<String> getExpected() {
+        Map<String, String> result = new ConcurrentHashMap<>(10, 1);
+        for (int i = 0; i < 10; i++) {
+            String value = String.format(DATABASE_PATTERN, i);
+            result.put(value, value);
+        }
+        return result.keySet();
     }
     
     @Test
@@ -116,7 +126,7 @@ public final class ShowDatabasesExecutorTest extends ProxyContextRestorer {
         assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
         int count = 0;
         while (showDatabasesExecutor.getMergedResult().next()) {
-            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is("schema_1"));
+            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is("database_1"));
             count++;
         }
         assertThat(count, is(1));
@@ -126,7 +136,7 @@ public final class ShowDatabasesExecutorTest extends ProxyContextRestorer {
     public void assertExecuteWithPreciseLike() throws SQLException {
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement();
         ShowFilterSegment showFilterSegment = new ShowFilterSegment(0, 0);
-        ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "schema_9");
+        ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "database_9");
         showFilterSegment.setLike(showLikeSegment);
         showDatabasesStatement.setFilter(showFilterSegment);
         showDatabasesExecutor = new ShowDatabasesExecutor(showDatabasesStatement);
@@ -134,7 +144,7 @@ public final class ShowDatabasesExecutorTest extends ProxyContextRestorer {
         assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
         int count = 0;
         while (showDatabasesExecutor.getMergedResult().next()) {
-            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is("schema_9"));
+            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is("database_9"));
             count++;
         }
         assertThat(count, is(1));
@@ -144,7 +154,7 @@ public final class ShowDatabasesExecutorTest extends ProxyContextRestorer {
     public void assertExecuteWithLikeMatchNone() throws SQLException {
         MySQLShowDatabasesStatement showDatabasesStatement = new MySQLShowDatabasesStatement();
         ShowFilterSegment showFilterSegment = new ShowFilterSegment(0, 0);
-        ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "schema_not_exist");
+        ShowLikeSegment showLikeSegment = new ShowLikeSegment(0, 0, "not_exist_database");
         showFilterSegment.setLike(showLikeSegment);
         showDatabasesStatement.setFilter(showFilterSegment);
         showDatabasesExecutor = new ShowDatabasesExecutor(showDatabasesStatement);
@@ -152,7 +162,7 @@ public final class ShowDatabasesExecutorTest extends ProxyContextRestorer {
         assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
         int count = 0;
         while (showDatabasesExecutor.getMergedResult().next()) {
-            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is("schema_not_exist"));
+            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is("not_exist_database"));
             count++;
         }
         assertThat(count, is(0));

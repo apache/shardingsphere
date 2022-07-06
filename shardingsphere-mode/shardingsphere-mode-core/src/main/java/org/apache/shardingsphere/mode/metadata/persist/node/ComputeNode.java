@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.node;
 
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,8 +40,6 @@ public final class ComputeNode {
     private static final String STATUS_NODE = "status";
     
     private static final String WORKER_ID = "worker_id";
-    
-    private static final String XA_RECOVERY_ID_NODE = "xa_recovery_id";
     
     /**
      * Get online compute node path.
@@ -101,26 +99,6 @@ public final class ComputeNode {
      */
     public static String getInstanceLabelsNodePath(final String instanceId) {
         return String.join("/", "", ROOT_NODE, COMPUTE_NODE, LABELS_NODE, instanceId);
-    }
-    
-    /**
-     * Get xa recovery id node path.
-     * 
-     * @return xa recovery id node path
-     */
-    public static String getXaRecoveryIdNodePath() {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, XA_RECOVERY_ID_NODE);
-    }
-    
-    /**
-     * Get compute node xa recovery id path.
-     *
-     * @param xaRecoveryId recovery id
-     * @param instanceId instance id
-     * @return path of compute node xa recovery id
-     */
-    public static String getInstanceXaRecoveryIdNodePath(final String xaRecoveryId, final String instanceId) {
-        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, XA_RECOVERY_ID_NODE, xaRecoveryId, instanceId);
     }
     
     /**
