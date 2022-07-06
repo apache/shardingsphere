@@ -77,7 +77,7 @@ public final class ShardingSphereProxy {
         
         List<ChannelFuture> futures = new ArrayList<>();
         for (String address : addresses) {
-            futures.add(bootstrap.bind(address, port));
+            futures.add(bootstrap.bind(address, port).sync());
         }
         return futures;
     }
