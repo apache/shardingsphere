@@ -1819,20 +1819,8 @@ direction
 prepare
     : PREPARE name prepTypeClause? AS preparableStmt
     ;
-    
-deallocate
-    : DEALLOCATE PREPARE? (name | ALL)
-    ;
 
-prepTypeClause
-    : LP_ typeList RP_
-    ;
-
-refreshMaterializedView
-    : REFRESH MATERIALIZED VIEW CONCURRENTLY? qualifiedName withData?
-    ;
-
-reIndex
+reindex
     : REINDEX reIndexClauses
     ;
 
@@ -1848,7 +1836,7 @@ reindexOptionList
     ;
 
 reindexOptionElem
-    : VERBOSE
+    : VERBOSE | CONCURRENTLY | TABLESPACE
     ;
 
 reindexTargetMultitable
@@ -1857,6 +1845,18 @@ reindexTargetMultitable
 
 reindexTargetType
     : INDEX | TABLE
+    ;
+
+deallocate
+    : DEALLOCATE PREPARE? (name | ALL)
+    ;
+
+prepTypeClause
+    : LP_ typeList RP_
+    ;
+
+refreshMaterializedView
+    : REFRESH MATERIALIZED VIEW CONCURRENTLY? qualifiedName withData?
     ;
 
 alterForeignTable

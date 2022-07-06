@@ -242,6 +242,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.PreparedStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.PurgeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.RefreshMatViewStmtStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.ReindexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.RenameStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.RenameTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.TruncateStatementTestCase;
@@ -1352,6 +1353,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "refresh-materialized-view")
     private final List<RefreshMatViewStmtStatementTestCase> refreshMatViewStmtStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "reindex")
+    private final List<ReindexStatementTestCase> reindexStatementTestCases = new LinkedList<>();
+    
     @XmlElement(name = "unlisten")
     private final List<UnlistenStatementTestCase> unlistenTestCases = new LinkedList<>();
     
@@ -1879,6 +1883,7 @@ public final class SQLParserTestCases {
         putAll(listenTestCases, result);
         putAll(notifyTestCases, result);
         putAll(refreshMatViewStmtStatementTestCases, result);
+        putAll(reindexStatementTestCases, result);
         putAll(unlistenTestCases, result);
         putAll(createLockdownProfileTestCases, result);
         putAll(dropLockdownProfileTestCases, result);
