@@ -56,7 +56,7 @@ public final class ProxyInfoCollector extends Collector {
             return Collections.emptyList();
         }
         Optional<GaugeMetricFamily> proxyInfo = FACTORY.createGaugeMetricFamily(MetricIds.PROXY_INFO);
-        if (ProxyContext.getInstance().getContextManager() == null || !proxyInfo.isPresent()) {
+        if (null == ProxyContext.getInstance().getContextManager() || !proxyInfo.isPresent()) {
             return Collections.emptyList();
         }
         Optional<StateContext> stateContext = ProxyContext.getInstance().getStateContext();
