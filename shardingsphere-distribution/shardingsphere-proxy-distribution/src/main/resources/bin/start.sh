@@ -71,7 +71,7 @@ print_usage() {
     echo "  port: proxy listen port, default is 3307"
     echo "  config_dir: proxy config directory, default is 'conf'"
     echo ""
-    echo "start.sh [-h addresses] [-p port] [-c /path/to/conf]"
+    echo "start.sh [-a addresses] [-p port] [-c /path/to/conf]"
     echo "The options are unordered."
     echo "-a  Bind addresses, can be IPv4, IPv6, hostname. In"
     echo "    case more than one address is specified in a"
