@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.framework.container.compose;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.integration.framework.container.compose.mode.ClusterComposedContainer;
-import org.apache.shardingsphere.test.integration.framework.container.compose.mode.MemoryComposedContainer;
+import org.apache.shardingsphere.test.integration.framework.container.compose.mode.DefaultComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
 import javax.sql.DataSource;
@@ -53,12 +53,12 @@ public final class ComposedContainerRegistry implements AutoCloseable {
     }
     
     private ComposedContainer createComposedContainer(final ParameterizedArray parameterizedArray) {
-        return isMemoryMode(parameterizedArray) ? new MemoryComposedContainer(parameterizedArray) : new ClusterComposedContainer(parameterizedArray);
+        return isClusterMode(parameterizedArray) ? new ClusterComposedContainer(parameterizedArray) : new DefaultComposedContainer(parameterizedArray);
     }
     
-    private boolean isMemoryMode(final ParameterizedArray parameterizedArray) {
+    private boolean isClusterMode(final ParameterizedArray parameterizedArray) {
         // TODO cluster mode often throw exception sometimes, issue is #15517
-        return true;
+        return false;
         // return "H2".equals(parameterizedArray.getDatabaseType().getName());
     }
     

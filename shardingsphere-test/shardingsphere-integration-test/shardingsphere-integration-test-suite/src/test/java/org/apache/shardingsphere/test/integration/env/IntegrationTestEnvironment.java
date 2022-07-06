@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.env;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
-import org.apache.shardingsphere.test.integration.env.cluster.ClusterEnvironment;
+import org.apache.shardingsphere.test.integration.env.cluster.NodeEnvironment;
 import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioCommonPath;
 
 import java.io.IOException;
@@ -41,14 +41,14 @@ public final class IntegrationTestEnvironment {
     
     private final Collection<String> scenarios;
     
-    private final ClusterEnvironment clusterEnvironment;
+    private final NodeEnvironment nodeEnvironment;
     
     private IntegrationTestEnvironment() {
         Properties props = loadProperties();
         runModes = Splitter.on(",").trimResults().splitToList(props.getProperty("it.run.modes"));
         runAdditionalTestCases = Boolean.parseBoolean(props.getProperty("it.run.additional.cases"));
         scenarios = getScenarios(props);
-        clusterEnvironment = new ClusterEnvironment(props);
+        nodeEnvironment = new NodeEnvironment(props);
     }
     
     @SuppressWarnings("AccessOfSystemProperties")

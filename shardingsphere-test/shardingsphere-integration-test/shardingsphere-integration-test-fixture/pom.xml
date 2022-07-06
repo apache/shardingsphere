@@ -108,7 +108,7 @@
         <profile>
             <id>it.env.docker</id>
             <properties>
-                <it.cluster.env.type>DOCKER</it.cluster.env.type>
+                <it.node.env.type>DOCKER</it.node.env.type>
             </properties>
             <build>
                 <plugins>

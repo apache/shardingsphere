@@ -28,10 +28,10 @@ import java.util.Properties;
 import java.util.stream.Collectors;
 
 /**
- * Cluster environment.
+ * ShardingSphere node environment.
  */
 @Getter
-public final class ClusterEnvironment {
+public final class NodeEnvironment {
     
     private final Type type;
     
@@ -39,14 +39,14 @@ public final class ClusterEnvironment {
     
     private final Collection<DatabaseType> databaseTypes;
     
-    public ClusterEnvironment(final Properties props) {
+    public NodeEnvironment(final Properties props) {
         type = getType(props);
         adapters = getAdapters(props);
         databaseTypes = getDatabaseTypes(props);
     }
     
     private Type getType(final Properties props) {
-        String value = props.getProperty("it.cluster.env.type");
+        String value = props.getProperty("it.node.env.type");
         if (null == value) {
             return Type.NATIVE;
         }
@@ -58,11 +58,11 @@ public final class ClusterEnvironment {
     }
     
     private Collection<String> getAdapters(final Properties props) {
-        return Splitter.on(",").trimResults().splitToList(props.getProperty("it.cluster.adapters"));
+        return Splitter.on(",").trimResults().splitToList(props.getProperty("it.node.adapters"));
     }
     
     private Collection<DatabaseType> getDatabaseTypes(final Properties props) {
-        return Arrays.stream(props.getProperty("it.cluster.databases").split(",")).map(each -> DatabaseTypeFactory.getInstance(each.trim())).collect(Collectors.toSet());
+        return Arrays.stream(props.getProperty("it.node.databases").split(",")).map(each -> DatabaseTypeFactory.getInstance(each.trim())).collect(Collectors.toSet());
     }
     
     /**

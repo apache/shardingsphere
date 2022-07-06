@@ -64,6 +64,6 @@ public final class TotalSuitesCountCalculator {
     }
     
     private static boolean isRunProxy() {
-        return ENV.getRunModes().contains("Cluster") && ENV.getClusterEnvironment().getAdapters().contains("proxy");
+        return ENV.getRunModes().contains("Cluster") && ENV.getNodeEnvironment().getAdapters().contains("proxy");
     }
 }

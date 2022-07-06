@@ -132,12 +132,12 @@ it.scenarios=db,tbl,dbtbl_with_replica_query,replica_query
 it.run.additional.cases=false
 
 # 配置环境类型，只支持单值。可选值：docker或空，默认值：空
-it.cluster.env.type=${it.env}
+it.node.env.type=${it.env}
 # 待测试的接入端类型，多个值可用逗号分隔。可选值：jdbc, proxy, 默认值：jdbc
-it.cluster.adapters=jdbc
+it.node.adapters=jdbc
 
 # 场景类型，多个值可用逗号分隔。可选值：H2, MySQL, Oracle, SQLServer, PostgreSQL
-it.cluster.databases=H2,MySQL,Oracle,SQLServer,PostgreSQL
+it.node.databases=H2,MySQL,Oracle,SQLServer,PostgreSQL
 ```
 
 #### 运行调试模式
@@ -155,13 +155,13 @@ it.cluster.databases=H2,MySQL,Oracle,SQLServer,PostgreSQL
 #### 运行 Docker 模式
 
 ```bash
-./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.cluster.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_1,scenario_name_n} -Dit.cluster.databases=MySQL
+./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.node.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_1,scenario_name_n} -Dit.node.databases=MySQL
 ```
 运行以上命令会构建出一个用于集成测试的 Docker 镜像 `apache/shardingsphere-proxy-test:latest`。
 如果仅修改了测试代码，可以复用已有的测试镜像，无须重新构建。使用以下命令可以跳过镜像构建，直接运行集成测试：
 
 ```bash
-./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Pit.env.docker -Dit.cluster.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_1,scenario_name_n} -Dit.cluster.databases=MySQL
+./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Pit.env.docker -Dit.node.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_1,scenario_name_n} -Dit.node.databases=MySQL
 ```
 
 #### 注意事项

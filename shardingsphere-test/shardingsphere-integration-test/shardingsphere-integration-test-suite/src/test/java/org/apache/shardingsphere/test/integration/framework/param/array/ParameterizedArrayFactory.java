@@ -46,6 +46,8 @@ public final class ParameterizedArrayFactory {
         for (String each : ENV.getRunModes()) {
             if ("Memory".equalsIgnoreCase(each)) {
                 result.addAll(MemoryParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
+            } else if ("Singleton".equalsIgnoreCase(each)) {
+                result.addAll(SingletonParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
             } else if ("Cluster".equalsIgnoreCase(each)) {
                 result.addAll(ClusterParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
             }
@@ -64,6 +66,8 @@ public final class ParameterizedArrayFactory {
         for (String each : ENV.getRunModes()) {
             if ("Memory".equalsIgnoreCase(each)) {
                 result.addAll(MemoryParameterizedArrayGenerator.getCaseParameterized(sqlCommandType));
+            } else if ("Singleton".equalsIgnoreCase(each)) {
+                result.addAll(SingletonParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
             } else if ("Cluster".equalsIgnoreCase(each)) {
                 result.addAll(ClusterParameterizedArrayGenerator.getCaseParameterized(sqlCommandType));
             }
