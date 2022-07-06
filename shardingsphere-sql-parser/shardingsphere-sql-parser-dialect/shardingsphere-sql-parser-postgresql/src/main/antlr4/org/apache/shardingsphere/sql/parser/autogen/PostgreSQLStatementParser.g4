@@ -165,5 +165,6 @@ execute
     | prepareTransaction
     | reassignOwned
     | refreshMatViewStmt
+    | reindex
     ) SEMI_? EOF
     ;
