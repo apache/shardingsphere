@@ -370,11 +370,11 @@ public final class ContextManager implements AutoCloseable {
         try {
             ShardingSphereResource currentResource = metaDataContexts.getMetaData().getDatabases().get(databaseName).getResource();
             SwitchingResource switchingResource = new SwitchingResource(currentResource, currentResource.getDataSources(), Collections.emptyMap());
-            MetaDataContexts metaDataContexts = createMetaDataContexts(databaseName, switchingResource, null);
-            Map<String, ShardingSphereSchema> toBeDeletedSchemas = getToBeDeletedSchemas(metaDataContexts.getMetaData().getDatabases().get(databaseName));
-            this.metaDataContexts = metaDataContexts;
-            toBeDeletedSchemas.keySet().forEach(each -> metaDataContexts.getPersistService().ifPresent(optional -> optional.getDatabaseMetaDataService().deleteSchema(databaseName, each)));
-            persistMetaData(metaDataContexts);
+            MetaDataContexts reloadedMetaDataContexts = createMetaDataContexts(databaseName, switchingResource, null);
+            Map<String, ShardingSphereSchema> toBeDeletedSchemas = getToBeDeletedSchemas(reloadedMetaDataContexts.getMetaData().getDatabases().get(databaseName));
+            metaDataContexts = reloadedMetaDataContexts;
+            toBeDeletedSchemas.keySet().forEach(each -> reloadedMetaDataContexts.getPersistService().ifPresent(optional -> optional.getDatabaseMetaDataService().deleteSchema(databaseName, each)));
+            persistMetaData(reloadedMetaDataContexts);
         } catch (final SQLException ex) {
             log.error("Reload database:{} failed", databaseName, ex);
         }
