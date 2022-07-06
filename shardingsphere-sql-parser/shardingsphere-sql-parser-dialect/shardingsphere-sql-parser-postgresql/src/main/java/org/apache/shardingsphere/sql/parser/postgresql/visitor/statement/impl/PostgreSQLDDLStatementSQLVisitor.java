@@ -160,6 +160,7 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Un
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ValidateConstraintSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.RefreshMatViewStmtContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.ReindexContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.SecurityLabelStmtContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.DirectionType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.CreateDefinitionSegment;
@@ -286,6 +287,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLPrepareStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLRefreshMatViewStmtStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLReindexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLSecurityLabelStmtStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLTruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLUnlistenStatement;
 
@@ -1301,5 +1303,10 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     @Override
     public ASTNode visitReindex(final ReindexContext ctx) {
         return new PostgreSQLReindexStatement();
+    }
+    
+    @Override
+    public ASTNode visitSecurityLabelStmt(final SecurityLabelStmtContext ctx) {
+        return new PostgreSQLSecurityLabelStmtStatement();
     }
 }

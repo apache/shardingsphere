@@ -245,6 +245,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.ReindexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.RenameStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.RenameTableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.SecurityLabelStmtStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.TruncateStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.UnlistenStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintDatabaseValueStatementTestCase;
@@ -1359,6 +1360,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "unlisten")
     private final List<UnlistenStatementTestCase> unlistenTestCases = new LinkedList<>();
     
+    @XmlElement(name = "security-label")
+    private final List<SecurityLabelStmtStatementTestCase> securityLabelStmtStatementTestCases = new LinkedList<>();
+    
     @XmlElement(name = "lock")
     private final List<LockStatementTestCase> lockTestCases = new LinkedList<>();
     
@@ -1885,6 +1889,7 @@ public final class SQLParserTestCases {
         putAll(refreshMatViewStmtStatementTestCases, result);
         putAll(reindexStatementTestCases, result);
         putAll(unlistenTestCases, result);
+        putAll(securityLabelStmtStatementTestCases, result);
         putAll(createLockdownProfileTestCases, result);
         putAll(dropLockdownProfileTestCases, result);
         putAll(createInmemoryJoinGroupTestCases, result);

@@ -252,6 +252,8 @@ public enum SQLVisitorRule {
     
     REINDEX("Reindex", SQLStatementType.DDL),
     
+    SECURITY_LABEL("SecurityLabelStmt", SQLStatementType.DDL),
+    
     UNLISTEN("Unlisten", SQLStatementType.DDL),
     
     SET_CONSTRAINTS("SetConstraints", SQLStatementType.TCL),
