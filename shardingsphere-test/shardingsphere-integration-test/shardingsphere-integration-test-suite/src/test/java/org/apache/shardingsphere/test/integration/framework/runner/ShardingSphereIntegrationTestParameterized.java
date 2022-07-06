@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.test.integration.framework.runner;
 
 import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.test.integration.env.cluster.NodeEnvironment;
+import org.apache.shardingsphere.test.integration.env.node.NodeEnvironment;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.ParallelRunnerScheduler;
 import org.apache.shardingsphere.test.integration.framework.runner.parallel.annotaion.ParallelRuntimeStrategy;
 import org.junit.runners.Parameterized;

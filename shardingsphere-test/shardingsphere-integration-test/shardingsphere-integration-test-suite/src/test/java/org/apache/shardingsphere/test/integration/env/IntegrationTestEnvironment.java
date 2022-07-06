@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.env;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
-import org.apache.shardingsphere.test.integration.env.cluster.NodeEnvironment;
+import org.apache.shardingsphere.test.integration.env.node.NodeEnvironment;
 import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioCommonPath;
 
 import java.io.IOException;

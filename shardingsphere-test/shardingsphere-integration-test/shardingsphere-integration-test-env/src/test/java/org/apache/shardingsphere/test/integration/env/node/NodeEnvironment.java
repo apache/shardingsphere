@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.cluster;
+package org.apache.shardingsphere.test.integration.env.node;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
@@ -66,7 +66,7 @@ public final class NodeEnvironment {
     }
     
     /**
-     * Cluster environment type.
+     * Node environment type.
      */
     public enum Type {
         

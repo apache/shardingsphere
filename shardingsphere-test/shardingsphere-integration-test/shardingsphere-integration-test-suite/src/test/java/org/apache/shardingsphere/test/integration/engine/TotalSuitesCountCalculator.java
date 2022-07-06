@@ -41,7 +41,7 @@ public final class TotalSuitesCountCalculator {
     
     /**
      * Calculate total test suites count.
-     * 
+     *
      * @return total test suites count
      */
     public static int calculate() {
@@ -60,10 +60,10 @@ public final class TotalSuitesCountCalculator {
     }
     
     private static boolean isRunDCL() {
-        return ENV.getRunModes().contains("Cluster");
+        return ENV.getRunModes().contains("Cluster") || ENV.getRunModes().contains("Singleton");
     }
     
     private static boolean isRunProxy() {
-        return ENV.getRunModes().contains("Cluster") && ENV.getNodeEnvironment().getAdapters().contains("proxy");
+        return (ENV.getRunModes().contains("Cluster") || ENV.getRunModes().contains("Singleton")) && ENV.getNodeEnvironment().getAdapters().contains("proxy");
     }
 }
