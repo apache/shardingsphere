@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.swapper;
 
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -161,6 +162,9 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
         yamlConfig.setDefaultKeyGenerateStrategy(mock(YamlKeyGenerateStrategyConfiguration.class));
         yamlConfig.setAuditStrategy(mock(YamlShardingAuditStrategyConfiguration.class));
         yamlConfig.setDefaultShardingColumn("user_id");
+        YamlShardingSphereAlgorithmConfiguration auditAlgorithmConfiguration = new YamlShardingSphereAlgorithmConfiguration();
+        auditAlgorithmConfiguration.setType("DML_SHARDING_CONDITIONS");
+        yamlConfig.getAuditors().put("sharding_key_required_auditor", auditAlgorithmConfiguration);
         ShardingRuleConfiguration actual = shardingRuleConfigurationYamlSwapper.swapToObject(yamlConfig);
         assertThat(actual.getTables().size(), is(1));
         assertThat(actual.getBindingTableGroups().size(), is(1));
@@ -171,6 +175,9 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
         assertNotNull(actual.getDefaultTableShardingStrategy());
         assertNotNull(actual.getDefaultKeyGenerateStrategy());
         assertNotNull(actual.getAuditStrategy());
+        assertThat(actual.getAuditors().size(), is(1));
+        assertTrue(actual.getAuditors().containsKey("sharding_key_required_auditor"));
+        assertThat(actual.getAuditors().get("sharding_key_required_auditor").getType(), is("DML_SHARDING_CONDITIONS"));
         assertThat(actual.getDefaultShardingColumn(), is("user_id"));
     }
     
