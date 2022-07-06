@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
@@ -75,6 +76,8 @@ public final class TableRule {
     
     private final ShardingStrategyConfiguration tableShardingStrategyConfig;
     
+    private final ShardingAuditStrategyConfiguration auditStrategyConfig;
+    
     @Getter(AccessLevel.NONE)
     private final String generateKeyColumn;
     
@@ -96,6 +99,7 @@ public final class TableRule {
         actualTables = getActualTables();
         databaseShardingStrategyConfig = null;
         tableShardingStrategyConfig = null;
+        auditStrategyConfig = null;
         generateKeyColumn = null;
         keyGeneratorName = null;
         dataSourceDataNode = actualDataNodes.isEmpty() ? null : createDataSourceDataNode(actualDataNodes);
@@ -112,6 +116,7 @@ public final class TableRule {
         actualTables = getActualTables();
         databaseShardingStrategyConfig = tableRuleConfig.getDatabaseShardingStrategy();
         tableShardingStrategyConfig = tableRuleConfig.getTableShardingStrategy();
+        auditStrategyConfig = tableRuleConfig.getAuditStrategy();
         KeyGenerateStrategyConfiguration keyGeneratorConfig = tableRuleConfig.getKeyGenerateStrategy();
         generateKeyColumn = null != keyGeneratorConfig && !Strings.isNullOrEmpty(keyGeneratorConfig.getColumn()) ? keyGeneratorConfig.getColumn() : defaultGenerateKeyColumn;
         keyGeneratorName = null == keyGeneratorConfig ? null : keyGeneratorConfig.getKeyGeneratorName();
@@ -125,6 +130,7 @@ public final class TableRule {
         logicTable = tableRuleConfig.getLogicTable();
         databaseShardingStrategyConfig = new NoneShardingStrategyConfiguration();
         tableShardingStrategyConfig = tableRuleConfig.getShardingStrategy();
+        auditStrategyConfig = tableRuleConfig.getAuditStrategy();
         List<String> dataNodes = getDataNodes(tableRuleConfig, shardingAutoTableAlgorithm, dataSourceNames);
         dataNodeIndexMap = new HashMap<>(dataNodes.size(), 1);
         actualTablePrefix = tableRuleConfig.getActualTablePrefix();

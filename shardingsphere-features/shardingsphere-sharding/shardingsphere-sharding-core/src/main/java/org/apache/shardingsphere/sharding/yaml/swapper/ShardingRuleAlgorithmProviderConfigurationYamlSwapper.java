@@ -69,8 +69,8 @@ public final class ShardingRuleAlgorithmProviderConfigurationYamlSwapper impleme
         if (null != data.getDefaultKeyGenerateStrategy()) {
             yamlConfig.setDefaultKeyGenerateStrategy(keyGenerateStrategyYamlSwapper.swapToYamlConfiguration(data.getDefaultKeyGenerateStrategy()));
         }
-        if (null != data.getAuditStrategy()) {
-            yamlConfig.setAuditStrategy(auditStrategyYamlSwapper.swapToYamlConfiguration(data.getAuditStrategy()));
+        if (null != data.getDefaultAuditStrategy()) {
+            yamlConfig.setDefaultAuditStrategy(auditStrategyYamlSwapper.swapToYamlConfiguration(data.getDefaultAuditStrategy()));
         }
     }
     
@@ -116,8 +116,8 @@ public final class ShardingRuleAlgorithmProviderConfigurationYamlSwapper impleme
         if (null != yamlConfig.getDefaultKeyGenerateStrategy()) {
             ruleConfig.setDefaultKeyGenerateStrategy(keyGenerateStrategyYamlSwapper.swapToObject(yamlConfig.getDefaultKeyGenerateStrategy()));
         }
-        if (null != yamlConfig.getAuditStrategy()) {
-            ruleConfig.setAuditStrategy(auditStrategyYamlSwapper.swapToObject(yamlConfig.getAuditStrategy()));
+        if (null != yamlConfig.getDefaultAuditStrategy()) {
+            ruleConfig.setDefaultAuditStrategy(auditStrategyYamlSwapper.swapToObject(yamlConfig.getDefaultAuditStrategy()));
         }
     }
     
