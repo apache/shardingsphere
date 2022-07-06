@@ -88,6 +88,9 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
         if (null != data.getKeyGenerators()) {
             data.getKeyGenerators().forEach((key, value) -> yamlConfig.getKeyGenerators().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
         }
+        if (null != data.getAuditors()) {
+            data.getAuditors().forEach((key, value) -> yamlConfig.getAuditors().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
+        }
         if (null != data.getScaling()) {
             data.getScaling().forEach((key, value) -> yamlConfig.getScaling().put(key, onRuleAlteredActionYamlSwapper.swapToYamlConfiguration(value)));
         }
