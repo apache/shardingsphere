@@ -67,7 +67,7 @@ public final class ParameterizedArrayFactory {
             if ("Memory".equalsIgnoreCase(each)) {
                 result.addAll(MemoryParameterizedArrayGenerator.getCaseParameterized(sqlCommandType));
             } else if ("Singleton".equalsIgnoreCase(each)) {
-                result.addAll(SingletonParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
+                result.addAll(SingletonParameterizedArrayGenerator.getCaseParameterized(sqlCommandType));
             } else if ("Cluster".equalsIgnoreCase(each)) {
                 result.addAll(ClusterParameterizedArrayGenerator.getCaseParameterized(sqlCommandType));
             }
