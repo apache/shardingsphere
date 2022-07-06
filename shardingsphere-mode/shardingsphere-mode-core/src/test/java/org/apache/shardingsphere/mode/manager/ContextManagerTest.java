@@ -256,7 +256,7 @@ public final class ContextManagerTest {
     }
     
     @Test
-    public void assertReloadDatabaseMetaData() {
+    public void assertReloadDatabase() {
         when(metaDataContexts.getMetaData().getDatabases().get("foo_db").getResource().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", new MockedDataSource()));
         DatabaseMetaDataPersistService databaseMetaDataPersistService = mock(DatabaseMetaDataPersistService.class, RETURNS_DEEP_STUBS);
         MetaDataPersistService metaDataPersistService = mock(MetaDataPersistService.class);
