@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DCLStatemen
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropUserStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.GrantStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.ReassignOwnedStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.RevokeStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.SetRoleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dcl.MySQLRenameUserStatement;
@@ -49,6 +50,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl.DropRoleStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl.DropUserStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl.GrantStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl.ReassignOwnedStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl.RenameUserStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl.RevokeStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dcl.impl.SetDefaultRoleStatementAssert;
@@ -67,6 +69,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.DropRoleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.DropUserStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.GrantStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.ReassignOwnedStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.RenameUserStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.RevokeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.SetDefaultRoleStatementTestCase;
@@ -122,6 +125,8 @@ public final class DCLStatementAssert {
             SetPasswordStatementAssert.assertIs(assertContext, (MySQLSetPasswordStatement) actual, (SetPasswordStatementTestCase) expected);
         } else if (actual instanceof SQLServerSetUserStatement) {
             SQLServerSetUserStatementAssert.assertIs(assertContext, (SQLServerSetUserStatement) actual, (SetUserStatementTestCase) expected);
+        } else if (actual instanceof ReassignOwnedStatement) {
+            ReassignOwnedStatementAssert.assertIs(assertContext, (ReassignOwnedStatement) actual, (ReassignOwnedStatementTestCase) expected);
         }
     }
 }

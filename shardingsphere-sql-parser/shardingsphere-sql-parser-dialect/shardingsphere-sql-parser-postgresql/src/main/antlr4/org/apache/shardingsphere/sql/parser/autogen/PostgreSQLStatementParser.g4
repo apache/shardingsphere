@@ -162,5 +162,8 @@ execute
     | alterRoutine
     | alterRule
     | createCollation
+    | prepareTransaction
+    | reassignOwned
+    | refreshMatViewStmt
     ) SEMI_? EOF
     ;

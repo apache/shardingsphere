@@ -15,26 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.instance.metadata.proxy;
+package org.apache.shardingsphere.sharding.factory;
 
-import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilderFactory;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.sharding.fixture.ShardingAuditAlgorithmFixture;
 import org.junit.Test;
 
-import static org.hamcrest.CoreMatchers.endsWith;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
+import java.util.Properties;
 
-public final class ProxyInstanceMetaDataBuilderTest {
+public final class ShardingAuditAlgorithmFactoryTest {
     
     @Test
     public void assertNewInstance() {
-        ProxyInstanceMetaData actual = (ProxyInstanceMetaData) InstanceMetaDataBuilderFactory.create("Proxy", 3307);
-        assertNotNull(actual.getId());
-        assertNotNull(actual.getIp());
-        assertThat(actual.getPort(), is(3307));
-        assertThat(actual.getAttributes(), endsWith("@3307"));
-        assertThat(actual.getType(), is(InstanceType.PROXY));
+        ShardingSphereAlgorithmConfiguration configuration = new ShardingSphereAlgorithmConfiguration("FIXTURE", new Properties());
+        assertThat(ShardingAuditAlgorithmFactory.newInstance(configuration), instanceOf(ShardingAuditAlgorithmFixture.class));
+    }
+    
+    @Test
+    public void assertContains() {
+        assertTrue(ShardingAuditAlgorithmFactory.contains("FIXTURE"));
     }
 }

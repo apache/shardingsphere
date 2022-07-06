@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.StandardSharding
 import java.util.Collection;
 import java.util.Properties;
 
-public final class ClassBasedDatasourceStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
+public final class ClassBasedDataSourceStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
     
     private static final String SHARDING_COUNT = "sharding-count";
     

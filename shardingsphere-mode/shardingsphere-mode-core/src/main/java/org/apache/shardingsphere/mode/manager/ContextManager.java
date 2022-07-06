@@ -46,6 +46,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
+import org.apache.shardingsphere.mode.manager.switcher.ResourceSwitchManager;
+import org.apache.shardingsphere.mode.manager.switcher.SwitchingResource;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
 import javax.sql.DataSource;
@@ -56,7 +58,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -245,31 +246,13 @@ public final class ContextManager implements AutoCloseable {
     @SuppressWarnings("rawtypes")
     public void alterRuleConfiguration(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) {
         try {
-            Collection<ResourceHeldRule> staleResourceHeldRules = metaDataContexts.getMetaData().getDatabases().get(databaseName).getRuleMetaData().findRules(ResourceHeldRule.class);
-            metaDataContexts = createMetaDataContextsWithAlteredDatabaseRules(databaseName, ruleConfigs);
+            Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
+            metaDataContexts = createMetaDataContexts(databaseName, null, ruleConfigs);
             persistMetaData(metaDataContexts);
             staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResources);
         } catch (final SQLException ex) {
             log.error("Alter database: {} rule configurations failed", databaseName, ex);
         }
-    }
-    
-    private MetaDataContexts createMetaDataContextsWithAlteredDatabaseRules(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
-        Map<String, ShardingSphereDatabase> changedDatabases = createChangedDatabases(databaseName, ruleConfigs);
-        ShardingSphereRuleMetaData changedGlobalMetaData = new ShardingSphereRuleMetaData(
-                GlobalRulesBuilder.buildRules(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), changedDatabases, instanceContext));
-        return new MetaDataContexts(metaDataContexts.getPersistService().orElse(null),
-                new ShardingSphereMetaData(changedDatabases, changedGlobalMetaData, metaDataContexts.getMetaData().getProps()),
-                OptimizerContextFactory.create(changedDatabases, changedGlobalMetaData));
-    }
-    
-    private Map<String, ShardingSphereDatabase> createChangedDatabases(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
-        ShardingSphereDatabase changedDatabase = ShardingSphereDatabasesFactory.create(databaseName,
-                new DataSourceProvidedDatabaseConfiguration(metaDataContexts.getMetaData().getDatabases().get(databaseName).getResource().getDataSources(), ruleConfigs),
-                metaDataContexts.getMetaData().getProps(), instanceContext);
-        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(metaDataContexts.getMetaData().getDatabases());
-        result.put(databaseName, changedDatabase);
-        return result;
     }
     
     /**
@@ -278,25 +261,18 @@ public final class ContextManager implements AutoCloseable {
      * @param databaseName database name
      * @param dataSourcePropsMap altered data source properties map
      */
+    @SuppressWarnings("rawtypes")
     public void alterDataSourceConfiguration(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap) {
         try {
-            MetaDataContexts changedMetaDataContext = createMetaDataContextsWithAlteredResources(databaseName, dataSourcePropsMap);
-            persistMetaData(changedMetaDataContext);
-            refreshMetaDataContext(databaseName, changedMetaDataContext, dataSourcePropsMap);
+            Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
+            SwitchingResource switchingResource = new ResourceSwitchManager().create(metaDataContexts.getMetaData().getDatabases().get(databaseName).getResource(), dataSourcePropsMap);
+            metaDataContexts = createMetaDataContexts(databaseName, switchingResource, null);
+            persistMetaData(metaDataContexts);
+            staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResources);
+            switchingResource.closeStaleDataSources();
         } catch (final SQLException ex) {
-            log.error("Alter database:{} data source configuration failed", databaseName, ex);
+            log.error("Alter database: {} data source configuration failed", databaseName, ex);
         }
-    }
-    
-    private MetaDataContexts createMetaDataContextsWithAlteredResources(final String databaseName, final Map<String, DataSourceProperties> dataSourceProps) throws SQLException {
-        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(databaseName);
-        DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(getNewDataSources(database, dataSourceProps), database.getRuleMetaData().getConfigurations());
-        ConfigurationProperties props = metaDataContexts.getMetaData().getProps();
-        Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(Collections.singletonMap(database.getName(), databaseConfig), props, instanceContext);
-        ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(
-                GlobalRulesBuilder.buildRules(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), databases, instanceContext));
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, globalMetaData, props);
-        return new MetaDataContexts(metaDataContexts.getPersistService().orElse(null), metaData, OptimizerContextFactory.create(databases, globalMetaData));
     }
     
     /**
@@ -306,14 +282,50 @@ public final class ContextManager implements AutoCloseable {
      * @param dataSourcePropsMap data source props map
      * @param ruleConfigs rule configurations
      */
+    @SuppressWarnings("rawtypes")
     public void alterDataSourceAndRuleConfiguration(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap, final Collection<RuleConfiguration> ruleConfigs) {
         try {
-            MetaDataContexts changedMetaDataContext = buildChangedMetaDataContextWithChangedDataSourceAndRule(
-                    metaDataContexts.getMetaData().getDatabases().get(databaseName), dataSourcePropsMap, ruleConfigs);
-            refreshMetaDataContext(databaseName, changedMetaDataContext, dataSourcePropsMap);
+            Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
+            SwitchingResource switchingResource = new ResourceSwitchManager().create(metaDataContexts.getMetaData().getDatabases().get(databaseName).getResource(), dataSourcePropsMap);
+            metaDataContexts = createMetaDataContexts(databaseName, switchingResource, ruleConfigs);
+            persistMetaData(metaDataContexts);
+            staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResources);
+            switchingResource.closeStaleDataSources();
         } catch (SQLException ex) {
             log.error("Alter database:{} data source and rule configuration failed", databaseName, ex);
         }
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private Collection<ResourceHeldRule> getStaleResourceHeldRules(final String databaseName) {
+        Collection<ResourceHeldRule> result = new LinkedList<>();
+        result.addAll(metaDataContexts.getMetaData().getDatabases().get(databaseName).getRuleMetaData().findRules(ResourceHeldRule.class));
+        result.addAll(metaDataContexts.getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class));
+        return result;
+    }
+    
+    private MetaDataContexts createMetaDataContexts(final String databaseName, final SwitchingResource switchingResource, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
+        Map<String, ShardingSphereDatabase> changedDatabases = createChangedDatabases(databaseName, switchingResource, ruleConfigs);
+        ShardingSphereRuleMetaData changedGlobalMetaData = new ShardingSphereRuleMetaData(
+                GlobalRulesBuilder.buildRules(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), changedDatabases, instanceContext));
+        return new MetaDataContexts(metaDataContexts.getPersistService().orElse(null),
+                new ShardingSphereMetaData(changedDatabases, changedGlobalMetaData, metaDataContexts.getMetaData().getProps()),
+                OptimizerContextFactory.create(changedDatabases, changedGlobalMetaData));
+    }
+    
+    private Map<String, ShardingSphereDatabase> createChangedDatabases(final String databaseName,
+                                                                       final SwitchingResource switchingResource, final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
+        Map<String, DataSource> toBeCreatedDataSources = null == switchingResource
+                ? metaDataContexts.getMetaData().getDatabases().get(databaseName).getResource().getDataSources()
+                : switchingResource.getNewDataSources();
+        Collection<RuleConfiguration> toBeCreatedRuleConfigs = null == ruleConfigs
+                ? metaDataContexts.getMetaData().getDatabases().get(databaseName).getRuleMetaData().getConfigurations()
+                : ruleConfigs;
+        DatabaseConfiguration toBeCreatedDatabaseConfig = new DataSourceProvidedDatabaseConfiguration(toBeCreatedDataSources, toBeCreatedRuleConfigs);
+        ShardingSphereDatabase changedDatabase = ShardingSphereDatabasesFactory.create(databaseName, toBeCreatedDatabaseConfig, metaDataContexts.getMetaData().getProps(), instanceContext);
+        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(metaDataContexts.getMetaData().getDatabases());
+        result.put(databaseName, changedDatabase);
+        return result;
     }
     
     /**
@@ -469,18 +481,6 @@ public final class ContextManager implements AutoCloseable {
         return result;
     }
     
-    private Collection<DataSource> getPendingClosedDataSources(final String databaseName, final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        Collection<DataSource> result = new LinkedList<>();
-        result.addAll(getDeletedDataSources(metaDataContexts.getMetaData().getDatabases().get(databaseName), dataSourcePropsMap).values());
-        result.addAll(getChangedDataSources(metaDataContexts.getMetaData().getDatabases().get(databaseName), dataSourcePropsMap).values());
-        return result;
-    }
-    
-    private Map<String, DataSource> getDeletedDataSources(final ShardingSphereDatabase database, final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        return database.getResource().getDataSources().entrySet().stream().filter(entry -> !dataSourcePropsMap.containsKey(entry.getKey()))
-                .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
-    }
-    
     private Map<String, DataSource> getChangedDataSources(final ShardingSphereDatabase database, final Map<String, DataSourceProperties> dataSourcePropsMap) {
         Collection<String> changedDataSourceNames = getChangedDataSourceProperties(database, dataSourcePropsMap).keySet();
         return database.getResource().getDataSources().entrySet().stream().filter(entry -> changedDataSourceNames.contains(entry.getKey()))
@@ -529,19 +529,6 @@ public final class ContextManager implements AutoCloseable {
         metaDataContexts.getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class).forEach(each -> each.addResource(metaDataContexts.getMetaData().getDatabases().get(databaseName)));
     }
     
-    private void refreshMetaDataContext(final String databaseName, final MetaDataContexts changedMetaDataContexts, final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases().putAll(changedMetaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases());
-        Map<String, ShardingSphereDatabase> databases = new HashMap<>(metaDataContexts.getMetaData().getDatabases());
-        databases.putAll(changedMetaDataContexts.getMetaData().getDatabases());
-        final Collection<DataSource> pendingClosedDataSources = getPendingClosedDataSources(databaseName, dataSourcePropsMap);
-        MetaDataContexts newMetaDataContexts = rebuildMetaDataContexts(
-                new ShardingSphereMetaData(databases, metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps()));
-        metaDataContexts.getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResources);
-        metaDataContexts.getMetaData().getDatabases().get(databaseName).getRuleMetaData().findRules(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResources);
-        renewMetaDataContexts(newMetaDataContexts);
-        pendingClosedDataSources.forEach(metaDataContexts.getMetaData().getDatabases().get(databaseName).getResource()::close);
-    }
-    
     private MetaDataContexts buildChangedMetaDataContextWithAddedDataSource(final String databaseName, final Map<String, DataSourceProperties> addedDataSourceProps) throws SQLException {
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(databaseName);
         Map<String, DataSource> dataSourceMap = new HashMap<>(database.getResource().getDataSources());
@@ -574,38 +561,6 @@ public final class ContextManager implements AutoCloseable {
         MetaDataContexts result = new MetaDataContexts(metaDataContexts.getPersistService().orElse(null), metaData, OptimizerContextFactory.create(databases, globalMetaData));
         persistMetaData(result);
         return result;
-    }
-    
-    private MetaDataContexts buildChangedMetaDataContextWithChangedDataSourceAndRule(final ShardingSphereDatabase database, final Map<String, DataSourceProperties> dataSourceProps,
-                                                                                     final Collection<RuleConfiguration> ruleConfigs) throws SQLException {
-        DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(getNewDataSources(database, dataSourceProps), ruleConfigs);
-        ConfigurationProperties props = metaDataContexts.getMetaData().getProps();
-        Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(Collections.singletonMap(database.getName(), databaseConfig), props, instanceContext);
-        ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(
-                GlobalRulesBuilder.buildRules(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), databases, instanceContext));
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases, globalMetaData, props);
-        MetaDataContexts result = new MetaDataContexts(metaDataContexts.getPersistService().orElse(null), metaData, OptimizerContextFactory.create(databases, globalMetaData));
-        persistMetaData(result);
-        return result;
-    }
-    
-    private Map<String, DataSource> getNewDataSources(final ShardingSphereDatabase database, final Map<String, DataSourceProperties> toBeChangedDataSourceProps) {
-        Map<String, DataSource> result = new LinkedHashMap<>(database.getResource().getDataSources());
-        result.keySet().removeAll(getDeletedDataSources(database, toBeChangedDataSourceProps).keySet());
-        result.putAll(buildToBeChangedDataSources(database, toBeChangedDataSourceProps));
-        // TODO close stale data sources
-        result.putAll(buildToBeAddedDataSources(database, toBeChangedDataSourceProps));
-        return result;
-    }
-    
-    private Map<String, DataSource> buildToBeAddedDataSources(final ShardingSphereDatabase database, final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        Map<String, DataSourceProperties> toBeAddedDataSourceProps = dataSourcePropsMap.entrySet().stream()
-                .filter(entry -> !database.getResource().getDataSources().containsKey(entry.getKey())).collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-        return DataSourcePoolCreator.create(toBeAddedDataSourceProps);
-    }
-    
-    private Map<String, DataSource> buildToBeChangedDataSources(final ShardingSphereDatabase database, final Map<String, DataSourceProperties> dataSourcePropsMap) {
-        return DataSourcePoolCreator.create(getChangedDataSourceProperties(database, dataSourcePropsMap));
     }
     
     private void persistMetaData(final MetaDataContexts metaDataContexts) {

@@ -18,24 +18,49 @@
 package org.apache.shardingsphere.infra.metadata;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 public final class ShardingSphereMetaDataTest {
+    
+    @Test
+    public void assertAddDatabase() throws SQLException {
+        ShardingSphereResource resource = mock(ShardingSphereResource.class);
+        DataSource dataSource = new MockedDataSource();
+        ResourceHeldRule<?> databaseResourceHeldRule = mock(ResourceHeldRule.class);
+        ResourceHeldRule<?> globalResourceHeldRule = mock(ResourceHeldRule.class);
+        ShardingSphereDatabase database = mockDatabase(resource, dataSource, databaseResourceHeldRule);
+        MockedStatic<ShardingSphereDatabase> mockedStatic = mockStatic(ShardingSphereDatabase.class);
+        DatabaseType databaseType = mock(DatabaseType.class);
+        mockedStatic.when(() -> ShardingSphereDatabase.create("foo_db", databaseType)).thenReturn(database);
+        Map<String, ShardingSphereDatabase> databases = new HashMap<>(Collections.singletonMap("foo_db", database));
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(databases,
+                new ShardingSphereRuleMetaData(Collections.singleton(globalResourceHeldRule)), new ConfigurationProperties(new Properties()));
+        metaData.addDatabase("foo_db", databaseType);
+        assertThat(metaData.getDatabases(), is(databases));
+        verify(globalResourceHeldRule).addResource(database);
+    }
     
     @Test
     public void assertDropDatabase() {
@@ -43,8 +68,7 @@ public final class ShardingSphereMetaDataTest {
         DataSource dataSource = new MockedDataSource();
         ResourceHeldRule<?> databaseResourceHeldRule = mock(ResourceHeldRule.class);
         ResourceHeldRule<?> globalResourceHeldRule = mock(ResourceHeldRule.class);
-        ShardingSphereMetaData metaData = new ShardingSphereMetaData(
-                new HashMap<>(Collections.singletonMap("foo_db", mockDatabase(resource, dataSource, databaseResourceHeldRule))),
+        ShardingSphereMetaData metaData = new ShardingSphereMetaData(new HashMap<>(Collections.singletonMap("foo_db", mockDatabase(resource, dataSource, databaseResourceHeldRule))),
                 new ShardingSphereRuleMetaData(Collections.singleton(globalResourceHeldRule)), new ConfigurationProperties(new Properties()));
         metaData.dropDatabase("foo_db");
         assertTrue(metaData.getDatabases().isEmpty());

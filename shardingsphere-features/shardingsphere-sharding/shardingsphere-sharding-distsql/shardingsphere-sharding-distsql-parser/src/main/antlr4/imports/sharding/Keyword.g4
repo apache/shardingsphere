@@ -210,3 +210,7 @@ EXISTS
 WITH
     : W I T H
     ;
+
+AUDIT
+    : A U D I T
+    ;

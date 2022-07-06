@@ -35,16 +35,16 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.Time
 import java.util.Optional;
 
 /**
- * Distribute mutex lock of ShardingSphere.
+ * Distribute global lock of ShardingSphere.
  */
 @Slf4j
-public final class ShardingSphereDistributedLock implements ShardingSphereLock {
+public final class ShardingSphereDistributedGlobalLock implements ShardingSphereLock {
     
     private final LockNodeService lockNodeService = LockNodeServiceFactory.getInstance().getLockNodeService(LockNodeType.DISTRIBUTED);
     
     private final ShardingSphereInternalLockHolder lockHolder;
     
-    public ShardingSphereDistributedLock(final ShardingSphereInternalLockHolder lockHolder) {
+    public ShardingSphereDistributedGlobalLock(final ShardingSphereInternalLockHolder lockHolder) {
         this.lockHolder = lockHolder;
         ShardingSphereEventBus.getInstance().register(this);
         syncDistributedLockStatus();

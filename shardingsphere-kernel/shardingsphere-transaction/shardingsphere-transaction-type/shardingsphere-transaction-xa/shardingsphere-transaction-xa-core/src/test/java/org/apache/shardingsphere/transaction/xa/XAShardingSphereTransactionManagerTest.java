@@ -70,8 +70,8 @@ public final class XAShardingSphereTransactionManagerTest {
     
     @Test
     public void assertRegisterXADataSource() {
-        Map<String, XATransactionDataSource> cachedXADatasourceMap = getCachedDataSources();
-        assertThat(cachedXADatasourceMap.size(), is(3));
+        Map<String, XATransactionDataSource> cachedXADataSourceMap = getCachedDataSources();
+        assertThat(cachedXADataSourceMap.size(), is(3));
     }
     
     @Test
