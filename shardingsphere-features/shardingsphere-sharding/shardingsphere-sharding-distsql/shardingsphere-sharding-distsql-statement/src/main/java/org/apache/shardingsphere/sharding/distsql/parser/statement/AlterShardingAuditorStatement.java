@@ -15,22 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter;
+package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.distsql.rdl.ExpectedShardingAuditor;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterRuleStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.segment.ShardingAuditorSegment;
 
-import java.util.LinkedList;
-import java.util.List;
-import javax.xml.bind.annotation.XmlElement;
+import java.util.Collection;
 
 /**
- * Alter sharding auditor statement test case.
+ * Alter sharding auditor statement.
  */
+@RequiredArgsConstructor
 @Getter
-public final class AlterShardingAuditorStatementTestCase extends SQLParserTestCase {
+public final class AlterShardingAuditorStatement extends AlterRuleStatement {
     
-    @XmlElement(name = "shardingAuditor")
-    private final List<ExpectedShardingAuditor> shardingAuditors = new LinkedList<>();
+    private final Collection<ShardingAuditorSegment> auditorSegments;
 }
