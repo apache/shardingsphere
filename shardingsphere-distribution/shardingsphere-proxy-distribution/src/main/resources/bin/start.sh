@@ -77,7 +77,7 @@ print_usage() {
     echo "    case more than one address is specified in a"
     echo "    comma-separated list. The default value is '0.0.0.0'."
     echo "-p  Bind port, default is '3307', which could be changed in server.yaml"
-    echo "-c  Path to config directory of ShardingSphere-Proxy, default it 'conf'"
+    echo "-c  Path to config directory of ShardingSphere-Proxy, default is 'conf'"
     exit 0
 }
 
