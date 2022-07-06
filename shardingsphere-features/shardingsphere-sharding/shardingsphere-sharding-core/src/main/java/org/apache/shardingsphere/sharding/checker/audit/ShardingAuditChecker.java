@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.check.SQLCheckResult;
 import org.apache.shardingsphere.infra.executor.check.SQLChecker;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
@@ -31,6 +32,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 /**
  * Sharding audit checker.
@@ -48,13 +50,17 @@ public final class ShardingAuditChecker implements SQLChecker<ShardingRule> {
         Collection<String> disableAuditNames = sqlStatementContext instanceof CommonSQLStatementContext
                 ? ((CommonSQLStatementContext<?>) sqlStatementContext).getSqlHintExtractor().findDisableAuditNames()
                 : Collections.emptyList();
-        for (String each : rule.getAuditStrategyConfig().getAuditorNames()) {
-            if (rule.getAuditStrategyConfig().isAllowHintDisable() && disableAuditNames.contains(each.toLowerCase())) {
-                continue;
-            }
-            SQLCheckResult result = rule.getAuditors().get(each).check(sqlStatementContext, parameters, grantee, databases.get(currentDatabase));
-            if (!result.isPassed()) {
-                return result;
+        Collection<ShardingAuditStrategyConfiguration> auditStrategies = sqlStatementContext.getTablesContext().getTableNames().stream().filter(rule::isShardingTable)
+                .map(each -> rule.getAuditStrategyConfiguration(rule.getTableRule(each))).collect(Collectors.toList());
+        for (ShardingAuditStrategyConfiguration auditStrategy : auditStrategies) {
+            for (String auditorName : auditStrategy.getAuditorNames()) {
+                if (auditStrategy.isAllowHintDisable() && disableAuditNames.contains(auditorName.toLowerCase())) {
+                    continue;
+                }
+                SQLCheckResult result = rule.getAuditors().get(auditorName).check(sqlStatementContext, parameters, grantee, databases.get(currentDatabase));
+                if (!result.isPassed()) {
+                    return result;
+                }
             }
         }
         return new SQLCheckResult(true, "");

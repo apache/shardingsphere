@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
@@ -50,20 +51,23 @@ public final class ShardingRuleBuilder implements DatabaseRuleBuilder<ShardingRu
     
     private boolean isValidRuleConfiguration(final ShardingRuleConfiguration config) {
         Map<String, ShardingSphereAlgorithmConfiguration> keyGenerators = config.getKeyGenerators();
+        Map<String, ShardingSphereAlgorithmConfiguration> auditors = config.getAuditors();
         Map<String, ShardingSphereAlgorithmConfiguration> shardingAlgorithms = config.getShardingAlgorithms();
         if (isInvalidKeyGenerateStrategy(config.getDefaultKeyGenerateStrategy(), keyGenerators)
+                || isInvalidAuditStrategy(config.getDefaultAuditStrategy(), auditors)
                 || isInvalidShardingStrategy(config.getDefaultDatabaseShardingStrategy(), shardingAlgorithms)
                 || isInvalidShardingStrategy(config.getDefaultTableShardingStrategy(), shardingAlgorithms)) {
             return false;
         }
         for (ShardingTableRuleConfiguration each : config.getTables()) {
-            if (isInvalidKeyGenerateStrategy(each.getKeyGenerateStrategy(), keyGenerators) || isInvalidShardingStrategy(each.getDatabaseShardingStrategy(), shardingAlgorithms)
-                    || isInvalidShardingStrategy(each.getTableShardingStrategy(), shardingAlgorithms)) {
+            if (isInvalidKeyGenerateStrategy(each.getKeyGenerateStrategy(), keyGenerators) || isInvalidAuditStrategy(each.getAuditStrategy(), auditors)
+                    || isInvalidShardingStrategy(each.getDatabaseShardingStrategy(), shardingAlgorithms) || isInvalidShardingStrategy(each.getTableShardingStrategy(), shardingAlgorithms)) {
                 return false;
             }
         }
         for (ShardingAutoTableRuleConfiguration each : config.getAutoTables()) {
-            if (isInvalidKeyGenerateStrategy(each.getKeyGenerateStrategy(), keyGenerators) || isInvalidShardingStrategy(each.getShardingStrategy(), shardingAlgorithms)) {
+            if (isInvalidKeyGenerateStrategy(each.getKeyGenerateStrategy(), keyGenerators) || isInvalidAuditStrategy(each.getAuditStrategy(), auditors)
+                    || isInvalidShardingStrategy(each.getShardingStrategy(), shardingAlgorithms)) {
                 return false;
             }
         }
@@ -82,6 +86,13 @@ public final class ShardingRuleBuilder implements DatabaseRuleBuilder<ShardingRu
             return false;
         }
         return !shardingAlgorithms.containsKey(shardingStrategy.getShardingAlgorithmName());
+    }
+    
+    private boolean isInvalidAuditStrategy(final ShardingAuditStrategyConfiguration auditStrategy, final Map<String, ShardingSphereAlgorithmConfiguration> auditors) {
+        if (null == auditStrategy) {
+            return false;
+        }
+        return !auditors.keySet().containsAll(auditStrategy.getAuditorNames());
     }
     
     @Override
