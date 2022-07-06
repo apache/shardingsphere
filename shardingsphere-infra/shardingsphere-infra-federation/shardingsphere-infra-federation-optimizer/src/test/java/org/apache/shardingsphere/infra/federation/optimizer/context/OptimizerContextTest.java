@@ -40,10 +40,29 @@ import static org.mockito.Mockito.mock;
 public final class OptimizerContextTest {
     
     @Test
+    public void assertAlterTable() {
+        String databaseName = "foo_db";
+        String schemaName = "foo_schema";
+        String tableName = "foo_tbl";
+        String beforeColumnName = "foo_col";
+        String afterColumnName = "bar_col";
+        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, new H2DatabaseType(), mock(ShardingSphereResource.class), null, 
+                Collections.singletonMap(schemaName, new ShardingSphereSchema(Collections.singletonMap(tableName, new ShardingSphereTable(tableName,
+                Collections.singleton(new ShardingSphereColumn(beforeColumnName, 0, false, false, true)), Collections.emptyList(), Collections.emptyList())))));
+        OptimizerContext optimizerContext = OptimizerContextFactory.create(Collections.singletonMap(databaseName, database), mock(ShardingSphereRuleMetaData.class));
+        optimizerContext.alterTable(databaseName, schemaName, new ShardingSphereTable(tableName,
+                Collections.singleton(new ShardingSphereColumn(afterColumnName, 0, false, false, true)), Collections.emptyList(), Collections.emptyList()));
+        Optional<FederationSchemaMetaData> federationSchemaMetaData = optimizerContext.getFederationMetaData().getDatabases().get(databaseName).getSchemaMetadata(schemaName);
+        assertTrue(federationSchemaMetaData.isPresent());
+        assertFalse(federationSchemaMetaData.get().getTables().get(tableName).getColumnNames().contains(beforeColumnName));
+        assertTrue(federationSchemaMetaData.get().getTables().get(tableName).getColumnNames().contains(afterColumnName));
+    }
+    
+    @Test
     public void assertDropTable() {
         String databaseName = "foo_db";
         String schemaName = "foo_schema";
-        String tableName = "t_order";
+        String tableName = "foo_tbl";
         ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, new H2DatabaseType(), mock(ShardingSphereResource.class),
                 null, Collections.singletonMap(schemaName, new ShardingSphereSchema(Collections.singletonMap(tableName, mock(ShardingSphereTable.class)))));
         OptimizerContext optimizerContext = OptimizerContextFactory.create(Collections.singletonMap(databaseName, database), mock(ShardingSphereRuleMetaData.class));
@@ -53,24 +72,5 @@ public final class OptimizerContextTest {
         Optional<FederationSchemaMetaData> schemaMetadata = optimizerContext.getFederationMetaData().getDatabases().get(databaseName).getSchemaMetadata(schemaName);
         assertTrue(schemaMetadata.isPresent());
         assertFalse(schemaMetadata.get().getTables().containsKey(tableName));
-    }
-    
-    @Test
-    public void alterTable() {
-        String databaseName = "foo_db";
-        String schemaName = "foo_schema";
-        String tableName = "foo_table";
-        String beforeColumnName = "foo_col";
-        String afterColumnName = "foo_col_new";
-        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, new H2DatabaseType(), mock(ShardingSphereResource.class),
-                null, Collections.singletonMap(schemaName, new ShardingSphereSchema(Collections.singletonMap(tableName, new ShardingSphereTable(tableName,
-                        Collections.singletonList(new ShardingSphereColumn(beforeColumnName, 0, false, false, true)), Collections.emptyList(), Collections.emptyList())))));
-        OptimizerContext optimizerContext = OptimizerContextFactory.create(Collections.singletonMap(databaseName, database), mock(ShardingSphereRuleMetaData.class));
-        optimizerContext.alterTable(databaseName, schemaName, new ShardingSphereTable(tableName,
-                Collections.singletonList(new ShardingSphereColumn(afterColumnName, 0, false, false, true)), Collections.emptyList(), Collections.emptyList()));
-        Optional<FederationSchemaMetaData> schemaMetadata = optimizerContext.getFederationMetaData().getDatabases().get(databaseName).getSchemaMetadata(schemaName);
-        assertTrue(schemaMetadata.isPresent());
-        assertFalse(schemaMetadata.get().getTables().get(tableName).getColumnNames().contains(beforeColumnName));
-        assertTrue(schemaMetadata.get().getTables().get(tableName).getColumnNames().contains(afterColumnName));
     }
 }

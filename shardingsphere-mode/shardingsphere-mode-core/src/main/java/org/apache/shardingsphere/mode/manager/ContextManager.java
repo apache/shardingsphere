@@ -386,13 +386,13 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
-     * Reload table meta data.
+     * Reload schema.
      *
      * @param databaseName database name
-     * @param schemaName schema name
+     * @param schemaName to be reloaded schema name
      * @param dataSourceName data source name
      */
-    public synchronized void reloadSchemaMetaData(final String databaseName, final String schemaName, final String dataSourceName) {
+    public synchronized void reloadSchema(final String databaseName, final String schemaName, final String dataSourceName) {
         try {
             ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(databaseName);
             database.reloadRules(instanceContext);
