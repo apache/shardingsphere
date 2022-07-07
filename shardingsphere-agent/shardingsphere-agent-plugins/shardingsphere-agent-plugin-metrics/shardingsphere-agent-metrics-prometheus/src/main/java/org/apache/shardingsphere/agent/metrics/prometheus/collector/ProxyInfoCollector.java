@@ -52,14 +52,14 @@ public final class ProxyInfoCollector extends Collector {
     
     @Override
     public List<MetricFamilySamples> collect() {
-        if (!MetricsUtil.isClassExisted(PROXY_CLASS)) {
+        if (!MetricsUtil.isClassExisted(PROXY_CLASS) || null == ProxyContext.getInstance().getContextManager()) {
             return Collections.emptyList();
         }
         Optional<GaugeMetricFamily> proxyInfo = FACTORY.createGaugeMetricFamily(MetricIds.PROXY_INFO);
-        if (null == ProxyContext.getInstance().getContextManager() || !proxyInfo.isPresent() || !ProxyContext.getInstance().getStateContext().isPresent()) {
+        Optional<StateContext> stateContext = ProxyContext.getInstance().getStateContext();
+        if (!proxyInfo.isPresent() || !stateContext.isPresent()) {
             return Collections.emptyList();
         }
-        Optional<StateContext> stateContext = ProxyContext.getInstance().getStateContext();
         List<MetricFamilySamples> result = new LinkedList<>();
         proxyInfo.get().addMetric(Collections.singletonList(PROXY_STATE), PROXY_STATE_MAP.get(stateContext.get().getCurrentState()));
         result.add(proxyInfo.get());
