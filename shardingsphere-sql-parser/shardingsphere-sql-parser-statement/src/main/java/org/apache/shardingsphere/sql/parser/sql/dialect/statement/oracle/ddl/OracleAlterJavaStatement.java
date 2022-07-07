@@ -15,17 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.fixture;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLock;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
-public final class RuleBasedJobLockFixture implements RuleBasedJobLock {
-    
-    @Override
-    public void lock(final String databaseName, final String jobId) {
-    }
-    
-    @Override
-    public void releaseLock(final String databaseName, final String jobId) {
-    }
+/**
+ * Oracle alter java statement.
+ */
+@ToString
+public final class OracleAlterJavaStatement extends AbstractSQLStatement implements OracleStatement {
 }
