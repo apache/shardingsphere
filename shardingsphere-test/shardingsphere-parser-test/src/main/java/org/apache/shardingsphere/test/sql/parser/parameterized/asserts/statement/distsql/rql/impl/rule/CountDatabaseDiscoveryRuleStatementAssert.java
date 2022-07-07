@@ -34,7 +34,7 @@ import static org.junit.Assert.assertTrue;
 public final class CountDatabaseDiscoveryRuleStatementAssert {
     
     /**
-     * Assert count database discovery statement is correct with expected parser result.
+     * Assert count database discovery rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
      * @param actual actual count database discovery rule statement
