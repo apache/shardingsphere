@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.federation.optimizer.context;
 
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
@@ -33,6 +34,7 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -46,9 +48,9 @@ public final class OptimizerContextTest {
         String tableName = "foo_tbl";
         String beforeColumnName = "foo_col";
         String afterColumnName = "bar_col";
-        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, new H2DatabaseType(), mock(ShardingSphereResource.class), null, 
+        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, new H2DatabaseType(), mock(ShardingSphereResource.class), null,
                 Collections.singletonMap(schemaName, new ShardingSphereSchema(Collections.singletonMap(tableName, new ShardingSphereTable(tableName,
-                Collections.singleton(new ShardingSphereColumn(beforeColumnName, 0, false, false, true)), Collections.emptyList(), Collections.emptyList())))));
+                        Collections.singleton(new ShardingSphereColumn(beforeColumnName, 0, false, false, true)), Collections.emptyList(), Collections.emptyList())))));
         OptimizerContext optimizerContext = OptimizerContextFactory.create(Collections.singletonMap(databaseName, database), mock(ShardingSphereRuleMetaData.class));
         optimizerContext.alterTable(databaseName, schemaName, new ShardingSphereTable(tableName,
                 Collections.singleton(new ShardingSphereColumn(afterColumnName, 0, false, false, true)), Collections.emptyList(), Collections.emptyList()));
@@ -72,5 +74,17 @@ public final class OptimizerContextTest {
         Optional<FederationSchemaMetaData> schemaMetadata = optimizerContext.getFederationMetaData().getDatabases().get(databaseName).getSchemaMetadata(schemaName);
         assertTrue(schemaMetadata.isPresent());
         assertFalse(schemaMetadata.get().getTables().containsKey(tableName));
+    }
+    
+    @Test
+    public void assertDropDatabase() {
+        String databaseName = "foo_db";
+        String schemaName = "foo_schema";
+        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, new H2DatabaseType(), mock(ShardingSphereResource.class),
+                null, Collections.singletonMap(schemaName, mock(ShardingSphereSchema.class)));
+        OptimizerContext optimizerContext = OptimizerContextFactory.create(Collections.singletonMap(databaseName, database), mock(ShardingSphereRuleMetaData.class));
+        optimizerContext.dropDatabase(databaseName);
+        FederationDatabaseMetaData federationDatabaseMetaData = optimizerContext.getFederationMetaData().getDatabases().get(databaseName);
+        assertNull(federationDatabaseMetaData);
     }
 }
