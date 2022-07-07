@@ -34,7 +34,6 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -56,7 +55,7 @@ public final class ShardingSphereDatabasesFactoryTest {
     public void assertCreateSingleDatabase() throws SQLException {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration()));
         ShardingSphereDatabase actual = ShardingSphereDatabasesFactory.create("foo_db", databaseConfig, new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
-        assertEquals("foo_db", actual.getName());
+        assertThat(actual.getName(), is("foo_db"));
         assertThat(actual.getRuleMetaData().getRules().iterator().next(), instanceOf(FixtureDatabaseRule.class));
         assertTrue(actual.getResource().getDataSources().isEmpty());
     }
