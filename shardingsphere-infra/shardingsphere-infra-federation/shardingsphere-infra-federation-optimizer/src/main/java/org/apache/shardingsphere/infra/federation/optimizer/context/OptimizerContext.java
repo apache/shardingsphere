@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.federation.optimizer.context.planner.Opti
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 
@@ -58,18 +57,6 @@ public final class OptimizerContext {
         FederationDatabaseMetaData federationDatabaseMetaData = new FederationDatabaseMetaData(databaseName, Collections.emptyMap());
         federationMetaData.getDatabases().put(databaseName, federationDatabaseMetaData);
         parserContexts.put(databaseName, OptimizerParserContextFactory.create(protocolType));
-        plannerContexts.put(databaseName, OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
-    }
-    
-    /**
-     * Alter database.
-     *
-     * @param databaseName database name
-     * @param schemas schemas
-     */
-    public void alterDatabase(final String databaseName, final Map<String, ShardingSphereSchema> schemas) {
-        FederationDatabaseMetaData federationDatabaseMetaData = new FederationDatabaseMetaData(databaseName, schemas);
-        federationMetaData.getDatabases().put(databaseName, federationDatabaseMetaData);
         plannerContexts.put(databaseName, OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
     }
     
