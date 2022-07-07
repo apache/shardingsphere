@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -109,7 +110,7 @@ public final class DatabaseTypeEngine {
         try (Connection connection = dataSource.getConnection()) {
             return getDatabaseType(connection.getMetaData().getURL());
         } catch (final SQLException ex) {
-            throw new IllegalArgumentException(ex.getMessage(), ex);
+            throw new ShardingSphereException(ex.getMessage(), ex);
         }
     }
     
