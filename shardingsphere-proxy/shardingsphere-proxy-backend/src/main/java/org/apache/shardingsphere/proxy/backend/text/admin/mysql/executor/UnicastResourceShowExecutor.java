@@ -72,7 +72,7 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
     public void execute(final ConnectionSession connectionSession) throws SQLException {
         String originDatabase = connectionSession.getDatabaseName();
         String databaseName = null == originDatabase ? getFirstDatabaseName() : originDatabase;
-        if (!ProxyContext.getInstance().getDatabase(databaseName).hasDataSource()) {
+        if (!ProxyContext.getInstance().getDatabase(databaseName).containsDataSource()) {
             throw new RuleNotExistedException();
         }
         try {
@@ -93,7 +93,7 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
         if (databaseNames.isEmpty()) {
             throw new NoDatabaseSelectedException();
         }
-        Optional<String> result = databaseNames.stream().filter(each -> ProxyContext.getInstance().getDatabase(each).hasDataSource()).findFirst();
+        Optional<String> result = databaseNames.stream().filter(each -> ProxyContext.getInstance().getDatabase(each).containsDataSource()).findFirst();
         if (!result.isPresent()) {
             throw new RuleNotExistedException();
         }

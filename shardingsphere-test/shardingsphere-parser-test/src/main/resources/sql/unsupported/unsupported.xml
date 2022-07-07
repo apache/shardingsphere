@@ -82,7 +82,6 @@
     <sql-case id="create_by_mysql_source_test_case38" value="CREATE FUNCTION bug_13627_f() returns int BEGIN create index t1_i on t1 (a); return 1; END" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case39" value="CREATE FUNCTION bug_13627_f() returns int BEGIN create trigger tr2 before insert on t1 for each row do select 1; return 1; END" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case40" value="CREATE FUNCTION bug_13627_f() returns int BEGIN create user &apos;mysqltest_1&apos;; return 1; END" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case41" value="CREATE FUNCTION bug_13627_f() returns int BEGIN create view v1 as select 1; return 1; END" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case42" value="CREATE FUNCTION bug_13627_f() returns int BEGIN drop database mysqltest; return 1; END" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case43" value="CREATE FUNCTION bug_13627_f() returns int BEGIN drop function bug_13627_f; return 1; END" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case44" value="CREATE FUNCTION bug_13627_f() returns int BEGIN drop index t1_i on t1; return 1; END" db-types="MySQL" />
@@ -114,12 +113,6 @@
     <sql-case id="create_by_mysql_source_test_case115" value="CREATE PROCEDURE bug13012_1() REPAIR TABLE t1" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case116" value="CREATE PROCEDURE bug13095(tbl_name varchar(32)) BEGIN SET @str = CONCAT(&quot;CREATE TABLE &quot;, tbl_name, &quot;(stuff char(15))&quot;); SELECT @str; PREPARE stmt FROM @str; EXECUTE stmt; SET @str = CONCAT(&quot;INSERT INTO &quot;, tbl_name, &quot; VALUES(&apos;row1&apos;),(&apos;row2&apos;),(&apos;row3&apos;)&quot; ); SELECT @str; PREPARE stmt FROM @str; EXECUTE stmt; SET @str = CONCAT(&quot;CREATE VIEW bug13095_v1(c1) AS SELECT stuff FROM &quot;, tbl_name); SELECT @str; PREPARE stmt FROM @str; EXECUTE stmt; SELECT * FROM bug13095_v1; SET @str = &quot;DROP VIEW bug13095_v1&quot;; SELECT @str; PREPARE stmt FROM @str; EXECUTE stmt; END" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case120" value="CREATE PROCEDURE bug15231_4() BEGIN DECLARE x DECIMAL(2,1); SET x = &apos;zap&apos;; SHOW WARNINGS; END" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case124" value="CREATE PROCEDURE bug20953() BEGIN DECLARE i INT; CREATE VIEW v AS SELECT i; END" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case125" value="CREATE PROCEDURE bug20953() CREATE VIEW v AS SELECT 1 FROM (SELECT 1) AS d1" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case126" value="CREATE PROCEDURE bug20953() CREATE VIEW v AS SELECT 1 INTO @a" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case127" value="CREATE PROCEDURE bug20953() CREATE VIEW v AS SELECT 1 INTO DUMPFILE &quot;file&quot;" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case128" value="CREATE PROCEDURE bug20953() CREATE VIEW v AS SELECT 1 INTO OUTFILE &quot;file&quot;" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case129" value="CREATE PROCEDURE bug20953(i INT) CREATE VIEW v AS SELECT i" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case131" value="CREATE PROCEDURE bug22580_proc_1() BEGIN CALL bug22580_proc_2(); END|" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case132" value="CREATE PROCEDURE bug22580_proc_2() BEGIN DROP TABLE IF EXISTS bug22580_tmp; CREATE TEMPORARY TABLE bug22580_tmp (a INT); DROP TABLE bug22580_tmp; END|" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case133" value="CREATE PROCEDURE bug24117() BEGIN DECLARE t3c1 ENUM(&apos;abc&apos;); DECLARE mycursor CURSOR FOR SELECT c1 FROM t3; OPEN mycursor; FLUSH TABLES; FETCH mycursor INTO t3c1; CLOSE mycursor; END" db-types="MySQL" />
@@ -159,7 +152,6 @@
     <sql-case id="create_by_mysql_source_test_case213" value="CREATE PROCEDURE p1() BEGIN SHOW CREATE PROCEDURE p1; SELECT get_lock(&quot;test&quot;, 100000); SHOW CREATE PROCEDURE p1; END" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case214" value="CREATE PROCEDURE p1() BEGIN skip: LOOP LEAVE skip; END LOOP skip; END" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case215" value="CREATE PROCEDURE p1() CREATE INDEX idx ON t1 (c1)" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case216" value="CREATE PROCEDURE p1() CREATE VIEW v1 AS SELECT * FROM t1" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case217" value="CREATE PROCEDURE p1() LOAD DATA INFILE &apos;../../std_data/loaddata_utf8.dat&apos; INTO TABLE t1" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case218" value="CREATE PROCEDURE p1() RENAME TABLE t2 TO t3" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case220" value="CREATE PROCEDURE p1() SET PASSWORD FOR u1@h = &apos;12345&apos;" db-types="MySQL" />
@@ -459,7 +451,6 @@
     <sql-case id="create_by_mysql_source_test_case707" value="CREATE TRIGGER tr1 BEFORE INSERT ON t1 FOR EACH ROW BEGIN create index t1_i on t1 (a); END" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case708" value="CREATE TRIGGER tr1 BEFORE INSERT ON t1 FOR EACH ROW BEGIN create trigger tr2 before insert on t1 for each row do select 1; END" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case709" value="CREATE TRIGGER tr1 BEFORE INSERT ON t1 FOR EACH ROW BEGIN create user &apos;mysqltest_1&apos;; END" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case710" value="CREATE TRIGGER tr1 BEFORE INSERT ON t1 FOR EACH ROW BEGIN create view v1 as select 1; END" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case711" value="CREATE TRIGGER tr1 BEFORE INSERT ON t1 FOR EACH ROW BEGIN drop database mysqltest; END" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case712" value="CREATE TRIGGER tr1 BEFORE INSERT ON t1 FOR EACH ROW BEGIN drop function bug_13627_f; END" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case713" value="CREATE TRIGGER tr1 BEFORE INSERT ON t1 FOR EACH ROW BEGIN drop index t1_i on t1; END" db-types="MySQL" />
@@ -639,10 +630,8 @@
     <sql-case id="create_by_mysql_source_test_case1111" value="create procedure mysqltest2.p2(in psql text) begin declare lsql text; set @lsql= psql; prepare lstatement from @lsql; execute lstatement; deallocate prepare lstatement; end" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1112" value="create procedure mysqltest_1 () begin begin declare continue handler for sqlexception begin end; update ignore t1 set a = 1 where a = 0; end; prepare stmt1 from &apos;alter table t1&apos;; execute stmt1; end" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1115" value="create procedure p() begin declare c cursor for insert into test.t1 values (&quot;foo&quot;, 42); open c; close c; end" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case1117" value="create procedure p() begin declare continue handler for sqlexception begin end; create view a as select 1; end" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1118" value="create procedure p() begin declare utf8_var VARCHAR(128) CHARACTER SET UTF8; set utf8_var = concat(repeat(&apos;A&apos;, 128), &apos;X&apos;); select length(utf8_var), utf8_var; end" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1119" value="create procedure p() begin declare utf8_var VARCHAR(128) CHARACTER SET UTF8; set utf8_var = concat(repeat(&apos;A&apos;, 128), &apos;X&apos;); show warnings; select length(utf8_var), utf8_var; end" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case1129" value="create procedure p1 () deterministic begin create view v1 as select 1; end;" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1130" value="create procedure p1 (a int) language sql deterministic begin declare rsql varchar(100); drop table if exists t1, t2; set @rsql= &quot;create table t1 (a int)&quot;; select @rsql; prepare pst from @rsql; execute pst; set @rsql= null; set @rsql= &quot;create table t2 (a int)&quot;; select @rsql; prepare pst from @rsql; execute pst; drop table if exists t1, t2; end" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1131" value="create procedure p1() begin alter event e1 rename to e2; end" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1132" value="create procedure p1() begin create view v1 as select 1; drop view v1; select f1() into @var; set @exec_count=@exec_count+1; end" db-types="MySQL" />
@@ -663,7 +652,6 @@
     <sql-case id="create_by_mysql_source_test_case1152" value="create procedure p1() begin prepare stmt_drop from &quot;drop table if exists t1&quot;; execute stmt_drop; prepare stmt from &quot;create table t1 (a int)&quot;; execute stmt; insert into t1 (a) values (1); select * from t1; prepare stmt_alter from &quot;alter table t1 add (b int)&quot;; execute stmt_alter; insert into t1 (a,b) values (2,1); deallocate prepare stmt_alter; deallocate prepare stmt; deallocate prepare stmt_drop; end" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1153" value="create procedure p1() begin select f1() into @var; execute stmt; end" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1154" value="create procedure p1() begin set @tab_name=concat(&quot;tab_&quot;, replace(curdate(), &apos;-&apos;, &apos;_&apos;)); set @drop_sql=concat(&quot;drop table if exists &quot;, @tab_name); set @create_sql=concat(&quot;create table &quot;, @tab_name, &quot; (a int)&quot;); set @insert_sql=concat(&quot;insert into &quot;, @tab_name, &quot; values (1), (2), (3)&quot;); set @select_sql=concat(&quot;select * from &quot;, @tab_name); select @tab_name; select @drop_sql; select @create_sql; select @insert_sql; select @select_sql; prepare stmt_drop from @drop_sql; execute stmt_drop; prepare stmt from @create_sql; execute stmt; prepare stmt from @insert_sql; execute stmt; prepare stmt from @select_sql; execute stmt; execute stmt_drop; deallocate prepare stmt; deallocate prepare stmt_drop; end" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case1155" value="create procedure p1() create view v1 as select * from t1" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1156" value="create procedure p1() execute stmt" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1157" value="create procedure p1() flush hosts" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1158" value="create procedure p1() flush logs" db-types="MySQL" />
@@ -3365,11 +3353,6 @@
     <sql-case id="alter_by_postgresql_source_test_case214" value="ALTER OPERATOR FAMILY alt_opf7 USING btree DROP OPERATOR 1 (int4, int2, int8);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case215" value="ALTER OPERATOR FAMILY alt_opf8 USING btree ADD OPERATOR 1 &lt; (int4, int4);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case216" value="ALTER OPERATOR FAMILY alt_opf9 USING gist ADD OPERATOR 1 &lt; (int4, int4) FOR ORDER BY float_ops;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case286" value="ALTER RULE &quot;_RETURN&quot; ON rule_v1 RENAME TO abc;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case287" value="ALTER RULE InsertRule ON rule_v1 RENAME TO NewInsertRule;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case288" value="ALTER RULE InsertRule ON rule_v1 RENAME to NewInsertRule;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case289" value="ALTER RULE NewInsertRule ON rule_v1 RENAME TO &quot;_RETURN&quot;;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case290" value="ALTER RULE rules_parted_table_insert ON rules_parted_table RENAME TO rules_parted_table_insert_redirect;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case295" value="ALTER SEQUENCE itest6_a_seq OWNED BY NONE;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case296" value="ALTER SERVER alt_fserv1 RENAME TO alt_fserv2;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case297" value="ALTER SERVER alt_fserv1 RENAME TO alt_fserv3;" db-types="PostgreSQL" />
@@ -3537,26 +3520,6 @@
     <sql-case id="alter_by_postgresql_source_test_case459" value="ALTER TYPE test_typex DROP ATTRIBUTE a;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case460" value="ALTER TYPE tt_t0 DROP ATTRIBUTE z;" db-types="PostgreSQL" />
     <sql-case id="analyze_by_postgresql_source_test_case1" value="ANALYZE (nonexistent-arg) does_not_exist;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case104" value="CREATE COLLATION case_insensitive (provider = icu, locale = &apos;@colStrength=secondary&apos;, deterministic = false);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case105" value="CREATE COLLATION case_sensitive (provider = icu, locale = &apos;&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case106" value="CREATE COLLATION coll_icu_upgrade FROM &quot;und-x-icu&quot;;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case107" value="CREATE COLLATION ctest_det (provider = icu, locale = &apos;&apos;, deterministic = true);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case108" value="CREATE COLLATION ctest_nondet (provider = icu, locale = &apos;&apos;, deterministic = false);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case109" value="CREATE COLLATION ignore_accents (provider = icu, locale = &apos;@colStrength=primary;colCaseLevel=yes&apos;, deterministic = false);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case110" value="CREATE COLLATION test0 FROM &quot;C&quot;;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case111" value="CREATE COLLATION test0 FROM &quot;C&quot;;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case112" value="CREATE COLLATION test3 (provider = icu, lc_collate = &apos;en_US.utf8&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case113" value="CREATE COLLATION test4 FROM nonsense;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case114" value="CREATE COLLATION test5 FROM test0;" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case115" value="CREATE COLLATION testcoll_backwards (provider = icu, locale = &apos;@colBackwards=yes&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case116" value="CREATE COLLATION testcoll_de_phonebook (provider = icu, locale = &apos;de@collation=phonebook&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case117" value="CREATE COLLATION testcoll_error1 (provider = icu, locale = &apos;@colNumeric=lower&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case118" value="CREATE COLLATION testcoll_ignore_accents (provider = icu, locale = &apos;@colStrength=primary;colCaseLevel=yes&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case119" value="CREATE COLLATION testcoll_lower_first (provider = icu, locale = &apos;@colCaseFirst=lower&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case120" value="CREATE COLLATION testcoll_numeric (provider = icu, locale = &apos;@colNumeric=yes&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case121" value="CREATE COLLATION testcoll_shifted (provider = icu, locale = &apos;@colAlternate=shifted&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case122" value="CREATE COLLATION testcoll_upper_first (provider = icu, locale = &apos;@colCaseFirst=upper&apos;);" db-types="PostgreSQL" />
-    <sql-case id="create_by_postgresql_source_test_case123" value="CREATE COLLATION testx (provider = icu, locale = &apos;nonsense&apos;); /* never fails with ICU */  DROP COLLATION testx;" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case124" value="CREATE CONSTRAINT TRIGGER trigtest_constraint AFTER INSERT OR UPDATE OR DELETE ON foreign_schema.foreign_table_1 FOR EACH ROW EXECUTE PROCEDURE dummy_trigger();" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case125" value="CREATE EVENT TRIGGER end_rls_command ON ddl_command_end     WHEN TAG IN (&apos;CREATE POLICY&apos;, &apos;ALTER POLICY&apos;, &apos;DROP POLICY&apos;) EXECUTE PROCEDURE end_command();" db-types="PostgreSQL" />
     <sql-case id="create_by_postgresql_source_test_case126" value="CREATE EVENT TRIGGER has_volatile_rewrite                   ON table_rewrite    EXECUTE PROCEDURE log_rewrite();" db-types="PostgreSQL" />
@@ -4664,169 +4627,7 @@
     <sql-case id="insert_by_postgresql_source_test_case395" value="INSERT INTO truncate_b DEFAULT VALUES;" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case396" value="INSERT INTO truncate_b DEFAULT VALUES;" db-types="PostgreSQL" />
     <sql-case id="insert_by_postgresql_source_test_case428" value="INSERT INTO y2 (SELECT x, md5(x::text) FROM generate_series(0,20) x);" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case1" value="LOCK TABLE ONLY lock_tbl1;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case2" value="LOCK TABLE fast_emp4000;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case3" value="LOCK TABLE lock_tbl1 * IN ACCESS EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case4" value="LOCK TABLE lock_tbl1 * IN ACCESS EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case5" value="LOCK TABLE lock_tbl1 IN ACCESS EXCLUSIVE MODE NOWAIT;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case6" value="LOCK TABLE lock_tbl1 IN ACCESS EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case7" value="LOCK TABLE lock_tbl1 IN ACCESS SHARE MODE NOWAIT;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case8" value="LOCK TABLE lock_tbl1 IN ACCESS SHARE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case9" value="LOCK TABLE lock_tbl1 IN EXCLUSIVE MODE NOWAIT;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case10" value="LOCK TABLE lock_tbl1 IN EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case11" value="LOCK TABLE lock_tbl1 IN ROW EXCLUSIVE MODE NOWAIT;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case12" value="LOCK TABLE lock_tbl1 IN ROW EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case13" value="LOCK TABLE lock_tbl1 IN ROW SHARE MODE NOWAIT;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case14" value="LOCK TABLE lock_tbl1 IN SHARE MODE NOWAIT;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case15" value="LOCK TABLE lock_tbl1 IN SHARE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case16" value="LOCK TABLE lock_tbl1 IN SHARE ROW EXCLUSIVE MODE NOWAIT;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case17" value="LOCK TABLE lock_tbl1 IN SHARE UPDATE EXCLUSIVE MODE NOWAIT;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case18" value="LOCK TABLE lock_tbl1 IN SHARE UPDATE EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case19" value="LOCK TABLE lock_tbl2;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case20" value="LOCK TABLE lock_view1 IN EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case21" value="LOCK TABLE lock_view2 IN EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case22" value="LOCK TABLE lock_view2 IN EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case23" value="LOCK TABLE lock_view3 IN EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case24" value="LOCK TABLE lock_view4 IN EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case25" value="LOCK TABLE lock_view5 IN EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case26" value="LOCK TABLE lock_view6 IN EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case27" value="LOCK TABLE lock_view7 IN EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case28" value="LOCK atest1 IN ACCESS EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case29" value="LOCK atest2 IN ACCESS EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case30" value="LOCK atest2 IN ACCESS EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case31" value="LOCK hs1 IN ACCESS EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case32" value="LOCK hs1 IN ACCESS SHARE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case33" value="LOCK hs1 IN EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case34" value="LOCK hs1 IN ROW EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case35" value="LOCK hs1 IN ROW SHARE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case36" value="LOCK hs1 IN SHARE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case37" value="LOCK hs1 IN SHARE ROW EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case38" value="LOCK hs1 IN SHARE UPDATE EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case39" value="LOCK hs1;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case40" value="LOCK lock_tbl1 IN ROW SHARE MODE;" db-types="PostgreSQL" />
-    <sql-case id="lock_by_postgresql_source_test_case41" value="LOCK lock_tbl1 IN SHARE ROW EXCLUSIVE MODE;" db-types="PostgreSQL" />
-    <sql-case id="prepare_by_postgresql_source_test_case1" value="PREPARE TRANSACTION &apos;foo1&apos;;" db-types="PostgreSQL" />
-    <sql-case id="prepare_by_postgresql_source_test_case2" value="PREPARE TRANSACTION &apos;foo2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="prepare_by_postgresql_source_test_case3" value="PREPARE TRANSACTION &apos;foo3&apos;;" db-types="PostgreSQL" />
-    <sql-case id="prepare_by_postgresql_source_test_case4" value="PREPARE TRANSACTION &apos;foo3&apos;;" db-types="PostgreSQL" />
-    <sql-case id="prepare_by_postgresql_source_test_case5" value="PREPARE TRANSACTION &apos;foo4&apos;;" db-types="PostgreSQL" />
-    <sql-case id="prepare_by_postgresql_source_test_case6" value="PREPARE TRANSACTION &apos;foo5&apos;;" db-types="PostgreSQL" />
-    <sql-case id="prepare_by_postgresql_source_test_case7" value="PREPARE TRANSACTION &apos;foo6&apos;;" db-types="PostgreSQL" />
-    <sql-case id="prepare_by_postgresql_source_test_case8" value="PREPARE TRANSACTION &apos;foobar&apos;;" db-types="PostgreSQL" />
-    <sql-case id="prepare_by_postgresql_source_test_case9" value="PREPARE TRANSACTION &apos;foobar&apos;;" db-types="PostgreSQL" />
-    <sql-case id="prepare_by_postgresql_source_test_case10" value="PREPARE TRANSACTION &apos;regress-one&apos;;" db-types="PostgreSQL" />
-    <sql-case id="prepare_by_postgresql_source_test_case11" value="PREPARE TRANSACTION &apos;regress-two&apos;;" db-types="PostgreSQL" />
-    <sql-case id="prepare_by_postgresql_source_test_case12" value="PREPARE TRANSACTION &apos;twophase_search&apos;;" db-types="PostgreSQL" />
-    <sql-case id="reassign_by_postgresql_source_test_case1" value="REASSIGN OWNED BY regress_dep_user0 TO regress_dep_user1;" db-types="PostgreSQL" />
-    <sql-case id="reassign_by_postgresql_source_test_case2" value="REASSIGN OWNED BY regress_dep_user1 TO regress_dep_user0;" db-types="PostgreSQL" />
-    <sql-case id="reassign_by_postgresql_source_test_case3" value="REASSIGN OWNED BY regress_dep_user1 TO regress_dep_user2;" db-types="PostgreSQL" />
-    <sql-case id="reassign_by_postgresql_source_test_case4" value="REASSIGN OWNED BY regress_test_role TO regress_test_role2;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case1" value="REFRESH MATERIALIZED VIEW CONCURRENTLY mvtest_boxmv;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case2" value="REFRESH MATERIALIZED VIEW CONCURRENTLY mvtest_mv;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case3" value="REFRESH MATERIALIZED VIEW CONCURRENTLY mvtest_mv;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case4" value="REFRESH MATERIALIZED VIEW CONCURRENTLY mvtest_mv_foo;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case5" value="REFRESH MATERIALIZED VIEW CONCURRENTLY mvtest_mv_v;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case6" value="REFRESH MATERIALIZED VIEW CONCURRENTLY mvtest_tm;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case7" value="REFRESH MATERIALIZED VIEW CONCURRENTLY mvtest_tvmm WITH NO DATA;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case8" value="REFRESH MATERIALIZED VIEW CONCURRENTLY mvtest_tvmm;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case9" value="REFRESH MATERIALIZED VIEW matview_schema.mv_nodata2;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case10" value="REFRESH MATERIALIZED VIEW matview_schema.mv_withdata2;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case11" value="REFRESH MATERIALIZED VIEW mvtest_mv;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case12" value="REFRESH MATERIALIZED VIEW mvtest_mv;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case13" value="REFRESH MATERIALIZED VIEW mvtest_mv_foo;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case14" value="REFRESH MATERIALIZED VIEW mvtest_mv_v;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case15" value="REFRESH MATERIALIZED VIEW mvtest_mv_v_2;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case16" value="REFRESH MATERIALIZED VIEW mvtest_mv_v_3;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case17" value="REFRESH MATERIALIZED VIEW mvtest_mv_v_4;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case18" value="REFRESH MATERIALIZED VIEW mvtest_tm;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case19" value="REFRESH MATERIALIZED VIEW mvtest_tmm;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case20" value="REFRESH MATERIALIZED VIEW mvtest_tvm;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case21" value="REFRESH MATERIALIZED VIEW mvtest_tvmm;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case22" value="REFRESH MATERIALIZED VIEW mvtest_tvvm;" db-types="PostgreSQL" />
-    <sql-case id="refresh_by_postgresql_source_test_case23" value="REFRESH MATERIALIZED VIEW tid_matview;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case1" value="REINDEX (CONCURRENTLY) TABLE concur_reindex_tab;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case2" value="REINDEX (VERBOSE) TABLE reindex_verbose;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case3" value="REINDEX INDEX CONCURRENTLY  concur_reindex_tab3_c2_excl;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case4" value="REINDEX INDEX CONCURRENTLY concur_reindex_ind1;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case5" value="REINDEX INDEX CONCURRENTLY concur_reindex_ind5;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case6" value="REINDEX INDEX CONCURRENTLY concur_reindex_ind5;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case7" value="REINDEX INDEX CONCURRENTLY concur_reindex_part;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case8" value="REINDEX INDEX CONCURRENTLY concur_reindex_part_10;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case9" value="REINDEX INDEX CONCURRENTLY concur_reindex_part_index;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case10" value="REINDEX INDEX CONCURRENTLY concur_reindex_part_index_0_1;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case11" value="REINDEX INDEX CONCURRENTLY concur_reindex_part_index_0_2;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case12" value="REINDEX INDEX CONCURRENTLY concur_temp_ind_1;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case13" value="REINDEX INDEX CONCURRENTLY concur_temp_ind_1;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case14" value="REINDEX INDEX CONCURRENTLY concur_temp_ind_2;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case15" value="REINDEX INDEX CONCURRENTLY concur_temp_ind_3;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case16" value="REINDEX INDEX CONCURRENTLY pg_class_oid_index;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case17" value="REINDEX INDEX CONCURRENTLY pg_toast.pg_toast_1260_index;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case18" value="REINDEX INDEX concur_reindex_part;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case19" value="REINDEX INDEX concur_reindex_part_10;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case20" value="REINDEX INDEX concur_reindex_part_index;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case21" value="REINDEX INDEX concur_reindex_part_index;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case22" value="REINDEX INDEX hash_split_index;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case23" value="REINDEX INDEX pg_class_oid_index;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case24" value="REINDEX INDEX pg_class_oid_index;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case25" value="REINDEX INDEX pg_class_relname_nsp_index;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case26" value="REINDEX INDEX pg_class_relname_nsp_index;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case27" value="REINDEX INDEX pg_database_oid_index;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case28" value="REINDEX INDEX pg_database_oid_index;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case29" value="REINDEX INDEX pg_index_indexrelid_index;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case30" value="REINDEX INDEX pg_index_indexrelid_index;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case31" value="REINDEX INDEX pg_index_indrelid_index;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case32" value="REINDEX INDEX pg_index_indrelid_index;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case33" value="REINDEX INDEX pg_shdescription_o_c_index;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case34" value="REINDEX INDEX pg_shdescription_o_c_index;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case35" value="REINDEX INDEX pg_toast.pg_toast_1260_index;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case36" value="REINDEX INDEX tbl_c1_c2_c3_c4_key;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case37" value="REINDEX INDEX tbl_gist_idx;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case38" value="REINDEX INDEX unlogged1_pkey;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case39" value="REINDEX INDEX unlogged2_pkey;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case40" value="REINDEX SCHEMA CONCURRENTLY pg_catalog;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case41" value="REINDEX SCHEMA CONCURRENTLY schema_to_reindex;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case42" value="REINDEX SCHEMA schema_to_reindex;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case43" value="REINDEX SCHEMA schema_to_reindex;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case44" value="REINDEX SCHEMA schema_to_reindex;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case45" value="REINDEX SCHEMA schema_to_reindex;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case46" value="REINDEX SCHEMA schema_to_reindex;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case47" value="REINDEX SYSTEM CONCURRENTLY postgres;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case48" value="REINDEX TABLE CONCURRENTLY concur_appclass_tab;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case49" value="REINDEX TABLE CONCURRENTLY concur_clustered;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case50" value="REINDEX TABLE CONCURRENTLY concur_exprs_tab;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case51" value="REINDEX TABLE CONCURRENTLY concur_reindex_matview;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case52" value="REINDEX TABLE CONCURRENTLY concur_reindex_part;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case53" value="REINDEX TABLE CONCURRENTLY concur_reindex_part_0_1;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case54" value="REINDEX TABLE CONCURRENTLY concur_reindex_part_0_2;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case55" value="REINDEX TABLE CONCURRENTLY concur_reindex_part_index;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case56" value="REINDEX TABLE CONCURRENTLY concur_reindex_part_index_10;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case57" value="REINDEX TABLE CONCURRENTLY concur_reindex_tab3;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case58" value="REINDEX TABLE CONCURRENTLY concur_reindex_tab4;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case59" value="REINDEX TABLE CONCURRENTLY concur_reindex_tab;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case60" value="REINDEX TABLE CONCURRENTLY concur_reindex_tab;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case61" value="REINDEX TABLE CONCURRENTLY concur_replident;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case62" value="REINDEX TABLE CONCURRENTLY concur_temp_tab_1;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case63" value="REINDEX TABLE CONCURRENTLY concur_temp_tab_2;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case64" value="REINDEX TABLE CONCURRENTLY pg_class;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case65" value="REINDEX TABLE CONCURRENTLY pg_toast.pg_toast_1260;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case66" value="REINDEX TABLE CONCURRENTLY testcomment ;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case67" value="REINDEX TABLE concur_heap;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case68" value="REINDEX TABLE concur_heap;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case69" value="REINDEX TABLE concur_reindex_part;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case70" value="REINDEX TABLE concur_reindex_part;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case71" value="REINDEX TABLE concur_reindex_part_index;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case72" value="REINDEX TABLE concur_reindex_part_index_10;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case73" value="REINDEX TABLE concur_reindex_tab;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case74" value="REINDEX TABLE hs2;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case75" value="REINDEX TABLE pg_class;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case76" value="REINDEX TABLE pg_database;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case77" value="REINDEX TABLE pg_index;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case78" value="REINDEX TABLE pg_operator;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case79" value="REINDEX TABLE pg_shdescription;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case80" value="REINDEX TABLE pg_toast.pg_toast_1260;" db-types="PostgreSQL" />
-    <sql-case id="reindex_by_postgresql_source_test_case81" value="REINDEX TABLE testcomment;" db-types="PostgreSQL" />
     <sql-case id="reset_by_postgresql_source_test_case1" value="RESET TIME ZONE;" db-types="PostgreSQL" />
-    <sql-case id="security_by_postgresql_source_test_case1" value="SECURITY LABEL ON TABLE seclabel_tbl1 IS &apos;classified&apos;;			-- fail SECURITY LABEL FOR &apos;dummy&apos; ON TABLE seclabel_tbl1 IS &apos;classified&apos;;		-- fail SECURITY LABEL ON TABLE seclabel_tbl1 IS &apos;...invalid label...&apos;;		-- fail SECURITY LABEL ON TABLE seclabel_tbl3 IS &apos;unclassified&apos;;			-- fail SECURITY LABEL ON ROLE regress_seclabel_user1 IS &apos;classified&apos;;			-- fail SECURITY LABEL FOR &apos;dummy&apos; ON ROLE regress_seclabel_user1 IS &apos;classified&apos;;		-- fail SECURITY LABEL ON ROLE regress_seclabel_user1 IS &apos;...invalid label...&apos;;		-- fail SECURITY LABEL ON ROLE regress_seclabel_user3 IS &apos;unclassified&apos;;			-- fail DROP FUNCTION seclabel_four();" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case1" value="SELECT 	i::text || &apos;:&apos; || COALESCE(v::text, &apos;NULL&apos;) as row, 	logging_agg_strict(v::text) 		over wnd as inverse, 	logging_agg_strict(v::text || CASE WHEN random() &lt; 0 then &apos;?&apos; ELSE &apos;&apos; END) 		over wnd as noinverse FROM (VALUES 	(1, &apos;a&apos;), 	(2, &apos;b&apos;), 	(3, &apos;c&apos;) ) AS t(i, v) WINDOW wnd AS (ORDER BY i ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) ORDER BY i;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case2" value="SELECT 	i::text || &apos;:&apos; || COALESCE(v::text, &apos;NULL&apos;) as row, 	logging_agg_strict(v::text) filter(where true) 		over wnd as inverse, 	logging_agg_strict(v::text) filter(where random() &gt;= 0) 		over wnd as noinverse FROM (VALUES 	(1, &apos;a&apos;), 	(2, &apos;b&apos;), 	(3, &apos;c&apos;) ) AS t(i, v) WINDOW wnd AS (ORDER BY i ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) ORDER BY i;" db-types="PostgreSQL" />
     <sql-case id="select_by_postgresql_source_test_case3" value="SELECT 	p::text || &apos;,&apos; || i::text || &apos;:&apos; || 		CASE WHEN f THEN COALESCE(v::text, &apos;NULL&apos;) ELSE &apos;-&apos; END as row, 	logging_agg_nonstrict(v) filter(where f) over wnd as nstrict_filt, 	logging_agg_nonstrict_initcond(v) filter(where f) over wnd as nstrict_init_filt, 	logging_agg_strict(v::text) filter(where f) over wnd as strict_filt, 	logging_agg_strict_initcond(v) filter(where f) over wnd as strict_init_filt FROM (VALUES 	(1, 1, true,  NULL), 	(1, 2, false, &apos;a&apos;), 	(1, 3, true,  &apos;b&apos;), 	(1, 4, false, NULL), 	(1, 5, false, NULL), 	(1, 6, false, &apos;c&apos;), 	(2, 1, false, NULL), 	(2, 2, true,  &apos;x&apos;), 	(3, 1, true,  &apos;z&apos;) ) AS t(p, i, f, v) WINDOW wnd AS (PARTITION BY p ORDER BY i ROWS BETWEEN 1 PRECEDING AND CURRENT ROW) ORDER BY p, i;" db-types="PostgreSQL" />
@@ -6945,29 +6746,11 @@
     <sql-case id="low_insert_by_postgresql_source_test_case136" value="insert into trigtest default values;" db-types="PostgreSQL" />
     <sql-case id="low_insert_by_postgresql_source_test_case137" value="insert into trigtest default values;" db-types="PostgreSQL" />
     <sql-case id="low_insert_by_postgresql_source_test_case138" value="insert into trigtest default values;" db-types="PostgreSQL" />
-    <sql-case id="low_lock_by_postgresql_source_test_case1" value="lock table pxtest3 in access share mode nowait;" db-types="PostgreSQL" />
-    <sql-case id="low_lock_by_postgresql_source_test_case2" value="lock table pxtest3 in access share mode nowait;" db-types="PostgreSQL" />
-    <sql-case id="low_lock_by_postgresql_source_test_case3" value="lock twophase_tab in access exclusive mode;" db-types="PostgreSQL" />
     <sql-case id="low_prepare_by_postgresql_source_test_case1" value="prepare q as   select &apos;some&quot;text&apos; as &quot;a&amp;title&quot;, E&apos;  &lt;foo&gt;\n&lt;bar&gt;&apos; as &quot;junk&quot;,          &apos;   &apos; as &quot;empty&quot;, n as int   from generate_series(1,2) as n;" db-types="PostgreSQL" />
     <sql-case id="low_prepare_by_postgresql_source_test_case2" value="prepare q as   select &apos;some\more_text&apos; as &quot;a$title&quot;, E&apos;  #&lt;foo&gt;%&amp;^~|\n{bar}&apos; as &quot;junk&quot;,          &apos;   &apos; as &quot;empty&quot;, n as int   from generate_series(1,2) as n;" db-types="PostgreSQL" />
     <sql-case id="low_prepare_by_postgresql_source_test_case3" value="prepare q as   select &apos;some\more_text&apos; as &quot;a$title&quot;, E&apos;  #&lt;foo&gt;%&amp;^~|\n{bar}&apos; as &quot;junk&quot;,          &apos;   &apos; as &quot;empty&quot;, n as int   from generate_series(1,2) as n;" db-types="PostgreSQL" />
     <sql-case id="low_prepare_by_postgresql_source_test_case4" value="prepare q as   select &apos;some\text&apos; as &quot;a\title&quot;, E&apos;  &lt;foo&gt;\n&lt;bar&gt;&apos; as &quot;junk&quot;,          &apos;   &apos; as &quot;empty&quot;, n as int   from generate_series(1,2) as n;" db-types="PostgreSQL" />
     <sql-case id="low_prepare_by_postgresql_source_test_case5" value="prepare q as   select &apos;some|text&apos; as &quot;a|title&quot;, &apos;        &apos; as &quot;empty &quot;, n as int   from generate_series(1,2) as n;" db-types="PostgreSQL" />
-    <sql-case id="low_prepare_by_postgresql_source_test_case6" value="prepare transaction &apos;twophase_func&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_prepare_by_postgresql_source_test_case7" value="prepare transaction &apos;twophase_func&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_prepare_by_postgresql_source_test_case8" value="prepare transaction &apos;twophase_operator&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_prepare_by_postgresql_source_test_case9" value="prepare transaction &apos;twophase_sequence&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_prepare_by_postgresql_source_test_case10" value="prepare transaction &apos;twophase_tab&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_prepare_by_postgresql_source_test_case11" value="prepare transaction &apos;twophase_tab&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_prepare_by_postgresql_source_test_case12" value="prepare transaction &apos;twophase_tab&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_prepare_by_postgresql_source_test_case13" value="prepare transaction &apos;twophase_tab&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_prepare_by_postgresql_source_test_case14" value="prepare transaction &apos;twophase_type&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_prepare_by_postgresql_source_test_case15" value="prepare transaction &apos;twophase_view&apos;;" db-types="PostgreSQL" />
-    <sql-case id="low_refresh_by_postgresql_source_test_case1" value="refresh materialized view concurrently parallel_mat_view;" db-types="PostgreSQL" />
-    <sql-case id="low_refresh_by_postgresql_source_test_case2" value="refresh materialized view mvtest_error;" db-types="PostgreSQL" />
-    <sql-case id="low_refresh_by_postgresql_source_test_case3" value="refresh materialized view parallel_mat_view;" db-types="PostgreSQL" />
-    <sql-case id="low_reindex_by_postgresql_source_test_case1" value="reindex index gist_pointidx;" db-types="PostgreSQL" />
-    <sql-case id="low_reindex_by_postgresql_source_test_case2" value="reindex index spgist_point_idx;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case2" value="select &apos;&quot;\b\f\r\n\t\v\&quot;\&apos;&apos;\\&quot;&apos;::jsonpath;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case3" value="select &apos;[2010-01-01 01:00:00 -05, 2010-01-01 02:00:00 -08)&apos;::tstzrange;" db-types="PostgreSQL" />
     <sql-case id="low_select_by_postgresql_source_test_case4" value="select &apos;[2010-01-01 01:00:00 -08, 2010-01-01 02:00:00 -05)&apos;::tstzrange;" db-types="PostgreSQL" />

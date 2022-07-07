@@ -95,7 +95,7 @@ public final class ShardingCreateIndexStatementValidatorTest {
     public void assertPreValidateCreateIndexWithoutIndexNameWhenTableExistIndexNotExistForPostgreSQL() {
         PostgreSQLCreateIndexStatement sqlStatement = new PostgreSQLCreateIndexStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        sqlStatement.setColumns(Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("content"))));
+        sqlStatement.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("content")));
         sqlStatement.setGeneratedIndexStartIndex(10);
         when(database.getSchemas().get("public").containsTable("t_order")).thenReturn(true);
         ShardingSphereTable table = mock(ShardingSphereTable.class);
@@ -109,7 +109,7 @@ public final class ShardingCreateIndexStatementValidatorTest {
     public void assertPreValidateCreateIndexWithoutIndexNameWhenTableNotExistIndexNotExistForPostgreSQL() {
         PostgreSQLCreateIndexStatement sqlStatement = new PostgreSQLCreateIndexStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        sqlStatement.setColumns(Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("content"))));
+        sqlStatement.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("content")));
         sqlStatement.setGeneratedIndexStartIndex(10);
         when(database.getSchemas().get("public").containsTable("t_order")).thenReturn(false);
         new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database);
@@ -119,7 +119,7 @@ public final class ShardingCreateIndexStatementValidatorTest {
     public void assertPreValidateCreateIndexWithoutIndexNameWhenTableExistIndexExistForPostgreSQL() {
         PostgreSQLCreateIndexStatement sqlStatement = new PostgreSQLCreateIndexStatement();
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
-        sqlStatement.setColumns(Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("content"))));
+        sqlStatement.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("content")));
         sqlStatement.setGeneratedIndexStartIndex(10);
         when(database.getSchemas().get("public").containsTable("t_order")).thenReturn(true);
         ShardingSphereTable table = mock(ShardingSphereTable.class);

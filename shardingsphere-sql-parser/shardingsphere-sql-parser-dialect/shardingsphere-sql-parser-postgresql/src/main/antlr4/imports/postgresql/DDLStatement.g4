@@ -976,10 +976,6 @@ createMvTarget
     : qualifiedName optColumnList? tableAccessMethodClause (WITH reloptions)? (TABLESPACE name)?
     ;
 
-refreshMatViewStmt
-    : REFRESH MATERIALIZED VIEW CONCURRENTLY? qualifiedName (WITH DATA | WITH NO DATA)?
-    ;
-
 alterPolicy
     : ALTER POLICY name ON tableName alterPolicyClauses
     ;
@@ -987,6 +983,10 @@ alterPolicy
 alterPolicyClauses
     : (TO roleList)? (USING LP_ aExpr RP_)? (WITH CHECK LP_ aExpr RP_)?
     | RENAME TO name
+    ;
+
+refreshMatViewStmt
+    : REFRESH MATERIALIZED VIEW CONCURRENTLY? qualifiedName (WITH DATA | WITH NO DATA)?
     ;
 
 alterProcedure
@@ -1030,7 +1030,7 @@ alterRoutine
     ;
 
 alterRule
-    : ALTER RULE ON qualifiedName RENAME TO name
+    : ALTER RULE name ON qualifiedName RENAME TO name
     ;
 
 alterSequence
@@ -1819,20 +1819,8 @@ direction
 prepare
     : PREPARE name prepTypeClause? AS preparableStmt
     ;
-    
-deallocate
-    : DEALLOCATE PREPARE? (name | ALL)
-    ;
 
-prepTypeClause
-    : LP_ typeList RP_
-    ;
-
-refreshMaterializedView
-    : REFRESH MATERIALIZED VIEW CONCURRENTLY? qualifiedName withData?
-    ;
-
-reIndex
+reindex
     : REINDEX reIndexClauses
     ;
 
@@ -1848,7 +1836,7 @@ reindexOptionList
     ;
 
 reindexOptionElem
-    : VERBOSE
+    : VERBOSE | CONCURRENTLY | TABLESPACE
     ;
 
 reindexTargetMultitable
@@ -1857,6 +1845,18 @@ reindexTargetMultitable
 
 reindexTargetType
     : INDEX | TABLE
+    ;
+
+deallocate
+    : DEALLOCATE PREPARE? (name | ALL)
+    ;
+
+prepTypeClause
+    : LP_ typeList RP_
+    ;
+
+refreshMaterializedView
+    : REFRESH MATERIALIZED VIEW CONCURRENTLY? qualifiedName withData?
     ;
 
 alterForeignTable
@@ -1882,23 +1882,6 @@ createOperatorFamily
     : CREATE OPERATOR FAMILY anyName USING name
     ;
 
-securityLabelStmt
-    : SECURITY LABEL (FOR nonReservedWordOrSconst) ON securityLabelClausces IS securityLabel
-    ;
-
-securityLabel
-    : STRING_ | NULL
-    ;
-
-securityLabelClausces
-    : objectTypeAnyName anyName
-    | COLUMN anyName
-    | (TYPE | DOMAIN) typeName
-    | (AGGREGATE | FUNCTION) aggregateWithArgtypes
-    | LARGE OBJECT numericOnly
-    | (PROCEDURE | ROUTINE) functionWithArgtypes
-    ;
-
 createSchema
     : CREATE SCHEMA ifNotExists? createSchemaClauses
     ;
@@ -1914,6 +1897,23 @@ schemaEltList
 
 schemaStmt
     : createTable | createIndex | createSequence | createTrigger | grant | createView
+    ;
+
+securityLabelStmt
+    : SECURITY LABEL (FOR nonReservedWordOrSconst)? ON securityLabelClausces IS securityLabel
+    ;
+
+securityLabel
+    : STRING_ | NULL
+    ;
+
+securityLabelClausces
+    : objectTypeAnyName anyName
+    | COLUMN anyName
+    | (TYPE | DOMAIN) typeName
+    | (AGGREGATE | FUNCTION) aggregateWithArgtypes
+    | LARGE OBJECT numericOnly
+    | (PROCEDURE | ROUTINE) functionWithArgtypes
     ;
 
 grant

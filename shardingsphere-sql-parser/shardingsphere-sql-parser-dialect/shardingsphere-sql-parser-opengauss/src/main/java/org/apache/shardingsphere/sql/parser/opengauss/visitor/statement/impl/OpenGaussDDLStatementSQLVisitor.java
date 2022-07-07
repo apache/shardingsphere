@@ -87,7 +87,6 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Cur
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.CursorNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DeallocateContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DeclareContext;
-import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropServerContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropCastContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropColumnSpecificationContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropConstraintSpecificationContext;
@@ -104,6 +103,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Dro
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropRuleContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropSequenceContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropServerContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropSynonymContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropTablespaceContext;
@@ -509,7 +509,7 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
         OpenGaussCreateIndexStatement result = new OpenGaussCreateIndexStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setColumns(((CollectionValue<ColumnSegment>) visit(ctx.indexParams())).getValue());
+        result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.indexParams())).getValue());
         if (null != ctx.indexName()) {
             result.setIndex((IndexSegment) visit(ctx.indexName()));
         } else {

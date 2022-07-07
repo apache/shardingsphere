@@ -55,7 +55,7 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
     public Future<ResponseHeader> executeFuture() {
         String originDatabase = connectionSession.getDatabaseName();
         String databaseName = null == originDatabase ? getFirstDatabaseName() : originDatabase;
-        if (!ProxyContext.getInstance().getDatabase(databaseName).hasDataSource()) {
+        if (!ProxyContext.getInstance().getDatabase(databaseName).containsDataSource()) {
             throw new RuleNotExistedException();
         }
         connectionSession.setCurrentDatabase(databaseName);
@@ -70,7 +70,7 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
     public ResponseHeader execute() throws SQLException {
         String originDatabase = connectionSession.getDefaultDatabaseName();
         String databaseName = null == originDatabase ? getFirstDatabaseName() : originDatabase;
-        if (!ProxyContext.getInstance().getDatabase(databaseName).hasDataSource()) {
+        if (!ProxyContext.getInstance().getDatabase(databaseName).containsDataSource()) {
             throw new RuleNotExistedException();
         }
         try {
@@ -87,7 +87,7 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
         if (databaseNames.isEmpty()) {
             throw new NoDatabaseSelectedException();
         }
-        Optional<String> result = databaseNames.stream().filter(each -> ProxyContext.getInstance().getDatabase(each).hasDataSource()).findFirst();
+        Optional<String> result = databaseNames.stream().filter(each -> ProxyContext.getInstance().getDatabase(each).containsDataSource()).findFirst();
         if (!result.isPresent()) {
             throw new RuleNotExistedException();
         }

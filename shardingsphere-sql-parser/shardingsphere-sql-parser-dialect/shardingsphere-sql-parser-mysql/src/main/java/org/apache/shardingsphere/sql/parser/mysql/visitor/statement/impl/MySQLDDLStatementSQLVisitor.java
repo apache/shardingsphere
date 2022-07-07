@@ -549,7 +549,7 @@ public final class MySQLDDLStatementSQLVisitor extends MySQLStatementSQLVisitor 
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         IndexNameSegment indexName = new IndexNameSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), new IdentifierValue(ctx.indexName().getText()));
         result.setIndex(new IndexSegment(ctx.indexName().start.getStartIndex(), ctx.indexName().stop.getStopIndex(), indexName));
-        result.setColumns(((CollectionValue) visit(ctx.keyListWithExpression())).getValue());
+        result.getColumns().addAll(((CollectionValue) visit(ctx.keyListWithExpression())).getValue());
         return result;
     }
     

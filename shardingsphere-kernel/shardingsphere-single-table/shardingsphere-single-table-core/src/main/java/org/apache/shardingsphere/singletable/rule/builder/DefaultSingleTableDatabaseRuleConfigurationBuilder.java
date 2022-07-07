@@ -19,7 +19,7 @@ package org.apache.shardingsphere.singletable.rule.builder;
 
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.singletable.constant.SingleTableOrder;
-import org.apache.shardingsphere.infra.rule.builder.schema.DefaultDatabaseRuleConfigurationBuilder;
+import org.apache.shardingsphere.infra.rule.builder.database.DefaultDatabaseRuleConfigurationBuilder;
 
 /**
  * Default single table rule configuration builder.

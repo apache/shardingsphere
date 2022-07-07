@@ -17,17 +17,22 @@
 
 package org.apache.shardingsphere.sharding.checker.audit;
 
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.check.SQLCheckResult;
 import org.apache.shardingsphere.infra.executor.check.SQLChecker;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
+import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
+import java.util.stream.Collectors;
 
 /**
  * Sharding audit checker.
@@ -42,10 +47,20 @@ public final class ShardingAuditChecker implements SQLChecker<ShardingRule> {
     @Override
     public SQLCheckResult check(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, final Grantee grantee,
                                 final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final ShardingRule rule) {
-        for (String each : rule.getAuditStrategyConfig().getAuditAlgorithmNames()) {
-            SQLCheckResult result = rule.getAuditAlgorithms().get(each).check(sqlStatementContext, parameters, grantee, databases.get(currentDatabase));
-            if (!result.isPassed()) {
-                return result;
+        Collection<String> disableAuditNames = sqlStatementContext instanceof CommonSQLStatementContext
+                ? ((CommonSQLStatementContext<?>) sqlStatementContext).getSqlHintExtractor().findDisableAuditNames()
+                : Collections.emptyList();
+        Collection<ShardingAuditStrategyConfiguration> auditStrategies = sqlStatementContext.getTablesContext().getTableNames().stream().filter(rule::isShardingTable)
+                .map(each -> rule.getAuditStrategyConfiguration(rule.getTableRule(each))).collect(Collectors.toList());
+        for (ShardingAuditStrategyConfiguration auditStrategy : auditStrategies) {
+            for (String auditorName : auditStrategy.getAuditorNames()) {
+                if (auditStrategy.isAllowHintDisable() && disableAuditNames.contains(auditorName.toLowerCase())) {
+                    continue;
+                }
+                SQLCheckResult result = rule.getAuditors().get(auditorName).check(sqlStatementContext, parameters, grantee, databases.get(currentDatabase));
+                if (!result.isPassed()) {
+                    return result;
+                }
             }
         }
         return new SQLCheckResult(true, "");

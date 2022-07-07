@@ -30,7 +30,7 @@ import java.util.Collection;
 @Setter
 public final class YamlShardingAuditStrategyConfiguration implements YamlConfiguration {
     
-    private Collection<String> auditAlgorithmNames;
+    private Collection<String> auditorNames;
     
     private boolean allowHintDisable = true;
 }

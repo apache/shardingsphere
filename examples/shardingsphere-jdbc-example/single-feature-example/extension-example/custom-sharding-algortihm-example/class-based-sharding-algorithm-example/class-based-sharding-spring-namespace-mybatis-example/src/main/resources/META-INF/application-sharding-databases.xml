@@ -53,7 +53,7 @@
     <sharding:sharding-algorithm id="databaseAlgorithm" type="CLASS_BASED">
         <props>
             <prop key="strategy">standard</prop>
-            <prop key="algorithmClassName">org.apache.shardingsphere.example.extension.classbased.sharding.spring.namespace.mybatis.fixture.ClassBasedDatasourceStandardShardingAlgorithmFixture</prop>
+            <prop key="algorithmClassName">org.apache.shardingsphere.example.extension.classbased.sharding.spring.namespace.mybatis.fixture.ClassBasedDataSourceStandardShardingAlgorithmFixture</prop>
             <prop key="sharding-count">2</prop>
         </props>
     </sharding:sharding-algorithm>

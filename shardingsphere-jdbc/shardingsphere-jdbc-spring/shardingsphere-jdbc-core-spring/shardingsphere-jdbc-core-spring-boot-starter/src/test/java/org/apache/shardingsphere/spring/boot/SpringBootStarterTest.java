@@ -125,12 +125,12 @@ public class SpringBootStarterTest {
         assertThat(actual.getLogicTable(), is("t_order"));
         Collection<DataNode> dataNodes = Arrays.asList(new DataNode("ds0.t_order_0"), new DataNode("ds0.t_order_1"), new DataNode("ds1.t_order_0"), new DataNode("ds1.t_order_1"));
         assertThat(actual.getActualDataNodes(), is(dataNodes));
-        assertThat(actual.getActualDatasourceNames(), is(new HashSet<>(Arrays.asList("ds0", "ds1"))));
+        assertThat(actual.getActualDataSourceNames(), is(new HashSet<>(Arrays.asList("ds0", "ds1"))));
         assertThat(actual.getDataNodeGroups(), is(DataNodeUtil.getDataNodeGroups(dataNodes)));
-        assertThat(actual.getDatasourceToTablesMap(), is(getExpectedDatasourceToTablesMap()));
+        assertThat(actual.getDataSourceToTablesMap(), is(getExpectedDataSourceToTablesMap()));
     }
     
-    private Map<String, Set<String>> getExpectedDatasourceToTablesMap() {
+    private Map<String, Set<String>> getExpectedDataSourceToTablesMap() {
         Map<String, Set<String>> result = new HashMap<>(2, 1);
         result.put("ds0", new HashSet<>(Arrays.asList("t_order_0", "t_order_1")));
         result.put("ds1", new HashSet<>(Arrays.asList("t_order_0", "t_order_1")));

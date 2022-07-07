@@ -46,4 +46,55 @@
         <table name="t1" start-index="12" stop-index="13" />
         <table name="t1" alias="TableAlias" start-index="21" stop-index="36" />
     </lock>
+    <lock sql-case-id="lock_table_with_only">
+        <table name="lock_tbl1" start-index="16" stop-index="24"/>
+    </lock>
+    <lock sql-case-id="lock_table">
+        <table name="fast_emp4000" start-index="11" stop-index="22"/>
+    </lock>
+    <lock sql-case-id="lock_table_access_exclusive">
+        <table name="lock_tbl1" start-index="11" stop-index="19"/>
+    </lock>
+    <lock sql-case-id="lock_table_access_exclusive_nowait">
+        <table name="lock_tbl1" start-index="11" stop-index="19"/>
+    </lock>
+    <lock sql-case-id="lock_table_access_share_nowait">
+        <table name="lock_tbl1" start-index="11" stop-index="19"/>
+    </lock>
+    <lock sql-case-id="lock_table_access_share">
+        <table name="lock_tbl1" start-index="11" stop-index="19"/>
+    </lock>
+    <lock sql-case-id="lock_table_exclusive_nowait">
+        <table name="lock_tbl1" start-index="11" stop-index="19"/>
+    </lock>
+    <lock sql-case-id="lock_table_exclusive">
+        <table name="lock_tbl1" start-index="11" stop-index="19"/>
+    </lock>
+    <lock sql-case-id="lock_table_row_exclusive_nowait">
+        <table name="lock_tbl1" start-index="11" stop-index="19"/>
+    </lock>
+    <lock sql-case-id="lock_table_row_exclusive">
+        <table name="lock_tbl1" start-index="11" stop-index="19"/>
+    </lock>
+    <lock sql-case-id="lock_table_row_share_nowait">
+        <table name="lock_tbl1" start-index="11" stop-index="19"/>
+    </lock>
+    <lock sql-case-id="lock_table_share_nowait">
+        <table name="lock_tbl1" start-index="11" stop-index="19"/>
+    </lock>
+    <lock sql-case-id="lock_table_share">
+        <table name="lock_tbl1" start-index="11" stop-index="19"/>
+    </lock>
+    <lock sql-case-id="lock_table_share_row_exclusive">
+        <table name="lock_tbl1" start-index="11" stop-index="19"/>
+    </lock>
+    <lock sql-case-id="lock_table_share_update_exclusive_nowait">
+        <table name="lock_tbl1" start-index="11" stop-index="19"/>
+    </lock>
+    <lock sql-case-id="lock_table_share_update_exclusive">
+        <table name="lock_tbl1" start-index="11" stop-index="19"/>
+    </lock>
+    <lock sql-case-id="lock_hs1">
+        <table name="hs1" start-index="5" stop-index="7"/>
+    </lock>
 </sql-parser-test-cases>

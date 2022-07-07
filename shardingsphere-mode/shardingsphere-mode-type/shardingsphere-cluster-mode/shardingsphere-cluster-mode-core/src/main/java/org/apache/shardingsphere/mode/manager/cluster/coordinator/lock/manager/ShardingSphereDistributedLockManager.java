@@ -20,33 +20,45 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager;
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.lock.LockMode;
+import org.apache.shardingsphere.infra.lock.LockScope;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.ShardingSphereDistributedDatabaseLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.ShardingSphereDistributedLock;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.ShardingSphereDistributedGlobalLock;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.ShardingSphereDistributedStandardLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.state.LockStateContextFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal.ShardingSphereInternalLockHolder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDefinition;
 
 /**
- * Distribute lock manager.
+ * Distribute lock manager of ShardingSphere.
  */
 @Slf4j
 public final class ShardingSphereDistributedLockManager implements ShardingSphereLockManager {
     
-    private ShardingSphereLock distributedLock;
+    private ShardingSphereLock standardDistributedLock;
+    
+    private ShardingSphereLock globalDistributedLock;
     
     private ShardingSphereLock databaseLock;
     
     @Override
     public void init(final ShardingSphereInternalLockHolder lockHolder) {
-        distributedLock = new ShardingSphereDistributedLock(lockHolder);
+        standardDistributedLock = new ShardingSphereDistributedStandardLock(lockHolder);
+        globalDistributedLock = new ShardingSphereDistributedGlobalLock(lockHolder);
         databaseLock = new ShardingSphereDistributedDatabaseLock(lockHolder, LockStateContextFactory.getLockStateContext());
     }
     
     @Override
-    public ShardingSphereLock getDistributedLock() {
-        return distributedLock;
+    public ShardingSphereLock getDistributedLock(final LockScope lockScope) {
+        switch (lockScope) {
+            case STANDARD:
+                return standardDistributedLock;
+            case GLOBAL:
+                return globalDistributedLock;
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
     
     @Override

@@ -78,7 +78,7 @@ public final class SchemaAssignedDatabaseBackendHandler implements DatabaseBacke
     private void prepareDatabaseCommunicationEngine() throws RequiredResourceMissedException {
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(connectionSession.getDatabaseName());
         boolean isSystemSchema = SystemSchemaUtil.containsSystemSchema(sqlStatementContext.getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames(), database);
-        if (!isSystemSchema && !database.hasDataSource()) {
+        if (!isSystemSchema && !database.containsDataSource()) {
             throw new RequiredResourceMissedException(connectionSession.getDatabaseName());
         }
         if (!isSystemSchema && !database.isComplete()) {

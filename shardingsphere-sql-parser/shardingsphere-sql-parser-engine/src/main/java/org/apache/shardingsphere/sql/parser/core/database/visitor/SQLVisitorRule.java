@@ -248,6 +248,12 @@ public enum SQLVisitorRule {
     
     NOTIFY("NotifyStmt", SQLStatementType.DDL),
     
+    REFRESH_MATERIALIZED_VIEW("RefreshMatViewStmt", SQLStatementType.DDL),
+    
+    REINDEX("Reindex", SQLStatementType.DDL),
+    
+    SECURITY_LABEL("SecurityLabelStmt", SQLStatementType.DDL),
+    
     UNLISTEN("Unlisten", SQLStatementType.DDL),
     
     SET_CONSTRAINTS("SetConstraints", SQLStatementType.TCL),
@@ -588,7 +594,13 @@ public enum SQLVisitorRule {
     
     CREATE_ACCESS_METHOD("CreateAccessMethod", SQLStatementType.DDL),
     
-    DO("DoStatement", SQLStatementType.DML);
+    DO("DoStatement", SQLStatementType.DML),
+    
+    PREPARE_TRANSACTION("PrepareTransaction", SQLStatementType.TCL),
+    
+    REASSIGN_OWNED("ReassignOwned", SQLStatementType.DCL),
+    
+    CREATE_COLLATION("CreateCollation", SQLStatementType.DDL);
     
     private final String name;
     
