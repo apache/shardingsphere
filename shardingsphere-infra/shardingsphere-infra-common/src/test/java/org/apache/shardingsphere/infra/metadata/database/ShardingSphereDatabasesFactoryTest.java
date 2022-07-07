@@ -50,4 +50,13 @@ public final class ShardingSphereDatabasesFactoryTest {
         assertThat(rules.iterator().next(), instanceOf(FixtureDatabaseRule.class));
         assertTrue(actual.get("foo_db").getResource().getDataSources().isEmpty());
     }
+    
+    @Test
+    public void assertCreateSingleDatabase() throws SQLException {
+        DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration()));
+        ShardingSphereDatabase actual = ShardingSphereDatabasesFactory.create("foo_db", databaseConfig, new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
+        assertThat(actual.getName(), is("foo_db"));
+        assertThat(actual.getRuleMetaData().getRules().iterator().next(), instanceOf(FixtureDatabaseRule.class));
+        assertTrue(actual.getResource().getDataSources().isEmpty());
+    }
 }
