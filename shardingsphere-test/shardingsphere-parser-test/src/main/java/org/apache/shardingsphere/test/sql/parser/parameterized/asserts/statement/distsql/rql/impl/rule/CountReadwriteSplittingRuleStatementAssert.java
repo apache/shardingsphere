@@ -19,28 +19,28 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountSingleTableRuleStatement;
+import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CountReadwriteSplittingRuleStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.database.DatabaseAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountSingleTableRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountReadwriteSplittingRuleStatementTestCase;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Count single table rule statement assert.
+ * Count readwrite splitting rule statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CountSingleTableRuleStatementAssert {
+public final class CountReadwriteSplittingRuleStatementAssert {
     
     /**
-     * Assert count single table rule statement is correct with expected parser result.
+     * Assert count readwrite splitting rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual count single table rule statement
-     * @param expected expected count single table rule statement test case
+     * @param actual actual count readwrite splitting rule statement
+     * @param expected expected count readwrite splitting rule statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final CountSingleTableRuleStatement actual, final CountSingleTableRuleStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final CountReadwriteSplittingRuleStatement actual, final CountReadwriteSplittingRuleStatementTestCase expected) {
         if (null != expected.getDatabase()) {
             assertTrue(assertContext.getText("Actual database should exist."), actual.getDatabase().isPresent());
             DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());

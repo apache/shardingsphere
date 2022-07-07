@@ -19,28 +19,28 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.rql.show.CountSingleTableRuleStatement;
+import org.apache.shardingsphere.encrypt.distsql.parser.statement.CountEncryptRuleStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.database.DatabaseAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountSingleTableRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountEncryptRuleStatementTestCase;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 /**
- * Count single table rule statement assert.
+ * Count encrypt table rule statement assert.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class CountSingleTableRuleStatementAssert {
+public final class CountEncryptRuleStatementAssert {
     
     /**
-     * Assert count single table rule statement is correct with expected parser result.
+     * Assert count encrypt rule statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual count single table rule statement
-     * @param expected expected count single table rule statement test case
+     * @param actual actual count encrypt rule statement
+     * @param expected expected count encrypt rule statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final CountSingleTableRuleStatement actual, final CountSingleTableRuleStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final CountEncryptRuleStatement actual, final CountEncryptRuleStatementTestCase expected) {
         if (null != expected.getDatabase()) {
             assertTrue(assertContext.getText("Actual database should exist."), actual.getDatabase().isPresent());
             DatabaseAssert.assertIs(assertContext, actual.getDatabase().get(), expected.getDatabase());
