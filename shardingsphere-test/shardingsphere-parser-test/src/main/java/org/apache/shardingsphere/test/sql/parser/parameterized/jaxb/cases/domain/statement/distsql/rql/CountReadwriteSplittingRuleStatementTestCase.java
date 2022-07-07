@@ -30,7 +30,7 @@ import javax.xml.bind.annotation.XmlElement;
 @Getter
 @Setter
 public final class CountReadwriteSplittingRuleStatementTestCase extends SQLParserTestCase {
-
+    
     @XmlElement
     private ExpectedDatabase database;
 }

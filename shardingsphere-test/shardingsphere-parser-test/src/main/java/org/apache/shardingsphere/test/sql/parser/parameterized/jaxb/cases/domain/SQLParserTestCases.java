@@ -1489,22 +1489,22 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "create-access-method")
     private final List<CreateAccessMethodStatementTestCase> createAccessMethodTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "count-single-table-rule")
     private final List<CountSingleTableRuleStatementTestCase> countSingleTableRuleStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "count-sharding-rule")
     private final List<CountShardingRuleStatementTestCase> countShardingRuleStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "count-readwrite-splitting-rule")
     private final List<CountReadwriteSplittingRuleStatementTestCase> countReadwriteSplittingRuleStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "count-db-discovery-rule")
     private final List<CountDatabaseDiscoveryRuleStatementTestCase> countDatabaseDiscoveryRuleStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "count-encrypt-rule")
     private final List<CountEncryptRuleStatementTestCase> countEncryptRuleStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "count-shadow-rule")
     private final List<CountShadowRuleStatementTestCase> countShadowRuleStatementTestCases = new LinkedList<>();
     
