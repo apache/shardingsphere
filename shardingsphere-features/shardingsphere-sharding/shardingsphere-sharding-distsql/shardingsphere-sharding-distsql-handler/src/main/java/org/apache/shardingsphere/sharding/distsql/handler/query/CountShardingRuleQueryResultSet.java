@@ -39,24 +39,24 @@ import java.util.function.Supplier;
  * Query result set for count sharding rule.
  */
 public final class CountShardingRuleQueryResultSet implements DistSQLResultSet {
-
-    private Iterator<Entry<String,LinkedList<Object>>> data = Collections.emptyIterator();
-
+    
     private static final String SHARDING_TABLE = "sharding_table";
-
+    
     private static final String SHARDING_BINDING_TABLE = "sharding_binding_table";
-
+    
     private static final String SHARDING_BROADCAST_TABLE = "sharding_broadcast_table";
-
+    
     private static final String SHARDING_SCALING = "sharding_scaling";
-
+    
+    private Iterator<Entry<String, LinkedList<Object>>> data = Collections.emptyIterator();
+    
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("rule_name", "database", "count");
     }
-
+    
     @Override
-    public void init(ShardingSphereDatabase database, SQLStatement sqlStatement) {
+    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
         Map<String, LinkedList<Object>> result = new LinkedHashMap<>();
         rule.ifPresent(optional -> addShardingData(result, rule.get(), database.getName()));
@@ -69,11 +69,11 @@ public final class CountShardingRuleQueryResultSet implements DistSQLResultSet {
         addData(rowMap, SHARDING_BROADCAST_TABLE, databaseName, () -> rule.getBroadcastTables().size());
         addData(rowMap, SHARDING_SCALING, databaseName, () -> ((ShardingRuleConfiguration) rule.getConfiguration()).getScaling().size());
     }
-
+    
     private void addData(final Map<String, LinkedList<Object>> rowMap, final String dataKey, final String databaseName, final Supplier<Integer> apply) {
         rowMap.compute(dataKey, (key, value) -> buildRow(value, databaseName, apply.get()));
     }
-
+    
     private LinkedList<Object> buildRow(final LinkedList<Object> value, final String databaseName, final int count) {
         if (null == value) {
             return new LinkedList<>(Arrays.asList(databaseName, count));
@@ -82,19 +82,19 @@ public final class CountShardingRuleQueryResultSet implements DistSQLResultSet {
             return value;
         }
     }
-
+    
     @Override
     public boolean next() {
         return data.hasNext();
     }
-
+    
     @Override
     public Collection<Object> getRowData() {
         Entry<String, LinkedList<Object>> entry = data.next();
         entry.getValue().addFirst(entry.getKey());
         return entry.getValue();
     }
-
+    
     @Override
     public String getType() {
         return CountShardingRuleStatement.class.getName();

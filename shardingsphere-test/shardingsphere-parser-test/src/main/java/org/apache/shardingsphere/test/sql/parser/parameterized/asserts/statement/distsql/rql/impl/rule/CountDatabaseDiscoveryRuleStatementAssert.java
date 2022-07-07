@@ -38,7 +38,7 @@ public final class CountDatabaseDiscoveryRuleStatementAssert {
      *
      * @param assertContext assert context
      * @param actual actual count database discovery rule statement
-     * @param expected expected count database discovery rules statement test case
+     * @param expected expected count database discovery rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CountDatabaseDiscoveryRuleStatement actual, final CountDatabaseDiscoveryRuleStatementTestCase expected) {
         if (null != expected.getDatabase()) {

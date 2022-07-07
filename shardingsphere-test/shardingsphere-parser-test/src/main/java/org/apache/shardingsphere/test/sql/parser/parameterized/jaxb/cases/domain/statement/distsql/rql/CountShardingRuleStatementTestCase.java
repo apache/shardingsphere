@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Count readwrite splitting rule statement test case.
+ * Count sharding rule statement test case.
  */
 @Getter
 @Setter

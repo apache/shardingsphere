@@ -38,7 +38,7 @@ public final class CountShadowRuleStatementAssert {
      *
      * @param assertContext assert context
      * @param actual actual count shadow rule statement
-     * @param expected expected count shadow rules statement test case
+     * @param expected expected count shadow rule statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final CountShadowRuleStatement actual, final CountShadowRuleStatementTestCase expected) {
         if (null != expected.getDatabase()) {

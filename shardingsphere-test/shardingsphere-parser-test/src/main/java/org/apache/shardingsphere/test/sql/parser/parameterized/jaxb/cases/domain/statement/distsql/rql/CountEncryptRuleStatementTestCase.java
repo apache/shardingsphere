@@ -25,7 +25,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Count sharding rule statement test case.
+ * Count encrypt rule statement test case.
  */
 @Getter
 @Setter

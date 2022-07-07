@@ -40,7 +40,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class CountShardingRuleQueryResultSetTest {
-
+    
     @Test
     public void assertGetRowData() {
         CountShardingRuleQueryResultSet resultSet = new CountShardingRuleQueryResultSet();
@@ -71,7 +71,7 @@ public final class CountShardingRuleQueryResultSetTest {
         assertThat(actual.get(2), is(0));
         assertFalse(resultSet.next());
     }
-
+    
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn("db_1");
@@ -79,7 +79,7 @@ public final class CountShardingRuleQueryResultSetTest {
         when(result.getRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
         return result;
     }
-
+    
     private ShardingRule mockShardingRule() {
         ShardingRule result = mock(ShardingRule.class);
         when(result.getConfiguration()).thenReturn(mock(ShardingRuleConfiguration.class));
