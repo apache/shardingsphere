@@ -41,7 +41,16 @@ import static org.mockito.Mockito.mock;
 public final class ShardingSphereDatabasesFactoryTest {
     
     @Test
-    public void assertCreate() throws SQLException {
+    public void assertCreateSingleDatabase() throws SQLException {
+        DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration()));
+        ShardingSphereDatabase actual = ShardingSphereDatabasesFactory.create("foo_db", databaseConfig, new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
+        assertThat(actual.getName(), is("foo_db"));
+        assertThat(actual.getRuleMetaData().getRules().iterator().next(), instanceOf(FixtureDatabaseRule.class));
+        assertTrue(actual.getResource().getDataSources().isEmpty());
+    }
+    
+    @Test
+    public void assertCreateDatabaseMap() throws SQLException {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration()));
         Map<String, ShardingSphereDatabase> actual = ShardingSphereDatabasesFactory.create(
                 Collections.singletonMap("foo_db", databaseConfig), new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
@@ -49,14 +58,5 @@ public final class ShardingSphereDatabasesFactoryTest {
         assertThat(rules.size(), is(1));
         assertThat(rules.iterator().next(), instanceOf(FixtureDatabaseRule.class));
         assertTrue(actual.get("foo_db").getResource().getDataSources().isEmpty());
-    }
-    
-    @Test
-    public void assertCreateSingleDatabase() throws SQLException {
-        DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration()));
-        ShardingSphereDatabase actual = ShardingSphereDatabasesFactory.create("foo_db", databaseConfig, new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
-        assertThat(actual.getName(), is("foo_db"));
-        assertThat(actual.getRuleMetaData().getRules().iterator().next(), instanceOf(FixtureDatabaseRule.class));
-        assertTrue(actual.getResource().getDataSources().isEmpty());
     }
 }
