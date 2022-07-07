@@ -37,7 +37,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class CountReadwriteSplittingRuleQueryResultSetTest {
-
+    
     @Test
     public void assertGetRowData() {
         CountReadwriteSplittingRuleQueryResultSet resultSet = new CountReadwriteSplittingRuleQueryResultSet();
@@ -50,7 +50,7 @@ public final class CountReadwriteSplittingRuleQueryResultSetTest {
         assertThat(actual.get(2), is(1));
         assertFalse(resultSet.next());
     }
-
+    
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn("db_1");
@@ -58,7 +58,7 @@ public final class CountReadwriteSplittingRuleQueryResultSetTest {
         when(result.getRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
         return result;
     }
-
+    
     private ReadwriteSplittingRule mockReadwriteSplittingRule() {
         ReadwriteSplittingRule result = mock(ReadwriteSplittingRule.class);
         when(result.getDataSourceMapper()).thenReturn(Collections.singletonMap("readwrite_splitting", Arrays.asList("write_ds", "read_ds")));

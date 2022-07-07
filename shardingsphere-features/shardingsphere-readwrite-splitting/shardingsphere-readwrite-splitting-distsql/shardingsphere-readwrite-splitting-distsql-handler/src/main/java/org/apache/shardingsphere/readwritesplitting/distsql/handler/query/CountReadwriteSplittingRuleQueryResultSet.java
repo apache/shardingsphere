@@ -38,33 +38,32 @@ import java.util.function.Supplier;
  * Query result set for count readwrite splitting rule.
  */
 public final class CountReadwriteSplittingRuleQueryResultSet implements DistSQLResultSet {
-
+    
     private static final String READWRITE_SPLITTING = "readwrite_splitting";
-
+    
     private Iterator<Entry<String, LinkedList<Object>>> data = Collections.emptyIterator();
-
+    
     @Override
     public Collection<String> getColumnNames() {
         return Arrays.asList("rule_name", "database", "count");
     }
-
+    
     @Override
-    public void init(ShardingSphereDatabase database, SQLStatement sqlStatement) {
+    public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         Optional<ReadwriteSplittingRule> rule = database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
         Map<String, LinkedList<Object>> result = new LinkedHashMap<>();
         rule.ifPresent(optional -> addReadwriteSplittingData(result, database.getName(), rule.get()));
         data = result.entrySet().iterator();
     }
-
-
+    
     private void addReadwriteSplittingData(final Map<String, LinkedList<Object>> rowMap, final String databaseName, final ReadwriteSplittingRule rule) {
         addData(rowMap, READWRITE_SPLITTING, databaseName, () -> rule.getDataSourceMapper().size());
     }
-
+    
     private void addData(final Map<String, LinkedList<Object>> rowMap, final String dataKey, final String databaseName, final Supplier<Integer> apply) {
         rowMap.compute(dataKey, (key, value) -> buildRow(value, databaseName, apply.get()));
     }
-
+    
     private LinkedList<Object> buildRow(final LinkedList<Object> value, final String databaseName, final int count) {
         if (null == value) {
             return new LinkedList<>(Arrays.asList(databaseName, count));
@@ -73,19 +72,19 @@ public final class CountReadwriteSplittingRuleQueryResultSet implements DistSQLR
             return value;
         }
     }
-
+    
     @Override
     public boolean next() {
         return data.hasNext();
     }
-
+    
     @Override
     public Collection<Object> getRowData() {
         Entry<String, LinkedList<Object>> entry = data.next();
         entry.getValue().addFirst(entry.getKey());
         return entry.getValue();
     }
-
+    
     @Override
     public String getType() {
         return CountReadwriteSplittingRuleStatement.class.getName();
