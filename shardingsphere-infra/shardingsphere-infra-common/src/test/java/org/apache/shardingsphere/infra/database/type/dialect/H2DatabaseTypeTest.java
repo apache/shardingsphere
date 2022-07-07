@@ -22,7 +22,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -45,11 +44,6 @@ public final class H2DatabaseTypeTest {
     public void assertGetDataSourceMetaData() {
         assertThat(new H2DatabaseType().getDataSourceMetaData("jdbc:h2:~:foo_ds", "sa"), instanceOf(H2DataSourceMetaData.class));
         assertThat(new H2DatabaseType().getDataSourceMetaData("jdbc:h2:mem:foo_ds", "sa"), instanceOf(H2DataSourceMetaData.class));
-    }
-    
-    @Test
-    public void assertGetDataSourceClassName() {
-        assertThat(new H2DatabaseType().getDataSourceClassName(), is(Optional.of("org.h2.jdbcx.JdbcDataSource")));
     }
     
     @Test

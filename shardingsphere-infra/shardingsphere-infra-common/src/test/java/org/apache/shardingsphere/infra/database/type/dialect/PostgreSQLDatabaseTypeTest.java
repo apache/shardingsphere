@@ -29,7 +29,6 @@ import java.sql.SQLFeatureNotSupportedException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -52,11 +51,6 @@ public final class PostgreSQLDatabaseTypeTest {
     @Test
     public void assertGetDataSourceMetaData() {
         assertThat(new PostgreSQLDatabaseType().getDataSourceMetaData("jdbc:postgresql://localhost:5432/demo_ds_0", "postgres"), instanceOf(PostgreSQLDataSourceMetaData.class));
-    }
-    
-    @Test
-    public void assertGetDataSourceClassName() {
-        assertThat(new PostgreSQLDatabaseType().getDataSourceClassName(), is(Optional.of("org.postgresql.ds.PGSimpleDataSource")));
     }
     
     @Test

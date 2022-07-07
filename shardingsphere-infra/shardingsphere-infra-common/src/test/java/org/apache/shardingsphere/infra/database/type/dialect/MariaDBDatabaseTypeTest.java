@@ -22,7 +22,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -44,11 +43,6 @@ public final class MariaDBDatabaseTypeTest {
     @Test
     public void assertGetDataSourceMetaData() {
         assertThat(new MariaDBDatabaseType().getDataSourceMetaData("jdbc:mariadb://localhost:3306/foo_ds", "root"), instanceOf(MariaDBDataSourceMetaData.class));
-    }
-    
-    @Test
-    public void assertGetDataSourceClassName() {
-        assertThat(new MariaDBDatabaseType().getDataSourceClassName(), is(Optional.of("org.mariadb.jdbc.MariaDbDataSource")));
     }
     
     @Test
