@@ -48,7 +48,7 @@ public final class DatabaseTypeEngine {
      * @return protocol type
      */
     public static DatabaseType getProtocolType(final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) {
-        return findConfiguredDatabaseType(props).orElse(getDatabaseType(databaseConfig.getDataSources().values()));
+        return findConfiguredDatabaseType(props).orElseGet(() -> getDatabaseType(databaseConfig.getDataSources().values()));
     }
     
     /**
