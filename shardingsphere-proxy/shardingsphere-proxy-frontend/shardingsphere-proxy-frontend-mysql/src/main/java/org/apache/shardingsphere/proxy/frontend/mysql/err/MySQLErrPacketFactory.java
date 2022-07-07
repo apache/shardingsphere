@@ -25,6 +25,7 @@ import org.apache.shardingsphere.db.protocol.error.CommonErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerErrorCode;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLErrPacket;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.infra.exception.ColumnMismatchException;
 import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
@@ -73,6 +74,9 @@ public final class MySQLErrPacketFactory {
         }
         if (cause instanceof TableModifyInTransactionException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE, ((TableModifyInTransactionException) cause).getTableName());
+        }
+        if (cause instanceof ColumnMismatchException) {
+            return new MySQLErrPacket(1, MySQLServerErrorCode.ER_MISMATCH_COLUMN_COUNT, ((ColumnMismatchException) cause).getRow());
         }
         if (cause instanceof UnknownDatabaseException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_BAD_DB_ERROR, ((UnknownDatabaseException) cause).getDatabaseName());

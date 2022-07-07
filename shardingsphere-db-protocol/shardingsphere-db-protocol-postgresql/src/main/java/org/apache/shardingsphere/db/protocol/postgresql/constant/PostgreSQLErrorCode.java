@@ -49,6 +49,7 @@ public enum PostgreSQLErrorCode {
     FEATURE_NOT_SUPPORTED("0A000", "feature_not_supported"),
     DUPLICATE_DATABASE("42P04", "Database '%s' already exists"),
     INVALID_AUTHORIZATION_SPECIFICATION("28000", "invalid_authorization_specification"),
+    ER_MISMATCH_COLUMN_COUNT("42601", "syntax_error"),
     INVALID_PARAMETER_VALUE("22023", "invalid_parameter_value"),
     INVALID_PASSWORD("28P01", "invalid_password"),
     INVALID_CATALOG_NAME("3D000", "invalid_catalog_name"),
