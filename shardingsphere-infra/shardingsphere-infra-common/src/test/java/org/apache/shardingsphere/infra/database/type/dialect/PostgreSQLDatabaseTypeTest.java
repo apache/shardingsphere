@@ -19,26 +19,29 @@ package org.apache.shardingsphere.infra.database.type.dialect;
 
 import org.apache.shardingsphere.infra.database.metadata.dialect.PostgreSQLDataSourceMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
 import org.junit.Test;
 
-import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class PostgreSQLDatabaseTypeTest {
     
     @Test
-    public void assertGetName() {
-        assertThat(new PostgreSQLDatabaseType().getType(), is("PostgreSQL"));
+    public void assertGetQuoteCharacter() {
+        assertThat(new PostgreSQLDatabaseType().getQuoteCharacter(), is(QuoteCharacter.QUOTE));
     }
     
     @Test
@@ -52,22 +55,28 @@ public final class PostgreSQLDatabaseTypeTest {
     }
     
     @Test
-    public void assertGetSchema() throws SQLException {
-        Connection connection = mock(Connection.class);
-        when(connection.getSchema()).thenReturn("ds");
-        assertThat(new PostgreSQLDatabaseType().getSchema(connection), is("ds"));
+    public void assertGetDataSourceClassName() {
+        assertThat(new PostgreSQLDatabaseType().getDataSourceClassName(), is(Optional.of("org.postgresql.ds.PGSimpleDataSource")));
     }
     
     @Test
-    public void assertFormatTableNamePattern() {
-        assertThat(new PostgreSQLDatabaseType().formatTableNamePattern("tbl"), is("tbl"));
+    public void assertHandleRollbackOnlyForNotRollbackOnly() throws SQLException {
+        new PostgreSQLDatabaseType().handleRollbackOnly(false, mock(CommitStatement.class));
     }
     
     @Test
-    public void assertGetQuoteCharacter() {
-        QuoteCharacter actual = new PostgreSQLDatabaseType().getQuoteCharacter();
-        assertThat(actual.getStartDelimiter(), is("\""));
-        assertThat(actual.getEndDelimiter(), is("\""));
+    public void assertHandleRollbackOnlyForRollbackOnlyAndCommitStatement() throws SQLException {
+        new PostgreSQLDatabaseType().handleRollbackOnly(true, mock(CommitStatement.class));
+    }
+    
+    @Test
+    public void assertHandleRollbackOnlyForRollbackOnlyAndRollbackStatement() throws SQLException {
+        new PostgreSQLDatabaseType().handleRollbackOnly(true, mock(RollbackStatement.class));
+    }
+    
+    @Test(expected = SQLFeatureNotSupportedException.class)
+    public void assertHandleRollbackOnlyForRollbackOnlyAndNotTCLStatement() throws SQLException {
+        new PostgreSQLDatabaseType().handleRollbackOnly(true, mock(SelectStatement.class));
     }
     
     @Test
@@ -78,5 +87,15 @@ public final class PostgreSQLDatabaseTypeTest {
     @Test
     public void assertGetSystemSchemas() {
         assertThat(new PostgreSQLDatabaseType().getSystemSchemas(), is(new HashSet<>(Arrays.asList("information_schema", "pg_catalog"))));
+    }
+    
+    @Test
+    public void assertIsSchemaAvailable() {
+        assertTrue(new PostgreSQLDatabaseType().isSchemaAvailable());
+    }
+    
+    @Test
+    public void assertGetDefaultSchema() {
+        assertThat(new PostgreSQLDatabaseType().getDefaultSchema(), is("public"));
     }
 }
