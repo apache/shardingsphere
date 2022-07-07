@@ -188,7 +188,7 @@ public final class ClusterContextManagerCoordinatorTest {
     }
     
     @Test
-    public void assertDataBaseDelete() {
+    public void assertDatabaseDelete() {
         coordinator.renew(new DatabaseDeletedEvent("db"));
         assertNull(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("db"));
     }
@@ -211,7 +211,7 @@ public final class ClusterContextManagerCoordinatorTest {
     @Test
     public void assertSchemaDelete() {
         coordinator.renew(new SchemaDeletedEvent("db", "foo_schema"));
-        verify(contextManager.getMetaDataContexts().getDatabaseMetaData("db").getSchemas()).remove("foo_schema");
+        verify(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("db").getSchemas()).remove("foo_schema");
     }
     
     @Test
