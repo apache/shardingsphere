@@ -19,7 +19,5 @@
         <assertion expected-data-file="show_databases.xml" />
     </test-case>
 
-    <test-case sql="RESET ALL" db-types="PostgreSQL,openGauss" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion expected-data-file="show_databases.xml" />
-    </test-case>
+    <test-case sql="RESET ALL" db-types="PostgreSQL,openGauss" />
 </integration-test-cases>
