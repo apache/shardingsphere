@@ -251,7 +251,6 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearHintStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearReadwriteSplittingHintStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearShardingHintStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.CountInstanceRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.CreateTrafficRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.DiscardDistSQLStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.DropTrafficRuleStatementTestCase;
@@ -1086,9 +1085,6 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-instance")
     private final List<ShowInstanceStatementTestCase> showInstanceTestCases = new LinkedList<>();
     
-    @XmlElement(name = "count-instance-rules")
-    private final List<CountInstanceRulesStatementTestCase> countInstanceRulesTestCases = new LinkedList<>();
-    
     @XmlElement(name = "clone")
     private final List<CloneStatementTestCase> cloneTestCases = new LinkedList<>();
     
@@ -1730,7 +1726,6 @@ public final class SQLParserTestCases {
         putAll(flushTestCases, result);
         putAll(installPluginTestCases, result);
         putAll(showInstanceTestCases, result);
-        putAll(countInstanceRulesTestCases, result);
         putAll(cloneTestCases, result);
         putAll(showReadwriteSplittingReadResourcesTestCases, result);
         putAll(uninstallComponentTestCases, result);
