@@ -18,9 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CountShardingRuleStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -33,6 +31,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -40,7 +40,7 @@ import java.util.function.Supplier;
  */
 public final class CountShardingRuleQueryResultSet implements DistSQLResultSet {
 
-    private Iterator<LocalDataQueryResultRow> data = Collections.emptyIterator();
+    private Iterator<Entry<String,LinkedList<Object>>> data = Collections.emptyIterator();
 
     private static final String SHARDING_TABLE = "sharding_table";
 
@@ -57,35 +57,30 @@ public final class CountShardingRuleQueryResultSet implements DistSQLResultSet {
 
     @Override
     public void init(ShardingSphereDatabase database, SQLStatement sqlStatement) {
-        Map<String, LocalDataQueryResultRow> result = new LinkedHashMap<>();
-        for (String each : Arrays.asList(SHARDING_TABLE, SHARDING_BINDING_TABLE, SHARDING_BROADCAST_TABLE, SHARDING_SCALING)) {
-            result.put(each, new LocalDataQueryResultRow(each, database.getName(), 0));
-        }
-        addDatabaseData(result, database);
-        data = result.values().iterator();
+        Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
+        Map<String, LinkedList<Object>> result = new LinkedHashMap<>();
+        rule.ifPresent(optional -> addShardingData(result, rule.get(), database.getName()));
+        data = result.entrySet().iterator();
     }
-
-    private void addDatabaseData(final Map<String, LocalDataQueryResultRow> rowMap, final ShardingSphereDatabase database) {
-        for (ShardingSphereRule each : database.getRuleMetaData().getRules()) {
-            if (each instanceof ShardingRule) {
-                addShardingData(rowMap, (ShardingRule) each, database.getName());
-            }
-        }
-    }
-
-    private void addShardingData(final Map<String, LocalDataQueryResultRow> rowMap, final ShardingRule rule, final String databaseName) {
+    
+    private void addShardingData(final Map<String, LinkedList<Object>> rowMap, final ShardingRule rule, final String databaseName) {
         addData(rowMap, SHARDING_TABLE, databaseName, () -> rule.getTables().size());
         addData(rowMap, SHARDING_BINDING_TABLE, databaseName, () -> rule.getBindingTableRules().size());
         addData(rowMap, SHARDING_BROADCAST_TABLE, databaseName, () -> rule.getBroadcastTables().size());
         addData(rowMap, SHARDING_SCALING, databaseName, () -> ((ShardingRuleConfiguration) rule.getConfiguration()).getScaling().size());
     }
 
-    private void addData(final Map<String, LocalDataQueryResultRow> rowMap, final String dataKey, final String databaseName, final Supplier<Integer> apply) {
-        rowMap.compute(dataKey, (key, value) -> buildRow(value, dataKey, databaseName, apply.get()));
+    private void addData(final Map<String, LinkedList<Object>> rowMap, final String dataKey, final String databaseName, final Supplier<Integer> apply) {
+        rowMap.compute(dataKey, (key, value) -> buildRow(value, databaseName, apply.get()));
     }
 
-    private LocalDataQueryResultRow buildRow(final LocalDataQueryResultRow value, final String ruleName, final String databaseName, final int count) {
-        return null == value ? new LocalDataQueryResultRow(ruleName, count) : new LocalDataQueryResultRow(ruleName, databaseName, Integer.sum((Integer) value.getCell(3), count));
+    private LinkedList<Object> buildRow(final LinkedList<Object> value, final String databaseName, final int count) {
+        if (null == value) {
+            return new LinkedList<>(Arrays.asList(databaseName, count));
+        } else {
+            value.set(1, (Integer) value.get(1) + count);
+            return value;
+        }
     }
 
     @Override
@@ -95,12 +90,9 @@ public final class CountShardingRuleQueryResultSet implements DistSQLResultSet {
 
     @Override
     public Collection<Object> getRowData() {
-        LocalDataQueryResultRow row = data.next();
-        Collection<Object> result = new LinkedList<>();
-        for (int i = 1; i <= getColumnNames().size(); i++) {
-            result.add(row.getCell(i));
-        }
-        return result;
+        Entry<String, LinkedList<Object>> entry = data.next();
+        entry.getValue().addFirst(entry.getKey());
+        return entry.getValue();
     }
 
     @Override

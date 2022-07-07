@@ -483,8 +483,8 @@ public final class ShardingDistSQLStatementVisitor extends ShardingDistSQLStatem
         return new ShowShardingTableRulesUsedKeyGeneratorStatement(getIdentifierValue(ctx.keyGeneratorName()), null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
     
-     @Override
-     public ASTNode visitCountShardingRule(final CountShardingRuleContext ctx) {
-         return new CountShardingRuleStatement(Objects.nonNull(ctx.databaseName()) ? (DatabaseSegment) visit(ctx.databaseName()) : null);
-     }
+    @Override
+    public ASTNode visitCountShardingRule(final CountShardingRuleContext ctx) {
+        return new CountShardingRuleStatement(Objects.nonNull(ctx.databaseName()) ? (DatabaseSegment) visit(ctx.databaseName()) : null);
+    }
 }

@@ -150,7 +150,7 @@ public final class ReadwriteSplittingDistSQLStatementVisitor extends ReadwriteSp
     public ASTNode visitClearReadwriteSplittingHint(final ClearReadwriteSplittingHintContext ctx) {
         return new ClearReadwriteSplittingHintStatement();
     }
-
+    
     @Override
     public ASTNode visitCountReadwriteSplittingRule(final CountReadwriteSplittingRuleContext ctx) {
         return new CountReadwriteSplittingRuleStatement(Objects.nonNull(ctx.databaseName()) ? (DatabaseSegment) visit(ctx.databaseName()) : null);

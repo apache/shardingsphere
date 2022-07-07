@@ -25,7 +25,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseS
  */
 public final class CountReadwriteSplittingRuleStatement extends ShowRulesStatement {
     
-    public CountReadwriteSplittingRuleStatement(DatabaseSegment database) {
+    public CountReadwriteSplittingRuleStatement(final DatabaseSegment database) {
         super(database);
     }
 }
