@@ -15,23 +15,17 @@
  * limitations under the License.
  */
 
-grammar DatabaseDiscoveryDistSQLStatement;
+package org.apache.shardingsphere.dbdiscovery.distsql.parser.statement;
 
-import Symbol, RDLStatement, RQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
-execute
-    : (createDatabaseDiscoveryRule
-    | alterDatabaseDiscoveryRule
-    | dropDatabaseDiscoveryRule
-    | showDatabaseDiscoveryTypes
-    | showDatabaseDiscoveryHeartbeats
-    | showDatabaseDiscoveryRules
-    | createDatabaseDiscoveryType
-    | createDatabaseDiscoveryHeartbeat
-    | alterDatabaseDiscoveryHeartbeat
-    | dropDatabaseDiscoveryType
-    | dropDatabaseDiscoveryHeartbeat
-    | alterDatabaseDiscoveryType
-    | countDatabaseDiscoveryRule
-    ) SEMI?
-    ;
+/**
+ * Count database discovery rule statement.
+ */
+public final class CountDatabaseDiscoveryRuleStatement extends ShowRulesStatement {
+    
+    public CountDatabaseDiscoveryRuleStatement(final DatabaseSegment database) {
+        super(database);
+    }
+}
