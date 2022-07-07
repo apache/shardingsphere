@@ -19,6 +19,8 @@ package org.apache.shardingsphere.mode.manager.memory.workerid.generator;
 
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 
+import java.util.Properties;
+
 /**
  * Worker id generator for memory mode.
  */
@@ -27,6 +29,11 @@ public final class MemoryWorkerIdGenerator implements WorkerIdGenerator {
     @Override
     public long generate() {
         // TODO need to support custom configuration of worker-id
-        return 0;
+        return DEFAULT_WORKER_ID;
+    }
+    
+    @Override
+    public long generate(final Properties props) {
+        return parseWorkerId(props).orElse(DEFAULT_WORKER_ID);
     }
 }

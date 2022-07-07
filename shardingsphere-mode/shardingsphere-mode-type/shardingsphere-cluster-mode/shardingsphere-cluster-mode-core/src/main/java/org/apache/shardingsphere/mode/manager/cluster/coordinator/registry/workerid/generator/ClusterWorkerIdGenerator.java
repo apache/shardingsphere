@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.generator;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
@@ -25,10 +26,12 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.worke
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Worker id generator for cluster mode.
  */
+@Slf4j
 @RequiredArgsConstructor
 public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     
@@ -43,9 +46,23 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
         return registryCenter.getComputeNodeStatusService().loadInstanceWorkerId(instanceMetaData.getId()).orElseGet(this::reGenerate);
     }
     
-    private Long reGenerate() {
-        Long result = Long.valueOf(Optional.ofNullable(repository.getSequentialId(WorkerIdNode.getWorkerIdGeneratorPath(instanceMetaData.getId()), "")).orElse("0"));
+    @Override
+    public long generate(final Properties props) {
+        long result = generate();
+        checkConfigured(result, props);
+        return result;
+    }
+    
+    private long reGenerate() {
+        long result = Long.parseLong(Optional.ofNullable(repository.getSequentialId(WorkerIdNode.getWorkerIdGeneratorPath(instanceMetaData.getId()), "")).orElse("0"));
         registryCenter.getComputeNodeStatusService().persistInstanceWorkerId(instanceMetaData.getId(), result);
         return result;
+    }
+    
+    private void checkConfigured(final long generatedWorkerId, final Properties props) {
+        Optional<Long> configuredWorkerId = parseWorkerId(props);
+        if (configuredWorkerId.isPresent()) {
+            log.warn("No need to configured {} in cluster mode, system assigned work-id was {}", WORKER_ID_KEY, generatedWorkerId);
+        }
     }
 }
