@@ -27,10 +27,10 @@ import org.apache.shardingsphere.test.integration.framework.param.model.Paramete
 import java.util.Collection;
 
 /**
- * Parameterized array generator for singleton mode.
+ * Parameterized array generator for standalone mode.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class SingletonParameterizedArrayGenerator {
+public final class StandaloneParameterizedArrayGenerator {
     
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     

@@ -60,10 +60,10 @@ public final class TotalSuitesCountCalculator {
     }
     
     private static boolean isRunDCL() {
-        return ENV.getRunModes().contains("Cluster") || ENV.getRunModes().contains("Singleton");
+        return ENV.getRunModes().contains("Cluster") || ENV.getRunModes().contains("Standalone");
     }
     
     private static boolean isRunProxy() {
-        return (ENV.getRunModes().contains("Cluster") || ENV.getRunModes().contains("Singleton")) && ENV.getNodeEnvironment().getAdapters().contains("proxy");
+        return (ENV.getRunModes().contains("Cluster") || ENV.getRunModes().contains("Standalone")) && ENV.getNodeEnvironment().getAdapters().contains("proxy");
     }
 }
