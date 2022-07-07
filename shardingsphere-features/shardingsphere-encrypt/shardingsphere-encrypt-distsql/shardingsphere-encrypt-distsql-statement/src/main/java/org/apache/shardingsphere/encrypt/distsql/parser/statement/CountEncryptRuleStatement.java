@@ -15,22 +15,17 @@
  * limitations under the License.
  */
 
-grammar RQLStatement;
+package org.apache.shardingsphere.encrypt.distsql.parser.statement;
 
-import BaseRule;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
-showEncryptRules
-    : SHOW ENCRYPT (TABLE tableRule | RULES) (FROM databaseName)?
-    ;
-
-tableRule
-    : RULE tableName
-    ;
-
-countEncryptRule
-    : COUNT ENCRYPT RULE (FROM databaseName)?
-    ;
-
-databaseName
-    : IDENTIFIER
-    ;
+/**
+ * Count encrypt rule statement.
+ */
+public final class CountEncryptRuleStatement extends ShowRulesStatement {
+    
+    public CountEncryptRuleStatement(final DatabaseSegment database) {
+        super(database);
+    }
+}
