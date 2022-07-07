@@ -53,7 +53,6 @@ public final class OracleDatabaseType implements DatabaseType {
         return Optional.empty();
     }
     
-    @SuppressWarnings("ReturnOfNull")
     @Override
     public String getSchema(final Connection connection) {
         try {

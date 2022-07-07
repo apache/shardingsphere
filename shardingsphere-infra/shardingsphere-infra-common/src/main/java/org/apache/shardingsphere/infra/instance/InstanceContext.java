@@ -30,6 +30,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Instance context.
@@ -52,7 +53,6 @@ public final class InstanceContext {
         this.workerIdGenerator = workerIdGenerator;
         this.modeConfiguration = modeConfiguration;
         this.lockContext = lockContext;
-        getWorkerId();
         lockContext.initLockState(this);
     }
     
@@ -105,13 +105,24 @@ public final class InstanceContext {
      * Get worker id.
      *
      * @return worker id
+     * @deprecated remove it when worker-id refactor was completed
      */
+    @Deprecated
     public long getWorkerId() {
         if (null == instance.getWorkerId()) {
-            // TODO process generate failed
             Optional.of(workerIdGenerator.generate()).ifPresent(instance::setWorkerId);
         }
         return instance.getWorkerId();
+    }
+    
+    /**
+     * Generate worker id.
+     *
+     * @param props props
+     * @return worker id
+     */
+    public long generateWorkerId(final Properties props) {
+        return workerIdGenerator.generate(props);
     }
     
     /**

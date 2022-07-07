@@ -15,26 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.lock;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
+
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Job lock.
+ * Alter java statement test case.
  */
-public interface JobLock {
-    
-    /**
-     * Lock.
-     *
-     * @param databaseName database name
-     * @param jobId job id
-     */
-    void lock(String databaseName, String jobId);
-    
-    /**
-     * Release lock.
-     *
-     * @param databaseName database name
-     * @param jobId job id
-     */
-    void releaseLock(String databaseName, String jobId);
+public final class AlterJavaStatementTestCase extends SQLParserTestCase {
 }
