@@ -285,4 +285,11 @@
     <test-case sql="DELETE FROM t_shadow WHERE user_id = ? and order_id in (?, ?)" db-types="PostgreSQL" scenario-types="shadow">
         <assertion parameters="0:int, 4:long, 5:long" expected-data-file="shadow_delete_order_by_user_id.xml" />
     </test-case>
+
+    <test-case sql="LOCK TABLE t_order_details" db-types="PostgreSQL" sscenario-types="encrypt,dbtbl_with_readwrite_splitting_and_encrypt">
+        <assertion expected-data-file="unchanged_table.xml">
+            <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_plain VARCHAR(45) NULL, number_cipher VARCHAR(45) NULL, description varchar(10))" affected-table="t_user_details" />
+        </assertion>
+    </test-case>
+
 </integration-test-cases>
