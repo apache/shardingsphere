@@ -20,11 +20,11 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.container.
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
+import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
-import org.apache.shardingsphere.test.integration.framework.container.wait.JDBCConnectionWaitStrategy;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
+import org.apache.shardingsphere.test.integration.framework.container.wait.JDBCConnectionWaitStrategy;
 import org.testcontainers.containers.BindMode;
 
 import java.sql.DriverManager;
@@ -56,7 +56,7 @@ public final class ShardingSphereProxyDockerContainer extends DockerITContainer 
     private void mapConfigurationFiles() {
         withClasspathResourceMapping(String.format("/env/%s/server.yaml", databaseType.getType().toLowerCase()), "/opt/shardingsphere-proxy/conf/server.yaml", BindMode.READ_ONLY);
         withClasspathResourceMapping("/env/logback.xml", "/opt/shardingsphere-proxy/conf/logback.xml", BindMode.READ_ONLY);
-        if (ITEnvTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItEnvType()) {
+        if (ScalingITEnvTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItEnvType()) {
             addFixedExposedPort(3307, 3307);
             addFixedExposedPort(5005, 3308);
         }

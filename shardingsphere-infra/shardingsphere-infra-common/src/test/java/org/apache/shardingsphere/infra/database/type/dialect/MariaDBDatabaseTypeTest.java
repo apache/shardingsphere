@@ -21,21 +21,18 @@ import org.apache.shardingsphere.infra.database.metadata.dialect.MariaDBDataSour
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertTrue;
 
 public final class MariaDBDatabaseTypeTest {
     
     @Test
-    public void assertGetName() {
-        assertThat(new MariaDBDatabaseType().getType(), is("MariaDB"));
+    public void assertGetQuoteCharacter() {
+        assertThat(new MariaDBDatabaseType().getQuoteCharacter(), is(QuoteCharacter.BACK_QUOTE));
     }
     
     @Test
@@ -45,8 +42,7 @@ public final class MariaDBDatabaseTypeTest {
     
     @Test
     public void assertGetDataSourceMetaData() {
-        assertThat(new MariaDBDatabaseType().getDataSourceMetaData("jdbc:mysql://localhost:3306/demo_ds_0", "root"), instanceOf(MariaDBDataSourceMetaData.class));
-        assertThat(new MariaDBDatabaseType().getDataSourceMetaData("jdbc:mariadb://localhost:3306/demo_ds_0", "root"), instanceOf(MariaDBDataSourceMetaData.class));
+        assertThat(new MariaDBDatabaseType().getDataSourceMetaData("jdbc:mariadb://localhost:3306/foo_ds", "root"), instanceOf(MariaDBDataSourceMetaData.class));
     }
     
     @Test
@@ -55,21 +51,12 @@ public final class MariaDBDatabaseTypeTest {
     }
     
     @Test
-    public void assertGetSchema() throws SQLException {
-        Connection connection = mock(Connection.class);
-        when(connection.getSchema()).thenReturn("ds");
-        assertThat(new MariaDBDatabaseType().getSchema(connection), is("ds"));
+    public void assertGetSystemDatabaseSchemaMap() {
+        assertTrue(new MariaDBDatabaseType().getSystemDatabaseSchemaMap().isEmpty());
     }
     
     @Test
-    public void assertFormatTableNamePattern() {
-        assertThat(new MariaDBDatabaseType().formatTableNamePattern("tbl"), is("tbl"));
-    }
-    
-    @Test
-    public void assertGetQuoteCharacter() {
-        QuoteCharacter actual = new MariaDBDatabaseType().getQuoteCharacter();
-        assertThat(actual.getStartDelimiter(), is("`"));
-        assertThat(actual.getEndDelimiter(), is("`"));
+    public void assertGetSystemSchemas() {
+        assertTrue(new MariaDBDatabaseType().getSystemSchemas().isEmpty());
     }
 }

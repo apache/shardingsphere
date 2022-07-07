@@ -35,9 +35,10 @@ public interface LockContext {
     /**
      * Get lock.
      *
+     * @param lockScope lock scope
      * @return lock
      */
-    ShardingSphereLock getLock();
+    ShardingSphereLock getLock(LockScope lockScope);
     
     /**
      * Try lock.

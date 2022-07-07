@@ -38,10 +38,10 @@ public final class FixedReplicaRandomLoadBalanceAlgorithmTest {
         String readDataSourceName2 = "test_replica_ds_2";
         List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
         TransactionHolder.setInTransaction();
-        String routeDatasource = fixedReplicaRandomLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames);
+        String routeDataSource = fixedReplicaRandomLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames);
         assertTrue(readDataSourceNames.contains(fixedReplicaRandomLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames)));
-        assertThat(fixedReplicaRandomLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(routeDatasource));
-        assertThat(fixedReplicaRandomLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(routeDatasource));
+        assertThat(fixedReplicaRandomLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(routeDataSource));
+        assertThat(fixedReplicaRandomLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(routeDataSource));
         TransactionHolder.clear();
     }
 }

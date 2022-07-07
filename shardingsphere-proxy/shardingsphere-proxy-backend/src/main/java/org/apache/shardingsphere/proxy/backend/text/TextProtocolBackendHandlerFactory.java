@@ -121,7 +121,7 @@ public final class TextProtocolBackendHandlerFactory {
         String databaseName = sqlStatementContext.getTablesContext().getDatabaseName().isPresent()
                 ? sqlStatementContext.getTablesContext().getDatabaseName().get()
                 : connectionSession.getDatabaseName();
-        SQLCheckEngine.check(sqlStatement, Collections.emptyList(),
+        SQLCheckEngine.check(sqlStatementContext, Collections.emptyList(),
                 getRules(databaseName), databaseName, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(), connectionSession.getGrantee());
         if (sqlStatement instanceof TCLStatement) {
             return TransactionBackendHandlerFactory.newInstance((SQLStatementContext<TCLStatement>) sqlStatementContext, sql, connectionSession);

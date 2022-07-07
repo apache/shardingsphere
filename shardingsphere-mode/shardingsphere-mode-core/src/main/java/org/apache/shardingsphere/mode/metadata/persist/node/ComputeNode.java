@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.node;
 
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -118,6 +118,15 @@ public final class ComputeNode {
      */
     public static String getInstanceWorkerIdNodePath(final String instanceId) {
         return String.join("/", "", ROOT_NODE, COMPUTE_NODE, WORKER_ID, instanceId);
+    }
+    
+    /**
+     * Get instance worker id root node path.
+     *
+     * @return worker id root node path
+     */
+    public static String getInstanceWorkerIdRootNodePath() {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, WORKER_ID);
     }
     
     /**

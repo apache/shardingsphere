@@ -23,10 +23,12 @@ import org.apache.shardingsphere.infra.config.function.DistributedRuleConfigurat
 import org.apache.shardingsphere.infra.config.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -54,9 +56,13 @@ public final class AlgorithmProvidedShardingRuleConfiguration implements Databas
     
     private KeyGenerateStrategyConfiguration defaultKeyGenerateStrategy;
     
+    private ShardingAuditStrategyConfiguration defaultAuditStrategy;
+    
     private String defaultShardingColumn;
     
     private Map<String, ShardingAlgorithm> shardingAlgorithms = new LinkedHashMap<>();
     
     private Map<String, KeyGenerateAlgorithm> keyGenerators = new LinkedHashMap<>();
+    
+    private Map<String, ShardingAuditAlgorithm> auditors = new LinkedHashMap<>();
 }

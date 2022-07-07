@@ -41,6 +41,16 @@ chapter = true
 | CosIdSnowflakeKeyGenerateAlgorithm | 基于 CosId 的雪花算法分布式主键生成算法 |
 | NanoIdKeyGenerateAlgorithm         | 基于 NanoId 的分布式主键生成算法      |
 
+## ShardingAuditAlgorithm
+
+| *SPI 名称*                     | *详细说明*                 |
+| ----------------------------- | ------------------------- |
+| ShardingAuditAlgorithm        | 分片审计算法                |
+
+| *已知实现类*                                  | *详细说明*                         |
+|-------------------------------------------- |---------------------------------- |
+| DMLShardingConditionsShardingAuditAlgorithm | 禁止不带分片键的DML审计算法           |
+
 ## DatetimeService
 
 | *SPI 名称*                       | *详细说明*                     |

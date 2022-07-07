@@ -22,7 +22,6 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import java.math.BigDecimal;
@@ -41,21 +40,11 @@ public final class ScalingCaseHelper {
     /**
      * Get query properties by database type.
      *
-     * @param databaseType database type
      * @return query properties
      */
-    public static Properties getQueryPropertiesByDatabaseType(final DatabaseType databaseType) {
+    public static Properties getPostgreSQLQueryProperties() {
         Properties result = new Properties();
-        if (databaseType instanceof MySQLDatabaseType) {
-            result.put("useSSL", Boolean.FALSE.toString());
-            result.put("rewriteBatchedStatements", Boolean.TRUE.toString());
-            result.put("serverTimezone", "UTC");
-            return result;
-        }
-        if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
-            result.put("preferQueryMode", "extendedForPrepared");
-            return result;
-        }
+        result.put("preferQueryMode", "extendedForPrepared");
         return result;
     }
     

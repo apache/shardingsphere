@@ -84,14 +84,14 @@ public final class MGRMySQLDatabaseDiscoveryProviderAlgorithm implements Databas
     private CompletableFuture<Void> runAsyncCheckEnvironment(final String databaseName, final DataSource dataSource, final ExecutorService executorService) {
         return CompletableFuture.runAsync(() -> {
             try {
-                checkSingleDatasourceEnvironment(databaseName, dataSource);
+                checkSingleDataSourceEnvironment(databaseName, dataSource);
             } catch (SQLException ex) {
                 throw new ShardingSphereException(ex);
             }
         }, executorService);
     }
     
-    private void checkSingleDatasourceEnvironment(final String databaseName, final DataSource dataSource) throws SQLException {
+    private void checkSingleDataSourceEnvironment(final String databaseName, final DataSource dataSource) throws SQLException {
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {

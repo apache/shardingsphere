@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.type.unicast;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -46,7 +47,7 @@ public final class ShardingUnicastRoutingEngineTest {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..2}"));
         shardingRuleConfig.getBroadcastTables().add("t_config");
-        shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1", "ds_2"));
+        shardingRule = new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1", "ds_2"), mock(InstanceContext.class));
     }
     
     @Test

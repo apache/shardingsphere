@@ -140,7 +140,7 @@ public final class EncryptProjectionTokenGenerator implements CollectionSQLToken
             }
         }
         String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(selectStatementContext.getDatabaseType(), databaseName);
-        ShardingSphereSchema schema = selectStatementContext.getTablesContext().getSchemaName().map(schemas::get).orElse(schemas.get(defaultSchema));
+        ShardingSphereSchema schema = selectStatementContext.getTablesContext().getSchemaName().map(schemas::get).orElseGet(() -> schemas.get(defaultSchema));
         return selectStatementContext.getTablesContext().findTableNamesByColumnProjection(columns, schema);
     }
     

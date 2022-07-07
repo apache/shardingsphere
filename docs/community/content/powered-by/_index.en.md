@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 211 companies.
+Total: 214 companies.
 
 ### Infra Software
 <ul>
@@ -126,6 +126,7 @@ Total: 211 companies.
     <li><a href="https://www.teddymobile.cn/" rel="nofollow">Teddy Mobile</a></li>
     <li><a href="https://www.ecopiatech.com/" rel="nofollow">Ecopia</a></li>
     <li><a href="https://xiaoman.cn/" rel="nofollow">OKKI CRM</a></li>
+    <li><a href="https://www.wegooooo.com/" rel="nofollow">wegooooo.com</a></li>
 </ul>
 
 ### Transportation
@@ -293,6 +294,8 @@ Total: 211 companies.
     <li><a href="http://www.hzsun.com" rel="nofollow">hzsun</a></li>
     <li><a href="https://www.ywwl.com/" rel="nofollow">YOWANT</a></li>
     <li><a href="http://www.le7soft.com/" rel="nofollow">Le7Soft</a></li>
+    <li><a href="http://www.hylink.net.cn/" rel="nofollow">hyLink</a></li>
+    <li><a href="https://www.data4truth.com" rel="nofollow">data4truth</a></li>
 </ul>
 
 ### Health Care

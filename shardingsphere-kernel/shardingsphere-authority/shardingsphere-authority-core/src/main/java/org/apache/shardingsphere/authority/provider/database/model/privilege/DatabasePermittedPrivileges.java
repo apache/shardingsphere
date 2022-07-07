@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.authority.model.AccessSubject;
 import org.apache.shardingsphere.authority.model.PrivilegeType;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.provider.natived.model.subject.DatabaseAccessSubject;
+import org.apache.shardingsphere.authority.provider.database.model.subject.DatabaseAccessSubject;
 
 import java.util.Collection;
 import java.util.Set;

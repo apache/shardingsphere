@@ -24,17 +24,13 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.RuleA
 import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExecutor;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
-import org.apache.shardingsphere.data.pipeline.core.lock.PipelineSimpleLock;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJob;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobCenter;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobPreparer;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobProgressDetector;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobSchedulerCenter;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseDatabaseLevelLockEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 
 import java.util.Optional;
@@ -75,8 +71,8 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
         boolean isDeleted = DataChangedEvent.Type.DELETED == event.getType();
         boolean isDisabled = jobConfigPOJO.isDisabled();
         if (isDeleted || isDisabled) {
-            log.info("jobId={}, deleted={}, disabled={}", jobConfigPOJO.getJobName(), isDeleted, isDisabled);
-            RuleAlteredJobCenter.stop(jobConfigPOJO.getJobName());
+            String jobId = jobConfigPOJO.getJobName();
+            log.info("jobId={}, deleted={}, disabled={}", jobId, isDeleted, isDisabled);
             // TODO refactor: dispatch to different job types
             RuleAlteredJobConfiguration jobConfig = RuleAlteredJobConfigurationSwapper.swapToObject(jobConfigPOJO.getJobParameter());
             if (isDeleted) {
@@ -85,13 +81,13 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
                 log.info("isJobSuccessful=true");
                 new RuleAlteredJobPreparer().cleanup(jobConfig);
             }
-            ShardingSphereEventBus.getInstance().post(new ScalingReleaseDatabaseLevelLockEvent(jobConfig.getDatabaseName()));
+            RuleAlteredJobCenter.stop(jobId);
             return;
         }
         switch (event.getType()) {
             case ADDED:
             case UPDATED:
-                if (RuleAlteredJobSchedulerCenter.existJob(jobConfigPOJO.getJobName())) {
+                if (RuleAlteredJobCenter.isJobExisting(jobConfigPOJO.getJobName())) {
                     log.info("{} added to executing jobs failed since it already exists", jobConfigPOJO.getJobName());
                 } else {
                     executor.execute(() -> execute(jobConfigPOJO));
@@ -103,15 +99,9 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     }
     
     private void execute(final JobConfigurationPOJO jobConfigPOJO) {
-        String databaseName = RuleAlteredJobConfigurationSwapper.swapToObject(jobConfigPOJO.getJobParameter()).getDatabaseName();
-        if (PipelineSimpleLock.getInstance().tryLock(databaseName, 3000)) {
-            log.info("{} added to executing jobs success", jobConfigPOJO.getJobName());
-            RuleAlteredJob job = new RuleAlteredJob();
-            RuleAlteredJobCenter.addJob(jobConfigPOJO.getJobName(), job);
-            new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration()).execute();
-        } else {
-            log.info("tryLock failed, databaseName={}", databaseName);
-        }
+        RuleAlteredJob job = new RuleAlteredJob();
+        RuleAlteredJobCenter.addJob(jobConfigPOJO.getJobName(), job);
+        new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration()).execute();
     }
     
     @Override

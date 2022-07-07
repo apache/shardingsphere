@@ -18,11 +18,12 @@
 package org.apache.shardingsphere.integration.data.pipeline.cases.general;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseExtraSQLITCase;
 import org.apache.shardingsphere.integration.data.pipeline.cases.task.MySQLIncrementTask;
-import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
@@ -45,8 +46,6 @@ import static org.junit.Assert.assertTrue;
 @RunWith(Parameterized.class)
 public final class MySQLGeneralScalingIT extends BaseExtraSQLITCase {
     
-    private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
-    
     private final ScalingParameterized parameterized;
     
     public MySQLGeneralScalingIT(final ScalingParameterized parameterized) {
@@ -58,8 +57,16 @@ public final class MySQLGeneralScalingIT extends BaseExtraSQLITCase {
     @Parameters(name = "{0}")
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
-        for (String version : ENV.getMysqlVersions()) {
-            result.add(new ScalingParameterized(new MySQLDatabaseType(), version, "env/scenario/general/mysql.xml"));
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NONE) {
+            return result;
+        }
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
+            for (String version : ENV.getMysqlVersions()) {
+                result.add(new ScalingParameterized(new MySQLDatabaseType(), version, "env/scenario/general/mysql.xml"));
+            }
+        }
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE && StringUtils.equalsIgnoreCase(ENV.getNativeDatabaseType(), "MySQL")) {
+            result.add(new ScalingParameterized(new MySQLDatabaseType(), "", "env/scenario/general/mysql.xml"));
         }
         return result;
     }

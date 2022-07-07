@@ -87,7 +87,7 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         String databaseName = backendConnection.getConnectionSession().getDatabaseName();
         DatabaseType databaseType = logicSQL.getSqlStatementContext().getDatabaseType();
-        String schemaName = logicSQL.getSqlStatementContext().getTablesContext().getSchemaName().orElse(DatabaseTypeEngine.getDefaultSchemaName(databaseType, databaseName));
+        String schemaName = logicSQL.getSqlStatementContext().getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(databaseType, databaseName));
         federationExecutor = FederationExecutorFactory.newInstance(databaseName, schemaName, metaDataContexts.getOptimizerContext(), metaDataContexts.getMetaData().getGlobalRuleMetaData(),
                 metaDataContexts.getMetaData().getProps(), new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), backendConnection.isSerialExecute()));
     }

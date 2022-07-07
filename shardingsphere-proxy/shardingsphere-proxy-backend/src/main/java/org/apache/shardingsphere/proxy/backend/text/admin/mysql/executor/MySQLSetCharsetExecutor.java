@@ -27,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatemen
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.nio.charset.UnsupportedCharsetException;
 import java.sql.SQLException;
 import java.util.Locale;
 
@@ -50,7 +51,7 @@ public final class MySQLSetCharsetExecutor implements DatabaseSetCharsetExecutor
     }
     
     private String formatValue(final String value) {
-        return value.startsWith("'") && value.endsWith("'") ? value.substring(1, value.length() - 1) : value.trim();
+        return value.startsWith("'") && value.endsWith("'") || value.startsWith("\"") && value.endsWith("\"") ? value.substring(1, value.length() - 1) : value.trim();
     }
     
     private Charset parseCharset(final String value) {
@@ -60,7 +61,13 @@ public final class MySQLSetCharsetExecutor implements DatabaseSetCharsetExecutor
             case "utf8mb4":
                 return StandardCharsets.UTF_8;
             default:
-                return Charset.forName(value);
+                try {
+                    return Charset.forName(value);
+                    // CHECKSTYLE:OFF
+                } catch (Exception ex) {
+                    // CHECKSTYLE:ON
+                    throw new UnsupportedCharsetException(value.toLowerCase());
+                }
         }
     }
     

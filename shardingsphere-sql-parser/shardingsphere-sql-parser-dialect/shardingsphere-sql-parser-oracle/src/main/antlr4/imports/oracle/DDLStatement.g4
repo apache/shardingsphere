@@ -2199,7 +2199,7 @@ sharingClause
     ;
 
 invokerRightsClause
-    : AUTHID (CURRENT_USER DEFINER)
+    : AUTHID (CURRENT_USER | DEFINER)
     ;
 
 accessibleByClause
@@ -2535,4 +2535,16 @@ alterZonemapAttributes
 zonemapRefreshClause
     : REFRESH (FAST | COMPLETE | FORCE)?
       (ON (DEMAND | COMMIT | LOAD | DATA MOVEMENT | LOAD DATA MOVEMENT) )?
+    ;
+
+alterJava
+   : ALTER JAVA (SOURCE | CLASS) objectName resolveClauses (COMPILE | RESOLVE | invokerRightsClause)
+   ;
+
+resolveClauses
+    : RESOLVER LP_ resolveClause+ RP_
+    ;
+
+resolveClause
+    : LP_ matchString DOT_? (schemaName | MINUS_) RP_
     ;
