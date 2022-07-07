@@ -21,7 +21,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStat
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
- * Show unused sharding algorithms statement.
+ * Count sharding rule statement.
  */
 public final class CountShardingRuleStatement extends ShowRulesStatement {
     
