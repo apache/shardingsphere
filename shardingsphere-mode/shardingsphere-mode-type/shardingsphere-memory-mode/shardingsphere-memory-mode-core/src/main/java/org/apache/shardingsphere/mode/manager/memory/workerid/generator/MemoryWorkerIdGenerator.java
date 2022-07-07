@@ -27,12 +27,6 @@ import java.util.Properties;
 public final class MemoryWorkerIdGenerator implements WorkerIdGenerator {
     
     @Override
-    public long generate() {
-        // TODO need to support custom configuration of worker-id
-        return DEFAULT_WORKER_ID;
-    }
-    
-    @Override
     public long generate(final Properties props) {
         return parseWorkerId(props).orElse(DEFAULT_WORKER_ID);
     }

@@ -105,13 +105,8 @@ public final class InstanceContext {
      * Get worker id.
      *
      * @return worker id
-     * @deprecated remove it when worker-id refactor was completed
      */
-    @Deprecated
     public long getWorkerId() {
-        if (null == instance.getWorkerId()) {
-            Optional.of(workerIdGenerator.generate()).ifPresent(instance::setWorkerId);
-        }
         return instance.getWorkerId();
     }
     
@@ -122,7 +117,12 @@ public final class InstanceContext {
      * @return worker id
      */
     public long generateWorkerId(final Properties props) {
-        return workerIdGenerator.generate(props);
+        Long result = instance.getWorkerId();
+        if (null == result) {
+            result = workerIdGenerator.generate(props);
+            instance.setWorkerId(result);
+        }
+        return result;
     }
     
     /**

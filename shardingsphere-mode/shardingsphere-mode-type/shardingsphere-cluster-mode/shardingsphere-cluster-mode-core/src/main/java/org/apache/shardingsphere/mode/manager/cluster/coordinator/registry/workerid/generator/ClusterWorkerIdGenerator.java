@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.work
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
@@ -35,6 +36,8 @@ import java.util.Properties;
 @RequiredArgsConstructor
 public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     
+    private static final int MAX_RE_TRY = 3;
+    
     private final ClusterPersistRepository repository;
     
     private final RegistryCenter registryCenter;
@@ -42,21 +45,36 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     private final InstanceMetaData instanceMetaData;
     
     @Override
-    public long generate() {
-        return registryCenter.getComputeNodeStatusService().loadInstanceWorkerId(instanceMetaData.getId()).orElseGet(this::reGenerate);
-    }
-    
-    @Override
     public long generate(final Properties props) {
-        long result = generate();
+        long result = registryCenter.getComputeNodeStatusService().loadInstanceWorkerId(instanceMetaData.getId()).orElseGet(this::reGenerate);
         checkConfigured(result, props);
         return result;
     }
     
     private long reGenerate() {
-        long result = Long.parseLong(Optional.ofNullable(repository.getSequentialId(WorkerIdNode.getWorkerIdGeneratorPath(instanceMetaData.getId()), "")).orElse("0"));
+        long result;
+        int reTryCount = 0;
+        do {
+            reTryCount++;
+            result = generateSequentialId();
+            if (result > MAX_WORKER_ID) {
+                result = result % 1024L;
+            }
+            if (reTryCount > MAX_RE_TRY) {
+                throw new ShardingSphereException("System assigned work-id failed, assigned work-id was {}", result);
+            }
+        } while (isExist(result));
         registryCenter.getComputeNodeStatusService().persistInstanceWorkerId(instanceMetaData.getId(), result);
         return result;
+    }
+    
+    private long generateSequentialId() {
+        String sequentialId = repository.getSequentialId(WorkerIdNode.getWorkerIdGeneratorPath(instanceMetaData.getId()), "");
+        return null == sequentialId ? DEFAULT_WORKER_ID : Long.parseLong(sequentialId);
+    }
+    
+    private boolean isExist(final long workerId) {
+        return registryCenter.getComputeNodeStatusService().getUsedWorkerIds().contains(workerId);
     }
     
     private void checkConfigured(final long generatedWorkerId, final Properties props) {

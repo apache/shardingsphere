@@ -33,6 +33,7 @@ import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Properties;
 import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -70,7 +71,7 @@ public final class GlobalRulesBuilderTest {
     
     private WorkerIdGenerator createWorkerIdGenerator() {
         WorkerIdGenerator result = mock(WorkerIdGenerator.class);
-        when(result.generate()).thenReturn(0L);
+        when(result.generate(new Properties())).thenReturn(0L);
         return result;
     }
 }

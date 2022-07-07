@@ -28,11 +28,6 @@ public final class WorkerIdGeneratorFixture implements WorkerIdGenerator {
     private final long fixtureWorkerId;
     
     @Override
-    public long generate() {
-        return fixtureWorkerId;
-    }
-    
-    @Override
     public long generate(final Properties props) {
         return fixtureWorkerId;
     }

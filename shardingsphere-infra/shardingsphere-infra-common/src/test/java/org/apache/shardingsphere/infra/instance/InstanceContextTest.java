@@ -29,7 +29,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.Random;
+import java.util.Properties;
 import java.util.Set;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -62,15 +62,10 @@ public final class InstanceContextTest {
     }
     
     @Test
-    public void assertUpdateWorkerId() {
+    public void assertGenerateWorkerId() {
         InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfig, lockContext);
-        long actual = context.getWorkerId();
+        long actual = context.generateWorkerId(new Properties());
         assertThat(actual, is(Long.MIN_VALUE));
-        Random random = new Random();
-        Long expected = random.nextLong();
-        context.updateWorkerId(expected);
-        actual = context.getWorkerId();
-        assertThat(actual, is(expected));
     }
     
     @Test
