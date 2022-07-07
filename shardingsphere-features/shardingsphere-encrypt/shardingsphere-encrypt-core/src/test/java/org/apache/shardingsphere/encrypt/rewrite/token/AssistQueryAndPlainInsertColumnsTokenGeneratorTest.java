@@ -39,28 +39,28 @@ import static org.mockito.Mockito.when;
 public class AssistQueryAndPlainInsertColumnsTokenGeneratorTest {
     
     private final AssistQueryAndPlainInsertColumnsTokenGenerator tokenGenerator = new AssistQueryAndPlainInsertColumnsTokenGenerator();
+    
     private InsertStatementContext insertStatementContext;
     
     @Before
     public void setup() {
-        String tableName = "foo_table";
-        String columnName = "foo_col";
+        final String tableName = "foo_tbl";
+        final String columnName = "foo_col";
         insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         EncryptRule encryptRule = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
-        EncryptTable encryptTable = mock(EncryptTable.class, RETURNS_DEEP_STUBS);
-        ColumnSegment columnSegment = mock(ColumnSegment.class, RETURNS_DEEP_STUBS);
         tokenGenerator.setEncryptRule(encryptRule);
         when(insertStatementContext.getSqlStatement()
                 .getInsertColumns()).thenReturn(Optional.of(mock(InsertColumnsSegment.class)));
         when(insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier()
                 .getValue()).thenReturn(tableName);
+        ColumnSegment columnSegment = mock(ColumnSegment.class, RETURNS_DEEP_STUBS);
         when(insertStatementContext.getSqlStatement()
                 .getColumns()).thenReturn(Collections.singletonList(columnSegment));
         when(columnSegment.getIdentifier().getValue()).thenReturn(columnName);
+        EncryptTable encryptTable = mock(EncryptTable.class, RETURNS_DEEP_STUBS);
         when(encryptRule.findEncryptTable(tableName)).thenReturn(Optional.of(encryptTable));
         when(encryptTable.findAssistedQueryColumn(columnName)).thenReturn(Optional.of("assisted_query_col"));
         when(encryptTable.findPlainColumn(columnName)).thenReturn(Optional.of("plain_col"));
-        
     }
     
     @Test
