@@ -28,13 +28,13 @@ import lombok.Getter;
 @Getter
 public final class ShardingAuditStrategyConfiguration {
     
-    private final Collection<String> auditAlgorithmNames;
+    private final Collection<String> auditorNames;
     
     private final boolean allowHintDisable;
     
-    public ShardingAuditStrategyConfiguration(final Collection<String> auditAlgorithmNames, final boolean allowHintDisable) {
-        Preconditions.checkNotNull(auditAlgorithmNames, "Sharding audit algorithm names is required.");
-        this.auditAlgorithmNames = auditAlgorithmNames;
+    public ShardingAuditStrategyConfiguration(final Collection<String> auditorNames, final boolean allowHintDisable) {
+        Preconditions.checkNotNull(auditorNames, "Sharding audit algorithm names is required.");
+        this.auditorNames = auditorNames;
         this.allowHintDisable = allowHintDisable;
     }
 }

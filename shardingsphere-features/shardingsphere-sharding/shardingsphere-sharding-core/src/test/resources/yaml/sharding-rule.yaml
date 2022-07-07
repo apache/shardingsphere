@@ -70,7 +70,11 @@ rules:
   defaultTableStrategy: 
     none:
   defaultShardingColumn: order_id
-  
+  defaultAuditStrategy:
+    auditorNames:
+      - sharding_key_required_auditor
+    allowHintDisable: true
+
   shardingAlgorithms:
     core_standard_fixture:
       type: CORE.STANDARD.FIXTURE
@@ -90,6 +94,10 @@ rules:
   keyGenerators:
     snowflake:
       type: SNOWFLAKE
+
+  auditors:
+    sharding_key_required_auditor:
+      type: DML_SHARDING_CONDITIONS
   
   scalingName: default_scaling
   scaling:

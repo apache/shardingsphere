@@ -37,7 +37,6 @@ execute
     | showShardingBindingTableRules
     | showShardingBroadcastTableRules
     | showShardingAlgorithms
-    | showShardingAuditAlgorithms
     | setShardingHintDatabaseValue
     | addShardingHintDatabaseValue
     | addShardingHintTableValue
@@ -50,6 +49,9 @@ execute
     | alterShardingKeyGenerator
     | showShardingKeyGenerators
     | dropShardingKeyGenerator
+    | showShardingAuditors
+    | createShardingAuditor
+    | alterShardingAuditor
     | showShardingDefaultShardingStrategy
     | alterDefaultShardingStrategy
     | dropDefaultShardingStrategy

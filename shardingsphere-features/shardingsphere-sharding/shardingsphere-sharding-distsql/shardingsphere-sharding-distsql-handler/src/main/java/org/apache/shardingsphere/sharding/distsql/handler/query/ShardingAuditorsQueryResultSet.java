@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.properties.PropertiesConverter;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingAuditAlgorithmsStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingAuditorsStatement;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -37,16 +37,16 @@ import java.util.Optional;
 import java.util.Properties;
 
 /**
- * Query result set for show sharding audit algorithms.
+ * Query result set for show sharding auditors.
  */
-public final class ShardingAuditAlgorithmsQueryResultSet implements DistSQLResultSet {
+public final class ShardingAuditorsQueryResultSet implements DistSQLResultSet {
     
     private Iterator<Entry<String, ShardingSphereAlgorithmConfiguration>> data;
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         Optional<ShardingRule> rule = database.getRuleMetaData().findSingleRule(ShardingRule.class);
-        data = rule.map(optional -> ((ShardingRuleConfiguration) optional.getConfiguration()).getAuditAlgorithms().entrySet().iterator()).orElse(Collections.emptyIterator());
+        data = rule.map(optional -> ((ShardingRuleConfiguration) optional.getConfiguration()).getAuditors().entrySet().iterator()).orElse(Collections.emptyIterator());
     }
     
     @Override
@@ -78,6 +78,6 @@ public final class ShardingAuditAlgorithmsQueryResultSet implements DistSQLResul
     
     @Override
     public String getType() {
-        return ShowShardingAuditAlgorithmsStatement.class.getName();
+        return ShowShardingAuditorsStatement.class.getName();
     }
 }

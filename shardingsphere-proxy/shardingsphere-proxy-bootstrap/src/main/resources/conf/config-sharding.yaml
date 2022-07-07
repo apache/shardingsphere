@@ -54,8 +54,12 @@
 #          shardingColumn: order_id
 #          shardingAlgorithmName: t_order_inline
 #      keyGenerateStrategy:
-#          column: order_id
-#          keyGeneratorName: snowflake
+#        column: order_id
+#        keyGeneratorName: snowflake
+#      auditStrategy:
+#        auditorNames:
+#          - sharding_key_required_auditor
+#        allowHintDisable: true
 #    t_order_item:
 #      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
 #      tableStrategy:
@@ -73,9 +77,9 @@
 #      shardingAlgorithmName: database_inline
 #  defaultTableStrategy:
 #    none:
-#  auditStrategy:
-#    auditAlgorithmNames:
-#      - sharding_key_required_audit_algorithm
+#  defaultAuditStrategy:
+#    auditorNames:
+#      - sharding_key_required_auditor
 #    allowHintDisable: true
 #
 #  shardingAlgorithms:
@@ -96,8 +100,8 @@
 #    snowflake:
 #      type: SNOWFLAKE
 #
-#  auditAlgorithms:
-#    sharding_key_required_audit_algorithm:
+#  auditors:
+#    sharding_key_required_auditor:
 #      type: DML_SHARDING_CONDITIONS
 #
 #  scalingName: default_scaling
@@ -121,14 +125,6 @@
 #        type: DATA_MATCH
 #        props:
 #          chunk-size: 1000
-#
-#  auditAlgorithms:
-#    sharding_key_required_audit_algorithm:
-#      type: DML_SHARDING_CONDITIONS
-#  auditStrategy:
-#    auditAlgorithmNames:
-#      - sharding_key_required_audit_algorithm
-#    allowHintDisable: true
 
 ######################################################################################################
 #
@@ -170,6 +166,10 @@
 #      keyGenerateStrategy:
 #        column: order_id
 #        keyGeneratorName: snowflake
+#      auditStrategy:
+#        auditorNames:
+#          - sharding_key_required_auditor
+#        allowHintDisable: true
 #    t_order_item:
 #      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
 #      tableStrategy:
@@ -187,9 +187,9 @@
 #      shardingAlgorithmName: database_inline
 #  defaultTableStrategy:
 #    none:
-#  auditStrategy:
-#    auditAlgorithmNames:
-#      - sharding_key_required_audit_algorithm
+#  defaultAuditStrategy:
+#    auditorNames:
+#      - sharding_key_required_auditor
 #    allowHintDisable: true
 #
 #  shardingAlgorithms:
@@ -210,8 +210,8 @@
 #    snowflake:
 #      type: SNOWFLAKE
 #
-#  auditAlgorithms:
-#    sharding_key_required_audit_algorithm:
+#  auditors:
+#    sharding_key_required_auditor:
 #      type: DML_SHARDING_CONDITIONS
 #
 #  scalingName: default_scaling

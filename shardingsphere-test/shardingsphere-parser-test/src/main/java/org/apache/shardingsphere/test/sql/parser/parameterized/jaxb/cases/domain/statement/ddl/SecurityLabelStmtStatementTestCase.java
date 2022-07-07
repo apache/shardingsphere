@@ -15,17 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Scaling release database level lock event.
+ * Security label test case.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ScalingReleaseDatabaseLevelLockEvent {
-    
-    private final String databaseName;
+public final class SecurityLabelStmtStatementTestCase extends SQLParserTestCase {
 }

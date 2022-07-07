@@ -41,6 +41,16 @@ public final class RuleAlteredJobCenter {
     }
     
     /**
+     * Is job existing.
+     *
+     * @param jobId job id
+     * @return true when job exists, else false
+     */
+    public static boolean isJobExisting(final String jobId) {
+        return JOB_MAP.containsKey(jobId);
+    }
+    
+    /**
      * Stop job.
      *
      * @param jobId job id

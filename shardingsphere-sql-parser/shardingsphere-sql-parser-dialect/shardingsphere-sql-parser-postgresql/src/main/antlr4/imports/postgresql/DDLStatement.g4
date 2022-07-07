@@ -1819,20 +1819,8 @@ direction
 prepare
     : PREPARE name prepTypeClause? AS preparableStmt
     ;
-    
-deallocate
-    : DEALLOCATE PREPARE? (name | ALL)
-    ;
 
-prepTypeClause
-    : LP_ typeList RP_
-    ;
-
-refreshMaterializedView
-    : REFRESH MATERIALIZED VIEW CONCURRENTLY? qualifiedName withData?
-    ;
-
-reIndex
+reindex
     : REINDEX reIndexClauses
     ;
 
@@ -1848,7 +1836,7 @@ reindexOptionList
     ;
 
 reindexOptionElem
-    : VERBOSE
+    : VERBOSE | CONCURRENTLY | TABLESPACE
     ;
 
 reindexTargetMultitable
@@ -1857,6 +1845,18 @@ reindexTargetMultitable
 
 reindexTargetType
     : INDEX | TABLE
+    ;
+
+deallocate
+    : DEALLOCATE PREPARE? (name | ALL)
+    ;
+
+prepTypeClause
+    : LP_ typeList RP_
+    ;
+
+refreshMaterializedView
+    : REFRESH MATERIALIZED VIEW CONCURRENTLY? qualifiedName withData?
     ;
 
 alterForeignTable
@@ -1882,23 +1882,6 @@ createOperatorFamily
     : CREATE OPERATOR FAMILY anyName USING name
     ;
 
-securityLabelStmt
-    : SECURITY LABEL (FOR nonReservedWordOrSconst) ON securityLabelClausces IS securityLabel
-    ;
-
-securityLabel
-    : STRING_ | NULL
-    ;
-
-securityLabelClausces
-    : objectTypeAnyName anyName
-    | COLUMN anyName
-    | (TYPE | DOMAIN) typeName
-    | (AGGREGATE | FUNCTION) aggregateWithArgtypes
-    | LARGE OBJECT numericOnly
-    | (PROCEDURE | ROUTINE) functionWithArgtypes
-    ;
-
 createSchema
     : CREATE SCHEMA ifNotExists? createSchemaClauses
     ;
@@ -1914,6 +1897,23 @@ schemaEltList
 
 schemaStmt
     : createTable | createIndex | createSequence | createTrigger | grant | createView
+    ;
+
+securityLabelStmt
+    : SECURITY LABEL (FOR nonReservedWordOrSconst)? ON securityLabelClausces IS securityLabel
+    ;
+
+securityLabel
+    : STRING_ | NULL
+    ;
+
+securityLabelClausces
+    : objectTypeAnyName anyName
+    | COLUMN anyName
+    | (TYPE | DOMAIN) typeName
+    | (AGGREGATE | FUNCTION) aggregateWithArgtypes
+    | LARGE OBJECT numericOnly
+    | (PROCEDURE | ROUTINE) functionWithArgtypes
     ;
 
 grant

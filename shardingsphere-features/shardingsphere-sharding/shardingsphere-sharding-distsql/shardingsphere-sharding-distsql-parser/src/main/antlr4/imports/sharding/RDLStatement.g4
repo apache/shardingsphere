@@ -51,6 +51,10 @@ createShardingKeyGenerator
     : CREATE SHARDING KEY GENERATOR keyGeneratorDefinition (COMMA keyGeneratorDefinition)*
     ;
 
+createShardingAuditor
+    : CREATE SHARDING AUDITOR auditorDefinition (COMMA auditorDefinition)*
+    ;
+
 alterShardingTableRule
     : ALTER SHARDING TABLE RULE shardingTableRuleDefinition (COMMA shardingTableRuleDefinition)*
     ;
@@ -69,6 +73,10 @@ alterShardingAlgorithm
 
 alterShardingKeyGenerator
     : ALTER SHARDING KEY GENERATOR keyGeneratorDefinition (COMMA keyGeneratorDefinition)*
+    ;
+
+alterShardingAuditor
+    : ALTER SHARDING AUDITOR auditorDefinition (COMMA auditorDefinition)*
     ;
 
 dropShardingTableRule
@@ -108,6 +116,14 @@ keyGeneratorDefinition
     ;
 
 keyGeneratorName
+    : IDENTIFIER
+    ;
+
+auditorDefinition
+    : auditorName LP algorithmDefinition RP
+    ;
+
+auditorName
     : IDENTIFIER
     ;
 

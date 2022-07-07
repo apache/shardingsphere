@@ -94,7 +94,7 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     private final Map<String, KeyGenerateAlgorithm> keyGenerators = new LinkedHashMap<>();
     
-    private final Map<String, ShardingAuditAlgorithm> auditAlgorithms = new LinkedHashMap<>();
+    private final Map<String, ShardingAuditAlgorithm> auditors = new LinkedHashMap<>();
     
     private final Map<String, TableRule> tableRules = new LinkedHashMap<>();
     
@@ -106,26 +106,27 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
     
     private final ShardingStrategyConfiguration defaultTableShardingStrategyConfig;
     
+    private final ShardingAuditStrategyConfiguration defaultAuditStrategy;
+    
     private final KeyGenerateAlgorithm defaultKeyGenerateAlgorithm;
     
     private final String defaultShardingColumn;
     
     private final Map<String, Collection<DataNode>> shardingTableDataNodes;
     
-    private final ShardingAuditStrategyConfiguration auditStrategyConfig;
-    
     public ShardingRule(final ShardingRuleConfiguration config, final Collection<String> dataSourceNames, final InstanceContext instanceContext) {
         configuration = config;
         this.dataSourceNames = getDataSourceNames(config.getTables(), config.getAutoTables(), dataSourceNames);
         config.getShardingAlgorithms().forEach((key, value) -> shardingAlgorithms.put(key, createShardingAlgorithm(key, value, config.getTables(), config.getAutoTables())));
         config.getKeyGenerators().forEach((key, value) -> keyGenerators.put(key, KeyGenerateAlgorithmFactory.newInstance(value)));
-        config.getAuditAlgorithms().forEach((key, value) -> auditAlgorithms.put(key, ShardingAuditAlgorithmFactory.newInstance(value)));
+        config.getAuditors().forEach((key, value) -> auditors.put(key, ShardingAuditAlgorithmFactory.newInstance(value)));
         tableRules.putAll(createTableRules(config.getTables(), config.getDefaultKeyGenerateStrategy()));
         tableRules.putAll(createAutoTableRules(config.getAutoTables(), config.getDefaultKeyGenerateStrategy()));
         broadcastTables = createBroadcastTables(config.getBroadcastTables());
         bindingTableRules.putAll(createBindingTableRules(config.getBindingTableGroups()));
         defaultDatabaseShardingStrategyConfig = null == config.getDefaultDatabaseShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultDatabaseShardingStrategy();
         defaultTableShardingStrategyConfig = null == config.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultTableShardingStrategy();
+        defaultAuditStrategy = null == config.getDefaultAuditStrategy() ? new ShardingAuditStrategyConfiguration(Collections.emptyList(), true) : config.getDefaultAuditStrategy();
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
                 ? KeyGenerateAlgorithmFactory.newInstance()
                 : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
@@ -134,8 +135,6 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         Preconditions.checkArgument(isValidBindingTableConfiguration(tableRules, new BindingTableCheckedConfiguration(this.dataSourceNames, shardingAlgorithms, config.getBindingTableGroups(),
                 broadcastTables, defaultDatabaseShardingStrategyConfig, defaultTableShardingStrategyConfig, defaultShardingColumn)),
                 "Invalid binding table configuration in ShardingRuleConfiguration.");
-        auditStrategyConfig = null == config.getAuditStrategy() ? new ShardingAuditStrategyConfiguration(Collections.emptyList(), true) : config.getAuditStrategy();
-        Preconditions.checkArgument(auditStrategyConfig.getAuditAlgorithmNames().stream().allMatch(auditAlgorithms::containsKey), "Cannot find sharding audit algorithm");
         keyGenerators.values().stream().filter(each -> each instanceof InstanceAwareAlgorithm).forEach(each -> ((InstanceAwareAlgorithm) each).setInstanceContext(instanceContext));
         if (defaultKeyGenerateAlgorithm instanceof InstanceAwareAlgorithm) {
             ((InstanceAwareAlgorithm) defaultKeyGenerateAlgorithm).setInstanceContext(instanceContext);
@@ -147,13 +146,14 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         this.dataSourceNames = getDataSourceNames(config.getTables(), config.getAutoTables(), dataSourceNames);
         shardingAlgorithms.putAll(config.getShardingAlgorithms());
         keyGenerators.putAll(config.getKeyGenerators());
-        auditAlgorithms.putAll(config.getAuditAlgorithms());
+        auditors.putAll(config.getAuditors());
         tableRules.putAll(createTableRules(config.getTables(), config.getDefaultKeyGenerateStrategy()));
         tableRules.putAll(createAutoTableRules(config.getAutoTables(), config.getDefaultKeyGenerateStrategy()));
         broadcastTables = createBroadcastTables(config.getBroadcastTables());
         bindingTableRules.putAll(createBindingTableRules(config.getBindingTableGroups()));
         defaultDatabaseShardingStrategyConfig = null == config.getDefaultDatabaseShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultDatabaseShardingStrategy();
         defaultTableShardingStrategyConfig = null == config.getDefaultTableShardingStrategy() ? new NoneShardingStrategyConfiguration() : config.getDefaultTableShardingStrategy();
+        defaultAuditStrategy = null == config.getDefaultAuditStrategy() ? new ShardingAuditStrategyConfiguration(Collections.emptyList(), true) : config.getDefaultAuditStrategy();
         defaultKeyGenerateAlgorithm = null == config.getDefaultKeyGenerateStrategy()
                 ? KeyGenerateAlgorithmFactory.newInstance()
                 : keyGenerators.get(config.getDefaultKeyGenerateStrategy().getKeyGeneratorName());
@@ -162,8 +162,6 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         Preconditions.checkArgument(isValidBindingTableConfiguration(tableRules, new BindingTableCheckedConfiguration(this.dataSourceNames, shardingAlgorithms, config.getBindingTableGroups(),
                 broadcastTables, defaultDatabaseShardingStrategyConfig, defaultTableShardingStrategyConfig, defaultShardingColumn)),
                 "Invalid binding table configuration in ShardingRuleConfiguration.");
-        auditStrategyConfig = null == config.getAuditStrategy() ? new ShardingAuditStrategyConfiguration(Collections.emptyList(), true) : config.getAuditStrategy();
-        Preconditions.checkArgument(auditStrategyConfig.getAuditAlgorithmNames().stream().allMatch(auditAlgorithms::containsKey), "Cannot find sharding audit algorithm");
         keyGenerators.values().stream().filter(each -> each instanceof InstanceAwareAlgorithm).forEach(each -> ((InstanceAwareAlgorithm) each).setInstanceContext(instanceContext));
         if (defaultKeyGenerateAlgorithm instanceof InstanceAwareAlgorithm) {
             ((InstanceAwareAlgorithm) defaultKeyGenerateAlgorithm).setInstanceContext(instanceContext);
@@ -339,6 +337,16 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
      */
     public ShardingStrategyConfiguration getTableShardingStrategyConfiguration(final TableRule tableRule) {
         return null == tableRule.getTableShardingStrategyConfig() ? defaultTableShardingStrategyConfig : tableRule.getTableShardingStrategyConfig();
+    }
+    
+    /**
+     * Get audit strategy configuration.
+     *
+     * @param tableRule table rule
+     * @return audit strategy configuration
+     */
+    public ShardingAuditStrategyConfiguration getAuditStrategyConfiguration(final TableRule tableRule) {
+        return null == tableRule.getAuditStrategyConfig() ? defaultAuditStrategy : tableRule.getAuditStrategyConfig();
     }
     
     /**

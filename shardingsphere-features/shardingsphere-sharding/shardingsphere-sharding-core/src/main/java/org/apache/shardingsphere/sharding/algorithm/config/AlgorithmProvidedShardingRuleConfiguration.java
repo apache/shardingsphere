@@ -56,13 +56,13 @@ public final class AlgorithmProvidedShardingRuleConfiguration implements Databas
     
     private KeyGenerateStrategyConfiguration defaultKeyGenerateStrategy;
     
-    private String defaultShardingColumn;
+    private ShardingAuditStrategyConfiguration defaultAuditStrategy;
     
-    private ShardingAuditStrategyConfiguration auditStrategy;
+    private String defaultShardingColumn;
     
     private Map<String, ShardingAlgorithm> shardingAlgorithms = new LinkedHashMap<>();
     
     private Map<String, KeyGenerateAlgorithm> keyGenerators = new LinkedHashMap<>();
     
-    private Map<String, ShardingAuditAlgorithm> auditAlgorithms = new LinkedHashMap<>();
+    private Map<String, ShardingAuditAlgorithm> auditors = new LinkedHashMap<>();
 }
