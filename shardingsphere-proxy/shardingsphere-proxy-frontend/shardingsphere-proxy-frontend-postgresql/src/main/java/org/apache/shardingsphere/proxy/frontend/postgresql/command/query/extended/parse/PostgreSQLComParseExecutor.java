@@ -66,7 +66,7 @@ public final class PostgreSQLComParseExecutor implements CommandExecutor {
             sqlStatement = sqlParserEngine.parse(sql, true);
         }
         List<PostgreSQLColumnType> paddedColumnTypes = paddingColumnTypes(sqlStatement.getParameterCount(), packet.readParameterTypes());
-        SQLStatementContext<?> sqlStatementContext = !(sqlStatement instanceof DistSQLStatement)
+        SQLStatementContext<?> sqlStatementContext = !(sqlStatement instanceof DistSQLStatement || sqlStatement instanceof EmptyStatement)
                 ? SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(),
                         sqlStatement, connectionSession.getDefaultDatabaseName())
                 : null;

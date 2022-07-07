@@ -172,12 +172,12 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         verifyManualMode(jobConfig);
         verifyJobNotStopped(jobConfigPOJO);
         verifyJobNotCompleted(jobConfig);
-        String databaseName = jobConfig.getDatabaseName();
-        stopClusterWriteDB(databaseName, jobId);
+        stopClusterWriteDB(jobConfig);
     }
     
     @Override
-    public void stopClusterWriteDB(final String databaseName, final String jobId) {
+    public void stopClusterWriteDB(final RuleAlteredJobConfiguration jobConfig) {
+        String databaseName = jobConfig.getDatabaseName();
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         LockNameDefinition lockNameDefinition = LockNameDefinitionFactory.newDatabaseDefinition(databaseName);
         if (lockContext.isLocked(lockNameDefinition)) {
@@ -198,16 +198,16 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         RuleAlteredJobConfiguration jobConfig = getJobConfig(jobConfigPOJO);
         verifyManualMode(jobConfig);
-        String databaseName = jobConfig.getDatabaseName();
-        restoreClusterWriteDB(databaseName, jobId);
+        restoreClusterWriteDB(jobConfig);
     }
     
     @Override
-    public void restoreClusterWriteDB(final String databaseName, final String jobId) {
+    public void restoreClusterWriteDB(final RuleAlteredJobConfiguration jobConfig) {
+        String databaseName = jobConfig.getDatabaseName();
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         LockNameDefinition lockNameDefinition = LockNameDefinitionFactory.newDatabaseDefinition(databaseName);
         if (lockContext.isLocked(lockNameDefinition)) {
-            log.info("restoreClusterWriteDB, before releaseLock, databaseName={}, jobId={}", databaseName, jobId);
+            log.info("restoreClusterWriteDB, before releaseLock, databaseName={}, jobId={}", databaseName, jobConfig.getJobId());
             lockContext.releaseLock(lockNameDefinition);
             return;
         }

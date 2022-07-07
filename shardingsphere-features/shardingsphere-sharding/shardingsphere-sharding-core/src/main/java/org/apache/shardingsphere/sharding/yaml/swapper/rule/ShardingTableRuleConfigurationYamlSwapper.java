@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwap
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.KeyGenerateStrategyConfigurationYamlSwapper;
+import org.apache.shardingsphere.sharding.yaml.swapper.strategy.ShardingAuditStrategyConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.ShardingStrategyConfigurationYamlSwapper;
 
 /**
@@ -32,6 +33,8 @@ public final class ShardingTableRuleConfigurationYamlSwapper implements YamlConf
     private final ShardingStrategyConfigurationYamlSwapper shardingStrategyYamlSwapper = new ShardingStrategyConfigurationYamlSwapper();
     
     private final KeyGenerateStrategyConfigurationYamlSwapper keyGenerateStrategyYamlSwapper = new KeyGenerateStrategyConfigurationYamlSwapper();
+    
+    private final ShardingAuditStrategyConfigurationYamlSwapper auditStrategyYamlSwapper = new ShardingAuditStrategyConfigurationYamlSwapper();
     
     @Override
     public YamlTableRuleConfiguration swapToYamlConfiguration(final ShardingTableRuleConfiguration data) {
@@ -47,6 +50,9 @@ public final class ShardingTableRuleConfigurationYamlSwapper implements YamlConf
         }
         if (null != data.getKeyGenerateStrategy()) {
             result.setKeyGenerateStrategy(keyGenerateStrategyYamlSwapper.swapToYamlConfiguration(data.getKeyGenerateStrategy()));
+        }
+        if (null != data.getAuditStrategy()) {
+            result.setAuditStrategy(auditStrategyYamlSwapper.swapToYamlConfiguration(data.getAuditStrategy()));
         }
         return result;
     }
@@ -64,6 +70,9 @@ public final class ShardingTableRuleConfigurationYamlSwapper implements YamlConf
         }
         if (null != yamlConfig.getKeyGenerateStrategy()) {
             result.setKeyGenerateStrategy(keyGenerateStrategyYamlSwapper.swapToObject(yamlConfig.getKeyGenerateStrategy()));
+        }
+        if (null != yamlConfig.getAuditStrategy()) {
+            result.setAuditStrategy(auditStrategyYamlSwapper.swapToObject(yamlConfig.getAuditStrategy()));
         }
         return result;
     }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.response.header.query.impl;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilder;
@@ -42,8 +42,9 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
         boolean primaryKey;
         if (null != actualTableName && null != database) {
             tableName = getLogicTableName(database, actualTableName);
-            ShardingSphereTable table = database.getSchemas().get(schemaName).get(tableName);
-            primaryKey = null != table && Optional.ofNullable(table.getColumns().get(columnName.toLowerCase())).map(ShardingSphereColumn::isPrimaryKey).orElse(false);
+            ShardingSphereSchema schema = database.getSchemas().get(schemaName);
+            primaryKey = null != schema
+                    && Optional.ofNullable(schema.get(tableName)).map(optional -> optional.getColumns().get(columnName.toLowerCase())).map(ShardingSphereColumn::isPrimaryKey).orElse(false);
         } else {
             tableName = actualTableName;
             primaryKey = false;

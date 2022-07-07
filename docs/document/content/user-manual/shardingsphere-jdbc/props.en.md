@@ -4,9 +4,11 @@ weight = 6
 chapter = true
 +++
 
+## Background
+
 Apache ShardingSphere provides the way of property configuration to configure system level configuration.
 
-## Configuration Item Explanation
+## Parameters
 
 | *Name*                             | *Data Type* | *Description*                                                                                                                                                                                                                                               | *Default Value* |
 | ---------------------------------- | ----------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
@@ -16,3 +18,16 @@ Apache ShardingSphere provides the way of property configuration to configure sy
 | max-connections-size-per-query (?) | int         | Max opened connection size for each query                                                                                                                                                                                                                   | 1               |
 | check-table-metadata-enabled (?)   | boolean     | Whether validate table meta data consistency when application startup or updated                                                                                                                                                                            | false           |
 | sql-federation-enabled (?)         | boolean     | Whether enable SQL federation                                                                                                                                                                                                                               | false           |
+
+## Procedure
+
+1. Properties configuration is directly configured in the profile used by ShardingSphere-JDBC. The format is as follows:
+
+```yaml
+props:
+    sql-show: true
+```
+
+## Sample
+
+The example of ShardingSphere warehouse contains property configurations of various scenarios. Please refer to: <https://github.com/apache/shardingsphere/tree/master/examples/shardingsphere-jdbc-example>

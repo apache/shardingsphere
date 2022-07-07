@@ -18,12 +18,13 @@
 package org.apache.shardingsphere.integration.data.pipeline.cases.general;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseExtraSQLITCase;
 import org.apache.shardingsphere.integration.data.pipeline.cases.task.PostgreSQLIncrementTask;
-import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
@@ -46,8 +47,6 @@ import static org.junit.Assert.assertTrue;
 @RunWith(Parameterized.class)
 public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
     
-    private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
-    
     private final ScalingParameterized parameterized;
     
     public PostgreSQLGeneralScalingIT(final ScalingParameterized parameterized) {
@@ -59,11 +58,24 @@ public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
     @Parameters(name = "{0}")
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
-        for (String dockerImageName : ENV.getPostgresVersions()) {
-            result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), dockerImageName, "env/scenario/general/postgresql.xml"));
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NONE) {
+            return result;
         }
-        for (String dockerImageName : ENV.getOpenGaussVersions()) {
-            result.add(new ScalingParameterized(new OpenGaussDatabaseType(), dockerImageName, "env/scenario/general/postgresql.xml"));
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
+            for (String dockerImageName : ENV.getPostgresVersions()) {
+                result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), dockerImageName, "env/scenario/general/postgresql.xml"));
+            }
+            for (String dockerImageName : ENV.getOpenGaussVersions()) {
+                result.add(new ScalingParameterized(new OpenGaussDatabaseType(), dockerImageName, "env/scenario/general/postgresql.xml"));
+            }
+        }
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
+            if (StringUtils.equalsIgnoreCase(ENV.getNativeDatabaseType(), "PostgreSQL")) {
+                result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), "", "env/scenario/general/postgresql.xml"));
+            }
+            if (StringUtils.equalsIgnoreCase(ENV.getNativeDatabaseType(), "openGauss")) {
+                result.add(new ScalingParameterized(new OpenGaussDatabaseType(), "", "env/scenario/general/postgresql.xml"));
+            }
         }
         return result;
     }

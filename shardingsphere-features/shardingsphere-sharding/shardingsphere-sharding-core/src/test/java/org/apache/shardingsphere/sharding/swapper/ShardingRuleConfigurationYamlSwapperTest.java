@@ -21,15 +21,18 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwap
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.ShardingTableRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.KeyGenerateStrategyConfigurationYamlSwapper;
+import org.apache.shardingsphere.sharding.yaml.swapper.strategy.ShardingAuditStrategyConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.ShardingStrategyConfigurationYamlSwapper;
 import org.junit.Before;
 import org.junit.Test;
@@ -63,6 +66,9 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
     @Mock
     private KeyGenerateStrategyConfigurationYamlSwapper keyGenerateStrategyConfigurationYamlSwapper;
     
+    @Mock
+    private ShardingAuditStrategyConfigurationYamlSwapper shardingAuditStrategyConfigurationYamlSwapper;
+    
     private final ShardingRuleConfigurationYamlSwapper shardingRuleConfigurationYamlSwapper = new ShardingRuleConfigurationYamlSwapper();
     
     @Before
@@ -76,6 +82,9 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
         setSwapper("keyGenerateStrategyYamlSwapper", keyGenerateStrategyConfigurationYamlSwapper);
         when(keyGenerateStrategyConfigurationYamlSwapper.swapToYamlConfiguration(ArgumentMatchers.any())).thenReturn(mock(YamlKeyGenerateStrategyConfiguration.class));
         when(keyGenerateStrategyConfigurationYamlSwapper.swapToObject(ArgumentMatchers.any())).thenReturn(mock(KeyGenerateStrategyConfiguration.class));
+        setSwapper("auditStrategyYamlSwapper", shardingAuditStrategyConfigurationYamlSwapper);
+        when(shardingAuditStrategyConfigurationYamlSwapper.swapToYamlConfiguration(ArgumentMatchers.any())).thenReturn(mock(YamlShardingAuditStrategyConfiguration.class));
+        when(shardingAuditStrategyConfigurationYamlSwapper.swapToObject(ArgumentMatchers.any())).thenReturn(mock(ShardingAuditStrategyConfiguration.class));
     }
     
     private void setSwapper(final String swapperFieldName, final YamlConfigurationSwapper swapperFieldValue) throws ReflectiveOperationException {
@@ -96,6 +105,7 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
         assertNull(actual.getDefaultTableStrategy());
         assertNull(actual.getDefaultKeyGenerateStrategy());
         assertNull(actual.getDefaultShardingColumn());
+        assertNull(actual.getDefaultShardingColumn());
         assertNull(actual.getScalingName());
         assertTrue(actual.getScaling().isEmpty());
     }
@@ -108,7 +118,9 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
         shardingRuleConfig.getBroadcastTables().add("dict");
         shardingRuleConfig.setDefaultDatabaseShardingStrategy(mock(ShardingStrategyConfiguration.class));
         shardingRuleConfig.setDefaultTableShardingStrategy(mock(ShardingStrategyConfiguration.class));
+        shardingRuleConfig.setDefaultTableShardingStrategy(mock(ShardingStrategyConfiguration.class));
         shardingRuleConfig.setDefaultKeyGenerateStrategy(mock(KeyGenerateStrategyConfiguration.class));
+        shardingRuleConfig.setDefaultAuditStrategy(mock(ShardingAuditStrategyConfiguration.class));
         shardingRuleConfig.setDefaultShardingColumn("user_id");
         YamlShardingRuleConfiguration actual = shardingRuleConfigurationYamlSwapper.swapToYamlConfiguration(shardingRuleConfig);
         assertThat(actual.getTables().size(), is(1));
@@ -119,6 +131,7 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
         assertNotNull(actual.getDefaultDatabaseStrategy());
         assertNotNull(actual.getDefaultTableStrategy());
         assertNotNull(actual.getDefaultKeyGenerateStrategy());
+        assertNotNull(actual.getDefaultAuditStrategy());
         assertThat(actual.getDefaultShardingColumn(), is("user_id"));
     }
     
@@ -133,6 +146,7 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
         assertNull(actual.getDefaultDatabaseShardingStrategy());
         assertNull(actual.getDefaultTableShardingStrategy());
         assertNull(actual.getDefaultKeyGenerateStrategy());
+        assertNull(actual.getDefaultAuditStrategy());
         assertNull(actual.getDefaultShardingColumn());
     }
     
@@ -145,6 +159,7 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
         yamlConfig.setDefaultDatabaseStrategy(mock(YamlShardingStrategyConfiguration.class));
         yamlConfig.setDefaultTableStrategy(mock(YamlShardingStrategyConfiguration.class));
         yamlConfig.setDefaultKeyGenerateStrategy(mock(YamlKeyGenerateStrategyConfiguration.class));
+        yamlConfig.setDefaultAuditStrategy(mock(YamlShardingAuditStrategyConfiguration.class));
         yamlConfig.setDefaultShardingColumn("user_id");
         ShardingRuleConfiguration actual = shardingRuleConfigurationYamlSwapper.swapToObject(yamlConfig);
         assertThat(actual.getTables().size(), is(1));
@@ -155,6 +170,7 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
         assertNotNull(actual.getDefaultDatabaseShardingStrategy());
         assertNotNull(actual.getDefaultTableShardingStrategy());
         assertNotNull(actual.getDefaultKeyGenerateStrategy());
+        assertNotNull(actual.getDefaultAuditStrategy());
         assertThat(actual.getDefaultShardingColumn(), is("user_id"));
     }
     

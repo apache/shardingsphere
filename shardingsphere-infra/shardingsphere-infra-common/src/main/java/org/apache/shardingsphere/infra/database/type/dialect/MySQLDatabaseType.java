@@ -26,7 +26,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Database type of MySQL.
@@ -55,11 +54,6 @@ public final class MySQLDatabaseType implements DatabaseType {
     @Override
     public MySQLDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
         return new MySQLDataSourceMetaData(url);
-    }
-    
-    @Override
-    public Optional<String> getDataSourceClassName() {
-        return Optional.of("com.mysql.jdbc.jdbc2.optional.MysqlDataSource");
     }
     
     @Override

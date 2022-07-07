@@ -4,13 +4,27 @@ weight = 3
 chapter = true
 +++
 
-## 简介
+## 背景信息
 
 ShardingSphere-JDBC 提供了 JDBC 驱动，可以仅通过配置变更即可使用，无需改写代码。
 
-## 使用步骤
+## 参数解释
 
-### 引入 Maven 依赖
+### 驱动类名称
+
+`org.apache.shardingsphere.driver.ShardingSphereDriver`
+
+### URL 配置
+
+- 以 `jdbc:shardingsphere:` 为前缀
+- 配置文件：`xxx.yaml`，配置文件格式与 [YAML 配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/)一致
+- 配置文件加载规则：
+  - 无前缀表示从绝对路径加载配置文件
+  - `classpath:` 前缀表示从类路径中加载配置文件
+
+## 操作步骤
+
+1. 引入 Maven 依赖
 
 ```xml
 <dependency>
@@ -20,9 +34,9 @@ ShardingSphere-JDBC 提供了 JDBC 驱动，可以仅通过配置变更即可使
 </dependency>
 ```
 
-### 使用驱动
+2. 使用驱动
 
-#### 使用原生驱动
+* 使用原生驱动：
 
 ```java
 Class.forName("org.apache.shardingsphere.driver.ShardingSphereDriver");
@@ -42,7 +56,7 @@ try (
 }
 ```
 
-#### 使用数据库连接池
+* 使用数据库连接池
 
 ```java
 String driverClassName = "org.apache.shardingsphere.driver.ShardingSphereDriver";
@@ -67,16 +81,14 @@ try (
 }
 ```
 
-### 配置说明
+## 配置示例
 
-#### 驱动类名称
+加载 classpath 中 config.yaml 配置文件的 JDBC URL：
+```
+jdbc:shardingsphere:classpath:config.yaml
+```
 
-`org.apache.shardingsphere.driver.ShardingSphereDriver`
-
-#### URL 配置说明
-
-- 以 `jdbc:shardingsphere:` 为前缀
-- 配置文件：`xxx.yaml`，配置文件格式与 [YAML 配置](/cn/user-manual/yaml-config/)一致
-- 配置文件加载规则：
-  - 无前缀表示从绝对路径加载配置文件  
-  - `classpath:` 前缀表示从类路径中加载配置文件
+加载绝对路径中 config.yaml 配置文件的 JDBC URL：
+```
+jdbc:shardingsphere:/path/to/config.yaml
+```

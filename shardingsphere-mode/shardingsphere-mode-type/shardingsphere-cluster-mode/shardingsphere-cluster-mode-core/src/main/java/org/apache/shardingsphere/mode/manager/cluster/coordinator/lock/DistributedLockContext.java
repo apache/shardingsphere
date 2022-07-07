@@ -19,9 +19,10 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.lock.LockScope;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.ShardingSphereLockManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.ShardingSphereInterMutexLockHolder;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal.ShardingSphereInternalLockHolder;
 import org.apache.shardingsphere.mode.manager.lock.AbstractLockContext;
 import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDefinition;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -44,17 +45,17 @@ public final class DistributedLockContext extends AbstractLockContext {
     
     @Override
     public void initLockState(final InstanceContext instanceContext) {
-        loadLockManager(new ShardingSphereInterMutexLockHolder(repository, instanceContext.getInstance(), instanceContext.getComputeNodeInstances()));
+        loadLockManager(new ShardingSphereInternalLockHolder(repository, instanceContext.getInstance(), instanceContext.getComputeNodeInstances()));
     }
     
-    private void loadLockManager(final ShardingSphereInterMutexLockHolder lockHolder) {
+    private void loadLockManager(final ShardingSphereInternalLockHolder lockHolder) {
         lockManager = RequiredSPIRegistry.getRegisteredService(ShardingSphereLockManager.class);
         lockManager.init(lockHolder);
     }
     
     @Override
-    public ShardingSphereLock getLock() {
-        return lockManager.getDistributedLock();
+    public ShardingSphereLock getLock(final LockScope lockScope) {
+        return lockManager.getDistributedLock(lockScope);
     }
     
     @Override

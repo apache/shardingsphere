@@ -105,7 +105,10 @@ execute
     | explain
     | analyzeTable
     | listen
+    | notifyStmt
+    | unlisten
     | load
+    | lock
     | createTablespace
     | alterTablespace
     | dropTablespace
@@ -157,5 +160,12 @@ execute
     | createAggregate
     | createCast
     | alterRoutine
+    | alterRule
+    | createCollation
+    | prepareTransaction
+    | reassignOwned
+    | refreshMatViewStmt
+    | reindex
+    | securityLabelStmt
     ) SEMI_? EOF
     ;

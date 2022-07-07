@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.binder.statement.ddl.DropIndexStatementCo
 import org.apache.shardingsphere.infra.binder.type.IndexAvailable;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -142,7 +143,7 @@ public final class ShardingTableBroadcastRoutingEngineTest extends AbstractRouti
         if (isContainBroadcastTable) {
             ruleConfig.getBroadcastTables().add("t_order");
         }
-        return new ShardingRule(ruleConfig, Arrays.asList("ds_0", "ds_1"));
+        return new ShardingRule(ruleConfig, Arrays.asList("ds_0", "ds_1"), mock(InstanceContext.class));
     }
     
     private SQLStatementContext<?> createSQLStatementContext(final Collection<String> tableNames) {

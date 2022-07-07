@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.infra.executor.check.fixture;
 
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.check.SQLCheckResult;
 import org.apache.shardingsphere.infra.executor.check.SQLChecker;
 import org.apache.shardingsphere.infra.executor.sql.fixture.FixtureRule;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.List;
 import java.util.Map;
@@ -36,7 +36,7 @@ public final class SQLCheckerFixture implements SQLChecker<FixtureRule> {
     }
     
     @Override
-    public SQLCheckResult check(final SQLStatement sqlStatement, final List<Object> parameters, final Grantee grantee, final String currentDatabase,
+    public SQLCheckResult check(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, final Grantee grantee, final String currentDatabase,
                                 final Map<String, ShardingSphereDatabase> databases, final FixtureRule rule) {
         return null;
     }

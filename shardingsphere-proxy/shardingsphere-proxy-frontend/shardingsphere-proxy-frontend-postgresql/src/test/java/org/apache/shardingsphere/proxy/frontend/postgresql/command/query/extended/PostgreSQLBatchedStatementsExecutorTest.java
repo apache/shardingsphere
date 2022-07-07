@@ -79,6 +79,7 @@ public final class PostgreSQLBatchedStatementsExecutorTest extends ProxyContextR
     
     @Before
     public void setup() {
+        when(connectionSession.getDatabaseName()).thenReturn("db");
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         when(connectionSession.getStatementManager()).thenReturn(backendStatement);
         ProxyContext.init(contextManager);

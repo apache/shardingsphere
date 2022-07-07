@@ -88,6 +88,7 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutorTest exte
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(globalRuleMetaData.getSingleRule(SQLTranslatorRule.class)).thenReturn(new SQLTranslatorRule(new DefaultSQLTranslatorRuleConfigurationBuilder().build()));
         ConnectionSession connectionSession = mock(ConnectionSession.class);
+        when(connectionSession.getDatabaseName()).thenReturn("db");
         when(connectionSession.getPreparedStatementRegistry()).thenReturn(new PreparedStatementRegistry());
         connectionSession.getPreparedStatementRegistry().addPreparedStatement(STATEMENT_ID,
                 new PostgreSQLPreparedStatement(SQL, SQL_PARSER_ENGINE.parse(SQL, false), null, Collections.singletonList(PostgreSQLColumnType.POSTGRESQL_TYPE_INT4)));

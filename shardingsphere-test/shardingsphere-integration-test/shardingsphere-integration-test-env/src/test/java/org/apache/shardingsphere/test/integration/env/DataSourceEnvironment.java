@@ -69,6 +69,8 @@ public final class DataSourceEnvironment {
                 return String.format("jdbc:sqlserver://%s:%s", host, port);
             case "Oracle":
                 return String.format("jdbc:oracle:thin:@%s:%s", host, port);
+            case "openGauss":
+                return String.format("jdbc:opengauss://%s:%s/", host, port);
             default:
                 throw new UnsupportedOperationException(databaseType.getType());
         }

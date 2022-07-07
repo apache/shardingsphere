@@ -20,8 +20,8 @@
         <column name="schema_name" />
     </metadata>
     <row values="dbtbl_with_readwrite_splitting" />
-    <row values="mysql" />
     <row values="information_schema" />
     <row values="performance_schema" />
+    <row values="mysql" />
     <row values="sys" />
 </dataset>

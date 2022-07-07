@@ -35,7 +35,7 @@ tableRule:
 *single table rules*
 
 ```sql
-sql> show single table rules;
+sql>  SHOW SINGLE TABLES RULES;
 +---------+---------------+
 | name    | resource_name |
 +---------+---------------+
@@ -46,7 +46,7 @@ sql> show single table rules;
 
 *single tables*
 ```sql
-mysql> show single tables;
+mysql> SHOW SINGLE TABLES;
 +--------------+---------------+
 | table_name   | resource_name |
 +--------------+---------------+

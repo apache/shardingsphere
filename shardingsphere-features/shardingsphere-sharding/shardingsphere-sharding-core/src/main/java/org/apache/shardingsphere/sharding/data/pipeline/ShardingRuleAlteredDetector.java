@@ -76,8 +76,9 @@ public final class ShardingRuleAlteredDetector implements RuleAlteredDetector {
         }
         ShardingRuleConfiguration sourceShardingConfig = SHARDING_RULE_CONFIG_YAML_SWAPPER.swapToObject((YamlShardingRuleConfiguration) sourceRuleConfig);
         ShardingRuleConfiguration targetShardingConfig = SHARDING_RULE_CONFIG_YAML_SWAPPER.swapToObject((YamlShardingRuleConfiguration) targetRuleConfig);
-        ShardingRule sourceShardingRule = new ShardingRule(sourceShardingConfig, sourceDataSources.keySet());
-        ShardingRule targetShardingRule = new ShardingRule(targetShardingConfig, targetDataSources.keySet());
+        // TODO InstanceContext should not null
+        ShardingRule sourceShardingRule = new ShardingRule(sourceShardingConfig, sourceDataSources.keySet(), null);
+        ShardingRule targetShardingRule = new ShardingRule(targetShardingConfig, targetDataSources.keySet(), null);
         return extractRuleAlteredLogicTables(sourceShardingRule, targetShardingRule);
     }
     

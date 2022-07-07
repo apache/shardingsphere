@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfigur
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.ShardingAutoTableRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.rule.ShardingTableRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.KeyGenerateStrategyConfigurationYamlSwapper;
+import org.apache.shardingsphere.sharding.yaml.swapper.strategy.ShardingAuditStrategyConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.ShardingStrategyConfigurationYamlSwapper;
 
 import java.util.Collections;
@@ -48,6 +49,8 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
     
     private final OnRuleAlteredActionConfigurationYamlSwapper onRuleAlteredActionYamlSwapper = new OnRuleAlteredActionConfigurationYamlSwapper();
     
+    private final ShardingAuditStrategyConfigurationYamlSwapper auditStrategyYamlSwapper = new ShardingAuditStrategyConfigurationYamlSwapper();
+    
     @Override
     public YamlShardingRuleConfiguration swapToYamlConfiguration(final ShardingRuleConfiguration data) {
         YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
@@ -56,14 +59,14 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
                 new ShardingAutoTableRuleConfigurationYamlSwapper(Collections.emptyMap(), data.getShardingAlgorithms()).swapToYamlConfiguration(each)));
         result.getBindingTables().addAll(data.getBindingTableGroups());
         result.getBroadcastTables().addAll(data.getBroadcastTables());
-        setYamlDefaultStrategies(data, result);
+        setYamlStrategies(data, result);
         setYamlAlgorithms(data, result);
         result.setDefaultShardingColumn(data.getDefaultShardingColumn());
         result.setScalingName(data.getScalingName());
         return result;
     }
     
-    private void setYamlDefaultStrategies(final ShardingRuleConfiguration data, final YamlShardingRuleConfiguration yamlConfig) {
+    private void setYamlStrategies(final ShardingRuleConfiguration data, final YamlShardingRuleConfiguration yamlConfig) {
         if (null != data.getDefaultDatabaseShardingStrategy()) {
             yamlConfig.setDefaultDatabaseStrategy(shardingStrategyYamlSwapper.swapToYamlConfiguration(data.getDefaultDatabaseShardingStrategy()));
         }
@@ -73,6 +76,9 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
         if (null != data.getDefaultKeyGenerateStrategy()) {
             yamlConfig.setDefaultKeyGenerateStrategy(keyGenerateStrategyYamlSwapper.swapToYamlConfiguration(data.getDefaultKeyGenerateStrategy()));
         }
+        if (null != data.getDefaultAuditStrategy()) {
+            yamlConfig.setDefaultAuditStrategy(auditStrategyYamlSwapper.swapToYamlConfiguration(data.getDefaultAuditStrategy()));
+        }
     }
     
     private void setYamlAlgorithms(final ShardingRuleConfiguration data, final YamlShardingRuleConfiguration yamlConfig) {
@@ -81,6 +87,9 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
         }
         if (null != data.getKeyGenerators()) {
             data.getKeyGenerators().forEach((key, value) -> yamlConfig.getKeyGenerators().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
+        }
+        if (null != data.getAuditors()) {
+            data.getAuditors().forEach((key, value) -> yamlConfig.getAuditors().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
         }
         if (null != data.getScaling()) {
             data.getScaling().forEach((key, value) -> yamlConfig.getScaling().put(key, onRuleAlteredActionYamlSwapper.swapToYamlConfiguration(value)));
@@ -102,14 +111,14 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
         }
         result.getBindingTableGroups().addAll(yamlConfig.getBindingTables());
         result.getBroadcastTables().addAll(yamlConfig.getBroadcastTables());
-        setDefaultStrategies(yamlConfig, result);
+        setStrategies(yamlConfig, result);
         setAlgorithms(yamlConfig, result);
         result.setDefaultShardingColumn(yamlConfig.getDefaultShardingColumn());
         result.setScalingName(yamlConfig.getScalingName());
         return result;
     }
     
-    private void setDefaultStrategies(final YamlShardingRuleConfiguration yamlConfig, final ShardingRuleConfiguration ruleConfig) {
+    private void setStrategies(final YamlShardingRuleConfiguration yamlConfig, final ShardingRuleConfiguration ruleConfig) {
         if (null != yamlConfig.getDefaultDatabaseStrategy()) {
             ruleConfig.setDefaultDatabaseShardingStrategy(shardingStrategyYamlSwapper.swapToObject(yamlConfig.getDefaultDatabaseStrategy()));
         }
@@ -119,6 +128,9 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
         if (null != yamlConfig.getDefaultKeyGenerateStrategy()) {
             ruleConfig.setDefaultKeyGenerateStrategy(keyGenerateStrategyYamlSwapper.swapToObject(yamlConfig.getDefaultKeyGenerateStrategy()));
         }
+        if (null != yamlConfig.getDefaultAuditStrategy()) {
+            ruleConfig.setDefaultAuditStrategy(auditStrategyYamlSwapper.swapToObject(yamlConfig.getDefaultAuditStrategy()));
+        }
     }
     
     private void setAlgorithms(final YamlShardingRuleConfiguration yamlConfig, final ShardingRuleConfiguration ruleConfig) {
@@ -127,6 +139,9 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
         }
         if (null != yamlConfig.getKeyGenerators()) {
             yamlConfig.getKeyGenerators().forEach((key, value) -> ruleConfig.getKeyGenerators().put(key, algorithmSwapper.swapToObject(value)));
+        }
+        if (null != yamlConfig.getAuditors()) {
+            yamlConfig.getAuditors().forEach((key, value) -> ruleConfig.getAuditors().put(key, algorithmSwapper.swapToObject(value)));
         }
         if (null != yamlConfig.getScaling()) {
             yamlConfig.getScaling().forEach((key, value) -> ruleConfig.getScaling().put(key, onRuleAlteredActionYamlSwapper.swapToObject(value)));

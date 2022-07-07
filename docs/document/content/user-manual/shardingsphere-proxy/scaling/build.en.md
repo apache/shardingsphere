@@ -182,7 +182,6 @@ If the backend database is in following table, please download JDBC driver jar a
 | RDBMS                 | JDBC driver                          | Reference            |
 | --------------------- | ------------------------------------ | -------------------- |
 | MySQL                 | [mysql-connector-java-5.1.47.jar]( https://repo1.maven.org/maven2/mysql/mysql-connector-java/5.1.47/mysql-connector-java-5.1.47.jar ) | [Connector/J Versions]( https://dev.mysql.com/doc/connector-j/5.1/en/connector-j-versions.html ) |
-| openGauss             | [opengauss-jdbc-2.0.1-compatibility.jar]( https://repo1.maven.org/maven2/org/opengauss/opengauss-jdbc/2.0.1-compatibility/opengauss-jdbc-2.0.1-compatibility.jar ) | |
 
 6. Start up ShardingSphere-Proxy:
 

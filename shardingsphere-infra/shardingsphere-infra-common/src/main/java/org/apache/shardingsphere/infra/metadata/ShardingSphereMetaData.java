@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.metadata;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -30,15 +29,14 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Meta data contexts.
  */
-@RequiredArgsConstructor
 @Getter
 public final class ShardingSphereMetaData {
     
-    // TODO should be concurrentHashMap, but some times throw NPE, need to investigate
     private final Map<String, ShardingSphereDatabase> databases;
     
     private final ShardingSphereRuleMetaData globalRuleMetaData;
@@ -47,6 +45,12 @@ public final class ShardingSphereMetaData {
     
     public ShardingSphereMetaData() {
         this(new LinkedHashMap<>(), new ShardingSphereRuleMetaData(Collections.emptyList()), new ConfigurationProperties(new Properties()));
+    }
+    
+    public ShardingSphereMetaData(final Map<String, ShardingSphereDatabase> databases, final ShardingSphereRuleMetaData globalRuleMetaData, final ConfigurationProperties props) {
+        this.databases = new ConcurrentHashMap<>(databases);
+        this.globalRuleMetaData = globalRuleMetaData;
+        this.props = props;
     }
     
     /**
@@ -60,5 +64,23 @@ public final class ShardingSphereMetaData {
         ShardingSphereDatabase database = ShardingSphereDatabase.create(databaseName, protocolType);
         databases.put(databaseName, database);
         globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.addResource(database));
+    }
+    
+    /**
+     * Drop database.
+     *
+     * @param databaseName database name
+     */
+    public void dropDatabase(final String databaseName) {
+        closeResources(databases.remove(databaseName));
+    }
+    
+    private void closeResources(final ShardingSphereDatabase database) {
+        if (null != database.getResource()) {
+            database.getResource().getDataSources().values().forEach(each -> database.getResource().close(each));
+        }
+        String databaseName = database.getName();
+        globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.closeStaleResource(databaseName));
+        database.getRuleMetaData().findRules(ResourceHeldRule.class).forEach(each -> each.closeStaleResource(databaseName));
     }
 }

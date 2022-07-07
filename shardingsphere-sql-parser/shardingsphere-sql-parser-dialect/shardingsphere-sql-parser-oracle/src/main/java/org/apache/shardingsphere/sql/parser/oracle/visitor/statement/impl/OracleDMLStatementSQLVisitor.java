@@ -514,7 +514,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         ModelSegment result = new ModelSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
         if (null != ctx.referenceModel()) {
             for (ReferenceModelContext each : ctx.referenceModel()) {
-                result.getReferenceModelSelect().add((SubquerySegment) visit(each));
+                result.getReferenceModelSelects().add((SubquerySegment) visit(each));
             }
         }
         if (null != ctx.mainModel().modelRulesClause().orderByClause()) {
@@ -526,11 +526,11 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
             result.getCellAssignmentColumns().add((ColumnSegment) visit(each.measureColumn().columnName()));
             if (null != each.singleColumnForLoop()) {
                 result.getCellAssignmentColumns().addAll(extractColumnValuesFromSingleColumnForLoop(each.singleColumnForLoop()));
-                result.getCellAsssignmentSelect().addAll(extractSelectSubqueryValuesFromSingleColumnForLoop(each.singleColumnForLoop()));
+                result.getCellAssignmentSelects().addAll(extractSelectSubqueryValuesFromSingleColumnForLoop(each.singleColumnForLoop()));
             }
             if (null != each.multiColumnForLoop()) {
                 result.getCellAssignmentColumns().addAll(extractColumnValuesFromMultiColumnForLoop(each.multiColumnForLoop()));
-                result.getCellAsssignmentSelect().add(extractSelectSubqueryValueFromMultiColumnForLoop(each.multiColumnForLoop()));
+                result.getCellAssignmentSelects().add(extractSelectSubqueryValueFromMultiColumnForLoop(each.multiColumnForLoop()));
             }
         }
         return result;

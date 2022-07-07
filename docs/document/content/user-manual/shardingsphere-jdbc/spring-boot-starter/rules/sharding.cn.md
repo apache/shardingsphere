@@ -45,10 +45,10 @@ spring.shardingsphere.rules.sharding.broadcast-tables[0]= # 广播表规则列�
 spring.shardingsphere.rules.sharding.broadcast-tables[1]= # 广播表规则列表
 spring.shardingsphere.rules.sharding.broadcast-tables[x]= # 广播表规则列表
 
-spring.shardingsphere.sharding.default-database-strategy.xxx= # 默认数据库分片策略
-spring.shardingsphere.sharding.default-table-strategy.xxx= # 默认表分片策略
-spring.shardingsphere.sharding.default-key-generate-strategy.xxx= # 默认分布式序列策略
-spring.shardingsphere.sharding.default-sharding-column= # 默认分片列名称
+spring.shardingsphere.rules.sharding.default-database-strategy.xxx= # 默认数据库分片策略
+spring.shardingsphere.rules.sharding.default-table-strategy.xxx= # 默认表分片策略
+spring.shardingsphere.rules.sharding.default-key-generate-strategy.xxx= # 默认分布式序列策略
+spring.shardingsphere.rules.sharding.default-sharding-column= # 默认分片列名称
 
 # 分片算法配置
 spring.shardingsphere.rules.sharding.sharding-algorithms.<sharding-algorithm-name>.type= # 分片算法类型

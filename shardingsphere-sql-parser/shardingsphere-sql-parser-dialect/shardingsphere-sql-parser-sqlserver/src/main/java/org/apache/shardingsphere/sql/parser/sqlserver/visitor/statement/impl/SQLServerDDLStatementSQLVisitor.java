@@ -327,7 +327,7 @@ public final class SQLServerDDLStatementSQLVisitor extends SQLServerStatementSQL
         SQLServerCreateIndexStatement result = new SQLServerCreateIndexStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.setIndex((IndexSegment) visit(ctx.indexName()));
-        result.setColumns(((CollectionValue) visit(ctx.columnNamesWithSort())).getValue());
+        result.getColumns().addAll(((CollectionValue) visit(ctx.columnNamesWithSort())).getValue());
         return result;
     }
     
