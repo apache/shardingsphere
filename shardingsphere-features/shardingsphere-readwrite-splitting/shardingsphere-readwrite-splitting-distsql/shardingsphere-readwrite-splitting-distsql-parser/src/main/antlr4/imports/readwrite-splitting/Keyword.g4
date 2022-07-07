@@ -126,6 +126,7 @@ EXISTS
 
 COUNT
     : C O U N T
+    ;
 
 WRITE_DATA_SOURCE_QUERY_ENABLED
     : W R I T E UL_ D A T A UL_ S O U R C E UL_ Q U E R Y UL_ E N A B L E D

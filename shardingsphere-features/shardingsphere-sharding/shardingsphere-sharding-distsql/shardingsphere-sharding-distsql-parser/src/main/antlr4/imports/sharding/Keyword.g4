@@ -213,6 +213,7 @@ WITH
 
 COUNT
     : C O U N T
+    ;
 
 AUDITOR
     : A U D I T O R

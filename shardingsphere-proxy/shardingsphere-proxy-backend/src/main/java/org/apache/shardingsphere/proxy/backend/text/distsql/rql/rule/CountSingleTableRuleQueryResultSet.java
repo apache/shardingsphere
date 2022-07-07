@@ -39,7 +39,7 @@ import java.util.Optional;
 public final class CountSingleTableRuleQueryResultSet implements DistSQLResultSet {
     
     private static final String SINGLE_TABLE = "single_table";
-
+    
     private Iterator<Entry<String, LinkedList<Object>>> data = Collections.emptyIterator();
     
     @Override
@@ -58,7 +58,7 @@ public final class CountSingleTableRuleQueryResultSet implements DistSQLResultSe
     private void addSingleTableData(final Map<String, LinkedList<Object>> rowMap, final String databaseName, final SingleTableRule rule) {
         rowMap.compute(SINGLE_TABLE, (key, value) -> buildRow(value, databaseName, rule.getAllTables().size()));
     }
-
+    
     private LinkedList<Object> buildRow(final LinkedList<Object> value, final String databaseName, final int count) {
         if (null == value) {
             return new LinkedList<>(Arrays.asList(databaseName, count));
@@ -67,19 +67,19 @@ public final class CountSingleTableRuleQueryResultSet implements DistSQLResultSe
             return value;
         }
     }
-
+    
     @Override
     public boolean next() {
         return data.hasNext();
     }
-
+    
     @Override
     public Collection<Object> getRowData() {
         Entry<String, LinkedList<Object>> entry = data.next();
         entry.getValue().addFirst(entry.getKey());
         return entry.getValue();
     }
-
+    
     @Override
     public String getType() {
         return CountSingleTableRuleStatement.class.getName();

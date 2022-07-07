@@ -1556,7 +1556,6 @@ public final class SQLParserTestCases {
     @XmlElement(name = "reassign-owned")
     private final List<ReassignOwnedStatementTestCase> reassignOwnedStatementTestCases = new LinkedList<>();
     
-    
     /**
      * Get all SQL parser test cases.
      *
