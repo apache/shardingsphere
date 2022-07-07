@@ -188,7 +188,8 @@ public final class ClusterContextManagerCoordinator {
         }
         Optional<ShardingSphereRule> staticStatusContainedRule = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(qualifiedDatabase.getDatabaseName()).getRuleMetaData()
                 .getRules().stream().filter(each -> each instanceof StaticStatusContainedRule).findFirst();
-        staticStatusContainedRule.ifPresent(shardingSphereRule -> ((StaticStatusContainedRule) shardingSphereRule).updateStatus(new StorageNodeDataSourceChangedEvent(qualifiedDatabase, event.getDataSource())));
+        staticStatusContainedRule.ifPresent(shardingSphereRule -> ((StaticStatusContainedRule) shardingSphereRule)
+                .updateStatus(new StorageNodeDataSourceChangedEvent(qualifiedDatabase, event.getDataSource())));
     }
     
     /**
