@@ -24,10 +24,13 @@ import org.junit.Test;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -35,8 +38,8 @@ import static org.mockito.Mockito.when;
 public final class OracleDatabaseTypeTest {
     
     @Test
-    public void assertGetName() {
-        assertThat(new OracleDatabaseType().getType(), is("Oracle"));
+    public void assertGetQuoteCharacter() {
+        assertThat(new OracleDatabaseType().getQuoteCharacter(), is(QuoteCharacter.QUOTE));
     }
     
     @Test
@@ -46,7 +49,12 @@ public final class OracleDatabaseTypeTest {
     
     @Test
     public void assertOracleDataSourceMetaData() {
-        assertThat(new OracleDatabaseType().getDataSourceMetaData("jdbc:oracle:oci:@127.0.0.1/ds_0", "scott"), instanceOf(OracleDataSourceMetaData.class));
+        assertThat(new OracleDatabaseType().getDataSourceMetaData("jdbc:oracle:oci:@127.0.0.1/foo_ds", "scott"), instanceOf(OracleDataSourceMetaData.class));
+    }
+    
+    @Test
+    public void assertGetDataSourceClassName() {
+        assertThat(new OracleDatabaseType().getDataSourceClassName(), is(Optional.empty()));
     }
     
     @Test
@@ -57,14 +65,24 @@ public final class OracleDatabaseTypeTest {
     }
     
     @Test
+    public void assertGetSchemaIfExceptionThrown() throws SQLException {
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getUserName()).thenThrow(SQLException.class);
+        assertNull(new OracleDatabaseType().getSchema(connection));
+    }
+    
+    @Test
     public void assertFormatTableNamePattern() {
         assertThat(new OracleDatabaseType().formatTableNamePattern("tbl"), is("TBL"));
     }
     
     @Test
-    public void assertGetQuoteCharacter() {
-        QuoteCharacter actual = new OracleDatabaseType().getQuoteCharacter();
-        assertThat(actual.getStartDelimiter(), is("\""));
-        assertThat(actual.getEndDelimiter(), is("\""));
+    public void assertGetSystemDatabases() {
+        assertTrue(new OracleDatabaseType().getSystemDatabaseSchemaMap().isEmpty());
+    }
+    
+    @Test
+    public void assertGetSystemSchemas() {
+        assertTrue(new OracleDatabaseType().getSystemSchemas().isEmpty());
     }
 }

@@ -43,7 +43,7 @@ public final class MariaDBDatabaseTypeTest {
     
     @Test
     public void assertGetDataSourceMetaData() {
-        assertThat(new MariaDBDatabaseType().getDataSourceMetaData("jdbc:mariadb://localhost:3306/demo_ds_0", "root"), instanceOf(MariaDBDataSourceMetaData.class));
+        assertThat(new MariaDBDatabaseType().getDataSourceMetaData("jdbc:mariadb://localhost:3306/foo_ds", "root"), instanceOf(MariaDBDataSourceMetaData.class));
     }
     
     @Test
