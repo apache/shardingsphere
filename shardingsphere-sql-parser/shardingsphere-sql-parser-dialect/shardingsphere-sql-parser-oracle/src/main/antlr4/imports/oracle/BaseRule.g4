@@ -1315,5 +1315,5 @@ libraryName
     ;
 
 matchString
-    : STRING_ | ASTERISK_
+    : IDENTIFIER_ | ASTERISK_
     ;
