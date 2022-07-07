@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MariaDBDatabaseType
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
+import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -122,37 +123,30 @@ public final class DatabaseTypeEngineTest {
     }
     
     private DataSource mockDataSource(final DatabaseType databaseType) throws SQLException {
-        DataSource result = mock(DataSource.class);
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
-        when(result.getConnection()).thenReturn(connection);
-        String url;
+        when(connection.getMetaData().getURL()).thenReturn(getURL(databaseType));
+        return new MockedDataSource(connection);
+    }
+    
+    private String getURL(final DatabaseType databaseType) {
         switch (databaseType.getType()) {
             case "H2":
-                url = "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
-                break;
+                return "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
             case "MariaDB":
-                url = "jdbc:mariadb://localhost:3306/test";
-                break;
+                return "jdbc:mariadb://localhost:3306/test";
             case "MySQL":
-                url = "jdbc:mysql://localhost:3306/test";
-                break;
-            case "Oracle":
-                url = "jdbc:oracle:oci:@127.0.0.1/test";
-                break;
+                return "jdbc:mysql://localhost:3306/test";
             case "PostgreSQL":
-                url = "jdbc:postgresql://localhost:5432/test";
-                break;
-            case "SQL92":
-                url = "jdbc:jtds:sqlserver://127.0.0.1;DatabaseName=test";
-                break;
+                return "jdbc:postgresql://localhost:5432/test";
             case "SQLServer":
-                url = "jdbc:microsoft:sqlserver://127.0.0.1;DatabaseName=test";
-                break;
+                return "jdbc:microsoft:sqlserver://127.0.0.1;DatabaseName=test";
+            case "Oracle":
+                return "jdbc:oracle:oci:@127.0.0.1/test";
+            case "SQL92":
+                return "jdbc:jtds:sqlserver://127.0.0.1;DatabaseName=test";
             default:
                 throw new IllegalStateException("Unexpected value: " + databaseType.getType());
         }
-        when(connection.getMetaData().getURL()).thenReturn(url);
-        return result;
     }
     
     @Test
