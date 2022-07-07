@@ -17,15 +17,49 @@
 
 package org.apache.shardingsphere.infra.instance.workerid;
 
+import java.util.Optional;
+import java.util.Properties;
+
 /**
  * Worker id generator.
  */
 public interface WorkerIdGenerator {
     
+    String WORKER_ID_KEY = "worker-id";
+    
+    long DEFAULT_WORKER_ID = 0;
+    
     /**
      * Generate worker id.
-     * 
+     *
+     * @return worker id
+     * @deprecated remove it when worker-id refactor was completed
+     */
+    @Deprecated
+    long generate();
+    
+    /**
+     * Generate worker id.
+     *
+     * @param props props
      * @return worker id
      */
-    long generate();
+    long generate(Properties props);
+    
+    /**
+     * Parse worker id.
+     *
+     * @param props props
+     * @return worker id
+     */
+    default Optional<Long> parseWorkerId(final Properties props) {
+        if (null == props) {
+            return Optional.of(DEFAULT_WORKER_ID);
+        }
+        Object workerId = props.get(WORKER_ID_KEY);
+        if (null == workerId) {
+            return Optional.empty();
+        }
+        return Optional.of(Long.parseLong(workerId.toString()));
+    }
 }

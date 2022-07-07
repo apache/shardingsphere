@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
+import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -38,6 +39,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class GlobalRulesBuilderTest {
     
@@ -58,13 +60,17 @@ public final class GlobalRulesBuilderTest {
     private InstanceContext buildInstanceContext() {
         ComputeNodeInstance computeNodeInstance = new ComputeNodeInstance(new JDBCInstanceMetaData(UUID.randomUUID().toString()));
         ModeConfiguration modeConfiguration = new ModeConfiguration("Standalone", null, false);
-        InstanceContext instanceContext = new InstanceContext(computeNodeInstance, () -> 0, modeConfiguration, mock(LockContext.class));
-        return instanceContext;
+        return new InstanceContext(computeNodeInstance, createWorkerIdGenerator(), modeConfiguration, mock(LockContext.class));
     }
     
     @SneakyThrows
     private ShardingSphereDatabase buildShardingSphereDatabase() {
-        ShardingSphereDatabase shardingSphereDatabase = ShardingSphereDatabase.create("logic_db", new MySQLDatabaseType());
-        return shardingSphereDatabase;
+        return ShardingSphereDatabase.create("logic_db", new MySQLDatabaseType());
+    }
+    
+    private WorkerIdGenerator createWorkerIdGenerator() {
+        WorkerIdGenerator result = mock(WorkerIdGenerator.class);
+        when(result.generate()).thenReturn(0L);
+        return result;
     }
 }

@@ -20,6 +20,8 @@ package org.apache.shardingsphere.sharding.algorithm.keygen.fixture;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 
+import java.util.Properties;
+
 @RequiredArgsConstructor
 public final class WorkerIdGeneratorFixture implements WorkerIdGenerator {
     
@@ -27,6 +29,11 @@ public final class WorkerIdGeneratorFixture implements WorkerIdGenerator {
     
     @Override
     public long generate() {
+        return fixtureWorkerId;
+    }
+    
+    @Override
+    public long generate(final Properties props) {
         return fixtureWorkerId;
     }
 }

@@ -43,6 +43,12 @@ public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgo
     
     public static final String EPOCH_KEY = "epoch";
     
+    public static final String WORKER_ID_KEY = "worker-id";
+    
+    public static final long DEFAULT_WORKER_ID = 0L;
+    
+    public static final long WORKER_ID_MAX_VALUE = 1L << 10;
+    
     @Getter
     private Properties props;
     
@@ -79,10 +85,20 @@ public final class CosIdSnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgo
     
     @Override
     public void setInstanceContext(final InstanceContext instanceContext) {
-        long workerId = instanceContext.getWorkerId();
+        long workerId = initWorkerId(instanceContext);
         MillisecondSnowflakeId millisecondSnowflakeId =
                 new MillisecondSnowflakeId(epoch, MillisecondSnowflakeId.DEFAULT_TIMESTAMP_BIT, MillisecondSnowflakeId.DEFAULT_MACHINE_BIT, MillisecondSnowflakeId.DEFAULT_SEQUENCE_BIT, workerId);
         snowflakeId = new StringSnowflakeId(new ClockSyncSnowflakeId(millisecondSnowflakeId), Radix62IdConverter.PAD_START);
+    }
+    
+    private long initWorkerId(final InstanceContext instanceContext) {
+        long result = null == instanceContext ? Long.parseLong(props.getOrDefault(WORKER_ID_KEY, DEFAULT_WORKER_ID).toString()) : instanceContext.generateWorkerId(props);
+        rangeValidate(result);
+        return result;
+    }
+    
+    private void rangeValidate(final long workerId) {
+        Preconditions.checkArgument(workerId >= 0L && workerId < WORKER_ID_MAX_VALUE, "Illegal worker id.");
     }
     
     @Override
