@@ -285,6 +285,4 @@
     <test-case sql="DELETE FROM t_shadow WHERE user_id = ? and order_id in (?, ?)" db-types="PostgreSQL" scenario-types="shadow">
         <assertion parameters="0:int, 4:long, 5:long" expected-data-file="shadow_delete_order_by_user_id.xml" />
     </test-case>
-
-    <test-case sql="LOCK TABLE t_order_details" db-types="PostgreSQL" />
 </integration-test-cases>
