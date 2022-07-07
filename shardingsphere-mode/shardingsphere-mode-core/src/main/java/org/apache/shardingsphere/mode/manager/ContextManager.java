@@ -292,7 +292,7 @@ public final class ContextManager implements AutoCloseable {
             staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResources);
             switchingResource.closeStaleDataSources();
         } catch (SQLException ex) {
-            log.error("Alter database:{} data source and rule configuration failed", databaseName, ex);
+            log.error("Alter database: {} data source and rule configuration failed", databaseName, ex);
         }
     }
     
@@ -376,7 +376,7 @@ public final class ContextManager implements AutoCloseable {
             toBeDeletedSchemas.keySet().forEach(each -> reloadedMetaDataContexts.getPersistService().ifPresent(optional -> optional.getDatabaseMetaDataService().deleteSchema(databaseName, each)));
             persistMetaData(reloadedMetaDataContexts);
         } catch (final SQLException ex) {
-            log.error("Reload database:{} failed", databaseName, ex);
+            log.error("Reload database: {} failed", databaseName, ex);
         }
     }
     
@@ -403,13 +403,13 @@ public final class ContextManager implements AutoCloseable {
                 metaDataContexts.getPersistService().ifPresent(optional -> optional.getDatabaseMetaDataService().persistMetaData(databaseName, schemaName, reloadedSchema));
             }
         } catch (final SQLException ex) {
-            log.error("Reload meta data of database:{} schema:{} with data source:{} failed", databaseName, schemaName, dataSourceName, ex);
+            log.error("Reload meta data of database: {} schema: {} with data source: {} failed", databaseName, schemaName, dataSourceName, ex);
         }
     }
     
     private ShardingSphereSchema loadSchema(final String databaseName, final String schemaName, final String dataSourceName) throws SQLException {
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(databaseName);
-        database.reloadRules(instanceContext);
+        database.reloadRules(MutableDataNodeRule.class, instanceContext);
         GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(database.getProtocolType(), database.getResource().getDatabaseType(),
                 Collections.singletonMap(dataSourceName, database.getResource().getDataSources().get(dataSourceName)),
                 database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), schemaName);
@@ -430,7 +430,7 @@ public final class ContextManager implements AutoCloseable {
                     database.getResource().getDatabaseType(), database.getResource().getDataSources(), database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), schemaName);
             loadTableMetaData(databaseName, schemaName, tableName, materials);
         } catch (final SQLException ex) {
-            log.error("Reload table:{} meta data of database:{} schema:{} failed", tableName, databaseName, schemaName, ex);
+            log.error("Reload table: {} meta data of database: {} schema: {} failed", tableName, databaseName, schemaName, ex);
         }
     }
     
@@ -450,7 +450,7 @@ public final class ContextManager implements AutoCloseable {
                     database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), schemaName);
             loadTableMetaData(databaseName, schemaName, tableName, materials);
         } catch (final SQLException ex) {
-            log.error("Reload table:{} meta data of database:{} schema:{} with data source:{} failed", tableName, databaseName, schemaName, dataSourceName, ex);
+            log.error("Reload table: {} meta data of database: {} schema: {} with data source: {} failed", tableName, databaseName, schemaName, dataSourceName, ex);
         }
     }
     

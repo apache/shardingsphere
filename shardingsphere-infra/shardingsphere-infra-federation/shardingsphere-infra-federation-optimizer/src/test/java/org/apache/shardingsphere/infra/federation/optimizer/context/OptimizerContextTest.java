@@ -46,9 +46,9 @@ public final class OptimizerContextTest {
         String tableName = "foo_tbl";
         String beforeColumnName = "foo_col";
         String afterColumnName = "bar_col";
-        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, new H2DatabaseType(), mock(ShardingSphereResource.class), null, 
+        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, new H2DatabaseType(), mock(ShardingSphereResource.class), null,
                 Collections.singletonMap(schemaName, new ShardingSphereSchema(Collections.singletonMap(tableName, new ShardingSphereTable(tableName,
-                Collections.singleton(new ShardingSphereColumn(beforeColumnName, 0, false, false, true)), Collections.emptyList(), Collections.emptyList())))));
+                        Collections.singleton(new ShardingSphereColumn(beforeColumnName, 0, false, false, true)), Collections.emptyList(), Collections.emptyList())))));
         OptimizerContext optimizerContext = OptimizerContextFactory.create(Collections.singletonMap(databaseName, database), mock(ShardingSphereRuleMetaData.class));
         optimizerContext.alterTable(databaseName, schemaName, new ShardingSphereTable(tableName,
                 Collections.singleton(new ShardingSphereColumn(afterColumnName, 0, false, false, true)), Collections.emptyList(), Collections.emptyList()));
