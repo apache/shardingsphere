@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.federation.optimizer.context;
 
-import lombok.var;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
