@@ -341,6 +341,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingKeyGeneratorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingScalingRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingTableRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountDatabaseDiscoveryRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountDatabaseRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountEncryptRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountReadwriteSplittingRuleStatementTestCase;
@@ -1503,7 +1504,7 @@ public final class SQLParserTestCases {
     private final List<CountReadwriteSplittingRuleStatementTestCase> countReadwriteSplittingRuleStatementTestCases = new LinkedList<>();
 
     @XmlElement(name = "count-db-discovery-rule")
-    private final List<CountDatabaseRulesStatementTestCase> countDatabaseRulesStatementTestCases = new LinkedList<>();
+    private final List<CountDatabaseDiscoveryRuleStatementTestCase> countDatabaseDiscoveryRuleStatementTestCases = new LinkedList<>();
 
     @XmlElement(name = "count-encrypt-rule")
     private final List<CountEncryptRuleStatementTestCase> countEncryptRuleStatementTestCases = new LinkedList<>();
@@ -1885,7 +1886,7 @@ public final class SQLParserTestCases {
         putAll(countSingleTableRuleStatementTestCases, result);
         putAll(countShardingRuleStatementTestCases, result);
         putAll(countReadwriteSplittingRuleStatementTestCases, result);
-        putAll(countDatabaseRulesStatementTestCases, result);
+        putAll(countDatabaseDiscoveryRuleStatementTestCases, result);
         putAll(countEncryptRuleStatementTestCases, result);
         putAll(countShadowRuleStatementTestCases, result);
         return result;

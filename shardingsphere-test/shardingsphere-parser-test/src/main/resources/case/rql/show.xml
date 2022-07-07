@@ -132,11 +132,11 @@
     </count-single-table-rule>
 
     <count-sharding-rule sql-case-id="count-sharding-rule">
-        <database name="db1" start-index="29" stop-index="31"/>
+        <database name="db1" start-index="25" stop-index="27"/>
     </count-sharding-rule>
 
     <count-readwrite-splitting-rule sql-case-id="count-readwrite-splitting-rule">
-        <database name="db1" start-index="29" stop-index="31"/>
+        <database name="db1" start-index="36" stop-index="38"/>
     </count-readwrite-splitting-rule>
 
     <count-db-discovery-rule sql-case-id="count-db-discovery-rule">
@@ -144,10 +144,10 @@
     </count-db-discovery-rule>
 
     <count-encrypt-rule sql-case-id="count-encrypt-rule">
-        <database name="db1" start-index="29" stop-index="31"/>
+        <database name="db1" start-index="24" stop-index="26"/>
     </count-encrypt-rule>
 
     <count-shadow-rule sql-case-id="count-shadow-rule">
-        <database name="db1" start-index="29" stop-index="31"/>
+        <database name="db1" start-index="23" stop-index="25"/>
     </count-shadow-rule>
 </sql-parser-test-cases>
