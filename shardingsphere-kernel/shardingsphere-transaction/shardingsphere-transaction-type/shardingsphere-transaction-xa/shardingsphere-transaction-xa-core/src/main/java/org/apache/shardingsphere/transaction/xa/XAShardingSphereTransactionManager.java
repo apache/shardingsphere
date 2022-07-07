@@ -39,6 +39,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * ShardingSphere Transaction manager for XA.
@@ -121,6 +122,8 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
             each.close();
         }
         cachedDataSources.clear();
-        xaTransactionManagerProvider.close();
+        if (Objects.nonNull(xaTransactionManagerProvider)) {
+            xaTransactionManagerProvider.close();
+        }
     }
 }

@@ -29,7 +29,6 @@ import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode
 import org.apache.shardingsphere.mode.metadata.persist.node.GlobalNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
-import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -54,7 +53,6 @@ public final class StandaloneContextManagerBuilderTextTest {
         assertNotNull(repository.get(GlobalNode.getGlobalRuleNode()));
         assertNotNull(repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath("foo_db", "0")));
         assertNotNull(repository.get(DatabaseMetaDataNode.getRulePath("foo_db", "0")));
-        assertTrue(actual.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getResources().containsKey("foo_db"));
     }
     
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {

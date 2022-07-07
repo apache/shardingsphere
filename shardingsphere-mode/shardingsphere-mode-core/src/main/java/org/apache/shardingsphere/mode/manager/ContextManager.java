@@ -248,7 +248,7 @@ public final class ContextManager implements AutoCloseable {
             Collection<ResourceHeldRule> staleResourceHeldRules = getStaleResourceHeldRules(databaseName);
             metaDataContexts = createMetaDataContexts(databaseName, null, ruleConfigs);
             persistMetaData(metaDataContexts);
-            staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResources);
+            staleResourceHeldRules.forEach(each -> each.closeStaleResource(databaseName));
         } catch (final SQLException ex) {
             log.error("Alter database: {} rule configurations failed", databaseName, ex);
         }
@@ -267,7 +267,7 @@ public final class ContextManager implements AutoCloseable {
             SwitchingResource switchingResource = new ResourceSwitchManager().create(metaDataContexts.getMetaData().getDatabases().get(databaseName).getResource(), dataSourcePropsMap);
             metaDataContexts = createMetaDataContexts(databaseName, switchingResource, null);
             persistMetaData(metaDataContexts);
-            staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResources);
+            staleResourceHeldRules.forEach(each -> each.closeStaleResource(databaseName));
             switchingResource.closeStaleDataSources();
         } catch (final SQLException ex) {
             log.error("Alter database: {} data source configuration failed", databaseName, ex);
@@ -289,7 +289,7 @@ public final class ContextManager implements AutoCloseable {
             SwitchingResource switchingResource = new ResourceSwitchManager().create(metaDataContexts.getMetaData().getDatabases().get(databaseName).getResource(), dataSourcePropsMap);
             metaDataContexts = createMetaDataContexts(databaseName, switchingResource, ruleConfigs);
             persistMetaData(metaDataContexts);
-            staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResources);
+            staleResourceHeldRules.forEach(each -> each.closeStaleResource(databaseName));
             switchingResource.closeStaleDataSources();
         } catch (SQLException ex) {
             log.error("Alter database:{} data source and rule configuration failed", databaseName, ex);
@@ -347,7 +347,7 @@ public final class ContextManager implements AutoCloseable {
         ShardingSphereMetaData toBeChangedMetaData = new ShardingSphereMetaData(
                 metaDataContexts.getMetaData().getDatabases(), toBeChangedGlobalRuleMetaData, metaDataContexts.getMetaData().getProps());
         metaDataContexts = newMetaDataContexts(toBeChangedMetaData, metaDataContexts.getOptimizerContext());
-        staleResourceHeldRules.forEach(ResourceHeldRule::closeStaleResources);
+        metaDataContexts.getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResource);
     }
     
     /**
