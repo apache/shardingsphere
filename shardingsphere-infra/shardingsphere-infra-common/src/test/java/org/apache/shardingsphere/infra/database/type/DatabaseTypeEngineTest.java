@@ -17,29 +17,28 @@
 
 package org.apache.shardingsphere.infra.database.type;
 
-import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
-import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
-import org.apache.shardingsphere.infra.database.type.dialect.MariaDBDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
-import org.junit.Test;
-
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Properties;
-
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Properties;
+import javax.sql.DataSource;
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.database.type.dialect.MariaDBDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
+import org.junit.Test;
 
 public final class DatabaseTypeEngineTest {
     
@@ -190,11 +189,16 @@ public final class DatabaseTypeEngineTest {
     }
     
     @Test
-    public void assertGetProtocolType() {
+    public void assertGetProtocolType() throws SQLException {
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "H2");
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration()));
         assertThat(DatabaseTypeEngine.getProtocolType(Collections.singletonMap("logic_db", databaseConfig), new ConfigurationProperties(props)), instanceOf(MySQLDatabaseType.class));
+        props.setProperty(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "");
+        assertThat(DatabaseTypeEngine.getProtocolType(Collections.singletonMap("logic_db", databaseConfig), new ConfigurationProperties(props)), instanceOf(MySQLDatabaseType.class));
+        DataSource datasource = mockDataSource(DatabaseTypeFactory.getInstance("PostgreSQL"));
+        databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("", datasource), Collections.singleton(new FixtureRuleConfiguration()));
+        assertThat(DatabaseTypeEngine.getProtocolType(Collections.singletonMap("logic_db", databaseConfig), new ConfigurationProperties(props)), instanceOf(PostgreSQLDatabaseType.class));
     }
     
     @Test
