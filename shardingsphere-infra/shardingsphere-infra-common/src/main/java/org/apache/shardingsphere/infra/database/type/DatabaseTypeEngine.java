@@ -42,8 +42,19 @@ public final class DatabaseTypeEngine {
     
     /**
      * Get protocol type.
+     * 
+     * @param databaseConfig database configuration
+     * @param props props
+     * @return protocol type
+     */
+    public static DatabaseType getProtocolType(final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) {
+        return findConfiguredDatabaseType(props).orElse(getDatabaseType(databaseConfig.getDataSources().values()));
+    }
+    
+    /**
+     * Get protocol type.
      *
-     * @param databaseConfigs database configs
+     * @param databaseConfigs database configurations
      * @param props props
      * @return protocol type
      */
@@ -53,7 +64,7 @@ public final class DatabaseTypeEngine {
             return configuredDatabaseType.get();
         }
         Collection<DataSource> dataSources = databaseConfigs.values().stream()
-                .filter(DatabaseTypeEngine::isComplete).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList);
+                .filter(each -> !each.getDataSources().isEmpty()).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList);
         return getDatabaseType(dataSources);
     }
     
@@ -65,7 +76,7 @@ public final class DatabaseTypeEngine {
      */
     public static DatabaseType getStorageType(final Map<String, ? extends DatabaseConfiguration> databaseConfigs) {
         return getDatabaseType(
-                databaseConfigs.values().stream().filter(DatabaseTypeEngine::isComplete).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList));
+                databaseConfigs.values().stream().filter(each -> !each.getDataSources().isEmpty()).findFirst().map(optional -> optional.getDataSources().values()).orElseGet(Collections::emptyList));
     }
     
     /**
@@ -105,10 +116,6 @@ public final class DatabaseTypeEngine {
     private static Optional<DatabaseType> findConfiguredDatabaseType(final ConfigurationProperties props) {
         String configuredDatabaseType = props.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE);
         return configuredDatabaseType.isEmpty() ? Optional.empty() : Optional.of(DatabaseTypeEngine.getTrunkDatabaseType(configuredDatabaseType));
-    }
-    
-    private static boolean isComplete(final DatabaseConfiguration databaseConfig) {
-        return !databaseConfig.getRuleConfigurations().isEmpty() && !databaseConfig.getDataSources().isEmpty();
     }
     
     private static boolean matchURLs(final String url, final DatabaseType databaseType) {

@@ -37,23 +37,39 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl.
 public final class DropTableStatementHandler implements SQLStatementHandler {
     
     /**
-     * Judge whether contains exist clause or not.
+     * Judge whether contains if exists.
      *
      * @param dropTableStatement drop table statement
-     * @return whether contains exist clause or not
+     * @return contains contains if exists or not
      */
-    public static boolean containsExistClause(final DropTableStatement dropTableStatement) {
+    public static boolean ifExists(final DropTableStatement dropTableStatement) {
         if (dropTableStatement instanceof MySQLStatement) {
-            return ((MySQLDropTableStatement) dropTableStatement).isContainsExistClause();
+            return ((MySQLDropTableStatement) dropTableStatement).isIfExists();
         }
         if (dropTableStatement instanceof PostgreSQLStatement) {
-            return ((PostgreSQLDropTableStatement) dropTableStatement).isContainsExistClause();
+            return ((PostgreSQLDropTableStatement) dropTableStatement).isIfExists();
         }
         if (dropTableStatement instanceof SQLServerStatement) {
-            return ((SQLServerDropTableStatement) dropTableStatement).isContainsExistClause();
+            return ((SQLServerDropTableStatement) dropTableStatement).isIfExists();
         }
         if (dropTableStatement instanceof OpenGaussStatement) {
-            return ((OpenGaussDropTableStatement) dropTableStatement).isContainsExistClause();
+            return ((OpenGaussDropTableStatement) dropTableStatement).isIfExists();
+        }
+        return false;
+    }
+    
+    /**
+     * Judge whether contains cascade.
+     *
+     * @param dropTableStatement drop table statement
+     * @return contains cascade or not
+     */
+    public static boolean containsCascade(final DropTableStatement dropTableStatement) {
+        if (dropTableStatement instanceof PostgreSQLStatement) {
+            return ((PostgreSQLDropTableStatement) dropTableStatement).isContainsCascade();
+        }
+        if (dropTableStatement instanceof OpenGaussStatement) {
+            return ((OpenGaussDropTableStatement) dropTableStatement).isContainsCascade();
         }
         return false;
     }

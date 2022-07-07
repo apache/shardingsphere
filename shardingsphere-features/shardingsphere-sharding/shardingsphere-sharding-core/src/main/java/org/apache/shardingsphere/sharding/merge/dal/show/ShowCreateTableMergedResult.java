@@ -21,10 +21,10 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.impl.memory.MemoryQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereConstraint;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtil;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ConstraintMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.TableMetaData;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sharding.rule.TableRule;
 
@@ -45,13 +45,13 @@ public final class ShowCreateTableMergedResult extends LogicTablesMergedResult {
     
     @Override
     protected void setCellValue(final MemoryQueryResultRow memoryResultSetRow, final String logicTableName, final String actualTableName,
-                                final TableMetaData tableMetaData, final ShardingRule shardingRule) {
+                                final ShardingSphereTable table, final ShardingRule shardingRule) {
         memoryResultSetRow.setCell(2, memoryResultSetRow.getCell(2).toString().replaceFirst(actualTableName, logicTableName));
-        for (String each : tableMetaData.getIndexes().keySet()) {
+        for (String each : table.getIndexes().keySet()) {
             String actualIndexName = IndexMetaDataUtil.getActualIndexName(each, actualTableName);
             memoryResultSetRow.setCell(2, memoryResultSetRow.getCell(2).toString().replace(actualIndexName, each));
         }
-        for (Entry<String, ConstraintMetaData> each : tableMetaData.getConstrains().entrySet()) {
+        for (Entry<String, ShardingSphereConstraint> each : table.getConstrains().entrySet()) {
             String actualIndexName = IndexMetaDataUtil.getActualIndexName(each.getKey(), actualTableName);
             memoryResultSetRow.setCell(2, memoryResultSetRow.getCell(2).toString().replace(actualIndexName, each.getKey()));
             Optional<TableRule> tableRule = shardingRule.findTableRule(each.getValue().getReferencedTableName());

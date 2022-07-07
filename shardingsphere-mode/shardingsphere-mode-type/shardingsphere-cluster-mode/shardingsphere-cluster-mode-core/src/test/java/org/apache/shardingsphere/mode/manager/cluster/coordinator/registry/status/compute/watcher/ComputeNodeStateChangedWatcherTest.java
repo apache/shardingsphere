@@ -17,17 +17,18 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.watcher;
 
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -39,9 +40,9 @@ public final class ComputeNodeStateChangedWatcherTest {
     @Test
     public void assertCreateEventWhenDisabled() {
         Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher().createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/status/127.0.0.1@3307",
-                YamlEngine.marshal(Arrays.asList(ComputeNodeStatus.CIRCUIT_BREAK.name())), Type.ADDED));
+                YamlEngine.marshal(Collections.singleton(ComputeNodeStatus.CIRCUIT_BREAK.name())), Type.ADDED));
         assertTrue(actual.isPresent());
-        assertThat(((StateEvent) actual.get()).getStatus(), is(Arrays.asList(ComputeNodeStatus.CIRCUIT_BREAK.name())));
+        assertThat(((StateEvent) actual.get()).getStatus(), is(Collections.singleton(ComputeNodeStatus.CIRCUIT_BREAK.name())));
         assertThat(((StateEvent) actual.get()).getInstanceId(), is("127.0.0.1@3307"));
     }
     

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.singletable.route.validator.ddl;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.singletable.route.validator.SingleTableMetadataValidator;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropSchemaStatement;
@@ -34,7 +34,7 @@ public final class SingleTableDropSchemaMetadataValidator implements SingleTable
     
     @Override
     public void validate(final SingleTableRule rule, final SQLStatementContext<DropSchemaStatement> sqlStatementContext, final ShardingSphereDatabase database) {
-        boolean containsCascade = DropSchemaStatementHandler.isContainsCascade(sqlStatementContext.getSqlStatement());
+        boolean containsCascade = DropSchemaStatementHandler.containsCascade(sqlStatementContext.getSqlStatement());
         for (IdentifierValue each : sqlStatementContext.getSqlStatement().getSchemaNames()) {
             String schemaName = each.getValue();
             ShardingSphereSchema schema = database.getSchemas().get(schemaName);

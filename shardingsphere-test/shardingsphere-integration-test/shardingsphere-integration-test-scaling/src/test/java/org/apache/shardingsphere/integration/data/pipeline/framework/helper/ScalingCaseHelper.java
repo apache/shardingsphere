@@ -17,17 +17,16 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.framework.helper;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.tuple.Pair;
-import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import java.math.BigDecimal;
-import java.nio.charset.StandardCharsets;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
@@ -38,30 +37,14 @@ import java.util.concurrent.ThreadLocalRandom;
  */
 public final class ScalingCaseHelper {
     
-    private static final JdbcUrlAppender JDBC_URL_APPENDER = new JdbcUrlAppender();
-    
-    private static final String CUSTOM_SCHEMA = "test";
-    
     /**
      * Get query properties by database type.
      *
-     * @param databaseType database type
      * @return query properties
      */
-    public static Properties getQueryPropertiesByDatabaseType(final DatabaseType databaseType) {
+    public static Properties getPostgreSQLQueryProperties() {
         Properties result = new Properties();
-        if (databaseType instanceof MySQLDatabaseType) {
-            result.put("useSSL", Boolean.FALSE.toString());
-            result.put("rewriteBatchedStatements", Boolean.TRUE.toString());
-            result.put("serverTimezone", "UTC");
-            return result;
-        }
-        if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
-            result.put("useSSL", Boolean.FALSE.toString());
-            result.put("serverTimezone", "UTC");
-            result.put("preferQueryMode", "extendedForPrepared");
-            return result;
-        }
+        result.put("preferQueryMode", "extendedForPrepared");
         return result;
     }
     
@@ -79,20 +62,42 @@ public final class ScalingCaseHelper {
         }
         List<Object[]> orderData = new ArrayList<>(insertRows);
         List<Object[]> orderItemData = new ArrayList<>(insertRows);
-        ThreadLocalRandom current = ThreadLocalRandom.current();
-        for (int i = 0; i <= insertRows; i++) {
-            int orderId = current.nextInt(0, 6);
-            int userId = current.nextInt(0, 6);
+        for (int i = 0; i < insertRows; i++) {
+            int orderId = generateInt(0, 6);
+            int userId = generateInt(0, 6);
+            LocalDateTime now = LocalDateTime.now();
+            int randomInt = generateInt(-100, 100);
+            int randomUnsignedInt = generateInt(0, 100);
             if (databaseType instanceof MySQLDatabaseType) {
-                orderData.add(new Object[]{keyGenerateAlgorithm.generateKey(), orderId, userId, "varchar" + i, (byte) 1, new Timestamp(System.currentTimeMillis()),
-                        new Timestamp(System.currentTimeMillis()), "hello".getBytes(StandardCharsets.UTF_8), null, new BigDecimal("100.00"), "test", Math.random(), "{}",
-                        current.nextInt(0, 10000000)});
+                Object[] addObjs = {keyGenerateAlgorithm.generateKey(), orderId, userId, generateString(6), randomInt, randomInt, randomInt,
+                        randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, randomUnsignedInt, generateFloat(), generateDouble(-1000, 100000),
+                        BigDecimal.valueOf(generateDouble(1, 100)), now, now, now.toLocalDate(), now.toLocalTime(), null, "1", "t", "e", "s", "t", generateString(2), generateString(1),
+                        generateString(1), "1", "2", "{}"};
+                orderData.add(addObjs);
             } else {
-                orderData.add(new Object[]{keyGenerateAlgorithm.generateKey(), ThreadLocalRandom.current().nextInt(0, 6), ThreadLocalRandom.current().nextInt(0, 6), "OK"});
+                orderData.add(new Object[]{keyGenerateAlgorithm.generateKey(), orderId, userId, generateString(6), randomInt,
+                        BigDecimal.valueOf(generateDouble(1, 100)), true, generateString(2), generateString(2), generateFloat(),
+                        generateDouble(0, 1000), LocalDateTime.now(), OffsetDateTime.now()});
             }
             orderItemData.add(new Object[]{keyGenerateAlgorithm.generateKey(), orderId, userId, "SUCCESS"});
         }
         return Pair.of(orderData, orderItemData);
+    }
+    
+    private static int generateInt(final int min, final int max) {
+        return ThreadLocalRandom.current().nextInt(min, max);
+    }
+    
+    private static String generateString(final int strLength) {
+        return RandomStringUtils.randomAlphabetic(strLength);
+    }
+    
+    private static float generateFloat() {
+        return ThreadLocalRandom.current().nextFloat();
+    }
+    
+    private static double generateDouble(final double min, final double max) {
+        return ThreadLocalRandom.current().nextDouble(min, max);
     }
     
     /**

@@ -29,6 +29,8 @@ import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -75,15 +77,27 @@ public final class SubstitutableColumnNameToken extends SQLToken implements Subs
     
     @Override
     public String toString(final RouteUnit routeUnit) {
-        Map<String, String> logicAndActualTables = getLogicAndActualTables(routeUnit);
-        StringBuilder builder = lastColumn ? new StringBuilder(COLUMN_NAME_SPLITTER) : new StringBuilder();
-        for (ColumnProjection each : projections) {
-            builder.append(getColumnName(each, logicAndActualTables)).append(COLUMN_NAME_SPLITTER);
+        Map<String, String> logicAndActualTables = new HashMap<>();
+        if (null != routeUnit) {
+            logicAndActualTables.putAll(getLogicAndActualTables(routeUnit));
         }
-        return builder.substring(0, builder.length() - COLUMN_NAME_SPLITTER.length());
+        StringBuilder result = new StringBuilder();
+        int count = 0;
+        for (ColumnProjection each : projections) {
+            if (0 == count && !lastColumn) {
+                result.append(getColumnName(each, logicAndActualTables));
+            } else {
+                result.append(COLUMN_NAME_SPLITTER).append(getColumnName(each, logicAndActualTables));
+            }
+            count++;
+        }
+        return result.toString();
     }
     
     private Map<String, String> getLogicAndActualTables(final RouteUnit routeUnit) {
+        if (null == routeUnit) {
+            return Collections.emptyMap();
+        }
         Map<String, String> result = new LinkedHashMap<>();
         for (RouteMapper each : routeUnit.getTableMappers()) {
             result.put(each.getLogicName(), each.getActualName());

@@ -49,12 +49,11 @@ public final class RQLBackendHandlerTest extends ProxyContextRestorer {
     
     @Before
     public void setUp() {
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class);
-        when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test"));
+        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
-        when(metaDataContexts.getDatabaseMetaData("test")).thenReturn(database);
+        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test", database));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
@@ -92,7 +91,7 @@ public final class RQLBackendHandlerTest extends ProxyContextRestorer {
         when(resultSet.getRowData()).thenReturn(Arrays.asList("foo_value", "bar_value"));
         RQLBackendHandler handler = new RQLBackendHandler(mock(RQLStatement.class), mock(ConnectionSession.class), resultSet);
         handler.execute("test", mock(RQLStatement.class));
-        Collection<Object> rowData = handler.getRowData();
+        Collection<Object> rowData = handler.getRowData().getData();
         assertThat(rowData.size(), is(2));
         assertTrue(rowData.contains("foo_value"));
         assertTrue(rowData.contains("bar_value"));

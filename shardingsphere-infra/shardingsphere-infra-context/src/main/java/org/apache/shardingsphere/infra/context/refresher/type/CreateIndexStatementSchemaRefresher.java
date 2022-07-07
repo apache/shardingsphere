@@ -20,43 +20,44 @@ package org.apache.shardingsphere.infra.context.refresher.type;
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereIndex;
+import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Schema refresher for create index statement.
  */
 public final class CreateIndexStatementSchemaRefresher implements MetaDataRefresher<CreateIndexStatement> {
     
-    private static final String TYPE = CreateIndexStatement.class.getName();
-    
     @Override
-    public void refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData, final Map<String, OptimizerPlannerContext> optimizerPlanners,
-                        final Collection<String> logicDataSourceNames, final String schemaName, final CreateIndexStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
+    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData,
+                                                    final Map<String, OptimizerPlannerContext> optimizerPlanners,
+                                                    final Collection<String> logicDataSourceNames, final String schemaName, final CreateIndexStatement sqlStatement,
+                                                    final ConfigurationProperties props) throws SQLException {
         String indexName = null != sqlStatement.getIndex() ? sqlStatement.getIndex().getIndexName().getIdentifier().getValue()
                 : IndexMetaDataUtil.getGeneratedLogicIndexName(sqlStatement.getColumns());
         if (Strings.isNullOrEmpty(indexName)) {
-            return;
+            return Optional.empty();
         }
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        database.getSchemas().get(schemaName).get(tableName).getIndexes().put(indexName, new IndexMetaData(indexName));
+        database.getSchemas().get(schemaName).get(tableName).getIndexes().put(indexName, new ShardingSphereIndex(indexName));
         SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);
         event.getAlteredTables().add(database.getSchemas().get(schemaName).get(tableName));
-        ShardingSphereEventBus.getInstance().post(event);
+        return Optional.of(event);
     }
     
     @Override
     public String getType() {
-        return TYPE;
+        return CreateIndexStatement.class.getName();
     }
 }

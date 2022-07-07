@@ -1,6 +1,6 @@
 +++
 title = "Encryption"
-weight = 4
+weight = 5
 +++
 
 ## Root Configuration
@@ -25,7 +25,7 @@ Attributes:
 | ----------- | -------------------------------------------- | ---------------------------------- |
 | name        | String                                       | Table name                         |
 | columns (+) | Collection\<EncryptColumnRuleConfiguration\> | Encrypt column rule configurations |
-| queryWithCipherColumn (?) | boolean                                             | The current table whether query with cipher column for data encrypt.  | true            |
+| queryWithCipherColumn (?) | boolean                                             | The current table whether query with cipher column for data encrypt.  |
 
 ### Encrypt Column Rule Configuration
 
@@ -40,6 +40,8 @@ Attributes:
 | assistedQueryColumn (?) | String     | Assisted query column name |
 | plainColumn (?)         | String     | Plain column name          |
 | encryptorName           | String     | Encrypt algorithm name     |
+| assistedQueryEncryptorName           | String     | Assisted query encrypt algorithm name     |
+| queryWithCipherColumn (?) | boolean                                             | The current column whether query with cipher column for data encrypt.  |
 
 ## Encrypt Algorithm Configuration
 

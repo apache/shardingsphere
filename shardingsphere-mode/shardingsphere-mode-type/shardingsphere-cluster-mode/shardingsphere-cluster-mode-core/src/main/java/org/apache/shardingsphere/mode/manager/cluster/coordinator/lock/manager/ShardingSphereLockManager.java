@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager;
 
+import org.apache.shardingsphere.infra.lock.LockScope;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.ShardingSphereInterMutexLockHolder;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal.ShardingSphereInternalLockHolder;
+import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDefinition;
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.required.RequiredSPI;
-
-import java.util.Set;
 
 /**
  * Lock manager of ShardingSphere.
@@ -35,88 +35,45 @@ public interface ShardingSphereLockManager extends RequiredSPI {
      *
      * @param lockHolder lock holder
      */
-    void init(ShardingSphereInterMutexLockHolder lockHolder);
+    void init(ShardingSphereInternalLockHolder lockHolder);
     
     /**
-     * Get mutex lock.
+     * Get distributed lock.
      *
-     * @return mutex lock
+     * @param lockScope lock scope
+     * @return distributed lock
      */
-    ShardingSphereLock getMutexLock();
+    ShardingSphereLock getDistributedLock(LockScope lockScope);
     
     /**
-     * Lock write for database.
+     * Try lock for database.
      *
-     * @param databaseName database name
+     * @param lockNameDefinition lock name definition
      * @return is locked or not
      */
-    boolean lockWrite(String databaseName);
-    
-    /**
-     * Lock write for schemas.
-     *
-     * @param databaseName database name
-     * @param schemaNames schema names
-     * @return is locked or not
-     */
-    default boolean lockWrite(String databaseName, Set<String> schemaNames) {
-        throw new UnsupportedOperationException();
-    }
+    boolean tryLock(DatabaseLockNameDefinition lockNameDefinition);
     
     /**
      * Try lock write for database.
      *
-     * @param databaseName database name
+     * @param lockNameDefinition lock name definition
      * @param timeoutMilliseconds timeout milliseconds
      * @return is locked or not
      */
-    boolean tryLockWrite(String databaseName, long timeoutMilliseconds);
+    boolean tryLock(DatabaseLockNameDefinition lockNameDefinition, long timeoutMilliseconds);
     
     /**
-     * Try lock write for schemas.
+     * Release lock for database.
      *
-     * @param databaseName database name
-     * @param schemaNames schema names
-     * @param timeoutMilliseconds timeout milliseconds
-     * @return is locked or not
+     * @param lockNameDefinition lock name definition
      */
-    default boolean tryLockWrite(String databaseName, Set<String> schemaNames, long timeoutMilliseconds) {
-        throw new UnsupportedOperationException();
-    }
-    
-    /**
-     * Release lock write for database.
-     *
-     * @param databaseName database name
-     */
-    void releaseLockWrite(String databaseName);
-    
-    /**
-     * Try lock write for schemas.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     */
-    default void releaseLockWrite(String databaseName, String schemaName) {
-        throw new UnsupportedOperationException();
-    }
+    void releaseLock(DatabaseLockNameDefinition lockNameDefinition);
     
     /**
      * Is locked database.
      *
-     * @param databaseName database name
+     * @param lockNameDefinition lock name definition
      * @return is locked or not
      */
-    boolean isLocked(String databaseName);
-    
-    /**
-     * Is locked schema.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @return is locked or not
-     */
-    default boolean isLocked(String databaseName, String schemaName) {
-        throw new UnsupportedOperationException();
-    }
+    boolean isLocked(DatabaseLockNameDefinition lockNameDefinition);
 }

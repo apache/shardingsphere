@@ -56,7 +56,7 @@ public final class MetaDataInfoCollector extends Collector {
     public List<MetricFamilySamples> collect() {
         List<MetricFamilySamples> result = new LinkedList<>();
         Optional<GaugeMetricFamily> metaDataInfo = FACTORY.createGaugeMetricFamily(MetricIds.METADATA_INFO);
-        if (metaDataInfo.isPresent() && MetricsUtil.isClassExisted(PROXY_CONTEXT_CLASS)) {
+        if (null != ProxyContext.getInstance().getContextManager() && metaDataInfo.isPresent() && MetricsUtil.isClassExisted(PROXY_CONTEXT_CLASS)) {
             collectProxy(metaDataInfo.get());
             result.add(metaDataInfo.get());
         }
@@ -65,13 +65,13 @@ public final class MetaDataInfoCollector extends Collector {
     
     private void collectProxy(final GaugeMetricFamily metricFamily) {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        metricFamily.addMetric(Collections.singletonList(LOGIC_DB_COUNT), metaDataContexts.getDatabaseMap().size());
+        metricFamily.addMetric(Collections.singletonList(LOGIC_DB_COUNT), metaDataContexts.getMetaData().getDatabases().size());
         metricFamily.addMetric(Collections.singletonList(ACTUAL_DB_COUNT), getDatabaseNames(metaDataContexts).size());
     }
     
     private Collection<String> getDatabaseNames(final MetaDataContexts metaDataContexts) {
         Collection<String> result = new HashSet<>();
-        for (ShardingSphereDatabase each : metaDataContexts.getDatabaseMap().values()) {
+        for (ShardingSphereDatabase each : metaDataContexts.getMetaData().getDatabases().values()) {
             result.addAll(getDatabaseNames(each));
         }
         return result;

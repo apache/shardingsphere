@@ -19,8 +19,6 @@ package org.apache.shardingsphere.infra.lock;
 
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 
-import java.util.Set;
-
 /**
  * Lock context.
  */
@@ -35,77 +33,42 @@ public interface LockContext {
     }
     
     /**
-     * Get or create mutex lock.
+     * Get lock.
      *
-     * @return mutex lock
+     * @param lockScope lock scope
+     * @return lock
      */
-    ShardingSphereLock getMutexLock();
+    ShardingSphereLock getLock(LockScope lockScope);
     
     /**
-     * Lock write for database.
+     * Try lock.
      *
-     * @param databaseName database name
+     * @param lockNameDefinition lock name definition
      * @return is locked or not
      */
-    boolean lockWrite(String databaseName);
+    boolean tryLock(LockNameDefinition lockNameDefinition);
     
     /**
-     * Lock write for schemas.
+     * Try Lock.
      *
-     * @param databaseName database name
-     * @param schemaNames schema names
-     * @return is locked or not
-     */
-    boolean lockWrite(String databaseName, Set<String> schemaNames);
-    
-    /**
-     * Try Lock write for database.
-     *
-     * @param databaseName database name
+     * @param lockNameDefinition lock name definition
      * @param timeoutMilliseconds timeout milliseconds
      * @return is locked or not
      */
-    boolean tryLockWrite(String databaseName, long timeoutMilliseconds);
+    boolean tryLock(LockNameDefinition lockNameDefinition, long timeoutMilliseconds);
     
     /**
-     * Try lock write for schemas.
+     * Release lock.
      *
-     * @param databaseName database name
-     * @param schemaNames schema names
-     * @param timeoutMilliseconds timeout milliseconds
+     * @param lockNameDefinition lock name definition
+     */
+    void releaseLock(LockNameDefinition lockNameDefinition);
+    
+    /**
+     *  Is locked.
+     *
+     * @param lockNameDefinition lock name definition
      * @return is locked or not
      */
-    boolean tryLockWrite(String databaseName, Set<String> schemaNames, long timeoutMilliseconds);
-    
-    /**
-     * Release lock write of database.
-     *
-     * @param databaseName database name
-     */
-    void releaseLockWrite(String databaseName);
-    
-    /**
-     * Release lock write for schemas.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     */
-    void releaseLockWrite(String databaseName, String schemaName);
-    
-    /**
-     *  Is locked database.
-     *
-     * @param databaseName database name
-     * @return is locked database or not
-     */
-    boolean isLocked(String databaseName);
-    
-    /**
-     * Is locked schema.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @return is locked or not
-     */
-    boolean isLocked(String databaseName, String schemaName);
+    boolean isLocked(LockNameDefinition lockNameDefinition);
 }

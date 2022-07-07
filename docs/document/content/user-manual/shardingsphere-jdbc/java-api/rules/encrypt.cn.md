@@ -1,6 +1,6 @@
 +++
 title = "数据加密"
-weight = 4
+weight = 5
 +++
 
 ## 配置入口
@@ -25,7 +25,7 @@ weight = 4
 | ----------- | -------------------------------------------- | --------------- |
 | name        | String                                       | 表名称           |
 | columns (+) | Collection\<EncryptColumnRuleConfiguration\> | 加密列规则配置列表 |
-| queryWithCipherColumn (?) | boolean                                             | 该表是否使用加密列进行查询 | true   |
+| queryWithCipherColumn (?) | boolean                                             | 该表是否使用加密列进行查询 |
 
 ## 加密列规则配置
 
@@ -33,13 +33,15 @@ weight = 4
 
 可配置属性：
 
-| *名称*                  | *数据类型* | *说明*        |
-| ----------------------- | -------- | ------------- |
-| logicColumn             | String   | 逻辑列名称     |
-| cipherColumn            | String   | 密文列名称     |
-| assistedQueryColumn (?) | String   | 查询辅助列名称 |
-| plainColumn (?)         | String   | 原文列名称     |
-| encryptorName           | String   | 加密算法名称   |
+| *名称*                    | *数据类型* | *说明*        |
+| ------------------------- | -------- | ------------- |
+| logicColumn               | String   | 逻辑列名称     |
+| cipherColumn              | String   | 密文列名称     |
+| assistedQueryColumn (?)   | String   | 查询辅助列名称 |
+| plainColumn (?)           | String   | 原文列名称     |
+| encryptorName             | String   | 密文列加密算法名称   |
+| assistedQueryEncryptorName| String   | 查询辅助列加密算法名称   |
+| queryWithCipherColumn (?) | boolean                                             | 该列是否使用加密列进行查询 |
 
 ## 加解密算法配置
 

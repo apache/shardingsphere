@@ -20,21 +20,21 @@ grammar RQLStatement;
 import BaseRule;
 
 showShadowRules
-    : SHOW SHADOW (shadowRule | RULES) (FROM schemaName)?
+    : SHOW SHADOW (shadowRule | RULES) (FROM databaseName)?
     ;
 
 showShadowTableRules
-    : SHOW SHADOW TABLE RULES (FROM schemaName)?
+    : SHOW SHADOW TABLE RULES (FROM databaseName)?
     ;
 
 showShadowAlgorithms
-    : SHOW SHADOW ALGORITHMS (FROM schemaName)?
+    : SHOW SHADOW ALGORITHMS (FROM databaseName)?
     ;
 
 shadowRule
     : RULE ruleName
     ;
 
-schemaName
+databaseName
     : IDENTIFIER
     ;

@@ -18,8 +18,6 @@
 package org.apache.shardingsphere.shadow.distsql.parser.statement;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.subject.impl.ShadowSubjectSupplier;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 
 import java.util.Collection;
@@ -27,14 +25,13 @@ import java.util.Collection;
 /**
  * Drop shadow rule statement.
  */
-@RequiredArgsConstructor
 @Getter
-public final class DropShadowRuleStatement extends DropRuleStatement implements ShadowSubjectSupplier {
+public final class DropShadowRuleStatement extends DropRuleStatement {
     
     private final Collection<String> ruleNames;
     
-    public DropShadowRuleStatement(final boolean containsExistClause, final Collection<String> ruleNames) {
-        setContainsExistClause(containsExistClause);
+    public DropShadowRuleStatement(final boolean ifExists, final Collection<String> ruleNames) {
+        super(ifExists);
         this.ruleNames = ruleNames;
     }
 }

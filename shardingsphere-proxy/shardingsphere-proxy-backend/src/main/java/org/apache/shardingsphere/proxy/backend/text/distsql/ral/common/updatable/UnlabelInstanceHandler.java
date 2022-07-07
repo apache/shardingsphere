@@ -19,38 +19,42 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatabl
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.UnlabelInstanceStatement;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
+import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.InstanceId;
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsChangedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.Optional;
 
 /**
  * Unlabel instance handler.
  */
-public final class UnlabelInstanceHandler extends UpdatableRALBackendHandler<UnlabelInstanceStatement, UnlabelInstanceHandler> {
+public final class UnlabelInstanceHandler extends UpdatableRALBackendHandler<UnlabelInstanceStatement> {
     
     @Override
-    protected void update(final ContextManager contextManager, final UnlabelInstanceStatement sqlStatement) throws DistSQLException {
+    protected void update(final ContextManager contextManager) throws DistSQLException {
         MetaDataPersistService persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService().orElse(null);
         if (null == persistService || null == persistService.getRepository() || persistService.getRepository() instanceof StandalonePersistRepository) {
             throw new UnsupportedOperationException("Labels can only be removed in cluster mode");
         }
-        String instanceId = new InstanceId(sqlStatement.getIp(), String.valueOf(sqlStatement.getPort())).getId();
-        ComputeNodeInstance instances = persistService.getComputeNodePersistService().loadComputeNodeInstance(new InstanceDefinition(InstanceType.PROXY, instanceId));
-        Collection<String> labels = new LinkedHashSet<>(instances.getLabels());
-        if (sqlStatement.getLabels().isEmpty()) {
-            persistService.getComputeNodePersistService().deleteInstanceLabels(instanceId);
-        } else {
-            labels.removeAll(sqlStatement.getLabels());
-            persistService.getComputeNodePersistService().persistInstanceLabels(instanceId, labels, true);
+        String instanceId = getSqlStatement().getInstanceId();
+        Optional<ComputeNodeInstance> computeNodeInstance = contextManager.getInstanceContext().getComputeNodeInstanceById(instanceId);
+        if (computeNodeInstance.isPresent()) {
+            Collection<String> labels = new LinkedHashSet<>(computeNodeInstance.get().getLabels());
+            if (getSqlStatement().getLabels().isEmpty()) {
+                ShardingSphereEventBus.getInstance().post(new LabelsChangedEvent(instanceId, Collections.emptyList()));
+            } else {
+                labels.removeAll(getSqlStatement().getLabels());
+                ShardingSphereEventBus.getInstance().post(new LabelsChangedEvent(instanceId, new LinkedList<>(labels)));
+            }
         }
     }
 }

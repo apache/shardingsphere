@@ -19,12 +19,12 @@ package org.apache.shardingsphere.infra.metadata.database.schema.loader.dialect;
 
 import org.apache.shardingsphere.infra.datasource.registry.GlobalDataSourceRegistry;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.DataTypeLoader;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ConstraintMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ConstraintMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.TableMetaData;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -62,16 +62,16 @@ public final class MySQLSchemaMetaDataLoader implements DialectSchemaMetaDataLoa
     
     @Override
     public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
-        Map<String, TableMetaData> tableMetaDataMap = new LinkedHashMap<>();
+        Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
         Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(dataSource, tables);
         Map<String, Collection<IndexMetaData>> indexMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(dataSource, columnMetaDataMap.keySet());
         Map<String, Collection<ConstraintMetaData>> constraintMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadConstraintMetaDataMap(dataSource, columnMetaDataMap.keySet());
         for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
             Collection<IndexMetaData> indexMetaDataList = indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList());
             Collection<ConstraintMetaData> constraintMetaDataList = constraintMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList());
-            tableMetaDataMap.put(entry.getKey(), new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataList, constraintMetaDataList));
+            tableMetaDataList.add(new TableMetaData(entry.getKey(), entry.getValue(), indexMetaDataList, constraintMetaDataList));
         }
-        return Collections.singletonList(new SchemaMetaData(defaultSchemaName, tableMetaDataMap));
+        return Collections.singletonList(new SchemaMetaData(defaultSchemaName, tableMetaDataList));
     }
     
     private Map<String, Collection<ConstraintMetaData>> loadConstraintMetaDataMap(final DataSource dataSource, final Collection<String> tables) throws SQLException {
@@ -125,6 +125,11 @@ public final class MySQLSchemaMetaDataLoader implements DialectSchemaMetaDataLoa
         dataTypes.putIfAbsent("JSON", Types.LONGVARCHAR);
         dataTypes.putIfAbsent("GEOMETRY", Types.BINARY);
         dataTypes.putIfAbsent("YEAR", Types.DATE);
+        dataTypes.putIfAbsent("POINT", Types.BINARY);
+        dataTypes.putIfAbsent("MULTIPOINT", Types.BINARY);
+        dataTypes.putIfAbsent("POLYGON", Types.BINARY);
+        dataTypes.putIfAbsent("MULTIPOLYGON", Types.BINARY);
+        dataTypes.putIfAbsent("MULTILINESTRING", Types.BINARY);
     }
     
     private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final ResultSet resultSet) throws SQLException {

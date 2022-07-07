@@ -19,16 +19,17 @@ package org.apache.shardingsphere.proxy.backend.text.transaction;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.SchemaAssignedDatabaseBackendHandler;
+import org.apache.shardingsphere.sharding.merge.ddl.fetch.FetchOrderByValueGroupsHolder;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.XAStatement;
 import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.Collections;
 
 /**
@@ -56,8 +57,8 @@ public final class TransactionXAHandler implements TextProtocolBackendHandler {
     }
     
     @Override
-    public Collection<Object> getRowData() throws SQLException {
-        return this.tclStatement.getOp().equals("RECOVER") ? this.backendHandler.getRowData() : Collections.emptyList();
+    public QueryResponseRow getRowData() throws SQLException {
+        return this.tclStatement.getOp().equals("RECOVER") ? this.backendHandler.getRowData() : new QueryResponseRow(Collections.emptyList());
     }
     
     @Override
@@ -74,7 +75,6 @@ public final class TransactionXAHandler implements TextProtocolBackendHandler {
                 }
                 ResponseHeader header = backendHandler.execute();
                 TransactionHolder.setInTransaction();
-                connectionSession.getTransactionStatus().setManualXA(true);
                 return header;
             case "END":
             case "PREPARE":
@@ -85,8 +85,8 @@ public final class TransactionXAHandler implements TextProtocolBackendHandler {
                 try {
                     return backendHandler.execute();
                 } finally {
-                    connectionSession.getTransactionStatus().setManualXA(false);
                     TransactionHolder.clear();
+                    FetchOrderByValueGroupsHolder.remove();
                 }
             default:
                 throw new SQLException("unrecognized XA statement " + tclStatement.getOp());

@@ -206,6 +206,7 @@
                         <property key="aes-key-value" value="123456abc" />
                     </properties>
                 </encryptor>
+                <assisted-query-encryptor algorithm-name="MD5" />
             </column>
             <column name="order_id" cipher-column="order_cipher">
                 <encryptor algorithm-name="MD5" />
@@ -278,6 +279,12 @@
             <algorithm algorithm-name="uuid" />
         </shardingKeyGenerator>
     </alter-sharding-key-generator>
+
+    <alter-sharding-auditor sql-case-id="alter-sharding-auditor">
+        <shardingAuditor auditor-name="sharding_key_required_auditor">
+            <algorithm algorithm-name="DML_SHARDING_CONDITIONS" />
+        </shardingAuditor>
+    </alter-sharding-auditor>
 
     <alter-default-single-table sql-case-id="alter-default-single-table" default-data-source="ds_0" />
 

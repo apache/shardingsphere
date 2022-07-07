@@ -26,7 +26,7 @@
     </parent>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>shardingsphere</artifactId>
-    <version>5.1.2-SNAPSHOT</version>
+    <version>5.1.3-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
     <description>Build criterion and ecosystem above multi-model databases</description>
@@ -67,7 +67,7 @@
         <antlr4.version>4.9.2</antlr4.version>
         <snakeyaml.version>1.30</snakeyaml.version>
         <gson.version>2.8.6</gson.version>
-        <groovy.version>4.0.2</groovy.version>
+        <groovy.version>4.0.3</groovy.version>
         
         <jaxb.version>2.3.0</jaxb.version>
         <annotation-api.version>1.3.2</annotation-api.version>
@@ -104,7 +104,7 @@
         <lombok.version>1.18.20</lombok.version>
         
         <postgresql.version>42.3.3</postgresql.version>
-        <opengauss.version>2.0.1-compatibility</opengauss.version>
+        <opengauss.version>3.0.0</opengauss.version>
         <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
         <h2.version>1.4.196</h2.version>
@@ -166,6 +166,10 @@
                     <exclusion>
                         <groupId>com.google.j2objc</groupId>
                         <artifactId>j2objc-annotations</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>com.google.guava</groupId>
+                        <artifactId>listenablefuture</artifactId>
                     </exclusion>
                 </exclusions>
             </dependency>

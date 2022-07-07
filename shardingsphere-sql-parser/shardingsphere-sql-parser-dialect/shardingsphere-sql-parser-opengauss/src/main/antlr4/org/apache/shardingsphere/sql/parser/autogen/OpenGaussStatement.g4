@@ -81,10 +81,12 @@ execute
     | alterSchema
     | dropSchema
     | createType
+    | dropType
     | createTextSearch
     | dropDatabase
     | dropFunction
     | dropProcedure
+    | dropRule
     | dropServer
     | dropTrigger
     | dropView
@@ -124,5 +126,15 @@ execute
     | move
     | fetch
     | createDirectory
+    | alterDirectory
+    | dropDirectory
+    | createCast
+    | dropCast
+    | alterRule
+    | checkpoint
+    | alterType
+    | createPublication
+    | dropPublication
+    | createAggregate
     ) SEMI_? EOF
     ;

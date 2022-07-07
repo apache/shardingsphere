@@ -34,10 +34,12 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 public final class YamlProxyConfigurationSwapperTest {
     
@@ -45,13 +47,13 @@ public final class YamlProxyConfigurationSwapperTest {
     public void assertSwap() throws IOException {
         YamlProxyConfiguration yamlProxyConfig = ProxyConfigurationLoader.load("/conf/swap");
         ProxyConfiguration actual = new YamlProxyConfigurationSwapper().swap(yamlProxyConfig);
-        assertSchemaDataSources(actual);
-        assertSchemaRules(actual);
+        assertDataSources(actual);
+        assertDatabaseRules(actual);
         assertAuthorityRuleConfiguration(actual);
         assertProxyConfigurationProps(actual);
     }
     
-    private void assertSchemaDataSources(final ProxyConfiguration proxyConfig) {
+    private void assertDataSources(final ProxyConfiguration proxyConfig) {
         Map<String, DatabaseConfiguration> actual = proxyConfig.getDatabaseConfigurations();
         assertThat(actual.size(), is(1));
         HikariDataSource dataSource = (HikariDataSource) actual.get("swapper_test").getDataSources().get("foo_db");
@@ -66,7 +68,7 @@ public final class YamlProxyConfigurationSwapperTest {
         assertTrue(dataSource.isReadOnly());
     }
     
-    private void assertSchemaRules(final ProxyConfiguration proxyConfig) {
+    private void assertDatabaseRules(final ProxyConfiguration proxyConfig) {
         Map<String, DatabaseConfiguration> actual = proxyConfig.getDatabaseConfigurations();
         assertThat(actual.size(), is(1));
         Collection<RuleConfiguration> ruleConfigs = actual.get("swapper_test").getRuleConfigurations();
@@ -78,10 +80,9 @@ public final class YamlProxyConfigurationSwapperTest {
         assertThat(actual.getDataSources().size(), is(1));
         ReadwriteSplittingDataSourceRuleConfiguration dataSource = actual.getDataSources().iterator().next();
         assertThat(dataSource.getName(), is("readwrite_ds"));
-        assertThat(dataSource.getType(), is("Static"));
-        assertThat(dataSource.getProps().size(), is(2));
-        assertThat(dataSource.getProps().getProperty("read-data-source-names"), is("foo_db"));
-        assertThat(dataSource.getProps().getProperty("write-data-source-name"), is("foo_db"));
+        assertNotNull(dataSource.getStaticStrategy());
+        assertThat(dataSource.getStaticStrategy().getWriteDataSourceName(), is("foo_db"));
+        assertThat(dataSource.getStaticStrategy().getReadDataSourceNames(), is(Arrays.asList("foo_db")));
         assertThat(actual.getLoadBalancers().size(), is(1));
         ShardingSphereAlgorithmConfiguration loadBalancer = actual.getLoadBalancers().get("round_robin");
         assertThat(loadBalancer.getProps().size(), is(1));

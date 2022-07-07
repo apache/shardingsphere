@@ -19,14 +19,13 @@ package org.apache.shardingsphere.distsql.parser.statement.rdl.create;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.subject.impl.SingleTableSubjectSupplier;
 
 /**
  * Create default single table rule statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class CreateDefaultSingleTableRuleStatement extends CreateRuleStatement implements SingleTableSubjectSupplier {
+public final class CreateDefaultSingleTableRuleStatement extends CreateRuleStatement {
     
     private final String defaultResource;
 }

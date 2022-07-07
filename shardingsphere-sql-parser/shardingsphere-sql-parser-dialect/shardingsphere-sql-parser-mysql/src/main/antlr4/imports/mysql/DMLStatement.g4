@@ -97,7 +97,7 @@ assignmentValues
     ;
 
 assignmentValue
-    : expr | DEFAULT | blobValue
+    : blobValue | expr | DEFAULT
     ;
 
 blobValue
@@ -138,12 +138,12 @@ queryExpression
 
 queryExpressionBody
     : queryPrimary
-    | queryExpressionParens unionClause
-    | queryExpressionBody unionClause
+    | queryExpressionParens combineClause
+    | queryExpressionBody combineClause
     ;
 
-unionClause
-    : UNION unionOption? (queryPrimary | queryExpressionParens)
+combineClause
+    : UNION combineOption? (queryPrimary | queryExpressionParens)
     ;
 
 queryExpressionParens

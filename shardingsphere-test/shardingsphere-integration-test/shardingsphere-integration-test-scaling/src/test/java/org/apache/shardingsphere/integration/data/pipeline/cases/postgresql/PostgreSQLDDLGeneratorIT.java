@@ -19,15 +19,16 @@ package org.apache.shardingsphere.integration.data.pipeline.cases.postgresql;
 
 import com.google.common.base.Strings;
 import com.zaxxer.hikari.HikariDataSource;
-import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.DialectDDLSQLGeneratorFactory;
+import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGeneratorFactory;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.integration.data.pipeline.cases.entity.DDLGeneratorAssertionEntity;
 import org.apache.shardingsphere.integration.data.pipeline.cases.entity.DDLGeneratorAssertionsRootEntity;
 import org.apache.shardingsphere.integration.data.pipeline.cases.entity.DDLGeneratorOutputEntity;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.factory.DatabaseContainerFactory;
-import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.DockerDatabaseContainer;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.DatabaseContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.junit.After;
@@ -62,7 +63,7 @@ public final class PostgreSQLDDLGeneratorIT {
     
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     
-    private final DockerDatabaseContainer dockerDatabaseContainer;
+    private final DatabaseContainer databaseContainer;
     
     private final ScalingParameterized parameterized;
     
@@ -72,13 +73,16 @@ public final class PostgreSQLDDLGeneratorIT {
         this.parameterized = parameterized;
         this.rootEntity = JAXB.unmarshal(Objects.requireNonNull(PostgreSQLDDLGeneratorIT.class.getClassLoader().getResource(parameterized.getScenario())),
                 DDLGeneratorAssertionsRootEntity.class);
-        this.dockerDatabaseContainer = DatabaseContainerFactory.newInstance(parameterized.getDatabaseType(), parameterized.getDockerImageName());
-        dockerDatabaseContainer.start();
+        this.databaseContainer = DatabaseContainerFactory.newInstance(parameterized.getDatabaseType(), parameterized.getDockerImageName());
+        databaseContainer.start();
     }
     
     @Parameters(name = "{0}")
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NONE) {
+            return result;
+        }
         for (String each : ENV.getPostgresVersions()) {
             if (!Strings.isNullOrEmpty(each)) {
                 result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), each, String.join("/", PARENT_PATH, CASE_FILE_PATH)));
@@ -96,8 +100,8 @@ public final class PostgreSQLDDLGeneratorIT {
             int majorVersion = connection.getMetaData().getDatabaseMajorVersion();
             for (DDLGeneratorAssertionEntity each : rootEntity.getAssertions()) {
                 statement.execute(each.getInput().getSql());
-                String sql = DialectDDLSQLGeneratorFactory.findInstance(parameterized.getDatabaseType()).orElseThrow(() -> new ShardingSphereException("Failed to get dialect ddl sql generator"))
-                        .generateDDLSQL(each.getInput().getTable(), DEFAULT_SCHEMA, dataSource);
+                String sql = CreateTableSQLGeneratorFactory.findInstance(parameterized.getDatabaseType()).orElseThrow(() -> new ShardingSphereException("Failed to get dialect ddl sql generator"))
+                        .generate(each.getInput().getTable(), DEFAULT_SCHEMA, dataSource);
                 assertThat(REPLACE_LINE_SPACE.matcher(sql).replaceAll(""), is(REPLACE_LINE_SPACE.matcher(getVersionOutput(each.getOutputs(), majorVersion)).replaceAll("")));
             }
         }
@@ -118,8 +122,8 @@ public final class PostgreSQLDDLGeneratorIT {
     
     private DataSource createDataSource() {
         HikariDataSource result = new HikariDataSource();
-        result.setDriverClassName(DataSourceEnvironment.getDriverClassName(dockerDatabaseContainer.getDatabaseType()));
-        result.setJdbcUrl(dockerDatabaseContainer.getJdbcUrl(dockerDatabaseContainer.getHost(), dockerDatabaseContainer.getFirstMappedPort(), "postgres"));
+        result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseContainer.getDatabaseType()));
+        result.setJdbcUrl(databaseContainer.getJdbcUrl("postgres"));
         result.setUsername("root");
         result.setPassword("root");
         result.setMaximumPoolSize(2);
@@ -129,6 +133,6 @@ public final class PostgreSQLDDLGeneratorIT {
     
     @After
     public void stopContainer() {
-        dockerDatabaseContainer.stop();
+        databaseContainer.stop();
     }
 }

@@ -47,9 +47,7 @@ public final class LabelInstanceStatementAssert {
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
             assertThat(actual.isOverwrite(), is(expected.isOverwrite()));
-            assertThat(actual.getIp(), is(expected.getIp()));
-            assertThat(actual.getPort(), is(expected.getPort()));
-            assertThat(actual.getPort(), is(actual.getPort()));
+            assertThat(actual.getInstanceId(), is(expected.getInstanceId()));
         }
     }
 }

@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -80,8 +81,8 @@ public final class SchemaAssignedDatabaseBackendHandlerTest extends ProxyContext
     @Before
     public void setUp() throws IllegalAccessException, NoSuchFieldException, SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(
-                mock(MetaDataPersistService.class), getDatabaseMap(), mock(ShardingSphereRuleMetaData.class), mock(OptimizerContext.class), new ConfigurationProperties(new Properties()));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
+                new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
         when(connectionSession.getDatabaseName()).thenReturn(String.format(DATABASE_PATTERN, 0));
@@ -93,12 +94,12 @@ public final class SchemaAssignedDatabaseBackendHandlerTest extends ProxyContext
         setBackendHandlerFactory(schemaAssignedDatabaseBackendHandler);
     }
     
-    private Map<String, ShardingSphereDatabase> getDatabaseMap() {
+    private Map<String, ShardingSphereDatabase> getDatabases() {
         Map<String, ShardingSphereDatabase> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
             when(database.isComplete()).thenReturn(true);
-            when(database.hasDataSource()).thenReturn(true);
+            when(database.containsDataSource()).thenReturn(true);
             when(database.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
             result.put(String.format(DATABASE_PATTERN, i), database);
         }
@@ -127,7 +128,7 @@ public final class SchemaAssignedDatabaseBackendHandlerTest extends ProxyContext
     public void assertDatabaseUsingStream() throws SQLException {
         schemaAssignedDatabaseBackendHandler.execute();
         while (schemaAssignedDatabaseBackendHandler.next()) {
-            assertThat(schemaAssignedDatabaseBackendHandler.getRowData().size(), is(1));
+            assertThat(schemaAssignedDatabaseBackendHandler.getRowData().getData().size(), is(1));
         }
     }
 }

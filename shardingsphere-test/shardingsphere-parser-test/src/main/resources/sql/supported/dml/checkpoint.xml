@@ -17,5 +17,5 @@
   -->
 
 <sql-cases>
-    <sql-case id="checkpoint" value="CHECKPOINT;" db-types="PostgreSQL" />
+    <sql-case id="checkpoint" value="CHECKPOINT;" db-types="PostgreSQL,openGauss" />
 </sql-cases>

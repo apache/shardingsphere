@@ -38,31 +38,10 @@ public final class TransactionStatus {
     private volatile TransactionType transactionType;
     
     @Setter
-    private volatile boolean manualXA;
-    
-    @Setter
     private volatile boolean rollbackOnly;
     
     public TransactionStatus(final TransactionType initialTransactionType) {
         transactionType = initialTransactionType;
-    }
-    
-    /**
-     * Get current transaction type of this session.
-     *
-     * @return MANUALXA when in manual xa transaction or predefined transaction type if not
-     */
-    public TransactionType getTransactionType() {
-        return manualXA ? TransactionType.MANUALXA : transactionType;
-    }
-    
-    /**
-     * Check there's any transaction on this session.
-     *
-     * @return is in transaction or in manual xa transaction
-     */
-    public boolean isInTransaction() {
-        return inTransaction || manualXA;
     }
     
     /**
@@ -83,6 +62,6 @@ public final class TransactionStatus {
      * @return is in connection held transaction or not
      */
     public boolean isInConnectionHeldTransaction() {
-        return isInTransaction() && TransactionType.BASE != getTransactionType();
+        return inTransaction && TransactionType.BASE != transactionType;
     }
 }

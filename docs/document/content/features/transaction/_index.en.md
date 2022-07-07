@@ -79,3 +79,5 @@ With a high access cost, soft transactions require developers to transform the a
 
 **The main design goal of the distributed transaction modular of Apache ShardingSphere is to integrate existing mature transaction cases to provide an unified distributed transaction interface for local transactions, 2PC transactions and soft transactions;
  compensate for the deficiencies of current solutions to provide a one-stop distributed transaction solution.**
+
+**Source Codes: https://github.com/apache/shardingsphere/tree/master/shardingsphere-kernel/shardingsphere-transaction**

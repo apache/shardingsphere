@@ -34,7 +34,6 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.S
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowTrafficRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowTransactionRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowVariableStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.AlterInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.AlterSQLParserRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.AlterTrafficRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.AlterTransactionRuleStatement;
@@ -51,13 +50,11 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.S
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.UnlabelInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler.HandlerParameter;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.FormatHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.ParseDistSQLBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.PreviewDistSQLBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.FormatSQLHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.ParseDistSQLHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.PreviewHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.HintDistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.CountInstanceRulesHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ExportDatabaseConfigurationHandler;
@@ -70,7 +67,6 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ShowTrafficRulesHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ShowTransactionRuleHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ShowVariableHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.AlterInstanceHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.AlterSQLParserRuleHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.AlterTrafficRuleHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.AlterTransactionRuleHandler;
@@ -93,7 +89,7 @@ import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.Sho
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.status.SetReadwriteSplittingStatusStatement;
 
 import java.sql.SQLException;
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -102,61 +98,49 @@ import java.util.Map;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class RALBackendHandlerFactory {
     
-    private static final Map<String, Class<? extends RALBackendHandler>> UPDATABLE_HANDLER_MAP = new LinkedHashMap<>();
-    
-    private static final Map<String, Class<? extends RALBackendHandler>> QUERYABLE_HANDLER_MAP = new LinkedHashMap<>();
+    private static final Map<Class<? extends RALStatement>, Class<? extends RALBackendHandler<?>>> HANDLERS = new HashMap<>();
     
     static {
-        initUpdatableHandlerMap();
-        initQueryableHandlerMap();
-    }
-    
-    private static void initUpdatableHandlerMap() {
-        UPDATABLE_HANDLER_MAP.put(LabelInstanceStatement.class.getName(), LabelInstanceHandler.class);
-        UPDATABLE_HANDLER_MAP.put(UnlabelInstanceStatement.class.getName(), UnlabelInstanceHandler.class);
-        UPDATABLE_HANDLER_MAP.put(SetInstanceStatusStatement.class.getName(), SetInstanceStatusHandler.class);
-        UPDATABLE_HANDLER_MAP.put(SetVariableStatement.class.getName(), SetVariableHandler.class);
-        UPDATABLE_HANDLER_MAP.put(AlterInstanceStatement.class.getName(), AlterInstanceHandler.class);
-        UPDATABLE_HANDLER_MAP.put(SetReadwriteSplittingStatusStatement.class.getName(), SetReadwriteSplittingStatusHandler.class);
-        UPDATABLE_HANDLER_MAP.put(RefreshTableMetadataStatement.class.getName(), RefreshTableMetadataHandler.class);
-        UPDATABLE_HANDLER_MAP.put(CreateTrafficRuleStatement.class.getName(), CreateTrafficRuleHandler.class);
-        UPDATABLE_HANDLER_MAP.put(AlterTrafficRuleStatement.class.getName(), AlterTrafficRuleHandler.class);
-        UPDATABLE_HANDLER_MAP.put(DropTrafficRuleStatement.class.getName(), DropTrafficRuleHandler.class);
-        UPDATABLE_HANDLER_MAP.put(AlterSQLParserRuleStatement.class.getName(), AlterSQLParserRuleHandler.class);
-        UPDATABLE_HANDLER_MAP.put(AlterTransactionRuleStatement.class.getName(), AlterTransactionRuleHandler.class);
-        UPDATABLE_HANDLER_MAP.put(PrepareDistSQLStatement.class.getName(), PrepareDistSQLHandler.class);
-        UPDATABLE_HANDLER_MAP.put(ApplyDistSQLStatement.class.getName(), ApplyDistSQLHandler.class);
-        UPDATABLE_HANDLER_MAP.put(DiscardDistSQLStatement.class.getName(), DiscardDistSQLHandler.class);
-        UPDATABLE_HANDLER_MAP.put(ImportDatabaseConfigurationStatement.class.getName(), ImportDatabaseConfigurationHandler.class);
-    }
-    
-    private static void initQueryableHandlerMap() {
-        QUERYABLE_HANDLER_MAP.put(ShowInstanceStatement.class.getName(), ShowInstanceHandler.class);
-        QUERYABLE_HANDLER_MAP.put(ShowInstanceModeStatement.class.getName(), ShowInstanceModeHandler.class);
-        QUERYABLE_HANDLER_MAP.put(CountInstanceRulesStatement.class.getName(), CountInstanceRulesHandler.class);
-        QUERYABLE_HANDLER_MAP.put(ShowVariableStatement.class.getName(), ShowVariableHandler.class);
-        QUERYABLE_HANDLER_MAP.put(ShowReadwriteSplittingReadResourcesStatement.class.getName(), ShowReadwriteSplittingReadResourcesHandler.class);
-        QUERYABLE_HANDLER_MAP.put(ShowAuthorityRuleStatement.class.getName(), ShowAuthorityRuleHandler.class);
-        QUERYABLE_HANDLER_MAP.put(ShowSQLParserRuleStatement.class.getName(), ShowSQLParserRuleHandler.class);
-        QUERYABLE_HANDLER_MAP.put(ShowTableMetadataStatement.class.getName(), ShowTableMetadataHandler.class);
-        QUERYABLE_HANDLER_MAP.put(ShowTrafficRulesStatement.class.getName(), ShowTrafficRulesHandler.class);
-        QUERYABLE_HANDLER_MAP.put(ShowTransactionRuleStatement.class.getName(), ShowTransactionRuleHandler.class);
-        QUERYABLE_HANDLER_MAP.put(ExportDatabaseConfigurationStatement.class.getName(), ExportDatabaseConfigurationHandler.class);
-        QUERYABLE_HANDLER_MAP.put(ParseStatement.class.getName(), ParseDistSQLBackendHandler.class);
-        QUERYABLE_HANDLER_MAP.put(PreviewStatement.class.getName(), PreviewDistSQLBackendHandler.class);
-        QUERYABLE_HANDLER_MAP.put(FormatStatement.class.getName(), FormatHandler.class);
+        HANDLERS.put(LabelInstanceStatement.class, LabelInstanceHandler.class);
+        HANDLERS.put(UnlabelInstanceStatement.class, UnlabelInstanceHandler.class);
+        HANDLERS.put(SetInstanceStatusStatement.class, SetInstanceStatusHandler.class);
+        HANDLERS.put(SetVariableStatement.class, SetVariableHandler.class);
+        HANDLERS.put(SetReadwriteSplittingStatusStatement.class, SetReadwriteSplittingStatusHandler.class);
+        HANDLERS.put(RefreshTableMetadataStatement.class, RefreshTableMetadataHandler.class);
+        HANDLERS.put(CreateTrafficRuleStatement.class, CreateTrafficRuleHandler.class);
+        HANDLERS.put(AlterTrafficRuleStatement.class, AlterTrafficRuleHandler.class);
+        HANDLERS.put(DropTrafficRuleStatement.class, DropTrafficRuleHandler.class);
+        HANDLERS.put(AlterSQLParserRuleStatement.class, AlterSQLParserRuleHandler.class);
+        HANDLERS.put(AlterTransactionRuleStatement.class, AlterTransactionRuleHandler.class);
+        HANDLERS.put(PrepareDistSQLStatement.class, PrepareDistSQLHandler.class);
+        HANDLERS.put(ApplyDistSQLStatement.class, ApplyDistSQLHandler.class);
+        HANDLERS.put(DiscardDistSQLStatement.class, DiscardDistSQLHandler.class);
+        HANDLERS.put(ImportDatabaseConfigurationStatement.class, ImportDatabaseConfigurationHandler.class);
+        HANDLERS.put(ShowInstanceStatement.class, ShowInstanceHandler.class);
+        HANDLERS.put(ShowInstanceModeStatement.class, ShowInstanceModeHandler.class);
+        HANDLERS.put(CountInstanceRulesStatement.class, CountInstanceRulesHandler.class);
+        HANDLERS.put(ShowVariableStatement.class, ShowVariableHandler.class);
+        HANDLERS.put(ShowReadwriteSplittingReadResourcesStatement.class, ShowReadwriteSplittingReadResourcesHandler.class);
+        HANDLERS.put(ShowAuthorityRuleStatement.class, ShowAuthorityRuleHandler.class);
+        HANDLERS.put(ShowSQLParserRuleStatement.class, ShowSQLParserRuleHandler.class);
+        HANDLERS.put(ShowTableMetadataStatement.class, ShowTableMetadataHandler.class);
+        HANDLERS.put(ShowTrafficRulesStatement.class, ShowTrafficRulesHandler.class);
+        HANDLERS.put(ShowTransactionRuleStatement.class, ShowTransactionRuleHandler.class);
+        HANDLERS.put(ExportDatabaseConfigurationStatement.class, ExportDatabaseConfigurationHandler.class);
+        HANDLERS.put(ParseStatement.class, ParseDistSQLHandler.class);
+        HANDLERS.put(PreviewStatement.class, PreviewHandler.class);
+        HANDLERS.put(FormatStatement.class, FormatSQLHandler.class);
     }
     
     /**
      * Create new instance of RAL backend handler.
      *
-     * @param databaseType database type
      * @param sqlStatement RAL statement
      * @param connectionSession connection session
      * @return created instance
      * @throws SQLException SQL exception
      */
-    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final RALStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
+    public static TextProtocolBackendHandler newInstance(final RALStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
         if (sqlStatement instanceof HintDistSQLStatement) {
             return new HintDistSQLBackendHandler((HintDistSQLStatement) sqlStatement, connectionSession);
         }
@@ -166,10 +150,10 @@ public final class RALBackendHandlerFactory {
         if (sqlStatement instanceof UpdatableScalingRALStatement) {
             return new UpdatableScalingRALBackendHandler((UpdatableScalingRALStatement) sqlStatement);
         }
-        return getHandler(sqlStatement, new HandlerParameter(sqlStatement, databaseType, connectionSession));
+        return createRALBackendHandler(sqlStatement, connectionSession);
     }
     
-    private static RALBackendHandler newInstance(final Class<? extends RALBackendHandler> clazz) {
+    private static RALBackendHandler<?> newInstance(final Class<? extends RALBackendHandler<?>> clazz) {
         try {
             return clazz.getDeclaredConstructor().newInstance();
         } catch (final ReflectiveOperationException ex) {
@@ -177,11 +161,13 @@ public final class RALBackendHandlerFactory {
         }
     }
     
-    private static RALBackendHandler getHandler(final RALStatement sqlStatement, final HandlerParameter<RALStatement> parameter) {
-        Class<? extends RALBackendHandler> clazz = UPDATABLE_HANDLER_MAP.getOrDefault(sqlStatement.getClass().getName(), QUERYABLE_HANDLER_MAP.get(sqlStatement.getClass().getName()));
+    private static RALBackendHandler<?> createRALBackendHandler(final RALStatement sqlStatement, final ConnectionSession connectionSession) {
+        Class<? extends RALBackendHandler<?>> clazz = HANDLERS.get(sqlStatement.getClass());
         if (null == clazz) {
-            throw new UnsupportedOperationException(String.format("Unsupported statement : %s", sqlStatement.getClass().getCanonicalName()));
+            throw new UnsupportedOperationException(String.format("Unsupported SQL statement : %s", sqlStatement.getClass().getCanonicalName()));
         }
-        return newInstance(clazz).init(parameter);
+        RALBackendHandler<?> result = newInstance(clazz);
+        result.init(sqlStatement, connectionSession);
+        return result;
     }
 }

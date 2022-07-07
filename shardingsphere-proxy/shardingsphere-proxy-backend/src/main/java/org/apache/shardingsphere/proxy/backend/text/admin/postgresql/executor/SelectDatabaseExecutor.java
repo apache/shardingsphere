@@ -66,7 +66,7 @@ public final class SelectDatabaseExecutor extends DefaultDatabaseMetadataExecuto
     }
     
     private void addDefaultRow() {
-        Collection<String> schemaWithoutDataSource = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> !hasDatasource(each)).collect(Collectors.toList());
+        Collection<String> schemaWithoutDataSource = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> !hasDataSource(each)).collect(Collectors.toList());
         schemaWithoutDataSource.forEach(each -> getRows().addLast(getDefaultRowData(each)));
     }
     
@@ -80,14 +80,14 @@ public final class SelectDatabaseExecutor extends DefaultDatabaseMetadataExecuto
     
     @Override
     protected List<String> getDatabaseNames(final ConnectionSession connectionSession) {
-        Collection<String> schemaNames = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee())).collect(Collectors.toList());
-        return schemaNames.stream().filter(AbstractDatabaseMetadataExecutor::hasDatasource).collect(Collectors.toList());
+        Collection<String> databaseNames = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee())).collect(Collectors.toList());
+        return databaseNames.stream().filter(AbstractDatabaseMetadataExecutor::hasDataSource).collect(Collectors.toList());
     }
     
     @Override
     protected void rowPostProcessing(final String databaseName, final Map<String, Object> rowMap, final Map<String, String> aliasMap) {
         buildColumnNames(aliasMap);
-        ShardingSphereResource resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMetaData(databaseName).getResource();
+        ShardingSphereResource resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getResource();
         Set<String> catalogs = resource.getDataSources().keySet().stream().map(each -> resource.getDataSourceMetaData(each).getCatalog()).collect(Collectors.toSet());
         databaseNameAlias = aliasMap.getOrDefault(DATABASE_NAME, aliasMap.getOrDefault(DATNAME, aliasMap.getOrDefault(NAME, "")));
         String rowValue = rowMap.getOrDefault(databaseNameAlias, "").toString();

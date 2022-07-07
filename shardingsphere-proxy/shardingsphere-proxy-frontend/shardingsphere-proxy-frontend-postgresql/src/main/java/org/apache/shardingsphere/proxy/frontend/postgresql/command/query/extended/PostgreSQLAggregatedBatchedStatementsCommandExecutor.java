@@ -22,8 +22,6 @@ import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.PostgreSQLCommandPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLNoDataPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLColumnType;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatement;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLBindCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.bind.PostgreSQLComBindPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.describe.PostgreSQLComDescribePacket;
@@ -73,7 +71,7 @@ public final class PostgreSQLAggregatedBatchedStatementsCommandExecutor implemen
     
     private PostgreSQLPreparedStatement getPreparedStatement() {
         PostgreSQLComBindPacket bindPacket = (PostgreSQLComBindPacket) packets.get(0);
-        return PostgreSQLPreparedStatementRegistry.getInstance().get(connectionSession.getConnectionId(), bindPacket.getStatementId());
+        return connectionSession.getPreparedStatementRegistry().getPreparedStatement(bindPacket.getStatementId());
     }
     
     private List<List<Object>> readParameterSets(final List<PostgreSQLColumnType> parameterTypes) {

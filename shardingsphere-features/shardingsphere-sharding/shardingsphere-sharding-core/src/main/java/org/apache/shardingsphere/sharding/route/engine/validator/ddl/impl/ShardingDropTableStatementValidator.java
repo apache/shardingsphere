@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.sharding.route.engine.validator.ddl.ShardingDDLStatementValidator;
@@ -46,11 +46,14 @@ public final class ShardingDropTableStatementValidator extends ShardingDDLStatem
     @Override
     public void preValidate(final ShardingRule shardingRule,
                             final SQLStatementContext<DropTableStatement> sqlStatementContext, final List<Object> parameters, final ShardingSphereDatabase database) {
-        if (!DropTableStatementHandler.containsExistClause(sqlStatementContext.getSqlStatement())) {
+        if (!DropTableStatementHandler.ifExists(sqlStatementContext.getSqlStatement())) {
             String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName());
             ShardingSphereSchema schema = sqlStatementContext.getTablesContext().getSchemaName()
                     .map(optional -> database.getSchemas().get(optional)).orElseGet(() -> database.getSchemas().get(defaultSchemaName));
             validateTableExist(schema, sqlStatementContext.getTablesContext().getTables());
+        }
+        if (DropTableStatementHandler.containsCascade(sqlStatementContext.getSqlStatement())) {
+            throw new ShardingSphereException("DROP TABLE ... CASCADE statement is not supported yet.");
         }
     }
     

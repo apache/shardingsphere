@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 206 companies.
+Total: 214 companies.
 
 ### Infra Software
 <ul>
@@ -35,6 +35,7 @@ Total: 206 companies.
 <ul>
     <li><a href="https://www.bestpay.com.cn/" rel="nofollow">China Telecom Best Pay(Orange Finance)</a></li>
     <li><a href="https://www.kjtpay.com/" rel="nofollow">KJT pay</a></li>
+    <li><a href="https://www.baofu.com/" rel="nofollow">BAO FU</a></li>
 </ul>
 
 ### Telecommunications
@@ -46,7 +47,8 @@ Total: 206 companies.
 ### FinTech
 <ul>
     <li><a href="http://jr.jd.com/" rel="nofollow">JD Finance</a>: <a href="https://www.mysql.com/customers/view/?id=1461" rel="nofollow">User Case</a></li>
-    <li><a href="http://www.sunline-i.com/" rel="nofollow">Sunline</a></li>    
+    <li><a href="https://tech.pingan.com/" rel="nofollow">PING AN TECHNOLOGY</a></li>
+    <li><a href="http://www.sunline-i.com/" rel="nofollow">Sunline</a></li> 
     <li><a href="https://www.360jinrong.net/" rel="nofollow">360 ShuKe</a></li>
     <li><a href="https://www.msxf.com/" rel="nofollow">MSXF</a></li>
     <li><a href="https://www.9fgroup.com/" rel="nofollow">9fgroup</a></li>
@@ -73,6 +75,7 @@ Total: 206 companies.
     <li><a href="https://www.jd.ru/" rel="nofollow">JD.ru</a></li>
     <li><a href="https://www.wandougongzhu.cn" rel="nofollow">WanDouGongZhu</a></li>
     <li><a href="https://www.missfresh.cn/" rel="nofollow">MissFresh</a></li>
+    <li><a href="http://www.ucreater.com/" rel="nofollow">UCREATER</a></li>
 </ul>
 
 ### E-Commerce
@@ -103,7 +106,6 @@ Total: 206 companies.
     <li>JD’s Big Data and Intelligent Supply Chain Department
     <li><a href="https://aifanfan.baidu.com/" rel="nofollow">Baidu aifanfan</a></li>
     <li><a href="https://www.tuya.com/" rel="nofollow">tuya</a></li>
-    <li><a href="https://www.itrus.com.cn/" rel="nofollow">ITrusChina</a></li>
     <li><a href="https://www.advancegroup.com/" rel="nofollow">Advance Intelligence Group</a></li>
     <li><a href="http://www.zhenxinsafe.com/" rel="nofollow">ZhenXin Safe</a></li>
     <li><a href="http://www.cloudansys.com/" rel="nofollow">YUNLU</a></li>
@@ -113,7 +115,7 @@ Total: 206 companies.
     <li><a href="https://www.shebaotong.com/" rel="nofollow">SheBaoTong</a></li>
     <li><a href="http://www.dtchuxing.com/" rel="nofollow">Bus Cloud</a></li>
     <li><a href="http://www.ushareit.com/" rel="nofollow">Shareit</a></li>
-    <li><a href="https://www.xforceplus.com/" rel="nofollow">Xforceplus</a></li>
+    <li><a href="https://www.xforceplus.com/" rel="nofollow">XForcePlus</a></li>
     <li><a href="http://www.meicloud.com/" rel="nofollow">Midea Cloud</a></li>
     <li><a href="http://www.shangquanquan.com/" rel="nofollow">shangquanquan</a></li>
     <li><a href="https://www.glodon.com/" rel="nofollow">Glodon</a></li>
@@ -124,6 +126,7 @@ Total: 206 companies.
     <li><a href="https://www.teddymobile.cn/" rel="nofollow">Teddy Mobile</a></li>
     <li><a href="https://www.ecopiatech.com/" rel="nofollow">Ecopia</a></li>
     <li><a href="https://xiaoman.cn/" rel="nofollow">OKKI CRM</a></li>
+    <li><a href="https://www.wegooooo.com/" rel="nofollow">wegooooo.com</a></li>
 </ul>
 
 ### Transportation
@@ -198,8 +201,15 @@ Total: 206 companies.
     <li><a href="https://www.weixiaotong.com.cn/" rel="nofollow">Wei Xiao Tong</a></li>
 </ul>
 
+### E-Security
+<ul>
+    <li><a href="https://www.itrus.com.cn/" rel="nofollow">ITrusChina</a></li>
+    <li><a href="http://www.ncs-cyber.com.cn" rel="nofollow">EncryptCyber</a></li>
+</ul>
+
 ### News
 <ul>
+    <li><a href="http://www.people.com.cn/" rel="nofollow">people.cn</a></li>
     <li><a href="https://ss.sohu.com/" rel="nofollow">Sohu News</a></li>
     <li><a href="https://www.tianya.cn/" rel="nofollow">TianYa</a></li>
     <li><a href="https://www.autohome.com.cn/" rel="nofollow">AutoHome</a></li>
@@ -284,6 +294,8 @@ Total: 206 companies.
     <li><a href="http://www.hzsun.com" rel="nofollow">hzsun</a></li>
     <li><a href="https://www.ywwl.com/" rel="nofollow">YOWANT</a></li>
     <li><a href="http://www.le7soft.com/" rel="nofollow">Le7Soft</a></li>
+    <li><a href="http://www.hylink.net.cn/" rel="nofollow">hyLink</a></li>
+    <li><a href="https://www.data4truth.com" rel="nofollow">data4truth</a></li>
 </ul>
 
 ### Health Care

@@ -20,9 +20,9 @@ package org.apache.shardingsphere.dbdiscovery.rule.builder;
 import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.constant.DatabaseDiscoveryOrder;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -31,12 +31,12 @@ import java.util.Map;
 /**
  * Algorithm provided database discovery rule builder.
  */
-public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilder implements SchemaRuleBuilder<AlgorithmProvidedDatabaseDiscoveryRuleConfiguration> {
+public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilder implements DatabaseRuleBuilder<AlgorithmProvidedDatabaseDiscoveryRuleConfiguration> {
     
     @Override
     public DatabaseDiscoveryRule build(final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration config, final String databaseName,
-                                       final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
-        return new DatabaseDiscoveryRule(databaseName, dataSources, config);
+                                       final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
+        return new DatabaseDiscoveryRule(databaseName, dataSources, config, instanceContext);
     }
     
     @Override

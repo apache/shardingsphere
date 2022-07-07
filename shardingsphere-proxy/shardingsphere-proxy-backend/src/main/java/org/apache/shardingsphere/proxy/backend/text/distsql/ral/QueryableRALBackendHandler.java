@@ -18,14 +18,16 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedResult;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
-import org.apache.shardingsphere.proxy.backend.response.data.impl.TextQueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
-import org.apache.shardingsphere.sharding.merge.dal.common.MultipleLocalDataMergedResult;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 
 import java.sql.SQLException;
 import java.sql.Types;
@@ -36,18 +38,28 @@ import java.util.stream.Collectors;
 
 /**
  * Queryable RAL backend handler.
+ * 
+ * @param <E> type of RAL statement
  */
-public abstract class QueryableRALBackendHandler<E extends RALStatement, R extends QueryableRALBackendHandler> extends RALBackendHandler<E, R> {
+public abstract class QueryableRALBackendHandler<E extends RALStatement> extends RALBackendHandler<E> {
     
     private List<QueryHeader> queryHeaders;
     
-    private MultipleLocalDataMergedResult mergedResult;
+    private MergedResult mergedResult;
     
     @Override
-    protected final ResponseHeader handle(final ContextManager contextManager, final E sqlStatement) throws SQLException {
-        queryHeaders = createQueryHeader(getColumnNames());
-        mergedResult = createMergedResult(getRows(contextManager));
+    public final ResponseHeader execute() throws SQLException {
+        queryHeaders = createQueryHeader();
+        mergedResult = createMergedResult();
         return new QueryResponseHeader(queryHeaders);
+    }
+    
+    private List<QueryHeader> createQueryHeader() {
+        return getColumnNames().stream().map(each -> new QueryHeader("", "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false)).collect(Collectors.toList());
+    }
+    
+    private MergedResult createMergedResult() throws SQLException {
+        return new LocalDataMergedResult(getRows(ProxyContext.getInstance().getContextManager()));
     }
     
     @Override
@@ -56,29 +68,15 @@ public abstract class QueryableRALBackendHandler<E extends RALStatement, R exten
     }
     
     @Override
-    public final Collection<Object> getRowData() throws SQLException {
-        return createQueryResponseRow(queryHeaders.size(), mergedResult).getData();
+    public final QueryResponseRow getRowData() throws SQLException {
+        List<QueryResponseCell> cells = new ArrayList<>(queryHeaders.size());
+        for (int i = 0; i < queryHeaders.size(); i++) {
+            cells.add(new QueryResponseCell(queryHeaders.get(i).getColumnType(), mergedResult.getValue(i + 1, Object.class)));
+        }
+        return new QueryResponseRow(cells);
     }
     
     protected abstract Collection<String> getColumnNames();
     
-    protected abstract Collection<List<Object>> getRows(ContextManager contextManager) throws SQLException;
-    
-    private MultipleLocalDataMergedResult createMergedResult(final Collection<List<Object>> rows) {
-        return new MultipleLocalDataMergedResult(rows);
-    }
-    
-    private List<QueryHeader> createQueryHeader(final Collection<String> columnNames) {
-        return columnNames.stream()
-                .map(each -> new QueryHeader("", "", each, each, Types.CHAR, "CHAR", 255, 0, false, false, false, false))
-                .collect(Collectors.toList());
-    }
-    
-    private QueryResponseRow createQueryResponseRow(final int size, final MultipleLocalDataMergedResult mergedResult) {
-        List<QueryResponseCell> cells = new ArrayList<>(size);
-        for (int i = 0; i < size; i++) {
-            cells.add(new TextQueryResponseCell(mergedResult.getValue(i + 1, Object.class)));
-        }
-        return new QueryResponseRow(cells);
-    }
+    protected abstract Collection<LocalDataQueryResultRow> getRows(ContextManager contextManager) throws SQLException;
 }

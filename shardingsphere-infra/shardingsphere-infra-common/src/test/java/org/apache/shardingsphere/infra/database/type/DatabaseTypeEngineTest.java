@@ -17,8 +17,14 @@
 
 package org.apache.shardingsphere.infra.database.type;
 
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.dialect.MariaDBDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -27,7 +33,9 @@ import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -180,5 +188,37 @@ public final class DatabaseTypeEngineTest {
     @Test
     public void assertGetTrunkDatabaseTypeNameWithBranchDatabaseType() {
         assertThat(DatabaseTypeEngine.getTrunkDatabaseTypeName(new MariaDBDatabaseType()), is("MySQL"));
+    }
+    
+    @Test
+    public void assertGetProtocolTypeFromConfiguredProperties() {
+        Properties props = new Properties();
+        props.setProperty(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "MySQL");
+        DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration()));
+        assertThat(DatabaseTypeEngine.getProtocolType(databaseConfig, new ConfigurationProperties(props)), instanceOf(MySQLDatabaseType.class));
+        assertThat(DatabaseTypeEngine.getProtocolType(Collections.singletonMap("foo_db", databaseConfig), new ConfigurationProperties(props)), instanceOf(MySQLDatabaseType.class));
+    }
+    
+    @Test
+    public void assertGetProtocolTypeFromDataSource() throws SQLException {
+        DataSource datasource = mockDataSource(DatabaseTypeFactory.getInstance("PostgreSQL"));
+        DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("foo_ds", datasource), Collections.singleton(new FixtureRuleConfiguration()));
+        assertThat(DatabaseTypeEngine.getProtocolType(databaseConfig, new ConfigurationProperties(new Properties())), instanceOf(PostgreSQLDatabaseType.class));
+        assertThat(DatabaseTypeEngine.getProtocolType(Collections.singletonMap("foo_db", databaseConfig), new ConfigurationProperties(new Properties())), instanceOf(PostgreSQLDatabaseType.class));
+    }
+    
+    @Test
+    public void assertGetStorageType() throws SQLException {
+        DataSource datasource = mockDataSource(DatabaseTypeFactory.getInstance("MySQL"));
+        DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.singletonMap("", datasource), Collections.singletonList(new FixtureRuleConfiguration()));
+        assertThat(DatabaseTypeEngine.getStorageType(Collections.singletonMap("foo_db", databaseConfig)), instanceOf(MySQLDatabaseType.class));
+    }
+    
+    @Test
+    public void assertGetDefaultSchemaName() {
+        DatabaseType schemaSupportDatabaseType = DatabaseTypeFactory.getInstance("openGauss");
+        assertThat(DatabaseTypeEngine.getDefaultSchemaName(schemaSupportDatabaseType, ""), is("public"));
+        DatabaseType schemaNoSupportDatabaseType = DatabaseTypeFactory.getInstance("MySQL");
+        assertThat(DatabaseTypeEngine.getDefaultSchemaName(schemaNoSupportDatabaseType, "MySQL"), is("MySQL"));
     }
 }

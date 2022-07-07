@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.infra.executor.check;
 
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.check.SQLCheckResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.ordered.OrderedSPI;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.List;
 import java.util.Map;
@@ -47,15 +48,15 @@ public interface SQLChecker<T extends ShardingSphereRule> extends OrderedSPI<T> 
     /**
      * Check SQL.
      * 
-     * @param sqlStatement SQL statement
+     * @param sqlStatementContext SQL statement context
      * @param parameters SQL parameters
      * @param grantee grantee
      * @param currentDatabase current database
-     * @param databaseMap database map
+     * @param databases databases
      * @param rule rule
      * @return SQL check result
      */
-    SQLCheckResult check(SQLStatement sqlStatement, List<Object> parameters, Grantee grantee, String currentDatabase, Map<String, ShardingSphereDatabase> databaseMap, T rule);
+    SQLCheckResult check(SQLStatementContext<?> sqlStatementContext, List<Object> parameters, Grantee grantee, String currentDatabase, Map<String, ShardingSphereDatabase> databases, T rule);
     
     /**
      * Check User.

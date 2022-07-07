@@ -24,10 +24,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.TableMetaDataLoader;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoaderFactory;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.TableMetaData;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -48,45 +48,45 @@ import java.util.concurrent.TimeUnit;
 public final class SchemaMetaDataLoaderEngine {
     
     private static final ExecutorService EXECUTOR_SERVICE = new ThreadPoolExecutor(Runtime.getRuntime().availableProcessors() * 2, Runtime.getRuntime().availableProcessors() * 2,
-            0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-TableMetaDataLoaderEngine-%d").build());
+            0L, TimeUnit.MILLISECONDS, new LinkedBlockingQueue<>(), new ThreadFactoryBuilder().setDaemon(true).setNameFormat("ShardingSphere-SchemaMetaDataLoaderEngine-%d").build());
     
     /**
      * Load schema meta data.
      *
-     * @param materials table meta data load material
+     * @param materials schema meta data loader materials
      * @param databaseType database type
      * @return schema meta data map
      * @throws SQLException SQL exception
      */
-    public static Map<String, SchemaMetaData> load(final Collection<TableMetaDataLoaderMaterial> materials, final DatabaseType databaseType) throws SQLException {
+    public static Map<String, SchemaMetaData> load(final Collection<SchemaMetaDataLoaderMaterials> materials, final DatabaseType databaseType) throws SQLException {
         Optional<DialectSchemaMetaDataLoader> dialectTableMetaDataLoader = DialectSchemaMetaDataLoaderFactory.findInstance(databaseType);
         if (dialectTableMetaDataLoader.isPresent()) {
             try {
                 return loadByDialect(dialectTableMetaDataLoader.get(), materials);
             } catch (final SQLException | ShardingSphereException ex) {
-                log.error("Dialect load table meta data error", ex);
+                log.error("Dialect load table meta data error.", ex);
                 return loadByDefault(materials, databaseType);
             }
         }
         return loadByDefault(materials, databaseType);
     }
     
-    private static Map<String, SchemaMetaData> loadByDefault(final Collection<TableMetaDataLoaderMaterial> materials, final DatabaseType databaseType) throws SQLException {
-        Map<String, TableMetaData> result = new LinkedHashMap<>();
+    private static Map<String, SchemaMetaData> loadByDefault(final Collection<SchemaMetaDataLoaderMaterials> materials, final DatabaseType databaseType) throws SQLException {
+        Collection<TableMetaData> result = new LinkedList<>();
         String defaultSchemaName = null;
-        for (TableMetaDataLoaderMaterial each : materials) {
+        for (SchemaMetaDataLoaderMaterials each : materials) {
             defaultSchemaName = each.getDefaultSchemaName();
             for (String tableName : each.getActualTableNames()) {
-                TableMetaDataLoader.load(each.getDataSource(), tableName, databaseType).ifPresent(optional -> result.put(tableName, optional));
+                TableMetaDataLoader.load(each.getDataSource(), tableName, databaseType).ifPresent(result::add);
             }
         }
         return Collections.singletonMap(defaultSchemaName, new SchemaMetaData(defaultSchemaName, result));
     }
     
-    private static Map<String, SchemaMetaData> loadByDialect(final DialectSchemaMetaDataLoader loader, final Collection<TableMetaDataLoaderMaterial> materials) throws SQLException {
+    private static Map<String, SchemaMetaData> loadByDialect(final DialectSchemaMetaDataLoader loader, final Collection<SchemaMetaDataLoaderMaterials> materials) throws SQLException {
         Map<String, SchemaMetaData> result = new LinkedHashMap<>();
         Collection<Future<Collection<SchemaMetaData>>> futures = new LinkedList<>();
-        for (TableMetaDataLoaderMaterial each : materials) {
+        for (SchemaMetaDataLoaderMaterials each : materials) {
             futures.add(EXECUTOR_SERVICE.submit(() -> loader.load(each.getDataSource(), each.getActualTableNames(), each.getDefaultSchemaName())));
         }
         try {
@@ -104,8 +104,8 @@ public final class SchemaMetaDataLoaderEngine {
     
     private static void mergeSchemaMetaDataMap(final Map<String, SchemaMetaData> schemaMetaDataMap, final Collection<SchemaMetaData> addedSchemaMetaDataList) {
         for (SchemaMetaData each : addedSchemaMetaDataList) {
-            SchemaMetaData schemaMetaData = schemaMetaDataMap.computeIfAbsent(each.getName(), key -> new SchemaMetaData(each.getName(), new LinkedHashMap<>()));
-            schemaMetaData.getTables().putAll(each.getTables());
+            SchemaMetaData schemaMetaData = schemaMetaDataMap.computeIfAbsent(each.getName(), key -> new SchemaMetaData(each.getName(), new LinkedList<>()));
+            schemaMetaData.getTables().addAll(each.getTables());
         }
     }
 }

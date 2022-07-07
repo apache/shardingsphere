@@ -31,9 +31,6 @@
     <logger name="org.apache.shardingsphere.driver" level="INFO" additivity="false">
         <appender-ref ref="console" />
     </logger>
-    <logger name="org.apache.shardingsphere.mode.manager.cluster.coordinator.lock" level="DEBUG" additivity="false">
-        <appender-ref ref="console" />
-    </logger>
     <logger name="com.zaxxer.hikari.pool.ProxyConnection" level="OFF" />
     <root>
         <level value="WARN" />

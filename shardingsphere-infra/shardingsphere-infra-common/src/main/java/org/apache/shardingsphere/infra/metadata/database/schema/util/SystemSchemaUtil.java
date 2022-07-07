@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.util;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.Collection;
 
@@ -31,19 +32,21 @@ public class SystemSchemaUtil {
     
     /**
      * Judge whether sql statement contains system schema or not.
-     * 
+     *
      * @param databaseType databaseType
      * @param schemaNames schema names
-     * @param sessionDatabaseName session database name
+     * @param database database
      * @return whether sql statement contains system schema or not
      */
-    public static boolean containsSystemSchema(final DatabaseType databaseType, final Collection<String> schemaNames, final String sessionDatabaseName) {
-        for (String each : schemaNames) {
-            if (!databaseType.getSystemSchemas().contains(each)) {
-                continue;
-            }
-            return true;
+    public static boolean containsSystemSchema(final DatabaseType databaseType, final Collection<String> schemaNames, final ShardingSphereDatabase database) {
+        if (database.isComplete()) {
+            return false;
         }
-        return databaseType.getSystemSchemas().contains(sessionDatabaseName);
+        for (String each : schemaNames) {
+            if (databaseType.getSystemSchemas().contains(each)) {
+                return true;
+            }
+        }
+        return databaseType.getSystemSchemas().contains(database.getName());
     }
 }

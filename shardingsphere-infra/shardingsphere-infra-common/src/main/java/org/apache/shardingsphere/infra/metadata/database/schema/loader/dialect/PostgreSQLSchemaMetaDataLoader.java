@@ -21,11 +21,11 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.DataTypeLoader;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoader;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.TableMetaData;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -72,17 +72,17 @@ public final class PostgreSQLSchemaMetaDataLoader implements DialectSchemaMetaDa
         for (String each : schemaNames) {
             Multimap<String, IndexMetaData> tableIndexMetaDataMap = schemaIndexMetaDataMap.getOrDefault(each, LinkedHashMultimap.create());
             Multimap<String, ColumnMetaData> tableColumnMetaDataMap = schemaColumnMetaDataMap.getOrDefault(each, LinkedHashMultimap.create());
-            result.add(new SchemaMetaData(each, createTableMetaDataMap(tableIndexMetaDataMap, tableColumnMetaDataMap)));
+            result.add(new SchemaMetaData(each, createTableMetaDataList(tableIndexMetaDataMap, tableColumnMetaDataMap)));
         }
         return result;
     }
     
-    private Map<String, TableMetaData> createTableMetaDataMap(final Multimap<String, IndexMetaData> tableIndexMetaDataMap, final Multimap<String, ColumnMetaData> tableColumnMetaDataMap) {
-        Map<String, TableMetaData> result = new LinkedHashMap<>();
+    private Collection<TableMetaData> createTableMetaDataList(final Multimap<String, IndexMetaData> tableIndexMetaDataMap, final Multimap<String, ColumnMetaData> tableColumnMetaDataMap) {
+        Collection<TableMetaData> result = new LinkedList<>();
         for (String each : tableColumnMetaDataMap.keySet()) {
             Collection<ColumnMetaData> columnMetaDataList = tableColumnMetaDataMap.get(each);
             Collection<IndexMetaData> indexMetaDataList = tableIndexMetaDataMap.get(each);
-            result.put(each, new TableMetaData(each, columnMetaDataList, indexMetaDataList, Collections.emptyList()));
+            result.add(new TableMetaData(each, columnMetaDataList, indexMetaDataList, Collections.emptyList()));
         }
         return result;
     }

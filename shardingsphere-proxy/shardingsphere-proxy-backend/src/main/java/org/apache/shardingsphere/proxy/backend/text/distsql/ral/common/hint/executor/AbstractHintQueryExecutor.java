@@ -21,10 +21,9 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQL
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
-import org.apache.shardingsphere.proxy.backend.response.data.impl.TextQueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.HintStatementExecutor;
 
 import java.sql.SQLException;
@@ -60,7 +59,7 @@ public abstract class AbstractHintQueryExecutor<T extends HintDistSQLStatement> 
     public final QueryResponseRow getQueryResponseRow() throws SQLException {
         List<QueryResponseCell> cells = new ArrayList<>(queryHeaders.size());
         for (int i = 0; i < queryHeaders.size(); i++) {
-            cells.add(new TextQueryResponseCell(mergedResult.getValue(i + 1, Object.class)));
+            cells.add(new QueryResponseCell(queryHeaders.get(i).getColumnType(), mergedResult.getValue(i + 1, Object.class)));
         }
         return new QueryResponseRow(cells);
     }

@@ -25,7 +25,6 @@ import org.apache.shardingsphere.db.protocol.payload.PacketPayload;
 import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.PostgreSQLCharacterSets;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLServerInfo;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLAuthenticationOKPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLComStartupPacket;
@@ -83,9 +82,7 @@ public final class OpenGaussAuthenticationEngine implements AuthenticationEngine
     
     @Override
     public int handshake(final ChannelHandlerContext context) {
-        int result = ConnectionIdGenerator.getInstance().nextId();
-        PostgreSQLPreparedStatementRegistry.getInstance().register(result);
-        return result;
+        return ConnectionIdGenerator.getInstance().nextId();
     }
     
     @Override

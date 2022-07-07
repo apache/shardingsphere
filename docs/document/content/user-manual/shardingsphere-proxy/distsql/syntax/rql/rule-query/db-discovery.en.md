@@ -6,11 +6,11 @@ weight = 4
 ## Syntax
 
 ```sql
-SHOW DB_DISCOVERY RULES [FROM schemaName]
+SHOW DB_DISCOVERY RULES [FROM databaseName]
 
-SHOW DB_DISCOVERY TYPES [FROM schemaName]
+SHOW DB_DISCOVERY TYPES [FROM databaseName]
 
-SHOW DB_DISCOVERY HEARTBEATS [FROM schemaName]
+SHOW DB_DISCOVERY HEARTBEATS [FROM databaseName]
 ```
 
 ## Return Value Description
@@ -36,7 +36,7 @@ SHOW DB_DISCOVERY HEARTBEATS [FROM schemaName]
 ### DB Discovery Heartbeat
 
 | Column                   | Description           |
-| ------------------------ | ----------------------|
+| ------------------------ | --------------------- |
 | name                     | Heartbeat name        |
 | props                    | Heartbeat properties  |
 
@@ -45,7 +45,7 @@ SHOW DB_DISCOVERY HEARTBEATS [FROM schemaName]
 *DB Discovery Rule*
 
 ```sql
-mysql> show db_discovery rules;
+mysql> SHOW DB_DISCOVERY RULES;
 +----------------------+-------------------+--------------------------+-----------------------------------------------------------------------------------+------------------------------------------------------------------------------+
 | group_name           | data_source_names | primary_data_source_name | discovery_type                                                                    | discovery_heartbeat                                                          |
 +----------------------+-------------------+--------------------------+-----------------------------------------------------------------------------------+------------------------------------------------------------------------------+
@@ -57,7 +57,7 @@ mysql> show db_discovery rules;
 *DB Discovery Type*
 
 ```sql
-mysql> show db_discovery types;
+mysql> SHOW DB_DISCOVERY TYPES;
 +---------------------------+------------+------------------------------+
 | name                      | type       | props                        |
 +---------------------------+------------+------------------------------+
@@ -69,7 +69,7 @@ mysql> show db_discovery types;
 *DB Discovery Heartbeat*
 
 ```sql
-mysql> show db_discovery heartbeats;
+mysql> SHOW DB_DISCOVERY HEARTBEATS;
 +--------------------------------+---------------------------------+
 | name                           | props                           |
 +--------------------------------+---------------------------------+

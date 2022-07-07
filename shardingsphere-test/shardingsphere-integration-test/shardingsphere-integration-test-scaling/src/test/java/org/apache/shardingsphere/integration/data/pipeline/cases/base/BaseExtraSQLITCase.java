@@ -18,11 +18,18 @@
 package org.apache.shardingsphere.integration.data.pipeline.cases.base;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.ExtraSQLCommand;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 
 import javax.xml.bind.JAXB;
+import java.util.List;
+import java.util.Objects;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+@Slf4j
 public abstract class BaseExtraSQLITCase extends BaseITCase {
     
     @Getter
@@ -30,19 +37,50 @@ public abstract class BaseExtraSQLITCase extends BaseITCase {
     
     public BaseExtraSQLITCase(final ScalingParameterized parameterized) {
         super(parameterized);
-        extraSQLCommand = JAXB.unmarshal(BaseExtraSQLITCase.class.getClassLoader().getResource(parameterized.getScenario()), ExtraSQLCommand.class);
+        extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseExtraSQLITCase.class.getClassLoader().getResource(parameterized.getScenario())), ExtraSQLCommand.class);
     }
     
     protected void createNoUseTable() {
-        getJdbcTemplate().execute("CREATE SHARDING TABLE RULE no_use (RESOURCES(ds_0, ds_1), SHARDING_COLUMN=sharding_id, TYPE(NAME=MOD,PROPERTIES('sharding-count'=4)))");
-        getJdbcTemplate().execute("CREATE TABLE no_use(id int(11) NOT NULL,sharding_id int(11) NOT NULL, PRIMARY KEY (id))");
+        executeWithLog("CREATE SHARDING TABLE RULE no_use (RESOURCES(ds_0, ds_1), SHARDING_COLUMN=sharding_id, TYPE(NAME=MOD,PROPERTIES('sharding-count'=4)))");
+        executeWithLog("CREATE TABLE no_use(id int(11) NOT NULL,sharding_id int(11) NOT NULL, PRIMARY KEY (id))");
     }
     
     protected void createOrderTable() {
-        getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrder());
+        executeWithLog(extraSQLCommand.getCreateTableOrder());
+    }
+    
+    protected void createTableIndexList() {
+        List<String> createTableIndexList = extraSQLCommand.getCreateTableIndexList();
+        for (String each : createTableIndexList) {
+            executeWithLog(each);
+        }
     }
     
     protected void createOrderItemTable() {
-        getJdbcTemplate().execute(extraSQLCommand.getCreateTableOrderItem());
+        executeWithLog(extraSQLCommand.getCreateTableOrderItem());
+    }
+    
+    @Override
+    protected void assertStopScalingSourceWriting() {
+        assertFalse(executeSql(extraSQLCommand.getUpdateTableOrderStatus()));
+        assertFalse(executeSql(extraSQLCommand.getCreateIndexStatus()));
+    }
+    
+    @Override
+    protected void assertRestoreScalingSourceWriting() {
+        assertTrue(executeSql(extraSQLCommand.getUpdateTableOrderStatus()));
+        assertTrue(executeSql(extraSQLCommand.getCreateIndexStatus()));
+    }
+    
+    private boolean executeSql(final String sql) {
+        try {
+            getJdbcTemplate().execute(sql);
+            return true;
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            assertTrue(ex.getCause().getMessage().endsWith("The database sharding_db is read-only"));
+            return false;
+        }
     }
 }

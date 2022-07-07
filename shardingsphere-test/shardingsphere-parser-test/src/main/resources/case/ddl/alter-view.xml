@@ -18,4 +18,11 @@
 
 <sql-parser-test-cases>
     <alter-view sql-case-id="alter_view" />
+    <alter-view sql-case-id="alter_view_set_default_column" />
+    <alter-view sql-case-id="alter_view_drop_default" />
+    <alter-view sql-case-id="alter_view_owner" />
+    <alter-view sql-case-id="alter_view_rename" />
+    <alter-view sql-case-id="alter_view_set_schema" />
+    <alter-view sql-case-id="alter_view_set_view_option" />
+    <alter-view sql-case-id="alter_view_reset" />
 </sql-parser-test-cases>

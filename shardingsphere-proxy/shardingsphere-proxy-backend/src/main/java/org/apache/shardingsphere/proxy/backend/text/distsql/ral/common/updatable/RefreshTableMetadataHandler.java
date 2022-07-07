@@ -25,40 +25,34 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
 
 /**
  * Refresh table metadata handler.
  */
-public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandler<RefreshTableMetadataStatement, RefreshTableMetadataHandler> {
-    
-    private ConnectionSession connectionSession;
+public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandler<RefreshTableMetadataStatement> {
     
     @Override
-    public RefreshTableMetadataHandler init(final HandlerParameter<RefreshTableMetadataStatement> parameter) {
-        sqlStatement = parameter.getStatement();
-        connectionSession = parameter.getConnectionSession();
-        return this;
-    }
-    
-    @Override
-    protected void update(final ContextManager contextManager, final RefreshTableMetadataStatement sqlStatement) throws DistSQLException {
+    protected void update(final ContextManager contextManager) throws DistSQLException {
         String databaseName = getDatabaseName();
-        String schemaName = DatabaseTypeEngine.getDefaultSchemaName(connectionSession.getDatabaseType(), databaseName);
-        if (sqlStatement.getResourceName().isPresent()) {
-            contextManager.reloadMetaData(databaseName, schemaName, sqlStatement.getTableName().get(), sqlStatement.getResourceName().get());
+        String schemaName = getSchemaName(databaseName);
+        if (getSqlStatement().getResourceName().isPresent()) {
+            if (getSqlStatement().getTableName().isPresent()) {
+                contextManager.reloadTableMetaData(databaseName, schemaName, getSqlStatement().getResourceName().get(), getSqlStatement().getTableName().get());
+            } else {
+                contextManager.reloadSchema(databaseName, schemaName, getSqlStatement().getResourceName().get());
+            }
             return;
         }
-        if (sqlStatement.getTableName().isPresent()) {
-            contextManager.reloadMetaData(databaseName, schemaName, sqlStatement.getTableName().get());
-            return;
+        if (getSqlStatement().getTableName().isPresent()) {
+            contextManager.reloadTableMetaData(databaseName, schemaName, getSqlStatement().getTableName().get());
+        } else {
+            contextManager.reloadDatabase(databaseName);
         }
-        contextManager.reloadMetaData(databaseName);
     }
     
     private String getDatabaseName() {
-        String result = connectionSession.getDatabaseName();
+        String result = getConnectionSession().getDatabaseName();
         if (Strings.isNullOrEmpty(result)) {
             throw new NoDatabaseSelectedException();
         }
@@ -66,5 +60,11 @@ public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandle
             throw new UnknownDatabaseException(result);
         }
         return result;
+    }
+    
+    private String getSchemaName(final String databaseName) {
+        return getSqlStatement().getSchemaName().isPresent()
+                ? getSqlStatement().getSchemaName().get()
+                : DatabaseTypeEngine.getDefaultSchemaName(getConnectionSession().getDatabaseType(), databaseName);
     }
 }

@@ -62,14 +62,14 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
     
     @Override
     public final ResultSetMetaData getMetaData() throws SQLException {
-        return new ShardingSphereResultSetMetaData(resultSets.get(0).getMetaData(), getDatabaseMetaData(), executionContext.getSqlStatementContext());
+        return new ShardingSphereResultSetMetaData(resultSets.get(0).getMetaData(), getDatabase(), executionContext.getSqlStatementContext());
     }
     
-    private ShardingSphereDatabase getDatabaseMetaData() {
+    private ShardingSphereDatabase getDatabase() {
         ShardingSphereConnection connection = statement instanceof ShardingSpherePreparedStatement
                 ? ((ShardingSpherePreparedStatement) statement).getConnection()
                 : ((ShardingSphereStatement) statement).getConnection();
-        return connection.getContextManager().getMetaDataContexts().getDatabaseMetaData(connection.getDatabaseName());
+        return connection.getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(connection.getDatabaseName());
     }
     
     @Override

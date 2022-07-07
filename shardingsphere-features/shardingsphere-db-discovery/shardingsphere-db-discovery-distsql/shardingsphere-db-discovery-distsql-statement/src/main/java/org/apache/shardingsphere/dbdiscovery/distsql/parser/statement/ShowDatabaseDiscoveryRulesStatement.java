@@ -17,16 +17,15 @@
 
 package org.apache.shardingsphere.dbdiscovery.distsql.parser.statement;
 
-import org.apache.shardingsphere.distsql.parser.subject.impl.DatabaseDiscoverySubjectSupplier;
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
  * Show database discovery rules statement.
  */
-public final class ShowDatabaseDiscoveryRulesStatement extends ShowRulesStatement implements DatabaseDiscoverySubjectSupplier {
+public final class ShowDatabaseDiscoveryRulesStatement extends ShowRulesStatement {
     
-    public ShowDatabaseDiscoveryRulesStatement(final SchemaSegment schema) {
-        super(schema);
+    public ShowDatabaseDiscoveryRulesStatement(final DatabaseSegment database) {
+        super(database);
     }
 }

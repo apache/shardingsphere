@@ -18,20 +18,19 @@
 package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
-import org.apache.shardingsphere.distsql.parser.subject.impl.ShardingSubjectSupplier;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 import java.util.Optional;
 
 /**
  * Show sharding table rules used key generator statement.
  */
-public final class ShowShardingTableRulesUsedKeyGeneratorStatement extends ShowRulesStatement implements ShardingSubjectSupplier {
+public final class ShowShardingTableRulesUsedKeyGeneratorStatement extends ShowRulesStatement {
     
     private final String keyGeneratorName;
     
-    public ShowShardingTableRulesUsedKeyGeneratorStatement(final String keyGeneratorName, final SchemaSegment schema) {
-        super(schema);
+    public ShowShardingTableRulesUsedKeyGeneratorStatement(final String keyGeneratorName, final DatabaseSegment database) {
+        super(database);
         this.keyGeneratorName = keyGeneratorName;
     }
     

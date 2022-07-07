@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.event;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,13 +27,13 @@ import java.util.Collection;
  * Schema altered event.
  */
 @Getter
-public final class SchemaAlteredEvent {
+public final class SchemaAlteredEvent implements MetaDataRefreshedEvent {
     
     private final String databaseName;
     
     private final String schemaName;
     
-    private final Collection<TableMetaData> alteredTables = new ArrayList<>();
+    private final Collection<ShardingSphereTable> alteredTables = new ArrayList<>();
     
     private final Collection<String> droppedTables = new ArrayList<>();
     

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.initializer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilderFactory;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
@@ -60,13 +60,9 @@ public final class BootstrapInitializer {
     
     private ContextManager createContextManager(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig, final int port) throws SQLException {
         ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
-        ContextManagerBuilderParameter parameter = ContextManagerBuilderParameter.builder()
-                .modeConfig(modeConfig)
-                .databaseConfigs(proxyConfig.getDatabaseConfigurations())
-                .globalRuleConfigs(proxyConfig.getGlobalConfiguration().getRules())
-                .props(proxyConfig.getGlobalConfiguration().getProperties())
-                .labels(proxyConfig.getGlobalConfiguration().getLabels())
-                .instanceDefinition(new InstanceDefinition(InstanceType.PROXY, port)).build();
+        InstanceMetaData instanceMetaData = InstanceMetaDataBuilderFactory.create("Proxy", port);
+        ContextManagerBuilderParameter parameter = new ContextManagerBuilderParameter(modeConfig, proxyConfig.getDatabaseConfigurations(),
+                proxyConfig.getGlobalConfiguration().getRules(), proxyConfig.getGlobalConfiguration().getProperties(), proxyConfig.getGlobalConfiguration().getLabels(), instanceMetaData);
         return ContextManagerBuilderFactory.getInstance(modeConfig).build(parameter);
     }
     

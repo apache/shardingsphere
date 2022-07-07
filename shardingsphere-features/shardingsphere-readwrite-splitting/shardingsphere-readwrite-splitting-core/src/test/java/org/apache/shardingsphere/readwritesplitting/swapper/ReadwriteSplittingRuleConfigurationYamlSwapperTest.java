@@ -21,17 +21,21 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperFactory;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.yaml.config.strategy.YamlStaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.swapper.ReadwriteSplittingRuleConfigurationYamlSwapper;
 import org.junit.Test;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -40,29 +44,26 @@ public final class ReadwriteSplittingRuleConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToYamlWithLoadBalanceAlgorithm() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig =
-                new ReadwriteSplittingDataSourceRuleConfiguration("ds", "Static", getProperties(), "roundRobin");
+                new ReadwriteSplittingDataSourceRuleConfiguration("ds",
+                        new StaticReadwriteSplittingStrategyConfiguration("write", Arrays.asList("read")), null, "roundRobin");
         YamlReadwriteSplittingRuleConfiguration actual = getReadwriteSplittingRuleConfigurationYamlSwapper().swapToYamlConfiguration(new ReadwriteSplittingRuleConfiguration(
                 Collections.singleton(dataSourceConfig), Collections.singletonMap("roundRobin", new ShardingSphereAlgorithmConfiguration("ROUND_ROBIN", new Properties()))));
-        assertThat(actual.getDataSources().get("ds").getProps().getProperty("write-data-source-name"), is("write"));
-        assertThat(actual.getDataSources().get("ds").getProps().getProperty("read-data-source-names"), is("read"));
+        assertNotNull(actual.getDataSources().get("ds").getStaticStrategy());
+        assertThat((actual.getDataSources().get("ds").getStaticStrategy()).getWriteDataSourceName(), is("write"));
+        assertThat((actual.getDataSources().get("ds").getStaticStrategy()).getReadDataSourceNames(), is(Arrays.asList("read")));
         assertThat(actual.getDataSources().get("ds").getLoadBalancerName(), is("roundRobin"));
     }
     
     @Test
     public void assertSwapToYamlWithoutLoadBalanceAlgorithm() {
-        ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = new ReadwriteSplittingDataSourceRuleConfiguration("ds", "Static", getProperties(), null);
+        ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = new ReadwriteSplittingDataSourceRuleConfiguration("ds",
+                new StaticReadwriteSplittingStrategyConfiguration("write", Arrays.asList("read")), null, null);
         YamlReadwriteSplittingRuleConfiguration actual = getReadwriteSplittingRuleConfigurationYamlSwapper().swapToYamlConfiguration(
                 new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceConfig), Collections.emptyMap()));
-        assertThat(actual.getDataSources().get("ds").getProps().getProperty("write-data-source-name"), is("write"));
-        assertThat(actual.getDataSources().get("ds").getProps().getProperty("read-data-source-names"), is("read"));
+        assertNotNull(actual.getDataSources().get("ds").getStaticStrategy());
+        assertThat(actual.getDataSources().get("ds").getStaticStrategy().getWriteDataSourceName(), is("write"));
+        assertThat(actual.getDataSources().get("ds").getStaticStrategy().getReadDataSourceNames(), is(Arrays.asList("read")));
         assertNull(actual.getDataSources().get("ds").getLoadBalancerName());
-    }
-    
-    private Properties getProperties() {
-        Properties result = new Properties();
-        result.setProperty("write-data-source-name", "write");
-        result.setProperty("read-data-source-names", "read");
-        return result;
     }
     
     @Test
@@ -85,16 +86,19 @@ public final class ReadwriteSplittingRuleConfigurationYamlSwapperTest {
     private YamlReadwriteSplittingRuleConfiguration createYamlReadwriteSplittingRuleConfiguration() {
         YamlReadwriteSplittingRuleConfiguration result = new YamlReadwriteSplittingRuleConfiguration();
         result.getDataSources().put("read_query_ds", new YamlReadwriteSplittingDataSourceRuleConfiguration());
-        result.getDataSources().get("read_query_ds").setType("Static");
-        result.getDataSources().get("read_query_ds").setProps(getProperties());
+        YamlStaticReadwriteSplittingStrategyConfiguration staticConfig = new YamlStaticReadwriteSplittingStrategyConfiguration();
+        staticConfig.setWriteDataSourceName("write");
+        staticConfig.setReadDataSourceNames(Arrays.asList("read"));
+        result.getDataSources().get("read_query_ds").setStaticStrategy(staticConfig);
         return result;
     }
     
     private void assertReadwriteSplittingRuleConfiguration(final ReadwriteSplittingRuleConfiguration actual) {
         ReadwriteSplittingDataSourceRuleConfiguration group = actual.getDataSources().iterator().next();
         assertThat(group.getName(), is("read_query_ds"));
-        assertThat(group.getProps().getProperty("write-data-source-name"), is("write"));
-        assertThat(group.getProps().getProperty("read-data-source-names"), is("read"));
+        assertNotNull(group.getStaticStrategy());
+        assertThat(group.getStaticStrategy().getWriteDataSourceName(), is("write"));
+        assertThat(group.getStaticStrategy().getReadDataSourceNames(), is(Arrays.asList("read")));
     }
     
     private ReadwriteSplittingRuleConfigurationYamlSwapper getReadwriteSplittingRuleConfigurationYamlSwapper() {

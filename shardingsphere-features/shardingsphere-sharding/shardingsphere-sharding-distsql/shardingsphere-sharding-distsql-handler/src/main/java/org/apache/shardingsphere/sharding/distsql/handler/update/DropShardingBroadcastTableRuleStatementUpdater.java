@@ -36,7 +36,7 @@ public final class DropShardingBroadcastTableRuleStatementUpdater implements Rul
     public void checkSQLStatement(final ShardingSphereDatabase database,
                                   final DropShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
         String databaseName = database.getName();
-        if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isContainsExistClause()) {
+        if (!isExistRuleConfig(currentRuleConfig) && sqlStatement.isIfExists()) {
             return;
         }
         checkCurrentRuleConfiguration(databaseName, currentRuleConfig);
@@ -45,7 +45,7 @@ public final class DropShardingBroadcastTableRuleStatementUpdater implements Rul
     
     private void checkBroadcastTableRuleExist(final String databaseName,
                                               final DropShardingBroadcastTableRulesStatement sqlStatement, final ShardingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        if (sqlStatement.isContainsExistClause()) {
+        if (sqlStatement.isIfExists()) {
             return;
         }
         if (!sqlStatement.getRules().isEmpty()) {
@@ -55,7 +55,7 @@ public final class DropShardingBroadcastTableRuleStatementUpdater implements Rul
         }
     }
     
-    private static boolean containsIgnoreCase(final Collection<String> collection, final String str) {
+    private boolean containsIgnoreCase(final Collection<String> collection, final String str) {
         return collection.stream().anyMatch(each -> each.equalsIgnoreCase(str));
     }
     

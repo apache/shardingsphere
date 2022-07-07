@@ -32,9 +32,5 @@ public final class ReadwriteSplittingRuleBeanDefinitionTag {
     
     public static final String READWRITE_SPLITTING_DATA_SOURCE_ID_ATTRIBUTE = "id";
     
-    public static final String READWRITE_SPLITTING_TYPE = "type";
-    
-    public static final String READWRITE_SPLITTING_PROPS = "props";
-    
     public static final String LOAD_BALANCE_ALGORITHM_REF_ATTRIBUTE = "load-balance-algorithm-ref";
 }

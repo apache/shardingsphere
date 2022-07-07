@@ -19,25 +19,23 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryabl
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowInstanceStatement;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
+import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
+import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
  * Show instance handler.
  */
-public final class ShowInstanceHandler extends QueryableRALBackendHandler<ShowInstanceStatement, ShowInstanceHandler> {
-    
-    private static final String DELIMITER = "@";
+public final class ShowInstanceHandler extends QueryableRALBackendHandler<ShowInstanceStatement> {
     
     private static final String ID = "instance_id";
     
@@ -51,39 +49,27 @@ public final class ShowInstanceHandler extends QueryableRALBackendHandler<ShowIn
     
     private static final String LABELS = "labels";
     
-    private static final String XA_RECOVERY_NODES = "xa_recovery_nodes";
-    
     @Override
     protected Collection<String> getColumnNames() {
-        return Arrays.asList(ID, HOST, PORT, STATUS, MODE_TYPE, LABELS, XA_RECOVERY_NODES);
+        return Arrays.asList(ID, HOST, PORT, STATUS, MODE_TYPE, LABELS);
     }
     
     @Override
-    protected Collection<List<Object>> getRows(final ContextManager contextManager) {
-        InstanceContext instanceContext = contextManager.getInstanceContext();
-        String modeType = instanceContext.getModeConfiguration().getType();
-        return buildInstanceRows(instanceContext, modeType);
-    }
-    
-    private Collection<List<Object>> buildInstanceRows(final InstanceContext instanceContext, final String modeType) {
+    protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
+        String modeType = contextManager.getInstanceContext().getModeConfiguration().getType();
         if ("Memory".equalsIgnoreCase(modeType) || "Standalone".equalsIgnoreCase(modeType)) {
-            return Collections.singletonList(buildRow(instanceContext.getInstance(), modeType));
+            return Collections.singletonList(buildRow(contextManager.getInstanceContext().getInstance(), modeType));
         }
-        Collection<ComputeNodeInstance> instances = instanceContext.getComputeNodeInstances().stream()
-                .filter(each -> InstanceType.PROXY.equals(each.getInstanceDefinition().getInstanceType())).collect(Collectors.toList());
-        return instances.isEmpty() ? Collections.emptyList()
-                : instances.stream().filter(Objects::nonNull).map(each -> buildRow(each, modeType)).collect(Collectors.toList());
+        Collection<ComputeNodeInstance> instances = contextManager.getInstanceContext().getComputeNodeInstances().stream()
+                .filter(each -> InstanceType.PROXY == each.getInstanceMetaData().getType()).collect(Collectors.toList());
+        return instances.isEmpty() ? Collections.emptyList() : instances.stream().filter(Objects::nonNull).map(each -> buildRow(each, modeType)).collect(Collectors.toList());
     }
     
-    private List<Object> buildRow(final ComputeNodeInstance instance, final String modeType) {
-        return buildRow(instance.getInstanceDefinition().getInstanceId().getId(), instance.getState().getCurrentState().name(), modeType, instance.getLabels(), instance.getXaRecoveryId());
-    }
-    
-    private List<Object> buildRow(final String instanceId, final String status, final String modeType, final Collection<String> instanceLabels, final String xaRecoveryId) {
-        String[] splitInstanceId = instanceId.split(DELIMITER);
-        String host = splitInstanceId[0];
-        String port = splitInstanceId.length < 2 ? "" : splitInstanceId[1];
-        String labels = null == instanceLabels ? "" : String.join(",", instanceLabels);
-        return new LinkedList<>(Arrays.asList(instanceId, host, port, status, modeType, labels, null == xaRecoveryId ? "" : xaRecoveryId));
+    private LocalDataQueryResultRow buildRow(final ComputeNodeInstance instance, final String modeType) {
+        String labels = null == instance.getLabels() ? "" : String.join(",", instance.getLabels());
+        InstanceMetaData instanceMetaData = instance.getInstanceMetaData();
+        return new LocalDataQueryResultRow(instanceMetaData.getId(), instanceMetaData.getIp(),
+                instanceMetaData instanceof ProxyInstanceMetaData ? ((ProxyInstanceMetaData) instanceMetaData).getPort() : -1,
+                instance.getState().getCurrentState().name(), modeType, labels);
     }
 }

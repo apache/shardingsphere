@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.subscriber;
 
-import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.AddSchemaEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.AlterSchemaEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.DropSchemaEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.TableMetaData;
-import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -32,7 +32,6 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.Collections;
 
 import static org.mockito.Mockito.mock;
@@ -42,7 +41,7 @@ import static org.mockito.Mockito.verify;
 public final class SchemaMetaDataRegistrySubscriberTest {
     
     @Mock
-    private SchemaMetaDataPersistService persistService;
+    private DatabaseMetaDataPersistService persistService;
     
     private SchemaMetaDataRegistrySubscriber schemaMetaDataRegistrySubscriber;
     
@@ -57,11 +56,11 @@ public final class SchemaMetaDataRegistrySubscriberTest {
     @Test
     public void assertUpdateWithMetaDataAlteredEvent() {
         SchemaAlteredEvent event = new SchemaAlteredEvent("foo_db", "foo_schema");
-        TableMetaData tableMetaData = new TableMetaData();
-        event.getAlteredTables().add(tableMetaData);
+        ShardingSphereTable table = new ShardingSphereTable();
+        event.getAlteredTables().add(table);
         event.getDroppedTables().add("foo_table");
         schemaMetaDataRegistrySubscriber.update(event);
-        verify(persistService).persistTable("foo_db", "foo_schema", tableMetaData);
+        verify(persistService).persistTable("foo_db", "foo_schema", table);
         verify(persistService).deleteTable("foo_db", "foo_schema", "foo_table");
     }
     
@@ -74,14 +73,14 @@ public final class SchemaMetaDataRegistrySubscriberTest {
     
     @Test
     public void assertDropSchemaEvent() {
-        DropSchemaEvent event = new DropSchemaEvent("foo_db", Arrays.asList("foo_schema"));
+        DropSchemaEvent event = new DropSchemaEvent("foo_db", Collections.singleton("foo_schema"));
         schemaMetaDataRegistrySubscriber.dropSchema(event);
         verify(persistService).deleteSchema("foo_db", "foo_schema");
     }
     
     @Test
     public void assertAlterSchemaEventWhenContainsTable() {
-        ShardingSphereSchema schema = new ShardingSphereSchema(Collections.singletonMap("t_order", new TableMetaData()));
+        ShardingSphereSchema schema = new ShardingSphereSchema(Collections.singletonMap("t_order", new ShardingSphereTable()));
         AlterSchemaEvent event = new AlterSchemaEvent("foo_db", "foo_schema", "new_foo_schema", schema);
         schemaMetaDataRegistrySubscriber.alterSchema(event);
         verify(persistService).persistMetaData("foo_db", "new_foo_schema", schema);

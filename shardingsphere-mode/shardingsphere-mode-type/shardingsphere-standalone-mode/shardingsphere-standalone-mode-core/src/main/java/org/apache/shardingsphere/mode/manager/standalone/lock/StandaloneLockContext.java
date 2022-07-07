@@ -17,64 +17,40 @@
 
 package org.apache.shardingsphere.mode.manager.standalone.lock;
 
-import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.infra.lock.LockScope;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-
-import java.util.Set;
+import org.apache.shardingsphere.mode.manager.lock.AbstractLockContext;
+import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDefinition;
 
 /**
  * Standalone lock context.
  */
-public final class StandaloneLockContext implements LockContext {
+public final class StandaloneLockContext extends AbstractLockContext {
     
-    private final ShardingSphereLock mutexLock = new ShardingSphereStandaloneMutexLock();
+    private final ShardingSphereLock standaloneLock = new ShardingSphereStandaloneLock();
     
     @Override
-    public ShardingSphereLock getMutexLock() {
-        return mutexLock;
+    public ShardingSphereLock getLock(final LockScope lockScope) {
+        return standaloneLock;
     }
     
     @Override
-    public boolean lockWrite(final String databaseName) {
-        return mutexLock.tryLock(databaseName);
+    protected boolean tryLock(final DatabaseLockNameDefinition lockNameDefinition) {
+        return standaloneLock.tryLock(lockNameDefinition.getDatabaseName());
     }
     
     @Override
-    public boolean lockWrite(final String databaseName, final Set<String> schemaNames) {
-        // TODO when the lock structure adjustment is completed
-        throw new UnsupportedOperationException();
+    protected boolean tryLock(final DatabaseLockNameDefinition lockNameDefinition, final long timeoutMilliseconds) {
+        return standaloneLock.tryLock(lockNameDefinition.getDatabaseName(), timeoutMilliseconds);
     }
     
     @Override
-    public boolean tryLockWrite(final String databaseName, final long timeoutMilliseconds) {
-        return mutexLock.tryLock(databaseName, timeoutMilliseconds);
+    protected void releaseLock(final DatabaseLockNameDefinition lockNameDefinition) {
+        standaloneLock.releaseLock(lockNameDefinition.getDatabaseName());
     }
     
     @Override
-    public boolean tryLockWrite(final String databaseName, final Set<String> schemaNames, final long timeoutMilliseconds) {
-        // TODO when the lock structure adjustment is completed
-        throw new UnsupportedOperationException();
-    }
-    
-    @Override
-    public void releaseLockWrite(final String databaseName) {
-        mutexLock.releaseLock(databaseName);
-    }
-    
-    @Override
-    public void releaseLockWrite(final String databaseName, final String schemaName) {
-        // TODO when the lock structure adjustment is completed
-        throw new UnsupportedOperationException();
-    }
-    
-    @Override
-    public boolean isLocked(final String databaseName) {
-        return mutexLock.isLocked(databaseName);
-    }
-    
-    @Override
-    public boolean isLocked(final String databaseName, final String schemaName) {
-        // TODO when the lock structure adjustment is completed
-        throw new UnsupportedOperationException();
+    protected boolean isLocked(final DatabaseLockNameDefinition lockNameDefinition) {
+        return standaloneLock.isLocked(lockNameDefinition.getDatabaseName());
     }
 }

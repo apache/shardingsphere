@@ -25,7 +25,7 @@ import lombok.RequiredArgsConstructor;
  */
 @RequiredArgsConstructor
 @Getter
-public final class AddSchemaEvent {
+public final class AddSchemaEvent implements MetaDataRefreshedEvent {
     
     private final String databaseName;
     

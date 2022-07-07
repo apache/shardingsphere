@@ -24,7 +24,7 @@ createShardingScalingRule
     ;
 
 dropShardingScalingRule
-    : DROP SHARDING SCALING RULE existsClause? scalingName
+    : DROP SHARDING SCALING RULE ifExists? scalingName
     ;
 
 enableShardingScalingRule
@@ -83,6 +83,6 @@ intValue
     : INT
     ;
 
-existsClause
+ifExists
     : IF EXISTS
     ;

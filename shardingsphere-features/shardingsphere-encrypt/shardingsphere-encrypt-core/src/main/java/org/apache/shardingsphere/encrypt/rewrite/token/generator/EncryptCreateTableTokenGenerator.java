@@ -20,8 +20,6 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 import lombok.Setter;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.aware.EncryptRuleAware;
-import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptConfigDataTypeToken;
-import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ColumnProjection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -48,10 +46,11 @@ public final class EncryptCreateTableTokenGenerator implements CollectionSQLToke
     private EncryptRule encryptRule;
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
         return sqlStatementContext instanceof CreateTableStatementContext && !(((CreateTableStatementContext) sqlStatementContext).getSqlStatement()).getColumnDefinitions().isEmpty();
     }
     
+    @SuppressWarnings("rawtypes")
     @Override
     public Collection<SQLToken> generateSQLTokens(final CreateTableStatementContext createTableStatementContext) {
         Collection<SQLToken> result = new LinkedList<>();
@@ -81,64 +80,19 @@ public final class EncryptCreateTableTokenGenerator implements CollectionSQLToke
     }
     
     private SQLToken getCipherColumnToken(final String tableName, final String columnName, final ColumnDefinitionSegment column, final int stopIndex) {
-        Optional<EncryptConfigDataTypeToken> configDataTypeToken = findEncryptConfigDataTypeToken(tableName, columnName, column, stopIndex);
-        return configDataTypeToken.isPresent() ? configDataTypeToken.get()
-                : new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(),
-                        getColumnProjections(encryptRule.getCipherColumn(tableName, columnName)));
-    }
-    
-    private Optional<EncryptConfigDataTypeToken> findEncryptConfigDataTypeToken(final String tableName, final String columnName, final ColumnDefinitionSegment column, final int stopIndex) {
-        Optional<EncryptColumn> encryptColumn = encryptRule.findEncryptTable(tableName).flatMap(optional -> optional.findEncryptColumn(columnName));
-        if (encryptColumn.isPresent() && null != encryptColumn.get().getCipherDataType()) {
-            return Optional.of(new EncryptConfigDataTypeToken(stopIndex + 1, column.getStopIndex(), encryptColumn.get().getCipherColumn(), encryptColumn.get().getCipherDataType().getTypeName()));
-        }
-        return Optional.empty();
+        return new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(), getColumnProjections(encryptRule.getCipherColumn(tableName, columnName)));
     }
     
     private Optional<? extends SQLToken> getAssistedQueryColumnToken(final String tableName, final String columnName, final ColumnDefinitionSegment column,
                                                                      final int stopIndex, final boolean lastColumn) {
-        Optional<EncryptConfigDataTypeToken> encryptConfigDataTypeToken = findAssistedConfigDataTypeToken(tableName, columnName, column, stopIndex, lastColumn);
-        if (encryptConfigDataTypeToken.isPresent()) {
-            return encryptConfigDataTypeToken;
-        }
         Optional<String> assistedQueryColumn = encryptRule.findAssistedQueryColumn(tableName, columnName);
         return assistedQueryColumn.map(optional -> new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(), getColumnProjections(optional), lastColumn));
     }
     
-    private Optional<EncryptConfigDataTypeToken> findAssistedConfigDataTypeToken(final String tableName, final String columnName, final ColumnDefinitionSegment column,
-                                                                                 final int stopIndex, final boolean lastColumn) {
-        Optional<EncryptColumn> encryptColumn = encryptRule.findEncryptTable(tableName).flatMap(optional -> optional.findEncryptColumn(columnName));
-        Optional<String> assistedQueryColumn = encryptColumn.flatMap(EncryptColumn::getAssistedQueryColumn);
-        if (assistedQueryColumn.isPresent()) {
-            if (null != encryptColumn.get().getAssistedQueryDataType()) {
-                return Optional.of(new EncryptConfigDataTypeToken(stopIndex + 1, column.getStopIndex(), assistedQueryColumn.get(),
-                        encryptColumn.get().getAssistedQueryDataType().getTypeName(), lastColumn));
-            }
-        }
-        return Optional.empty();
-    }
-    
     private Optional<? extends SQLToken> getPlainColumnToken(final String tableName, final String columnName, final ColumnDefinitionSegment column,
                                                              final int stopIndex, final boolean lastColumn) {
-        Optional<EncryptConfigDataTypeToken> encryptConfigDataTypeToken = findPlainConfigDataTypeToken(tableName, columnName, column, stopIndex, lastColumn);
-        if (encryptConfigDataTypeToken.isPresent()) {
-            return encryptConfigDataTypeToken;
-        }
         Optional<String> plainColumn = encryptRule.findPlainColumn(tableName, columnName);
         return plainColumn.map(optional -> new SubstitutableColumnNameToken(stopIndex + 1, column.getColumnName().getStopIndex(), getColumnProjections(optional), lastColumn));
-    }
-    
-    private Optional<EncryptConfigDataTypeToken> findPlainConfigDataTypeToken(final String tableName, final String columnName, final ColumnDefinitionSegment column,
-                                                                              final int stopIndex, final boolean lastColumn) {
-        Optional<EncryptColumn> encryptColumn = encryptRule.findEncryptTable(tableName).flatMap(optional -> optional.findEncryptColumn(columnName));
-        Optional<String> plainColumn = encryptColumn.flatMap(EncryptColumn::getPlainColumn);
-        if (plainColumn.isPresent()) {
-            if (null != encryptColumn.get().getPlainDataType()) {
-                return Optional.of(new EncryptConfigDataTypeToken(stopIndex + 1, column.getStopIndex(), plainColumn.get(),
-                        encryptColumn.get().getPlainDataType().getTypeName(), lastColumn));
-            }
-        }
-        return Optional.empty();
     }
     
     private Collection<ColumnProjection> getColumnProjections(final String columnName) {

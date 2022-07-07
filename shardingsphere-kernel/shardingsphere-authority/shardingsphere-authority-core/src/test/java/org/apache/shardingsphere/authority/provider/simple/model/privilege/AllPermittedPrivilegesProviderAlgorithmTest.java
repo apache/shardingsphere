@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.authority.provider.simple.model.privilege;
 
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
-import org.apache.shardingsphere.authority.provider.natived.model.subject.SchemaAccessSubject;
+import org.apache.shardingsphere.authority.provider.database.model.subject.DatabaseAccessSubject;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -32,6 +32,6 @@ public final class AllPermittedPrivilegesProviderAlgorithmTest {
         ShardingSpherePrivileges actual = new AllPrivilegesPermittedShardingSpherePrivileges();
         assertTrue(actual.hasPrivileges("testSchema"));
         assertTrue(actual.hasPrivileges(Collections.emptyList()));
-        assertTrue(actual.hasPrivileges(new SchemaAccessSubject("testSchema"), Collections.emptyList()));
+        assertTrue(actual.hasPrivileges(new DatabaseAccessSubject("testSchema"), Collections.emptyList()));
     }
 }

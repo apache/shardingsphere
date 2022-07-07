@@ -30,8 +30,8 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChanne
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -96,9 +96,9 @@ public final class PipelineContextUtil {
                 ConfigurationFileUtil.readFile("config_sharding_sphere_jdbc_source.yaml"));
         ShardingSphereDataSource dataSource = (ShardingSphereDataSource) PipelineDataSourceFactory.newInstance(pipelineDataSourceConfig).getDataSource();
         ContextManager contextManager = getContextManager(dataSource);
-        MetaDataPersistService metaDataPersistService = new MetaDataPersistService(getClusterPersistRepository());
-        MetaDataContexts metaDataContexts = renewMetaDataContexts(contextManager.getMetaDataContexts(), metaDataPersistService);
-        PipelineContext.initContextManager(new ContextManager(metaDataContexts, contextManager.getTransactionContexts(), contextManager.getInstanceContext()));
+        MetaDataPersistService persistService = new MetaDataPersistService(getClusterPersistRepository());
+        MetaDataContexts metaDataContexts = renewMetaDataContexts(contextManager.getMetaDataContexts(), persistService);
+        PipelineContext.initContextManager(new ContextManager(metaDataContexts, contextManager.getInstanceContext()));
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -113,12 +113,12 @@ public final class PipelineContextUtil {
         return PERSIST_REPOSITORY_LAZY_INITIALIZER.get();
     }
     
-    private static MetaDataContexts renewMetaDataContexts(final MetaDataContexts old, final MetaDataPersistService metaDataPersistService) {
-        Map<String, TableMetaData> tableMetaDataMap = new HashMap<>(3, 1);
-        tableMetaDataMap.put("t_order", new TableMetaData("t_order", Arrays.asList(new ColumnMetaData("order_id", Types.INTEGER, true, false, false),
-                new ColumnMetaData("user_id", Types.VARCHAR, false, false, false)), Collections.emptyList(), Collections.emptyList()));
-        old.getDatabaseMap().get(DefaultDatabase.LOGIC_NAME).getSchemas().get(DefaultDatabase.LOGIC_NAME).putAll(tableMetaDataMap);
-        return new MetaDataContexts(metaDataPersistService, old.getDatabaseMap(), old.getGlobalRuleMetaData(), old.getOptimizerContext(), old.getProps());
+    private static MetaDataContexts renewMetaDataContexts(final MetaDataContexts old, final MetaDataPersistService persistService) {
+        Map<String, ShardingSphereTable> tables = new HashMap<>(3, 1);
+        tables.put("t_order", new ShardingSphereTable("t_order", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false),
+                new ShardingSphereColumn("user_id", Types.VARCHAR, false, false, false)), Collections.emptyList(), Collections.emptyList()));
+        old.getMetaData().getDatabases().get(DefaultDatabase.LOGIC_NAME).getSchemas().get(DefaultDatabase.LOGIC_NAME).putAll(tables);
+        return new MetaDataContexts(persistService, old.getMetaData(), old.getOptimizerContext());
     }
     
     /**

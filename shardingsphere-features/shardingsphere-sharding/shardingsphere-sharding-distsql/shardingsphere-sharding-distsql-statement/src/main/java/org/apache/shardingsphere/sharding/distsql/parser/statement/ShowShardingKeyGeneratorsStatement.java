@@ -18,15 +18,14 @@
 package org.apache.shardingsphere.sharding.distsql.parser.statement;
 
 import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
-import org.apache.shardingsphere.distsql.parser.subject.impl.ShardingSubjectSupplier;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.SchemaSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
  * Show sharding key generators statement.
  */
-public final class ShowShardingKeyGeneratorsStatement extends ShowRulesStatement implements ShardingSubjectSupplier {
+public final class ShowShardingKeyGeneratorsStatement extends ShowRulesStatement {
     
-    public ShowShardingKeyGeneratorsStatement(final SchemaSegment schema) {
-        super(schema);
+    public ShowShardingKeyGeneratorsStatement(final DatabaseSegment database) {
+        super(database);
     }
 }

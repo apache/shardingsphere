@@ -20,10 +20,12 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 import org.apache.shardingsphere.proxy.backend.communication.TransactionManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.sharding.merge.ddl.fetch.FetchOrderByValueGroupsHolder;
 import org.apache.shardingsphere.transaction.ConnectionSavepointManager;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.TransactionHolder;
 import org.apache.shardingsphere.transaction.core.TransactionType;
+import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.apache.shardingsphere.transaction.spi.ShardingSphereTransactionManager;
 
 import java.sql.Connection;
@@ -48,7 +50,8 @@ public final class JDBCBackendTransactionManager implements TransactionManager<V
         connection = backendConnection;
         transactionType = connection.getConnectionSession().getTransactionStatus().getTransactionType();
         localTransactionManager = new LocalTransactionManager(backendConnection);
-        ShardingSphereTransactionManagerEngine engine = ProxyContext.getInstance().getContextManager().getTransactionContexts().getEngines().get(connection.getConnectionSession().getDatabaseName());
+        TransactionRule transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
+        ShardingSphereTransactionManagerEngine engine = transactionRule.getResources().get(connection.getConnectionSession().getDatabaseName());
         shardingSphereTransactionManager = null == engine ? null : engine.getTransactionManager(transactionType);
     }
     
@@ -81,6 +84,7 @@ public final class JDBCBackendTransactionManager implements TransactionManager<V
                 connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
                 connection.getConnectionSession().getTransactionStatus().setRollbackOnly(false);
                 TransactionHolder.clear();
+                FetchOrderByValueGroupsHolder.remove();
             }
         }
         return null;
@@ -99,6 +103,7 @@ public final class JDBCBackendTransactionManager implements TransactionManager<V
                 connection.getConnectionSession().getTransactionStatus().setInTransaction(false);
                 connection.getConnectionSession().getTransactionStatus().setRollbackOnly(false);
                 TransactionHolder.clear();
+                FetchOrderByValueGroupsHolder.remove();
             }
         }
         return null;

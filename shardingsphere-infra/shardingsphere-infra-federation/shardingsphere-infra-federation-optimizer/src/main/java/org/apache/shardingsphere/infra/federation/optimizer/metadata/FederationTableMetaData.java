@@ -26,8 +26,8 @@ import org.apache.calcite.rel.type.RelDataTypeImpl;
 import org.apache.calcite.rel.type.RelDataTypeSystem;
 import org.apache.calcite.rel.type.RelProtoDataType;
 import org.apache.calcite.sql.type.SqlTypeFactoryImpl;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -46,22 +46,23 @@ public final class FederationTableMetaData {
     
     private final List<String> columnNames;
     
-    public FederationTableMetaData(final String name, final TableMetaData tableMetaData) {
+    public FederationTableMetaData(final String name, final ShardingSphereTable table) {
         this.name = name;
-        relProtoDataType = createRelProtoDataType(tableMetaData);
-        columnNames = tableMetaData.getColumns().values().stream().map(ColumnMetaData::getName).collect(Collectors.toList());
+        relProtoDataType = createRelProtoDataType(table);
+        // TODO consider using keySet when ShardingSphere supports column name case sensitivity
+        columnNames = table.getColumns().values().stream().map(ShardingSphereColumn::getName).collect(Collectors.toList());
     }
     
-    private RelProtoDataType createRelProtoDataType(final TableMetaData tableMetaData) {
-        Builder fieldInfo = REL_DATA_TYPE_FACTORY.builder();
-        for (ColumnMetaData each : tableMetaData.getColumns().values()) {
-            fieldInfo.add(each.getName(), getRelDataType(each));
+    private RelProtoDataType createRelProtoDataType(final ShardingSphereTable table) {
+        Builder fieldInfoBuilder = REL_DATA_TYPE_FACTORY.builder();
+        for (ShardingSphereColumn each : table.getColumns().values()) {
+            fieldInfoBuilder.add(each.getName(), getRelDataType(each));
         }
-        return RelDataTypeImpl.proto(fieldInfo.build());
+        return RelDataTypeImpl.proto(fieldInfoBuilder.build());
     }
     
-    private RelDataType getRelDataType(final ColumnMetaData columnMetaData) {
-        Class<?> sqlTypeClass = SqlType.valueOf(columnMetaData.getDataType()).clazz;
+    private RelDataType getRelDataType(final ShardingSphereColumn column) {
+        Class<?> sqlTypeClass = SqlType.valueOf(column.getDataType()).clazz;
         RelDataType javaType = REL_DATA_TYPE_FACTORY.createJavaType(sqlTypeClass);
         return REL_DATA_TYPE_FACTORY.createTypeWithNullability(javaType, true);
     }

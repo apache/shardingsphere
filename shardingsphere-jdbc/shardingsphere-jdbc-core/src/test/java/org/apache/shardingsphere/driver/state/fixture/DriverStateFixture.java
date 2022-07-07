@@ -34,5 +34,4 @@ public final class DriverStateFixture implements DriverState {
     public String getType() {
         return "FIXTURE";
     }
-    
 }

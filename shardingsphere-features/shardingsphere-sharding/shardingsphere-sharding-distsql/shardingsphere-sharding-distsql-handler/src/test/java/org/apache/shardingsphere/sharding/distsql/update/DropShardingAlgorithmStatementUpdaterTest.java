@@ -51,13 +51,12 @@ public final class DropShardingAlgorithmStatementUpdaterTest {
     
     @Test(expected = RequiredAlgorithmMissedException.class)
     public void assertCheckSQLStatementWithoutCurrentRule() throws RuleDefinitionViolationException {
-        updater.checkSQLStatement(database, new DropShardingAlgorithmStatement(Collections.emptyList()), null);
+        updater.checkSQLStatement(database, new DropShardingAlgorithmStatement(false, Collections.emptyList()), null);
     }
     
     @Test
     public void assertCheckSQLStatementWithoutCurrentRuleWithIfExists() throws RuleDefinitionViolationException {
-        DropShardingAlgorithmStatement dropShardingAlgorithmStatement = new DropShardingAlgorithmStatement(Collections.emptyList());
-        dropShardingAlgorithmStatement.setContainsExistClause(true);
+        DropShardingAlgorithmStatement dropShardingAlgorithmStatement = new DropShardingAlgorithmStatement(true, Collections.emptyList());
         updater.checkSQLStatement(database, dropShardingAlgorithmStatement, null);
     }
     
@@ -106,13 +105,11 @@ public final class DropShardingAlgorithmStatementUpdaterTest {
     }
     
     private DropShardingAlgorithmStatement createSQLStatement(final String algorithmName) {
-        return new DropShardingAlgorithmStatement(Collections.singleton(algorithmName));
+        return new DropShardingAlgorithmStatement(false, Collections.singleton(algorithmName));
     }
     
     private DropShardingAlgorithmStatement createSQLStatementWithIfExists(final String algorithmName) {
-        DropShardingAlgorithmStatement result = new DropShardingAlgorithmStatement(Collections.singleton(algorithmName));
-        result.setContainsExistClause(true);
-        return result;
+        return new DropShardingAlgorithmStatement(true, Collections.singleton(algorithmName));
     }
     
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {

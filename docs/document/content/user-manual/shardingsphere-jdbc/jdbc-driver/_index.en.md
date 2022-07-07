@@ -4,13 +4,27 @@ weight = 3
 chapter = true
 +++
 
-## Overview
+## Background
 
-ShardingSphere-JDBC provides JDBC driver, it permits user using ShardingSphere by configuration updating only, without any code changes.
+ShardingSphere-JDBC provides a JDBC Driver, which can be used only through configuration changes without rewriting the code.
 
-## Usage
+## Parameters
 
-### Import Maven Dependency
+### Driver Class Name
+
+`org.apache.shardingsphere.driver.ShardingSphereDriver`
+
+### URL Configuration
+
+- Use jdbc:shardingsphere: as prefix
+- Configuration file: xxx.yaml, keep consist format with [YAML Configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/)
+- Configuration file loading rule:
+  - No prefix means that the configuration file is loaded from the absolute path
+  - `classpath:` prefix indicates that the configuration file is loaded from the classpath
+
+## Procedure
+
+1. Import Maven Dependency
 
 ```xml
 <dependency>
@@ -20,12 +34,12 @@ ShardingSphere-JDBC provides JDBC driver, it permits user using ShardingSphere b
 </dependency>
 ```
 
-### Driver Usage
+2. Use drive
 
-#### Native Driver Usage
+* Use native drivers:
 
 ```java
-Class.forName("org.apache.shardingsphere.driver.ShardingSphereDriver"); // Or use SPI to register database driver
+Class.forName("org.apache.shardingsphere.driver.ShardingSphereDriver");
 String jdbcUrl = "jdbc:shardingsphere:classpath:config.yaml";
 
 String sql = "SELECT i.* FROM t_order o JOIN t_order_item i ON o.order_id=i.order_id WHERE o.user_id=? AND o.order_id=?";
@@ -42,13 +56,13 @@ try (
 }
 ```
 
-#### 方式 2. 使用数据库连接池
+* Use database connection pool:
 
 ```java
 String driverClassName = "org.apache.shardingsphere.driver.ShardingSphereDriver";
 String jdbcUrl = "jdbc:shardingsphere:classpath:config.yaml";
 
-// Use HikariCP as sample 
+// Take HikariCP as an example 
 HikariDataSource dataSource = new HikariDataSource();
 dataSource.setDriverClassName(driverClassName);
 dataSource.setJdbcUrl(jdbcUrl);
@@ -67,16 +81,14 @@ try (
 }
 ```
 
-### Configuration Explanation
+## Sample
 
-#### Driver Class Name
+Load JDBC URL of config.yaml profile in classpath:
+```
+jdbc:shardingsphere:classpath:config.yaml
+```
 
-`org.apache.shardingsphere.driver.ShardingSphereDriver`
-
-#### URL Configuration Explanation
-
-- Use `jdbc:shardingsphere:` as prefix
-- Configuration file: `xxx.yaml`, keep consist format with [YAML Configuration](/en/user-manual/yaml-config/)
-- Configuration file loading rule:
-  - No prefix for loading from absolute path
-  - Prefix with `classpath:` for loading from java class path
+Load JDBC URL of config.yaml profile in absolute path
+```
+jdbc:shardingsphere:/path/to/config.yaml
+```

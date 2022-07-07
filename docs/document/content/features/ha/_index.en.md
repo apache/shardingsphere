@@ -27,3 +27,5 @@ and can also integrate the readwrite splitting dynamically, which is the main ch
 ## Goal
 
 **The main goal of Apache ShardingSphere high availability module which is ensuring 7 * 24-hour uninterrupted database service as much as possible.**
+
+**Source Codes: https://github.com/apache/shardingsphere/tree/master/shardingsphere-features/shardingsphere-db-discovery**

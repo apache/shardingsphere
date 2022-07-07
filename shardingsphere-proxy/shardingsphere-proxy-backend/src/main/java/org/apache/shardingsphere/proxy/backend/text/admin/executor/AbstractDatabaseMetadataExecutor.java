@@ -119,11 +119,11 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
     /**
      * Get the source object of the row data.
      *
-     * @param schemaName schema name
+     * @param databaseName database name
      * @param callback callback for processing source data of information_schema
      * @throws SQLException SQLException
      */
-    protected abstract void getSourceData(String schemaName, FunctionWithException<ResultSet, SQLException> callback) throws SQLException;
+    protected abstract void getSourceData(String databaseName, FunctionWithException<ResultSet, SQLException> callback) throws SQLException;
     
     /**
      * Get the source object of the row data.
@@ -146,13 +146,13 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
     }
     
     /**
-     * Determine whether the current schema has a data source.
+     * Determine whether the current database has a data source.
      *
-     * @param schemaName schema name
-     * @return has datasource or not
+     * @param databaseName database name
+     * @return has data source or not
      */
-    protected static Boolean hasDatasource(final String schemaName) {
-        return ProxyContext.getInstance().getDatabase(schemaName).hasDataSource();
+    protected static Boolean hasDataSource(final String databaseName) {
+        return ProxyContext.getInstance().getDatabase(databaseName).containsDataSource();
     }
     
     /**
@@ -168,8 +168,8 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
     
     private static Collection<ShardingSphereRule> getRules(final String databaseName) {
         Collection<ShardingSphereRule> result;
-        result = new LinkedList<>(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMetaData(databaseName).getRuleMetaData().getRules());
-        result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getGlobalRuleMetaData().getRules());
+        result = new LinkedList<>(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getRuleMetaData().getRules());
+        result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
         return result;
     }
     
@@ -198,7 +198,7 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
         @Override
         protected List<String> getDatabaseNames(final ConnectionSession connectionSession) {
             String database = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee()))
-                    .filter(AbstractDatabaseMetadataExecutor::hasDatasource).findFirst().orElseThrow(ResourceNotExistedException::new);
+                    .filter(AbstractDatabaseMetadataExecutor::hasDataSource).findFirst().orElseThrow(ResourceNotExistedException::new);
             return Collections.singletonList(database);
         }
         
@@ -210,7 +210,7 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
          */
         @Override
         protected void getSourceData(final String databaseName, final FunctionWithException<ResultSet, SQLException> callback) throws SQLException {
-            ShardingSphereResource resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getDatabaseMetaData(databaseName).getResource();
+            ShardingSphereResource resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getResource();
             Optional<Entry<String, DataSource>> dataSourceEntry = resource.getDataSources().entrySet().stream().findFirst();
             log.info("Actual SQL: {} ::: {}", dataSourceEntry.orElseThrow(ResourceNotExistedException::new).getKey(), sql);
             try (

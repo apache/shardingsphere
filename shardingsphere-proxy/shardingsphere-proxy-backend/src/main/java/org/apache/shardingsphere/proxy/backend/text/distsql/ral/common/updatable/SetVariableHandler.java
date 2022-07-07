@@ -27,7 +27,6 @@ import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.enums.VariableEnum;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.InvalidValueException;
@@ -41,26 +40,17 @@ import java.util.Properties;
 /**
  * Set variable statement handler.
  */
-public final class SetVariableHandler extends UpdatableRALBackendHandler<SetVariableStatement, SetVariableHandler> {
-    
-    private ConnectionSession connectionSession;
+public final class SetVariableHandler extends UpdatableRALBackendHandler<SetVariableStatement> {
     
     @Override
-    public SetVariableHandler init(final HandlerParameter<SetVariableStatement> parameter) {
-        initStatement(parameter.getStatement());
-        connectionSession = parameter.getConnectionSession();
-        return this;
-    }
-    
-    @Override
-    protected void update(final ContextManager contextManager, final SetVariableStatement sqlStatement) throws DistSQLException {
-        Enum<?> enumType = getEnumType(sqlStatement.getName());
+    protected void update(final ContextManager contextManager) throws DistSQLException {
+        Enum<?> enumType = getEnumType(getSqlStatement().getName());
         if (enumType instanceof ConfigurationPropertyKey) {
-            handleConfigurationProperty((ConfigurationPropertyKey) enumType, sqlStatement.getValue());
+            handleConfigurationProperty((ConfigurationPropertyKey) enumType, getSqlStatement().getValue());
         } else if (enumType instanceof VariableEnum) {
-            handleVariables(sqlStatement);
+            handleVariables();
         } else {
-            throw new UnsupportedVariableException(sqlStatement.getName());
+            throw new UnsupportedVariableException(getSqlStatement().getName());
         }
     }
     
@@ -76,7 +66,7 @@ public final class SetVariableHandler extends UpdatableRALBackendHandler<SetVari
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
         Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getPersistService();
-        Properties props = new Properties(metaDataContexts.getProps().getProps());
+        Properties props = new Properties(metaDataContexts.getMetaData().getProps().getProps());
         props.put(propertyKey.getKey(), getValue(propertyKey, value));
         contextManager.alterProperties(props);
         if (metaDataPersistService.isPresent() && null != metaDataPersistService.get().getPropsService()) {
@@ -93,25 +83,25 @@ public final class SetVariableHandler extends UpdatableRALBackendHandler<SetVari
         }
     }
     
-    private void handleVariables(final SetVariableStatement setVariableStatement) {
-        VariableEnum variable = VariableEnum.getValueOf(setVariableStatement.getName());
+    private void handleVariables() {
+        VariableEnum variable = VariableEnum.getValueOf(getSqlStatement().getName());
         switch (variable) {
             case AGENT_PLUGINS_ENABLED:
-                Boolean agentPluginsEnabled = BooleanUtils.toBooleanObject(sqlStatement.getValue());
+                Boolean agentPluginsEnabled = BooleanUtils.toBooleanObject(getSqlStatement().getValue());
                 SystemPropertyUtil.setSystemProperty(variable.name(), null == agentPluginsEnabled ? Boolean.FALSE.toString() : agentPluginsEnabled.toString());
                 break;
             case TRANSACTION_TYPE:
-                connectionSession.getTransactionStatus().setTransactionType(getTransactionType(sqlStatement.getValue()));
+                getConnectionSession().getTransactionStatus().setTransactionType(getTransactionType(getSqlStatement().getValue()));
                 break;
             default:
-                throw new UnsupportedVariableException(setVariableStatement.getName());
+                throw new UnsupportedVariableException(getSqlStatement().getName());
         }
     }
     
     private TransactionType getTransactionType(final String transactionTypeName) throws UnsupportedVariableException {
         try {
             return TransactionType.valueOf(transactionTypeName.toUpperCase());
-        } catch (IllegalArgumentException ex) {
+        } catch (final IllegalArgumentException ex) {
             throw new UnsupportedVariableException(transactionTypeName);
         }
     }

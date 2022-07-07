@@ -21,13 +21,13 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.S
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
+import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.junit.Test;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -43,12 +43,13 @@ public final class ShowSQLParserRuleHandlerTest extends ProxyContextRestorer {
     @Test
     public void assertSQLParserRule() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getGlobalRuleMetaData()).thenReturn(getGlobalRuleMetaData());
+        when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(createGlobalRuleMetaData());
         ProxyContext.init(contextManager);
-        ShowSQLParserRuleHandler handler = new ShowSQLParserRuleHandler().initStatement(new ShowSQLParserRuleStatement());
+        ShowSQLParserRuleHandler handler = new ShowSQLParserRuleHandler();
+        handler.init(new ShowSQLParserRuleStatement(), null);
         handler.execute();
         handler.next();
-        List<Object> data = new ArrayList<>(handler.getRowData());
+        List<Object> data = handler.getRowData().getData();
         assertThat(data.size(), is(3));
         assertThat(data.get(0), is(Boolean.TRUE.toString()));
         String parseTreeCache = String.valueOf(data.get(1));
@@ -59,9 +60,10 @@ public final class ShowSQLParserRuleHandlerTest extends ProxyContextRestorer {
         assertThat(sqlStatementCache, containsString("\"maximumSize\":65535"));
     }
     
-    private ShardingSphereRuleMetaData getGlobalRuleMetaData() {
+    private ShardingSphereRuleMetaData createGlobalRuleMetaData() {
         CacheOption parseTreeCache = new CacheOption(128, 1024);
         CacheOption sqlStatementCache = new CacheOption(2000, 65535);
-        return new ShardingSphereRuleMetaData(Collections.singleton(new SQLParserRuleConfiguration(true, parseTreeCache, sqlStatementCache)), Collections.emptyList());
+        SQLParserRuleConfiguration config = new SQLParserRuleConfiguration(true, parseTreeCache, sqlStatementCache);
+        return new ShardingSphereRuleMetaData(Collections.singleton(new SQLParserRule(config)));
     }
 }

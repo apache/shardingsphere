@@ -6,7 +6,7 @@ weight = 1
 ## Syntax
 
 ```sql
-SHOW SCHEMA RESOURCES [FROM schemaName]
+SHOW DATABASE RESOURCES [FROM databaseName]
 ```
 
 ## Return Value Description
@@ -23,7 +23,7 @@ SHOW SCHEMA RESOURCES [FROM schemaName]
 ## Example
 
 ```sql
-mysql> show schema resources;
+mysql> SHOW DATABASE RESOURCES;
 +------+-------+-----------+------+------+-------------------------------------------------------------------------------------------------------------------------------------------------------------+
 | name | type  | host      | port | db   | attribute                                                                                                                                                   |
 +------+-------+-----------+------+------+-------------------------------------------------------------------------------------------------------------------------------------------------------------+

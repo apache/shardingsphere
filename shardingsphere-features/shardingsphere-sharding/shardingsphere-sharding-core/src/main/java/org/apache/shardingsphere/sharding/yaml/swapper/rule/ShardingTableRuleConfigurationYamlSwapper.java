@@ -18,10 +18,11 @@
 package org.apache.shardingsphere.sharding.yaml.swapper.rule;
 
 import com.google.common.base.Preconditions;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.KeyGenerateStrategyConfigurationYamlSwapper;
+import org.apache.shardingsphere.sharding.yaml.swapper.strategy.ShardingAuditStrategyConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.yaml.swapper.strategy.ShardingStrategyConfigurationYamlSwapper;
 
 /**
@@ -33,11 +34,14 @@ public final class ShardingTableRuleConfigurationYamlSwapper implements YamlConf
     
     private final KeyGenerateStrategyConfigurationYamlSwapper keyGenerateStrategyYamlSwapper = new KeyGenerateStrategyConfigurationYamlSwapper();
     
+    private final ShardingAuditStrategyConfigurationYamlSwapper auditStrategyYamlSwapper = new ShardingAuditStrategyConfigurationYamlSwapper();
+    
     @Override
     public YamlTableRuleConfiguration swapToYamlConfiguration(final ShardingTableRuleConfiguration data) {
         YamlTableRuleConfiguration result = new YamlTableRuleConfiguration();
         result.setLogicTable(data.getLogicTable());
         result.setActualDataNodes(data.getActualDataNodes());
+        result.setActualTablePrefix(data.getActualTablePrefix());
         if (null != data.getDatabaseShardingStrategy()) {
             result.setDatabaseStrategy(shardingStrategyYamlSwapper.swapToYamlConfiguration(data.getDatabaseShardingStrategy()));
         }
@@ -47,6 +51,9 @@ public final class ShardingTableRuleConfigurationYamlSwapper implements YamlConf
         if (null != data.getKeyGenerateStrategy()) {
             result.setKeyGenerateStrategy(keyGenerateStrategyYamlSwapper.swapToYamlConfiguration(data.getKeyGenerateStrategy()));
         }
+        if (null != data.getAuditStrategy()) {
+            result.setAuditStrategy(auditStrategyYamlSwapper.swapToYamlConfiguration(data.getAuditStrategy()));
+        }
         return result;
     }
     
@@ -54,6 +61,7 @@ public final class ShardingTableRuleConfigurationYamlSwapper implements YamlConf
     public ShardingTableRuleConfiguration swapToObject(final YamlTableRuleConfiguration yamlConfig) {
         Preconditions.checkNotNull(yamlConfig.getLogicTable(), "Logic table cannot be null.");
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration(yamlConfig.getLogicTable(), yamlConfig.getActualDataNodes());
+        result.setActualTablePrefix(yamlConfig.getActualTablePrefix());
         if (null != yamlConfig.getDatabaseStrategy()) {
             result.setDatabaseShardingStrategy(shardingStrategyYamlSwapper.swapToObject(yamlConfig.getDatabaseStrategy()));
         }
@@ -62,6 +70,9 @@ public final class ShardingTableRuleConfigurationYamlSwapper implements YamlConf
         }
         if (null != yamlConfig.getKeyGenerateStrategy()) {
             result.setKeyGenerateStrategy(keyGenerateStrategyYamlSwapper.swapToObject(yamlConfig.getKeyGenerateStrategy()));
+        }
+        if (null != yamlConfig.getAuditStrategy()) {
+            result.setAuditStrategy(auditStrategyYamlSwapper.swapToObject(yamlConfig.getAuditStrategy()));
         }
         return result;
     }

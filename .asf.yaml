@@ -19,6 +19,7 @@ notifications:
   commits: notifications@shardingsphere.apache.org
   issues: notifications@shardingsphere.apache.org
   pullrequests: notifications@shardingsphere.apache.org
+  jobs: notifications@shardingsphere.apache.org
 
 github:
   description: Ecosystem to transform any database into a distributed database system, and enhance it with sharding, elastic scaling, encryption features & more

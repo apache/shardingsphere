@@ -19,12 +19,10 @@ package org.apache.shardingsphere.dbdiscovery.algorithm;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.dbdiscovery.mysql.type.MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
 import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
-import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeRole;
@@ -35,12 +33,10 @@ import org.apache.shardingsphere.mode.metadata.storage.event.PrimaryDataSourceCh
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Database discovery engine.
@@ -56,15 +52,9 @@ public final class DatabaseDiscoveryEngine {
      *
      * @param databaseName database name
      * @param dataSourceMap data source map
-     * @throws SQLException SQL exception
      */
-    public void checkEnvironment(final String databaseName, final Map<String, DataSource> dataSourceMap) throws SQLException {
-        ExecutorEngine executorEngine = ExecutorEngine.createExecutorEngineWithCPUAndResources(dataSourceMap.size());
-        executorEngine.execute(createExecutionGroupContext(dataSourceMap), new DatabaseDiscoveryExecutorCallback(databaseName, databaseDiscoveryProviderAlgorithm));
-    }
-    
-    private ExecutionGroupContext<DataSource> createExecutionGroupContext(final Map<String, DataSource> dataSourceMap) {
-        return new ExecutionGroupContext<>(dataSourceMap.values().stream().map(each -> new ExecutionGroup<>(Collections.singletonList(each))).collect(Collectors.toList()));
+    public void checkEnvironment(final String databaseName, final Map<String, DataSource> dataSourceMap) {
+        databaseDiscoveryProviderAlgorithm.checkEnvironment(databaseName, dataSourceMap.values());
     }
     
     /**
@@ -84,7 +74,7 @@ public final class DatabaseDiscoveryEngine {
             ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceChangedEvent(new QualifiedDatabase(databaseName, groupName, newPrimaryDataSourceName.get())));
         }
         String result = newPrimaryDataSourceName.orElse(originalPrimaryDataSourceName);
-        postReplicaDataSourceDisabledEvent(databaseName, groupName, result, dataSourceMap);
+        postReplicaDataSourceDisabledEvent(databaseName, groupName, result, dataSourceMap, disabledDataSourceNames);
         return result;
     }
     
@@ -109,10 +99,22 @@ public final class DatabaseDiscoveryEngine {
         return result;
     }
     
-    private void postReplicaDataSourceDisabledEvent(final String databaseName, final String groupName, final String primaryDataSourceName, final Map<String, DataSource> dataSourceMap) {
+    private void postReplicaDataSourceDisabledEvent(final String databaseName, final String groupName, final String primaryDataSourceName,
+                                                    final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
+        int enabledReplicasCount = dataSourceMap.size() - disabledDataSourceNames.size() - 1;
         for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             if (!entry.getKey().equals(primaryDataSourceName)) {
-                ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), createStorageNodeDataSource(loadReplicaStatus(entry.getValue()))));
+                StorageNodeDataSource storageNodeDataSource = createStorageNodeDataSource(loadReplicaStatus(entry.getValue()));
+                if (StorageNodeStatus.isEnable(storageNodeDataSource.getStatus())) {
+                    enabledReplicasCount += disabledDataSourceNames.contains(entry.getKey()) ? 1 : 0;
+                    ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), storageNodeDataSource));
+                    continue;
+                }
+                if (!(databaseDiscoveryProviderAlgorithm instanceof MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm)
+                        || enabledReplicasCount > Integer.parseInt(databaseDiscoveryProviderAlgorithm.getProps().getProperty("min-enabled-replicas", "0"))) {
+                    enabledReplicasCount -= disabledDataSourceNames.contains(entry.getKey()) ? 0 : 1;
+                    ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), storageNodeDataSource));
+                }
             }
         }
     }

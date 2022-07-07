@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockRegistryService;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.MutexLockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcherFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.subscriber.ScalingRegistrySubscriber;
@@ -61,7 +61,7 @@ public final class RegistryCenter {
     
     private void createSubscribers(final ClusterPersistRepository repository) {
         new SchemaMetaDataRegistrySubscriber(repository);
-        new ComputeNodeStatusSubscriber(repository);
+        new ComputeNodeStatusSubscriber(this, repository);
         new StorageNodeStatusSubscriber(repository);
         new ScalingRegistrySubscriber(repository);
         new ProcessRegistrySubscriber(repository);
@@ -70,10 +70,11 @@ public final class RegistryCenter {
     /**
      * Online instance.
      * 
-     * @param instanceDefinition instance definition
+     * @param computeNodeInstance compute node instance
      */
-    public void onlineInstance(final InstanceDefinition instanceDefinition) {
-        computeNodeStatusService.registerOnline(instanceDefinition);
+    public void onlineInstance(final ComputeNodeInstance computeNodeInstance) {
+        computeNodeStatusService.registerOnline(computeNodeInstance.getInstanceMetaData());
+        computeNodeStatusService.persistInstanceLabels(computeNodeInstance.getCurrentInstanceId(), computeNodeInstance.getLabels());
         listenerFactory.watchListeners();
     }
 }

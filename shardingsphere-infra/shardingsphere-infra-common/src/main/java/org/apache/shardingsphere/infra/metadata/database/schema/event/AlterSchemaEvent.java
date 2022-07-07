@@ -19,14 +19,14 @@ package org.apache.shardingsphere.infra.metadata.database.schema.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 
 /**
  * Alter schema event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AlterSchemaEvent {
+public final class AlterSchemaEvent implements MetaDataRefreshedEvent {
     
     private final String databaseName;
     

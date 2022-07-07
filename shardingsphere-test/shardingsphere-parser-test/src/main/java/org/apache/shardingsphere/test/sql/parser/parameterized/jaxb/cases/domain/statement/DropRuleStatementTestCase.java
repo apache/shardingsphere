@@ -28,6 +28,6 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "distsql")
 public abstract class DropRuleStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute(name = "contains-exists-clause")
-    private boolean containsExistClause;
+    @XmlAttribute(name = "if-exists")
+    private boolean ifExists;
 }

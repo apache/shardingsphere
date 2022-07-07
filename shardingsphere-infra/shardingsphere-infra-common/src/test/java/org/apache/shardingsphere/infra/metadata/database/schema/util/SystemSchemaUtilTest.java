@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database.schema.util;
 
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.Test;
 
 import java.util.Arrays;
@@ -26,18 +27,35 @@ import java.util.Collections;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class SystemSchemaUtilTest {
     
     @Test
     public void assertContainsSystemSchemaForPostgreSQL() {
-        assertTrue(SystemSchemaUtil.containsSystemSchema(new PostgreSQLDatabaseType(), Arrays.asList("information_schema", "pg_catalog"), "information_schema"));
-        assertFalse(SystemSchemaUtil.containsSystemSchema(new PostgreSQLDatabaseType(), Collections.singletonList("sharding_db"), "sharding_db"));
+        ShardingSphereDatabase informationSchemaDatabase = mockShardingSphereDatabase("information_schema", false);
+        assertTrue(SystemSchemaUtil.containsSystemSchema(new PostgreSQLDatabaseType(), Arrays.asList("information_schema", "pg_catalog"), informationSchemaDatabase));
+        ShardingSphereDatabase shardingSchemaDatabase = mockShardingSphereDatabase("sharding_db", false);
+        assertFalse(SystemSchemaUtil.containsSystemSchema(new PostgreSQLDatabaseType(), Collections.singletonList("sharding_db"), shardingSchemaDatabase));
+        ShardingSphereDatabase customizedInformationSchemaDatabase = mockShardingSphereDatabase("information_schema", true);
+        assertFalse(SystemSchemaUtil.containsSystemSchema(new PostgreSQLDatabaseType(), Arrays.asList("information_schema", "pg_catalog"), customizedInformationSchemaDatabase));
     }
     
     @Test
     public void assertContainsSystemSchemaForMySQL() {
-        assertTrue(SystemSchemaUtil.containsSystemSchema(new MySQLDatabaseType(), Arrays.asList("information_schema", "mysql"), "information_schema"));
-        assertFalse(SystemSchemaUtil.containsSystemSchema(new MySQLDatabaseType(), Collections.singletonList("sharding_db"), "sharding_db"));
+        ShardingSphereDatabase informationSchemaDatabase = mockShardingSphereDatabase("information_schema", false);
+        assertTrue(SystemSchemaUtil.containsSystemSchema(new MySQLDatabaseType(), Arrays.asList("information_schema", "mysql"), informationSchemaDatabase));
+        ShardingSphereDatabase shardingSchemaDatabase = mockShardingSphereDatabase("sharding_db", false);
+        assertFalse(SystemSchemaUtil.containsSystemSchema(new MySQLDatabaseType(), Collections.singletonList("sharding_db"), shardingSchemaDatabase));
+        ShardingSphereDatabase customizedInformationSchemaDatabase = mockShardingSphereDatabase("information_schema", true);
+        assertFalse(SystemSchemaUtil.containsSystemSchema(new MySQLDatabaseType(), Arrays.asList("information_schema", "mysql"), customizedInformationSchemaDatabase));
+    }
+    
+    private ShardingSphereDatabase mockShardingSphereDatabase(final String databaseName, final boolean isComplete) {
+        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class);
+        when(result.getName()).thenReturn(databaseName);
+        when(result.isComplete()).thenReturn(isComplete);
+        return result;
     }
 }

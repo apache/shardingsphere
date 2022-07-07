@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -208,7 +208,7 @@ public final class ShardingInsertStatementValidatorTest {
     
     private void mockShardingRuleForUpdateShardingColumn() {
         TableRule tableRule = mock(TableRule.class);
-        when(tableRule.getActualDatasourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
+        when(tableRule.getActualDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
         when(tableRule.getActualTableNames("ds_1")).thenReturn(Collections.singletonList("user"));
         when(shardingRule.findShardingColumn("id", "user")).thenReturn(Optional.of("id"));
         when(shardingRule.getTableRule("user")).thenReturn(tableRule);

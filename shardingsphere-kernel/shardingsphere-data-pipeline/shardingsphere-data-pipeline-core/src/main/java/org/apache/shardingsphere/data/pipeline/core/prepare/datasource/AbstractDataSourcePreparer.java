@@ -100,6 +100,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         return result;
     }
     
+    // TODO the invocation is disabled for now, it might be used again for next new feature
     protected final PipelineDataSourceWrapper getSourceCachedDataSource(final RuleAlteredJobConfiguration jobConfig, final PipelineDataSourceManager dataSourceManager) {
         return dataSourceManager.getDataSource(PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getSource().getType(), jobConfig.getSource().getParameter()));
     }

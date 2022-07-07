@@ -20,53 +20,57 @@ grammar RQLStatement;
 import BaseRule;
 
 showShardingTableRules
-    : SHOW SHARDING TABLE (tableRule | RULES) (FROM schemaName)?
+    : SHOW SHARDING TABLE (tableRule | RULES) (FROM databaseName)?
     ;
 
 showShardingBindingTableRules
-    : SHOW SHARDING BINDING TABLE RULES (FROM schemaName)?
+    : SHOW SHARDING BINDING TABLE RULES (FROM databaseName)?
     ;
 
 showShardingBroadcastTableRules
-    : SHOW SHARDING BROADCAST TABLE RULES (FROM schemaName)?
+    : SHOW SHARDING BROADCAST TABLE RULES (FROM databaseName)?
     ;
 
 showShardingAlgorithms
-    : SHOW SHARDING ALGORITHMS (FROM schemaName)?
+    : SHOW SHARDING ALGORITHMS (FROM databaseName)?
+    ;
+
+showShardingAuditors
+    : SHOW SHARDING AUDITORS (FROM databaseName)?
     ;
 
 showShardingTableNodes
-    : SHOW SHARDING TABLE NODES tableName? (FROM schemaName)?
+    : SHOW SHARDING TABLE NODES tableName? (FROM databaseName)?
     ;
 
 showShardingKeyGenerators
-    : SHOW SHARDING KEY GENERATORS (FROM schemaName)?
+    : SHOW SHARDING KEY GENERATORS (FROM databaseName)?
     ;
 
 showShardingDefaultShardingStrategy
-    : SHOW DEFAULT SHARDING STRATEGY (FROM schemaName)?
+    : SHOW DEFAULT SHARDING STRATEGY (FROM databaseName)?
     ;
 
 showUnusedShardingAlgorithms
-    : SHOW UNUSED SHARDING ALGORITHMS (FROM schemaName)?
+    : SHOW UNUSED SHARDING ALGORITHMS (FROM databaseName)?
     ;
 
 showUnusedShardingKeyGenerators
-    : SHOW UNUSED SHARDING KEY GENERATORS (FROM schemaName)?
+    : SHOW UNUSED SHARDING KEY GENERATORS (FROM databaseName)?
     ;
 
 showShardingTableRulesUsedAlgorithm
-    : SHOW SHARDING TABLE RULES USED ALGORITHM algorithmName (FROM schemaName)?
+    : SHOW SHARDING TABLE RULES USED ALGORITHM algorithmName (FROM databaseName)?
     ;
 
 showShardingTableRulesUsedKeyGenerator
-    : SHOW SHARDING TABLE RULES USED KEY GENERATOR keyGeneratorName (FROM schemaName)?
+    : SHOW SHARDING TABLE RULES USED KEY GENERATOR keyGeneratorName (FROM databaseName)?
     ;
  
 tableRule
     : RULE tableName
     ;
 
-schemaName
+databaseName
     : IDENTIFIER
     ;

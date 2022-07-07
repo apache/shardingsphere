@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.singletable.rule.builder;
 
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.builder.schema.SchemaRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
 import org.apache.shardingsphere.singletable.config.SingleTableRuleConfiguration;
 import org.apache.shardingsphere.singletable.constant.SingleTableOrder;
 import org.apache.shardingsphere.singletable.rule.SingleTableRule;
@@ -32,12 +31,12 @@ import java.util.Map;
 /**
  * Single table rule builder.
  */
-public final class SingleTableRuleBuilder implements SchemaRuleBuilder<SingleTableRuleConfiguration> {
+public final class SingleTableRuleBuilder implements DatabaseRuleBuilder<SingleTableRuleConfiguration> {
     
     @Override
     public SingleTableRule build(final SingleTableRuleConfiguration config, final String databaseName,
-                                 final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final ConfigurationProperties props) {
-        return new SingleTableRule(config, databaseName, DatabaseTypeEngine.getDatabaseType(dataSources.values()), dataSources, builtRules, props);
+                                 final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
+        return new SingleTableRule(config, databaseName, dataSources, builtRules);
     }
     
     @Override

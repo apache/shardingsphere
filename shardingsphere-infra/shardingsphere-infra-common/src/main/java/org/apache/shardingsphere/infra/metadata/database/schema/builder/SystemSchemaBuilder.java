@@ -22,8 +22,8 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlTableMetaData;
 import org.apache.shardingsphere.infra.yaml.schema.swapper.TableMetaDataYamlSwapper;
 import org.yaml.snakeyaml.Yaml;
@@ -42,11 +42,11 @@ import java.util.Map;
 public final class SystemSchemaBuilder {
     
     /**
-     * Build.
+     * Build system schema.
      * 
      * @param databaseName database name
      * @param databaseType database type
-     * @return ShardingSphere schema map
+     * @return ShardingSphere system schema map
      */
     public static Map<String, ShardingSphereSchema> build(final String databaseName, final DatabaseType databaseType) {
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(databaseType.getSystemSchemas().size(), 1);
@@ -72,7 +72,7 @@ public final class SystemSchemaBuilder {
     }
     
     private static ShardingSphereSchema createSchema(final Collection<InputStream> schemaStreams, final TableMetaDataYamlSwapper swapper) {
-        Map<String, TableMetaData> tables = new LinkedHashMap<>(schemaStreams.size(), 1);
+        Map<String, ShardingSphereTable> tables = new LinkedHashMap<>(schemaStreams.size(), 1);
         for (InputStream each : schemaStreams) {
             YamlTableMetaData metaData = new Yaml().loadAs(each, YamlTableMetaData.class);
             tables.put(metaData.getName(), swapper.swapToObject(metaData));

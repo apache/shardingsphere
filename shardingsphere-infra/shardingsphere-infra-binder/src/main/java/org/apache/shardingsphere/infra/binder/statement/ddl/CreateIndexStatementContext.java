@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.IndexMetaDataUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
@@ -61,5 +62,10 @@ public final class CreateIndexStatementContext extends CommonSQLStatementContext
         }
         return CreateIndexStatementHandler.getGeneratedIndexStartIndex(getSqlStatement()).map(each -> Collections.singletonList(new IndexSegment(each, each,
                 new IndexNameSegment(each, each, new IdentifierValue(IndexMetaDataUtil.getGeneratedLogicIndexName(getSqlStatement().getColumns())))))).orElseGet(Collections::emptyList);
+    }
+    
+    @Override
+    public Collection<ColumnSegment> getIndexColumns() {
+        return getSqlStatement().getColumns();
     }
 }

@@ -40,8 +40,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class EncryptAlgorithmMetaData {
     
-    private final String databaseName;
-    
     private final ShardingSphereDatabase database;
     
     private final EncryptRule encryptRule;
@@ -60,13 +58,14 @@ public final class EncryptAlgorithmMetaData {
     }
     
     /**
-     * Judge whether table is support QueryWithCipherColumn or not.
+     * Judge whether column is support QueryWithCipherColumn or not.
      *
      * @param tableName table name
-     * @return whether table is support QueryWithCipherColumn or not
+     * @param columnName column name
+     * @return whether column is support QueryWithCipherColumn or not
      */
-    public boolean isQueryWithCipherColumn(final String tableName) {
-        return encryptRule.isQueryWithCipherColumn(tableName);
+    public boolean isQueryWithCipherColumn(final String tableName, final String columnName) {
+        return encryptRule.isQueryWithCipherColumn(tableName, columnName);
     }
     
     /**
@@ -85,7 +84,7 @@ public final class EncryptAlgorithmMetaData {
         Map<String, String> expressionTableNames = tablesContext.findTableNamesByColumnProjection(
                 Collections.singletonList(columnProjection.get()), database.getSchemas().get(schemaName));
         Optional<String> tableName = findTableName(columnProjection.get(), expressionTableNames);
-        return tableName.map(optional -> EncryptContextBuilder.build(databaseName, schemaName, optional, columnProjection.get().getName(), encryptRule));
+        return tableName.map(optional -> EncryptContextBuilder.build(database.getName(), schemaName, optional, columnProjection.get().getName()));
     }
     
     private Optional<ColumnProjection> findColumnProjection(final int columnIndex) {

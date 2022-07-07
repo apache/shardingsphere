@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -37,6 +38,7 @@ public final class OptionalSPIRegistry {
      * @return registered service
      */
     public static <T extends OptionalSPI> Optional<T> findRegisteredService(final Class<T> spiClass) {
-        return ShardingSphereServiceLoader.getServiceInstances(spiClass).stream().findFirst();
+        Collection<T> result = ShardingSphereServiceLoader.getServiceInstances(spiClass);
+        return result.isEmpty() ? Optional.empty() : Optional.of(result.iterator().next());
     }
 }

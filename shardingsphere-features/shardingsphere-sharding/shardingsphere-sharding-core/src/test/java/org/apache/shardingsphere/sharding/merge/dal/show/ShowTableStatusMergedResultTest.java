@@ -19,9 +19,10 @@ package org.apache.shardingsphere.sharding.merge.dal.show;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
-import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -54,13 +55,13 @@ public final class ShowTableStatusMergedResultTest {
     @Before
     public void setUp() {
         shardingRule = buildShardingRule();
-        schema = new ShardingSphereSchema(Collections.singletonMap("table", new TableMetaData("table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())));
+        schema = new ShardingSphereSchema(Collections.singletonMap("table", new ShardingSphereTable("table", Collections.emptyList(), Collections.emptyList(), Collections.emptyList())));
     }
     
     private ShardingRule buildShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         shardingRuleConfig.getTables().add(new ShardingTableRuleConfiguration("table", "ds.table_${0..2}"));
-        return new ShardingRule(shardingRuleConfig, Collections.singletonList("ds"));
+        return new ShardingRule(shardingRuleConfig, Collections.singletonList("ds"), mock(InstanceContext.class));
     }
     
     @Test

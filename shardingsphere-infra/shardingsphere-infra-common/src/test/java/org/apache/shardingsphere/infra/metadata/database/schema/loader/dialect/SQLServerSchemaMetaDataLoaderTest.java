@@ -18,21 +18,20 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.loader.dialect;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoaderFactory;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.IndexMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.SchemaMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.TableMetaData;
 import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
+import java.util.Iterator;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -126,13 +125,13 @@ public final class SQLServerSchemaMetaDataLoaderTest {
     
     private void assertTableMetaDataMap(final Collection<SchemaMetaData> schemaMetaDataList) {
         assertThat(schemaMetaDataList.size(), is(1));
-        assertTrue(schemaMetaDataList.iterator().next().getTables().containsKey("tbl"));
-        TableMetaData actualTableMetaData = schemaMetaDataList.iterator().next().getTables().get("tbl");
+        TableMetaData actualTableMetaData = schemaMetaDataList.iterator().next().getTables().iterator().next();
         assertThat(actualTableMetaData.getColumns().size(), is(2));
-        List<String> actualColumnNames = new ArrayList<>(actualTableMetaData.getColumns().keySet());
-        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(0)), is(new ColumnMetaData("id", 4, false, true, true)));
-        assertThat(actualTableMetaData.getColumns().get(actualColumnNames.get(1)), is(new ColumnMetaData("name", 12, false, false, false)));
+        Iterator<ColumnMetaData> columnsIterator = actualTableMetaData.getColumns().iterator();
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("id", 4, false, true, true)));
+        assertThat(columnsIterator.next(), is(new ColumnMetaData("name", 12, false, false, false)));
         assertThat(actualTableMetaData.getIndexes().size(), is(1));
-        assertThat(actualTableMetaData.getIndexes().get("id"), is(new IndexMetaData("id")));
+        Iterator<IndexMetaData> indexesIterator = actualTableMetaData.getIndexes().iterator();
+        assertThat(indexesIterator.next(), is(new IndexMetaData("id")));
     }
 }

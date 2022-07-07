@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.database;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -54,7 +55,7 @@ public final class CreateDatabaseBackendHandlerTest extends ProxyContextRestorer
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
         handler = new CreateDatabaseBackendHandler(statement);
-        when(metaDataContexts.getAllDatabaseNames()).thenReturn(Collections.singleton("test_db"));
+        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test_db", mock(ShardingSphereDatabase.class)));
     }
     
     @SneakyThrows
@@ -75,7 +76,7 @@ public final class CreateDatabaseBackendHandlerTest extends ProxyContextRestorer
     @Test
     public void assertExecuteCreateExistDatabaseWithIfNotExists() {
         when(statement.getDatabaseName()).thenReturn("test_db");
-        when(statement.isContainsNotExistClause()).thenReturn(true);
+        when(statement.isIfNotExists()).thenReturn(true);
         assertThat(handler.execute(), instanceOf(UpdateResponseHeader.class));
     }
 }

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.binder.segment.insert.keygen.engine;
 
 import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKeyContext;
-import org.apache.shardingsphere.infra.metadata.database.schema.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.ColumnMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
@@ -61,9 +61,9 @@ public final class GeneratedKeyContextEngineTest {
     
     @Before
     public void setUp() {
-        TableMetaData tableMetaData = new TableMetaData(
-                "tbl", Collections.singletonList(new ColumnMetaData("id", Types.INTEGER, true, true, false)), Collections.emptyList(), Collections.emptyList());
-        schema = new ShardingSphereSchema(Collections.singletonMap("tbl", tableMetaData));
+        ShardingSphereTable table = new ShardingSphereTable(
+                "tbl", Collections.singletonList(new ShardingSphereColumn("id", Types.INTEGER, true, true, false)), Collections.emptyList(), Collections.emptyList());
+        schema = new ShardingSphereSchema(Collections.singletonMap("tbl", table));
     }
     
     @Test

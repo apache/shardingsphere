@@ -82,7 +82,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
     }
     
     @Override
-    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext<?> sqlStatementContext, final String sql, final String schemaName) {
+    public Optional<DatabaseAdminExecutor> create(final SQLStatementContext<?> sqlStatementContext, final String sql, final String databaseName) {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         if (sqlStatement instanceof UseStatement) {
             return Optional.of(new UseDatabaseExecutor((UseStatement) sqlStatement));
@@ -131,7 +131,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
                 // TODO
                 return Optional.empty();
             }
-            return Optional.ofNullable(mockExecutor(schemaName, (SelectStatement) sqlStatement, sql));
+            return Optional.ofNullable(mockExecutor(databaseName, (SelectStatement) sqlStatement, sql));
         }
         return Optional.empty();
     }
@@ -157,12 +157,12 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
         return ((SimpleTableSegment) tableSegment).getOwner().isPresent() && specialSchemaName.equalsIgnoreCase(((SimpleTableSegment) tableSegment).getOwner().get().getIdentifier().getValue());
     }
     
-    private DatabaseAdminExecutor mockExecutor(final String schemaName, final SelectStatement sqlStatement, final String sql) {
-        boolean isNotUseSchema = !Optional.ofNullable(schemaName).isPresent() && sqlStatement.getFrom() == null;
+    private DatabaseAdminExecutor mockExecutor(final String databaseName, final SelectStatement sqlStatement, final String sql) {
+        boolean isNotUseSchema = !Optional.ofNullable(databaseName).isPresent() && sqlStatement.getFrom() == null;
         if (!hasDatabases() || !hasResources()) {
             return new NoResourceShowExecutor(sqlStatement);
         }
-        String driverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
+        String driverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
         if (isNotUseSchema) {
             return "ExperimentalVertx".equals(driverType) ? null : new UnicastResourceShowExecutor(sqlStatement, sql);
         }
@@ -174,7 +174,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
     }
     
     private boolean hasResources() {
-        return ProxyContext.getInstance().getAllDatabaseNames().stream().anyMatch(each -> ProxyContext.getInstance().getDatabase(each).hasDataSource());
+        return ProxyContext.getInstance().getAllDatabaseNames().stream().anyMatch(each -> ProxyContext.getInstance().getDatabase(each).containsDataSource());
     }
     
     private boolean isSetClientEncoding(final SetStatement setStatement) {

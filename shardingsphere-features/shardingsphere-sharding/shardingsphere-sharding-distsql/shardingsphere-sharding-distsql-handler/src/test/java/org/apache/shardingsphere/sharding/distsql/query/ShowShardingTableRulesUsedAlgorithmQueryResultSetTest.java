@@ -28,10 +28,10 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShard
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableRulesUsedAlgorithmQueryResultSet;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingTableRulesUsedAlgorithmStatement;
+import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
@@ -47,24 +47,23 @@ public final class ShowShardingTableRulesUsedAlgorithmQueryResultSetTest {
     @Test
     public void assertGetRowData() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData().findRuleConfigurations(ShardingRuleConfiguration.class)).thenReturn(Collections.singleton(createRuleConfiguration()));
-        when(database.getName()).thenReturn("sharding_db");
+        ShardingRule rule = mock(ShardingRule.class);
+        when(rule.getConfiguration()).thenReturn(createRuleConfiguration());
+        when(database.getRuleMetaData().findSingleRule(ShardingRule.class)).thenReturn(Optional.of(rule));
         DistSQLResultSet resultSet = new ShardingTableRulesUsedAlgorithmQueryResultSet();
         ShowShardingTableRulesUsedAlgorithmStatement statement = mock(ShowShardingTableRulesUsedAlgorithmStatement.class);
         when(statement.getAlgorithmName()).thenReturn(Optional.of("t_order_inline"));
         resultSet.init(database, statement);
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
-        assertThat(actual.size(), is(3));
-        assertThat(actual.get(0), is("sharding_db"));
-        assertThat(actual.get(1), is("table"));
-        assertThat(actual.get(2), is("t_order"));
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(0), is("table"));
+        assertThat(actual.get(1), is("t_order"));
         when(statement.getAlgorithmName()).thenReturn(Optional.of("auto_mod"));
         resultSet.init(database, statement);
         actual = new ArrayList<>(resultSet.getRowData());
-        assertThat(actual.size(), is(3));
-        assertThat(actual.get(0), is("sharding_db"));
-        assertThat(actual.get(1), is("auto_table"));
-        assertThat(actual.get(2), is("t_order_auto"));
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(0), is("auto_table"));
+        assertThat(actual.get(1), is("t_order_auto"));
     }
     
     private ShardingRuleConfiguration createRuleConfiguration() {

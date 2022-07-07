@@ -17,22 +17,29 @@
 
 package org.apache.shardingsphere.proxy.backend.text.data.impl;
 
+import com.google.common.base.Preconditions;
 import io.vertx.core.Future;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.aware.CursorDefinitionAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CloseStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementContext;
+import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtil;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandler;
+import org.apache.shardingsphere.sharding.merge.ddl.fetch.FetchOrderByValueGroupsHolder;
 
 import java.sql.SQLException;
-import java.util.Collection;
 
 /**
  * Database backend handler with assigned schema.
@@ -69,15 +76,45 @@ public final class SchemaAssignedDatabaseBackendHandler implements DatabaseBacke
     }
     
     private void prepareDatabaseCommunicationEngine() throws RequiredResourceMissedException {
-        boolean isSystemSchema = SystemSchemaUtil.containsSystemSchema(
-                sqlStatementContext.getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames(), connectionSession.getDatabaseName());
-        if (!isSystemSchema && !ProxyContext.getInstance().getDatabase(connectionSession.getDatabaseName()).hasDataSource()) {
+        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(connectionSession.getDatabaseName());
+        boolean isSystemSchema = SystemSchemaUtil.containsSystemSchema(sqlStatementContext.getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames(), database);
+        if (!isSystemSchema && !database.containsDataSource()) {
             throw new RequiredResourceMissedException(connectionSession.getDatabaseName());
         }
-        if (!isSystemSchema && !ProxyContext.getInstance().getDatabase(connectionSession.getDatabaseName()).isComplete()) {
+        if (!isSystemSchema && !database.isComplete()) {
             throw new RuleNotExistedException();
         }
+        if (sqlStatementContext instanceof CursorAvailable) {
+            prepareCursorStatementContext((CursorAvailable) sqlStatementContext, connectionSession);
+        }
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection());
+    }
+    
+    private void prepareCursorStatementContext(final CursorAvailable statementContext, final ConnectionSession connectionSession) {
+        if (statementContext.getCursorName().isPresent()) {
+            String cursorName = statementContext.getCursorName().get().getIdentifier().getValue().toLowerCase();
+            prepareCursorStatementContext(statementContext, connectionSession, cursorName);
+        }
+        if (statementContext instanceof CloseStatementContext && ((CloseStatementContext) statementContext).getSqlStatement().isCloseAll()) {
+            FetchOrderByValueGroupsHolder.remove();
+            connectionSession.getCursorDefinitions().clear();
+        }
+    }
+    
+    private void prepareCursorStatementContext(final CursorAvailable statementContext, final ConnectionSession connectionSession, final String cursorName) {
+        if (statementContext instanceof CursorStatementContext) {
+            connectionSession.getCursorDefinitions().put(cursorName, (CursorStatementContext) statementContext);
+        }
+        if (statementContext instanceof CursorDefinitionAware) {
+            CursorStatementContext cursorStatementContext = connectionSession.getCursorDefinitions().get(cursorName);
+            Preconditions.checkArgument(null != cursorStatementContext, "Cursor %s does not exist.", cursorName);
+            ((CursorDefinitionAware) statementContext).setUpCursorDefinition(cursorStatementContext);
+        }
+        if (statementContext instanceof CloseStatementContext) {
+            FetchOrderByValueGroupsHolder.getOrderByValueGroups().remove(cursorName);
+            FetchOrderByValueGroupsHolder.getMinGroupRowCounts().remove(cursorName);
+            connectionSession.getCursorDefinitions().remove(cursorName);
+        }
     }
     
     @Override
@@ -86,8 +123,8 @@ public final class SchemaAssignedDatabaseBackendHandler implements DatabaseBacke
     }
     
     @Override
-    public Collection<Object> getRowData() throws SQLException {
-        return databaseCommunicationEngine.getQueryResponseRow().getData();
+    public QueryResponseRow getRowData() throws SQLException {
+        return databaseCommunicationEngine.getQueryResponseRow();
     }
     
     @Override

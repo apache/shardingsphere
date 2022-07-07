@@ -22,5 +22,5 @@ package org.apache.shardingsphere.transaction.core;
  */
 public enum TransactionOperationType {
     
-    BEGIN, COMMIT, ROLLBACK, SAVEPOINT, ROLLBACK_TO_SAVEPOINT, RELEASE_SAVEPOINT
+    BEGIN, COMMIT, ROLLBACK, SAVEPOINT, ROLLBACK_TO_SAVEPOINT, RELEASE_SAVEPOINT, SET_AUTOCOMMIT
 }
