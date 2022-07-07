@@ -26,6 +26,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -44,9 +45,9 @@ public final class CountEncryptRuleQueryResultSetTest {
         assertTrue(resultSet.next());
         List<Object> actual = new ArrayList<>(resultSet.getRowData());
         assertThat(actual.size(), is(3));
-        assertThat(actual.get(0), is("db_discovery"));
+        assertThat(actual.get(0), is("encrypt"));
         assertThat(actual.get(1), is("db_1"));
-        assertThat(actual.get(2), is(2));
+        assertThat(actual.get(2), is(1));
         assertFalse(resultSet.next());
     }
     
@@ -54,7 +55,8 @@ public final class CountEncryptRuleQueryResultSetTest {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn("db_1");
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
-        when(ruleMetaData.getRules()).thenReturn(Collections.singletonList(mockEncryptRule()));
+        EncryptRule encryptRule = mockEncryptRule();
+        when(ruleMetaData.findSingleRule(EncryptRule.class)).thenReturn(Optional.of(encryptRule));
         when(result.getRuleMetaData()).thenReturn(ruleMetaData);
         return result;
     }

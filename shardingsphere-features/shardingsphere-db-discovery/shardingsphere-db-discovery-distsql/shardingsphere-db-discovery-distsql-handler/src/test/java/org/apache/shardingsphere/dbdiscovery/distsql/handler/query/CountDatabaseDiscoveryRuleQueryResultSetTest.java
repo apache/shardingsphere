@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
@@ -56,8 +57,10 @@ public final class CountDatabaseDiscoveryRuleQueryResultSetTest {
     private ShardingSphereDatabase mockDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getName()).thenReturn("db_1");
-        ShardingSphereRuleMetaData shardingSphereRuleMetaData = new ShardingSphereRuleMetaData(Collections.singletonList(mockDatabaseDiscoveryRule()));
-        when(result.getRuleMetaData()).thenReturn(shardingSphereRuleMetaData);
+        ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
+        DatabaseDiscoveryRule databaseDiscoveryRule = mockDatabaseDiscoveryRule();
+        when(ruleMetaData.findSingleRule(DatabaseDiscoveryRule.class)).thenReturn(Optional.of(databaseDiscoveryRule));
+        when(result.getRuleMetaData()).thenReturn(ruleMetaData);
         return result;
     }
     
