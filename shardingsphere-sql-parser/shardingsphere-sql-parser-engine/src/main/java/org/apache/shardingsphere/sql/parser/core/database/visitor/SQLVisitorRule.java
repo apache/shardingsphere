@@ -44,6 +44,8 @@ public enum SQLVisitorRule {
     
     COPY("Copy", SQLStatementType.DML),
     
+    LOCKTABLE("LockTable", SQLStatementType.DML),
+    
     CREATE_TABLE("CreateTable", SQLStatementType.DDL),
     
     CREATE_AGGREGATE("CreateAggregate", SQLStatementType.DDL),
