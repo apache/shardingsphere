@@ -55,7 +55,7 @@ public final class CountSingleTableRuleQueryResultSet implements DistSQLResultSe
         data = result.entrySet().iterator();
     }
     
-    private void addSingleTableData(final Map<String, LinkedList<Object>> rowMap,final String databaseName, final SingleTableRule rule) {
+    private void addSingleTableData(final Map<String, LinkedList<Object>> rowMap, final String databaseName, final SingleTableRule rule) {
         rowMap.compute(SINGLE_TABLE, (key, value) -> buildRow(value, databaseName, rule.getAllTables().size()));
     }
 
