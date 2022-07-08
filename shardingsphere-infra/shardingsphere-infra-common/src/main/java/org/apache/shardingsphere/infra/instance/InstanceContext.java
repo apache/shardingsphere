@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -78,17 +77,6 @@ public final class InstanceContext {
     }
     
     /**
-     * Update instance worker id.
-     * 
-     * @param workerId worker id
-     */
-    public void updateWorkerId(final Long workerId) {
-        if (!Objects.equals(workerId, instance.getWorkerId())) {
-            instance.setWorkerId(workerId);
-        }
-    }
-    
-    /**
      * Update instance label.
      * 
      * @param instanceId instance id
@@ -102,27 +90,13 @@ public final class InstanceContext {
     }
     
     /**
-     * Get worker id.
-     *
-     * @return worker id
-     */
-    public long getWorkerId() {
-        return instance.getWorkerId();
-    }
-    
-    /**
      * Generate worker id.
      *
      * @param props props
      * @return worker id
      */
     public long generateWorkerId(final Properties props) {
-        Long result = instance.getWorkerId();
-        if (null == result) {
-            result = workerIdGenerator.generate(props);
-            instance.setWorkerId(result);
-        }
-        return result;
+        return workerIdGenerator.generate(props);
     }
     
     /**

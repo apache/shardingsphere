@@ -58,10 +58,10 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
             reTryCount++;
             result = generateSequentialId();
             if (result > MAX_WORKER_ID) {
-                result = result % 1024L;
+                result = result % MAX_WORKER_ID + 1;
             }
             if (reTryCount > MAX_RE_TRY) {
-                throw new ShardingSphereException("System assigned work-id failed, assigned work-id was {}", result);
+                throw new ShardingSphereException("System assigned %s failed, assigned worker id was %s", WORKER_ID_KEY, result);
             }
         } while (isExist(result));
         registryCenter.getComputeNodeStatusService().persistInstanceWorkerId(instanceMetaData.getId(), result);
@@ -80,7 +80,7 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     private void checkConfigured(final long generatedWorkerId, final Properties props) {
         Optional<Long> configuredWorkerId = parseWorkerId(props);
         if (configuredWorkerId.isPresent()) {
-            log.warn("No need to configured {} in cluster mode, system assigned work-id was {}", WORKER_ID_KEY, generatedWorkerId);
+            log.warn("No need to configured {} in cluster mode, system assigned worker id was {}", WORKER_ID_KEY, generatedWorkerId);
         }
     }
 }
