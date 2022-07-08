@@ -98,7 +98,7 @@ public abstract class AbstractBaseExecutorTest {
     
     private TransactionRule mockTransactionRule() {
         TransactionRule result = mock(TransactionRule.class);
-        when(result.getResources()).thenReturn(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new ShardingSphereTransactionManagerEngine()));
+        when(result.getResource()).thenReturn(new ShardingSphereTransactionManagerEngine());
         return result;
     }
     
