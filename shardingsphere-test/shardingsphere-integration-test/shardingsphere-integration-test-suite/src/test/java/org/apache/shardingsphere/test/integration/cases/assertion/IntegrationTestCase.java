@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.cases.assertion;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -38,6 +39,7 @@ public final class IntegrationTestCase {
     
     private static final String DB_NAME = "\\{dbName}";
     
+    @Getter(AccessLevel.NONE)
     @XmlAttribute(name = "sql")
     private String sql;
     
@@ -50,8 +52,14 @@ public final class IntegrationTestCase {
     @XmlElement(name = "assertion")
     private Collection<IntegrationTestCaseAssertion> assertions = new LinkedList<>();
     
+    /**
+     * Get sql statement.
+     *
+     * @param dbName the db name
+     * @return sql statement
+     */
     public String getSql(final String dbName) {
-        if (Pattern.compile(DB_NAME).matcher(sql).find()){
+        if (Pattern.compile(DB_NAME).matcher(sql).find()) {
             return sql.replaceAll(DB_NAME, dbName);
         }
         return sql;
