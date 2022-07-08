@@ -23,11 +23,9 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.*;
 import java.util.Collection;
 import java.util.Properties;
 
-/**
- * @author Administrator
- */
 @Getter
 public final class SPIBasedDatasourceStandardShardingAlgorithmFixture implements StandardShardingAlgorithm<Integer> {
+
     private Properties props;
 
     @Override
