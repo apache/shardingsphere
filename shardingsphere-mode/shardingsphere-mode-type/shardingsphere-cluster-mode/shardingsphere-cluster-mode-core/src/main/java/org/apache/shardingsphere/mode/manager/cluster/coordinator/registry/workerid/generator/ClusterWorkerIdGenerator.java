@@ -58,7 +58,7 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
             reTryCount++;
             result = generateSequentialId();
             if (result > MAX_WORKER_ID) {
-                result = result % 1024L;
+                result = result % MAX_WORKER_ID + 1;
             }
             if (reTryCount > MAX_RE_TRY) {
                 throw new ShardingSphereException("System assigned work-id failed, assigned work-id was {}", result);
