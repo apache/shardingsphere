@@ -112,4 +112,10 @@ public final class ComputeNodeStatusServiceTest {
         ComputeNodeInstance actual = new ComputeNodeStatusService(repository).loadComputeNodeInstance(instanceMetaData);
         assertThat(actual.getInstanceMetaData(), is(instanceMetaData));
     }
+    
+    @Test
+    public void assertGetUsedWorkerIds() {
+        new ComputeNodeStatusService(repository).getUsedWorkerIds();
+        verify(repository).getChildrenKeys(ComputeNode.getInstanceWorkerIdRootNodePath());
+    }
 }
