@@ -28,10 +28,6 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 @Getter
 public final class TransactionStatus {
     
-    private static final long DEFAULT_TIMEOUT_MILLISECONDS = 200L;
-    
-    private static final int MAXIMUM_RETRY_COUNT = 5;
-    
     @Setter
     private volatile boolean inTransaction;
     
