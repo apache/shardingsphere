@@ -56,7 +56,7 @@ public abstract class SingleITCase extends BaseITCase {
     }
     
     protected final String getSQL() throws ParseException {
-        return sqlExecuteType == SQLExecuteType.Literal ? getLiteralSQL(getItCase().getSql()) : getItCase().getSql();
+        return sqlExecuteType == SQLExecuteType.Literal ? getLiteralSQL(getItCase().getSql(getScenario())) : getItCase().getSql(getScenario());
     }
     
     private String getLiteralSQL(final String sql) throws ParseException {

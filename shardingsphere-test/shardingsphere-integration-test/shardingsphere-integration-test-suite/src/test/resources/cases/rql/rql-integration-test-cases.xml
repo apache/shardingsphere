@@ -15,10 +15,17 @@
   ~ limitations under the License.
   -->
 <integration-test-cases>
-    <test-case sql="SHOW DATABASE RESOURCES" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion expected-data-file="show_resources.xml" />
+    <!--RESOURCE QUERY-->
+    <test-case sql="SHOW DATABASE RESOURCES" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
+        <assertion expected-data-file="show_resources.xml"/>
     </test-case>
-    
+
+    <!--FIXME! db scenario got a problem #18964-->
+    <test-case sql="SHOW DATABASE RESOURCES FROM {dbName}" scenario-types="tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
+        <assertion expected-data-file="show_resources.xml"/>
+    </test-case>
+
+    <!--RULES QUERY-->
     <test-case sql="SHOW SHARDING TABLE RULES" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
         <assertion expected-data-file="show_rules.xml" />
     </test-case>

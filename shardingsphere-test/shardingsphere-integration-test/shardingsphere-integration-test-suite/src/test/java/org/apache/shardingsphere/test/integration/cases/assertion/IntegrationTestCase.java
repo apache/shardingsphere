@@ -26,6 +26,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.regex.Pattern;
 
 /**
  * JAXB definition of integration test case.
@@ -34,6 +35,8 @@ import java.util.LinkedList;
 @Setter
 @XmlAccessorType(XmlAccessType.FIELD)
 public final class IntegrationTestCase {
+    
+    private static final String DB_NAME = "\\{dbName}";
     
     @XmlAttribute(name = "sql")
     private String sql;
@@ -46,4 +49,11 @@ public final class IntegrationTestCase {
     
     @XmlElement(name = "assertion")
     private Collection<IntegrationTestCaseAssertion> assertions = new LinkedList<>();
+    
+    public String getSql(final String dbName) {
+        if (Pattern.compile(DB_NAME).matcher(sql).find()){
+            return sql.replaceAll(DB_NAME, dbName);
+        }
+        return sql;
+    }
 }
