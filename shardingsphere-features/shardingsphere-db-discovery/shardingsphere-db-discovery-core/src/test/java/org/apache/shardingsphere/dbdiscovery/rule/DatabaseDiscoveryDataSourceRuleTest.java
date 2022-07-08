@@ -34,7 +34,7 @@ import static org.junit.Assert.assertThat;
 public final class DatabaseDiscoveryDataSourceRuleTest {
     
     private final DatabaseDiscoveryDataSourceRule databaseDiscoveryDataSourceRule = new DatabaseDiscoveryDataSourceRule(
-            new DatabaseDiscoveryDataSourceRuleConfiguration("test_pr", Arrays.asList("ds_0", "ds_1"), "ha_heartbeat", "discoveryTypeName"), new Properties(),
+            new DatabaseDiscoveryDataSourceRuleConfiguration("replica_ds", Arrays.asList("ds_0", "ds_1"), "ha_heartbeat", "discoveryTypeName"), new Properties(),
             new MGRMySQLDatabaseDiscoveryProviderAlgorithm());
     
     @Test(expected = IllegalArgumentException.class)
@@ -67,8 +67,8 @@ public final class DatabaseDiscoveryDataSourceRuleTest {
     
     private Map<String, Collection<String>> getExpectedDataSourceMapper() {
         Map<String, Collection<String>> result = new LinkedHashMap<>(2, 1);
-        result.put("ds_0", Collections.singletonList("ds_0"));
-        result.put("ds_1", Collections.singletonList("ds_1"));
+        result.put("replica_ds", Collections.singletonList("ds_0"));
+        result.put("replica_ds", Collections.singletonList("ds_1"));
         return result;
     }
 }
