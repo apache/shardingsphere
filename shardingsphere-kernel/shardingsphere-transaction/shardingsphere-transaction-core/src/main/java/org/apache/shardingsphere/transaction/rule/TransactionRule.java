@@ -63,7 +63,7 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
     }
     
     private synchronized ShardingSphereTransactionManagerEngine createTransactionManagerEngine(final Map<String, ShardingSphereDatabase> databases) {
-        if (databases.size() == 0) {
+        if (databases.isEmpty()) {
             return new ShardingSphereTransactionManagerEngine();
         }
         ShardingSphereTransactionManagerEngine result = new ShardingSphereTransactionManagerEngine();
