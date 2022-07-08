@@ -15,18 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.lock;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml;
 
-import org.apache.shardingsphere.data.pipeline.spi.fixture.RuleBasedJobLockFixture;
-import org.junit.Test;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
-public final class RuleBasedJobLockFactoryTest {
-    
-    @Test
-    public void assertGetInstance() {
-        assertThat(RuleBasedJobLockFactory.getInstance(), instanceOf(RuleBasedJobLockFixture.class));
-    }
+/**
+ * Lock table statement test case.
+ */
+public final class LockTableStatementTestCase extends SQLParserTestCase {
 }

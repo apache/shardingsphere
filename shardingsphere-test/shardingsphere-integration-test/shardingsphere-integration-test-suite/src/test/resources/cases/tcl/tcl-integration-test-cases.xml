@@ -15,9 +15,5 @@
   ~ limitations under the License.
   -->
 <integration-test-cases>
-    <test-case sql="SHOW DATABASES" db-types="MySQL" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion expected-data-file="show_databases.xml" />
-    </test-case>
-
-    <test-case sql="RESET ALL" db-types="PostgreSQL,openGauss" />
+    <test-case sql="PREPARE TRANSACTION 'foo1" db-types="PostgreSQL" />
 </integration-test-cases>

@@ -15,21 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.rulealtered.spi;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.dml;
 
-import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLock;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Default metadata checkout lock.
+ * Lock table statement.
  */
-public final class DefaultMetadataCheckoutLock implements RuleBasedJobLock {
-    
-    // TODO to be finished
-    @Override
-    public void lock(final String databaseName, final String jobId) {
-    }
-    
-    @Override
-    public void releaseLock(final String databaseName, final String jobId) {
-    }
+public abstract class LockTableStatement extends AbstractSQLStatement implements DMLStatement {
 }

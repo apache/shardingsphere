@@ -15,17 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.fixture;
+package org.apache.shardingsphere.infra.database.type.dialect;
 
-import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLock;
+import org.apache.shardingsphere.infra.fixture.FixtureDatabaseType;
+import org.junit.Test;
 
-public final class RowBasedJobLockFixture implements RowBasedJobLock {
+import java.sql.Connection;
+import java.sql.SQLException;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
+public final class DatabaseTypeTest {
     
-    @Override
-    public void lock(final String databaseName, final String jobId) {
+    @Test
+    public void assertGetSchema() throws SQLException {
+        Connection connection = mock(Connection.class);
+        when(connection.getSchema()).thenReturn("ds");
+        assertThat(new FixtureDatabaseType().getSchema(connection), is("ds"));
     }
     
-    @Override
-    public void releaseLock(final String databaseName, final String jobId) {
+    @Test
+    public void assertFormatTableNamePattern() {
+        assertThat(new FixtureDatabaseType().formatTableNamePattern("tbl"), is("tbl"));
     }
 }

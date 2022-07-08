@@ -110,6 +110,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterFunctionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterIndexStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterJavaStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterLanguageStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterLibraryStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterMaterializedViewStatementTestCase;
@@ -381,6 +382,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.MergeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.UpdateStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.LockTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.BeginTransactionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.CommitStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.LockStatementTestCase;
@@ -436,6 +438,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-table")
     private final List<DropTableStatementTestCase> dropTableTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "lock-table")
+    private final List<LockTableStatementTestCase> lockTableTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-text-search")
     private final List<DropTextSearchStatementTestCase> dropTextSearchTestCases = new LinkedList<>();
@@ -1316,6 +1321,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "alter-materialized-view")
     private final List<AlterMaterializedViewStatementTestCase> alterMaterializedViewTestCases = new LinkedList<>();
     
+    @XmlElement(name = "alter-java")
+    private final List<AlterJavaStatementTestCase> alterJavaTestCases = new LinkedList<>();
+    
     @XmlElement(name = "alter-operator")
     private final List<AlterOperatorStatementTestCase> alterOperatorTestCases = new LinkedList<>();
     
@@ -1548,6 +1556,7 @@ public final class SQLParserTestCases {
         putAll(createEditionTestCases, result);
         putAll(alterTableTestCases, result);
         putAll(dropTableTestCases, result);
+        putAll(lockTableTestCases, result);
         putAll(dropTextSearchTestCases, result);
         putAll(truncateTestCases, result);
         putAll(dropEditionTestCases, result);
@@ -1828,6 +1837,7 @@ public final class SQLParserTestCases {
         putAll(dropForeignTableTestCases, result);
         putAll(alterGroupTestCases, result);
         putAll(alterMaterializedViewTestCases, result);
+        putAll(alterJavaTestCases, result);
         putAll(alterOperatorTestCases, result);
         putAll(createTextSearchTestCases, result);
         putAll(alterTextSearchTestCases, result);

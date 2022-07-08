@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.lock;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import org.apache.shardingsphere.spi.type.required.RequiredSPI;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Row based job lock.
+ * Alter java statement test case.
  */
-public interface RowBasedJobLock extends JobLock, RequiredSPI {
+public final class AlterJavaStatementTestCase extends SQLParserTestCase {
 }

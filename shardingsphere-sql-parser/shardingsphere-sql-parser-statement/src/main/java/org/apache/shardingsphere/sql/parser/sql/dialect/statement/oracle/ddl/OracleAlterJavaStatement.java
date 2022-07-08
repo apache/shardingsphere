@@ -15,26 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.lock;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
+
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Job lock.
+ * Oracle alter java statement.
  */
-public interface JobLock {
-    
-    /**
-     * Lock.
-     *
-     * @param databaseName database name
-     * @param jobId job id
-     */
-    void lock(String databaseName, String jobId);
-    
-    /**
-     * Release lock.
-     *
-     * @param databaseName database name
-     * @param jobId job id
-     */
-    void releaseLock(String databaseName, String jobId);
+@ToString
+public final class OracleAlterJavaStatement extends AbstractSQLStatement implements OracleStatement {
 }

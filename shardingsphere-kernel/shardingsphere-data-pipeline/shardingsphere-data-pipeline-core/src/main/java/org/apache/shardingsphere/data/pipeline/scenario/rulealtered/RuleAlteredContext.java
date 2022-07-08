@@ -28,10 +28,6 @@ import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlg
 import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithmFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreatorFactory;
-import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLock;
-import org.apache.shardingsphere.data.pipeline.spi.lock.RowBasedJobLockFactory;
-import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLock;
-import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLockFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
@@ -74,10 +70,6 @@ public final class RuleAlteredContext {
     
     private final DataConsistencyCalculateAlgorithm dataConsistencyCalculateAlgorithm;
     
-    private final RowBasedJobLock rowBasedJobLock;
-    
-    private final RuleBasedJobLock ruleBasedJobLock;
-    
     private final ExecuteEngine inventoryDumperExecuteEngine;
     
     private final ExecuteEngine incrementalDumperExecuteEngine;
@@ -102,8 +94,6 @@ public final class RuleAlteredContext {
         dataConsistencyCalculateAlgorithm = null != dataConsistencyCheckerConfig
                 ? DataConsistencyCalculateAlgorithmFactory.newInstance(dataConsistencyCheckerConfig.getType(), dataConsistencyCheckerConfig.getProps())
                 : null;
-        rowBasedJobLock = RowBasedJobLockFactory.getInstance();
-        ruleBasedJobLock = RuleBasedJobLockFactory.getInstance();
         inventoryDumperExecuteEngine = ExecuteEngine.newFixedThreadInstance(inputConfig.getWorkerThread(), INVENTORY_THREAD_PREFIX + jobId);
         incrementalDumperExecuteEngine = ExecuteEngine.newCachedThreadInstance(INCREMENTAL_THREAD_PREFIX + jobId);
         importerExecuteEngine = ExecuteEngine.newFixedThreadInstance(outputConfig.getWorkerThread(), IMPORTER_THREAD_PREFIX + jobId);
