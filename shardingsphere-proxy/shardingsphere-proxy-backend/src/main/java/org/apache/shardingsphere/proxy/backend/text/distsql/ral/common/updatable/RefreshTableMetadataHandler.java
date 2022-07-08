@@ -38,14 +38,14 @@ public final class RefreshTableMetadataHandler extends UpdatableRALBackendHandle
         String schemaName = getSchemaName(databaseName);
         if (getSqlStatement().getResourceName().isPresent()) {
             if (getSqlStatement().getTableName().isPresent()) {
-                contextManager.reloadTableMetaData(databaseName, schemaName, getSqlStatement().getResourceName().get(), getSqlStatement().getTableName().get());
+                contextManager.reloadTable(databaseName, schemaName, getSqlStatement().getResourceName().get(), getSqlStatement().getTableName().get());
             } else {
                 contextManager.reloadSchema(databaseName, schemaName, getSqlStatement().getResourceName().get());
             }
             return;
         }
         if (getSqlStatement().getTableName().isPresent()) {
-            contextManager.reloadTableMetaData(databaseName, schemaName, getSqlStatement().getTableName().get());
+            contextManager.reloadTable(databaseName, schemaName, getSqlStatement().getTableName().get());
         } else {
             contextManager.reloadDatabase(databaseName);
         }

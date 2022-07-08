@@ -121,6 +121,15 @@ public final class ComputeNode {
     }
     
     /**
+     * Get instance worker id root node path.
+     *
+     * @return worker id root node path
+     */
+    public static String getInstanceWorkerIdRootNodePath() {
+        return String.join("/", "", ROOT_NODE, COMPUTE_NODE, WORKER_ID);
+    }
+    
+    /**
      * Get instance id by compute node path.
      * 
      * @param computeNodePath compute node path

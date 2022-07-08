@@ -580,6 +580,8 @@ public enum SQLVisitorRule {
     
     ALTER_MATERIALIZED_ZONEMAP("AlterMaterializedZonemap", SQLStatementType.DDL),
     
+    ALTER_JAVA("AlterJava", SQLStatementType.DDL),
+    
     CURSOR("Cursor", SQLStatementType.DDL),
     
     CLOSE("Close", SQLStatementType.DDL),

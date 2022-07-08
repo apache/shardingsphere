@@ -15,17 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.spi.fixture;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import org.apache.shardingsphere.data.pipeline.spi.lock.RuleBasedJobLock;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-public final class RuleBasedJobLockFixture implements RuleBasedJobLock {
-    
-    @Override
-    public void lock(final String databaseName, final String jobId) {
-    }
-    
-    @Override
-    public void releaseLock(final String databaseName, final String jobId) {
-    }
+/**
+ * Alter java statement test case.
+ */
+public final class AlterJavaStatementTestCase extends SQLParserTestCase {
 }

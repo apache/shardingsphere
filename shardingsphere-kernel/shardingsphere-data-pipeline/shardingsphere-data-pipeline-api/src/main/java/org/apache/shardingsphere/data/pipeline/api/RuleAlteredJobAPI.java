@@ -76,10 +76,9 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI {
     /**
      * Stop cluster writing.
      *
-     * @param databaseName database name
-     * @param jobId job id
+     * @param jobConfig job configuration
      */
-    void stopClusterWriteDB(String databaseName, String jobId);
+    void stopClusterWriteDB(RuleAlteredJobConfiguration jobConfig);
     
     /**
      * Restore cluster writing.
@@ -91,10 +90,9 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI {
     /**
      * Restore cluster writing.
      *
-     * @param databaseName database name
-     * @param jobId job id
+     * @param jobConfig job configuration
      */
-    void restoreClusterWriteDB(String databaseName, String jobId);
+    void restoreClusterWriteDB(RuleAlteredJobConfiguration jobConfig);
     
     /**
      * List all data consistency check algorithms from SPI.
