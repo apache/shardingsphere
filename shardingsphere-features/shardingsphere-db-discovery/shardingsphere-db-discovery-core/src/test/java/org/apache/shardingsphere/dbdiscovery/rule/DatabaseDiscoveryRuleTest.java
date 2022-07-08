@@ -48,7 +48,7 @@ public final class DatabaseDiscoveryRuleTest {
     
     @Test
     public void assertFindDataSourceRule() {
-        Optional<DatabaseDiscoveryDataSourceRule> actual = createRule().findDataSourceRule("test_pr");
+        Optional<DatabaseDiscoveryDataSourceRule> actual = createRule().findDataSourceRule("replica_ds");
         assertTrue(actual.isPresent());
         assertDataSourceRule(actual.get());
     }
@@ -59,7 +59,7 @@ public final class DatabaseDiscoveryRuleTest {
     }
     
     private void assertDataSourceRule(final DatabaseDiscoveryDataSourceRule actual) {
-        assertThat(actual.getGroupName(), is("test_pr"));
+        assertThat(actual.getGroupName(), is("replica_ds"));
         assertThat(actual.getDataSourceNames(), is(Arrays.asList("ds_0", "ds_1")));
     }
     
@@ -73,19 +73,18 @@ public final class DatabaseDiscoveryRuleTest {
     
     private Map<String, Collection<String>> getDataSourceMapper() {
         Map<String, Collection<String>> result = new HashMap<>(2, 1);
-        result.put("ds_0", Collections.singletonList("ds_0"));
-        result.put("ds_1", Collections.singletonList("ds_1"));
+        result.put("replica_ds", Arrays.asList("ds_0", "ds_1"));
         return result;
     }
     
     @Test
     public void assertGetExportedMethods() {
         DatabaseDiscoveryRule databaseDiscoveryRule = createRule();
-        assertThat(databaseDiscoveryRule.getExportData().get(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES), is(Collections.singletonMap("test_pr", "primary")));
+        assertThat(databaseDiscoveryRule.getExportData().get(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES), is(Collections.singletonMap("replica_ds", "primary")));
     }
     
     private DatabaseDiscoveryRule createRule() {
-        DatabaseDiscoveryDataSourceRuleConfiguration config = new DatabaseDiscoveryDataSourceRuleConfiguration("test_pr", Arrays.asList("ds_0", "ds_1"), "", "CORE.FIXTURE");
+        DatabaseDiscoveryDataSourceRuleConfiguration config = new DatabaseDiscoveryDataSourceRuleConfiguration("replica_ds", Arrays.asList("ds_0", "ds_1"), "", "CORE.FIXTURE");
         InstanceContext instanceContext = mock(InstanceContext.class, RETURNS_DEEP_STUBS);
         when(instanceContext.getInstance().getCurrentInstanceId()).thenReturn("foo_id");
         return new DatabaseDiscoveryRule("db_discovery", dataSourceMap, new DatabaseDiscoveryRuleConfiguration(
