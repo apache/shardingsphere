@@ -24,7 +24,10 @@ Therefore, enterprises usually select the full link voltage test method, i.e. a 
 | default-shadow-algorithm-name(?) | Tag | Default shadow algorithm configuration | 
 
 ###  Shadow data source configuration:
+```xml
 <shadow:data-source />
+```
+
 |  *Name*  |  *Type*  | *Description*  |
 | ------- | -------- | ------- |
 | id | Attribute | Spring Bean Id |
@@ -32,20 +35,29 @@ Therefore, enterprises usually select the full link voltage test method, i.e. a 
 | shadow-data-source-name | Attribute | Shadow data source name |
 
 ###  Shadow table configuration:
+```xml
 <shadow:shadow-table />
+```
+
 |  *Name*  |  *Type*  | *Description*  |
 | ------- | -------- | ------- |
 | name | Attribute | Shadow table name|
 | data-sources | Attribute | Shadow table associated shadow data source name list (multiple values are separated by ",") |
 | algorithm (?) | Tag | Shadow table association shadow algorithm configuration |
 
+```xml
 <shadow:algorithm />
+```
+
 |  *Name*  |  *Type*  | *Description*  |
 | ------- | -------- | ------- |
 | shadow-algorithm-ref | Attribute | Shadow table association shadow algorithm name |
 
 ###  Shadow algorithm configuration:
+```xml
 <shadow:shadow-algorithm />
+```
+
 |  *Name*  |  *Type*  | *Description*  |
 | ------- | -------- | ------- |
 | id | Attribute | Shadow algorithm name |

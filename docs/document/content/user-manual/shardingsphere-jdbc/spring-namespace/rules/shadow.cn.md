@@ -23,7 +23,10 @@ weight = 5
 | default-shadow-algorithm-name(?) | 标签 | 默认影子算法名称 | 
 
 ###  影子数据源配置：
+```xml
 <shadow:data-source />
+```
+
 |  *名称*  |  *类型*  | *说明*  |
 | ------- | -------- | ------- |
 | id | 属性 | Spring Bean Id |
@@ -31,20 +34,29 @@ weight = 5
 | shadow-data-source-name | 属性 | 影子数据源名称 |
 
 ###  影子表配置：
+```xml
 <shadow:shadow-table />
+```
+
 |  *名称*  |  *类型*  | *说明*  |
 | ------- | -------- | ------- |
 | name | 属性 | 影子表名称 |
 | data-sources | 属性 | 影子表关联影子数据源名称列表（多个值用","隔开） |
 | algorithm (?) | 标签 | 影子表关联影子算法配置 |
 
+```xml
 <shadow:algorithm />
+```
+
 |  *名称*  |  *类型*  | *说明*  |
 | ------- | -------- | ------- |
 | shadow-algorithm-ref | 属性 | 影子表关联影子算法名称 |
 
 ###  影子算法配置：
+```xml
 <shadow:shadow-algorithm />
+```
+
 |  *名称*  |  *类型*  | *说明*  |
 | ------- | -------- | ------- |
 | id | 属性 | 影子算法名称 |
