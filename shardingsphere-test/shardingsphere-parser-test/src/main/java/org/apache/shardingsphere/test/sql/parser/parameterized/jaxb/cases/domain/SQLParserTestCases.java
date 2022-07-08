@@ -382,6 +382,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.MergeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.UpdateStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.LockTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.BeginTransactionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.CommitStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.LockStatementTestCase;
@@ -437,6 +438,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-table")
     private final List<DropTableStatementTestCase> dropTableTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "lock-table")
+    private final List<LockTableStatementTestCase> lockTableTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-text-search")
     private final List<DropTextSearchStatementTestCase> dropTextSearchTestCases = new LinkedList<>();
@@ -1552,6 +1556,7 @@ public final class SQLParserTestCases {
         putAll(createEditionTestCases, result);
         putAll(alterTableTestCases, result);
         putAll(dropTableTestCases, result);
+        putAll(lockTableTestCases, result);
         putAll(dropTextSearchTestCases, result);
         putAll(truncateTestCases, result);
         putAll(dropEditionTestCases, result);
