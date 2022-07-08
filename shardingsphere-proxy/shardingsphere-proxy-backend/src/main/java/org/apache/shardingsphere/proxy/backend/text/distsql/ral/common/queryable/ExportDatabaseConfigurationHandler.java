@@ -84,7 +84,7 @@ public final class ExportDatabaseConfigurationHandler extends QueryableRALBacken
     }
     
     private void appendDatabaseName(final String databaseName, final StringBuilder stringBuilder) {
-        stringBuilder.append("databaseName").append(": ").append(databaseName).append(System.lineSeparator());
+        stringBuilder.append("databaseName").append(": ").append(databaseName);
     }
     
     private void appendDataSourceConfigurations(final ShardingSphereDatabase database, final StringBuilder stringBuilder) {
