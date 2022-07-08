@@ -30,7 +30,7 @@ import java.util.LinkedList;
 @Getter
 public final class CacheTableIndexSegment extends TableIndexSegment {
     
-    private Collection<IndexSegment> indexes = new LinkedList<>();
+    private final Collection<IndexSegment> indexes = new LinkedList<>();
     
     public CacheTableIndexSegment(final int startIndex, final int stopIndex, final SimpleTableSegment table) {
         super(startIndex, stopIndex, table);

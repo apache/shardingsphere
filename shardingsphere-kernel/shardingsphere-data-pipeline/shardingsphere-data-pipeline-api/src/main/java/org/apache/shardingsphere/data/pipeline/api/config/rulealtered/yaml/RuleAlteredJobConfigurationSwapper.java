@@ -44,6 +44,7 @@ public final class RuleAlteredJobConfigurationSwapper implements YamlConfigurati
         result.setSource(dataSourceConfigSwapper.swapToYamlConfiguration(data.getSource()));
         result.setTarget(dataSourceConfigSwapper.swapToYamlConfiguration(data.getTarget()));
         result.setAlteredRuleYamlClassNameTablesMap(data.getAlteredRuleYamlClassNameTablesMap());
+        result.setSchemaTablesMap(data.getSchemaTablesMap());
         result.setLogicTables(data.getLogicTables());
         result.setTablesFirstDataNodes(data.getTablesFirstDataNodes());
         result.setJobShardingDataNodes(data.getJobShardingDataNodes());
@@ -58,7 +59,7 @@ public final class RuleAlteredJobConfigurationSwapper implements YamlConfigurati
                 yamlConfig.getActiveVersion(), yamlConfig.getNewVersion(),
                 yamlConfig.getSourceDatabaseType(), yamlConfig.getTargetDatabaseType(),
                 dataSourceConfigSwapper.swapToObject(yamlConfig.getSource()), dataSourceConfigSwapper.swapToObject(yamlConfig.getTarget()),
-                yamlConfig.getAlteredRuleYamlClassNameTablesMap(), yamlConfig.getLogicTables(),
+                yamlConfig.getAlteredRuleYamlClassNameTablesMap(), yamlConfig.getSchemaTablesMap(), yamlConfig.getLogicTables(),
                 yamlConfig.getTablesFirstDataNodes(), yamlConfig.getJobShardingDataNodes(),
                 yamlConfig.getConcurrency(), yamlConfig.getRetryTimes());
     }

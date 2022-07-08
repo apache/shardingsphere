@@ -25,7 +25,7 @@ SHOW READWRITE_SPLITTING RULES [FROM databaseName]
 
 *静态读写分离规则*
 ```sql
-mysql> show readwrite_splitting rules;
+mysql> SHOW READWRITE_SPLITTING RULES;
 +------------+-----------------------------+------------------------+------------------------+--------------------+---------------------+
 | name       | auto_aware_data_source_name | write_data_source_name | read_data_source_names | load_balancer_type | load_balancer_props |
 +------------+-----------------------------+------------------------+------------------------+--------------------+---------------------+
@@ -36,7 +36,7 @@ mysql> show readwrite_splitting rules;
 
 *动态读写分离规则*
 ```sql
-mysql> show readwrite_splitting rules from readwrite_splitting_db;
+mysql> SHOW READWRITE_SPLITTING RULES FROM readwrite_splitting_db;
 +--------------+-----------------------------+------------------------+------------------------+--------------------+---------------------+
 | name         | auto_aware_data_source_name | write_data_source_query_enabled | write_data_source_name | read_data_source_names | load_balancer_type | load_balancer_props |
 +--------------+-----------------------------+------------------------+------------------------+--------------------+---------------------+
@@ -47,7 +47,7 @@ mysql> show readwrite_splitting rules from readwrite_splitting_db;
 
 *静态读写分离规则和动态读写分离规则*
 ```sql
-mysql> show readwrite_splitting rules from readwrite_splitting_db;
+mysql> SHOW READWRITE_SPLITTING RULES FROM readwrite_splitting_db;
 +--------------+-----------------------------+------------------------+------------------------+--------------------+---------------------+
 | name         | auto_aware_data_source_name | write_data_source_query_enabled | write_data_source_name | read_data_source_names | load_balancer_type | load_balancer_props |
 +--------------+-----------------------------+------------------------+------------------------+--------------------+---------------------+

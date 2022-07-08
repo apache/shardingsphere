@@ -93,10 +93,10 @@ createGroup
     : CREATE GROUP roleSpec WITH? createOptRoleElem*
     ;
 
-dropDroup
-    : DROP GROUP ifExists? roleList
-    ;
-
 reassignOwned
     : REASSIGN OWNED BY roleList TO roleSpec
+    ;
+
+dropDroup
+    : DROP GROUP ifExists? roleList
     ;

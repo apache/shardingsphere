@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.dbdiscovery.rule;
 
+import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.dbdiscovery.algorithm.DatabaseDiscoveryEngine;
@@ -32,10 +33,11 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.datasource.strategy.DynamicDataSourceStrategyFactory;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.RestartHeartBeatJobRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
@@ -54,12 +56,11 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.stream.Collectors;
 
 /**
  * Database discovery rule.
  */
-public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceContainedRule, StatusContainedRule, ExportableRule, InstanceAwareRule {
+public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceContainedRule, RestartHeartBeatJobRule, StatusContainedRule, ExportableRule {
     
     @Getter
     private final RuleConfiguration configuration;
@@ -73,24 +74,25 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
     @Getter
     private final Map<String, DatabaseDiscoveryDataSourceRule> dataSourceRules;
     
-    public DatabaseDiscoveryRule(final String databaseName, final Map<String, DataSource> dataSourceMap, final DatabaseDiscoveryRuleConfiguration ruleConfig) {
+    public DatabaseDiscoveryRule(final String databaseName, final Map<String, DataSource> dataSourceMap, final DatabaseDiscoveryRuleConfiguration ruleConfig, final InstanceContext instanceContext) {
         configuration = ruleConfig;
         this.databaseName = databaseName;
         this.dataSourceMap = dataSourceMap;
         discoveryTypes = getDiscoveryProviderAlgorithms(ruleConfig.getDiscoveryTypes());
         dataSourceRules = getDataSourceRules(ruleConfig.getDataSources(), ruleConfig.getDiscoveryHeartbeats());
         findPrimaryReplicaRelationship(databaseName, dataSourceMap);
-        initAware();
+        initAwareAndHeartBeatJobs(instanceContext);
     }
     
-    public DatabaseDiscoveryRule(final String databaseName, final Map<String, DataSource> dataSourceMap, final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration ruleConfig) {
+    public DatabaseDiscoveryRule(final String databaseName,
+                                 final Map<String, DataSource> dataSourceMap, final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration ruleConfig, final InstanceContext instanceContext) {
         configuration = ruleConfig;
         this.databaseName = databaseName;
         this.dataSourceMap = dataSourceMap;
         discoveryTypes = ruleConfig.getDiscoveryTypes();
         dataSourceRules = getDataSourceRules(ruleConfig.getDataSources(), ruleConfig.getDiscoveryHeartbeats());
         findPrimaryReplicaRelationship(databaseName, dataSourceMap);
-        initAware();
+        initAwareAndHeartBeatJobs(instanceContext);
     }
     
     private static Map<String, DatabaseDiscoveryProviderAlgorithm> getDiscoveryProviderAlgorithms(final Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypesConfig) {
@@ -123,10 +125,6 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
         }
     }
     
-    private void initAware() {
-        DynamicDataSourceStrategyFactory.findInstance().ifPresent(optional -> optional.init(this));
-    }
-    
     /**
      * Get single data source rule.
      *
@@ -156,21 +154,41 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
     }
     
     @Override
-    public void updateStatus(final DataSourceStatusChangedEvent event) {
-        if (event instanceof StorageNodeDataSourceChangedEvent) {
+    public void restart(final DataSourceStatusChangedEvent event, final InstanceContext instanceContext) {
+        PrimaryDataSourceChangedEvent dataSourceEvent = (PrimaryDataSourceChangedEvent) event;
+        QualifiedDatabase qualifiedDatabase = dataSourceEvent.getQualifiedDatabase();
+        DatabaseDiscoveryDataSourceRule dataSourceRule = dataSourceRules.get(qualifiedDatabase.getGroupName());
+        Preconditions.checkState(null != dataSourceRule, "Can 't find database discovery data source rule in database `%s`.", databaseName);
+        dataSourceRule.changePrimaryDataSourceName(qualifiedDatabase.getDataSourceName());
+        initAwareAndHeartBeatJobs(instanceContext);
+    }
+    
+    private void initAwareAndHeartBeatJobs(final InstanceContext instanceContext) {
+        DynamicDataSourceStrategyFactory.findInstance().ifPresent(optional -> optional.init(this));
+        initHeartBeatJobs(instanceContext.getInstance().getCurrentInstanceId());
+    }
+    
+    private void initHeartBeatJobs(final String instanceId) {
+        Optional<ModeScheduleContext> modeScheduleContext = ModeScheduleContextFactory.getInstance().get(instanceId);
+        if (modeScheduleContext.isPresent()) {
             for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
-                StorageNodeDataSourceChangedEvent dataSourceChangedEvent = (StorageNodeDataSourceChangedEvent) event;
-                if (StorageNodeStatus.isDisable(dataSourceChangedEvent.getDataSource().getStatus())) {
-                    entry.getValue().disableDataSource(dataSourceChangedEvent.getQualifiedDatabase().getDataSourceName());
-                } else {
-                    entry.getValue().enableDataSource(dataSourceChangedEvent.getQualifiedDatabase().getDataSourceName());
-                }
+                DatabaseDiscoveryDataSourceRule rule = entry.getValue();
+                String jobName = rule.getDatabaseDiscoveryProviderAlgorithm().getType() + "-" + databaseName + "-" + rule.getGroupName();
+                CronJob job = new CronJob(jobName, each -> new HeartbeatJob(databaseName, rule.getGroupName(), rule.getPrimaryDataSourceName(), dataSourceMap,
+                        rule.getDatabaseDiscoveryProviderAlgorithm(), rule.getDisabledDataSourceNames()).execute(null), rule.getHeartbeatProps().getProperty("keep-alive-cron"));
+                modeScheduleContext.get().startCronJob(job);
             }
-        } else if (event instanceof PrimaryDataSourceChangedEvent) {
-            for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
-                if (entry.getValue().getGroupName().equals(((PrimaryDataSourceChangedEvent) event).getQualifiedDatabase().getGroupName())) {
-                    entry.getValue().changePrimaryDataSourceName(((PrimaryDataSourceChangedEvent) event).getQualifiedDatabase().getDataSourceName());
-                }
+        }
+    }
+    
+    @Override
+    public void updateStatus(final DataSourceStatusChangedEvent event) {
+        StorageNodeDataSourceChangedEvent dataSourceChangedEvent = (StorageNodeDataSourceChangedEvent) event;
+        for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
+            if (StorageNodeStatus.isDisable(dataSourceChangedEvent.getDataSource().getStatus())) {
+                entry.getValue().disableDataSource(dataSourceChangedEvent.getQualifiedDatabase().getDataSourceName());
+            } else {
+                entry.getValue().enableDataSource(dataSourceChangedEvent.getQualifiedDatabase().getDataSourceName());
             }
         }
     }
@@ -186,28 +204,8 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
         return result;
     }
     
-    private void initHeartBeatJobs(final InstanceContext instanceContext) {
-        Optional<ModeScheduleContext> modeScheduleContext = ModeScheduleContextFactory.getInstance().get(instanceContext.getInstance().getInstanceDefinition().getInstanceId());
-        if (modeScheduleContext.isPresent()) {
-            for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
-                DatabaseDiscoveryDataSourceRule rule = entry.getValue();
-                Map<String, DataSource> dataSources = dataSourceMap.entrySet().stream().filter(each -> !rule.getDisabledDataSourceNames().contains(each.getKey()))
-                        .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-                String jobName = rule.getDatabaseDiscoveryProviderAlgorithm().getType() + "-" + databaseName + "-" + rule.getGroupName();
-                CronJob job = new CronJob(jobName, each -> new HeartbeatJob(databaseName, rule.getGroupName(), rule.getPrimaryDataSourceName(), dataSources,
-                        rule.getDatabaseDiscoveryProviderAlgorithm(), rule.getDisabledDataSourceNames()).execute(null), rule.getHeartbeatProps().getProperty("keep-alive-cron"));
-                modeScheduleContext.get().startCronJob(job);
-            }
-        }
-    }
-    
     @Override
     public String getType() {
         return DatabaseDiscoveryRule.class.getSimpleName();
-    }
-    
-    @Override
-    public void setInstanceContext(final InstanceContext instanceContext) {
-        initHeartBeatJobs(instanceContext);
     }
 }

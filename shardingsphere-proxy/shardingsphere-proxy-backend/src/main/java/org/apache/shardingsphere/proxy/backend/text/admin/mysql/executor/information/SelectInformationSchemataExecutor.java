@@ -84,10 +84,10 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     @Override
     protected List<String> getDatabaseNames(final ConnectionSession connectionSession) {
         Collection<String> databaseNames = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee())).collect(Collectors.toList());
-        SCHEMA_WITHOUT_DATA_SOURCE.addAll(databaseNames.stream().filter(each -> !AbstractDatabaseMetadataExecutor.hasDatasource(each)).collect(Collectors.toSet()));
-        List<String> result = databaseNames.stream().filter(AbstractDatabaseMetadataExecutor::hasDatasource).collect(Collectors.toList());
+        SCHEMA_WITHOUT_DATA_SOURCE.addAll(databaseNames.stream().filter(each -> !AbstractDatabaseMetadataExecutor.hasDataSource(each)).collect(Collectors.toSet()));
+        List<String> result = databaseNames.stream().filter(AbstractDatabaseMetadataExecutor::hasDataSource).collect(Collectors.toList());
         if (!SCHEMA_WITHOUT_DATA_SOURCE.isEmpty()) {
-            fillSchemasWithoutDatasource();
+            fillSchemasWithoutDataSource();
         }
         return result;
     }
@@ -106,7 +106,7 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
         }
     }
     
-    private void fillSchemasWithoutDatasource() {
+    private void fillSchemasWithoutDataSource() {
         if (SCHEMA_WITHOUT_DATA_SOURCE.isEmpty()) {
             return;
         }

@@ -32,7 +32,7 @@ The encryption configuration is mainly divided into four parts: data source conf
 
 ![2](https://shardingsphere.apache.org/document/current/img/encrypt/2_en.png)
 
-**Datasource Configuration**：The configuration of DataSource.
+**Data Source Configuration**：The configuration of DataSource.
 
 **Encrypt Algorithm Configuration**：What kind of encryption strategy to use for encryption and decryption. 
 Currently ShardingSphere has five built-in encryption/decryption strategies: AES, MD5, RC4, SM3, SM4. 

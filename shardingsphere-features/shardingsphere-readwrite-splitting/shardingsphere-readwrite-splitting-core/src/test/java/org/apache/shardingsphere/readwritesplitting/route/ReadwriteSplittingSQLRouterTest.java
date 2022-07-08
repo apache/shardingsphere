@@ -48,7 +48,6 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.Optional;
@@ -65,7 +64,7 @@ public final class ReadwriteSplittingSQLRouterTest {
     
     private static final String DATASOURCE_NAME = "ds";
     
-    private static final String NONE_READWRITE_SPLITTING_DATASOURCE_NAME = "noneReadwriteSplittingDatasource";
+    private static final String NONE_READWRITE_SPLITTING_DATASOURCE_NAME = "noneReadwriteSplittingDataSource";
     
     private static final String WRITE_DATASOURCE = "write";
     
@@ -85,7 +84,7 @@ public final class ReadwriteSplittingSQLRouterTest {
     @Before
     public void setUp() {
         rule = new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(Collections.singleton(new ReadwriteSplittingDataSourceRuleConfiguration(DATASOURCE_NAME,
-                new StaticReadwriteSplittingStrategyConfiguration(WRITE_DATASOURCE, Arrays.asList(READ_DATASOURCE)), null, "")), Collections.emptyMap()));
+                new StaticReadwriteSplittingStrategyConfiguration(WRITE_DATASOURCE, Collections.singletonList(READ_DATASOURCE)), null, "")), Collections.emptyMap()));
         sqlRouter = (ReadwriteSplittingSQLRouter) SQLRouterFactory.getInstances(Collections.singleton(rule)).get(rule);
         dynamicRule = new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(Collections.singleton(new ReadwriteSplittingDataSourceRuleConfiguration(DATASOURCE_NAME, null,
                 new DynamicReadwriteSplittingStrategyConfiguration("readwrite_ds", "true"), "")), Collections.emptyMap()));

@@ -100,6 +100,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Update
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.UsingClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.WhereClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.WithClauseContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.LockTableContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.AssignmentSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.ColumnAssignmentSegment;
@@ -149,6 +150,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleMergeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleSelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleUpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml.OracleLockTableStatement;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -514,7 +516,7 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
         ModelSegment result = new ModelSegment(ctx.start.getStartIndex(), ctx.stop.getStopIndex());
         if (null != ctx.referenceModel()) {
             for (ReferenceModelContext each : ctx.referenceModel()) {
-                result.getReferenceModelSelect().add((SubquerySegment) visit(each));
+                result.getReferenceModelSelects().add((SubquerySegment) visit(each));
             }
         }
         if (null != ctx.mainModel().modelRulesClause().orderByClause()) {
@@ -526,11 +528,11 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
             result.getCellAssignmentColumns().add((ColumnSegment) visit(each.measureColumn().columnName()));
             if (null != each.singleColumnForLoop()) {
                 result.getCellAssignmentColumns().addAll(extractColumnValuesFromSingleColumnForLoop(each.singleColumnForLoop()));
-                result.getCellAsssignmentSelect().addAll(extractSelectSubqueryValuesFromSingleColumnForLoop(each.singleColumnForLoop()));
+                result.getCellAssignmentSelects().addAll(extractSelectSubqueryValuesFromSingleColumnForLoop(each.singleColumnForLoop()));
             }
             if (null != each.multiColumnForLoop()) {
                 result.getCellAssignmentColumns().addAll(extractColumnValuesFromMultiColumnForLoop(each.multiColumnForLoop()));
-                result.getCellAsssignmentSelect().add(extractSelectSubqueryValueFromMultiColumnForLoop(each.multiColumnForLoop()));
+                result.getCellAssignmentSelects().add(extractSelectSubqueryValueFromMultiColumnForLoop(each.multiColumnForLoop()));
             }
         }
         return result;
@@ -1097,5 +1099,10 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     public ASTNode visitDeleteWhereClause(final DeleteWhereClauseContext ctx) {
         ASTNode segment = visit(ctx.whereClause().expr());
         return new WhereSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), (ExpressionSegment) segment);
+    }
+    
+    @Override
+    public ASTNode visitLockTable(final LockTableContext ctx) {
+        return new OracleLockTableStatement();
     }
 }

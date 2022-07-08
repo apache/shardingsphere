@@ -210,3 +210,11 @@ EXISTS
 WITH
     : W I T H
     ;
+
+AUDITOR
+    : A U D I T O R
+    ;
+
+AUDITORS
+    : A U D I T O R S
+    ;

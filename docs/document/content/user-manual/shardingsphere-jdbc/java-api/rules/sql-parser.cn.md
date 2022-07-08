@@ -1,6 +1,6 @@
 +++
-title = "SQL解析"
-weight = 6
+title = "SQL 解析"
+weight = 7
 +++
 
 ## 配置入口
@@ -9,7 +9,7 @@ weight = 6
 
 可配置属性：
 
-| *名称*                        | *数据类型*        | *说明*               |
+| *名称*                       | *数据类型*        | *说明*               |
 |-----------------------------|-------------------|---------------------|
 | sqlCommentParseEnabled (?)  | boolean           | 是否解析 SQL 注释     |
 | parseTreeCache (?)          | CacheOption       | 解析语法树本地缓存配置  |

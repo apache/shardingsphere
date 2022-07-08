@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.lock.LockScope;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.ShardingSphereLockManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal.ShardingSphereInternalLockHolder;
@@ -53,8 +54,8 @@ public final class DistributedLockContext extends AbstractLockContext {
     }
     
     @Override
-    public ShardingSphereLock getLock() {
-        return lockManager.getDistributedLock();
+    public ShardingSphereLock getLock(final LockScope lockScope) {
+        return lockManager.getDistributedLock(lockScope);
     }
     
     @Override

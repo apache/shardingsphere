@@ -18,10 +18,9 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.watcher;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
-import org.apache.shardingsphere.infra.instance.definition.jdbc.JDBCInstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.proxy.ProxyInstanceDefinition;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilderFactory;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
@@ -103,22 +102,18 @@ public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<G
     private Optional<GovernanceEvent> createInstanceEvent(final DataChangedEvent event) {
         Matcher matcher = matchInstanceOnlinePath(event.getKey());
         if (matcher.find()) {
-            InstanceDefinition instanceDefinition = createInstanceDefinition(matcher.group(2), InstanceType.valueOf(matcher.group(1).toUpperCase()), event.getValue());
+            InstanceMetaData instanceMetaData = InstanceMetaDataBuilderFactory.create(matcher.group(2), InstanceType.valueOf(matcher.group(1).toUpperCase()), event.getValue());
             if (Type.ADDED == event.getType()) {
-                return Optional.of(new InstanceOnlineEvent(instanceDefinition));
+                return Optional.of(new InstanceOnlineEvent(instanceMetaData));
             }
             if (Type.DELETED == event.getType()) {
-                return Optional.of(new InstanceOfflineEvent(instanceDefinition));
+                return Optional.of(new InstanceOfflineEvent(instanceMetaData));
             }
         }
         return Optional.empty();
     }
     
     private Matcher matchInstanceOnlinePath(final String onlineInstancePath) {
-        return Pattern.compile(ComputeNode.getOnlineInstanceNodePath() + "/[\\S]+/([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(onlineInstancePath);
-    }
-    
-    private InstanceDefinition createInstanceDefinition(final String instanceId, final InstanceType instanceType, final String attributes) {
-        return InstanceType.JDBC == instanceType ? new JDBCInstanceDefinition(instanceId) : new ProxyInstanceDefinition(instanceId, attributes);
+        return Pattern.compile(ComputeNode.getOnlineInstanceNodePath() + "/([\\S]+)/([\\S]+)$", Pattern.CASE_INSENSITIVE).matcher(onlineInstancePath);
     }
 }

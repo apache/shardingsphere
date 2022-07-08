@@ -161,12 +161,12 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         }
     }
     
-    private void persistRuleConfigurationChange(final MetaDataPersistService metaDataPersistService, final String version, final ShardingSphereDatabase database,
+    private void persistRuleConfigurationChange(final MetaDataPersistService persistService, final String version, final ShardingSphereDatabase database,
                                                 final RuleConfiguration currentRuleConfig, final RuleConfiguration alteredRuleConfig) {
         Collection<RuleConfiguration> configs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         configs.remove(currentRuleConfig);
         configs.add(alteredRuleConfig);
-        metaDataPersistService.getDatabaseRulePersistService().persist(database.getName(), version, configs);
+        persistService.getDatabaseRulePersistService().persist(database.getName(), version, configs);
         ShardingSphereEventBus.getInstance().post(new MetadataVersionPreparedEvent(version, database.getName()));
     }
     
