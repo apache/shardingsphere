@@ -51,7 +51,7 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
     
     private final Map<String, ShardingSphereDatabase> databases;
     
-    private volatile ShardingSphereTransactionManagerEngine transactionManagerEngine;
+    private volatile ShardingSphereTransactionManagerEngine resource;
     
     public TransactionRule(final TransactionRuleConfiguration ruleConfig, final Map<String, ShardingSphereDatabase> databases, final InstanceContext instanceContext) {
         configuration = ruleConfig;
@@ -59,7 +59,7 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
         providerType = ruleConfig.getProviderType();
         props = ruleConfig.getProps();
         this.databases = databases;
-        transactionManagerEngine = createTransactionManagerEngine(databases);
+        resource = createTransactionManagerEngine(databases);
     }
     
     private synchronized ShardingSphereTransactionManagerEngine createTransactionManagerEngine(final Map<String, ShardingSphereDatabase> databases) {
@@ -75,11 +75,6 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
         }
         result.init(databaseType, dataSourceMap, providerType);
         return result;
-    }
-    
-    @Override
-    public ShardingSphereTransactionManagerEngine getResource() {
-        return transactionManagerEngine;
     }
     
     @Override
@@ -108,18 +103,18 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
     }
     
     private void rebuildEngine() {
-        ShardingSphereTransactionManagerEngine previousEngine = transactionManagerEngine;
+        ShardingSphereTransactionManagerEngine previousEngine = resource;
         if (null != previousEngine) {
             closeEngine(previousEngine);
         }
-        transactionManagerEngine = createTransactionManagerEngine(databases);
+        resource = createTransactionManagerEngine(databases);
     }
     
     private void closeEngine() {
-        ShardingSphereTransactionManagerEngine engine = transactionManagerEngine;
+        ShardingSphereTransactionManagerEngine engine = resource;
         if (null != engine) {
-            transactionManagerEngine = new ShardingSphereTransactionManagerEngine();
             closeEngine(engine);
+            resource = new ShardingSphereTransactionManagerEngine();
         }
     }
     
