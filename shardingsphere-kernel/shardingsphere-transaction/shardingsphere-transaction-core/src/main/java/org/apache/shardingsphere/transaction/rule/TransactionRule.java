@@ -62,7 +62,7 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
         transactionManagerEngine = createTransactionManagerEngine(databases);
     }
     
-    private ShardingSphereTransactionManagerEngine createTransactionManagerEngine(final Map<String, ShardingSphereDatabase> databases) {
+    private synchronized ShardingSphereTransactionManagerEngine createTransactionManagerEngine(final Map<String, ShardingSphereDatabase> databases) {
         if (databases.size() == 0) {
             return new ShardingSphereTransactionManagerEngine();
         }
@@ -109,10 +109,10 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
     
     private void rebuildEngine() {
         ShardingSphereTransactionManagerEngine previousEngine = transactionManagerEngine;
-        transactionManagerEngine = createTransactionManagerEngine(databases);
         if (null != previousEngine) {
             closeEngine(previousEngine);
         }
+        transactionManagerEngine = createTransactionManagerEngine(databases);
     }
     
     private void closeEngine() {
