@@ -46,7 +46,7 @@ public final class DriverDataSourceCache {
         }
         DataSource dataSource;
         try {
-            dataSource = YamlShardingSphereDataSourceFactory.createDataSource(new ShardingSphereDriverURL(url).toConfigurationFile());
+            dataSource = YamlShardingSphereDataSourceFactory.createDataSource(new ShardingSphereDriverURL(url).toConfigurationBytes());
         } catch (final IOException ex) {
             throw new SQLException(ex);
         }
