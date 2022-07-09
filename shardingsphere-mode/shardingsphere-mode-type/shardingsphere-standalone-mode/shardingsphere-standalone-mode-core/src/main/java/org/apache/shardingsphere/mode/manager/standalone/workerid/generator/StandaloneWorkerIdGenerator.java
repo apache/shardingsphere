@@ -17,7 +17,11 @@
 
 package org.apache.shardingsphere.mode.manager.standalone.workerid.generator;
 
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
+
+import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Worker id generator for standalone mode.
@@ -25,8 +29,11 @@ import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 public final class StandaloneWorkerIdGenerator implements WorkerIdGenerator {
     
     @Override
-    public long generate() {
-        // TODO need to support custom configuration of worker-id
-        return 0;
+    public long generate(final Properties props) {
+        Optional<Long> result = parseWorkerId(props);
+        if (result.isPresent()) {
+            return result.get();
+        }
+        throw new ShardingSphereException("{} is required configuration item in standalone mode", WORKER_ID_KEY);
     }
 }

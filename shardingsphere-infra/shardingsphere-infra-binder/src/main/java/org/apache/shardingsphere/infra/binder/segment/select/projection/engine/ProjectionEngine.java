@@ -156,7 +156,8 @@ public final class ProjectionEngine {
         }
         String tableName = ((SimpleTableSegment) table).getTableName().getIdentifier().getValue();
         String tableAlias = table.getAlias().orElse(tableName);
-        String schemaName = ((SimpleTableSegment) table).getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(DatabaseTypeEngine.getDefaultSchemaName(databaseType, databaseName));
+        String schemaName = ((SimpleTableSegment) table).getOwner().map(optional -> optional.getIdentifier().getValue())
+                .orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(databaseType, databaseName));
         Collection<ColumnProjection> result = new LinkedList<>();
         if (null == owner) {
             schemas.get(schemaName).getAllColumnNames(tableName).stream().map(each -> new ColumnProjection(tableAlias, each, null)).forEach(result::add);

@@ -35,7 +35,7 @@ execute
     | showInstanceMode
     | labelInstance
     | unlabelInstance
-    | countInstanceRules
+    | countSingleTableRule
     | alterInstance
     | countDatabaseRules
     | prepareDistSQL

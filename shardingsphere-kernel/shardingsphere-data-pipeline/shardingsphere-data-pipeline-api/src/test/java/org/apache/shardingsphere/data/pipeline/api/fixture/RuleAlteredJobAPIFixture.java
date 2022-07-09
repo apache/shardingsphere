@@ -69,7 +69,7 @@ public final class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     }
     
     @Override
-    public void stopClusterWriteDB(final String databaseName, final String jobId) {
+    public void stopClusterWriteDB(final RuleAlteredJobConfiguration jobConfig) {
     }
     
     @Override
@@ -77,7 +77,7 @@ public final class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
     }
     
     @Override
-    public void restoreClusterWriteDB(final String databaseName, final String jobId) {
+    public void restoreClusterWriteDB(final RuleAlteredJobConfiguration jobConfig) {
     }
     
     @Override

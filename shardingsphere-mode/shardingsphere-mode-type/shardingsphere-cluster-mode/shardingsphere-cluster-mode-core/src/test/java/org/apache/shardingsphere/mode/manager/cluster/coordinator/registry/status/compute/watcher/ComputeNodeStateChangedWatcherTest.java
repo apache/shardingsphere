@@ -22,7 +22,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.Gover
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
 import org.junit.Test;
@@ -53,24 +52,6 @@ public final class ComputeNodeStateChangedWatcherTest {
         assertTrue(actual.isPresent());
         assertTrue(((StateEvent) actual.get()).getStatus().isEmpty());
         assertThat(((StateEvent) actual.get()).getInstanceId(), is("127.0.0.1@3307"));
-    }
-    
-    @Test
-    public void assertCreateAddWorkerIdEvent() {
-        Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
-                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/worker_id/127.0.0.1@3307", "123", Type.ADDED));
-        assertTrue(actual.isPresent());
-        assertThat(((WorkerIdEvent) actual.get()).getWorkerId(), is(123L));
-        assertThat(((WorkerIdEvent) actual.get()).getInstanceId(), is("127.0.0.1@3307"));
-    }
-    
-    @Test
-    public void assertCreateUpdateWorkerIdEvent() {
-        Optional<GovernanceEvent> actual = new ComputeNodeStateChangedWatcher()
-                .createGovernanceEvent(new DataChangedEvent("/nodes/compute_nodes/worker_id/127.0.0.1@3307", "123", Type.UPDATED));
-        assertTrue(actual.isPresent());
-        assertThat(((WorkerIdEvent) actual.get()).getWorkerId(), is(123L));
-        assertThat(((WorkerIdEvent) actual.get()).getInstanceId(), is("127.0.0.1@3307"));
     }
     
     @Test

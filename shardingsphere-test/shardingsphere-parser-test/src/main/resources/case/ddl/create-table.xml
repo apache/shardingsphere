@@ -1744,4 +1744,11 @@
             <column name="a" />
         </column-definition>
     </create-table>
+
+    <create-table sql-case-id="create_table_path">
+        <table name="files" start-index="13" stop-index="17" />
+        <column-definition type="PATH" start-index="20" stop-index="28">
+            <column name="path" />
+        </column-definition>
+    </create-table>
 </sql-parser-test-cases>

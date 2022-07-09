@@ -26,6 +26,8 @@ import org.apache.shardingsphere.infra.federation.optimizer.context.planner.Opti
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 
@@ -58,6 +60,18 @@ public final class OptimizerContext {
         federationMetaData.getDatabases().put(databaseName, federationDatabaseMetaData);
         parserContexts.put(databaseName, OptimizerParserContextFactory.create(protocolType));
         plannerContexts.put(databaseName, OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
+    }
+    
+    /**
+     * Alter database.
+     *
+     * @param database to be altered database
+     * @param globalRuleMetaData global rule meta data
+     */
+    public void alterDatabase(final ShardingSphereDatabase database, final ShardingSphereRuleMetaData globalRuleMetaData) {
+        OptimizerContext toBeAlteredOptimizerContext = OptimizerContextFactory.create(Collections.singletonMap(database.getName(), database), globalRuleMetaData);
+        federationMetaData.getDatabases().put(database.getName(), toBeAlteredOptimizerContext.getFederationMetaData().getDatabases().get(database.getName()));
+        plannerContexts.put(database.getName(), toBeAlteredOptimizerContext.getPlannerContexts().get(database.getName()));
     }
     
     /**

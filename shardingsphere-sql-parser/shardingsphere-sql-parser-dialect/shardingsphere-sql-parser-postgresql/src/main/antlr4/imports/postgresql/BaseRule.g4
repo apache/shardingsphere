@@ -307,6 +307,7 @@ unreservedWord
     | PARTITION
     | PASSING
     | PASSWORD
+    | PATH
     | PLAIN
     | PLANS
     | POLICY
