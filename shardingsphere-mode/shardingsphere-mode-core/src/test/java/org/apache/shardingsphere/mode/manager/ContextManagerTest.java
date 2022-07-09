@@ -165,9 +165,9 @@ public final class ContextManagerTest {
     }
     
     @Test
-    public void assertDropResource() {
+    public void assertDropResources() {
         when(metaDataContexts.getMetaData().getDatabases().get("foo_db").getResource().getDataSources()).thenReturn(new HashMap<>(Collections.singletonMap("foo_ds", new MockedDataSource())));
-        contextManager.dropResource("foo_db", Collections.singleton("foo_ds"));
+        contextManager.dropResources("foo_db", Collections.singleton("foo_ds"));
         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("foo_db").getResource().getDataSources().isEmpty());
     }
     

@@ -212,12 +212,12 @@ public final class ContextManager implements AutoCloseable {
     }
     
     /**
-     * Drop resource.
+     * Drop resources.
      *
      * @param databaseName database name
      * @param toBeDroppedResourceNames to be dropped resource names
      */
-    public synchronized void dropResource(final String databaseName, final Collection<String> toBeDroppedResourceNames) {
+    public synchronized void dropResources(final String databaseName, final Collection<String> toBeDroppedResourceNames) {
         Map<String, DataSource> dataSourceMap = metaDataContexts.getMetaData().getDatabases().get(databaseName).getResource().getDataSources();
         // TODO should check to be dropped resources are unused here. ContextManager is atomic domain to maintain metadata, not Dist SQL handler
         for (String each : toBeDroppedResourceNames) {
