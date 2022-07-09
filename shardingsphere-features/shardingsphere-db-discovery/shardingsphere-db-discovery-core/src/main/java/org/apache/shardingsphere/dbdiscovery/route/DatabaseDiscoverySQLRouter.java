@@ -23,7 +23,6 @@ import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryDataSourceRul
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.route.SQLRouter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
@@ -43,8 +42,9 @@ public final class DatabaseDiscoverySQLRouter implements SQLRouter<DatabaseDisco
     @Override
     public RouteContext createRouteContext(final LogicSQL logicSQL, final ShardingSphereDatabase database, final DatabaseDiscoveryRule rule, final ConfigurationProperties props) {
         RouteContext result = new RouteContext();
-        String dataSourceName = new DatabaseDiscoveryDataSourceRouter(rule.getSingleDataSourceRule()).route();
-        result.getRouteUnits().add(new RouteUnit(new RouteMapper(DefaultDatabase.LOGIC_NAME, dataSourceName), Collections.emptyList()));
+        DatabaseDiscoveryDataSourceRule singleDataSourceRule = rule.getSingleDataSourceRule();
+        String dataSourceName = new DatabaseDiscoveryDataSourceRouter(singleDataSourceRule).route();
+        result.getRouteUnits().add(new RouteUnit(new RouteMapper(singleDataSourceRule.getGroupName(), dataSourceName), Collections.emptyList()));
         return result;
     }
     

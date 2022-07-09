@@ -146,7 +146,6 @@ public final class ComputeNodeStatusService {
         ComputeNodeInstance result = new ComputeNodeInstance(instanceMetaData);
         result.setLabels(loadInstanceLabels(instanceMetaData.getId()));
         result.switchState(loadInstanceStatus(instanceMetaData.getId()));
-        loadInstanceWorkerId(instanceMetaData.getId()).ifPresent(result::setWorkerId);
         return result;
     }
     
