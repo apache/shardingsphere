@@ -17,59 +17,84 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token;
 
-import java.util.Collections;
-import java.util.Optional;
-
 import org.apache.shardingsphere.encrypt.rewrite.token.generator.AssistQueryAndPlainInsertColumnsTokenGenerator;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertColumnsToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
-import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class AssistQueryAndPlainInsertColumnsTokenGeneratorTest {
     
-    private final AssistQueryAndPlainInsertColumnsTokenGenerator tokenGenerator = new AssistQueryAndPlainInsertColumnsTokenGenerator();
+    @Test
+    public void assertIsNotGenerateSQLTokenWithNotInsertStatementContext() {
+        assertFalse(new AssistQueryAndPlainInsertColumnsTokenGenerator().isGenerateSQLToken(mock(SQLStatementContext.class)));
+    }
     
-    private InsertStatementContext insertStatementContext;
+    @Test
+    public void assertIsNotGenerateSQLTokenWithoutInsertColumns() {
+        InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        when(insertStatementContext.getSqlStatement().getInsertColumns()).thenReturn(Optional.empty());
+        assertFalse(new AssistQueryAndPlainInsertColumnsTokenGenerator().isGenerateSQLToken(insertStatementContext));
+    }
     
-    @Before
-    public void setup() {
-        final String tableName = "foo_tbl";
-        final String columnName = "foo_col";
-        insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        EncryptRule encryptRule = mock(EncryptRule.class, RETURNS_DEEP_STUBS);
-        tokenGenerator.setEncryptRule(encryptRule);
-        when(insertStatementContext.getSqlStatement()
-                .getInsertColumns()).thenReturn(Optional.of(mock(InsertColumnsSegment.class)));
-        when(insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier()
-                .getValue()).thenReturn(tableName);
-        ColumnSegment columnSegment = mock(ColumnSegment.class, RETURNS_DEEP_STUBS);
-        when(insertStatementContext.getSqlStatement()
-                .getColumns()).thenReturn(Collections.singletonList(columnSegment));
-        when(columnSegment.getIdentifier().getValue()).thenReturn(columnName);
-        EncryptTable encryptTable = mock(EncryptTable.class, RETURNS_DEEP_STUBS);
-        when(encryptRule.findEncryptTable(tableName)).thenReturn(Optional.of(encryptTable));
-        when(encryptTable.findAssistedQueryColumn(columnName)).thenReturn(Optional.of("assisted_query_col"));
-        when(encryptTable.findPlainColumn(columnName)).thenReturn(Optional.of("plain_col"));
+    @Test
+    public void assertIsNotGenerateSQLTokenWithDefaultColumns() {
+        InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        when(insertStatementContext.getSqlStatement().getInsertColumns()).thenReturn(Optional.of(mock(InsertColumnsSegment.class)));
+        when(insertStatementContext.useDefaultColumns()).thenReturn(true);
+        assertFalse(new AssistQueryAndPlainInsertColumnsTokenGenerator().isGenerateSQLToken(insertStatementContext));
     }
     
     @Test
     public void assertIsGenerateSQLToken() {
-        assertTrue(tokenGenerator.isGenerateSQLToken(insertStatementContext));
+        InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        when(insertStatementContext.getSqlStatement().getInsertColumns()).thenReturn(Optional.of(mock(InsertColumnsSegment.class)));
+        assertTrue(new AssistQueryAndPlainInsertColumnsTokenGenerator().isGenerateSQLToken(insertStatementContext));
     }
     
     @Test
     public void assertGenerateSQLTokens() {
-        assertThat(tokenGenerator.generateSQLTokens(insertStatementContext).size(), is(1));
+        AssistQueryAndPlainInsertColumnsTokenGenerator tokenGenerator = new AssistQueryAndPlainInsertColumnsTokenGenerator();
+        tokenGenerator.setEncryptRule(mockEncryptRule());
+        Collection<InsertColumnsToken> actual = tokenGenerator.generateSQLTokens(mockInsertStatementContext());
+        assertThat(actual.size(), is(1));
+        // TODO add more assertions for actual value
+    }
+    
+    private EncryptRule mockEncryptRule() {
+        EncryptRule result = mock(EncryptRule.class);
+        EncryptTable encryptTable = mock(EncryptTable.class);
+        when(encryptTable.findAssistedQueryColumn("foo_col")).thenReturn(Optional.of("assisted_query_col"));
+        when(encryptTable.findPlainColumn("foo_col")).thenReturn(Optional.of("plain_col"));
+        when(result.findEncryptTable("foo_tbl")).thenReturn(Optional.of(encryptTable));
+        return result;
+    }
+    
+    private InsertStatementContext mockInsertStatementContext() {
+        InsertStatementContext result = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        when(result.getSqlStatement().getTable().getTableName().getIdentifier().getValue()).thenReturn("foo_tbl");
+        ColumnSegment columnSegment = mock(ColumnSegment.class, RETURNS_DEEP_STUBS);
+        when(columnSegment.getIdentifier().getValue()).thenReturn("foo_col");
+        when(result.getSqlStatement().getColumns()).thenReturn(Collections.singleton(columnSegment));
+        return result;
     }
 }
