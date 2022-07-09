@@ -23,7 +23,6 @@ import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.HashSet;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -45,11 +44,6 @@ public final class MySQLDatabaseTypeTest {
     @Test
     public void assertGetDataSourceMetaData() {
         assertThat(new MySQLDatabaseType().getDataSourceMetaData("jdbc:mysql://127.0.0.1/foo_ds", "root"), instanceOf(MySQLDataSourceMetaData.class));
-    }
-    
-    @Test
-    public void assertGetDataSourceClassName() {
-        assertThat(new MySQLDatabaseType().getDataSourceClassName(), is(Optional.of("com.mysql.jdbc.jdbc2.optional.MysqlDataSource")));
     }
     
     @Test

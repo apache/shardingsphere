@@ -47,7 +47,7 @@ public final class ConnectionTransaction {
     
     public ConnectionTransaction(final String databaseName, final TransactionType transactionType, final TransactionRule rule) {
         this.transactionType = transactionType;
-        transactionManager = rule.getResources().get(databaseName).getTransactionManager(transactionType);
+        transactionManager = rule.getResource().getTransactionManager(transactionType);
         TransactionTypeHolder.set(transactionType);
     }
     

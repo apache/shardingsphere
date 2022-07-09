@@ -22,7 +22,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -44,11 +43,6 @@ public final class SQL92DatabaseTypeTest {
     @Test
     public void assertGetDataSourceMetaData() {
         assertThat(new SQL92DatabaseType().getDataSourceMetaData("jdbc:xxx", "root"), instanceOf(SQL92DataSourceMetaData.class));
-    }
-    
-    @Test
-    public void assertGetDataSourceClassName() {
-        assertThat(new SQL92DatabaseType().getDataSourceClassName(), is(Optional.empty()));
     }
     
     @Test

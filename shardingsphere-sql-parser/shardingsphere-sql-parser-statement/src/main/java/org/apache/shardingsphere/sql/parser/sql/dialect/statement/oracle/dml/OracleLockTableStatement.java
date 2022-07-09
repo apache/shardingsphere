@@ -15,15 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.dml;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.LockTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Count instance rules statement.
- * 
- * @deprecated The class CountInstanceRulesHandler is deprecated, the entry SQL statement should be deprecated too.
+ * Oracle lock table statement.
  */
-@Deprecated
-public final class CountInstanceRulesStatement extends QueryableRALStatement {
+@ToString
+public final class OracleLockTableStatement extends LockTableStatement implements OracleStatement {
 }

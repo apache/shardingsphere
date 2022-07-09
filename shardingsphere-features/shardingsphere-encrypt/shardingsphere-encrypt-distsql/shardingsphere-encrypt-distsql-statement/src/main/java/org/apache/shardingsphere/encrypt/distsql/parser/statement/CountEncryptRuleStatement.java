@@ -15,20 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event;
+package org.apache.shardingsphere.encrypt.distsql.parser.statement;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
- * Worker id changed event.
+ * Count encrypt rule statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class WorkerIdEvent implements GovernanceEvent {
+public final class CountEncryptRuleStatement extends ShowRulesStatement {
     
-    private final String instanceId;
-    
-    private final Long workerId;
+    public CountEncryptRuleStatement(final DatabaseSegment database) {
+        super(database);
+    }
 }

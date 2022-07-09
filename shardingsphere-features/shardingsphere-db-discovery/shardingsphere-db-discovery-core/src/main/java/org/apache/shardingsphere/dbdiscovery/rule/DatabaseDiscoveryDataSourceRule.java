@@ -108,7 +108,7 @@ public final class DatabaseDiscoveryDataSourceRule {
     public Map<String, Collection<String>> getDataSourceMapper() {
         Map<String, Collection<String>> result = new HashMap<>(dataSourceNames.size(), 1);
         for (String each : dataSourceNames) {
-            result.put(each, Collections.singletonList(each));
+            result.put(groupName, Collections.singletonList(each));
         }
         return result;
     }

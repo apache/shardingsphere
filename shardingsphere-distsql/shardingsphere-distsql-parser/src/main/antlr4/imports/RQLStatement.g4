@@ -43,6 +43,10 @@ showRulesUsedResource
     : SHOW RULES USED RESOURCE resourceName (FROM databaseName)?
     ;
 
+countSingleTableRule
+    : COUNT SINGLE_TABLE RULE (FROM databaseName)?
+    ;
+
 table
     : TABLE tableName
     ;

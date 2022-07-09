@@ -47,6 +47,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DeleteStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.UpdateStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -79,7 +80,7 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
     }
     
     private SQLStatement parseSql(final String sql, final DatabaseType databaseType) {
-        if (sql.isEmpty()) {
+        if (SQLUtil.trimComment(sql).isEmpty()) {
             return new EmptyStatement();
         }
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();

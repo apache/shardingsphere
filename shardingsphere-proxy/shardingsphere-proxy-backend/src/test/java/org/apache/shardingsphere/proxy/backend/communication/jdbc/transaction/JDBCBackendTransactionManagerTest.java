@@ -37,7 +37,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
 import java.sql.SQLException;
-import java.util.Collections;
 
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -68,7 +67,6 @@ public final class JDBCBackendTransactionManagerTest extends ProxyContextRestore
     @Before
     public void setUp() {
         setTransactionContexts();
-        when(connectionSession.getDatabaseName()).thenReturn("db");
         when(connectionSession.getTransactionStatus()).thenReturn(transactionStatus);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
     }
@@ -85,7 +83,7 @@ public final class JDBCBackendTransactionManagerTest extends ProxyContextRestore
         TransactionRule transactionRule = mock(TransactionRule.class);
         ShardingSphereTransactionManagerEngine transactionManagerEngine = mock(ShardingSphereTransactionManagerEngine.class);
         when(transactionManagerEngine.getTransactionManager(TransactionType.XA)).thenReturn(shardingSphereTransactionManager);
-        when(transactionRule.getResources()).thenReturn(Collections.singletonMap("db", transactionManagerEngine));
+        when(transactionRule.getResource()).thenReturn(transactionManagerEngine);
         when(result.getSingleRule(TransactionRule.class)).thenReturn(transactionRule);
         return result;
     }
