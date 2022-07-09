@@ -211,6 +211,7 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertSchemaDelete() {
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("db").getSchemas().containsKey("foo_schema")).thenReturn(true);
         coordinator.renew(new SchemaDeletedEvent("db", "foo_schema"));
         verify(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("db").getSchemas()).remove("foo_schema");
     }
