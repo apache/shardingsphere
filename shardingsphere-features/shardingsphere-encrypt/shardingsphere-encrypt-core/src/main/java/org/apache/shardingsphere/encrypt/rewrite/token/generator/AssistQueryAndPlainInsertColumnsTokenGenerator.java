@@ -43,11 +43,7 @@ public final class AssistQueryAndPlainInsertColumnsTokenGenerator implements Col
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
-        if (sqlStatementContext instanceof InsertStatementContext) {
-            InsertStatementContext insertStatementContext = (InsertStatementContext) sqlStatementContext;
-            return insertStatementContext.getSqlStatement().getInsertColumns().isPresent() && !insertStatementContext.useDefaultColumns();
-        }
-        return false;
+        return sqlStatementContext instanceof InsertStatementContext && ((InsertStatementContext) sqlStatementContext).containsInsertColumns();
     }
     
     @Override
