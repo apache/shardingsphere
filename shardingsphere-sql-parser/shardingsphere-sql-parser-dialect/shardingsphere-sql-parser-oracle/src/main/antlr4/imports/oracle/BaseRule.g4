@@ -1317,3 +1317,11 @@ libraryName
 matchString
     : IDENTIFIER_ | ASTERISK_
     ;
+
+parameterTypes
+    : identifier
+    ;
+
+varrayType
+    : (owner DOT_)? name
+    ;

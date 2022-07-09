@@ -110,6 +110,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterFunctionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterIndexStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterIndexTypeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterJavaStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterLanguageStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterLibraryStatementTestCase;
@@ -1320,6 +1321,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "alter-java")
     private final List<AlterJavaStatementTestCase> alterJavaTestCases = new LinkedList<>();
     
+    @XmlElement(name = "alter-index-type")
+    private final List<AlterIndexTypeStatementTestCase> alterIndexTypeTestCases = new LinkedList<>();
+
     @XmlElement(name = "alter-operator")
     private final List<AlterOperatorStatementTestCase> alterOperatorTestCases = new LinkedList<>();
     
@@ -1833,6 +1837,7 @@ public final class SQLParserTestCases {
         putAll(alterGroupTestCases, result);
         putAll(alterMaterializedViewTestCases, result);
         putAll(alterJavaTestCases, result);
+        putAll(alterIndexTypeTestCases, result);
         putAll(alterOperatorTestCases, result);
         putAll(createTextSearchTestCases, result);
         putAll(alterTextSearchTestCases, result);

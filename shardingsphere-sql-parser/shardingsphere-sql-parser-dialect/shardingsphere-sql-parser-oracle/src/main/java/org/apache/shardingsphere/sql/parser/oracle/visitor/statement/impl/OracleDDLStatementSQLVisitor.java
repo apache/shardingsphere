@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterD
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterDimensionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterFlashbackArchiveContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterIndexContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterIndexTypeContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterInmemoryJoinGroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterLibraryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterJavaContext;
@@ -145,6 +146,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterDimensionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterFlashbackArchiveStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterIndexStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterIndexTypeStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterInmemoryJoinGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterJavaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterLibraryStatement;
@@ -898,5 +900,10 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitAlterJava(final AlterJavaContext ctx) {
         return new OracleAlterJavaStatement();
+    }
+    
+    @Override
+    public ASTNode visitAlterIndexType(final AlterIndexTypeContext ctx) {
+        return new OracleAlterIndexTypeStatement();
     }
 }
