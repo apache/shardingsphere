@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.InsertColumnsToken;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -52,22 +51,13 @@ public class AssistQueryAndPlainInsertColumnsTokenGeneratorTest {
     @Test
     public void assertIsNotGenerateSQLTokenWithoutInsertColumns() {
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(insertStatementContext.getSqlStatement().getInsertColumns()).thenReturn(Optional.empty());
         assertFalse(new AssistQueryAndPlainInsertColumnsTokenGenerator().isGenerateSQLToken(insertStatementContext));
     }
     
     @Test
-    public void assertIsNotGenerateSQLTokenWithDefaultColumns() {
+    public void assertIsGenerateSQLTokenWithInsertColumns() {
         InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(insertStatementContext.getSqlStatement().getInsertColumns()).thenReturn(Optional.of(mock(InsertColumnsSegment.class)));
-        when(insertStatementContext.useDefaultColumns()).thenReturn(true);
-        assertFalse(new AssistQueryAndPlainInsertColumnsTokenGenerator().isGenerateSQLToken(insertStatementContext));
-    }
-    
-    @Test
-    public void assertIsGenerateSQLToken() {
-        InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        when(insertStatementContext.getSqlStatement().getInsertColumns()).thenReturn(Optional.of(mock(InsertColumnsSegment.class)));
+        when(insertStatementContext.containsInsertColumns()).thenReturn(true);
         assertTrue(new AssistQueryAndPlainInsertColumnsTokenGenerator().isGenerateSQLToken(insertStatementContext));
     }
     
