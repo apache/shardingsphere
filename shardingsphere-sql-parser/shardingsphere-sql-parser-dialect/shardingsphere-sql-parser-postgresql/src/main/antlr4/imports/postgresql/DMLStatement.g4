@@ -275,6 +275,7 @@ targetEl
     | aExpr identifier
     | aExpr
     | ASTERISK_
+    | aExpr DOT_ASTERISK_ AS identifier
     ;
 
 groupClause
