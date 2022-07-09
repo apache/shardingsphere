@@ -18,3 +18,4 @@
 org.apache.shardingsphere.dbdiscovery.distsql.handler.query.DatabaseDiscoveryRuleQueryResultSet
 org.apache.shardingsphere.dbdiscovery.distsql.handler.query.DatabaseDiscoveryTypeQueryResultSet
 org.apache.shardingsphere.dbdiscovery.distsql.handler.query.DatabaseDiscoveryHeartbeatQueryResultSet
+org.apache.shardingsphere.dbdiscovery.distsql.handler.query.CountDatabaseDiscoveryRuleQueryResultSet

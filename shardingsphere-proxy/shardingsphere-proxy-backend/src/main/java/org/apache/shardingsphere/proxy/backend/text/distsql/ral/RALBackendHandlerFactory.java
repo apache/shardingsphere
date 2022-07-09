@@ -24,7 +24,6 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.FormatSta
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.ParseStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.PreviewStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.CountInstanceRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowInstanceModeStatement;
@@ -56,7 +55,6 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.FormatS
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.ParseDistSQLHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.PreviewHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.HintDistSQLBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.CountInstanceRulesHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ExportDatabaseConfigurationHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ShowAuthorityRuleHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ShowInstanceHandler;
@@ -118,7 +116,6 @@ public final class RALBackendHandlerFactory {
         HANDLERS.put(ImportDatabaseConfigurationStatement.class, ImportDatabaseConfigurationHandler.class);
         HANDLERS.put(ShowInstanceStatement.class, ShowInstanceHandler.class);
         HANDLERS.put(ShowInstanceModeStatement.class, ShowInstanceModeHandler.class);
-        HANDLERS.put(CountInstanceRulesStatement.class, CountInstanceRulesHandler.class);
         HANDLERS.put(ShowVariableStatement.class, ShowVariableHandler.class);
         HANDLERS.put(ShowReadwriteSplittingReadResourcesStatement.class, ShowReadwriteSplittingReadResourcesHandler.class);
         HANDLERS.put(ShowAuthorityRuleStatement.class, ShowAuthorityRuleHandler.class);

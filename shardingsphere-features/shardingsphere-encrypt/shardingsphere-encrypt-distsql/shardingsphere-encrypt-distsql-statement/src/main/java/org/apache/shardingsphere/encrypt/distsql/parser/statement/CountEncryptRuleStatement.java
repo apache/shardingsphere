@@ -15,15 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable;
+package org.apache.shardingsphere.encrypt.distsql.parser.statement;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rql.show.ShowRulesStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
 
 /**
- * Count instance rules statement.
- * 
- * @deprecated The class CountInstanceRulesHandler is deprecated, the entry SQL statement should be deprecated too.
+ * Count encrypt rule statement.
  */
-@Deprecated
-public final class CountInstanceRulesStatement extends QueryableRALStatement {
+public final class CountEncryptRuleStatement extends ShowRulesStatement {
+    
+    public CountEncryptRuleStatement(final DatabaseSegment database) {
+        super(database);
+    }
 }
