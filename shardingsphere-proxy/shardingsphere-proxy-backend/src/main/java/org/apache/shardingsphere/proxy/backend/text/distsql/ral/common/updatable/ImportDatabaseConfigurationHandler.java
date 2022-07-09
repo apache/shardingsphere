@@ -118,7 +118,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
             validator.validate(toBeUpdatedResourcePropsMap);
             Collection<String> currentResourceNames = new LinkedList<>(ProxyContext.getInstance().getDatabase(databaseName).getResource().getDataSources().keySet());
             Collection<String> toBeDroppedResourceNames = currentResourceNames.stream().filter(each -> !toBeUpdatedResourcePropsMap.containsKey(each)).collect(Collectors.toSet());
-            ProxyContext.getInstance().getContextManager().addResource(databaseName, toBeUpdatedResourcePropsMap);
+            ProxyContext.getInstance().getContextManager().updateResources(databaseName, toBeUpdatedResourcePropsMap);
             if (!toBeDroppedResourceNames.isEmpty()) {
                 ProxyContext.getInstance().getContextManager().dropResource(databaseName, toBeDroppedResourceNames);
             }
