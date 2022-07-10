@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.distsql.parser.statement.ral;
 
 /**
- * Common dist sql statement.
+ * Common RAL statement.
  */
-public abstract class CommonDistSQLStatement extends RALStatement {
+public abstract class CommonRALStatement extends RALStatement {
 }
