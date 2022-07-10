@@ -22,14 +22,21 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 
 /**
- * Restart heart beat job rule.
+ * Dynamic status contained rule.
  */
-public interface RestartHeartBeatJobRule extends ShardingSphereRule {
+public interface DynamicStatusContainedRule extends ShardingSphereRule {
+    
+    /**
+     * Update data source status.
+     *
+     * @param event data source status changed event
+     */
+    void updateStatus(DataSourceStatusChangedEvent event);
     
     /**
      * Restart heart beat job.
      * @param event data source status changed event
      * @param instanceContext instance context
      */
-    void restart(DataSourceStatusChangedEvent event, InstanceContext instanceContext);
+    void restartHeartBeatJob(DataSourceStatusChangedEvent event, InstanceContext instanceContext);
 }

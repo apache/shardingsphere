@@ -21,9 +21,9 @@ import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 
 /**
- * Status contained rule.
+ * Static Status contained rule.
  */
-public interface StatusContainedRule extends ShardingSphereRule {
+public interface StaticStatusContainedRule extends ShardingSphereRule {
     
     /**
      * Update data source status.
