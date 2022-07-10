@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -74,13 +74,13 @@ public final class ResourceSwitchManagerTest {
     
     @SuppressWarnings("BusyWait")
     private void assertStaleDataSource(final MockedDataSource dataSource) throws InterruptedException {
-        while (null == dataSource.getClosed()) {
+        while (!dataSource.isClosed()) {
             Thread.sleep(10L);
         }
-        assertTrue(dataSource.getClosed());
+        assertTrue(dataSource.isClosed());
     }
     
     private void assertNotStaleDataSource(final MockedDataSource dataSource) {
-        assertNull(dataSource.getClosed());
+        assertFalse(dataSource.isClosed());
     }
 }
