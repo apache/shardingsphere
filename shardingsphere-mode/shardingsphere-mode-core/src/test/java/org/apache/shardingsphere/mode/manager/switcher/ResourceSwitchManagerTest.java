@@ -17,32 +17,70 @@
 
 package org.apache.shardingsphere.mode.manager.switcher;
 
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
+import javax.sql.DataSource;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class ResourceSwitchManagerTest {
-
+public final class ResourceSwitchManagerTest {
+    
     @Test
-    public void assertCreate() {
-        MockedDataSource dataSource = new MockedDataSource();
-        ShardingSphereResource resource = new ShardingSphereResource(Collections.singletonMap("foo_ds", dataSource));
-        DataSourceProperties dataSourceProperties =
-                new DataSourceProperties(MockedDataSource.class.getName(), createUserProperties("foo"));
-        ResourceSwitchManager manager = new ResourceSwitchManager();
-        SwitchingResource switchingResource = manager.create(resource, Collections.singletonMap("db", dataSourceProperties));
-        assertTrue(switchingResource.getNewDataSources().containsKey("db"));
+    public void assertCreate() throws InterruptedException {
+        Map<String, DataSource> dataSourceMap = createDataSourceMap();
+        SwitchingResource actual = new ResourceSwitchManager().create(new ShardingSphereResource(dataSourceMap), createToBeChangedDataSourcePropsMap());
+        assertNewDataSources(actual);
+        actual.closeStaleDataSources();
+        assertStaleDataSources(dataSourceMap);
     }
-
-    private Map<String, Object> createUserProperties(final String username) {
-        Map<String, Object> result = new LinkedHashMap<>(1, 1);
-        result.put("username", username);
+    
+    private Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new HashMap<>(3, 1);
+        result.put("not_change", new MockedDataSource());
+        result.put("replace", new MockedDataSource());
+        result.put("delete", new MockedDataSource());
         return result;
+    }
+    
+    private Map<String, DataSourceProperties> createToBeChangedDataSourcePropsMap() {
+        Map<String, DataSourceProperties> result = new HashMap<>(3, 1);
+        result.put("new", new DataSourceProperties(MockedDataSource.class.getName(), Collections.emptyMap()));
+        result.put("not_change", new DataSourceProperties(MockedDataSource.class.getName(), Collections.emptyMap()));
+        result.put("replace", new DataSourceProperties(MockedDataSource.class.getName(), Collections.singletonMap("password", "new_pwd")));
+        return result;
+    }
+    
+    private void assertNewDataSources(final SwitchingResource actual) {
+        assertThat(actual.getNewDataSources().size(), is(3));
+        assertTrue(actual.getNewDataSources().containsKey("not_change"));
+        assertTrue(actual.getNewDataSources().containsKey("new"));
+        assertTrue(actual.getNewDataSources().containsKey("replace"));
+    }
+    
+    private void assertStaleDataSources(final Map<String, DataSource> originalDataSourceMap) throws InterruptedException {
+        assertStaleDataSource((MockedDataSource) originalDataSourceMap.get("delete"));
+        assertStaleDataSource((MockedDataSource) originalDataSourceMap.get("replace"));
+        assertNotStaleDataSource((MockedDataSource) originalDataSourceMap.get("not_change"));
+    }
+    
+    @SuppressWarnings("BusyWait")
+    private void assertStaleDataSource(final MockedDataSource dataSource) throws InterruptedException {
+        while (!dataSource.isClosed()) {
+            Thread.sleep(10L);
+        }
+        assertTrue(dataSource.isClosed());
+    }
+    
+    private void assertNotStaleDataSource(final MockedDataSource dataSource) {
+        assertFalse(dataSource.isClosed());
     }
 }

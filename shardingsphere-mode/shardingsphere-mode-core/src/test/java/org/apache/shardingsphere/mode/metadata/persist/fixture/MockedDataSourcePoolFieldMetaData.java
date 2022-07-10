@@ -15,27 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.resource;
+package org.apache.shardingsphere.mode.metadata.persist.fixture;
 
-import org.apache.shardingsphere.test.mock.MockedDataSource;
-import org.junit.Test;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolFieldMetaData;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Collections;
-
-import static org.junit.Assert.assertTrue;
-
-public final class ShardingSphereResourceTest {
+public final class MockedDataSourcePoolFieldMetaData implements DataSourcePoolFieldMetaData {
     
-    @SuppressWarnings("BusyWait")
-    @Test
-    public void assertClose() throws SQLException, IOException, InterruptedException {
-        MockedDataSource dataSource = new MockedDataSource();
-        new ShardingSphereResource(Collections.singletonMap("foo_ds", dataSource)).close(dataSource);
-        while (!dataSource.isClosed()) {
-            Thread.sleep(10L);
-        }
-        assertTrue(dataSource.isClosed());
+    @Override
+    public String getUsernameFieldName() {
+        return "username";
+    }
+    
+    @Override
+    public String getPasswordFieldName() {
+        return "password";
+    }
+    
+    @Override
+    public String getJdbcUrlFieldName() {
+        return "url";
+    }
+    
+    @Override
+    public String getJdbcUrlPropertiesFieldName() {
+        return "jdbcUrlProperties";
     }
 }
