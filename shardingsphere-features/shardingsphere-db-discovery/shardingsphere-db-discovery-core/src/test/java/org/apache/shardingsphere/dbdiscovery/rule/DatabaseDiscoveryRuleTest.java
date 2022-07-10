@@ -72,10 +72,8 @@ public final class DatabaseDiscoveryRuleTest {
     }
     
     private Map<String, Collection<String>> getDataSourceMapper() {
-        Map<String, Collection<String>> result = new HashMap<>(2, 1);
-        result.put("replica_ds_0", Collections.singletonList("replica_ds_0"));
-        result.put("replica_ds_1", Collections.singletonList("replica_ds_1"));
-        result.put("primary_ds", Collections.singletonList("primary_ds"));
+        Map<String, Collection<String>> result = new HashMap<>(1, 1);
+        result.put("replica_ds", Collections.singletonList("replica_ds_1"));
         return result;
     }
     
