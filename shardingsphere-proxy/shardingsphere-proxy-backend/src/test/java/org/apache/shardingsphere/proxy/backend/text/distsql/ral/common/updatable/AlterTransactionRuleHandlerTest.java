@@ -42,7 +42,9 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -66,13 +68,13 @@ public final class AlterTransactionRuleHandlerTest extends ProxyContextRestorer 
     }
     
     private ShardingSphereMetaData createMetaData() {
-        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(new LinkedList<>(Collections.singleton(createTransactionRule())));
-        return new ShardingSphereMetaData(Collections.singletonMap("foo_db", mockDatabase()), ruleMetaData, new ConfigurationProperties(new Properties()));
+        Map<String, ShardingSphereDatabase> databases = new HashMap<>(Collections.singletonMap("foo_db", mockDatabase()));
+        ShardingSphereRuleMetaData ruleMetaData = new ShardingSphereRuleMetaData(new LinkedList<>(Collections.singleton(createTransactionRule(databases))));
+        return new ShardingSphereMetaData(databases, ruleMetaData, new ConfigurationProperties(new Properties()));
     }
     
-    private TransactionRule createTransactionRule() {
-        TransactionRule result = new TransactionRule(new TransactionRuleConfiguration("LOCAL", null, new Properties()), Collections.emptyMap(), mock(InstanceContext.class));
-        return result;
+    private TransactionRule createTransactionRule(final Map<String, ShardingSphereDatabase> databases) {
+        return new TransactionRule(new TransactionRuleConfiguration("LOCAL", null, new Properties()), databases, mock(InstanceContext.class));
     }
     
     private ShardingSphereDatabase mockDatabase() {
