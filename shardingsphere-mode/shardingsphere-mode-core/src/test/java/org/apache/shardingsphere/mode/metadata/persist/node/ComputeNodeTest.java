@@ -61,6 +61,11 @@ public final class ComputeNodeTest {
     }
     
     @Test
+    public void assertGetInstanceWorkerIdRootNodePath() {
+        assertThat(ComputeNode.getInstanceWorkerIdRootNodePath(), is("/nodes/compute_nodes/worker_id"));
+    }
+    
+    @Test
     public void assertGetInstanceIdByComputeNodePath() {
         assertThat(ComputeNode.getInstanceIdByComputeNode("/nodes/compute_nodes/status/foo_instance_1"), is("foo_instance_1"));
         assertThat(ComputeNode.getInstanceIdByComputeNode("/nodes/compute_nodes/worker_id/foo_instance_2"), is("foo_instance_2"));

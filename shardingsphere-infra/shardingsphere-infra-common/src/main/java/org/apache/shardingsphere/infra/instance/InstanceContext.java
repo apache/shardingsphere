@@ -28,7 +28,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 
@@ -78,17 +77,6 @@ public final class InstanceContext {
     }
     
     /**
-     * Update instance worker id.
-     * 
-     * @param workerId worker id
-     */
-    public void updateWorkerId(final Long workerId) {
-        if (!Objects.equals(workerId, instance.getWorkerId())) {
-            instance.setWorkerId(workerId);
-        }
-    }
-    
-    /**
      * Update instance label.
      * 
      * @param instanceId instance id
@@ -99,20 +87,6 @@ public final class InstanceContext {
             instance.setLabels(labels);
         }
         computeNodeInstances.stream().filter(each -> each.getInstanceMetaData().getId().equals(instanceId)).forEach(each -> each.setLabels(labels));
-    }
-    
-    /**
-     * Get worker id.
-     *
-     * @return worker id
-     * @deprecated remove it when worker-id refactor was completed
-     */
-    @Deprecated
-    public long getWorkerId() {
-        if (null == instance.getWorkerId()) {
-            Optional.of(workerIdGenerator.generate()).ifPresent(instance::setWorkerId);
-        }
-        return instance.getWorkerId();
     }
     
     /**

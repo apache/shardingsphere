@@ -27,16 +27,9 @@ public interface WorkerIdGenerator {
     
     String WORKER_ID_KEY = "worker-id";
     
-    long DEFAULT_WORKER_ID = 0;
+    long DEFAULT_WORKER_ID = 0L;
     
-    /**
-     * Generate worker id.
-     *
-     * @return worker id
-     * @deprecated remove it when worker-id refactor was completed
-     */
-    @Deprecated
-    long generate();
+    long MAX_WORKER_ID = 1023L;
     
     /**
      * Generate worker id.

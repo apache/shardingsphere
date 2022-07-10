@@ -61,10 +61,23 @@ JAVA_MEM_OPTS=" -server -Xmx2g -Xms2g -Xmn1g -Xss1m -XX:AutoBoxCacheMax=4096 -XX
 
 MAIN_CLASS=org.apache.shardingsphere.proxy.Bootstrap
 
+unset -v PORT
+unset -v ADDRESSES
+unset -v CONF_PATH
+
 print_usage() {
-    echo "usage: start.sh [port] [config_dir]"
+    echo "usage:"
+    echo "start.sh [port] [config_dir]"
     echo "  port: proxy listen port, default is 3307"
-    echo "  config_dir: proxy config directory, default is conf"
+    echo "  config_dir: proxy config directory, default is 'conf'"
+    echo ""
+    echo "start.sh [-a addresses] [-p port] [-c /path/to/conf]"
+    echo "The options are unordered."
+    echo "-a  Bind addresses, can be IPv4, IPv6, hostname. In"
+    echo "    case more than one address is specified in a"
+    echo "    comma-separated list. The default value is '0.0.0.0'."
+    echo "-p  Bind port, default is '3307', which could be changed in server.yaml"
+    echo "-c  Path to config directory of ShardingSphere-Proxy, default is 'conf'"
     exit 0
 }
 
@@ -81,26 +94,54 @@ if [ "$1" == "-v" ] || [ "$1" == "--version" ] ; then
     print_version
 fi
 
-echo "Starting the $SERVER_NAME ..."
-
 if [ $# == 0 ]; then
     CLASS_PATH=${DEPLOY_DIR}/conf:${CLASS_PATH}
 fi
 
-if [ $# == 1 ]; then
-    MAIN_CLASS=${MAIN_CLASS}" "$1
+if [[ $1 == -a ]] || [[ $1 == -p ]] || [[ $1 == -c ]] ; then
+    while getopts ":a:p:c:" opt
+    do
+        case $opt in
+        a)
+          echo "The address is $OPTARG"
+          ADDRESSES=$OPTARG;;
+        p)
+          echo "The port is $OPTARG"
+          PORT=$OPTARG;;
+        c)
+          echo "The configuration path is $OPTARG"
+          CONF_PATH=$OPTARG;;
+        ?)
+          print_usage;;
+        esac
+
+    done
+
+elif [ $# == 1 ]; then
+    PORT=$1
     echo "The port is $1"
-    CLASS_PATH=${DEPLOY_DIR}/conf:${CLASS_PATH}
+
+elif [ $# == 2 ]; then
+    PORT=$1
+    CONF_PATH=$2
+    echo "The port is $1"
+    echo "The configuration path is $2"
 fi
 
-if [ $# == 2 ]; then
-    MAIN_CLASS=${MAIN_CLASS}" "$1" "$2
-    echo "The port is $1"
-    echo "The configuration path is $DEPLOY_DIR/$2"
-    CLASS_PATH=${DEPLOY_DIR}/$2:${CLASS_PATH}
+if [ -z "$CONF_PATH" ]; then
+    CONF_PATH=${DEPLOY_DIR}/conf
 fi
 
+if [ -z "$PORT" ]; then
+    PORT=-1
+fi
+
+CLASS_PATH=${CONF_PATH}:${CLASS_PATH}
+MAIN_CLASS=${MAIN_CLASS}" "${PORT}" "${CONF_PATH}" "${ADDRESSES}
+
+echo "Starting the $SERVER_NAME ..."
 echo "The classpath is ${CLASS_PATH}"
+echo "main class ${MAIN_CLASS}"
 
 nohup java ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &
 sleep 1

@@ -84,7 +84,7 @@ public final class JDBCBackendDataSourceTest extends ProxyContextRestorer {
     private ShardingSphereRuleMetaData mockGlobalRuleMetaData() {
         ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class);
         TransactionRule transactionRule = mock(TransactionRule.class);
-        when(transactionRule.getResources()).thenReturn(Collections.singletonMap("schema", mock(ShardingSphereTransactionManagerEngine.class)));
+        when(transactionRule.getResource()).thenReturn(mock(ShardingSphereTransactionManagerEngine.class));
         when(result.getSingleRule(TransactionRule.class)).thenReturn(transactionRule);
         return result;
     }

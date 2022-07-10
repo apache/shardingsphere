@@ -24,7 +24,6 @@ import org.junit.Test;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -50,11 +49,6 @@ public final class OracleDatabaseTypeTest {
     @Test
     public void assertOracleDataSourceMetaData() {
         assertThat(new OracleDatabaseType().getDataSourceMetaData("jdbc:oracle:oci:@127.0.0.1/foo_ds", "scott"), instanceOf(OracleDataSourceMetaData.class));
-    }
-    
-    @Test
-    public void assertGetDataSourceClassName() {
-        assertThat(new OracleDatabaseType().getDataSourceClassName(), is(Optional.empty()));
     }
     
     @Test

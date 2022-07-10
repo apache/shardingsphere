@@ -29,12 +29,6 @@ import java.util.Properties;
 public final class StandaloneWorkerIdGenerator implements WorkerIdGenerator {
     
     @Override
-    public long generate() {
-        // TODO need to support custom configuration of worker-id
-        return DEFAULT_WORKER_ID;
-    }
-    
-    @Override
     public long generate(final Properties props) {
         Optional<Long> result = parseWorkerId(props);
         if (result.isPresent()) {

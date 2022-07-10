@@ -49,11 +49,6 @@ public final class OracleDatabaseType implements DatabaseType {
     }
     
     @Override
-    public Optional<String> getDataSourceClassName() {
-        return Optional.empty();
-    }
-    
-    @Override
     public String getSchema(final Connection connection) {
         try {
             return Optional.ofNullable(connection.getMetaData().getUserName()).map(String::toUpperCase).orElse(null);

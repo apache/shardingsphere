@@ -314,3 +314,7 @@ APPLY
 DISCARD
     : D I S C A R D
     ;
+
+SINGLE_TABLE
+    : S I N G L E UL_ T A B L E
+    ;

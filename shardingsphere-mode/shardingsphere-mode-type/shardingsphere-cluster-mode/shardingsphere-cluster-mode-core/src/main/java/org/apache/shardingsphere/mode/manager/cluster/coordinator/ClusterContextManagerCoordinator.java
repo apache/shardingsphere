@@ -49,7 +49,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListTriggerEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListUnitCompleteEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.StorageNodeChangedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -226,18 +225,6 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final StateEvent event) {
         contextManager.getInstanceContext().updateInstanceStatus(event.getInstanceId(), event.getStatus());
-    }
-    
-    /**
-     * Renew instance worker id.
-     *
-     * @param event worker id event
-     */
-    @Subscribe
-    public synchronized void renew(final WorkerIdEvent event) {
-        if (contextManager.getInstanceContext().getInstance().getInstanceMetaData().getId().equals(event.getInstanceId())) {
-            contextManager.getInstanceContext().updateWorkerId(event.getWorkerId());
-        }
     }
     
     /**
