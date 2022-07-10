@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseMetaDataPersistService;
@@ -126,6 +127,25 @@ public final class ContextManagerTest {
     }
     
     @Test
+    public void assertAlterSchema() {
+        when(metaDataContexts.getMetaData().getDatabases().containsKey("foo_db")).thenReturn(true);
+        ShardingSphereTable fooTable = mock(ShardingSphereTable.class);
+        when(fooTable.getName()).thenReturn("FOO_TABLE");
+        contextManager.alterSchema("foo_db", "foo_schema", fooTable, null);
+        assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabases().containsKey("foo_db"));
+        assertAlterTable();
+        assertAlterDropTable();
+    }
+    
+    public void assertAlterDropTable() {
+        contextManager.alterSchema("foo_db", "foo_schema", null, "foo_table");
+    }
+    
+    public void assertAlterTable() {
+        assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("foo_db").getSchemas().get("foo_schema").getTables().containsKey("foo_table"));
+    }
+    
+    @Test
     public void assertAddSchema() {
         contextManager.addSchema("foo_db", "bar_schema");
         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("foo_db").getSchemas().containsKey("bar_schema"));
@@ -136,6 +156,25 @@ public final class ContextManagerTest {
     public void assertAddExistedSchema() {
         contextManager.addSchema("foo_db", "foo_schema");
         verify(metaDataContexts.getOptimizerContext(), times(0)).addSchema("foo_db", "foo_schema");
+    }
+    
+    private Map<String, DataSourceProperties> createToBeAddedDataSourceProperties() {
+        Map<String, DataSourceProperties> result = new LinkedHashMap<>(2, 1);
+        result.put("foo_ds_1", new DataSourceProperties(MockedDataSource.class.getName(), createProperties("root", "root")));
+        result.put("foo_ds_2", new DataSourceProperties(MockedDataSource.class.getName(), createProperties("root", "root")));
+        return result;
+    }
+    
+    private void assertAddedDataSources(final Map<String, DataSource> actual) {
+        assertThat(actual.size(), is(2));
+        assertAddedDataSource((MockedDataSource) actual.get("foo_ds_1"));
+        assertAddedDataSource((MockedDataSource) actual.get("foo_ds_2"));
+    }
+    
+    private void assertAddedDataSource(final MockedDataSource actual) {
+        assertThat(actual.getUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
+        assertThat(actual.getUsername(), is("root"));
+        assertThat(actual.getPassword(), is("root"));
     }
     
     @Test
