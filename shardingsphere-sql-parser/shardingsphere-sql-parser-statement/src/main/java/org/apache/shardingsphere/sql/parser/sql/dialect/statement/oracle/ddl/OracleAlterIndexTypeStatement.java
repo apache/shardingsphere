@@ -23,5 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle alter index type statement.
  */
+
 public final class OracleAlterIndexTypeStatement extends AbstractSQLStatement implements OracleStatement {
 }
