@@ -176,6 +176,7 @@ public final class ContextManager implements AutoCloseable {
         if (metaDataContexts.getMetaData().getDatabases().get(databaseName).getSchemas().containsKey(schemaName)) {
             metaDataContexts.getMetaData().getDatabases().get(databaseName).getSchemas().get(schemaName).remove(toBeDeletedTableName);
             metaDataContexts.getOptimizerContext().dropTable(databaseName, schemaName, toBeDeletedTableName);
+            // TODO check whether need to reloadRules(single table rule) if table dropped? 
         }
     }
     
