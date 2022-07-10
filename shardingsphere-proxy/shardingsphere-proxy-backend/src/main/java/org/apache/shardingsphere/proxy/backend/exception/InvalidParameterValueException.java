@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.exception;
+package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.frontend.exception.FrontendException;
 
 /**
  * Invalid parameter value exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class InvalidParameterValueException extends FrontendException {
+public final class InvalidParameterValueException extends BackendException {
     
     private static final long serialVersionUID = -6561119208409452172L;
     
-    private final String message;
+    private final String parameterName;
+    
+    private final String parameterValue;
 }

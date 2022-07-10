@@ -19,8 +19,9 @@ package org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
+import org.apache.shardingsphere.proxy.backend.exception.InvalidParameterValueException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseSetCharsetExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.PostgreSQLCharacterSets;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
@@ -34,19 +35,15 @@ import java.util.Locale;
  * Set charset executor of PostgreSQL.
  */
 @RequiredArgsConstructor
-public final class PostgreSQLSetCharsetExecutor implements DatabaseSetCharsetExecutor {
+public final class PostgreSQLSetCharsetExecutor implements DatabaseAdminExecutor {
     
     private final SetStatement setStatement;
-    
-    private String currentValue;
     
     @Override
     public void execute(final ConnectionSession connectionSession) throws SQLException {
         VariableAssignSegment segment = setStatement.getVariableAssigns().iterator().next();
         String value = formatValue(segment.getAssignValue().trim());
-        Charset charset = parseCharset(value);
-        currentValue = value;
-        connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(charset);
+        connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(parseCharset(value));
     }
     
     private String formatValue(final String value) {
@@ -54,12 +51,11 @@ public final class PostgreSQLSetCharsetExecutor implements DatabaseSetCharsetExe
     }
     
     private Charset parseCharset(final String value) {
-        String result = value.toLowerCase(Locale.ROOT);
-        return "default".equals(result) ? StandardCharsets.UTF_8 : PostgreSQLCharacterSets.findCharacterSet(result);
-    }
-    
-    @Override
-    public String getCurrentCharset() {
-        return currentValue;
+        try {
+            String result = value.toLowerCase(Locale.ROOT);
+            return "default".equals(result) ? StandardCharsets.UTF_8 : PostgreSQLCharacterSets.findCharacterSet(result);
+        } catch (final IllegalArgumentException ignored) {
+            throw new InvalidParameterValueException("client_encoding", value.toLowerCase(Locale.ROOT));
+        }
     }
 }
