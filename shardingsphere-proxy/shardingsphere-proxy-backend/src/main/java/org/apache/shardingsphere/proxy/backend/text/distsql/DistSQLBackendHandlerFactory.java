@@ -58,7 +58,7 @@ public final class DistSQLBackendHandlerFactory {
             return RQLBackendHandlerFactory.newInstance((RQLStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof RDLStatement) {
-            checkLockedDatabase(connectionSession);
+            checkDatabaseLocked(connectionSession);
             return RDLBackendHandlerFactory.newInstance((RDLStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof RALStatement) {
@@ -66,13 +66,13 @@ public final class DistSQLBackendHandlerFactory {
                     || sqlStatement instanceof UpdatableScalingRALStatement) {
                 return RALBackendHandlerFactory.newInstance((RALStatement) sqlStatement, connectionSession);
             }
-            checkLockedDatabase(connectionSession);
+            checkDatabaseLocked(connectionSession);
             return RALBackendHandlerFactory.newInstance((RALStatement) sqlStatement, connectionSession);
         }
         throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
     }
     
-    private static void checkLockedDatabase(final ConnectionSession connectionSession) {
+    private static void checkDatabaseLocked(final ConnectionSession connectionSession) {
         String databaseName = connectionSession.getDatabaseName();
         if (null == databaseName) {
             return;
