@@ -25,8 +25,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.mockito.Mockito.mock;
-
 public final class MockedDataSourcePoolMetaData implements DataSourcePoolMetaData {
     
     @Override
@@ -57,7 +55,28 @@ public final class MockedDataSourcePoolMetaData implements DataSourcePoolMetaDat
     
     @Override
     public DataSourcePoolFieldMetaData getFieldMetaData() {
-        return mock(DataSourcePoolFieldMetaData.class);
+        return new DataSourcePoolFieldMetaData() {
+    
+            @Override
+            public String getUsernameFieldName() {
+                return "username";
+            }
+    
+            @Override
+            public String getPasswordFieldName() {
+                return "password";
+            }
+    
+            @Override
+            public String getJdbcUrlFieldName() {
+                return "url";
+            }
+    
+            @Override
+            public String getJdbcUrlPropertiesFieldName() {
+                return "jdbcUrlProperties";
+            }
+        };
     }
     
     @Override
