@@ -24,8 +24,8 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatem
 /**
  * Set instance status statement.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public class SetInstanceStatusStatement extends UpdatableRALStatement {
     
     private final String status;
