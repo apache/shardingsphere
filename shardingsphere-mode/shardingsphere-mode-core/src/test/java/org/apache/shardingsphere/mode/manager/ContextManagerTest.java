@@ -137,12 +137,10 @@ public final class ContextManagerTest {
         assertAlterDropTable();
     }
 
-    @Test
     public void assertAlterDropTable() {
         contextManager.alterSchema("foo_db", "foo_schema", null, "foo_table");
     }
 
-    @Test
     public void assertAlterTable() {
         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("foo_db").getSchemas().get("foo_schema").getTables().containsKey("foo_table"));
     }
