@@ -29,16 +29,16 @@ public final class PostgreSQLCharacterSetsTest {
     
     @Test
     public void assertFindSqlAscii() {
-        assertThat(PostgreSQLCharacterSets.findCharacterSet("SQL_ASCII"), is(StandardCharsets.US_ASCII));
+        assertThat(PostgreSQLCharacterSets.getCharacterSet("SQL_ASCII"), is(StandardCharsets.US_ASCII));
     }
     
     @Test
     public void assertFindUTF8() {
-        assertThat(PostgreSQLCharacterSets.findCharacterSet("utf8"), is(StandardCharsets.UTF_8));
+        assertThat(PostgreSQLCharacterSets.getCharacterSet("utf8"), is(StandardCharsets.UTF_8));
     }
     
     @Test(expected = UnsupportedCharsetException.class)
     public void assertFindUnsupportedCharset() {
-        PostgreSQLCharacterSets.findCharacterSet("unknown_charset");
+        PostgreSQLCharacterSets.getCharacterSet("unknown_charset");
     }
 }

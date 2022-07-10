@@ -22,6 +22,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.charset.UnsupportedCharsetException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Supplier;
 
 /**
@@ -36,7 +37,7 @@ public enum PostgreSQLCharacterSets {
     EUC_KR(() -> Charset.forName("EUC_KR")),
     EUC_TW(() -> Charset.forName("EUC_TW")),
     EUC_JIS_2004(() -> Charset.forName("EUC_JIS_2004")),
-    UTF8(() -> StandardCharsets.UTF_8, "Unicode"),
+    UTF8(() -> StandardCharsets.UTF_8, "Unicode", "UTF_8"),
     MULE_INTERNAL(() -> Charset.forName("MULE_INTERNAL")),
     LATIN1(() -> StandardCharsets.ISO_8859_1, "ISO88591"),
     LATIN2(() -> Charset.forName("LATIN2"), "ISO88592"),
@@ -101,13 +102,23 @@ public enum PostgreSQLCharacterSets {
     }
     
     /**
-     * Find corresponding {@link Charset} by charset name defined in PostgreSQL.
+     * Get corresponding {@link Charset} by charset name defined in PostgreSQL.
      *
      * @param charsetName charset name defined in PostgreSQL
      * @return corresponding {@link Charset}
      */
-    public static Charset findCharacterSet(final String charsetName) {
+    public static Charset getCharacterSet(final String charsetName) {
         PostgreSQLCharacterSets result = CHARACTER_SETS_MAP.get(charsetName.toUpperCase());
         return null != result && null != result.charset ? result.charset : Charset.forName(charsetName);
+    }
+    
+    /**
+     * Find corresponding {@link PostgreSQLCharacterSets} by charset name defined in PostgreSQL.
+     *
+     * @param charsetName charset name defined in PostgreSQL
+     * @return {@link PostgreSQLCharacterSets}
+     */
+    public static Optional<PostgreSQLCharacterSets> findPostgreSQLCharacterSets(final String charsetName) {
+        return Optional.ofNullable(CHARACTER_SETS_MAP.get(charsetName.toUpperCase()));
     }
 }
