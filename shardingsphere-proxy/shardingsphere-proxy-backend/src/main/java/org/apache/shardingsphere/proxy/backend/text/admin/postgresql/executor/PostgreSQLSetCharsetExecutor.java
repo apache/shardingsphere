@@ -53,7 +53,7 @@ public final class PostgreSQLSetCharsetExecutor implements DatabaseAdminExecutor
     private Charset parseCharset(final String value) {
         try {
             String result = value.toLowerCase(Locale.ROOT);
-            return "default".equals(result) ? StandardCharsets.UTF_8 : PostgreSQLCharacterSets.getCharacterSet(result);
+            return "default".equals(result) ? StandardCharsets.UTF_8 : PostgreSQLCharacterSets.findCharacterSet(result);
         } catch (final IllegalArgumentException ignored) {
             throw new InvalidParameterValueException("client_encoding", value.toLowerCase(Locale.ROOT));
         }

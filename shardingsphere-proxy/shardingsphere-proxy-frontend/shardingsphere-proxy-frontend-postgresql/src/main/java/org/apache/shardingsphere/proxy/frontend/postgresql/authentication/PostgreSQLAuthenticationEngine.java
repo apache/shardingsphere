@@ -84,7 +84,7 @@ public final class PostgreSQLAuthenticationEngine implements AuthenticationEngin
         startupMessageReceived = true;
         PostgreSQLComStartupPacket comStartupPacket = new PostgreSQLComStartupPacket(payload);
         clientEncoding = comStartupPacket.getClientEncoding();
-        context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(PostgreSQLCharacterSets.getCharacterSet(clientEncoding));
+        context.channel().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(PostgreSQLCharacterSets.findCharacterSet(clientEncoding));
         String user = comStartupPacket.getUser();
         if (Strings.isNullOrEmpty(user)) {
             throw new InvalidAuthorizationSpecificationException("no PostgreSQL user name specified in startup packet");
