@@ -30,6 +30,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -109,7 +110,7 @@ public final class DatabaseDiscoveryDataSourceRule {
      */
     public Map<String, DataSource> getDataSourceGroup(final Map<String, DataSource> dataSourceMap) {
         Map<String, DataSource> result = new HashMap<>(dataSourceMap.size(), 1);
-        for (Map.Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
             if (dataSourceNames.contains(entry.getKey())) {
                 result.put(entry.getKey(), entry.getValue());
             }
