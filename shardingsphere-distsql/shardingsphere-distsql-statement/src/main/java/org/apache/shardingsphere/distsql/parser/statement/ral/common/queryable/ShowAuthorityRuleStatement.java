@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable;
 
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
  * Show authority rule statement.
  */
-@NoArgsConstructor
 public final class ShowAuthorityRuleStatement extends QueryableRALStatement {
 }

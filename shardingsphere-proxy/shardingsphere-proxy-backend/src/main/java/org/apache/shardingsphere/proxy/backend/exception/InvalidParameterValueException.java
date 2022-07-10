@@ -15,24 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable;
+package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
-
-import java.util.Collection;
 
 /**
- * Label instance statement.
+ * Invalid parameter value exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class LabelInstanceStatement extends UpdatableRALStatement {
+public final class InvalidParameterValueException extends BackendException {
     
-    private final boolean overwrite;
+    private static final long serialVersionUID = -6561119208409452172L;
     
-    private final String instanceId;
+    private final String parameterName;
     
-    private final Collection<String> labels;
+    private final String parameterValue;
 }

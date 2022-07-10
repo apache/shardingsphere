@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.mysql.command.query.exception;
+package org.apache.shardingsphere.proxy.backend.text.admin.postgresql;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.frontend.exception.FrontendException;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 
 /**
- * Unknown character set exception.
+ * Default session variable handler for PostgreSQL.
  */
-@RequiredArgsConstructor
-@Getter
-public final class UnknownCharacterSetException extends FrontendException {
+@Slf4j
+public final class DefaultPostgreSQLSessionVariableHandler implements PostgreSQLSessionVariableHandler {
     
-    private static final long serialVersionUID = -1224655358882073372L;
-    
-    private final String message;
+    @Override
+    public void handle(final ConnectionSession connectionSession, final SetStatement setStatement) {
+        log.debug("Set statement {} was discarded.", setStatement.getVariableAssigns().stream().findFirst()
+                .map(segment -> String.format("%s = %s", segment.getVariable().getVariable(), segment.getAssignValue())).orElseGet(setStatement::toString));
+    }
 }

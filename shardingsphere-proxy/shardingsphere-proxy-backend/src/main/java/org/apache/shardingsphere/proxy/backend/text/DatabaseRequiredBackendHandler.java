@@ -54,8 +54,8 @@ public abstract class DatabaseRequiredBackendHandler<T extends SQLStatement> imp
     protected abstract ResponseHeader execute(String databaseName, T sqlStatement) throws SQLException;
     
     private String getDatabaseName(final ConnectionSession connectionSession, final T sqlStatement) {
-        Optional<DatabaseSegment> schemaFromSQL = sqlStatement instanceof FromDatabaseAvailable ? ((FromDatabaseAvailable) sqlStatement).getDatabase() : Optional.empty();
-        return schemaFromSQL.isPresent() ? schemaFromSQL.get().getIdentifier().getValue() : connectionSession.getDatabaseName();
+        Optional<DatabaseSegment> databaseSegment = sqlStatement instanceof FromDatabaseAvailable ? ((FromDatabaseAvailable) sqlStatement).getDatabase() : Optional.empty();
+        return databaseSegment.isPresent() ? databaseSegment.get().getIdentifier().getValue() : connectionSession.getDatabaseName();
     }
     
     private void checkDatabaseName(final String databaseName) {

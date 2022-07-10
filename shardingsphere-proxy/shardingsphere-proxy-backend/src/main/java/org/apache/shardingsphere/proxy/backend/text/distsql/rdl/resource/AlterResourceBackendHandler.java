@@ -65,7 +65,7 @@ public final class AlterResourceBackendHandler extends DatabaseRequiredBackendHa
         Map<String, DataSourceProperties> dataSourcePropsMap = ResourceSegmentsConverter.convert(databaseType, sqlStatement.getDataSources());
         validator.validate(dataSourcePropsMap);
         try {
-            ProxyContext.getInstance().getContextManager().alterResource(databaseName, dataSourcePropsMap);
+            ProxyContext.getInstance().getContextManager().updateResources(databaseName, dataSourcePropsMap);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON

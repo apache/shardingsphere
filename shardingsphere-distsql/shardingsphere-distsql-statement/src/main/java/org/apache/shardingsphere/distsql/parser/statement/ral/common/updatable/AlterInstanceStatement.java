@@ -21,6 +21,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 
+/**
+ * Alter instance statement.
+ */
 @RequiredArgsConstructor
 @Getter
 public final class AlterInstanceStatement extends UpdatableRALStatement {

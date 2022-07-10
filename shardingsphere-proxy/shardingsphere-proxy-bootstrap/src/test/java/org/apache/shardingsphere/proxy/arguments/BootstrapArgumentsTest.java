@@ -50,14 +50,14 @@ public final class BootstrapArgumentsTest {
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(3306));
     }
-
+    
     @Test
     public void assertGetPortWithTwoArgument() {
         Optional<Integer> actual = new BootstrapArguments(new String[]{"3306", "/test_conf/"}).getPort();
         assertTrue(actual.isPresent());
         assertThat(actual.get(), is(3306));
     }
-
+    
     @Test
     public void assertGetPortWithThreeArgument() {
         Optional<Integer> actual = new BootstrapArguments(new String[]{"3306", "/test_conf/", "127.0.0.1"}).getPort();
@@ -74,7 +74,7 @@ public final class BootstrapArgumentsTest {
     public void assertGetConfigurationPathWithSingleArgument() {
         assertThat(new BootstrapArguments(new String[]{"3306"}).getConfigurationPath(), is("/conf/"));
     }
-
+    
     @Test
     public void assertGetConfigurationPathWithTwoArguments() {
         assertThat(new BootstrapArguments(new String[]{"3306", "test_conf"}).getConfigurationPath(), is("/test_conf/"));
@@ -82,22 +82,22 @@ public final class BootstrapArgumentsTest {
         assertThat(new BootstrapArguments(new String[]{"3306", "test_conf/"}).getConfigurationPath(), is("/test_conf/"));
         assertThat(new BootstrapArguments(new String[]{"3306", "/test_conf/"}).getConfigurationPath(), is("/test_conf/"));
     }
-
+    
     @Test
     public void assertGetAddressesWithEmptyArgument() {
         assertThat(new BootstrapArguments(new String[]{}).getAddresses(), is(Arrays.asList("0.0.0.0")));
     }
-
+    
     @Test
     public void assertGetAddressesWithSingleArgument() {
         assertThat(new BootstrapArguments(new String[]{"3306"}).getAddresses(), is(Arrays.asList("0.0.0.0")));
     }
-
+    
     @Test
     public void assertGetAddressesWithTwoArgument() {
         assertThat(new BootstrapArguments(new String[]{"3306", "test_conf"}).getAddresses(), is(Arrays.asList("0.0.0.0")));
     }
-
+    
     @Test
     public void assertGetAddressesWithThreeArguments() {
         assertThat(new BootstrapArguments(new String[]{"3306", "test_conf", "127.0.0.1"}).getAddresses(), is(Arrays.asList("127.0.0.1")));

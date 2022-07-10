@@ -15,31 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.response.header.update;
+package org.apache.shardingsphere.proxy.backend.text.admin.postgresql;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-
-import java.util.Optional;
+import org.apache.shardingsphere.proxy.backend.text.admin.executor.SessionVariableHandler;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 
 /**
- * Client encoding response header.
+ * Session variable handler for PostgreSQL.
  */
-@RequiredArgsConstructor
-public class ClientEncodingResponseHeader implements ResponseHeader {
-    
-    private final String currentCharsetValue;
-    
-    @Getter
-    private final String inputValue;
-    
-    /**
-     * Get current charset value.
-     *
-     * @return current charset value
-     */
-    public Optional<String> getCurrentCharsetValue() {
-        return Optional.ofNullable(currentCharsetValue);
-    }
+@SingletonSPI
+public interface PostgreSQLSessionVariableHandler extends SessionVariableHandler {
 }

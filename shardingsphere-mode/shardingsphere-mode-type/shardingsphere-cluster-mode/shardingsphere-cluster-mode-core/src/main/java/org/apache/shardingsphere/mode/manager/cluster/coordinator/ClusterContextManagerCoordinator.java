@@ -126,16 +126,6 @@ public final class ClusterContextManagerCoordinator {
     }
     
     /**
-     * Renew properties.
-     *
-     * @param event properties changed event
-     */
-    @Subscribe
-    public synchronized void renew(final PropertiesChangedEvent event) {
-        contextManager.alterProperties(event.getProps());
-    }
-    
-    /**
      * Renew meta data of the schema.
      *
      * @param event meta data changed event
@@ -269,6 +259,16 @@ public final class ClusterContextManagerCoordinator {
         Collection<RuleConfiguration> ruleConfigs = persistService.getDatabaseRulePersistService().load(event.getDatabaseName(), event.getActiveVersion());
         contextManager.alterDataSourceAndRuleConfiguration(event.getDatabaseName(), dataSourcePropertiesMap, ruleConfigs);
         disableDataSources();
+    }
+    
+    /**
+     * Renew properties.
+     *
+     * @param event properties changed event
+     */
+    @Subscribe
+    public synchronized void renew(final PropertiesChangedEvent event) {
+        contextManager.alterProperties(event.getProps());
     }
     
     /**
