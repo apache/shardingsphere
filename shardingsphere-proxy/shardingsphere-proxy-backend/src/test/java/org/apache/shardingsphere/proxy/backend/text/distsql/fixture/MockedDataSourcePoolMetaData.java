@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.fixture;
+package org.apache.shardingsphere.proxy.backend.text.distsql.fixture;
 
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolFieldMetaData;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
