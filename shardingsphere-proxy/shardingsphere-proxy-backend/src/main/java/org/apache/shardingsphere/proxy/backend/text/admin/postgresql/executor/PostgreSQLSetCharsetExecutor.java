@@ -17,30 +17,25 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidParameterValueException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.PostgreSQLCharacterSets;
+import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.PostgreSQLSessionVariableHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.sql.SQLException;
 import java.util.Locale;
 
 /**
  * Set charset executor of PostgreSQL.
  */
-@RequiredArgsConstructor
-public final class PostgreSQLSetCharsetExecutor implements DatabaseAdminExecutor {
-    
-    private final SetStatement setStatement;
+public final class PostgreSQLSetCharsetExecutor implements PostgreSQLSessionVariableHandler {
     
     @Override
-    public void execute(final ConnectionSession connectionSession) throws SQLException {
+    public void handle(final ConnectionSession connectionSession, final SetStatement setStatement) {
         VariableAssignSegment segment = setStatement.getVariableAssigns().iterator().next();
         String value = formatValue(segment.getAssignValue().trim());
         connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(parseCharset(value));
@@ -57,5 +52,10 @@ public final class PostgreSQLSetCharsetExecutor implements DatabaseAdminExecutor
         } catch (final IllegalArgumentException ignored) {
             throw new InvalidParameterValueException("client_encoding", value.toLowerCase(Locale.ROOT));
         }
+    }
+    
+    @Override
+    public String getType() {
+        return "client_encoding";
     }
 }
