@@ -24,9 +24,9 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatem
 /**
  * Set variable statement.
  */
-@Getter
 @RequiredArgsConstructor
-public class SetVariableStatement extends UpdatableRALStatement {
+@Getter
+public final class SetVariableStatement extends UpdatableRALStatement {
     
     private final String name;
     

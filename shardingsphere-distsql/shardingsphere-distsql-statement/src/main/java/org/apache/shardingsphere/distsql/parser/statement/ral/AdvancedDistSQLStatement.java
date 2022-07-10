@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.distsql.parser.statement.ral;
 
 /**
- * Advanced dist sql statement.
+ * Advanced Dist SQL statement.
  */
 public abstract class AdvancedDistSQLStatement extends RALStatement {
 }
