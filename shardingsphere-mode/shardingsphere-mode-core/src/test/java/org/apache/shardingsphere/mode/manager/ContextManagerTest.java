@@ -160,6 +160,7 @@ public final class ContextManagerTest {
         verify(metaDataContexts.getOptimizerContext(), times(0)).addSchema("foo_db", "foo_schema");
     }
 
+
     private Map<String, DataSourceProperties> createToBeAddedDataSourceProperties() {
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(2, 1);
         result.put("foo_ds_1", new DataSourceProperties(MockedDataSource.class.getName(), createProperties("root", "root")));
@@ -178,6 +179,21 @@ public final class ContextManagerTest {
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getPassword(), is("root"));
     }
+
+
+    
+    @Test
+    public void assertUpdateResources() throws SQLException {
+        Map<String, ShardingSphereDatabase> originalDatabases = new HashMap<>(Collections.singletonMap("foo_db", createOriginalDatabaseMetaData()));
+        ShardingSphereResource originalResource = originalDatabases.get("foo_db").getResource();
+        DataSource originalDataSource = originalResource.getDataSources().get("bar_ds");
+        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(originalDatabases);
+        contextManager.updateResources("foo_db", Collections.singletonMap("bar_ds", new DataSourceProperties(MockedDataSource.class.getName(),
+                createProperties("test", "test"))));
+        verify(originalResource, times(1)).close(originalDataSource);
+        assertAlteredDataSource((MockedDataSource) contextManager.getMetaDataContexts().getMetaData().getDatabases().get("foo_db").getResource().getDataSources().get("bar_ds"));
+    }
+    
 
     private ShardingSphereDatabase createOriginalDatabaseMetaData() {
         ShardingSphereResource resource = mock(ShardingSphereResource.class);
