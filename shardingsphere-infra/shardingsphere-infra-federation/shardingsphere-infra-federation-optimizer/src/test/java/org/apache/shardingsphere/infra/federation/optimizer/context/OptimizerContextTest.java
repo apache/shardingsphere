@@ -17,13 +17,6 @@
 
 package org.apache.shardingsphere.infra.federation.optimizer.context;
 
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import java.util.Collections;
-import java.util.Optional;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
@@ -35,81 +28,76 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.junit.Test;
 
+import java.util.Collections;
+import java.util.Optional;
+
+import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
+
 public final class OptimizerContextTest {
     
     @Test
     public void assertDropDatabase() {
-        String databaseName = "foo_db";
-        String schemaName = "foo_schema";
-        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName,
-                new H2DatabaseType(), mock(ShardingSphereResource.class), null, Collections.singletonMap(schemaName, mock(ShardingSphereSchema.class)));
-        OptimizerContext optimizerContext = OptimizerContextFactory.create(Collections.singletonMap(databaseName, database), mock(ShardingSphereRuleMetaData.class));
-        optimizerContext.dropDatabase(databaseName);
-        assertFalse(optimizerContext.getFederationMetaData().getDatabases().containsKey(databaseName));
+        OptimizerContext optimizerContext = createOptimizerContext();
+        optimizerContext.dropDatabase("foo_db");
+        assertFalse(optimizerContext.getFederationMetaData().getDatabases().containsKey("foo_db"));
     }
     
     @Test
     public void assertAlterTable() {
-        String databaseName = "foo_db";
-        String schemaName = "foo_schema";
-        String tableName = "foo_tbl";
-        String beforeColumnName = "foo_col";
-        String afterColumnName = "bar_col";
-        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, new H2DatabaseType(), mock(ShardingSphereResource.class), null,
-                Collections.singletonMap(schemaName, new ShardingSphereSchema(Collections.singletonMap(tableName, new ShardingSphereTable(tableName,
-                        Collections.singleton(new ShardingSphereColumn(beforeColumnName, 0, false, false, true)), Collections.emptyList(), Collections.emptyList())))));
-        OptimizerContext optimizerContext = OptimizerContextFactory.create(Collections.singletonMap(databaseName, database), mock(ShardingSphereRuleMetaData.class));
-        optimizerContext.alterTable(databaseName, schemaName, new ShardingSphereTable(tableName,
-                Collections.singleton(new ShardingSphereColumn(afterColumnName, 0, false, false, true)), Collections.emptyList(), Collections.emptyList()));
-        Optional<FederationSchemaMetaData> federationSchemaMetaData = optimizerContext.getFederationMetaData().getDatabases().get(databaseName).getSchemaMetadata(schemaName);
-        assertTrue(federationSchemaMetaData.isPresent());
-        assertFalse(federationSchemaMetaData.get().getTables().get(tableName).getColumnNames().contains(beforeColumnName));
-        assertTrue(federationSchemaMetaData.get().getTables().get(tableName).getColumnNames().contains(afterColumnName));
+        OptimizerContext optimizerContext = createOptimizerContext();
+        optimizerContext.alterTable("foo_db", "foo_schema", createTable("bar_col"));
+        Optional<FederationSchemaMetaData> schemaMetaData = optimizerContext.getFederationMetaData().getDatabases().get("foo_db").getSchemaMetadata("foo_schema");
+        assertTrue(schemaMetaData.isPresent());
+        assertFalse(schemaMetaData.get().getTables().get("foo_tbl").getColumnNames().contains("foo_col"));
+        assertTrue(schemaMetaData.get().getTables().get("foo_tbl").getColumnNames().contains("bar_col"));
     }
     
     @Test
     public void assertDropTable() {
-        String databaseName = "foo_db";
-        String schemaName = "foo_schema";
-        String tableName = "foo_tbl";
-        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, new H2DatabaseType(), mock(ShardingSphereResource.class),
-                null, Collections.singletonMap(schemaName, new ShardingSphereSchema(Collections.singletonMap(tableName, mock(ShardingSphereTable.class)))));
-        OptimizerContext optimizerContext = OptimizerContextFactory.create(Collections.singletonMap(databaseName, database), mock(ShardingSphereRuleMetaData.class));
-        OptimizerPlannerContext beforeDroppedPlannerContext = optimizerContext.getPlannerContexts().get(databaseName);
-        optimizerContext.dropTable(databaseName, schemaName, tableName);
-        assertThat(beforeDroppedPlannerContext, not(optimizerContext.getPlannerContexts().get(databaseName)));
-        Optional<FederationSchemaMetaData> schemaMetadata = optimizerContext.getFederationMetaData().getDatabases().get(databaseName).getSchemaMetadata(schemaName);
+        OptimizerContext optimizerContext = createOptimizerContext();
+        OptimizerPlannerContext beforeDroppedPlannerContext = optimizerContext.getPlannerContexts().get("foo_db");
+        optimizerContext.dropTable("foo_db", "foo_schema", "foo_tbl");
+        assertThat(beforeDroppedPlannerContext, not(optimizerContext.getPlannerContexts().get("foo_db")));
+        Optional<FederationSchemaMetaData> schemaMetadata = optimizerContext.getFederationMetaData().getDatabases().get("foo_db").getSchemaMetadata("foo_schema");
         assertTrue(schemaMetadata.isPresent());
-        assertFalse(schemaMetadata.get().getTables().containsKey(tableName));
+        assertFalse(schemaMetadata.get().getTables().containsKey("foo_tbl"));
+    }
+    
+    @Test
+    public void assertAddDatabase() {
+        OptimizerContext optimizerContext = createOptimizerContext();
+        optimizerContext.addDatabase("bar_db", new H2DatabaseType());
+        assertTrue(optimizerContext.getFederationMetaData().getDatabases().containsKey("bar_db"));
+        assertTrue(optimizerContext.getParserContexts().containsKey("bar_db"));
+        assertTrue(optimizerContext.getPlannerContexts().containsKey("bar_db"));
     }
     
     @Test
     public void assertAlterDatabase() {
-        String databaseName = "foo_db";
-        String schemaName = "foo_schema";
-        String tableName = "foo_tbl";
-        String addTable = "bar_tbl";
-        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, new H2DatabaseType(), mock(ShardingSphereResource.class),
-                null, Collections.singletonMap(schemaName, new ShardingSphereSchema(Collections.singletonMap(tableName, mock(ShardingSphereTable.class)))));
-        OptimizerContext optimizerContext = OptimizerContextFactory.create(Collections.singletonMap(databaseName, database), mock(ShardingSphereRuleMetaData.class));
-        database.getSchemas().get(schemaName).getTables().put(addTable, mock(ShardingSphereTable.class));
+        OptimizerContext optimizerContext = createOptimizerContext();
+        ShardingSphereDatabase database = createDatabase();
+        database.getSchemas().get("foo_schema").getTables().put("bar_tbl", mock(ShardingSphereTable.class));
         optimizerContext.alterDatabase(database, mock(ShardingSphereRuleMetaData.class));
-        Optional<FederationSchemaMetaData> federationSchemaMetaData = optimizerContext.getFederationMetaData().getDatabases().get(databaseName).getSchemaMetadata(schemaName);
-        assertTrue(federationSchemaMetaData.isPresent());
-        assertTrue(federationSchemaMetaData.get().getTables().containsKey(addTable));
+        Optional<FederationSchemaMetaData> schemaMetadata = optimizerContext.getFederationMetaData().getDatabases().get("foo_db").getSchemaMetadata("foo_schema");
+        assertTrue(schemaMetadata.isPresent());
+        assertTrue(schemaMetadata.get().getTables().containsKey("bar_tbl"));
     }
-
-    @Test
-    public void assertAddDatabase() {
-        String databaseName = "foo_db";
-        String schemaName = "foo_schema";
-        String addDatabase = "bar_db";
-        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, new H2DatabaseType(), mock(ShardingSphereResource.class),
-                null, Collections.singletonMap(schemaName, new ShardingSphereSchema(Collections.emptyMap())));
-        OptimizerContext optimizerContext = OptimizerContextFactory.create(Collections.singletonMap(databaseName, database), mock(ShardingSphereRuleMetaData.class));
-        optimizerContext.addDatabase(addDatabase, new H2DatabaseType());
-        assertTrue(addDatabase.equals(optimizerContext.getFederationMetaData().getDatabases().get(addDatabase).getName()));
-        assertTrue(optimizerContext.getParserContexts().containsKey(addDatabase));
-        assertTrue(optimizerContext.getPlannerContexts().containsKey(addDatabase));
+    
+    private OptimizerContext createOptimizerContext() {
+        return OptimizerContextFactory.create(Collections.singletonMap("foo_db", createDatabase()), mock(ShardingSphereRuleMetaData.class));
+    }
+    
+    private ShardingSphereDatabase createDatabase() {
+        ShardingSphereSchema schema = new ShardingSphereSchema(Collections.singletonMap("foo_tbl", createTable("foo_col")));
+        return new ShardingSphereDatabase("foo_db", new H2DatabaseType(), mock(ShardingSphereResource.class), null, Collections.singletonMap("foo_schema", schema));
+    }
+    
+    private ShardingSphereTable createTable(final String columnName) {
+        ShardingSphereColumn toBeAlteredColumn = new ShardingSphereColumn(columnName, 0, false, false, true);
+        return new ShardingSphereTable("foo_tbl", Collections.singleton(toBeAlteredColumn), Collections.emptyList(), Collections.emptyList());
     }
 }
