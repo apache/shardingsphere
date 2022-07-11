@@ -13,7 +13,7 @@ Please register [here](https://github.com/apache/shardingsphere/discussions/1225
 
 ## Who is Using ShardingSphere?
 
-Total: 214 companies.
+Total: 217 companies.
 
 ### Infra Software
 <ul>
@@ -40,8 +40,8 @@ Total: 214 companies.
 
 ### Telecommunications
 <ul>
-    <li><a href="https://jf.10086.cn/" rel="nofollow">China Mobile Financial Technology</a></li>
     <li><a href="https://www.cucloud.cn/" rel="nofollow">CU Cloud</a></li>
+    <li><a href="https://jf.10086.cn/" rel="nofollow">China Mobile Financial Technology</a></li>
 </ul>
 
 ### FinTech
@@ -97,6 +97,7 @@ Total: 214 companies.
     <li><a href="https://www.sourcingarts.com/" rel="nofollow">SourcingArts</a></li>
     <li><a href="https://www.danchuangglobal.com/" rel="nofollow">VTN</a></li>
     <li><a href="https://jossney.com/" rel="nofollow">Jossney</a></li>
+    <li><a href="https://www.belleintl.com/" rel="nofollow">Belle</a></li>
 </ul>
 
 ### Digitalization & Cloud Services
@@ -127,6 +128,7 @@ Total: 214 companies.
     <li><a href="https://www.ecopiatech.com/" rel="nofollow">Ecopia</a></li>
     <li><a href="https://xiaoman.cn/" rel="nofollow">OKKI CRM</a></li>
     <li><a href="https://www.wegooooo.com/" rel="nofollow">wegooooo.com</a></li>
+    <li><a href="https://www.lingxing.com/" rel="nofollow">LINGXING</a></li>
 </ul>
 
 ### Transportation
@@ -181,6 +183,7 @@ Total: 214 companies.
     <li><a href="https://www.bbgameonline.com/" rel="nofollow">BBGame</a></li>
     <li><a href="https://www.elelive.net/" rel="nofollow">elelive.tv</a></li>
     <li><a href="http://read.zhulang.com/" rel="nofollow">LianShang Literature</a></li>
+    <li><a href="http://www.dayang.com.cn" rel="nofollow">DAYANG</a></li>
 </ul>
 
 ### E-Learning
