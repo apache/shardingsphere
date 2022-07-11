@@ -34,7 +34,7 @@ public final class H2RepositoryTest {
     @Before
     public void setUp() {
         Properties props = new Properties();
-        props.setProperty("jdbc_url", "jdbc:h2:~/h2_repository");
+        props.setProperty("jdbc_url", "jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
         props.setProperty("user", "sa");
         props.setProperty("password", "");
         props.setProperty("driver_class", "org.h2.Driver");
