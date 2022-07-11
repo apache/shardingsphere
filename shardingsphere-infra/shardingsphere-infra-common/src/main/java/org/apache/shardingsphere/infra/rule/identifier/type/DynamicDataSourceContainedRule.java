@@ -24,9 +24,9 @@ import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 import java.util.Collection;
 
 /**
- * Dynamic status contained rule.
+ * Dynamic data source contained rule.
  */
-public interface DynamicStatusContainedRule extends ShardingSphereRule {
+public interface DynamicDataSourceContainedRule extends ShardingSphereRule {
     
     /**
      * Get primary data source name.
