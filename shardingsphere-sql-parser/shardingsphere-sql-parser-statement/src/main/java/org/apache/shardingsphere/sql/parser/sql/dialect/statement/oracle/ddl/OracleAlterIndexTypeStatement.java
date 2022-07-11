@@ -17,12 +17,21 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndextypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
  * Oracle alter index type statement.
  */
-
+@Getter
+@Setter
+@ToString
 public final class OracleAlterIndexTypeStatement extends AbstractSQLStatement implements OracleStatement {
+    
+    private IndextypeSegment indextype;
+    
 }
