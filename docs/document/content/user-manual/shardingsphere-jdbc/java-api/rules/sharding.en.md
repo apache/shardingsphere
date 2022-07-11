@@ -7,7 +7,7 @@ weight = 1
 
 The Java API rule configuration for data sharding, which allows users to create ShardingSphereDataSource objects directly by writing Java code, is flexible enough to integrate various types of business systems without relying on additional jar packages.
 
-## Parameters Explained
+## Parameters
 
 ### Root Configuration
 
@@ -110,13 +110,13 @@ Attributes:
 
 Please refer to [Built-in Key Generate Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen) for more details about type of algorithm.
 
-## Operating Procedures
+## Procedure
 
 1. Create an authentic data source mapping relationship, with key as the logical name of the data source and value as the DataSource object.
 2. Create the sharding rule object ShardingRuleConfiguration, and initialize the sharding table objects—ShardingTableRuleConfiguration, the set of bound tables, the set of broadcast tables, and parameters like library sharding strategy and the database sharding strategy, on which the data sharding depends.
 3. Using the ShardingSphereDataSource method of calling the ShardingSphereDataSourceFactory subject to create the ShardingSphereDataSource.
 
-## Configuration Examples
+## Sample
 
 ```java
 public final class ShardingDatabasesAndTablesConfigurationPrecise implements ExampleConfiguration {
@@ -163,7 +163,7 @@ public final class ShardingDatabasesAndTablesConfigurationPrecise implements Exa
 }
 ```
 
-## References
+## Related References
 
-- [Core features of data sharding](/en/features/sharding/)
-- [Developer guide for data sharding](/en/dev-manual/sharding/)
+- [Core Features of Data Sharding](/en/features/sharding/)
+- [Developer Guide of Data Sharding](/en/dev-manual/sharding/)
