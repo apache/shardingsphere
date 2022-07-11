@@ -179,12 +179,12 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
     }
     
     @Override
-    public String getPrimaryDataSourceName(String dataSourceName) {
+    public String getPrimaryDataSourceName(final String dataSourceName) {
         return dataSourceRules.get(dataSourceName).getPrimaryDataSourceName();
     }
     
     @Override
-    public Collection<String> getReplicaDataSourceNames(String dataSourceName) {
+    public Collection<String> getReplicaDataSourceNames(final String dataSourceName) {
         return dataSourceRules.get(dataSourceName).getReplicaDataSourceNames();
     }
     
