@@ -64,7 +64,7 @@ public final class MockedDataSource implements DataSource, AutoCloseable {
     private Connection connection;
     
     @Setter(AccessLevel.NONE)
-    private Boolean closed;
+    private boolean closed;
     
     public MockedDataSource(final String url, final String username, final String password) {
         this.url = url;

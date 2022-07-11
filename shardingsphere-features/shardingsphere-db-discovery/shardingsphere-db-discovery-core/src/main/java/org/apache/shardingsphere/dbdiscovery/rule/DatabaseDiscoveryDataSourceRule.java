@@ -23,12 +23,14 @@ import lombok.Getter;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -98,6 +100,22 @@ public final class DatabaseDiscoveryDataSourceRule {
      */
     public void changePrimaryDataSourceName(final String primaryDataSourceName) {
         this.primaryDataSourceName = primaryDataSourceName;
+    }
+    
+    /**
+     *  Get data source.
+     *
+     * @param dataSourceMap data source map
+     * @return data source
+     */
+    public Map<String, DataSource> getDataSourceGroup(final Map<String, DataSource> dataSourceMap) {
+        Map<String, DataSource> result = new HashMap<>(dataSourceMap.size(), 1);
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            if (dataSourceNames.contains(entry.getKey())) {
+                result.put(entry.getKey(), entry.getValue());
+            }
+        }
+        return result;
     }
     
     /**

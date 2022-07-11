@@ -15,20 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.identifier.type;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Status contained rule.
+ * Alter audit policy statement test case.
  */
-public interface StatusContainedRule extends ShardingSphereRule {
-    
-    /**
-     * Update data source status.
-     *
-     * @param event data source status changed event
-     */
-    void updateStatus(DataSourceStatusChangedEvent event);
+public final class AlterAuditPolicyStatementTestCase extends SQLParserTestCase {
 }

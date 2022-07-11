@@ -15,21 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rule.identifier.type;
+package org.apache.shardingsphere.proxy.backend.text.admin.postgresql;
 
-import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
+import org.apache.shardingsphere.proxy.backend.text.admin.executor.SessionVariableHandler;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 
 /**
- * Restart heart beat job rule.
+ * Session variable handler for PostgreSQL.
  */
-public interface RestartHeartBeatJobRule extends ShardingSphereRule {
-    
-    /**
-     * Restart heart beat job.
-     * @param event data source status changed event
-     * @param instanceContext instance context
-     */
-    void restart(DataSourceStatusChangedEvent event, InstanceContext instanceContext);
+@SingletonSPI
+public interface PostgreSQLSessionVariableHandler extends SessionVariableHandler {
 }

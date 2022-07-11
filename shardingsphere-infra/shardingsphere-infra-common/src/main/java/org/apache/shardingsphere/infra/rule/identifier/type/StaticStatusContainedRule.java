@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.mysql.command.query.exception;
+package org.apache.shardingsphere.infra.rule.identifier.type;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.frontend.exception.FrontendException;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 
 /**
- * Unknown character set exception.
+ * Static Status contained rule.
  */
-@RequiredArgsConstructor
-@Getter
-public final class UnknownCharacterSetException extends FrontendException {
+public interface StaticStatusContainedRule extends ShardingSphereRule {
     
-    private static final long serialVersionUID = -1224655358882073372L;
-    
-    private final String message;
+    /**
+     * Update data source status.
+     *
+     * @param event data source status changed event
+     */
+    void updateStatus(DataSourceStatusChangedEvent event);
 }

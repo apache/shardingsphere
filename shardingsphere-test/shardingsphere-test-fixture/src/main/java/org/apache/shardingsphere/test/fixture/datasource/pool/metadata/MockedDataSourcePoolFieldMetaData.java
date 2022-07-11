@@ -15,10 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral;
+package org.apache.shardingsphere.test.fixture.datasource.pool.metadata;
 
-/**
- * Common dist sql statement.
- */
-public abstract class CommonDistSQLStatement extends RALStatement {
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolFieldMetaData;
+
+public final class MockedDataSourcePoolFieldMetaData implements DataSourcePoolFieldMetaData {
+    
+    @Override
+    public String getUsernameFieldName() {
+        return "username";
+    }
+    
+    @Override
+    public String getPasswordFieldName() {
+        return "password";
+    }
+    
+    @Override
+    public String getJdbcUrlFieldName() {
+        return "url";
+    }
+    
+    @Override
+    public String getJdbcUrlPropertiesFieldName() {
+        return "jdbcUrlProperties";
+    }
 }

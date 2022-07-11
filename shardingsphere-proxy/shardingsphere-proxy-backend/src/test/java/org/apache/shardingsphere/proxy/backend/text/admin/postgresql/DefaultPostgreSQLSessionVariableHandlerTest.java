@@ -15,20 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.exception;
+package org.apache.shardingsphere.proxy.backend.text.admin.postgresql;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.frontend.exception.FrontendException;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLSetStatement;
+import org.junit.Test;
 
-/**
- * Invalid parameter value exception.
- */
-@RequiredArgsConstructor
-@Getter
-public final class InvalidParameterValueException extends FrontendException {
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
+
+public final class DefaultPostgreSQLSessionVariableHandlerTest {
     
-    private static final long serialVersionUID = -6561119208409452172L;
-    
-    private final String message;
+    @Test
+    public void assertHandle() {
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        new DefaultPostgreSQLSessionVariableHandler().handle(connectionSession, new PostgreSQLSetStatement());
+        verifyNoInteractions(connectionSession);
+    }
 }

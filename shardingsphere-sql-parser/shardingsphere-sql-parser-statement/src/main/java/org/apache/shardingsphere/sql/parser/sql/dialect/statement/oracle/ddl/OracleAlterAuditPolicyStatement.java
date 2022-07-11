@@ -15,31 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.response.header.update;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-
-import java.util.Optional;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterAuditPolicyStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Client encoding response header.
+ * Oracle alter audit policy statement.
  */
-@RequiredArgsConstructor
-public class ClientEncodingResponseHeader implements ResponseHeader {
-    
-    private final String currentCharsetValue;
-    
-    @Getter
-    private final String inputValue;
-    
-    /**
-     * Get current charset value.
-     *
-     * @return current charset value
-     */
-    public Optional<String> getCurrentCharsetValue() {
-        return Optional.ofNullable(currentCharsetValue);
-    }
+@ToString
+public final class OracleAlterAuditPolicyStatement extends AlterAuditPolicyStatement implements OracleStatement {
 }

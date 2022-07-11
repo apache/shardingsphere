@@ -17,15 +17,20 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.executor;
 
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
+
 /**
- * Database set charset executor.
+ * Session variable handler.
  */
-public interface DatabaseSetCharsetExecutor extends DatabaseAdminExecutor {
+public interface SessionVariableHandler extends TypedSPI {
     
     /**
-     * Get current charset.
+     * Handle set statement for specific connection session.
      *
-     * @return Current charset name
+     * @param connectionSession connection session
+     * @param setStatement set statement
      */
-    String getCurrentCharset();
+    void handle(ConnectionSession connectionSession, SetStatement setStatement);
 }

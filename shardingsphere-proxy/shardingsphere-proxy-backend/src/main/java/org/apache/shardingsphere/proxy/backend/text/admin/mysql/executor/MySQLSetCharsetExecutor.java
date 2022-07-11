@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseSetCharsetExecutor;
+import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 
@@ -35,19 +35,15 @@ import java.util.Locale;
  * Set charset executor of MySQL.
  */
 @RequiredArgsConstructor
-public final class MySQLSetCharsetExecutor implements DatabaseSetCharsetExecutor {
+public final class MySQLSetCharsetExecutor implements DatabaseAdminExecutor {
     
     private final SetStatement setStatement;
-    
-    private String currentValue;
     
     @Override
     public void execute(final ConnectionSession connectionSession) throws SQLException {
         VariableAssignSegment segment = setStatement.getVariableAssigns().iterator().next();
         String value = formatValue(segment.getAssignValue().trim());
-        Charset charset = parseCharset(value);
-        currentValue = value;
-        connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(charset);
+        connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(parseCharset(value));
     }
     
     private String formatValue(final String value) {
@@ -69,10 +65,5 @@ public final class MySQLSetCharsetExecutor implements DatabaseSetCharsetExecutor
                     throw new UnsupportedCharsetException(value.toLowerCase());
                 }
         }
-    }
-    
-    @Override
-    public String getCurrentCharset() {
-        return currentValue;
     }
 }
