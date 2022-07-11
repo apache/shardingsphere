@@ -14,7 +14,8 @@ chapter = true
 
 ### 逻辑列
 
-用于计算加解密列的逻辑名称，是 SQL 中列的逻辑标识。 逻辑列包含密文列（必须）、查询辅助列（可选）和明文列（可选）。
+用于计算加解密列的逻辑名称，是 SQL 中列的逻辑标识。
+逻辑列包含密文列（必须）、查询辅助列（可选）和明文列（可选）。
 
 ### 密文列
 
@@ -22,11 +23,13 @@ chapter = true
 
 ### 查询辅助列
 
-用于查询的辅助列。 对于一些安全级别更高的非幂等加密算法，提供不可逆的幂等列用于查询。
+用于查询的辅助列。
+对于一些安全级别更高的非幂等加密算法，提供不可逆的幂等列用于查询。
 
 ### 明文列
 
-存储明文的列，用于在加密数据迁移过程中仍旧提供服务。 在洗数结束后可以删除。
+存储明文的列，用于在加密数据迁移过程中仍旧提供服务。
+在洗数结束后可以删除。
 
 ## 对系统的影响
 
@@ -63,25 +66,35 @@ Apache ShardingSphere 会将用户请求的明文进行加密后存储到底层�
 
 ![2](https://shardingsphere.apache.org/document/current/img/encrypt/2.png)
 
-- 数据源配置：指数据源配置。
+**数据源配置**：指数据源配置。
 
-- 加密器配置：指使用什么加密算法进行加解密。目前 ShardingSphere 内置了三种加解密算法：AES，MD5 和 RC4。用户还可以通过实现 ShardingSphere 提供的接口，自行实现一套加解密算法。
+**加密器配置**：指使用什么加密算法进行加解密。目前 ShardingSphere 内置了三种加解密算法：AES，MD5 和 RC4。用户还可以通过实现 ShardingSphere 提供的接口，自行实现一套加解密算法。
 
-- 加密表配置：用于告诉 ShardingSphere 数据表里哪个列用于存储密文数据（cipherColumn）、哪个列用于存储明文数据（plainColumn）以及用户想使用哪个列进行 SQL 编写（logicColumn）。
+**加密表配置**：用于告诉 ShardingSphere 数据表里哪个列用于存储密文数据（cipherColumn）、哪个列用于存储明文数据（plainColumn）以及用户想使用哪个列进行 SQL 编写（logicColumn）。
 
-> 如何理解 用户想使用哪个列进行 SQL 编写（logicColumn）？
-我们可以从加密模块存在的意义来理解。加密模块最终目的是希望屏蔽底层对数据的加密处理，也就是说我们不希望用户知道数据是如何被加解密的、如何将明文数据存储到 plainColumn，将密文数据存储到 cipherColumn。 换句话说，我们不希望用户知道 plainColumn 和 cipherColumn 的存在和使用。 所以，我们需要给用户提供一个概念意义上的列，这个列可以脱离底层数据库的真实列，它可以是数据库表里的一个真实列，也可以不是，从而使得用户可以随意改变底层数据库的 plainColumn 和 cipherColumn 的列名。 或者删除 plainColumn，选择永远不再存储明文，只存储密文。 只要用户的 SQL 面向这个逻辑列进行编写，并在加密规则里给出 logicColumn 和 plainColumn、cipherColumn 之间正确的映射关系即可。
+> 如何理解 `用户想使用哪个列进行 SQL 编写（logicColumn）`？
+> 
+> 我们可以从加密模块存在的意义来理解。加密模块最终目的是希望屏蔽底层对数据的加密处理，也就是说我们不希望用户知道数据是如何被加解密的、如何将明文数据存储到 plainColumn，将密文数据存储到 cipherColumn。
+> 换句话说，我们不希望用户知道 plainColumn 和 cipherColumn 的存在和使用。
+> 所以，我们需要给用户提供一个概念意义上的列，这个列可以脱离底层数据库的真实列，它可以是数据库表里的一个真实列，也可以不是，从而使得用户可以随意改变底层数据库的 plainColumn 和 cipherColumn 的列名。
+> 或者删除 plainColumn，选择永远不再存储明文，只存储密文。
+> 只要用户的 SQL 面向这个逻辑列进行编写，并在加密规则里给出 logicColumn 和 plainColumn、cipherColumn 之间正确的映射关系即可。
 为什么要这么做呢？答案在文章后面，即为了让已上线的业务能无缝、透明、安全地进行数据加密迁移。
 
-- 查询属性的配置：当底层数据库表里同时存储了明文数据、密文数据后，该属性开关用于决定是直接查询数据库表里的明文数据进行返回，还是查询密文数据通过 Apache ShardingSphere 解密后返回。该属性开关支持表级别和整个规则级别配置，表级别优先级最高。
+**查询属性的配置**：当底层数据库表里同时存储了明文数据、密文数据后，该属性开关用于决定是直接查询数据库表里的明文数据进行返回，还是查询密文数据通过 Apache ShardingSphere 解密后返回。该属性开关支持表级别和整个规则级别配置，表级别优先级最高。
 
 ### 加密处理过程
 
-举例说明，假如数据库里有一张表叫做 t_user，这张表里实际有两个字段 pwd_plain，用于存放明文数据、pwd_cipher，用于存放密文数据，同时定义 logicColumn 为 pwd。 那么，用户在编写 SQL 时应该面向 logicColumn 进行编写，即 INSERT INTO t_user SET pwd = '123'。 Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发现 pwd 是 logicColumn，于是便对逻辑列及其对应的明文数据进行加密处理。 Apache ShardingSphere 将面向用户的逻辑列与面向底层数据库的明文列和密文列进行了列名以及数据的加密映射转换。 如下图所示：
+举例说明，假如数据库里有一张表叫做 `t_user`，这张表里实际有两个字段 `pwd_plain`，用于存放明文数据、`pwd_cipher`，用于存放密文数据，同时定义 logicColumn 为 `pwd`。
+那么，用户在编写 SQL 时应该面向 logicColumn 进行编写，即 `INSERT INTO t_user SET pwd = '123'`。
+Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发现 `pwd` 是 logicColumn，于是便对逻辑列及其对应的明文数据进行加密处理。
+**Apache ShardingSphere 将面向用户的逻辑列与面向底层数据库的明文列和密文列进行了列名以及数据的加密映射转换。**
+如下图所示：
 
 ![3](https://shardingsphere.apache.org/document/current/img/encrypt/3.png)
 
-即依据用户提供的加密规则，将用户 SQL 与底层数据表结构割裂开来，使得用户的 SQL 编写不再依赖于真实的数据库表结构。 而用户与底层数据库之间的衔接、映射、转换交由 Apache ShardingSphere 进行处理。
+即依据用户提供的加密规则，将用户 SQL 与底层数据表结构割裂开来，使得用户的 SQL 编写不再依赖于真实的数据库表结构。
+而用户与底层数据库之间的衔接、映射、转换交由 Apache ShardingSphere 进行处理。
 下方图片展示了使用加密模块进行增删改查时，其中的处理流程和转换逻辑，如下图所示。
 
 ![4](https://shardingsphere.apache.org/document/current/img/encrypt/4.png)
