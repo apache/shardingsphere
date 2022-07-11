@@ -79,7 +79,7 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
         discoveryTypes = getDiscoveryProviderAlgorithms(ruleConfig.getDiscoveryTypes());
         dataSourceRules = getDataSourceRules(ruleConfig.getDataSources(), ruleConfig.getDiscoveryHeartbeats());
         findPrimaryReplicaRelationship(databaseName, dataSourceMap);
-        initHeartBeatJobs(instanceContext);
+        initHeartBeatJobs(instanceContext.getInstance().getCurrentInstanceId());
     }
     
     public DatabaseDiscoveryRule(final String databaseName,
@@ -90,7 +90,7 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
         discoveryTypes = ruleConfig.getDiscoveryTypes();
         dataSourceRules = getDataSourceRules(ruleConfig.getDataSources(), ruleConfig.getDiscoveryHeartbeats());
         findPrimaryReplicaRelationship(databaseName, dataSourceMap);
-        initHeartBeatJobs(instanceContext);
+        initHeartBeatJobs(instanceContext.getInstance().getCurrentInstanceId());
     }
     
     private static Map<String, DatabaseDiscoveryProviderAlgorithm> getDiscoveryProviderAlgorithms(final Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypesConfig) {
@@ -158,10 +158,6 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
         DatabaseDiscoveryDataSourceRule dataSourceRule = dataSourceRules.get(qualifiedDatabase.getGroupName());
         Preconditions.checkState(null != dataSourceRule, "Can 't find database discovery data source rule in database `%s`.", databaseName);
         dataSourceRule.changePrimaryDataSourceName(qualifiedDatabase.getDataSourceName());
-        initHeartBeatJobs(instanceContext);
-    }
-    
-    private void initHeartBeatJobs(final InstanceContext instanceContext) {
         initHeartBeatJobs(instanceContext.getInstance().getCurrentInstanceId());
     }
     
