@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager;
 
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.lock.LockMode;
 import org.apache.shardingsphere.infra.lock.LockScope;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
@@ -43,10 +44,10 @@ public final class ShardingSphereDistributedLockManager implements ShardingSpher
     private ShardingSphereLock databaseLock;
     
     @Override
-    public void init(final ShardingSphereInternalLockHolder lockHolder) {
+    public void init(final ShardingSphereInternalLockHolder lockHolder, final EventBusContext eventBusContext) {
         standardDistributedLock = new ShardingSphereDistributedStandardLock(lockHolder);
-        globalDistributedLock = new ShardingSphereDistributedGlobalLock(lockHolder);
-        databaseLock = new ShardingSphereDistributedDatabaseLock(lockHolder, LockStateContextFactory.getLockStateContext());
+        globalDistributedLock = new ShardingSphereDistributedGlobalLock(lockHolder, eventBusContext);
+        databaseLock = new ShardingSphereDistributedDatabaseLock(lockHolder, LockStateContextFactory.getLockStateContext(), eventBusContext);
     }
     
     @Override

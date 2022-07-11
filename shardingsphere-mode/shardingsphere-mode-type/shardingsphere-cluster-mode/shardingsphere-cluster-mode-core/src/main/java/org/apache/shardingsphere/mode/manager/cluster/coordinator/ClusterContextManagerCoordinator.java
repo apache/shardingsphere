@@ -20,14 +20,13 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.BatchYamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.StaticStatusContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DynamicStatusContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.StaticStatusContainedRule;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceChangedEvent;
@@ -80,7 +79,7 @@ public final class ClusterContextManagerCoordinator {
         this.persistService = persistService;
         this.registryCenter = registryCenter;
         this.contextManager = contextManager;
-        ShardingSphereEventBus.getInstance().register(this);
+        contextManager.getInstanceContext().getEventBusContext().register(this);
         disableDataSources();
     }
     

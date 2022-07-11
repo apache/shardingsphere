@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
@@ -41,19 +42,21 @@ public final class ExecuteProcessEngineTest {
     
     private ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext;
     
+    private final EventBusContext eventBusContext = new EventBusContext();
+    
     @Before
     public void setUp() {
         executionGroupContext = createMockedExecutionGroups();
-        ExecuteProcessEngine.initialize(createLogicSQL(), executionGroupContext, createConfigurationProperties());
+        ExecuteProcessEngine.initialize(createLogicSQL(), executionGroupContext, createConfigurationProperties(), eventBusContext);
         assertThat(ExecutorDataMap.getValue().get("EXECUTE_ID"), is(executionGroupContext.getExecutionID()));
         assertThat(ExecuteProcessReporterFixture.ACTIONS.get(0), is("Report the summary of this task."));
     }
     
     @Test
     public void assertFinish() {
-        ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), mock(RawSQLExecutionUnit.class));
+        ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), mock(RawSQLExecutionUnit.class), eventBusContext);
         assertThat(ExecuteProcessReporterFixture.ACTIONS.get(1), is("Report a unit of this task."));
-        ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
+        ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), eventBusContext);
         assertThat(ExecuteProcessReporterFixture.ACTIONS.get(2), is("Report this task on completion."));
     }
     

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.lock.LockScope;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
@@ -45,12 +46,12 @@ public final class DistributedLockContext extends AbstractLockContext {
     
     @Override
     public void initLockState(final InstanceContext instanceContext) {
-        loadLockManager(new ShardingSphereInternalLockHolder(repository, instanceContext.getInstance(), instanceContext.getComputeNodeInstances()));
+        loadLockManager(new ShardingSphereInternalLockHolder(repository, instanceContext.getInstance(), instanceContext.getComputeNodeInstances()), instanceContext.getEventBusContext());
     }
     
-    private void loadLockManager(final ShardingSphereInternalLockHolder lockHolder) {
+    private void loadLockManager(final ShardingSphereInternalLockHolder lockHolder, final EventBusContext eventBusContext) {
         lockManager = RequiredSPIRegistry.getRegisteredService(ShardingSphereLockManager.class);
-        lockManager.init(lockHolder);
+        lockManager.init(lockHolder, eventBusContext);
     }
     
     @Override
