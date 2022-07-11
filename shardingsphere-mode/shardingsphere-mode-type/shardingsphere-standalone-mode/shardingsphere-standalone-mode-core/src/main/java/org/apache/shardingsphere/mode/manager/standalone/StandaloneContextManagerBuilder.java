@@ -54,8 +54,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     @Override
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
         ModeConfiguration modeConfig = null == parameter.getModeConfig() ? new ModeConfiguration("Standalone", null, true) : parameter.getModeConfig();
-        MetaDataPersistService persistService = new MetaDataPersistService(
-                StandalonePersistRepositoryFactory.getInstance(modeConfig.getRepository()));
+        MetaDataPersistService persistService = new MetaDataPersistService(StandalonePersistRepositoryFactory.getInstance(modeConfig.getRepository()));
         persistConfigurations(persistService, parameter, modeConfig);
         InstanceContext instanceContext = buildInstanceContext(parameter, modeConfig);
         return new ContextManager(buildMetaDataContexts(persistService, parameter, instanceContext), instanceContext);
