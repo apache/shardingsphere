@@ -584,6 +584,8 @@ public enum SQLVisitorRule {
     
     ALTER_JAVA("AlterJava", SQLStatementType.DDL),
     
+    ALTER_AUDIT_POLICY("AlterAuditPolicy", SQLStatementType.DDL),
+    
     CURSOR("Cursor", SQLStatementType.DDL),
     
     CLOSE("Close", SQLStatementType.DDL),
