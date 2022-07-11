@@ -56,7 +56,8 @@ public final class ReadwriteSplittingStrategyFactory {
         return new StaticReadwriteSplittingStrategy(staticConfig.getWriteDataSourceName(), staticConfig.getReadDataSourceNames());
     }
     
-    private static DynamicReadwriteSplittingStrategy createDynamicReadwriteSplittingStrategy(final DynamicReadwriteSplittingStrategyConfiguration dynamicConfig, final Collection<ShardingSphereRule> builtRules) {
+    private static DynamicReadwriteSplittingStrategy createDynamicReadwriteSplittingStrategy(final DynamicReadwriteSplittingStrategyConfiguration dynamicConfig,
+                                                                                             final Collection<ShardingSphereRule> builtRules) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(dynamicConfig.getAutoAwareDataSourceName()), "Auto aware data source name is required.");
         Optional<ShardingSphereRule> dynamicDataSourceStrategy = builtRules.stream().filter(each -> each instanceof DynamicStatusContainedRule).findFirst();
         Preconditions.checkArgument(dynamicDataSourceStrategy.isPresent(), "Dynamic data source strategy is required.");

@@ -38,12 +38,12 @@ public class DatabaseDiscoveryDynamicDataSourceStrategyFixture implements Dynami
     }
 
     @Override
-    public void updateStatus(DataSourceStatusChangedEvent event) {
+    public void updateStatus(final DataSourceStatusChangedEvent event) {
 
     }
 
     @Override
-    public void restartHeartBeatJob(DataSourceStatusChangedEvent event, InstanceContext instanceContext) {
+    public void restartHeartBeatJob(final DataSourceStatusChangedEvent event, final InstanceContext instanceContext) {
 
     }
 

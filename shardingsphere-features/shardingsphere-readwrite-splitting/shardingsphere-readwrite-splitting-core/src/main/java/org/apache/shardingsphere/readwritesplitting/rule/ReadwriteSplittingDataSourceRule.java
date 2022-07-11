@@ -48,7 +48,8 @@ public final class ReadwriteSplittingDataSourceRule {
     @Getter(AccessLevel.NONE)
     private final Collection<String> disabledDataSourceNames = new HashSet<>();
     
-    public ReadwriteSplittingDataSourceRule(final ReadwriteSplittingDataSourceRuleConfiguration config, final ReadQueryLoadBalanceAlgorithm loadBalancer, final Collection<ShardingSphereRule> builtRules) {
+    public ReadwriteSplittingDataSourceRule(final ReadwriteSplittingDataSourceRuleConfiguration config, final ReadQueryLoadBalanceAlgorithm loadBalancer,
+                                            final Collection<ShardingSphereRule> builtRules) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(config.getName()), "Name is required.");
         name = config.getName();
         this.loadBalancer = loadBalancer;
