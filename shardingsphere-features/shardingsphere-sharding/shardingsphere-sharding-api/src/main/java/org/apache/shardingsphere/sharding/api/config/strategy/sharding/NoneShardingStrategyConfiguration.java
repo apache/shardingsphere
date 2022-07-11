@@ -29,6 +29,6 @@ public final class NoneShardingStrategyConfiguration implements ShardingStrategy
     
     @Override
     public String getType() {
-        return "NONE";
+        return "";
     }
 }
