@@ -46,7 +46,6 @@ import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsist
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockNameDefinition;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
@@ -324,7 +323,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
             }
         }
         ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(jobConfig.getDatabaseName(), jobConfig.getActiveVersion(), jobConfig.getNewVersion());
-        ShardingSphereEventBus.getInstance().post(taskFinishedEvent);
+        PipelineContext.getContextManager().getInstanceContext().getEventBusContext().post(taskFinishedEvent);
         // TODO rewrite job status update after job progress structure refactor
         RuleAlteredJobSchedulerCenter.updateJobStatus(jobId, JobStatus.FINISHED);
         for (int each : repositoryAPI.getShardingItems(jobId)) {

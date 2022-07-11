@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatabl
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.UnlabelInstanceStatement;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsChangedEvent;
@@ -50,10 +49,10 @@ public final class UnlabelInstanceHandler extends UpdatableRALBackendHandler<Unl
         if (computeNodeInstance.isPresent()) {
             Collection<String> labels = new LinkedHashSet<>(computeNodeInstance.get().getLabels());
             if (getSqlStatement().getLabels().isEmpty()) {
-                ShardingSphereEventBus.getInstance().post(new LabelsChangedEvent(instanceId, Collections.emptyList()));
+                contextManager.getInstanceContext().getEventBusContext().post(new LabelsChangedEvent(instanceId, Collections.emptyList()));
             } else {
                 labels.removeAll(getSqlStatement().getLabels());
-                ShardingSphereEventBus.getInstance().post(new LabelsChangedEvent(instanceId, new LinkedList<>(labels)));
+                contextManager.getInstanceContext().getEventBusContext().post(new LabelsChangedEvent(instanceId, new LinkedList<>(labels)));
             }
         }
     }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.proc
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
@@ -52,9 +52,12 @@ public final class ProcessRegistrySubscriber {
     
     private final ClusterPersistRepository repository;
     
-    public ProcessRegistrySubscriber(final ClusterPersistRepository repository) {
+    private final EventBusContext eventBusContext;
+    
+    public ProcessRegistrySubscriber(final ClusterPersistRepository repository, final EventBusContext eventBusContext) {
         this.repository = repository;
-        ShardingSphereEventBus.getInstance().register(this);
+        this.eventBusContext = eventBusContext;
+        eventBusContext.register(this);
     }
     
     /**
@@ -113,7 +116,7 @@ public final class ProcessRegistrySubscriber {
         for (String each : childrenKeys) {
             batchProcessContexts.add(repository.get(ProcessNode.getShowProcessListInstancePath(showProcessListId, each)));
         }
-        ShardingSphereEventBus.getInstance().post(new ShowProcessListResponseEvent(batchProcessContexts));
+        eventBusContext.post(new ShowProcessListResponseEvent(batchProcessContexts));
     }
     
     /**

@@ -17,15 +17,36 @@
 
 package org.apache.shardingsphere.infra.eventbus;
 
-import org.junit.Test;
+import com.google.common.eventbus.EventBus;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class ShardingSphereEventBusTest {
+/**
+ * Event bus context.
+ */
+public final class EventBusContext {
     
-    @Test
-    public void assertInstance() {
-        assertThat(ShardingSphereEventBus.getInstance(), is(ShardingSphereEventBus.getInstance()));
+    private final EventBus eventBus = new EventBus();
+    
+    static {
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
+    }
+    
+    /**
+     * Register object.
+     * 
+     * @param object object
+     */
+    public void register(final Object object) {
+        eventBus.register(object);
+    }
+    
+    /**
+     * Post event.
+     * 
+     * @param event event
+     */
+    public void post(final Object event) {
+        eventBus.post(event);
     }
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager;
 
+import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.lock.LockScope;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal.ShardingSphereInternalLockHolder;
@@ -34,8 +35,9 @@ public interface ShardingSphereLockManager extends RequiredSPI {
      * Init lock manager.
      *
      * @param lockHolder lock holder
+     * @param eventBusContext event bus context                  
      */
-    void init(ShardingSphereInternalLockHolder lockHolder);
+    void init(ShardingSphereInternalLockHolder lockHolder, EventBusContext eventBusContext);
     
     /**
      * Get distributed lock.
