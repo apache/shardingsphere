@@ -21,10 +21,28 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 
+import java.util.Collection;
+
 /**
  * Dynamic status contained rule.
  */
 public interface DynamicStatusContainedRule extends ShardingSphereRule {
+    
+    /**
+     * Get primary data source name.
+     *
+     * @param dataSourceName data source name
+     * @return primary data source name
+     */
+    String getPrimaryDataSourceName(String dataSourceName);
+    
+    /**
+     * Get replica data source names.
+     *
+     * @param dataSourceName data source name
+     * @return replica data source names
+     */
+    Collection<String> getReplicaDataSourceNames(String dataSourceName);
     
     /**
      * Update data source status.

@@ -17,25 +17,43 @@
 
 package org.apache.shardingsphere.readwritesplitting.fixture;
 
-import org.apache.shardingsphere.infra.datasource.strategy.DynamicDataSourceStrategy;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
+import org.apache.shardingsphere.infra.rule.identifier.type.DynamicStatusContainedRule;
 
 import java.util.Collection;
 import java.util.Collections;
 
-public class DatabaseDiscoveryDynamicDataSourceStrategyFixture implements DynamicDataSourceStrategy {
-    
-    @Override
-    public void init(final ShardingSphereRule rule) {
-    }
-    
+public class DatabaseDiscoveryDynamicDataSourceStrategyFixture implements DynamicStatusContainedRule {
+
     @Override
     public String getPrimaryDataSourceName(final String dataSourceName) {
         return "write";
     }
-    
+
     @Override
     public Collection<String> getReplicaDataSourceNames(final String dataSourceName) {
         return Collections.emptyList();
+    }
+
+    @Override
+    public void updateStatus(DataSourceStatusChangedEvent event) {
+
+    }
+
+    @Override
+    public void restartHeartBeatJob(DataSourceStatusChangedEvent event, InstanceContext instanceContext) {
+
+    }
+
+    @Override
+    public RuleConfiguration getConfiguration() {
+        return null;
+    }
+
+    @Override
+    public String getType() {
+        return null;
     }
 }

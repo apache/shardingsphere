@@ -19,7 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.strategy.type;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.datasource.strategy.DynamicDataSourceStrategy;
+import org.apache.shardingsphere.infra.rule.identifier.type.DynamicStatusContainedRule;
 import org.apache.shardingsphere.readwritesplitting.strategy.ReadwriteSplittingStrategy;
 
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public final class DynamicReadwriteSplittingStrategy implements ReadwriteSplitti
     
     private final boolean allowWriteDataSourceQuery;
     
-    private final DynamicDataSourceStrategy dynamicDataSourceStrategy;
+    private final DynamicStatusContainedRule dynamicDataSourceStrategy;
     
     @Override
     public String getWriteDataSource() {
