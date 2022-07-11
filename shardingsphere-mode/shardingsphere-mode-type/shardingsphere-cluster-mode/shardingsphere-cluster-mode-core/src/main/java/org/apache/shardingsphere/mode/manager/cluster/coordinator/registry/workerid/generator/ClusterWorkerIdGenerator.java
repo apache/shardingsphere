@@ -44,6 +44,8 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     
     private final InstanceMetaData instanceMetaData;
     
+    private volatile boolean isWarned;
+    
     @Override
     public long generate(final Properties props) {
         long result = registryCenter.getComputeNodeStatusService().loadInstanceWorkerId(instanceMetaData.getId()).orElseGet(this::reGenerate);
@@ -61,7 +63,7 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
                 result = result % MAX_WORKER_ID + 1;
             }
             if (reTryCount > MAX_RE_TRY) {
-                throw new ShardingSphereException("System assigned %s failed, assigned worker id was %s", WORKER_ID_KEY, result);
+                throw new ShardingSphereException("System assigned %s failed, assigned %s was %s", WORKER_ID_KEY, WORKER_ID_KEY, result);
             }
         } while (isExist(result));
         registryCenter.getComputeNodeStatusService().persistInstanceWorkerId(instanceMetaData.getId(), result);
@@ -78,9 +80,13 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     }
     
     private void checkConfigured(final long generatedWorkerId, final Properties props) {
+        if (null == props) {
+            return;
+        }
         Optional<Long> configuredWorkerId = parseWorkerId(props);
-        if (configuredWorkerId.isPresent()) {
-            log.warn("No need to configured {} in cluster mode, system assigned worker id was {}", WORKER_ID_KEY, generatedWorkerId);
+        if (configuredWorkerId.isPresent() && !isWarned) {
+            isWarned = true;
+            log.warn("No need to configured {} in cluster mode, system assigned {} was {}", WORKER_ID_KEY, WORKER_ID_KEY, generatedWorkerId);
         }
     }
 }
