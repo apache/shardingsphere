@@ -19,6 +19,7 @@ package org.apache.shardingsphere.mode.manager.memory;
 
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -53,7 +54,8 @@ public final class MemoryContextManagerBuilder implements ContextManagerBuilder 
         ComputeNodeInstance instance = new ComputeNodeInstance(parameter.getInstanceMetaData());
         instance.setLabels(parameter.getLabels());
         return new InstanceContext(instance,
-                new MemoryWorkerIdGenerator(), Optional.ofNullable(parameter.getModeConfig()).orElseGet(() -> new ModeConfiguration(getType(), null, false)), new MemoryLockContext());
+                new MemoryWorkerIdGenerator(), Optional.ofNullable(parameter.getModeConfig()).orElseGet(() -> new ModeConfiguration(getType(), null, false)),
+                new MemoryLockContext(), new EventBusContext());
     }
     
     private MetaDataContexts buildMetaDataContexts(final ContextManagerBuilderParameter parameter, final InstanceContext instanceContext) throws SQLException {

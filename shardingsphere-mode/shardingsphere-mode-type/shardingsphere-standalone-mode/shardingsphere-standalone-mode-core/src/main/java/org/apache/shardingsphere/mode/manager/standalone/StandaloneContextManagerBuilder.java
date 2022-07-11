@@ -22,6 +22,7 @@ import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -67,7 +68,8 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     }
     
     private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter parameter, final ModeConfiguration modeConfig) {
-        return new InstanceContext(new ComputeNodeInstance(parameter.getInstanceMetaData()), new StandaloneWorkerIdGenerator(), modeConfig, new StandaloneLockContext());
+        return new InstanceContext(new ComputeNodeInstance(parameter.getInstanceMetaData()), new StandaloneWorkerIdGenerator(), modeConfig, new StandaloneLockContext(),
+                new EventBusContext());
     }
     
     private MetaDataContexts buildMetaDataContexts(final MetaDataPersistService persistService,
@@ -99,10 +101,5 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     @Override
     public String getType() {
         return "Standalone";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
     }
 }

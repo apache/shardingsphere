@@ -15,38 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.util;
+package org.apache.shardingsphere.mode.manager.cluster.process;
 
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
+import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 
-import java.util.concurrent.TimeUnit;
-
-/**
- * Execute util.
- */
-@RequiredArgsConstructor
-public final class ExecuteUtil {
+public final class EventBusContextHolderFixture {
     
-    private final Executor executor;
-    
-    private final int retryCount;
-    
-    private final long waitMs;
-    
-    /**
-     * Execute.
-     *
-     * @return execute result
-     */
-    public boolean execute() {
-        int count = 0;
-        while (!executor.execute() && retryCount > count) {
-            try {
-                TimeUnit.MILLISECONDS.sleep(waitMs);
-            } catch (final InterruptedException ignored) {
-            }
-            count++;
-        }
-        return retryCount > count;
-    }
+    @Getter
+    public static final EventBusContext EVENT_BUS_CONTEXT = new EventBusContext();
 }

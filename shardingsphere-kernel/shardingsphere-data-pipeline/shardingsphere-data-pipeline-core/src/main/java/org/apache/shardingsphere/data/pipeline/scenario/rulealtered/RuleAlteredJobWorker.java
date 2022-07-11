@@ -32,6 +32,7 @@ import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.Shardi
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
+import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.execute.FinishedCheckJobExecutor;
 import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobExecutor;
@@ -40,7 +41,6 @@ import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetect
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparerFactory;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
@@ -97,7 +97,7 @@ public final class RuleAlteredJobWorker {
                 return;
             }
             log.info("start worker initialization");
-            ShardingSphereEventBus.getInstance().register(INSTANCE);
+            PipelineContext.getContextManager().getInstanceContext().getEventBusContext().register(INSTANCE);
             new FinishedCheckJobExecutor().start();
             new PipelineJobExecutor().start();
             WORKER_INITIALIZED.set(true);
@@ -167,7 +167,7 @@ public final class RuleAlteredJobWorker {
         } else {
             log.info("Switch rule configuration immediately.");
             ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(event.getDatabaseName(), event.getActiveVersion(), event.getNewVersion());
-            ShardingSphereEventBus.getInstance().post(taskFinishedEvent);
+            PipelineContext.getContextManager().getInstanceContext().getEventBusContext().post(taskFinishedEvent);
         }
     }
     

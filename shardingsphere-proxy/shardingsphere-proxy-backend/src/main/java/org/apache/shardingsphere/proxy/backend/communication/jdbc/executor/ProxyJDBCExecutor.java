@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
@@ -65,13 +66,14 @@ public final class ProxyJDBCExecutor {
                                        final boolean isReturnGeneratedKeys, final boolean isExceptionThrown) throws SQLException {
         try {
             MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
+            EventBusContext eventBusContext = ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext();
             DatabaseType databaseType = metaDataContexts.getMetaData().getDatabases().get(connectionSession.getDatabaseName()).getResource().getDatabaseType();
-            ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, metaDataContexts.getMetaData().getProps());
+            ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, metaDataContexts.getMetaData().getProps(), eventBusContext);
             SQLStatementContext<?> context = logicSQL.getSqlStatementContext();
             List<ExecuteResult> result = jdbcExecutor.execute(executionGroupContext,
                     ProxyJDBCExecutorCallbackFactory.newInstance(type, databaseType, context.getSqlStatement(), databaseCommunicationEngine, isReturnGeneratedKeys, isExceptionThrown, true),
                     ProxyJDBCExecutorCallbackFactory.newInstance(type, databaseType, context.getSqlStatement(), databaseCommunicationEngine, isReturnGeneratedKeys, isExceptionThrown, false));
-            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
+            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), eventBusContext);
             return result;
         } finally {
             ExecuteProcessEngine.clean();

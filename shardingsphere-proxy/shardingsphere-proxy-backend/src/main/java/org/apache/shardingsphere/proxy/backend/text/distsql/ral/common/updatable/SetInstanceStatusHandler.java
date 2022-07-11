@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.SetInstanceStatusStatement;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
@@ -42,7 +41,7 @@ public final class SetInstanceStatusHandler extends UpdatableRALBackendHandler<S
         } else {
             checkEnablingIsValid(contextManager, instanceId);
         }
-        ShardingSphereEventBus.getInstance().post(new ComputeNodeStatusChangedEvent(isDisable ? ComputeNodeStatus.CIRCUIT_BREAK : ComputeNodeStatus.ONLINE, instanceId));
+        contextManager.getInstanceContext().getEventBusContext().post(new ComputeNodeStatusChangedEvent(isDisable ? ComputeNodeStatus.CIRCUIT_BREAK : ComputeNodeStatus.ONLINE, instanceId));
     }
     
     private void checkEnablingIsValid(final ContextManager contextManager, final String instanceId) {

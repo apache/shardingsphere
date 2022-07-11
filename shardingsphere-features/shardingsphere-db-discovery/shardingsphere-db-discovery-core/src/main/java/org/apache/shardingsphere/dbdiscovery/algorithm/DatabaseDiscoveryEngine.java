@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.dbdiscovery.mysql.type.MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spi.ReplicaDataSourceStatus;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeRole;
@@ -46,6 +46,8 @@ import java.util.Optional;
 public final class DatabaseDiscoveryEngine {
     
     private final DatabaseDiscoveryProviderAlgorithm databaseDiscoveryProviderAlgorithm;
+    
+    private final EventBusContext eventBusContext;
     
     /**
      * Check environment of database cluster.
@@ -71,7 +73,7 @@ public final class DatabaseDiscoveryEngine {
                                           final Map<String, DataSource> dataSourceMap, final Collection<String> disabledDataSourceNames) {
         Optional<String> newPrimaryDataSourceName = findPrimaryDataSourceName(dataSourceMap, disabledDataSourceNames);
         if (newPrimaryDataSourceName.isPresent() && !newPrimaryDataSourceName.get().equals(originalPrimaryDataSourceName)) {
-            ShardingSphereEventBus.getInstance().post(new PrimaryDataSourceChangedEvent(new QualifiedDatabase(databaseName, groupName, newPrimaryDataSourceName.get())));
+            eventBusContext.post(new PrimaryDataSourceChangedEvent(new QualifiedDatabase(databaseName, groupName, newPrimaryDataSourceName.get())));
         }
         String result = newPrimaryDataSourceName.orElse(originalPrimaryDataSourceName);
         postReplicaDataSourceDisabledEvent(databaseName, groupName, result, dataSourceMap, disabledDataSourceNames);
@@ -107,13 +109,13 @@ public final class DatabaseDiscoveryEngine {
                 StorageNodeDataSource storageNodeDataSource = createStorageNodeDataSource(loadReplicaStatus(entry.getValue()));
                 if (StorageNodeStatus.isEnable(storageNodeDataSource.getStatus())) {
                     enabledReplicasCount += disabledDataSourceNames.contains(entry.getKey()) ? 1 : 0;
-                    ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), storageNodeDataSource));
+                    eventBusContext.post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), storageNodeDataSource));
                     continue;
                 }
                 if (!(databaseDiscoveryProviderAlgorithm instanceof MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm)
                         || enabledReplicasCount > Integer.parseInt(databaseDiscoveryProviderAlgorithm.getProps().getProperty("min-enabled-replicas", "0"))) {
                     enabledReplicasCount -= disabledDataSourceNames.contains(entry.getKey()) ? 0 : 1;
-                    ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), storageNodeDataSource));
+                    eventBusContext.post(new DataSourceDisabledEvent(databaseName, groupName, entry.getKey(), storageNodeDataSource));
                 }
             }
         }
