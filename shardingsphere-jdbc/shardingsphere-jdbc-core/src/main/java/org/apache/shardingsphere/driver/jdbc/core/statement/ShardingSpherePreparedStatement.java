@@ -467,7 +467,6 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 connection.getDatabaseName(), metaDataContexts.getMetaData().getDatabases(), null);
         ExecutionContext result = kernelProcessor.generateExecutionContext(logicSQL, metaDataContexts.getMetaData().getDatabases().get(connection.getDatabaseName()),
                 metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps());
-        generatedValues.clear();
         findGeneratedKey(result).ifPresent(generatedKey -> generatedValues.addAll(generatedKey.getGeneratedValues()));
         return result;
     }
@@ -516,6 +515,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private void clearPrevious() {
         statements.clear();
         parameterSets.clear();
+        generatedValues.clear();
     }
     
     private Optional<GeneratedKeyContext> findGeneratedKey(final ExecutionContext executionContext) {
