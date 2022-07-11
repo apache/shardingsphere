@@ -1330,10 +1330,10 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "alter-audit-policy")
     private final List<AlterAuditPolicyStatementTestCase> alterAuditPolicyTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-index-type")
     private final List<AlterIndexTypeStatementTestCase> alterIndexTypeTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-operator")
     private final List<AlterOperatorStatementTestCase> alterOperatorTestCases = new LinkedList<>();
     

@@ -903,12 +903,12 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     public ASTNode visitAlterJava(final AlterJavaContext ctx) {
         return new OracleAlterJavaStatement();
     }
-
+    
     @Override
     public ASTNode visitAlterAuditPolicy(final AlterAuditPolicyContext ctx) {
         return new OracleAlterAuditPolicyStatement();
     }
-
+    
     @Override
     public ASTNode visitAlterIndexType(final AlterIndexTypeContext ctx) {
         return new OracleAlterIndexTypeStatement();

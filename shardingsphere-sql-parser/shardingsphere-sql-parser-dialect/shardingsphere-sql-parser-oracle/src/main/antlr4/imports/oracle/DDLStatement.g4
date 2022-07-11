@@ -2749,7 +2749,7 @@ usingTypeClause
     ;
 
 withLocalClause
-    :  (WITH LOCAL RANGE? PARTITION)? storageTableClause?
+    : (WITH LOCAL RANGE? PARTITION)? storageTableClause?
     ;
 
 arrayDMLClause
