@@ -1,62 +1,1 @@
-<!--
-  ~ Licensed to the Apache Software Foundation (ASF) under one or more
-  ~ contributor license agreements.  See the NOTICE file distributed with
-  ~ this work for additional information regarding copyright ownership.
-  ~ The ASF licenses this file to You under the Apache License, Version 2.0
-  ~ (the "License"); you may not use this file except in compliance with
-  ~ the License.  You may obtain a copy of the License at
-  ~
-  ~     http://www.apache.org/licenses/LICENSE-2.0
-  ~
-  ~ Unless required by applicable law or agreed to in writing, software
-  ~ distributed under the License is distributed on an "AS IS" BASIS,
-  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  ~ See the License for the specific language governing permissions and
-  ~ limitations under the License.
-  -->
-<integration-test-cases>
-    <test-case sql="SHOW DATABASE RESOURCES" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion expected-data-file="show_resources.xml" />
-    </test-case>
-    
-    <test-case sql="SHOW SHARDING TABLE RULES" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion expected-data-file="show_rules.xml" />
-    </test-case>
-    
-    <test-case sql="SHOW SHARDING TABLE RULE t_order" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting,sharding_governance">
-        <assertion expected-data-file="show_table_rule.xml" />
-    </test-case>
-    
-    <test-case sql="SHOW SHARDING TABLE RULE t_user" scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,encrypt">
-        <assertion expected-data-file="show_table_rule.xml" />
-    </test-case>
-    
-    <test-case sql="SHOW SHARDING ALGORITHMS" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion expected-data-file="show_algorithms.xml" />
-    </test-case>
-    
-    <test-case sql="SHOW SHARDING BINDING TABLE RULES" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion expected-data-file="show_binging_rules.xml" />
-    </test-case>
-    
-    <test-case sql="SHOW SHARDING BROADCAST TABLE RULES" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion expected-data-file="show_broadcast_rules.xml" />
-    </test-case>
-    
-    <test-case sql="SHOW READWRITE_SPLITTING RULES" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion expected-data-file="show_readwrite_splitting_rules.xml" />
-    </test-case>
-    
-    <test-case sql="SHOW ENCRYPT RULES" scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,encrypt">
-        <assertion expected-data-file="show_encrypt_rules.xml" />
-    </test-case>
-    
-    <test-case sql="SHOW ENCRYPT TABLE RULE t_user" scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,encrypt">
-        <assertion expected-data-file="show_encrypt_rule.xml" />
-    </test-case>
-    
-    <!--TODO add db discovery tests-->
-    <test-case sql="SHOW DB_DISCOVERY RULES" scenario-types="sharding_governance">
-        <assertion expected-data-file="show_discovery_rules.xml" />
-    </test-case>
-</integration-test-cases>
+<!--  ~ Licensed to the Apache Software Foundation (ASF) under one or more  ~ contributor license agreements.  See the NOTICE file distributed with  ~ this work for additional information regarding copyright ownership.  ~ The ASF licenses this file to You under the Apache License, Version 2.0  ~ (the "License"); you may not use this file except in compliance with  ~ the License.  You may obtain a copy of the License at  ~  ~     http://www.apache.org/licenses/LICENSE-2.0  ~  ~ Unless required by applicable law or agreed to in writing, software  ~ distributed under the License is distributed on an "AS IS" BASIS,  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.  ~ See the License for the specific language governing permissions and  ~ limitations under the License.  --><integration-test-cases>    <test-case sql="SHOW DATABASE RESOURCES" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">        <assertion expected-data-file="show_resources.xml" />    </test-case>        <!--TODO Support dynamic input of scenario names-->    <!--FIXME db scenario have a problem. #18964--><!--    <test-case sql="SHOW DATABASE RESOURCES FROM ?" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">--><!--        <assertion expected-data-file="show_resources.xml" />--><!--    </test-case>-->    <test-case sql="SHOW SHARDING TABLE RULES" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">        <assertion expected-data-file="show_rules.xml" />    </test-case>    <test-case sql="SHOW SHARDING TABLE RULE t_order" scenario-types="db,tbl,readwrite_splitting,dbtbl_with_readwrite_splitting">        <assertion expected-data-file="show_table_rule.xml" />    </test-case>    <test-case sql="SHOW SHARDING TABLE RULE t_user" scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,encrypt">        <assertion expected-data-file="show_table_rule.xml" />    </test-case>    <test-case sql="SHOW SHARDING ALGORITHMS" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">        <assertion expected-data-file="show_algorithms.xml" />    </test-case>    <test-case sql="SHOW UNUSED SHARDING ALGORITHMS" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">        <assertion expected-data-file="show_unused_algorithms.xml" />    </test-case>        <test-case sql="SHOW SHARDING TABLE RULES USED ALGORITHM it_standard_fixture" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">        <assertion expected-data-file="show_table_algorithms.xml" />    </test-case>        <!--FIXME! not support yet. #19020--><!--    <test-case sql="SHOW SHARDING AUDITORS" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">--><!--        <assertion expected-data-file="show_auditors.xml" />--><!--    </test-case>-->        <test-case sql="SHOW SHARDING AUDITORS" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">        <assertion expected-data-file="show_auditors.xml" />    </test-case>        <test-case sql="SHOW SHARDING KEY GENERATORS" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">        <assertion expected-data-file="show_generators.xml" />    </test-case>        <test-case sql="SHOW UNUSED SHARDING KEY GENERATORS" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">        <assertion expected-data-file="show_unused_generators.xml" />    </test-case>        <test-case sql="SHOW SHARDING TABLE RULES USED KEY GENERATOR constant" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">        <assertion expected-data-file="show_table_generator.xml" />    </test-case>        <test-case sql="SHOW DEFAULT SHARDING STRATEGY" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">        <assertion expected-data-file="show_default_strategy.xml" />    </test-case>        <test-case sql="SHOW SHARDING TABLE NODES" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">        <assertion expected-data-file="show_table_nodes.xml" />    </test-case>        <test-case sql="SHOW SHARDING BINDING TABLE RULES" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">        <assertion expected-data-file="show_binging_rules.xml" />    </test-case>        <test-case sql="SHOW SHARDING BROADCAST TABLE RULES" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">        <assertion expected-data-file="show_broadcast_rules.xml" />    </test-case>        <test-case sql="SHOW READWRITE_SPLITTING RULES" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">        <assertion expected-data-file="show_readwrite_splitting_rules.xml" />    </test-case>        <test-case sql="SHOW ENCRYPT RULES" scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,encrypt">        <assertion expected-data-file="show_encrypt_rules.xml" />    </test-case>        <test-case sql="SHOW ENCRYPT TABLE RULE t_user" scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,encrypt">        <assertion expected-data-file="show_encrypt_rule.xml" />    </test-case>        <!--TODO add db discovery tests-->    <test-case sql="SHOW DB_DISCOVERY RULES" scenario-types="sharding_governance">        <assertion expected-data-file="show_discovery_rules.xml" />    </test-case></integration-test-cases>
