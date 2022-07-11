@@ -22,6 +22,7 @@ import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Collection;
 
 /**
  * Create table SQL generator.
@@ -38,5 +39,5 @@ public interface CreateTableSQLGenerator extends TypedSPI {
     * @return generated SQL
     * @throws SQLException SQL exception
     */
-    String generate(String tableName, String schemaName, DataSource dataSource) throws SQLException;
+    Collection<String> generate(String tableName, String schemaName, DataSource dataSource) throws SQLException;
 }
