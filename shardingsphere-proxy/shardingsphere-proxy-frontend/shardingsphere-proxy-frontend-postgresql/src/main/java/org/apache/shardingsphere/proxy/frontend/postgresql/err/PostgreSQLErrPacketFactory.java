@@ -66,8 +66,8 @@ public final class PostgreSQLErrPacketFactory {
         }
         if (cause instanceof PostgreSQLProtocolViolationException) {
             return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLErrorCode.PROTOCOL_VIOLATION,
-                            String.format("expected %s response, got message type %s", ((PostgreSQLProtocolViolationException) cause).getExpectedMessageType(),
-                                    ((PostgreSQLProtocolViolationException) cause).getActualMessageType()))
+                    String.format("expected %s response, got message type %s", ((PostgreSQLProtocolViolationException) cause).getExpectedMessageType(),
+                            ((PostgreSQLProtocolViolationException) cause).getActualMessageType()))
                     .build();
         }
         if (cause instanceof PostgreSQLAuthenticationException) {

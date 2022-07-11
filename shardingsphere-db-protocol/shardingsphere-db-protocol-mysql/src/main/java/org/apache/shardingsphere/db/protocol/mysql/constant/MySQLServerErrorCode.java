@@ -23,7 +23,7 @@ import org.apache.shardingsphere.db.protocol.error.SQLErrorCode;
 
 /**
  * Server error code for MySQL.
- *
+ * 
  * @see <a href="https://dev.mysql.com/doc/mysql-errors/8.0/en/server-error-reference.html">Server Error Message Reference</a>
  */
 @RequiredArgsConstructor
