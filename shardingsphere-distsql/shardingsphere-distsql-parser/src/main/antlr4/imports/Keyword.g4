@@ -275,6 +275,14 @@ IMPORT
     : I M P O R T
     ;
 
+CONVERT
+    : C O N V E R T
+    ;
+
+YAML
+    : Y A M L
+    ;
+
 CONFIGURATION
     : C O N F I G U R A T I O N
     ;

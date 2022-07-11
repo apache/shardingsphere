@@ -26,6 +26,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.PreviewSt
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.CountInstanceRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ExportDatabaseConfigurationStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ConvertYamlConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowInstanceModeStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowInstanceStatement;
@@ -58,6 +59,7 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.Preview
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.HintDistSQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.CountInstanceRulesHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ExportDatabaseConfigurationHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ConvertYamlConfigurationHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ShowAuthorityRuleHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ShowInstanceHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ShowInstanceModeHandler;
@@ -127,6 +129,7 @@ public final class RALBackendHandlerFactory {
         HANDLERS.put(ShowTrafficRulesStatement.class, ShowTrafficRulesHandler.class);
         HANDLERS.put(ShowTransactionRuleStatement.class, ShowTransactionRuleHandler.class);
         HANDLERS.put(ExportDatabaseConfigurationStatement.class, ExportDatabaseConfigurationHandler.class);
+        HANDLERS.put(ConvertYamlConfigurationStatement.class, ConvertYamlConfigurationHandler.class);
         HANDLERS.put(ParseStatement.class, ParseDistSQLHandler.class);
         HANDLERS.put(PreviewStatement.class, PreviewHandler.class);
         HANDLERS.put(FormatStatement.class, FormatSQLHandler.class);
