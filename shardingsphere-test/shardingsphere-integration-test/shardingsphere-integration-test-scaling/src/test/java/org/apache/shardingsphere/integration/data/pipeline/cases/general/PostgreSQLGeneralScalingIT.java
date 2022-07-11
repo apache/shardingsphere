@@ -87,10 +87,12 @@ public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
         assertTrue(waitShardingAlgorithmEffect(15));
         createScalingRule();
         createSchema("test");
-        getCreateOrderWithItemSharingTableRule();
+        createOrderTableRule();
+        createOrderItemTableRule();
         createOrderTable();
         createTableIndexList();
         createOrderItemTable();
+        executeWithLog("COMMENT ON COLUMN test.t_order.user_id IS 'user id';");
         SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
         Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(keyGenerateAlgorithm, parameterized.getDatabaseType(), 3000);
         getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
