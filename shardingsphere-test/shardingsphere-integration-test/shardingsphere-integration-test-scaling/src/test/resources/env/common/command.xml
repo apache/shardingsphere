@@ -35,7 +35,7 @@
         CREATE SHARDING TABLE RULE t_order (
         DATANODES("ds_${0..1}.t_order_${0..1}"),
         DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=user_id,SHARDING_ALGORITHM=database_inline),
-        TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=id,SHARDING_ALGORITHM=t_account_inline),
+        TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=order_id,SHARDING_ALGORITHM=t_order_inline),
         KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
         )
     </create-order-table-rule>
