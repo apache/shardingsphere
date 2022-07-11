@@ -3,17 +3,19 @@ title = "Metadata Repository"
 weight = 1
 +++
 
-## File Repository
+## H2 Repository
 
-Type: File
+Type: H2
 
 Mode: Standalone
 
 Attributes:
 
-| *Name*                       | *Type* | *Description*                     | *Default Value* |
-| ---------------------------- | ------ | --------------------------------- | --------------- |
-| path                         | String | Path for metadata persist         | .shardingsphere |
+| *Name*                       | *Type* | *Description*                     | *Default Value*                                                         |
+| ---------------------------- | ------ | --------------------------------- | ----------------------------------------------------------------------- |
+| jdbcUrl                      | String | Database access URL               | jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL |
+| user                         | String | Database access username          | sa                                                                      |
+| password                     | String | Database access password          |                                                                         |
 
 ## ZooKeeper Repository
 

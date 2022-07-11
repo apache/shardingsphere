@@ -63,12 +63,8 @@ weight = 1
                            http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone
                            http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository.xsd">
-    <standalone:repository id="standaloneRepository" type="File">
-        <props>
-            <prop key="path">target</prop>
-        </props>
-    </standalone:repository>
-
+    <standalone:repository id="standaloneRepository" type="H2" />
+    
     <shardingsphere:data-source id="ds" database-name="foo_schema" data-source-names="..." rule-refs="..." >
         <shardingsphere:mode type="Standalone" repository-ref="standaloneRepository" overwrite="true" />
     </shardingsphere:data-source>
