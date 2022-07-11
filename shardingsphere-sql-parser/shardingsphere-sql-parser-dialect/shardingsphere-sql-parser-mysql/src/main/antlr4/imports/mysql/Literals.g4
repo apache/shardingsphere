@@ -31,6 +31,10 @@ DOUBLE_QUOTED_TEXT
     : DQ_ ( '\\'. | '""' | ~('"'| '\\') )* DQ_
     ;
 
+BACK_QUOTED_TEXT
+    : BQ_ ( '\\'. | '``' | ~('`'| '\\') )* BQ_
+    ;
+
 NCHAR_TEXT
     : N SINGLE_QUOTED_TEXT
     ;
