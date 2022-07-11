@@ -230,7 +230,7 @@ public abstract class BaseITCase {
                 .replace("${ds2}", getActualJdbcUrlTemplate(DS_2))
                 .replace("${ds3}", getActualJdbcUrlTemplate(DS_3))
                 .replace("${ds4}", getActualJdbcUrlTemplate(DS_4));
-        executeWithLog(addTargetResource);
+        executeWithLog(addTargetResource, 1);
         List<Map<String, Object>> resources = queryForListWithLog("SHOW DATABASE RESOURCES from sharding_db");
         assertThat(resources.size(), is(5));
         assertBeforeApplyScalingMetadataCorrectly();

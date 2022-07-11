@@ -97,8 +97,8 @@ public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
         Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(keyGenerateAlgorithm, parameterized.getDatabaseType(), 3000);
         getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
         getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
-        startIncrementTask(new PostgreSQLIncrementTask(getJdbcTemplate(), new SnowflakeKeyGenerateAlgorithm(), "test", true));
         addTargetResource();
+        startIncrementTask(new PostgreSQLIncrementTask(getJdbcTemplate(), new SnowflakeKeyGenerateAlgorithm(), "test", true));
         executeWithLog(getCommonSQLCommand().getAutoAlterOrderWithItemShardingTableRule());
         String jobId = getScalingJobId();
         waitScalingFinished(jobId);
