@@ -17,27 +17,30 @@
 
 package org.apache.shardingsphere.infra.merge.engine;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-
-import java.util.Map;
-
 import org.apache.shardingsphere.infra.merge.fixture.ResultProcessEngineFixture;
 import org.apache.shardingsphere.infra.merge.fixture.rule.ResultProcessRuleFixture;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.hamcrest.collection.IsMapContaining;
 import org.junit.Test;
 
-import com.google.common.collect.Lists;
+import java.util.Collections;
+import java.util.Map;
 
-public class ResultProcessEngineFactoryTest {
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.hasValue;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
+
+public final class ResultProcessEngineFactoryTest {
     
+    @SuppressWarnings("rawtypes")
     @Test
     public void assertGetInstances() {
-        ResultProcessRuleFixture ruleFixture = mock(ResultProcessRuleFixture.class);
-        Map<ShardingSphereRule, ResultProcessEngine> instances = ResultProcessEngineFactory.getInstances(Lists.newArrayList(ruleFixture));
-        assertThat(instances, IsMapContaining.hasKey(ruleFixture));
-        assertThat(instances, IsMapContaining.hasValue(instanceOf(ResultProcessEngineFixture.class)));
+        ResultProcessRuleFixture rule = mock(ResultProcessRuleFixture.class);
+        Map<ShardingSphereRule, ResultProcessEngine> instances = ResultProcessEngineFactory.getInstances(Collections.singleton(rule));
+        assertThat(instances.size(), is(1));
+        assertThat(instances, hasKey(rule));
+        assertThat(instances, hasValue(instanceOf(ResultProcessEngineFixture.class)));
     }
 }

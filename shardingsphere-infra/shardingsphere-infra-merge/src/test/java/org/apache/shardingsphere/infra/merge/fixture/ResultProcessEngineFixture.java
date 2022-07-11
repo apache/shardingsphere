@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.merge.fixture;
 import org.apache.shardingsphere.infra.merge.engine.ResultProcessEngine;
 import org.apache.shardingsphere.infra.merge.fixture.rule.ResultProcessRuleFixture;
 
-public class ResultProcessEngineFixture implements ResultProcessEngine<ResultProcessRuleFixture> {
+public final class ResultProcessEngineFixture implements ResultProcessEngine<ResultProcessRuleFixture> {
     
     @Override
     public int getOrder() {
