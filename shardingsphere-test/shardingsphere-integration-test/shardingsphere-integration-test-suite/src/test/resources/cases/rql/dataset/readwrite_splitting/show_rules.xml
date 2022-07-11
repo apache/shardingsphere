@@ -32,7 +32,7 @@
         <column name="key_generator_type" />
         <column name="key_generator_props" />
     </metadata>
-    <row values="t_order| write-read-ds.t_order| | | | | | none| | | | | | " />
-    <row values="t_order_item| write-read-ds.t_order_item| | | | | | none| | | | | | " />
-    <row values="t_order_details| write-read-ds.t_order_details| | | | | | none| | | | | | " />
+    <row values="t_order| write-read-ds.t_order| | | | | | | | | | | | " />
+    <row values="t_order_item| write-read-ds.t_order_item| | | | | | | | | | | | " />
+    <row values="t_order_details| write-read-ds.t_order_details| | | | | | | | | | | | " />
 </dataset>
