@@ -5,38 +5,38 @@ weight = 1
 chapter = true
 +++
 
-## SPI 接口
+## SPI Interface
 
-| *SPI 名称*                     | *详细说明*                  |
+| *SPI Name*                     | *Description*                  |
 | ----------------------------- | -----------------------    |
-| StandalonePersistRepository   | Standalone 模式配置信息持久化 |
-| ClusterPersistRepository      | Cluster 模式配置信息持久化    |
-| GovernanceWatcher             | 治理监听器                   |
+| StandalonePersistRepository   | Standalone mode configuration information persistence |
+| ClusterPersistRepository      | Cluster mode configuration information persistence    |
+| GovernanceWatcher             | Governance listener                   |
 
-## 示例
+## Sample
 
-### StandalonePersistRepository 已知实现类
+### StandalonePersistRepository
 
-| *已知实现类*                    | *详细说明*                  |
+| *Implementation Class*                    | *Description*                  |
 | ----------------------------- | -------------------------- |
-| FileRepository                | 基于 File 的持久化           |
-| H2Repository                  | 基于 H2 的持久化             |
+| FileRepository                | File-based persistence           |
+| H2Repository                  | H2-based persistence             |
 
-### ClusterPersistRepository 已知实现类
+### ClusterPersistRepository
 
-| *已知实现类*                    | *详细说明*                 |
+| *Implementation Class*                    | *Description*                 |
 | ----------------------------- | ------------------------- |
-| CuratorZookeeperRepository    | 基于 ZooKeeper 的持久化     |
-| EtcdRepository                | 基于 Etcd 的持久化          |
+| CuratorZookeeperRepository    | ZooKeeper-based persistence     |
+| EtcdRepository                | Etcd-based persistence          |
 
-### GovernanceWatcher 已知实现类
+### GovernanceWatcher
 
-| *已知实现类*                     | *详细说明*          |
+| *Implementation Class*                     | *Description*          |
 | -----------------------------  | ------------------ |
-| ComputeNodeStateChangedWatcher | 计算节点状态变化监听器 |
-| DatabaseLockChangedWatcher     | 数据库锁状态变化监听器 |
-| DistributedLockChangedWatcher  | 分布式锁变化监听器     |
-| GlobalRuleChangedWatcher       | 全局规则配置变化监听器 |
-| MetaDataChangedWatcher         | 元数据变化监听器      |
-| PropertiesChangedWatcher       | 属性变化监听器        |
-| StorageNodeStateChangedWatcher | 存储节点状态变化监听器 |
+| ComputeNodeStateChangedWatcher | Compute node state change listener |
+| DatabaseLockChangedWatcher     | Database lock state change listener |
+| DistributedLockChangedWatcher  | Distributed lock change listener     |
+| GlobalRuleChangedWatcher       | The global rule configuration change listener |
+| MetaDataChangedWatcher         | Metadata change listener      |
+| PropertiesChangedWatcher       | Property change listener        |
+| StorageNodeStateChangedWatcher | Storage node state change listener |
