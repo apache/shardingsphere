@@ -56,7 +56,15 @@ public final class ShardingSphereDatabasesFactory {
         log.error("=================databaseConfig===========" + databaseConfig);
         log.error("=================props===========" + props);
         log.error("=================instanceContext===========" + instanceContext);
-        return ShardingSphereDatabase.create(databaseName, protocolType, storageType, databaseConfig, props, instanceContext);
+        try {
+            ShardingSphereDatabase result = ShardingSphereDatabase.create(databaseName, protocolType, storageType, databaseConfig, props, instanceContext);
+            log.error("=================create result===========" + result);
+            return result;
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        log.error("=================create result null===========");
+        return null;
     }
     
     /**
