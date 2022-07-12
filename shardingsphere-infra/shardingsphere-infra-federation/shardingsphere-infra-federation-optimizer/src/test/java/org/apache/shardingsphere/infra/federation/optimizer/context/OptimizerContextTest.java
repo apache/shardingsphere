@@ -86,7 +86,15 @@ public final class OptimizerContextTest {
         assertTrue(schemaMetadata.isPresent());
         assertTrue(schemaMetadata.get().getTables().containsKey("bar_tbl"));
     }
-    
+
+    @Test
+    public void assertAddSchema(){
+        OptimizerContext optimizerContext = createOptimizerContext();
+        optimizerContext.addSchema("foo_db", "foo_schema");
+        assertTrue(optimizerContext.getFederationMetaData().getDatabases().get("foo_db").getSchemaMetadata("foo_schema").isPresent());
+        assertFalse(optimizerContext.getFederationMetaData().getDatabases().get("foo_db").getSchemaMetadata("foo_schema_1").isPresent());
+    }
+
     private OptimizerContext createOptimizerContext() {
         return OptimizerContextFactory.create(Collections.singletonMap("foo_db", createDatabase()), mock(ShardingSphereRuleMetaData.class));
     }
