@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.database;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -32,7 +31,6 @@ import java.util.Map.Entry;
 /**
  * ShardingSphere databases factory.
  */
-@Slf4j
 public final class ShardingSphereDatabasesFactory {
     
     /**
@@ -49,8 +47,6 @@ public final class ShardingSphereDatabasesFactory {
                                                 final ConfigurationProperties props, final InstanceContext instanceContext) throws SQLException {
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfig, props);
         DatabaseType storageType = DatabaseTypeEngine.getDatabaseType(databaseConfig.getDataSources().values());
-        log.error("=======protocolType=====" + protocolType);
-        log.error("=======storageType=====" + storageType);
         return ShardingSphereDatabase.create(databaseName, protocolType, storageType, databaseConfig, props, instanceContext);
     }
     
