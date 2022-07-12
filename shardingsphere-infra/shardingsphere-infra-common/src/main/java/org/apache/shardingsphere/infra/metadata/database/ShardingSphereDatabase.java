@@ -76,6 +76,7 @@ public final class ShardingSphereDatabase {
      */
     public static ShardingSphereDatabase create(final String name, final DatabaseType protocolType, final DatabaseType storageType,
                                                 final DatabaseConfiguration databaseConfig, final ConfigurationProperties props, final InstanceContext instanceContext) throws SQLException {
+        log.error("========ShardingSphereDatabase create======");
         Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(name, databaseConfig, instanceContext);
         log.error("========databaseRules======" + databaseRules);
         Map<String, ShardingSphereSchema> schemas = new ConcurrentHashMap<>();

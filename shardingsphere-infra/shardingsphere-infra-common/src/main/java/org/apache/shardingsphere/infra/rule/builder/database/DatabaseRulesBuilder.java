@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.rule.builder.database;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.function.DistributedRuleConfiguration;
@@ -39,6 +40,7 @@ import java.util.stream.Collectors;
  * Database rules builder.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Slf4j
 public final class DatabaseRulesBuilder {
     
     /**
@@ -60,10 +62,12 @@ public final class DatabaseRulesBuilder {
     
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, DatabaseRuleBuilder> getRuleBuilderMap(final DatabaseConfiguration databaseConfig) {
+        log.error("========getRuleBuilderMap======");
         Map<RuleConfiguration, DatabaseRuleBuilder> result = new LinkedHashMap<>();
         result.putAll(getDistributedRuleBuilderMap(databaseConfig.getRuleConfigurations()));
         result.putAll(getEnhancedRuleBuilderMap(databaseConfig.getRuleConfigurations()));
         result.putAll(getMissedDefaultRuleBuilderMap(result.values()));
+        log.error("========getRuleBuilderMap result======" + result);
         return result;
     }
     
