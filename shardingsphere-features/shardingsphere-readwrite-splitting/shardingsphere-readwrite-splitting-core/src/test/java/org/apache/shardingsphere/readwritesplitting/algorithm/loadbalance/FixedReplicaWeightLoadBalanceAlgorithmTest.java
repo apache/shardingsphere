@@ -71,7 +71,7 @@ public final class FixedReplicaWeightLoadBalanceAlgorithmTest {
         String readDataSourceName2 = "test_read_ds_2";
         List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
         List<String> noTransactionReadDataSourceNames = new LinkedList<>();
-        for (int i = 0 ; i < 5 ; i++) {
+        for (int i = 0; i < 5; i++) {
             String routeDataSource = fixedReplicaWeightLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames);
             noTransactionReadDataSourceNames.add(routeDataSource);
         }

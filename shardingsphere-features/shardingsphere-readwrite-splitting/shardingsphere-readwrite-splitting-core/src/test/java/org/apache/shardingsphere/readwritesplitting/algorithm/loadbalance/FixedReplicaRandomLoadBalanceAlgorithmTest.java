@@ -44,14 +44,6 @@ public final class FixedReplicaRandomLoadBalanceAlgorithmTest {
         assertThat(fixedReplicaRandomLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(routeDataSource));
         assertThat(fixedReplicaRandomLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(routeDataSource));
         TransactionHolder.clear();
-        List<String> noTransactionReadDataSourceNames = new LinkedList<>();
-    
-        for (int i = 0 ; i < 5 ; i++) {
-            String r = fixedReplicaRandomLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames);
-            noTransactionReadDataSourceNames.add(r);
-        }
-        assertTrue(noTransactionReadDataSourceNames.size() > 1);
-    
     }
     
     @Test
@@ -61,7 +53,7 @@ public final class FixedReplicaRandomLoadBalanceAlgorithmTest {
         String readDataSourceName2 = "test_replica_ds_2";
         List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
         List<String> noTransactionReadDataSourceNames = new LinkedList<>();
-        for (int i = 0 ; i < 5 ; i++) {
+        for (int i = 0; i < 5; i++) {
             String routeDataSource = fixedReplicaRandomLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames);
             noTransactionReadDataSourceNames.add(routeDataSource);
         }
