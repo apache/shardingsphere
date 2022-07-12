@@ -68,30 +68,18 @@ public class AssistQueryAndPlainInsertColumnsTokenGeneratorTest {
         tokenGenerator.setEncryptRule(mockEncryptRule());
         Collection<InsertColumnsToken> actual = tokenGenerator.generateSQLTokens(mockInsertStatementContext());
         assertThat(actual.size(), is(1));
-
         Iterator<InsertColumnsToken> iterator = actual.iterator();
         InsertColumnsToken insertColumnsToken = iterator.next();
         assertThat(insertColumnsToken.getStartIndex(), is(1));
-
-        InsertStatementContext insertStatementContext = mockInsertStatementContext();
-        ColumnSegment columnSegment = mock(ColumnSegment.class, RETURNS_DEEP_STUBS);
-        when(columnSegment.getIdentifier().getValue()).thenReturn("foo_col");
-        when(columnSegment.getStopIndex()).thenReturn(1);
-        when(insertStatementContext.getSqlStatement().getColumns()).thenReturn(Collections.singleton(columnSegment));
-        Collection<InsertColumnsToken> insertColumnsTokens = tokenGenerator.generateSQLTokens(insertStatementContext);
-        InsertColumnsToken compareInsertColumnsToken = insertColumnsTokens.iterator().next();
-        assertTrue(insertColumnsToken.compareTo(compareInsertColumnsToken) < 0);
-
-        insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
         when(insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue()).thenReturn("foo_tbl");
         actual = tokenGenerator.generateSQLTokens(insertStatementContext);
-        assertThat(actual.size(), is(0));
-
-        columnSegment = mock(ColumnSegment.class, RETURNS_DEEP_STUBS);
+        assertTrue(actual.isEmpty());
+        ColumnSegment columnSegment = mock(ColumnSegment.class, RETURNS_DEEP_STUBS);
         when(columnSegment.getIdentifier().getValue()).thenReturn("bar_col");
         when(insertStatementContext.getSqlStatement().getColumns()).thenReturn(Collections.singleton(columnSegment));
         actual = tokenGenerator.generateSQLTokens(insertStatementContext);
-        assertThat(actual.size(), is(0));
+        assertTrue(actual.isEmpty());
     }
     
     private EncryptRule mockEncryptRule() {
