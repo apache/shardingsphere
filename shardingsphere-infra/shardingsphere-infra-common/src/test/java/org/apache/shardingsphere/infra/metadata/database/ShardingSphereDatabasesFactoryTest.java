@@ -44,6 +44,7 @@ public final class ShardingSphereDatabasesFactoryTest {
     
     @Test
     public void assertCreateSingleDatabase() throws SQLException {
+        log.error("============assertCreateSingleDatabase=========");
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration()));
         ShardingSphereDatabase actual = ShardingSphereDatabasesFactory.create("foo_db", databaseConfig, new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
         log.error("============ShardingSphereDatabase actual=========" + actual);
@@ -57,7 +58,6 @@ public final class ShardingSphereDatabasesFactoryTest {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration()));
         Map<String, ShardingSphereDatabase> actual = ShardingSphereDatabasesFactory.create(
                 Collections.singletonMap("foo_db", databaseConfig), new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
-        log.error("============ShardingSphereDatabase actual=========" + actual);
         Collection<ShardingSphereRule> rules = actual.get("foo_db").getRuleMetaData().getRules();
         assertThat(rules.size(), is(1));
         assertThat(rules.iterator().next(), instanceOf(FixtureDatabaseRule.class));
