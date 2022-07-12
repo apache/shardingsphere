@@ -59,5 +59,5 @@ rules:
 
 ## Related References
 
-- [Core Features: Read/Write Splitting](/en/features/readwrite-splitting/)
+- [Core Feature: Read/Write Splitting](/en/features/readwrite-splitting/)
 - [Developer Guide: Read/Write Splitting](/en/dev-manual/readwrite-splitting/)

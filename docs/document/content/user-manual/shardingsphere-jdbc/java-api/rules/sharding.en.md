@@ -165,5 +165,5 @@ public final class ShardingDatabasesAndTablesConfigurationPrecise implements Exa
 
 ## Related References
 
-- [Core Features of Data Sharding](/en/features/sharding/)
-- [Developer Guide of Data Sharding](/en/dev-manual/sharding/)
+- [Core Feature: Data Sharding](/en/features/sharding/)
+- [Developer Guide: Data Sharding](/en/dev-manual/sharding/)
