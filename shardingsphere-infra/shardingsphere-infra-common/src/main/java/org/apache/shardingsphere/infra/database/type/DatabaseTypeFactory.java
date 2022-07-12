@@ -17,11 +17,16 @@
 
 package org.apache.shardingsphere.infra.database.type;
 
+import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collection;
 
 /**
@@ -29,6 +34,8 @@ import java.util.Collection;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseTypeFactory {
+    
+    private static final String DEFAULT_DATABASE_TYPE = "MySQL";
     
     static {
         ShardingSphereServiceLoader.register(DatabaseType.class);
@@ -51,5 +58,43 @@ public final class DatabaseTypeFactory {
      */
     public static Collection<DatabaseType> getInstances() {
         return ShardingSphereServiceLoader.getServiceInstances(DatabaseType.class);
+    }
+    
+    /**
+     * Get database type.
+     *
+     * @param url database URL
+     * @return database type
+     */
+    public static DatabaseType getDatabaseType(final String url) {
+        return DatabaseTypeFactory.getInstances().stream().filter(each -> matchURLs(url, each)).findAny().orElseGet(() -> DatabaseTypeFactory.getInstance("SQL92"));
+    }
+    
+    /**
+     * Get database type.
+     *
+     * @param dataSources data sources
+     * @return database type
+     */
+    public static DatabaseType getDatabaseType(final Collection<DataSource> dataSources) {
+        DatabaseType result = null;
+        for (DataSource each : dataSources) {
+            DatabaseType databaseType = getDatabaseType(each);
+            Preconditions.checkState(null == result || result == databaseType, "Database type inconsistent with '%s' and '%s'", result, databaseType);
+            result = databaseType;
+        }
+        return null == result ? DatabaseTypeFactory.getInstance(DEFAULT_DATABASE_TYPE) : result;
+    }
+    
+    private static DatabaseType getDatabaseType(final DataSource dataSource) {
+        try (Connection connection = dataSource.getConnection()) {
+            return getDatabaseType(connection.getMetaData().getURL());
+        } catch (final SQLException ex) {
+            throw new ShardingSphereException(ex.getMessage(), ex);
+        }
+    }
+    
+    private static boolean matchURLs(final String url, final DatabaseType databaseType) {
+        return databaseType.getJdbcUrlPrefixes().stream().anyMatch(url::startsWith);
     }
 }
