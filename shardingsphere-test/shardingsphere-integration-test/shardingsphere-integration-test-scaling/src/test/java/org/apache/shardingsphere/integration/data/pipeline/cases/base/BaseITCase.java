@@ -230,7 +230,7 @@ public abstract class BaseITCase {
                 .replace("${ds2}", getActualJdbcUrlTemplate(DS_2))
                 .replace("${ds3}", getActualJdbcUrlTemplate(DS_3))
                 .replace("${ds4}", getActualJdbcUrlTemplate(DS_4));
-        executeWithLog(addTargetResource, 1);
+        executeWithLog(addTargetResource);
         List<Map<String, Object>> resources = queryForListWithLog("SHOW DATABASE RESOURCES from sharding_db");
         assertThat(resources.size(), is(5));
         assertBeforeApplyScalingMetadataCorrectly();
@@ -246,17 +246,17 @@ public abstract class BaseITCase {
     }
     
     protected void initShardingAlgorithm() {
-        executeWithLog(getCommonSQLCommand().getCreateDatabaseShardingAlgorithm(), 1);
-        executeWithLog(getCommonSQLCommand().getCreateOrderShardingAlgorithm(), 1);
-        executeWithLog(getCommonSQLCommand().getCreateOrderItemShardingAlgorithm(), 1);
+        executeWithLog(getCommonSQLCommand().getCreateDatabaseShardingAlgorithm());
+        executeWithLog(getCommonSQLCommand().getCreateOrderShardingAlgorithm());
+        executeWithLog(getCommonSQLCommand().getCreateOrderItemShardingAlgorithm());
     }
     
     protected void createOrderTableRule() {
-        executeWithLog(commonSQLCommand.getCreateOrderTableRule(), 0);
+        executeWithLog(commonSQLCommand.getCreateOrderTableRule());
     }
     
     protected void createOrderItemTableRule() {
-        executeWithLog(commonSQLCommand.getCreateOrderItemTableRule(), 0);
+        executeWithLog(commonSQLCommand.getCreateOrderItemTableRule());
     }
     
     protected void bindingShardingRule() {
@@ -275,11 +275,11 @@ public abstract class BaseITCase {
                 log.error("Failed to show scaling list. {}", ex.getMessage());
             }
         }
-        executeWithLog("CREATE SHARDING SCALING RULE scaling_manual (INPUT(SHARDING_SIZE=1000), DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH)))", 1);
+        executeWithLog("CREATE SHARDING SCALING RULE scaling_manual (INPUT(SHARDING_SIZE=1000), DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH)))");
     }
     
     protected void createSchema(final String schemaName) {
-        executeWithLog(String.format("CREATE SCHEMA %s", schemaName), 0);
+        executeWithLog(String.format("CREATE SCHEMA %s", schemaName));
     }
     
     protected void executeWithLog(final Connection connection, final String sql) throws SQLException {
@@ -288,7 +288,7 @@ public abstract class BaseITCase {
         ThreadUtil.sleep(1, TimeUnit.SECONDS);
     }
     
-    protected void executeWithLog(final String sql, final Integer sleepSeconds) {
+    private void executeWithLog(final String sql, final Integer sleepSeconds) {
         log.info("jdbcTemplate execute:{}", sql);
         jdbcTemplate.execute(sql);
         ThreadUtil.sleep(Math.max(sleepSeconds, 0), TimeUnit.SECONDS);
