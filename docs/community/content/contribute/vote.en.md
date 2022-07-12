@@ -65,7 +65,7 @@ Title: [NOTICE] (nominee) for ShardingSphere PMC
 
 The Apache ShardingSphere project proposes to invite (nominee) to join the PMC.
 The vote result is available here:
-(vote link here)
+(Vote link here. The link should be a permalink from the https://lists.apache.org/ mail archive.)
 
 Thank you,
 (initiator)
