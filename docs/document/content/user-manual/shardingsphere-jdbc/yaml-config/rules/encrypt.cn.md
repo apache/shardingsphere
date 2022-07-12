@@ -82,5 +82,5 @@ YamlShardingSphereDataSourceFactory.createDataSource(getFile());
 
 ## 相关参考
 
-- [数据加密核心特性](/cn/features/encrypt/)
-- [数据加密开发者指南](/cn/dev-manual/encryption/)
+- [核心特性：数据加密](/cn/features/encrypt/)
+- [开发者指南：数据加密](/cn/dev-manual/encrypt/)

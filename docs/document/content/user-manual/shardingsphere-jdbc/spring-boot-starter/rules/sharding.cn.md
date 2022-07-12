@@ -124,5 +124,5 @@ spring.shardingsphere.rules.sharding.key-generators.snowflake.type=SNOWFLAKE
 
 ## 相关参考
 
-- [数据分片核心特性](/cn/features/sharding/)
-- [数据分片开发者指南](/cn/dev-manual/sharding/)
+- [核心特性：数据分片](/cn/features/sharding/)
+- [开发者指南：数据分片](/cn/dev-manual/sharding/)
