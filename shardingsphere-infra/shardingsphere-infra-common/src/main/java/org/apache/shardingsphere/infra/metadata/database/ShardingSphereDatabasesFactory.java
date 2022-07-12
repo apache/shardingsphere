@@ -45,6 +45,7 @@ public final class ShardingSphereDatabasesFactory {
      * @return created database
      * @throws SQLException SQL exception
      */
+    // CHECKSTYLE:OFF
     public static ShardingSphereDatabase create(final String databaseName, final DatabaseConfiguration databaseConfig,
                                                 final ConfigurationProperties props, final InstanceContext instanceContext) throws SQLException {
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfig, props);
@@ -60,7 +61,8 @@ public final class ShardingSphereDatabasesFactory {
             ShardingSphereDatabase result = ShardingSphereDatabase.create(databaseName, protocolType, storageType, databaseConfig, props, instanceContext);
             log.error("=================create result===========" + result);
             return result;
-        } catch (Exception ex) {
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
             ex.printStackTrace();
         }
         log.error("=================create result null===========");
