@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -76,7 +77,8 @@ public final class ShardingSphereDatabase {
                                                 final DatabaseConfiguration databaseConfig, final ConfigurationProperties props, final InstanceContext instanceContext) throws SQLException {
         Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(name, databaseConfig, instanceContext);
         Map<String, ShardingSphereSchema> schemas = new ConcurrentHashMap<>();
-        schemas.putAll(GenericSchemaBuilder.build(new GenericSchemaBuilderMaterials(protocolType, storageType, databaseConfig.getDataSources(), databaseRules, props, name)));
+        schemas.putAll(GenericSchemaBuilder.build(new GenericSchemaBuilderMaterials(protocolType, storageType, databaseConfig.getDataSources(), databaseRules, props,
+                DatabaseTypeEngine.getDefaultSchemaName(storageType, name))));
         schemas.putAll(SystemSchemaBuilder.build(name, protocolType));
         return create(name, protocolType, databaseConfig, databaseRules, schemas);
     }

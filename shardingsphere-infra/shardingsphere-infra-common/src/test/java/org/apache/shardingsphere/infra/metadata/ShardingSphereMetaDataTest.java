@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.infra.metadata;
 
+import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -37,6 +40,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.verify;
@@ -84,5 +88,13 @@ public final class ShardingSphereMetaDataTest {
         when(result.getResource().getDataSources()).thenReturn(Collections.singletonMap("foo_db", dataSource));
         when(result.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.singleton(databaseResourceHeldRule)));
         return result;
+    }
+    
+    @Test
+    public void assertGetPostgresDefaultSchema() throws SQLException {
+        PostgreSQLDatabaseType databaseType = new PostgreSQLDatabaseType();
+        ShardingSphereDatabase actual = ShardingSphereDatabase.create("foo_db", databaseType, databaseType,
+                mock(DataSourceProvidedDatabaseConfiguration.class), new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
+        assertNotNull(actual.getSchemas().get("public"));
     }
 }
