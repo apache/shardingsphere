@@ -15,51 +15,49 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.HintRALStatement;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.HintStatementExecutor;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.HintStatementExecutorFactory;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandler;
 
 import java.sql.SQLException;
 
 /**
- * Hint dist sql backend handler.
+ * Hint RAL backend handler.
  */
 @RequiredArgsConstructor
 @Getter
-public final class HintDistSQLBackendHandler implements TextProtocolBackendHandler {
+public final class HintRALBackendHandler extends RALBackendHandler {
     
-    private final HintDistSQLStatement sqlStatement;
+    private final HintRALStatement sqlStatement;
     
     private final ConnectionSession connectionSession;
     
-    private HintStatementExecutor<? extends HintDistSQLStatement> hintStatementExecutor;
+    private HintRALStatementExecutor<? extends HintRALStatement> hintRALStatementExecutor;
     
     @Override
     public ResponseHeader execute() throws SQLException {
         if (!ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().<Boolean>getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED)) {
             throw new UnsupportedOperationException(String.format("%s should be true, please check your config", ConfigurationPropertyKey.PROXY_HINT_ENABLED.getKey()));
         }
-        hintStatementExecutor = HintStatementExecutorFactory.newInstance(sqlStatement, connectionSession);
-        return hintStatementExecutor.execute();
+        hintRALStatementExecutor = HintRALStatementExecutorFactory.newInstance(sqlStatement, connectionSession);
+        return hintRALStatementExecutor.execute();
     }
     
     @Override
     public boolean next() throws SQLException {
-        return hintStatementExecutor.next();
+        return hintRALStatementExecutor.next();
     }
     
     @Override
     public QueryResponseRow getRowData() throws SQLException {
-        return hintStatementExecutor.getQueryResponseRow();
+        return hintRALStatementExecutor.getQueryResponseRow();
     }
 }

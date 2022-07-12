@@ -15,39 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint.executor;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-
-import java.sql.SQLException;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint.HintManagerHolder;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.ClearShardingHintStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 
 /**
- * Hint statement executor.
+ * Clear sharding hint executor.
  */
-public interface HintStatementExecutor<T extends HintDistSQLStatement> {
+@RequiredArgsConstructor
+public final class ClearShardingHintExecutor extends AbstractHintUpdateExecutor<ClearShardingHintStatement> {
     
-    /**
-     * Execute hint statement.
-     *
-     * @return backend response
-     */
-    ResponseHeader execute();
-    
-    /**
-     * Goto next result value.
-     *
-     * @return has more result value or not
-     * @throws SQLException SQL exception
-     */
-    boolean next() throws SQLException;
-    
-    /**
-     * Get query response row.
-     *
-     * @return query response row
-     * @throws SQLException SQL exception
-     */
-    QueryResponseRow getQueryResponseRow() throws SQLException;
+    @Override
+    public ResponseHeader execute() {
+        HintManagerHolder.get().clearShardingValues();
+        return new UpdateResponseHeader(new EmptyStatement());
+    }
 }

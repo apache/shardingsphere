@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.hint.ClearHintStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.HintRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.hint.ClearHintStatement;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.AddShardingHintDatabaseValueExecutor;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.AddShardingHintTableValueExecutor;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.ClearHintExecutor;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.ClearReadwriteSplittingHintExecutor;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.ClearShardingHintExecutor;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.SetReadwriteSplittingHintExecutor;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.SetShardingHintDatabaseValueExecutor;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.ShowReadwriteSplittingHintStatusExecutor;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor.ShowShardingHintStatusExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint.executor.AddShardingHintDatabaseValueExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint.executor.AddShardingHintTableValueExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint.executor.ClearHintExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint.executor.ClearReadwriteSplittingHintExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint.executor.ClearShardingHintExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint.executor.SetReadwriteSplittingHintExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint.executor.SetShardingHintDatabaseValueExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint.executor.ShowReadwriteSplittingHintStatusExecutor;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint.executor.ShowShardingHintStatusExecutor;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ClearReadwriteSplittingHintStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.SetReadwriteSplittingHintStatement;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ShowReadwriteSplittingHintStatusStatement;
@@ -43,20 +43,20 @@ import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.ShowShar
 import java.sql.SQLException;
 
 /**
- * Hint statement executor factory.
+ * Hint RAL statement executor factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class HintStatementExecutorFactory {
+public final class HintRALStatementExecutorFactory {
     
     /**
-     * Create hint statement executor instance.
+     * Create hint RAL statement executor instance.
      *
-     * @param sqlStatement hint statement
+     * @param sqlStatement hint RAL statement
      * @param connectionSession connection session
-     * @return hint command executor
+     * @return hint RAL statement executor
      * @throws SQLException SQL exception
      */
-    public static HintStatementExecutor<? extends HintDistSQLStatement> newInstance(final HintDistSQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
+    public static HintRALStatementExecutor<? extends HintRALStatement> newInstance(final HintRALStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
         if (sqlStatement instanceof SetReadwriteSplittingHintStatement) {
             return new SetReadwriteSplittingHintExecutor((SetReadwriteSplittingHintStatement) sqlStatement);
         }
