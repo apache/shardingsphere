@@ -33,7 +33,6 @@ import org.junit.Test;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
@@ -67,30 +66,30 @@ public final class DatabaseTypeFactoryTest {
         assertThat(iterator.next(), instanceOf(SQLServerDatabaseType.class));
         assertThat(iterator.next(), instanceOf(H2DatabaseType.class));
     }
-
+    
     @Test(expected = ShardingSphereException.class)
     public void assertGetDatabaseTypeWhenGetConnectionError() throws SQLException {
         DataSource dataSource = mock(DataSource.class);
         when(dataSource.getConnection()).thenThrow(SQLException.class);
         DatabaseTypeFactory.getDatabaseType(Collections.singleton(dataSource));
     }
-
+    
     @Test
     public void assertGetDatabaseTypeWithRecognizedURL() {
         assertThat(DatabaseTypeFactory.getDatabaseType("jdbc:mysql://localhost:3306/test").getType(), is("MySQL"));
     }
-
+    
     @Test
     public void assertGetDatabaseTypeWithUnrecognizedURL() {
         assertThat(DatabaseTypeFactory.getDatabaseType("jdbc:sqlite:test").getType(), is("SQL92"));
     }
-
+    
     private DataSource mockDataSource(final DatabaseType databaseType) throws SQLException {
         Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(connection.getMetaData().getURL()).thenReturn(getURL(databaseType));
         return new MockedDataSource(connection);
     }
-
+    
     private String getURL(final DatabaseType databaseType) {
         switch (databaseType.getType()) {
             case "H2":
@@ -99,16 +98,6 @@ public final class DatabaseTypeFactoryTest {
                 return "jdbc:mysql://localhost:3306/test";
             case "PostgreSQL":
                 return "jdbc:postgresql://localhost:5432/test";
-            case "openGauss":
-                return "jdbc:opengauss://localhost:5432/test";
-            case "SQLServer":
-                return "jdbc:sqlserver://localhost:8000/test";
-            case "Oracle":
-                return "jdbc:oracle://localhost:3306/test";
-            case "MariaDB":
-                return "jdbc:mariadb://localhost:5432/test";
-            case "FIXTURE":
-                return "jdbc:fixture://localhost:5432/test";
             default:
                 throw new IllegalStateException("Unexpected value: " + databaseType.getType());
         }
