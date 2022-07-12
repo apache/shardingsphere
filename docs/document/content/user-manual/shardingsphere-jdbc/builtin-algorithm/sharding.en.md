@@ -3,9 +3,17 @@ title = "Sharding Algorithm"
 weight = 2
 +++
 
-## Auto Sharding Algorithm
+## Background
 
-### Modulo Sharding Algorithm
+ShardingSphere built-in algorithms provide a variety of sharding algorithms, which can be divided into automatic sharding algorithms, standard sharding algorithms, composite sharding algorithms, and hint sharding algorithms, and can meet the needs of most business scenarios of users.
+
+Additionally, considering the complexity of business scenarios, the built-in algorithm also provides a way to customize the sharding algorithm. Users can complete complex sharding logic by writing java code.
+
+## Parameters
+
+### Auto Sharding Algorithm
+
+#### Modulo Sharding Algorithm
 
 Type: MOD
 
@@ -15,7 +23,7 @@ Attributes:
 | -------------- | ---------- | -------------- |
 | sharding-count | int        | Sharding count |
 
-### Hash Modulo Sharding Algorithm
+#### Hash Modulo Sharding Algorithm
 
 Type: HASH_MOD
 
@@ -25,7 +33,7 @@ Attributes:
 | -------------- | ---------- | -------------- |
 | sharding-count | int        | Sharding count |
 
-### Volume Based Range Sharding Algorithm
+#### Volume Based Range Sharding Algorithm
 
 Type: VOLUME_RANGE
 
@@ -37,7 +45,7 @@ Attributes:
 | range-upper     | long       | Range upper bound, throw exception if upper than bound |
 | sharding-volume | long       | Sharding volume                                        |
 
-### Boundary Based Range Sharding Algorithm
+#### Boundary Based Range Sharding Algorithm
 
 Type: BOUNDARY_RANGE
 
@@ -47,7 +55,7 @@ Attributes:
 | --------------- | ---------- | ----------------------------------------------------------------- |
 | sharding-ranges | String     | Range of sharding border, multiple boundaries separated by commas |
 
-### Auto Interval Sharding Algorithm
+#### Auto Interval Sharding Algorithm
 
 Type: AUTO_INTERVAL
 
@@ -59,11 +67,11 @@ Attributes:
 | datetime-upper   | String     | Shard datetime end boundary, pattern: yyyy-MM-dd HH:mm:ss                                                                                                         |
 | sharding-seconds | long       | Max seconds for the data in one shard, allows sharding key timestamp format seconds with time precision, but time precision after seconds is automatically erased |
 
-## Standard Sharding Algorithm
+### Standard Sharding Algorithm
 
 Apache ShardingSphere built-in standard sharding algorithm are:
 
-### Inline Sharding Algorithm
+#### Inline Sharding Algorithm
 
 With Groovy expressions, `InlineShardingStrategy` provides single-key support for the sharding operation of `=` and `IN` in SQL.
 Simple sharding algorithms can be used through a simple configuration to avoid laborious Java code developments.
@@ -79,7 +87,7 @@ Attributes:
 | algorithm-expression                      | String     | Inline expression sharding algorithm                                                                     | -               |
 | allow-range-query-with-inline-sharding (?)| boolean    | Whether range query is allowed. Note: range query will ignore sharding strategy and conduct full routing | false           |
 
-### Interval Sharding Algorithm
+#### Interval Sharding Algorithm
 
 Type: INTERVAL
 
@@ -94,9 +102,9 @@ Attributes:
 | datetime-interval-amount (?) | int        | Interval of sharding value                                                                                                                                                                                                      | 1               |
 | datetime-interval-unit (?)   | String     | Unit of sharding value interval, must can be transformed to Java ChronoUnit's Enum value. For example: MONTHS                                                                                                                   | DAYS            |
 
-## Complex Sharding Algorithm
+### Complex Sharding Algorithm
 
-### Complex Inline Sharding Algorithm
+#### Complex Inline Sharding Algorithm
 
 Please refer to [Inline Expression](/en/features/sharding/concept/inline-expression/) for more details.
 
@@ -108,9 +116,9 @@ Type: COMPLEX_INLINE
 | algorithm-expression                      | String     | Inline expression sharding algorithm                                                                     | -               |
 | allow-range-query-with-inline-sharding (?)| boolean    | Whether range query is allowed. Note: range query will ignore sharding strategy and conduct full routing | false           |
 
-## Hint Sharding Algorithm
+### Hint Sharding Algorithm
 
-### Hint Inline Sharding Algorithm
+#### Hint Inline Sharding Algorithm
 
 Please refer to [Inline Expression](/en/features/sharding/concept/inline-expression/) for more details.
 
@@ -121,7 +129,7 @@ Type: COMPLEX_INLINE
 | algorithm-expression                      | String     | Inline expression sharding algorithm                                                                     | ${value}        |
 
 
-## Class Based Sharding Algorithm
+### Class Based Sharding Algorithm
 
 Realize custom extension by configuring the sharding strategy type and algorithm class name.
 
@@ -133,3 +141,78 @@ Attributes：
 | ------------------ | --------- | -------------------------------------------------- |
 | strategy           | String    | Sharding strategy type, support STANDARD, COMPLEX or HINT (case insensitive) |
 | algorithmClassName | String    | Fully qualified name of sharding algorithm                                   |
+
+## Procedure
+
+1. When using data sharding, configure the corresponding data sharding algorithm under the shardingAlgorithms attribute.
+
+## Sample
+
+```yaml
+rules:
+- !SHARDING
+  tables:
+    t_order: 
+      actualDataNodes: ds_${0..1}.t_order_${0..1}
+      tableStrategy: 
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithmName: t-order-inline
+      keyGenerateStrategy:
+        column: order_id
+        keyGeneratorName: snowflake
+    t_order_item:
+      actualDataNodes: ds_${0..1}.t_order_item_${0..1}
+      tableStrategy:
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithmName: t_order-item-inline
+      keyGenerateStrategy:
+        column: order_item_id
+        keyGeneratorName: snowflake
+    t_account:
+      actualDataNodes: ds_${0..1}.t_account_${0..1}
+      tableStrategy:
+        standard:
+          shardingAlgorithmName: t-account-inline
+      keyGenerateStrategy:
+        column: account_id
+        keyGeneratorName: snowflake
+  defaultShardingColumn: account_id
+  bindingTables:
+    - t_order,t_order_item
+  broadcastTables:
+    - t_address
+  defaultDatabaseStrategy:
+    standard:
+      shardingColumn: user_id
+      shardingAlgorithmName: database-inline
+  defaultTableStrategy:
+    none:
+  
+  shardingAlgorithms:
+    database-inline:
+      type: INLINE
+      props:
+        algorithm-expression: ds_${user_id % 2}
+    t-order-inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_order_${order_id % 2}
+    t_order-item-inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_order_item_${order_id % 2}
+    t-account-inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_account_${account_id % 2}
+  keyGenerators:
+    snowflake:
+      type: SNOWFLAKE
+```
+
+## Related References
+
+- [Core Features of Data Sharding](/en/features/sharding/)
+- [Developer Guide of Data Sharding](/en/dev-manual/sharding/)
