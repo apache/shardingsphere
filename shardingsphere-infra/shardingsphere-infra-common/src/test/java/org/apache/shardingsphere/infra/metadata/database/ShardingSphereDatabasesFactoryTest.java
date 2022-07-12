@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.metadata.database;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -38,12 +39,14 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
+@Slf4j
 public final class ShardingSphereDatabasesFactoryTest {
     
     @Test
     public void assertCreateSingleDatabase() throws SQLException {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration()));
         ShardingSphereDatabase actual = ShardingSphereDatabasesFactory.create("foo_db", databaseConfig, new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
+        log.error("============ShardingSphereDatabase actual=========" + actual);
         assertThat(actual.getName(), is("foo_db"));
         assertThat(actual.getRuleMetaData().getRules().iterator().next(), instanceOf(FixtureDatabaseRule.class));
         assertTrue(actual.getResource().getDataSources().isEmpty());
@@ -54,6 +57,7 @@ public final class ShardingSphereDatabasesFactoryTest {
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration()));
         Map<String, ShardingSphereDatabase> actual = ShardingSphereDatabasesFactory.create(
                 Collections.singletonMap("foo_db", databaseConfig), new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
+        log.error("============ShardingSphereDatabase actual=========" + actual);
         Collection<ShardingSphereRule> rules = actual.get("foo_db").getRuleMetaData().getRules();
         assertThat(rules.size(), is(1));
         assertThat(rules.iterator().next(), instanceOf(FixtureDatabaseRule.class));
