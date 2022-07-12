@@ -586,6 +586,8 @@ public enum SQLVisitorRule {
     
     ALTER_AUDIT_POLICY("AlterAuditPolicy", SQLStatementType.DDL),
     
+    ALTER_CLUSTER("AlterCluster", SQLStatementType.DDL),
+    
     CURSOR("Cursor", SQLStatementType.DDL),
     
     CLOSE("Close", SQLStatementType.DDL),
