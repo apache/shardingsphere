@@ -31,6 +31,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
+import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
@@ -59,6 +60,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -97,7 +99,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
             addRules(databaseName, yamlConfig.getRules());
         } catch (DistSQLException ex) {
             dropDatabase(databaseName);
-            throw new RuntimeException(ex.getMessage());
+            throw ex;
         }
     }
     
@@ -116,7 +118,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         try {
             ProxyContext.getInstance().getContextManager().addDatabase(databaseName);
         } catch (SQLException ex) {
-            throw new RuntimeException(ex.getMessage());
+            throw new ShardingSphereException(ex.getMessage());
         }
     }
     
@@ -133,7 +135,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         try {
             ProxyContext.getInstance().getContextManager().updateResources(databaseName, dataSourcePropsMap);
         } catch (final SQLException ex) {
-            throw new RuntimeException(ex.getMessage());
+            throw new InvalidResourcesException(Collections.singleton(ex.getMessage()));
         }
     }
     
