@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
@@ -48,6 +49,7 @@ import java.util.stream.Collectors;
  */
 @RequiredArgsConstructor
 @Getter
+@Slf4j
 public final class ShardingSphereDatabase {
     
     private final String name;
@@ -102,6 +104,7 @@ public final class ShardingSphereDatabase {
     }
     
     private static ShardingSphereResource createResource(final Map<String, DataSource> dataSourceMap) {
+        log.error("=======createResource======" + dataSourceMap);
         return new ShardingSphereResource(dataSourceMap);
     }
     

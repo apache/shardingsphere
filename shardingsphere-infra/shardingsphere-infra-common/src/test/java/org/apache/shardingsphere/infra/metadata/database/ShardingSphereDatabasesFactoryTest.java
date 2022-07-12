@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.metadata.database;
 
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -39,16 +38,12 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-@Slf4j
 public final class ShardingSphereDatabasesFactoryTest {
     
     @Test
     public void assertCreateSingleDatabase() throws SQLException {
-        log.error("============assertCreateSingleDatabase=========");
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration()));
-        log.error("============DatabaseConfiguration databaseConfig=========" + databaseConfig);
         ShardingSphereDatabase actual = ShardingSphereDatabasesFactory.create("foo_db", databaseConfig, new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
-        log.error("============ShardingSphereDatabase actual=========" + actual);
         assertThat(actual.getName(), is("foo_db"));
         assertThat(actual.getRuleMetaData().getRules().iterator().next(), instanceOf(FixtureDatabaseRule.class));
         assertTrue(actual.getResource().getDataSources().isEmpty());
