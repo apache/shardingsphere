@@ -3,43 +3,15 @@ title = "模式配置"
 weight = 1
 +++
 
-## 配置项说明
+## 背景信息
 
-命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource-5.1.2.xsd)
+缺省配置为使用内存模式。
 
-\<shardingsphere:mode />
-
-| *名称*              | *类型* | *说明*                                         | *默认值* |
-| ------------------ | ------ | --------------------------------------------- | ------- |
-| type               | 属性   | 运行模式类型。可选配置：Memory、Standalone、Cluster |         |
-| repository-ref (?) | 属性   | 持久化仓库 Bean 引用。Memory 类型无需持久化         |         |
-| overwrite (?)      | 属性   | 是否使用本地配置覆盖持久化配置                      | false   |
-
-### 内存模式
-
-缺省配置。
-
-#### 配置示例
-
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-                           http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/datasource
-                           http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd">
-    
-    <shardingsphere:data-source id="ds" database-name="foo_schema" data-source-names="..." rule-refs="..." />
-</beans>
-```
+## 参数解释
 
 ### 单机模式
 
-#### 配置项说明
-
-命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository-5.1.2.xsd)
+命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository-5.1.1.xsd)
 
 <standalone:repository />
 
@@ -49,33 +21,9 @@ weight = 1
 | type      | 属性   | 持久化仓库类型       |
 | props (?) | 标签   | 持久化仓库所需属性    |
 
-#### 配置示例
+### 集群模式 (推荐)
 
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
-       xmlns:standalone="http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-                           http://www.springframework.org/schema/beans/spring-beans.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/datasource
-                           http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
-                           http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone
-                           http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository.xsd">
-    <standalone:repository id="standaloneRepository" type="H2" />
-    
-    <shardingsphere:data-source id="ds" database-name="foo_schema" data-source-names="..." rule-refs="..." >
-        <shardingsphere:mode type="Standalone" repository-ref="standaloneRepository" overwrite="true" />
-    </shardingsphere:data-source>
-</beans>
-```
-
-### 集群模式
-
-#### 配置项说明
-
-命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository-5.1.2.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository-5.1.2.xsd)
+命名空间：[http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/cluster/repository-5.1.1.xsd)
 
 <cluster:repository />
 
@@ -87,7 +35,51 @@ weight = 1
 | server-lists  | 属性   | 注册中心连接地址     |
 | props (?)     | 标签   | 持久化仓库所需属性    |
 
-#### 配置示例
+## 注意事项
+1. 生产环境建议使用集群模式部署。
+2. 集群模式部署推荐使用 `ZooKeeper` 注册中心。
+
+## 操作步骤
+1. 引入 MAVEN 依赖
+
+```xml
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-jdbc-core-spring-namespace</artifactId>
+    <version>${latest.release.version}</version>
+</dependency>
+```
+
+> 注意：请将 `${latest.release.version}` 更改为实际的版本号。
+
+## 配置示例
+
+### 单机模式
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:shardingsphere="http://shardingsphere.apache.org/schema/shardingsphere/datasource"
+       xmlns:standalone="http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+                           http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/datasource
+                  http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
+                           http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone
+                           http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository.xsd">
+    <standalone:repository id="standaloneRepository" type="File">
+        <props>
+            <prop key="path">.shardingsphere</prop>
+        </props>
+    </standalone:repository>
+
+    <shardingsphere:data-source id="ds" database-name="foo_db" data-source-names="..." rule-refs="..." >
+        <shardingsphere:mode type="Standalone" repository-ref="standaloneRepository" overwrite="false" />
+    </shardingsphere:data-source>
+</beans>
+```
+### 集群模式
 
 ```xml
 <?xml version="1.0" encoding="UTF-8"?>
@@ -108,10 +100,13 @@ weight = 1
         </props>
     </cluster:repository>
     
-    <shardingsphere:data-source id="ds" database-name="foo_schema" data-source-names="..." rule-refs="...">
-        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" overwrite="true" />
+    <shardingsphere:data-source id="ds" database-name="foo_db" data-source-names="..." rule-refs="...">
+        <shardingsphere:mode type="Cluster" repository-ref="clusterRepository" overwrite="false" />
     </shardingsphere:data-source>
 </beans>
 ```
 
-持久化仓库类型的详情，请参见[内置持久化仓库类型列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/metadata-repository/)。
+## 相关参考
+
+- [ZooKeeper 注册中心安装与使用](https://zookeeper.apache.org/doc/r3.7.1/zookeeperStarted.html)
+- 持久化仓库类型的详情，请参见[内置持久化仓库类型列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/metadata-repository/)。
