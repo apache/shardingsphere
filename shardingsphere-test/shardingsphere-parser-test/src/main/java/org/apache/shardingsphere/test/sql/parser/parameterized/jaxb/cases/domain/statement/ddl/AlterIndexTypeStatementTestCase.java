@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedIndexType;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
@@ -25,6 +28,9 @@ import javax.xml.bind.annotation.XmlElement;
 /**
  * Alter index type statement test case.
  */
+@Getter
+@Setter
+@ToString
 public final class AlterIndexTypeStatementTestCase extends SQLParserTestCase {
     
     @XmlElement(name = "index-type")

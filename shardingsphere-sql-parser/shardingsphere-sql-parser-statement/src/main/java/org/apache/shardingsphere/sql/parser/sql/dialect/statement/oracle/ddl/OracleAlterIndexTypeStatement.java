@@ -22,6 +22,7 @@ import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
@@ -30,7 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 @Getter
 @Setter
 @ToString
-public final class OracleAlterIndexTypeStatement extends AbstractSQLStatement implements OracleStatement {
+public final class OracleAlterIndexTypeStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
     
     private IndexTypeSegment indexType;
 }
