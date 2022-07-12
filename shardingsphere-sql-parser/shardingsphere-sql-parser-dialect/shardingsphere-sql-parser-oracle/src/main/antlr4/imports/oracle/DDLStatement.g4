@@ -2746,7 +2746,7 @@ alterCluster
     ;
 
 alterIndexType
-    : ALTER INDEXTYPE indextypeName ((addOrDropClause (COMMA_ addOrDropClause)* usingTypeClause?) | COMPILE) withLocalClause
+    : ALTER INDEXTYPE indexTypeName ((addOrDropClause (COMMA_ addOrDropClause)* usingTypeClause?) | COMPILE) withLocalClause
     ;
 
 addOrDropClause

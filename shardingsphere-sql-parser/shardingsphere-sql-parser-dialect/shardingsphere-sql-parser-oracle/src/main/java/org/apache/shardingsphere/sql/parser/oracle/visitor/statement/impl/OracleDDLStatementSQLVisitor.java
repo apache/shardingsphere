@@ -910,16 +910,16 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     public ASTNode visitAlterAuditPolicy(final AlterAuditPolicyContext ctx) {
         return new OracleAlterAuditPolicyStatement();
     }
-
+    
     @Override
     public ASTNode visitAlterCluster(final AlterClusterContext ctx) {
         return new OracleAlterClusterStatement();
     }
-
+    
     @Override
     public ASTNode visitAlterIndexType(final AlterIndexTypeContext ctx) {
         OracleAlterIndexTypeStatement result = new OracleAlterIndexTypeStatement();
-        result.setIndextype((IndextypeSegment) visit(ctx.indextypeName()));
+        result.setIndexType((IndexTypeSegment) visit(ctx.indexTypeName()));
         return new OracleAlterIndexTypeStatement();
     }
 }

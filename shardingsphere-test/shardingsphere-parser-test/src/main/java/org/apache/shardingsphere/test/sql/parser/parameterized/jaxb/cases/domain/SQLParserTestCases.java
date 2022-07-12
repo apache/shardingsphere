@@ -1334,10 +1334,10 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "alter-cluster")
     private final List<AlterClusterStatementTestCase> alterClusterTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-index-type")
     private final List<AlterIndexTypeStatementTestCase> alterIndexTypeTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-operator")
     private final List<AlterOperatorStatementTestCase> alterOperatorTestCases = new LinkedList<>();
     

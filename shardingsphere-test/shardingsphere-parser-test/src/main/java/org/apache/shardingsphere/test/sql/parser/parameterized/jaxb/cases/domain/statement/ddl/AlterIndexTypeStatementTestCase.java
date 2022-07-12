@@ -17,10 +17,16 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedIndexType;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlElement;
 
 /**
  * Alter index type statement test case.
  */
 public final class AlterIndexTypeStatementTestCase extends SQLParserTestCase {
+    
+    @XmlElement(name = "index-type")
+    private ExpectedIndexType indexType;
 }
