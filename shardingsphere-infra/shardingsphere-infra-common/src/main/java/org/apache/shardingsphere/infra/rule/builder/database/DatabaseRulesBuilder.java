@@ -55,19 +55,20 @@ public final class DatabaseRulesBuilder {
     public static Collection<ShardingSphereRule> build(final String databaseName, final DatabaseConfiguration databaseConfig, final InstanceContext instanceContext) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         for (Entry<RuleConfiguration, DatabaseRuleBuilder> entry : getRuleBuilderMap(databaseConfig).entrySet()) {
+            log.error("========databaseConfig======" + databaseConfig);
+            log.error("========databaseConfig.getDataSources()======" + databaseConfig.getDataSources());
             result.add(entry.getValue().build(entry.getKey(), databaseName, databaseConfig.getDataSources(), result, instanceContext));
         }
+        log.error("========result======" + result);
         return result;
     }
     
     @SuppressWarnings("rawtypes")
     private static Map<RuleConfiguration, DatabaseRuleBuilder> getRuleBuilderMap(final DatabaseConfiguration databaseConfig) {
-        log.error("========getRuleBuilderMap======");
         Map<RuleConfiguration, DatabaseRuleBuilder> result = new LinkedHashMap<>();
         result.putAll(getDistributedRuleBuilderMap(databaseConfig.getRuleConfigurations()));
         result.putAll(getEnhancedRuleBuilderMap(databaseConfig.getRuleConfigurations()));
         result.putAll(getMissedDefaultRuleBuilderMap(result.values()));
-        log.error("========getRuleBuilderMap result======" + result);
         return result;
     }
     
