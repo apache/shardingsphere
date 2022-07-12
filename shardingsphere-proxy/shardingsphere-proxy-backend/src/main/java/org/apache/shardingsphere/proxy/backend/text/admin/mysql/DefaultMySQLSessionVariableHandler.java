@@ -15,27 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
+package org.apache.shardingsphere.proxy.backend.text.admin.mysql;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 
-import java.sql.SQLException;
+import java.util.stream.Collectors;
 
 /**
- * No Resource set executor.
+ * Default session variable handler for MySQL.
  */
-@Getter
-@RequiredArgsConstructor
-public final class NoResourceSetExecutor implements DatabaseAdminExecutor {
-    
-    private final SetStatement sqlStatement;
+@Slf4j
+public final class DefaultMySQLSessionVariableHandler implements MySQLSessionVariableHandler {
     
     @Override
-    public void execute(final ConnectionSession connectionSession) throws SQLException {
-        return;
+    public void handle(final ConnectionSession connectionSession, final SetStatement setStatement) {
+        if (log.isDebugEnabled()) {
+            log.debug("Set statement {} was discarded.", setStatement.getVariableAssigns().stream()
+                    .map(segment -> String.format("%s %s = %s", segment.getVariable().getScope(), segment.getVariable().getVariable(), segment.getAssignValue())).collect(Collectors.joining(", ")));
+        }
     }
 }
