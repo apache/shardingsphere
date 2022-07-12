@@ -17,14 +17,13 @@
 
 package org.apache.shardingsphere.infra.rule.identifier.type;
 
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 
 /**
- * Dynamic status contained rule.
+ * Static data source contained rule.
  */
-public interface DynamicStatusContainedRule extends ShardingSphereRule {
+public interface StaticDataSourceContainedRule extends ShardingSphereRule {
     
     /**
      * Update data source status.
@@ -32,11 +31,4 @@ public interface DynamicStatusContainedRule extends ShardingSphereRule {
      * @param event data source status changed event
      */
     void updateStatus(DataSourceStatusChangedEvent event);
-    
-    /**
-     * Restart heart beat job.
-     * @param event data source status changed event
-     * @param instanceContext instance context
-     */
-    void restartHeartBeatJob(DataSourceStatusChangedEvent event, InstanceContext instanceContext);
 }

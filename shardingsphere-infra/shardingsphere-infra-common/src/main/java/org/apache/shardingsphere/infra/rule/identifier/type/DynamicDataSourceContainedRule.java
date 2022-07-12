@@ -17,13 +17,32 @@
 
 package org.apache.shardingsphere.infra.rule.identifier.type;
 
+import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 
+import java.util.Collection;
+
 /**
- * Static Status contained rule.
+ * Dynamic data source contained rule.
  */
-public interface StaticStatusContainedRule extends ShardingSphereRule {
+public interface DynamicDataSourceContainedRule extends ShardingSphereRule {
+    
+    /**
+     * Get primary data source name.
+     *
+     * @param dataSourceName data source name
+     * @return primary data source name
+     */
+    String getPrimaryDataSourceName(String dataSourceName);
+    
+    /**
+     * Get replica data source names.
+     *
+     * @param dataSourceName data source name
+     * @return replica data source names
+     */
+    Collection<String> getReplicaDataSourceNames(String dataSourceName);
     
     /**
      * Update data source status.
@@ -31,4 +50,11 @@ public interface StaticStatusContainedRule extends ShardingSphereRule {
      * @param event data source status changed event
      */
     void updateStatus(DataSourceStatusChangedEvent event);
+    
+    /**
+     * Restart heart beat job.
+     * @param event data source status changed event
+     * @param instanceContext instance context
+     */
+    void restartHeartBeatJob(DataSourceStatusChangedEvent event, InstanceContext instanceContext);
 }
