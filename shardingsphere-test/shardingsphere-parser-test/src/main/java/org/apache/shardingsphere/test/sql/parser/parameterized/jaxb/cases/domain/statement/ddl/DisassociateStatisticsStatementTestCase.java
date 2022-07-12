@@ -57,6 +57,6 @@ public final class DisassociateStatisticsStatementTestCase extends SQLParserTest
     @XmlElement(name = "type")
     private final List<ExpectedType> types = new LinkedList<>();
     
-    @XmlElement(name = "indexType")
+    @XmlElement(name = "index-type")
     private final List<ExpectedIndexType> indexTypes = new LinkedList<>();
 }

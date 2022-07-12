@@ -39,6 +39,6 @@ public final class CommentStatementTestCase extends SQLParserTestCase {
     @XmlElement(name = "column")
     private ExpectedColumn column;
     
-    @XmlElement(name = "indexType")
+    @XmlElement(name = "index-type")
     private ExpectedIndexType indexType;
 }
