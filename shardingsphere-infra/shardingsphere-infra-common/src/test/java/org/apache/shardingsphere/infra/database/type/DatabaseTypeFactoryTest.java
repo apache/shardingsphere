@@ -120,4 +120,24 @@ public final class DatabaseTypeFactoryTest {
                 throw new IllegalStateException("Unexpected value: " + databaseType.getType());
         }
     }
+    
+    @Test
+    public void assertGetTrunkDatabaseTypeWithTrunkDatabaseType() {
+        assertThat(DatabaseTypeEngine.getTrunkDatabaseType("MySQL").getType(), is("MySQL"));
+    }
+    
+    @Test
+    public void assertGetTrunkDatabaseTypeWithBranchDatabaseType() {
+        assertThat(DatabaseTypeEngine.getTrunkDatabaseType("H2").getType(), is("MySQL"));
+    }
+    
+    @Test
+    public void assertGetTrunkDatabaseTypeNameWithTrunkDatabaseType() {
+        assertThat(DatabaseTypeEngine.getTrunkDatabaseTypeName(new MySQLDatabaseType()), is("MySQL"));
+    }
+    
+    @Test
+    public void assertGetTrunkDatabaseTypeNameWithBranchDatabaseType() {
+        assertThat(DatabaseTypeEngine.getTrunkDatabaseTypeName(new MariaDBDatabaseType()), is("MySQL"));
+    }
 }
