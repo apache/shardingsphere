@@ -135,6 +135,7 @@ public final class ShardingSphereDatabase {
      * @param instanceContext instance context
      */
     public synchronized void reloadRules(final InstanceContext instanceContext) {
+        log.error("===========ShardingSphereDatabase.reloadRules0=======");
         Collection<ShardingSphereRule> databaseRules = DatabaseRulesBuilder.build(
                 name, new DataSourceProvidedDatabaseConfiguration(resource.getDataSources(), ruleMetaData.getConfigurations()), instanceContext);
         ruleMetaData.getRules().clear();
@@ -150,6 +151,7 @@ public final class ShardingSphereDatabase {
     public synchronized void reloadRules(final Class<? extends ShardingSphereRule> ruleClass, final InstanceContext instanceContext) {
         Collection<? extends ShardingSphereRule> toBeReloadedRules = ruleMetaData.findRules(ruleClass);
         Collection<RuleConfiguration> toBeReloadedRuleConfigs = toBeReloadedRules.stream().map(ShardingSphereRule::getConfiguration).collect(Collectors.toList());
+        log.error("===========ShardingSphereDatabase.reloadRules1=======");
         Collection<ShardingSphereRule> reloadedDatabaseRules = DatabaseRulesBuilder.build(
                 name, new DataSourceProvidedDatabaseConfiguration(resource.getDataSources(), toBeReloadedRuleConfigs), instanceContext);
         ruleMetaData.getRules().removeAll(toBeReloadedRules);
