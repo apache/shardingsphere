@@ -32,5 +32,5 @@ public final class DatabaseLockDefinition implements LockDefinition {
     
     private final LockMode lockMode;
     
-    private final LockNameDefinition lockNameDefinition;
+    private final DatabaseLockNameDefinition lockNameDefinition;
 }

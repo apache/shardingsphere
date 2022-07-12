@@ -19,9 +19,7 @@ package org.apache.shardingsphere.mode.manager.lock;
 
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
-import org.apache.shardingsphere.infra.lock.LockNameDefinition;
 import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockDefinition;
-import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDefinition;
 
 /**
  * Abstract lock context.
@@ -30,8 +28,7 @@ public abstract class AbstractLockContext implements LockContext {
     
     @Override
     public boolean tryLock(final LockDefinition lockDefinition) {
-        LockNameDefinition lockNameDefinition = lockDefinition.getLockNameDefinition();
-        if (lockNameDefinition instanceof DatabaseLockNameDefinition) {
+        if (lockDefinition instanceof DatabaseLockDefinition) {
             return tryLock((DatabaseLockDefinition) lockDefinition);
         }
         throw new UnsupportedOperationException();
@@ -41,8 +38,7 @@ public abstract class AbstractLockContext implements LockContext {
     
     @Override
     public boolean tryLock(final LockDefinition lockDefinition, final long timeoutMilliseconds) {
-        LockNameDefinition lockNameDefinition = lockDefinition.getLockNameDefinition();
-        if (lockNameDefinition instanceof DatabaseLockNameDefinition) {
+        if (lockDefinition instanceof DatabaseLockDefinition) {
             return tryLock((DatabaseLockDefinition) lockDefinition, timeoutMilliseconds);
         }
         throw new UnsupportedOperationException();
@@ -52,8 +48,7 @@ public abstract class AbstractLockContext implements LockContext {
     
     @Override
     public void releaseLock(final LockDefinition lockDefinition) {
-        LockNameDefinition lockNameDefinition = lockDefinition.getLockNameDefinition();
-        if (lockNameDefinition instanceof DatabaseLockNameDefinition) {
+        if (lockDefinition instanceof DatabaseLockDefinition) {
             releaseLock((DatabaseLockDefinition) lockDefinition);
             return;
         }
@@ -64,8 +59,7 @@ public abstract class AbstractLockContext implements LockContext {
     
     @Override
     public boolean isLocked(final LockDefinition lockDefinition) {
-        LockNameDefinition lockNameDefinition = lockDefinition.getLockNameDefinition();
-        if (lockNameDefinition instanceof DatabaseLockNameDefinition) {
+        if (lockDefinition instanceof DatabaseLockDefinition) {
             return isLocked((DatabaseLockDefinition) lockDefinition);
         }
         throw new UnsupportedOperationException();
