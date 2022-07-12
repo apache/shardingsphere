@@ -115,6 +115,7 @@ public final class DatabaseTypeFactoryTest {
             case "MySQL":
                 return "jdbc:mysql://localhost:3306/test";
             case "PostgreSQL":
+                return "jdbc:postgresql://localhost:5432/test";
             case "OpenGauss":
                 return "jdbc:postgresql://localhost:5432/test";
             case "Oracle":
