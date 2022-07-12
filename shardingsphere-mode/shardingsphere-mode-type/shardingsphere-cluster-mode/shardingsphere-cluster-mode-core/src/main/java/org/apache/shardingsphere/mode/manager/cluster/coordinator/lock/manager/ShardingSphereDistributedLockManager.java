@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.ShardingSphereDistributedDatabaseLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.ShardingSphereDistributedGlobalLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.ShardingSphereDistributedStandardLock;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.state.LockStateContext;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.state.LockStateContextFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal.ShardingSphereInternalLockHolder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
@@ -38,6 +39,8 @@ import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockDefini
 @Slf4j
 public final class ShardingSphereDistributedLockManager implements ShardingSphereLockManager {
     
+    private LockStateContext lockStateContext;
+    
     private ShardingSphereLock standardDistributedLock;
     
     private ShardingSphereLock globalDistributedLock;
@@ -46,9 +49,10 @@ public final class ShardingSphereDistributedLockManager implements ShardingSpher
     
     @Override
     public void init(final ShardingSphereInternalLockHolder lockHolder, final EventBusContext eventBusContext) {
+        lockStateContext = LockStateContextFactory.getLockStateContext();
         standardDistributedLock = new ShardingSphereDistributedStandardLock(lockHolder);
         globalDistributedLock = new ShardingSphereDistributedGlobalLock(lockHolder, eventBusContext);
-        databaseLock = new ShardingSphereDistributedDatabaseLock(lockHolder, LockStateContextFactory.getLockStateContext(), eventBusContext);
+        databaseLock = new ShardingSphereDistributedDatabaseLock(lockHolder, lockStateContext, eventBusContext);
     }
     
     @Override
@@ -107,8 +111,8 @@ public final class ShardingSphereDistributedLockManager implements ShardingSpher
     @Override
     public boolean isLocked(final DatabaseLockDefinition lockDefinition) {
         Preconditions.checkNotNull(lockDefinition, "Try Lock for database arg lock definition can not be null.");
-        String databaseName = lockDefinition.getLockNameDefinition().getDatabaseName();
-        Preconditions.checkNotNull(databaseName, "Is locked database args database name can not be null.");
-        return databaseLock.isLocked(databaseName);
+        LockNameDefinition lockNameDefinition = lockDefinition.getLockNameDefinition();
+        Preconditions.checkNotNull(lockNameDefinition, "Is locked database args lock name definition can not be null.");
+        return lockStateContext.isLocked(lockNameDefinition);
     }
 }

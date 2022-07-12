@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.lock.LockMode;
 import org.apache.shardingsphere.infra.lock.LockScope;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.ShardingSphereDistributedDatabaseLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.ShardingSphereDistributedGlobalLock;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.state.ShardingSphereLockStateContext;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockDefinition;
 import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDefinition;
@@ -41,6 +42,10 @@ public final class ShardingSphereDistributedGlobalLockManagerTest {
     
     @Before
     public void init() throws ReflectiveOperationException {
+        ShardingSphereLockStateContext lockStateContext = new ShardingSphereLockStateContext();
+        Field lockStateContextField = shardingSphereDistributedLockManager.getClass().getDeclaredField("lockStateContext");
+        lockStateContextField.setAccessible(true);
+        lockStateContextField.set(shardingSphereDistributedLockManager, lockStateContext);
         ShardingSphereDistributedGlobalLock distributedLock = mock(ShardingSphereDistributedGlobalLock.class);
         Field distributedLockField = shardingSphereDistributedLockManager.getClass().getDeclaredField("globalDistributedLock");
         distributedLockField.setAccessible(true);
