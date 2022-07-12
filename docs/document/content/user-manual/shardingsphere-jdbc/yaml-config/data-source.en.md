@@ -4,25 +4,27 @@ weight = 2
 chapter = true
 +++
 
-It is divided into single data source configuration and multi data source configuration.
+## Background
+
 ShardingSphere-JDBC Supports all JDBC drivers and database connection pools.
 
-In this example, the database driver is MySQL, and connection pool is HikariCP, which can be replaced with other database drivers and connection pools. When using ShardingSphere JDBC, the property name of the JDBC pool depends on the definition of the respective JDBC pool, and is not defined by ShardingSphere. For related processing, please refer to the class `org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator` . For example, with Alibaba Druid 1.2.9, using `url` instead of `jdbcUrl` in the example below is the expected behavior.
+In this example, the database driver is MySQL, and the connection pool is HikariCP, which can be replaced with other database drivers and connection pools.
+When using ShardingSphere JDBC, the property name of the JDBC pool depends on the definition of the respective JDBC pool and is not defined by ShardingSphere. For related processing, please refer to the class org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator.
+For example, with Alibaba Druid 1.2.9, using url instead of jdbcUrl in the example below is the expected behavior.
 
-### Configuration Item Explanation
+## Parameters
 
 ```yaml
 dataSources: # Data sources configuration, multiple <data-source-name> available
   <data-source-name>: # Data source name
     dataSourceClassName: # Data source class name
-    driverClassName: # Class name of database driver, ref property of connection pool
-    jdbcUrl: # Database URL, ref property of connection pool
-    username: # Database username, ref property of connection pool
-    password: # Database password, ref property of connection pool
-    # ... Other properties for data source pool
+    driverClassName: # The database driver class name is subject to the configuration of the database connection pool itself
+    jdbcUrl: # The database URL connection is subject to the configuration of the database connection pool itself
+    username: # Database user name, subject to the configuration of the database connection pool itself
+    password: # The database password is subject to the configuration of the database connection pool itself
+    # ... Other properties of data source pool
 ```
-
-### Example
+## Sample
 
 ```yaml
 dataSources:
@@ -38,6 +40,6 @@ dataSources:
     jdbcUrl: jdbc:mysql://localhost:3306/ds_2
     username: root
     password:
-  
+      
   # Configure other data sources
 ```
