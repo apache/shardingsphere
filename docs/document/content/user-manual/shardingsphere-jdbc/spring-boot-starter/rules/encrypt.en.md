@@ -59,5 +59,5 @@ spring.shardingsphere.props.sql-show=true
 
 ## Related References
 
-- [Core Features of Data Encryption](/en/features/encrypt/)
-- [Developer Guide of Data Encryption](/en/dev-manual/encryption/)
+- [Core Feature: Data Encryption](/en/features/encrypt/)
+- [Developer Guide: Data Encryption](/en/dev-manual/encrypt/)

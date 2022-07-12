@@ -21,6 +21,7 @@ import org.apache.shardingsphere.transaction.TransactionHolder;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -32,7 +33,7 @@ public final class FixedReplicaRoundRobinLoadBalanceAlgorithmTest {
     private final FixedReplicaRoundRobinLoadBalanceAlgorithm fixedReplicaRoundRobinLoadBalanceAlgorithm = new FixedReplicaRoundRobinLoadBalanceAlgorithm();
     
     @Test
-    public void assertGetDataSource() {
+    public void assertGetDataSourceInTransaction() {
         String writeDataSourceName = "test_write_ds";
         String readDataSourceName1 = "test_replica_ds_1";
         String readDataSourceName2 = "test_replica_ds_2";
@@ -44,5 +45,19 @@ public final class FixedReplicaRoundRobinLoadBalanceAlgorithmTest {
         assertThat(fixedReplicaRoundRobinLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(routeDataSource));
         assertThat(fixedReplicaRoundRobinLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(routeDataSource));
         TransactionHolder.clear();
+    }
+    
+    @Test
+    public void assertGetDataSourceWithoutTransaction() {
+        String writeDataSourceName = "test_write_ds";
+        String readDataSourceName1 = "test_replica_ds_1";
+        String readDataSourceName2 = "test_replica_ds_2";
+        List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
+        List<String> noTransactionReadDataSourceNames = new LinkedList<>();
+        for (int i = 0; i < 5; i++) {
+            String routeDataSource = fixedReplicaRoundRobinLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames);
+            noTransactionReadDataSourceNames.add(routeDataSource);
+        }
+        assertTrue(noTransactionReadDataSourceNames.size() > 1);
     }
 }

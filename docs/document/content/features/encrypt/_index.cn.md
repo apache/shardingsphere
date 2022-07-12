@@ -101,5 +101,5 @@ Apache ShardingSphere 接收到该 SQL，通过用户提供的加密配置，发
 
 ## 相关参考
 
-- [数据加密配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/encrypt/)
-- [数据加密开发者指南](/cn/dev-manual/encryption/)
+- [配置：数据加密](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/encrypt/)
+- [开发者指南：数据加密](/cn/dev-manual/encrypt/)

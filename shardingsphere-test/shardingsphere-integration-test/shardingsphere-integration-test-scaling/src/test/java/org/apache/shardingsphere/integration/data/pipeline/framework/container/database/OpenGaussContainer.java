@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.framework.container.database;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
@@ -60,7 +61,7 @@ public final class OpenGaussContainer extends DatabaseContainer {
     
     @Override
     public String getJdbcUrl(final String databaseName) {
-        return DataSourceEnvironment.getURL(DATABASE_TYPE, getHost(), getFirstMappedPort(), databaseName);
+        return DataSourceEnvironment.getURL(DATABASE_TYPE, getHost(), getFirstMappedPort(), StringUtils.isBlank(databaseName) ? "postgres" : databaseName);
     }
     
     @Override

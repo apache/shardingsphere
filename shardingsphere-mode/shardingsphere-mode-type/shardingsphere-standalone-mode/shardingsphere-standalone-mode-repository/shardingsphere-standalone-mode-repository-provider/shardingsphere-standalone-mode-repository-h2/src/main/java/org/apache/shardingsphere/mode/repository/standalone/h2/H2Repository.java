@@ -42,7 +42,7 @@ import java.util.UUID;
 @Slf4j
 public final class H2Repository implements StandalonePersistRepository {
     
-    private static final String DEFAULT_JDBC_URL = "jdbc:h2:~/h2_repository";
+    private static final String DEFAULT_JDBC_URL = "jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL";
     
     private static final String DEFAULT_USER = "sa";
     
@@ -85,7 +85,7 @@ public final class H2Repository implements StandalonePersistRepository {
                 return Optional.ofNullable(Strings.emptyToNull(resultSet.getString("value"))).map(each -> each.replace("\"", "'")).orElse("");
             }
         } catch (final SQLException ex) {
-            log.error("Get h2 data by key: {} failed", key, ex);
+            log.error("Get H2 data by key: {} failed", key, ex);
         }
         return "";
     }
@@ -106,7 +106,7 @@ public final class H2Repository implements StandalonePersistRepository {
             }
             return resultChildren;
         } catch (final SQLException ex) {
-            log.error("Get children h2 data by key: {} failed", key, ex);
+            log.error("Get children H2 data by key: {} failed", key, ex);
         }
         return Collections.emptyList();
     }
@@ -139,7 +139,7 @@ public final class H2Repository implements StandalonePersistRepository {
                 update(key, insensitiveValue);
             }
         } catch (final SQLException ex) {
-            log.error("Persist h2 data to key: {} failed", key, ex);
+            log.error("Persist H2 data to key: {} failed", key, ex);
         }
     }
     
@@ -160,7 +160,7 @@ public final class H2Repository implements StandalonePersistRepository {
         try (PreparedStatement statement = connection.prepareStatement("DELETE FROM REPOSITORY WHERE key = '" + key + "'")) {
             statement.executeUpdate();
         } catch (final SQLException ex) {
-            log.error("Delete h2 data by key: {} failed", key, ex);
+            log.error("Delete H2 data by key: {} failed", key, ex);
         }
     }
     
@@ -171,12 +171,17 @@ public final class H2Repository implements StandalonePersistRepository {
                 connection.close();
             }
         } catch (final SQLException ex) {
-            log.error("Failed to release h2 database resources.", ex);
+            log.error("Failed to release H2 database resources.", ex);
         }
     }
     
     @Override
     public String getType() {
         return "H2";
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
     }
 }

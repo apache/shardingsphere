@@ -587,7 +587,7 @@ storageClause
     ;
 
 sizeClause
-    : (NUMBER_ | INTEGER_) capacityUnit?
+    : INTEGER_ capacityUnit?
     ;
 
 maxsizeClause
@@ -2734,4 +2734,13 @@ databaseVaultAction
 
 roleAuditClause
     : ROLES roleName (COMMA_ roleName)*
+    ;
+
+alterCluster
+    : ALTER CLUSTER clusterName
+    (physicalAttributesClause
+    | SIZE sizeClause
+    | (MODIFY PARTITION partitionName)? allocateExtentClause
+    | deallocateUnusedClause
+    | (CACHE | NOCACHE))+ (parallelClause)?
     ;

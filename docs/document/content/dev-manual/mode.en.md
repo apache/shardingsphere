@@ -5,40 +5,38 @@ weight = 1
 chapter = true
 +++
 
-## StandalonePersistRepository
+## SPI 接口
 
-| *SPI Name*                     | *Description*                            |
-| ----------------------------- | ----------------------------------------  |
-| StandalonePersistRepository   | Standalone mode Configuration persistence |
+| *SPI 名称*                     | *详细说明*                  |
+| ----------------------------- | -----------------------    |
+| StandalonePersistRepository   | Standalone 模式配置信息持久化 |
+| ClusterPersistRepository      | Cluster 模式配置信息持久化    |
+| GovernanceWatcher             | 治理监听器                   |
 
-| *Implementation Class*        | *Description*                             |
-| ----------------------------- | ----------------------------------------- |
-| FileRepository                | File persistence                          |
-| H2Repository                  | H2 persistence                            |
+## 示例
 
-## ClusterPersistRepository
+### StandalonePersistRepository 已知实现类
 
-| *SPI Name*                       | *Description*                        |
-| -------------------------------- | ------------------------------------ |
-| ClusterPersistRepository         | Registry center repository           |
+| *已知实现类*                    | *详细说明*                  |
+| ----------------------------- | -------------------------- |
+| FileRepository                | 基于 File 的持久化           |
+| H2Repository                  | 基于 H2 的持久化             |
 
-| *Implementation Class*           | *Description*                        |
-| -------------------------------- | ------------------------------------ |
-| CuratorZookeeperRepository       | ZooKeeper registry center repository |
-| EtcdRepository                   | Etcd registry center repository      |
+### ClusterPersistRepository 已知实现类
 
-## GovernanceWatcher
+| *已知实现类*                    | *详细说明*                 |
+| ----------------------------- | ------------------------- |
+| CuratorZookeeperRepository    | 基于 ZooKeeper 的持久化     |
+| EtcdRepository                | 基于 Etcd 的持久化          |
 
-| *SPI Name*                       | *Description*                 |
-| -------------------------------- | ----------------------------- |
-| GovernanceWatcher                | Governance watcher            |
+### GovernanceWatcher 已知实现类
 
-| *Implementation Class*           | *Description*                     |
-| -------------------------------- | --------------------------------- |
-| ComputeNodeStateChangedWatcher   | Compute node changed watcher      |
-| GlobalAckChangedWatcher          | Global ack changed watcher        |
-| GlobalLocksChangedWatcher        | Global locks changed watcher      |
-| GlobalRuleChangedWatcher         | Global rule changed watcher       |
-| MetaDataChangedWatcher           | Meta data changed watcher         |
-| PropertiesChangedWatcher         | Properties changed watcher        |
-| StorageNodeStateChangedWatcher   | Storage node changed watcher      |
+| *已知实现类*                     | *详细说明*          |
+| -----------------------------  | ------------------ |
+| ComputeNodeStateChangedWatcher | 计算节点状态变化监听器 |
+| DatabaseLockChangedWatcher     | 数据库锁状态变化监听器 |
+| DistributedLockChangedWatcher  | 分布式锁变化监听器     |
+| GlobalRuleChangedWatcher       | 全局规则配置变化监听器 |
+| MetaDataChangedWatcher         | 元数据变化监听器      |
+| PropertiesChangedWatcher       | 属性变化监听器        |
+| StorageNodeStateChangedWatcher | 存储节点状态变化监听器 |
