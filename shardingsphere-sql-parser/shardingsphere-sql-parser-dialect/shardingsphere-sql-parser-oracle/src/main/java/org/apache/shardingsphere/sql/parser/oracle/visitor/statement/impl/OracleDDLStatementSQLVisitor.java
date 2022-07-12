@@ -26,6 +26,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AddCon
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterAnalyticViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterAttributeDimensionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterAuditPolicyContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterClusterContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterDatabaseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterDatabaseDictionaryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterDatabaseLinkContext;
@@ -141,6 +142,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.collection.Collecti
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterAnalyticViewStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterAttributeDimensionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterAuditPolicyStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterClusterStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterDatabaseDictionaryStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterDatabaseLinkStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterDatabaseStatement;
@@ -905,5 +907,10 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitAlterAuditPolicy(final AlterAuditPolicyContext ctx) {
         return new OracleAlterAuditPolicyStatement();
+    }
+    
+    @Override
+    public ASTNode visitAlterCluster(final AlterClusterContext ctx) {
+        return new OracleAlterClusterStatement();
     }
 }
