@@ -18,21 +18,21 @@
 package org.apache.shardingsphere.infra.lock;
 
 /**
- * Lock name definition.
+ * Lock definition.
  */
-public interface LockNameDefinition {
+public interface LockDefinition {
     
     /**
-     * Get lock name.
+     * Get lock mode.
      *
-     * @return lock name
+     * @return lock mode
      */
-    String getLockName();
+    LockMode getLockMode();
     
     /**
-     * Get database name.
+     * Get lock name definition.
      *
-     * @return database name
+     * @return lock name definition
      */
-    String getDatabaseName();
+    LockNameDefinition getLockNameDefinition();
 }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDefinition;
 
 /**
  * Database locked event.
@@ -28,5 +29,9 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.Gover
 @Getter
 public final class DatabaseLockedEvent implements GovernanceEvent {
     
-    private final String database;
+    private final DatabaseLockNameDefinition lockNameDefinition;
+    
+    public DatabaseLockedEvent(final String lockedName) {
+        this.lockNameDefinition = new DatabaseLockNameDefinition(lockedName);
+    }
 }

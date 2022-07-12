@@ -15,12 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.proxy.backend.exception;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Lock level.
+ * Unsupported update operation exception.
  */
-public enum LockLevel {
+@RequiredArgsConstructor
+@Getter
+public final class UnsupportedUpdateOperationException extends BackendException {
     
-    DATABASE, SCHEMA, TABLE
+    private static final long serialVersionUID = -5409739222950362541L;
+    
+    private final String databaseName;
+    
+    private final String errorMessage;
+    
+    public UnsupportedUpdateOperationException(final String databaseName) {
+        this(databaseName, String.format("The database %s is read-only", databaseName));
+    }
 }

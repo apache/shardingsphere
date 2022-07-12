@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.mode.manager.lock;
 
 import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.lock.LockLevel;
+import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.infra.lock.LockNameDefinition;
+import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockDefinition;
 import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDefinition;
 
 /**
@@ -28,63 +29,47 @@ import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDe
 public abstract class AbstractLockContext implements LockContext {
     
     @Override
-    public boolean tryLock(final LockNameDefinition lockNameDefinition) {
-        LockLevel lockLevel = lockNameDefinition.getLockLevel();
-        switch (lockLevel) {
-            case DATABASE:
-                return tryLock((DatabaseLockNameDefinition) lockNameDefinition);
-            case SCHEMA:
-            case TABLE:
-            default:
-                throw new UnsupportedOperationException();
+    public boolean tryLock(final LockDefinition lockDefinition) {
+        LockNameDefinition lockNameDefinition = lockDefinition.getLockNameDefinition();
+        if (lockNameDefinition instanceof DatabaseLockNameDefinition) {
+            return tryLock((DatabaseLockDefinition) lockDefinition);
         }
+        throw new UnsupportedOperationException();
     }
     
-    protected abstract boolean tryLock(DatabaseLockNameDefinition lockNameDefinition);
+    protected abstract boolean tryLock(DatabaseLockDefinition lockDefinition);
     
     @Override
-    public boolean tryLock(final LockNameDefinition lockNameDefinition, final long timeoutMilliseconds) {
-        LockLevel lockLevel = lockNameDefinition.getLockLevel();
-        switch (lockLevel) {
-            case DATABASE:
-                return tryLock((DatabaseLockNameDefinition) lockNameDefinition, timeoutMilliseconds);
-            case SCHEMA:
-            case TABLE:
-            default:
-                throw new UnsupportedOperationException();
+    public boolean tryLock(final LockDefinition lockDefinition, final long timeoutMilliseconds) {
+        LockNameDefinition lockNameDefinition = lockDefinition.getLockNameDefinition();
+        if (lockNameDefinition instanceof DatabaseLockNameDefinition) {
+            return tryLock((DatabaseLockDefinition) lockDefinition, timeoutMilliseconds);
         }
+        throw new UnsupportedOperationException();
     }
     
-    protected abstract boolean tryLock(DatabaseLockNameDefinition lockNameDefinition, long timeoutMilliseconds);
+    protected abstract boolean tryLock(DatabaseLockDefinition lockDefinition, long timeoutMilliseconds);
     
     @Override
-    public void releaseLock(final LockNameDefinition lockNameDefinition) {
-        LockLevel lockLevel = lockNameDefinition.getLockLevel();
-        switch (lockLevel) {
-            case DATABASE:
-                releaseLock((DatabaseLockNameDefinition) lockNameDefinition);
-                break;
-            case SCHEMA:
-            case TABLE:
-            default:
-                throw new UnsupportedOperationException();
+    public void releaseLock(final LockDefinition lockDefinition) {
+        LockNameDefinition lockNameDefinition = lockDefinition.getLockNameDefinition();
+        if (lockNameDefinition instanceof DatabaseLockNameDefinition) {
+            releaseLock((DatabaseLockDefinition) lockDefinition);
+            return;
         }
+        throw new UnsupportedOperationException();
     }
     
-    protected abstract void releaseLock(DatabaseLockNameDefinition lockNameDefinition);
+    protected abstract void releaseLock(DatabaseLockDefinition lockDefinition);
     
     @Override
-    public boolean isLocked(final LockNameDefinition lockNameDefinition) {
-        LockLevel lockLevel = lockNameDefinition.getLockLevel();
-        switch (lockLevel) {
-            case DATABASE:
-                return isLocked((DatabaseLockNameDefinition) lockNameDefinition);
-            case SCHEMA:
-            case TABLE:
-            default:
-                throw new UnsupportedOperationException();
+    public boolean isLocked(final LockDefinition lockDefinition) {
+        LockNameDefinition lockNameDefinition = lockDefinition.getLockNameDefinition();
+        if (lockNameDefinition instanceof DatabaseLockNameDefinition) {
+            return isLocked((DatabaseLockDefinition) lockDefinition);
         }
+        throw new UnsupportedOperationException();
     }
     
-    protected abstract boolean isLocked(DatabaseLockNameDefinition lockNameDefinition);
+    protected abstract boolean isLocked(DatabaseLockDefinition lockDefinition);
 }
