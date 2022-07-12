@@ -85,7 +85,10 @@ public final class EncryptAssignmentTokenGeneratorTest {
     
     @Test
     public void assertIsGenerateSQLTokenUpdateSQLFail() {
-        assertTrue(tokenGenerator.isGenerateSQLToken(insertStatement));
+        try (MockedStatic<InsertStatementHandler> insertStatementHandlerMockedStatic = mockStatic(InsertStatementHandler.class)) {
+            insertStatementHandlerMockedStatic.when(() -> InsertStatementHandler.getSetAssignmentSegment(any())).thenReturn(Optional.of(setAssignmentSegment));
+            assertTrue(tokenGenerator.isGenerateSQLToken(insertStatement));
+        }
     }
     
     @Test
@@ -108,9 +111,10 @@ public final class EncryptAssignmentTokenGeneratorTest {
     
     @Test
     public void assertGenerateSQLTokenWithInsertLiteralExpressionSegment() {
-        MockedStatic<InsertStatementHandler> insertStatementHandlerMockedStatic = mockStatic(InsertStatementHandler.class);
-        insertStatementHandlerMockedStatic.when(() -> InsertStatementHandler.getSetAssignmentSegment(any())).thenReturn(Optional.of(setAssignmentSegment));
-        when(assignmentSegment.getValue()).thenReturn(literalExpression);
-        assertThat(tokenGenerator.generateSQLTokens(insertStatement).size(), is(1));
+        try (MockedStatic<InsertStatementHandler> insertStatementHandlerMockedStatic = mockStatic(InsertStatementHandler.class)) {
+            insertStatementHandlerMockedStatic.when(() -> InsertStatementHandler.getSetAssignmentSegment(any())).thenReturn(Optional.of(setAssignmentSegment));
+            when(assignmentSegment.getValue()).thenReturn(literalExpression);
+            assertThat(tokenGenerator.generateSQLTokens(insertStatement).size(), is(1));
+        }
     }
 }
