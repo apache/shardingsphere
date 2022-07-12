@@ -15,25 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.mode.manager.lock.definition;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.lock.LockMode;
+import org.apache.shardingsphere.infra.lock.LockDefinition;
 
 /**
- * database locked exception.
+ * Database lock name definition.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DatabaseLockedException extends BackendException {
+public final class DatabaseLockDefinition implements LockDefinition {
     
-    private static final long serialVersionUID = -5409739222950362541L;
+    private final LockMode lockMode;
     
-    private final String databaseName;
-    
-    private final String errorMessage;
-    
-    public DatabaseLockedException(final String databaseName) {
-        this(databaseName, String.format("The database %s is read-only", databaseName));
-    }
+    private final DatabaseLockNameDefinition lockNameDefinition;
 }

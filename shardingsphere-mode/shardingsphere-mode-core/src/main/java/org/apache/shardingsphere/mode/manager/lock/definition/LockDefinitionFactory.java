@@ -19,23 +19,22 @@ package org.apache.shardingsphere.mode.manager.lock.definition;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.lock.LockLevel;
 import org.apache.shardingsphere.infra.lock.LockMode;
-import org.apache.shardingsphere.infra.lock.LockNameDefinition;
+import org.apache.shardingsphere.infra.lock.LockDefinition;
 
 /**
- * Lock name definition factory.
+ * Lock definition factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class LockNameDefinitionFactory {
+public final class LockDefinitionFactory {
     
     /**
-     * New database definition.
+     * New database lock definition.
      *
      * @param databaseName database name
-     * @return database lock name definition
+     * @return database lock definition
      */
-    public static LockNameDefinition newDatabaseDefinition(final String databaseName) {
-        return new DatabaseLockNameDefinition(databaseName, LockMode.READ, LockLevel.DATABASE);
+    public static LockDefinition newDatabaseLockDefinition(final String databaseName) {
+        return new DatabaseLockDefinition(LockMode.READ, new DatabaseLockNameDefinition(databaseName));
     }
 }

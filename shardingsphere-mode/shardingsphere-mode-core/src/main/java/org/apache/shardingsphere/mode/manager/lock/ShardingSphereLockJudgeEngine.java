@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.lock;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.mode.manager.lock.definition.LockNameDefinitionFactory;
+import org.apache.shardingsphere.mode.manager.lock.definition.LockDefinitionFactory;
 
 /**
  * Lock judge engine for ShardingSphere.
@@ -37,7 +37,7 @@ public final class ShardingSphereLockJudgeEngine extends AbstractLockJudgeEngine
     @Override
     public boolean isLocked(final String databaseName, final SQLStatementContext<?> sqlStatementContext) {
         if (isWriteStatement(sqlStatementContext.getSqlStatement())) {
-            return getLockContext().isLocked(LockNameDefinitionFactory.newDatabaseDefinition(databaseName));
+            return getLockContext().isLocked(LockDefinitionFactory.newDatabaseLockDefinition(databaseName));
         }
         return false;
     }

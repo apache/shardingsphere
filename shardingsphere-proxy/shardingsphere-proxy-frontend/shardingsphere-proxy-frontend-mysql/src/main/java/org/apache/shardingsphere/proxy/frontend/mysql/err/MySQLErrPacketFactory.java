@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DBDropNotExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.DatabaseLockedException;
+import org.apache.shardingsphere.proxy.backend.exception.UnsupportedUpdateOperationException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
@@ -112,8 +112,8 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof RuleNotExistedException || cause instanceof ResourceNotExistedException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_SP_DOES_NOT_EXIST);
         }
-        if (cause instanceof DatabaseLockedException) {
-            DatabaseLockedException exception = (DatabaseLockedException) cause;
+        if (cause instanceof UnsupportedUpdateOperationException) {
+            UnsupportedUpdateOperationException exception = (UnsupportedUpdateOperationException) cause;
             return new MySQLErrPacket(1, CommonErrorCode.DATABASE_WRITE_LOCKED, exception.getDatabaseName());
         }
         if (cause instanceof TableLockWaitTimeoutException) {

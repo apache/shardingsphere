@@ -47,10 +47,10 @@ import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.lock.LockNameDefinition;
+import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
-import org.apache.shardingsphere.mode.manager.lock.definition.LockNameDefinitionFactory;
+import org.apache.shardingsphere.mode.manager.lock.definition.LockDefinitionFactory;
 import org.apache.shardingsphere.scaling.core.job.environment.ScalingEnvironmentManager;
 
 import java.sql.SQLException;
@@ -178,12 +178,12 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     public void stopClusterWriteDB(final RuleAlteredJobConfiguration jobConfig) {
         String databaseName = jobConfig.getDatabaseName();
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        LockNameDefinition lockNameDefinition = LockNameDefinitionFactory.newDatabaseDefinition(databaseName);
-        if (lockContext.isLocked(lockNameDefinition)) {
+        LockDefinition lockDefinition = LockDefinitionFactory.newDatabaseLockDefinition(databaseName);
+        if (lockContext.isLocked(lockDefinition)) {
             log.info("stopClusterWriteDB, already stopped");
             return;
         }
-        if (lockContext.tryLock(lockNameDefinition)) {
+        if (lockContext.tryLock(lockDefinition)) {
             log.info("stopClusterWriteDB, tryLockSuccess=true");
             return;
         }
@@ -204,10 +204,10 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     public void restoreClusterWriteDB(final RuleAlteredJobConfiguration jobConfig) {
         String databaseName = jobConfig.getDatabaseName();
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        LockNameDefinition lockNameDefinition = LockNameDefinitionFactory.newDatabaseDefinition(databaseName);
-        if (lockContext.isLocked(lockNameDefinition)) {
+        LockDefinition lockDefinition = LockDefinitionFactory.newDatabaseLockDefinition(databaseName);
+        if (lockContext.isLocked(lockDefinition)) {
             log.info("restoreClusterWriteDB, before releaseLock, databaseName={}, jobId={}", databaseName, jobConfig.getJobId());
-            lockContext.releaseLock(lockNameDefinition);
+            lockContext.releaseLock(lockDefinition);
             return;
         }
         log.info("restoreClusterWriteDB, isLocked false, databaseName={}", databaseName);
