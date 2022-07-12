@@ -5,11 +5,15 @@ weight = 13
 chapter = true
 +++
 
-## EncryptAlgorithm
+## SPI Interface
 
-| *SPI Name*                    | *Description*              |
-| ----------------------------- | -------------------------- |
-| EncryptAlgorithm              | Data encrypt algorithm     |
+| SPI Name         | Description            |
+| ---------------- | ---------------------- |
+| EncryptAlgorithm | Data encrypt algorithm |
+
+## Sample
+
+### EncryptAlgorithm Known Implementation Class
 
 | *Implementation Class*        | *Description*              |
 | ----------------------------- | -------------------------- |
