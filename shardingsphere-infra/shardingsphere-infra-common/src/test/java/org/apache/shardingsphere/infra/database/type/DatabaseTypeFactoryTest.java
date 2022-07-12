@@ -116,12 +116,6 @@ public final class DatabaseTypeFactoryTest {
                 return "jdbc:mysql://localhost:3306/test";
             case "PostgreSQL":
                 return "jdbc:postgresql://localhost:5432/test";
-            case "OpenGauss":
-                return "jdbc:postgresql://localhost:5432/test";
-            case "Oracle":
-                return "jdbc:oracle://localhost:3306/test";
-            case "SQLServer":
-                return "jdbc:sqlserver://localhost:3306/test";
             default:
                 throw new IllegalStateException("Unexpected value: " + databaseType.getType());
         }
