@@ -15,37 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.state;
-
-import org.apache.shardingsphere.infra.lock.LockNameDefinition;
-import org.apache.shardingsphere.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.spi.type.required.RequiredSPI;
+package org.apache.shardingsphere.infra.lock;
 
 /**
- * Lock state context.
+ * Lock definition.
  */
-@SingletonSPI
-public interface LockStateContext extends RequiredSPI {
+public interface LockDefinition {
     
     /**
-     * Register lock state.
+     * Get lock mode.
      *
-     * @param lockName lock name definition
+     * @return lock mode
      */
-    void register(LockNameDefinition lockName);
+    LockMode getLockMode();
     
     /**
-     * Un-register lock state.
+     * Get lock name definition.
      *
-     * @param lockName lock name definition
+     * @return lock name definition
      */
-    void unregister(LockNameDefinition lockName);
-    
-    /**
-     * Is locked.
-     *
-     * @param lockName lock name definition
-     * @return is locked or not
-     */
-    boolean isLocked(LockNameDefinition lockName);
+    LockNameDefinition getLockNameDefinition();
 }

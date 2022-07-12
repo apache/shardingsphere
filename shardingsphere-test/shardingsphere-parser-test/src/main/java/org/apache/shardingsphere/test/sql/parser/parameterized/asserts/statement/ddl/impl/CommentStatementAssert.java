@@ -19,12 +19,12 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndextypeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CommentStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl.CommentStatementHandler;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.column.ColumnAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.index.IndextypeAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.index.IndexTypeAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CommentStatementTestCase;
 
@@ -50,7 +50,7 @@ public final class CommentStatementAssert {
     public static void assertIs(final SQLCaseAssertContext assertContext, final CommentStatement actual, final CommentStatementTestCase expected) {
         assertTable(assertContext, actual, expected);
         assertColumn(assertContext, actual, expected);
-        assertIndextype(assertContext, actual, expected);
+        assertIndexType(assertContext, actual, expected);
     }
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final CommentStatement actual, final CommentStatementTestCase expected) {
@@ -69,13 +69,13 @@ public final class CommentStatementAssert {
         }
     }
     
-    private static void assertIndextype(final SQLCaseAssertContext assertContext, final CommentStatement actual, final CommentStatementTestCase expected) {
-        Optional<IndextypeSegment> indextypeSegment = CommentStatementHandler.getIndextype(actual);
-        if (null != expected.getIndextype()) {
-            assertTrue(assertContext.getText("Actual index type should exist"), indextypeSegment.isPresent());
-            IndextypeAssert.assertIs(assertContext, indextypeSegment.get(), expected.getIndextype());
+    private static void assertIndexType(final SQLCaseAssertContext assertContext, final CommentStatement actual, final CommentStatementTestCase expected) {
+        Optional<IndexTypeSegment> indexTypeSegment = CommentStatementHandler.getIndexType(actual);
+        if (null != expected.getIndexType()) {
+            assertTrue(assertContext.getText("Actual index type should exist"), indexTypeSegment.isPresent());
+            IndexTypeAssert.assertIs(assertContext, indexTypeSegment.get(), expected.getIndexType());
         } else {
-            assertFalse(assertContext.getText("Actual index type should not exist."), indextypeSegment.isPresent());
+            assertFalse(assertContext.getText("Actual index type should not exist."), indexTypeSegment.isPresent());
         }
     }
 }

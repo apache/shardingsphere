@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.lock.LockScope;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal.ShardingSphereInternalLockHolder;
-import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDefinition;
+import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockDefinition;
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.required.RequiredSPI;
 
@@ -50,32 +50,32 @@ public interface ShardingSphereLockManager extends RequiredSPI {
     /**
      * Try lock for database.
      *
-     * @param lockNameDefinition lock name definition
+     * @param lockDefinition lock definition
      * @return is locked or not
      */
-    boolean tryLock(DatabaseLockNameDefinition lockNameDefinition);
+    boolean tryLock(DatabaseLockDefinition lockDefinition);
     
     /**
-     * Try lock write for database.
+     * Try lock for database.
      *
-     * @param lockNameDefinition lock name definition
+     * @param lockDefinition lock definition
      * @param timeoutMilliseconds timeout milliseconds
      * @return is locked or not
      */
-    boolean tryLock(DatabaseLockNameDefinition lockNameDefinition, long timeoutMilliseconds);
+    boolean tryLock(DatabaseLockDefinition lockDefinition, long timeoutMilliseconds);
     
     /**
      * Release lock for database.
      *
-     * @param lockNameDefinition lock name definition
+     * @param lockDefinition lock definition
      */
-    void releaseLock(DatabaseLockNameDefinition lockNameDefinition);
+    void releaseLock(DatabaseLockDefinition lockDefinition);
     
     /**
      * Is locked database.
      *
-     * @param lockNameDefinition lock name definition
+     * @param lockDefinition lock definition
      * @return is locked or not
      */
-    boolean isLocked(DatabaseLockNameDefinition lockNameDefinition);
+    boolean isLocked(DatabaseLockDefinition lockDefinition);
 }

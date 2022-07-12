@@ -15,25 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerAvailable;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
+
+import java.util.Optional;
 
 /**
- * database locked exception.
+ * Index type segment.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DatabaseLockedException extends BackendException {
+@Setter
+public final class IndexTypeSegment implements SQLSegment, OwnerAvailable {
     
-    private static final long serialVersionUID = -5409739222950362541L;
+    private final int startIndex;
     
-    private final String databaseName;
+    private final int stopIndex;
     
-    private final String errorMessage;
+    private final IdentifierValue identifier;
     
-    public DatabaseLockedException(final String databaseName) {
-        this(databaseName, String.format("The database %s is read-only", databaseName));
+    private OwnerSegment owner;
+    
+    @Override
+    public Optional<OwnerSegment> getOwner() {
+        return Optional.ofNullable(owner);
     }
 }

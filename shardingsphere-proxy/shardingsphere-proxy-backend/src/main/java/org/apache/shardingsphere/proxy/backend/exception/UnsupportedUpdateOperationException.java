@@ -15,36 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index;
+package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerAvailable;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-
-import java.util.Optional;
 
 /**
- * Indextype segment.
+ * Unsupported update operation exception.
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
-public final class IndextypeSegment implements SQLSegment, OwnerAvailable {
+public final class UnsupportedUpdateOperationException extends BackendException {
     
-    private final int startIndex;
+    private static final long serialVersionUID = -5409739222950362541L;
     
-    private final int stopIndex;
+    private final String databaseName;
     
-    private final IdentifierValue identifier;
+    private final String errorMessage;
     
-    private OwnerSegment owner;
-    
-    @Override
-    public Optional<OwnerSegment> getOwner() {
-        return Optional.ofNullable(owner);
+    public UnsupportedUpdateOperationException(final String databaseName) {
+        this(databaseName, String.format("The database %s is read-only", databaseName));
     }
 }

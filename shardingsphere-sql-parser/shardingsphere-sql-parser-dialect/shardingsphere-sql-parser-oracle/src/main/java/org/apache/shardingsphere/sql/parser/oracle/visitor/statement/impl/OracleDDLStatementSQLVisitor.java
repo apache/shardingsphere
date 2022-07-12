@@ -103,7 +103,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.Functi
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexExpressionContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexExpressionsContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexNameContext;
-import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndextypeNameContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.IndexTypeNameContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.InlineConstraintContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModifyColPropertiesContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.ModifyColumnSpecificationContext;
@@ -131,7 +131,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.al
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.DropConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.alter.ModifyConstraintDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndextypeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.packages.PackageSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.type.TypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -620,8 +620,8 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
             for (TypeNameContext each : ctx.functionAssociation().typeName()) {
                 result.getTypes().add((TypeSegment) visit(each));
             }
-            for (IndextypeNameContext each : ctx.functionAssociation().indextypeName()) {
-                result.getIndextypes().add((IndextypeSegment) visit(each));
+            for (IndexTypeNameContext each : ctx.functionAssociation().indexTypeName()) {
+                result.getIndexTypes().add((IndexTypeSegment) visit(each));
             }
         }
         return result;
@@ -658,9 +658,9 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
                 result.getTypes().add((TypeSegment) visit(each));
             }
         }
-        if (null != ctx.indextypeName()) {
-            for (IndextypeNameContext each : ctx.indextypeName()) {
-                result.getIndextypes().add((IndextypeSegment) visit(each));
+        if (null != ctx.indexTypeName()) {
+            for (IndexTypeNameContext each : ctx.indexTypeName()) {
+                result.getIndexTypes().add((IndexTypeSegment) visit(each));
             }
         }
         return result;
@@ -685,8 +685,8 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
         if (null != ctx.columnName()) {
             result.setColumn((ColumnSegment) visit(ctx.columnName()));
         }
-        if (null != ctx.indextypeName()) {
-            result.setIndextype((IndextypeSegment) visit(ctx.indextypeName()));
+        if (null != ctx.indexTypeName()) {
+            result.setIndexType((IndexTypeSegment) visit(ctx.indexTypeName()));
         }
         return result;
     }

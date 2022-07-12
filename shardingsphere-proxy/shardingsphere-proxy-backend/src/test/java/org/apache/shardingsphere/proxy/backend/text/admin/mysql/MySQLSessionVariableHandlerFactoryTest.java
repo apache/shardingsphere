@@ -15,12 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.proxy.backend.text.admin.mysql;
 
-/**
- * Lock level.
- */
-public enum LockLevel {
+import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class MySQLSessionVariableHandlerFactoryTest {
     
-    DATABASE, SCHEMA, TABLE
+    @Test
+    public void assertGetHandlers() {
+        List<MySQLSessionVariableHandler> actual = MySQLSessionVariableHandlerFactory.getHandlers(Arrays.asList("test_fixture", "test_fixture"));
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(0), instanceOf(TestFixtureSessionVariableHandler.class));
+        assertThat(actual.get(1), instanceOf(TestFixtureSessionVariableHandler.class));
+    }
 }

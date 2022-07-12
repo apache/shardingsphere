@@ -15,37 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.state;
+package org.apache.shardingsphere.proxy.backend.text.admin.mysql;
 
-import org.apache.shardingsphere.infra.lock.LockNameDefinition;
+import org.apache.shardingsphere.proxy.backend.text.admin.executor.SessionVariableHandler;
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.spi.type.required.RequiredSPI;
 
 /**
- * Lock state context.
+ * Session variable handler for MySQL.
  */
 @SingletonSPI
-public interface LockStateContext extends RequiredSPI {
-    
-    /**
-     * Register lock state.
-     *
-     * @param lockName lock name definition
-     */
-    void register(LockNameDefinition lockName);
-    
-    /**
-     * Un-register lock state.
-     *
-     * @param lockName lock name definition
-     */
-    void unregister(LockNameDefinition lockName);
-    
-    /**
-     * Is locked.
-     *
-     * @param lockName lock name definition
-     * @return is locked or not
-     */
-    boolean isLocked(LockNameDefinition lockName);
+public interface MySQLSessionVariableHandler extends SessionVariableHandler {
 }

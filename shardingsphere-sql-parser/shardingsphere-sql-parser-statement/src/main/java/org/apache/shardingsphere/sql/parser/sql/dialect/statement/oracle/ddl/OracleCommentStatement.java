@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndextypeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CommentStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
@@ -32,5 +32,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 @ToString
 public final class OracleCommentStatement extends CommentStatement implements OracleStatement {
     
-    private IndextypeSegment indextype;
+    private IndexTypeSegment indexType;
 }

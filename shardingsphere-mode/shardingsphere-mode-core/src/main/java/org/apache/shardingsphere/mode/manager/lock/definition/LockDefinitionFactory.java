@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
+package org.apache.shardingsphere.mode.manager.lock.definition;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
-
-import java.sql.SQLException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.lock.LockMode;
+import org.apache.shardingsphere.infra.lock.LockDefinition;
 
 /**
- * No Resource set executor.
+ * Lock definition factory.
  */
-@Getter
-@RequiredArgsConstructor
-public final class NoResourceSetExecutor implements DatabaseAdminExecutor {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class LockDefinitionFactory {
     
-    private final SetStatement sqlStatement;
-    
-    @Override
-    public void execute(final ConnectionSession connectionSession) throws SQLException {
-        return;
+    /**
+     * New database lock definition.
+     *
+     * @param databaseName database name
+     * @return database lock definition
+     */
+    public static LockDefinition newDatabaseLockDefinition(final String databaseName) {
+        return new DatabaseLockDefinition(LockMode.READ, new DatabaseLockNameDefinition(databaseName));
     }
 }

@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.state;
 
+import org.apache.shardingsphere.infra.lock.LockNameDefinition;
+
 import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -34,13 +34,15 @@ public final class ShardingSphereLockStateContext implements LockStateContext {
     
     private final AtomicInteger lockCounter = new AtomicInteger(0);
     
-    private final Map<String, Set<String>> lockStates = new LinkedHashMap<>();
+    private final Map<String, Boolean> lockStates = new LinkedHashMap<>();
     
     @Override
-    public void register(final String databaseName) {
+    public void register(final LockNameDefinition lockName) {
         lock.writeLock().lock();
         try {
-            if (lockStates.computeIfAbsent(databaseName, locks -> new LinkedHashSet<>()).add("@all")) {
+            Boolean isLocked = lockStates.get(lockName.getLockName());
+            if (null == isLocked || !isLocked) {
+                lockStates.put(lockName.getLockName(), true);
                 lockCounter.incrementAndGet();
             }
         } finally {
@@ -49,10 +51,12 @@ public final class ShardingSphereLockStateContext implements LockStateContext {
     }
     
     @Override
-    public void unregister(final String databaseName) {
+    public void unregister(final LockNameDefinition lockName) {
         lock.writeLock().lock();
         try {
-            if (lockStates.get(databaseName).remove("@all")) {
+            Boolean isLocked = lockStates.get(lockName.getLockName());
+            if (null != isLocked && isLocked) {
+                lockStates.put(lockName.getLockName(), false);
                 lockCounter.decrementAndGet();
             }
         } finally {
@@ -61,16 +65,20 @@ public final class ShardingSphereLockStateContext implements LockStateContext {
     }
     
     @Override
-    public boolean isLocked(final String databaseName) {
-        if (0 == lockCounter.get()) {
+    public boolean isLocked(final LockNameDefinition lockName) {
+        if (isExistLock()) {
             return false;
         }
         lock.readLock().lock();
         try {
-            Set<String> locks = lockStates.get(databaseName);
-            return null != locks && !locks.isEmpty();
+            Boolean isLocked = lockStates.get(lockName.getLockName());
+            return null != isLocked && isLocked;
         } finally {
             lock.readLock().unlock();
         }
+    }
+    
+    private boolean isExistLock() {
+        return 0 == lockCounter.get();
     }
 }
