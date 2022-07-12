@@ -1915,7 +1915,7 @@ functionAssociation
     | PACKAGES packageName (COMMA_ packageName)*
     | TYPES typeName (COMMA_ typeName)*
     | INDEXES indexName (COMMA_ indexName)*
-    | INDEXTYPES indextypeName (COMMA_ indextypeName)*) 
+    | INDEXTYPES indexTypeName (COMMA_ indexTypeName)*)
     (usingStatisticsType | defaultCostClause (COMMA_ defaultSelectivityClause)? | defaultSelectivityClause (COMMA_ defaultCostClause)?)
     ;
 
@@ -1942,7 +1942,7 @@ disassociateStatistics
     | PACKAGES packageName (COMMA_ packageName)*
     | TYPES typeName (COMMA_ typeName)*
     | INDEXES indexName (COMMA_ indexName)*
-    | INDEXTYPES indextypeName (COMMA_ indextypeName)*) FORCE?
+    | INDEXTYPES indexTypeName (COMMA_ indexTypeName)*) FORCE?
     ;
 
 audit
@@ -1978,7 +1978,7 @@ comment
     | AUDIT POLICY policyName
     | COLUMN (tableName | viewName | materializedViewName) DOT_ columnName
     | EDITION editionName
-    | INDEXTYPE indextypeName
+    | INDEXTYPE indexTypeName
     | MATERIALIZED VIEW materializedViewName
     | MINING MODEL modelName
     | OPERATOR operatorName

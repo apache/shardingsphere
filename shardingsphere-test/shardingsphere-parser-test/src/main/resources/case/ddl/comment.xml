@@ -23,8 +23,8 @@
         <column name="job_id" start-index="28" stop-index="33" />
     </comment>
     <comment sql-case-id="comment_on_edition" />
-    <comment sql-case-id="comment_on_indextype">
-        <indextype name="indtype" start-index="21" stop-index="27" />
+    <comment sql-case-id="comment_on_index_type">
+        <index-type name="indtype" start-index="21" stop-index="27" />
     </comment>
     <comment sql-case-id="comment_on_view" />
     <comment sql-case-id="comment_on_model" />
