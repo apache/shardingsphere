@@ -46,6 +46,7 @@ public final class ShardingSphereDatabasesFactoryTest {
     public void assertCreateSingleDatabase() throws SQLException {
         log.error("============assertCreateSingleDatabase=========");
         DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration()));
+        log.error("============DatabaseConfiguration databaseConfig=========" + databaseConfig);
         ShardingSphereDatabase actual = ShardingSphereDatabasesFactory.create("foo_db", databaseConfig, new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
         log.error("============ShardingSphereDatabase actual=========" + actual);
         assertThat(actual.getName(), is("foo_db"));
