@@ -2759,7 +2759,7 @@ implementationClause
     ;
 
 primaryOperatorClause
-    : operatorName LP_ parameterType (COMMA_ parameterType) RP_
+    : operatorName LP_ parameterType (COMMA_ parameterType)* RP_
     ;
 
 contextClauseWithOpeartor
@@ -2775,9 +2775,9 @@ withColumnClause
     ;
 
 usingFunctionClause
-    : USING (schemaName DOT_)? (packageName DOT_ | typeName DOT_)? functionName
+    : USING (packageName DOT_ | typeName DOT_)? functionName
     ;
 
 dropBindingClause
-    : DROP BINDING LP_ parameterType (COMMA_ parameterType) RP_ FORCE?
+    : DROP BINDING LP_ parameterType (COMMA_ parameterType)* RP_ FORCE?
     ;
