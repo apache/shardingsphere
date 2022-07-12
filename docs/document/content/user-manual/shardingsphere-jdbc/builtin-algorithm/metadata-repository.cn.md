@@ -3,9 +3,9 @@ title = "元数据持久化仓库"
 weight = 1
 +++
 
-## 文件持久化
+## H2 数据库持久化
 
-类型：File
+类型：H2
 
 适用模式：Standalone
 
@@ -13,7 +13,9 @@ weight = 1
 
 | *名称*                        | *数据类型* | *说明*            | *默认值*         |
 | ---------------------------- | --------- | ---------------- | --------------- |
-| path                         | String    | 元数据存储路径      | .shardingsphere |
+| jdbcUrl                      | String    | 连接数据库的 URL   | jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL |
+| user                         | String    | 访问数据库的用户名  | sa                                                                      |
+| password                     | String    | 访问数据库的密码    |                                                                         |
 
 ## ZooKeeper 持久化
 

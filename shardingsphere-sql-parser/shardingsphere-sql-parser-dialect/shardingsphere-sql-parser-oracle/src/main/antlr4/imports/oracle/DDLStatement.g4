@@ -17,7 +17,7 @@
 
 grammar DDLStatement;
 
-import BaseRule;
+import BaseRule, DCLStatement;
 
 createTable
     : CREATE createTableSpecification TABLE tableName createSharingClause createDefinitionClause createMemOptimizeClause createParentClause
@@ -2547,4 +2547,191 @@ resolveClauses
 
 resolveClause
     : LP_ matchString DOT_? (schemaName | MINUS_) RP_
+    ;
+
+alterAuditPolicy
+    : ALTER AUDIT POLICY policyName
+      ((ADD | DROP) subAuditClause)?
+      (CONDITION (DROP | condition EVALUATE PER (STATEMENT | SESSION | INSTANCE)))?
+    ;
+
+subAuditClause
+    : (privilegeAuditClause)? (actionAuditClause)? (roleAuditClause)? (ONLY TOPLEVEL)?
+    ;
+
+privilegeAuditClause
+    : PRIVILEGES systemPrivilegeClause (COMMA_ systemPrivilegeClause)*
+    ;
+
+actionAuditClause
+    : (standardActions | componentActions)*
+    ;
+
+standardActions
+    : ACTIONS standardActionsClause standardActionsClause*
+    ;
+
+standardActionsClause
+    : (objectAction ON (DIRECTORY directoryName | MINING MODEL objectName | objectName) | systemAction)
+    ;
+
+objectAction
+    : ALL
+    | ALTER
+    | AUDIT
+    | COMMENT
+    | CREATE
+    | DELETE
+    | EXECUTE
+    | FLASHBACK
+    | GRANT
+    | INDEX
+    | INSERT
+    | LOCK
+    | READ
+    | RENAME
+    | SELECT
+    | UPDATE
+    | USE
+    | WRITE
+    ;
+
+systemAction
+    : ALL
+    | ALTER EDITION
+    | ALTER REWRITE EQUIVALENCE
+    | ALTER SUMMARY
+    | ALTER TRACING
+    | CREATE BITMAPFILE
+    | CREATE CONTROL FILE
+    | CREATE DATABASE
+    | CREATE SUMMARY
+    | DECLARE REWRITE EQUIVALENCE
+    | DROP BITMAPFILE
+    | DROP DATABASE
+    | DROP REWRITE EQUIVALENCE
+    | DROP SUMMARY
+    | FLASHBACK DATABASE
+    | MERGE
+    | SAVEPOINT
+    | SET CONSTRAINTS
+    | UNDROP OBJECT
+    | UPDATE INDEXES
+    | UPDATE JOIN INDEX
+    | VALIDATE INDEX
+    ;
+
+componentActions
+    : ACTIONS COMPONENT EQ_ (DATAPUMP | DIRECT_LOAD | OLS | XS) componentAction (COMMA_ componentAction)*
+    | DV componentAction ON objectName (COMMA_ componentAction ON objectName)*
+    ;
+
+componentAction
+    : ALL
+    | dataDumpAction
+    | directLoadAction
+    | labelSecurityAction
+    | securityAction
+    | databaseVaultAction
+    ;
+
+dataDumpAction
+    : EXPORT
+    | IMPORT
+    ;
+
+directLoadAction
+    : LOAD
+    ;
+
+labelSecurityAction
+    : CREATE POLICY
+    | ALTER POLICY
+    | DROP POLICY
+    | APPLY POLICY
+    | REMOVE POLICY
+    | SET AUTHORIZATION
+    | PRIVILEGED ACTION
+    | ENABLE POLICY
+    | DISABLE POLICY
+    | SUBSCRIBE OID
+    | UNSUBSCRIBE OID
+    | CREATE DATA LABEL
+    | ALTER DATA LABEL
+    | DROP DATA LABEL
+    | CREATE LABEL COMPONENT
+    | ALTER LABEL COMPONENTS
+    | DROP LABEL COMPONENTS
+    ;
+
+securityAction
+    : CREATE USER
+    | UPDATE USER
+    | DELETE USER
+    | CREATE ROLE
+    | UPDATE ROLE
+    | DELETE ROLE
+    | GRANT ROLE
+    | REVOKE ROLE
+    | ADD PROXY
+    | REMOVE PROXY
+    | SET USER PASSWORD
+    | SET USER VERIFIER
+    | CREATE ROLESET
+    | UPDATE ROLESET
+    | DELETE ROLESET
+    | CREATE SECURITY CLASS
+    | UPDATE SECURITY CLASS
+    | DELETE SECURITY CLASS
+    | CREATE NAMESPACE TEMPLATE
+    | UPDATE NAMESPACE TEMPLATE
+    | DELETE NAMESPACE TEMPLATE
+    | CREATE ACL
+    | UPDATE ACL
+    | DELETE ACL
+    | CREATE DATA SECURITY
+    | UPDATE DATA SECURITY
+    | DELETE DATA SECURITY
+    | ENABLE DATA SECURITY
+    | DISABLE DATA SECURITY
+    | ADD GLOBAL CALLBACK
+    | DELETE GLOBAL CALLBACK
+    | ENABLE GLOBAL CALLBACK
+    | ENABLE ROLE
+    | DISABLE ROLE
+    | SET COOKIE
+    | SET INACTIVE TIMEOUT
+    | CREATE SESSION
+    | DESTROY SESSION
+    | SWITCH USER
+    | ASSIGN USER
+    | CREATE SESSION NAMESPACE
+    | DELETE SESSION NAMESPACE
+    | CREATE NAMESPACE ATTRIBUTE
+    | GET NAMESPACE ATTRIBUTE
+    | SET NAMESPACE ATTRIBUTE
+    | DELETE NAMESPACE ATTRIBUTE
+    | SET USER PROFILE
+    | GRANT SYSTEM PRIVILEGE
+    | REVOKE SYSTEM PRIVILEGE
+    ;
+
+databaseVaultAction
+    : REALM VIOLATION
+    | REALM SUCCESS
+    | REALM ACCESS
+    | RULE SET FAILURE
+    | RULE SET SUCCESS
+    | RULE SET EVAL
+    | FACTOR ERROR
+    | FACTOR NULL
+    | FACTOR VALIDATE ERROR
+    | FACTOR VALIDATE FALSE
+    | FACTOR TRUST LEVEL NULL
+    | FACTOR TRUST LEVEL NEG
+    | FACTOR ALL
+    ;
+
+roleAuditClause
+    : ROLES roleName (COMMA_ roleName)*
     ;

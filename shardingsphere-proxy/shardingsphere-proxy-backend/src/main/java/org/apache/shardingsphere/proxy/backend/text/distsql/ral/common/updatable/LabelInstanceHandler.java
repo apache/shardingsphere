@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.updatable.LabelInstanceStatement;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsChangedEvent;
@@ -50,7 +49,7 @@ public final class LabelInstanceHandler extends UpdatableRALBackendHandler<Label
             if (!getSqlStatement().isOverwrite() && null != computeNodeInstance.get().getLabels()) {
                 labels.addAll(computeNodeInstance.get().getLabels());
             }
-            ShardingSphereEventBus.getInstance().post(new LabelsChangedEvent(instanceId, new LinkedList<>(labels)));
+            contextManager.getInstanceContext().getEventBusContext().post(new LabelsChangedEvent(instanceId, new LinkedList<>(labels)));
         }
     }
 }

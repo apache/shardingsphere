@@ -19,16 +19,16 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distribu
 
 import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockNodeServiceFactory;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal.ExclusiveInternalLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal.ShardingSphereInternalLockHolder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.event.DistributedAckLockReleasedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.event.DistributedAckLockedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.event.DistributedLockReleasedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.event.DistributedLockedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal.ExclusiveInternalLock;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal.ShardingSphereInternalLockHolder;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockNodeServiceFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 
@@ -44,9 +44,9 @@ public final class ShardingSphereDistributedGlobalLock implements ShardingSphere
     
     private final ShardingSphereInternalLockHolder lockHolder;
     
-    public ShardingSphereDistributedGlobalLock(final ShardingSphereInternalLockHolder lockHolder) {
+    public ShardingSphereDistributedGlobalLock(final ShardingSphereInternalLockHolder lockHolder, final EventBusContext eventBusContext) {
         this.lockHolder = lockHolder;
-        ShardingSphereEventBus.getInstance().register(this);
+        eventBusContext.register(this);
         syncDistributedLockStatus();
     }
     

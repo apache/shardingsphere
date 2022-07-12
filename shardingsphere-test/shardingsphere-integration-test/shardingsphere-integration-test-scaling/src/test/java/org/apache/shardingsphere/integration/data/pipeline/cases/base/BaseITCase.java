@@ -230,7 +230,7 @@ public abstract class BaseITCase {
                 .replace("${ds2}", getActualJdbcUrlTemplate(DS_2))
                 .replace("${ds3}", getActualJdbcUrlTemplate(DS_3))
                 .replace("${ds4}", getActualJdbcUrlTemplate(DS_4));
-        executeWithLog(addTargetResource);
+        executeWithLog(addTargetResource, 1);
         List<Map<String, Object>> resources = queryForListWithLog("SHOW DATABASE RESOURCES from sharding_db");
         assertThat(resources.size(), is(5));
         assertBeforeApplyScalingMetadataCorrectly();
@@ -246,18 +246,17 @@ public abstract class BaseITCase {
     }
     
     protected void initShardingAlgorithm() {
-        executeWithLog(getCommonSQLCommand().getCreateDatabaseShardingAlgorithm());
-        executeWithLog(getCommonSQLCommand().getCreateOrderShardingAlgorithm());
-        executeWithLog(getCommonSQLCommand().getCreateOrderItemShardingAlgorithm());
+        executeWithLog(getCommonSQLCommand().getCreateDatabaseShardingAlgorithm(), 1);
+        executeWithLog(getCommonSQLCommand().getCreateOrderShardingAlgorithm(), 1);
+        executeWithLog(getCommonSQLCommand().getCreateOrderItemShardingAlgorithm(), 1);
     }
     
-    protected void getCreateOrderWithItemSharingTableRule() {
-        executeWithLog(commonSQLCommand.getCreateOrderWithItemSharingTableRule());
-        assertBeforeApplyScalingMetadataCorrectly();
+    protected void createOrderTableRule() {
+        executeWithLog(commonSQLCommand.getCreateOrderTableRule(), 0);
     }
     
-    protected void createOrderSharingTableRule() {
-        executeWithLog(commonSQLCommand.getCreateOrderShardingTableRule());
+    protected void createOrderItemTableRule() {
+        executeWithLog(commonSQLCommand.getCreateOrderItemTableRule(), 0);
     }
     
     protected void bindingShardingRule() {
@@ -270,17 +269,17 @@ public abstract class BaseITCase {
                 List<Map<String, Object>> scalingList = jdbcTemplate.queryForList("SHOW SCALING LIST");
                 for (Map<String, Object> each : scalingList) {
                     String id = each.get("id").toString();
-                    jdbcTemplate.execute(String.format("DROP SCALING %s", id));
+                    executeWithLog(String.format("DROP SCALING %s", id), 0);
                 }
             } catch (final DataAccessException ex) {
                 log.error("Failed to show scaling list. {}", ex.getMessage());
             }
         }
-        executeWithLog("CREATE SHARDING SCALING RULE scaling_manual (INPUT(SHARDING_SIZE=1000), DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH)))");
+        executeWithLog("CREATE SHARDING SCALING RULE scaling_manual (INPUT(SHARDING_SIZE=1000), DATA_CONSISTENCY_CHECKER(TYPE(NAME=DATA_MATCH)))", 1);
     }
     
     protected void createSchema(final String schemaName) {
-        executeWithLog(String.format("CREATE SCHEMA %s", schemaName));
+        executeWithLog(String.format("CREATE SCHEMA %s", schemaName), 0);
     }
     
     protected void executeWithLog(final Connection connection, final String sql) throws SQLException {
@@ -289,10 +288,14 @@ public abstract class BaseITCase {
         ThreadUtil.sleep(1, TimeUnit.SECONDS);
     }
     
-    protected void executeWithLog(final String sql) {
+    protected void executeWithLog(final String sql, final Integer sleepSeconds) {
         log.info("jdbcTemplate execute:{}", sql);
         jdbcTemplate.execute(sql);
-        ThreadUtil.sleep(2, TimeUnit.SECONDS);
+        ThreadUtil.sleep(Math.max(sleepSeconds, 0), TimeUnit.SECONDS);
+    }
+    
+    protected void executeWithLog(final String sql) {
+        executeWithLog(sql, 2);
     }
     
     protected List<Map<String, Object>> queryForListWithLog(final String sql) {

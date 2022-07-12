@@ -275,6 +275,7 @@ unreservedWord
     | MOD
     | NAME
     | NAMES
+    | NATIONAL
     | NEW
     | NEXT
     | NFC

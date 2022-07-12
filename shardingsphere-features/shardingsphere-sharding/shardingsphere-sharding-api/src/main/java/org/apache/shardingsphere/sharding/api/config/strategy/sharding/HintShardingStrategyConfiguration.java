@@ -32,4 +32,9 @@ public final class HintShardingStrategyConfiguration implements ShardingStrategy
         Preconditions.checkNotNull(shardingAlgorithmName, "Sharding algorithm name is required.");
         this.shardingAlgorithmName = shardingAlgorithmName;
     }
+    
+    @Override
+    public String getType() {
+        return "HINT";
+    }
 }

@@ -111,5 +111,6 @@ execute
     | alterLibrary
     | alterMaterializedZonemap
     | alterJava
+    | alterAuditPolicy
     ) SEMI_?
     ;

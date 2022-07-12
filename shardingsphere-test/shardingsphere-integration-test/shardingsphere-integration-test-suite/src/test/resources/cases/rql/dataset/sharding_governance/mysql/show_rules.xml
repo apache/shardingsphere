@@ -32,6 +32,6 @@
         <column name="key_generator_type" />
         <column name="key_generator_props" />
     </metadata>
-    <row values="t_order| governance_db.t_order| | | | | | none| | | | | | " />
-    <row values="t_order_details| governance_db.t_order_details| | | | | | none| | | | | | " />
+    <row values="t_order| governance_db.t_order| | | | | | | | | | | | " />
+    <row values="t_order_details| governance_db.t_order_details| | | | | | | | | | | | " />
 </dataset>

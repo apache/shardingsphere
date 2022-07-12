@@ -124,4 +124,5 @@
     <sql-case id="create_bit_xor_table" value="create table BIT_XOR(a int)" db-types="MySQL" />
     <sql-case id="create_bit_xor_table_with_space" value="create table BIT_XOR (a int)" db-types="MySQL" />
     <sql-case id="create_table_path" value="CREATE TABLE files (path PATH);" db-types="PostgreSQL" />
+    <sql-case id="create_table_national" value="CREATE TABLE t_order (national int);" db-types="PostgreSQL,openGauss" />
 </sql-cases>

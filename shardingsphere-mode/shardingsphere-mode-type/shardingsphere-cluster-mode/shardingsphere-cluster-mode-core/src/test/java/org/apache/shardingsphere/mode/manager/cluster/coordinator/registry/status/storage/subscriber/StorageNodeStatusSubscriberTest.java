@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.subscriber;
 
+import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeRole;
@@ -39,6 +40,8 @@ public final class StorageNodeStatusSubscriberTest {
     @Mock
     private ClusterPersistRepository repository;
     
+    private final EventBusContext eventBusContext = new EventBusContext();
+    
     @Test
     public void assertUpdateDataSourceDisabledState() {
         String databaseName = "replica_query_db";
@@ -46,7 +49,7 @@ public final class StorageNodeStatusSubscriberTest {
         String dataSourceName = "replica_ds_0";
         StorageNodeDataSource storageNodeDataSource = new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.DISABLED);
         DataSourceDisabledEvent dataSourceDisabledEvent = new DataSourceDisabledEvent(databaseName, groupName, dataSourceName, storageNodeDataSource);
-        new StorageNodeStatusSubscriber(repository).update(dataSourceDisabledEvent);
+        new StorageNodeStatusSubscriber(repository, eventBusContext).update(dataSourceDisabledEvent);
         verify(repository).persist(StorageNode.getStatusPath(new QualifiedDatabase(databaseName, groupName, dataSourceName)), YamlEngine.marshal(storageNodeDataSource));
     }
     
@@ -57,7 +60,7 @@ public final class StorageNodeStatusSubscriberTest {
         String dataSourceName = "replica_ds_0";
         StorageNodeDataSource storageNodeDataSource = new StorageNodeDataSource(StorageNodeRole.MEMBER, StorageNodeStatus.ENABLED);
         DataSourceDisabledEvent dataSourceDisabledEvent = new DataSourceDisabledEvent(databaseName, groupName, dataSourceName, storageNodeDataSource);
-        new StorageNodeStatusSubscriber(repository).update(dataSourceDisabledEvent);
+        new StorageNodeStatusSubscriber(repository, eventBusContext).update(dataSourceDisabledEvent);
         verify(repository).persist(StorageNode.getStatusPath(new QualifiedDatabase(databaseName, groupName, dataSourceName)), YamlEngine.marshal(storageNodeDataSource));
     }
     
@@ -67,7 +70,7 @@ public final class StorageNodeStatusSubscriberTest {
         String groupName = "readwrite_ds";
         String dataSourceName = "replica_ds_0";
         PrimaryDataSourceChangedEvent event = new PrimaryDataSourceChangedEvent(new QualifiedDatabase(databaseName, groupName, dataSourceName));
-        new StorageNodeStatusSubscriber(repository).update(event);
+        new StorageNodeStatusSubscriber(repository, eventBusContext).update(event);
         verify(repository).persist(StorageNode.getStatusPath(new QualifiedDatabase(databaseName, groupName, dataSourceName)),
                 YamlEngine.marshal(new StorageNodeDataSource(StorageNodeRole.PRIMARY, StorageNodeStatus.ENABLED)));
     }

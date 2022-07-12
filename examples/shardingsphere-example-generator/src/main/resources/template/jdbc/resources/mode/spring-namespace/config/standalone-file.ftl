@@ -15,8 +15,4 @@
   ~ limitations under the License.
   -->
 
-<standalone:repository id="standaloneRepository" type="File">
-    <props>
-        <prop key="path">generator_demo</prop>
-    </props>
-</standalone:repository>
+<standalone:repository id="standaloneRepository" type="H2" />
