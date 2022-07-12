@@ -2843,6 +2843,22 @@ DEMAND
     : D E M A N D
     ;
 
+RESOLVE
+   : R E S O L V E
+   ;
+
+RESOLVER
+   : R E S O L V E R
+   ;
+
+SHARE
+    : S H A R E
+    ;
+
+EXCLUSIVE
+    : E X C L U S I V E
+    ;
+
 ANCILLARY
     : A N C I L L A R Y
     ;

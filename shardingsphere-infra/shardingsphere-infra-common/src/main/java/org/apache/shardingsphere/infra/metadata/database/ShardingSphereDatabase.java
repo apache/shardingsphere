@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
@@ -40,6 +41,7 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 /**
  * ShardingSphere database.
@@ -131,5 +133,20 @@ public final class ShardingSphereDatabase {
                 name, new DataSourceProvidedDatabaseConfiguration(resource.getDataSources(), ruleMetaData.getConfigurations()), instanceContext);
         ruleMetaData.getRules().clear();
         ruleMetaData.getRules().addAll(databaseRules);
+    }
+    
+    /**
+     * Reload rules.
+     *
+     * @param ruleClass to be reloaded rule class
+     * @param instanceContext instance context
+     */
+    public synchronized void reloadRules(final Class<? extends ShardingSphereRule> ruleClass, final InstanceContext instanceContext) {
+        Collection<? extends ShardingSphereRule> toBeReloadedRules = ruleMetaData.findRules(ruleClass);
+        Collection<RuleConfiguration> toBeReloadedRuleConfigs = toBeReloadedRules.stream().map(ShardingSphereRule::getConfiguration).collect(Collectors.toList());
+        Collection<ShardingSphereRule> reloadedDatabaseRules = DatabaseRulesBuilder.build(
+                name, new DataSourceProvidedDatabaseConfiguration(resource.getDataSources(), toBeReloadedRuleConfigs), instanceContext);
+        ruleMetaData.getRules().removeAll(toBeReloadedRules);
+        ruleMetaData.getRules().addAll(reloadedDatabaseRules);
     }
 }

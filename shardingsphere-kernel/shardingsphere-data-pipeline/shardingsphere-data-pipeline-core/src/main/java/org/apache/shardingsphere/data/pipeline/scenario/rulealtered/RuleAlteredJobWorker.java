@@ -36,23 +36,17 @@ import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.execute.FinishedCheckJobExecutor;
 import org.apache.shardingsphere.data.pipeline.core.execute.PipelineJobExecutor;
-import org.apache.shardingsphere.data.pipeline.core.lock.PipelineSimpleLock;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetector;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredDetectorFactory;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparerFactory;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.lock.LockNameDefinition;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseDatabaseLevelLockEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
-import org.apache.shardingsphere.mode.manager.lock.definition.LockNameDefinitionFactory;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -103,7 +97,7 @@ public final class RuleAlteredJobWorker {
                 return;
             }
             log.info("start worker initialization");
-            ShardingSphereEventBus.getInstance().register(INSTANCE);
+            PipelineContext.getContextManager().getInstanceContext().getEventBusContext().register(INSTANCE);
             new FinishedCheckJobExecutor().start();
             new PipelineJobExecutor().start();
             WORKER_INITIALIZED.set(true);
@@ -173,8 +167,7 @@ public final class RuleAlteredJobWorker {
         } else {
             log.info("Switch rule configuration immediately.");
             ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(event.getDatabaseName(), event.getActiveVersion(), event.getNewVersion());
-            ShardingSphereEventBus.getInstance().post(taskFinishedEvent);
-            ShardingSphereEventBus.getInstance().post(new ScalingReleaseDatabaseLevelLockEvent(event.getDatabaseName()));
+            PipelineContext.getContextManager().getInstanceContext().getEventBusContext().post(taskFinishedEvent);
         }
     }
     
@@ -275,33 +268,5 @@ public final class RuleAlteredJobWorker {
             }
         }
         return result;
-    }
-    
-    /**
-     * scaling release database level lock.
-     *
-     * @param event scaling release database level lock event
-     */
-    @Subscribe
-    public void scalingReleaseDatabaseLevelLock(final ScalingReleaseDatabaseLevelLockEvent event) {
-        String databaseName = event.getDatabaseName();
-        try {
-            restoreSourceWriting(databaseName);
-            // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
-            // CHECKSTYLE:ON
-            log.error("restore source writing failed, databaseName={}", databaseName, ex);
-        }
-        PipelineSimpleLock.getInstance().releaseLock(event.getDatabaseName());
-    }
-    
-    private void restoreSourceWriting(final String databaseName) {
-        log.info("restoreSourceWriting, databaseName={}", databaseName);
-        LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        LockNameDefinition lockNameDefinition = LockNameDefinitionFactory.newDatabaseDefinition(databaseName);
-        if (lockContext.isLocked(lockNameDefinition)) {
-            log.info("Source writing is still stopped on database '{}', restore it now", databaseName);
-            lockContext.releaseLock(lockNameDefinition);
-        }
     }
 }

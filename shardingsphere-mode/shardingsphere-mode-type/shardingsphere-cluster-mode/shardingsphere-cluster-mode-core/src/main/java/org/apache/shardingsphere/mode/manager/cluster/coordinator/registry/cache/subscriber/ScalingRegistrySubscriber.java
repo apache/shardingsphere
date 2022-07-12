@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cach
 
 import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
+import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.MetadataVersionPreparedEvent;
@@ -40,10 +40,13 @@ public final class ScalingRegistrySubscriber {
     
     private final DatabaseVersionPersistService databaseVersionPersistService;
     
-    public ScalingRegistrySubscriber(final ClusterPersistRepository repository) {
+    private final EventBusContext eventBusContext;
+    
+    public ScalingRegistrySubscriber(final ClusterPersistRepository repository, final EventBusContext eventBusContext) {
         this.repository = repository;
+        this.eventBusContext = eventBusContext;
         databaseVersionPersistService = new DatabaseVersionPersistService(repository);
-        ShardingSphereEventBus.getInstance().register(this);
+        eventBusContext.register(this);
     }
     
     /**
@@ -62,7 +65,7 @@ public final class ScalingRegistrySubscriber {
         log.info("start scaling job, locked the schema name, event={}", event);
         StartScalingEvent startScalingEvent = new StartScalingEvent(databaseName, sourceDataSource, sourceRule, targetDataSource, targetRule,
                 Integer.parseInt(activeVersion), Integer.parseInt(event.getVersion()));
-        ShardingSphereEventBus.getInstance().post(startScalingEvent);
+        eventBusContext.post(startScalingEvent);
     }
     
     /**

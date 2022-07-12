@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.executor.sql.execute.engine.raw;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
@@ -45,6 +46,8 @@ public final class RawExecutor {
     
     private final ConfigurationProperties props;
     
+    private final EventBusContext eventBusContext;
+    
     /**
      * Execute.
      *
@@ -56,10 +59,10 @@ public final class RawExecutor {
      */
     public List<ExecuteResult> execute(final ExecutionGroupContext<RawSQLExecutionUnit> executionGroupContext, final LogicSQL logicSQL, final RawSQLExecutorCallback callback) throws SQLException {
         try {
-            ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, props);
+            ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, props, eventBusContext);
             // TODO Load query header for first query
             List<ExecuteResult> results = execute(executionGroupContext, (RawSQLExecutorCallback) null, callback);
-            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
+            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), eventBusContext);
             return results.isEmpty() || Objects.isNull(results.get(0)) ? Collections
                     .singletonList(new UpdateResult(0, 0L)) : results;
         } finally {

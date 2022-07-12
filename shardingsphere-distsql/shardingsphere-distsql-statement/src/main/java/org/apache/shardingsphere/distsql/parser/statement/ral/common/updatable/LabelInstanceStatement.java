@@ -26,9 +26,9 @@ import java.util.Collection;
 /**
  * Label instance statement.
  */
-@Getter
 @RequiredArgsConstructor
-public class LabelInstanceStatement extends UpdatableRALStatement {
+@Getter
+public final class LabelInstanceStatement extends UpdatableRALStatement {
     
     private final boolean overwrite;
     

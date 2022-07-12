@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.ral.common;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.CommonDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.CommonRALStatement;
 
 /**
- * Hint dist sql statement.
+ * Hint Dist SQL statement.
  */
-public abstract class HintDistSQLStatement extends CommonDistSQLStatement {
+public abstract class HintDistSQLStatement extends CommonRALStatement {
 }

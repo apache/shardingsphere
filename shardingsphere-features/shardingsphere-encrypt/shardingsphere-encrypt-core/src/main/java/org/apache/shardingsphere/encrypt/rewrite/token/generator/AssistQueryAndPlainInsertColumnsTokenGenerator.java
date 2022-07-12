@@ -42,11 +42,8 @@ public final class AssistQueryAndPlainInsertColumnsTokenGenerator implements Col
     private EncryptRule encryptRule;
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
-        if (sqlStatementContext instanceof InsertStatementContext) {
-            return (((InsertStatementContext) sqlStatementContext).getSqlStatement()).getInsertColumns().isPresent() && !(((InsertStatementContext) sqlStatementContext)).useDefaultColumns();
-        }
-        return false;
+    public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
+        return sqlStatementContext instanceof InsertStatementContext && ((InsertStatementContext) sqlStatementContext).containsInsertColumns();
     }
     
     @Override

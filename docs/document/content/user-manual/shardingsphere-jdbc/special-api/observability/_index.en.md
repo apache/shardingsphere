@@ -1,6 +1,6 @@
 +++
 title = "Observability"
-weight = 3
+weight = 4
 chapter = true
 +++
 

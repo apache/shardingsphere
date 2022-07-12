@@ -21,11 +21,9 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.AbstractDatabaseMetadataExecutor.DefaultDatabaseMetadataExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorCreator;
-import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor.PostgreSQLSetCharsetExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor.SelectDatabaseExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor.SelectTableExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SubqueryTableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
@@ -34,7 +32,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatemen
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -76,20 +73,7 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
                 return Optional.of(new DefaultDatabaseMetadataExecutor(sql));
             }
         }
-        if (sqlStatement instanceof SetStatement) {
-            SetStatement setStatement = (SetStatement) sqlStatement;
-            // TODO Consider refactoring this with SPI.
-            switch (getSetConfigurationParameter(setStatement)) {
-                case "client_encoding":
-                    return Optional.of(new PostgreSQLSetCharsetExecutor(setStatement));
-                case "extra_float_digits":
-                case "application_name":
-                    return Optional.of(connectionSession -> {
-                    });
-                default:
-            }
-        }
-        return Optional.empty();
+        return sqlStatement instanceof SetStatement ? Optional.of(new PostgreSQLSetVariableAdminExecutor((SetStatement) sqlStatement)) : Optional.empty();
     }
     
     private boolean isQueryPgTable(final Collection<String> selectedTableNames) {
@@ -108,11 +92,6 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
         extractor.getTableContext().addAll(subQueryTableSegment);
         return extractor.getTableContext().stream().filter(each -> each instanceof SimpleTableSegment)
                 .map(each -> ((SimpleTableSegment) each).getTableName().getIdentifier().getValue()).collect(Collectors.toList());
-    }
-    
-    private String getSetConfigurationParameter(final SetStatement setStatement) {
-        Iterator<VariableAssignSegment> iterator = setStatement.getVariableAssigns().iterator();
-        return iterator.hasNext() ? iterator.next().getVariable().getVariable().toLowerCase() : "";
     }
     
     @Override

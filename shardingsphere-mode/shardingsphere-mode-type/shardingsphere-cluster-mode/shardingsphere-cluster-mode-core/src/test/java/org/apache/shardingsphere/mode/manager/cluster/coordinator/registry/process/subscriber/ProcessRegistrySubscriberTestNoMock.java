@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber;
 
+import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -52,7 +53,7 @@ public final class ProcessRegistrySubscriberTestNoMock {
     
     private final ClusterPersistRepository repository = new ProcessListClusterPersistRepositoryFixture();
     
-    private final ProcessRegistrySubscriber subscriber = new ProcessRegistrySubscriber(repository);
+    private final ProcessRegistrySubscriber subscriber = new ProcessRegistrySubscriber(repository, new EventBusContext());
     
     private ExecuteProcessContext createExecuteProcessContext() {
         ExecutionUnit executionUnit = createExecuteUnit();

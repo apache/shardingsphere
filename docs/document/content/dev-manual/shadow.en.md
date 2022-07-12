@@ -5,14 +5,14 @@ weight = 14
 chapter = true
 +++
 
-## ShadowAlgorithm
-
-| *SPI Name*      | *Description*            |
-| --------------- | ------------------------ |
+## SPI Interface
+| *SPI Name*       | *Description*   |
+|---------------- |------------ |
 | ShadowAlgorithm | shadow routing algorithm |
 
-| *Implementation Class*          | *Description*                       |
-| ------------------------------- | ----------------------------------- |
-| ColumnValueMatchShadowAlgorithm | Column value match shadow algorithm |
-| ColumnRegexMatchShadowAlgorithm | Column regex match shadow algorithm |
-| SimpleHintShadowAlgorithm    | Simple hint shadow algorithm    |
+## Sample
+| *Implementation Class* | *Description* |
+|-------------------------------- |----------------------- |
+| ColumnValueMatchShadowAlgorithm | Match shadow algorithms based on field values     |
+| ColumnRegexMatchShadowAlgorithm | Regular matching shadow algorithm based on field value  |
+| SimpleHintShadowAlgorithm    | Simple match shadow algorithm based on Hint |

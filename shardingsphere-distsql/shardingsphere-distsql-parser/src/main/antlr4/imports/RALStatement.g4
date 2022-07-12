@@ -107,10 +107,6 @@ unlabelInstance
     : UNLABEL INSTANCE instanceId (WITH label (COMMA label)*)?
     ;
 
-countInstanceRules
-    : COUNT INSTANCE RULES (FROM databaseName)?
-    ;
-
 trafficRuleDefinition
     : ruleName LP (labelDefinition COMMA)? trafficAlgorithmDefinition (COMMA loadBalancerDefinition)? RP
     ;

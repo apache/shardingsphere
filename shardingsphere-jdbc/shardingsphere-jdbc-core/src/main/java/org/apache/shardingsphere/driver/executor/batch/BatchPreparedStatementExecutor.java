@@ -19,6 +19,7 @@ package org.apache.shardingsphere.driver.executor.batch;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
@@ -61,10 +62,13 @@ public final class BatchPreparedStatementExecutor {
     
     private final String databaseName;
     
-    public BatchPreparedStatementExecutor(final MetaDataContexts metaDataContexts, final JDBCExecutor jdbcExecutor, final String databaseName) {
+    private final EventBusContext eventBusContext;
+    
+    public BatchPreparedStatementExecutor(final MetaDataContexts metaDataContexts, final JDBCExecutor jdbcExecutor, final String databaseName, final EventBusContext eventBusContext) {
         this.databaseName = databaseName;
         this.metaDataContexts = metaDataContexts;
         this.jdbcExecutor = jdbcExecutor;
+        this.eventBusContext = eventBusContext;
         executionGroupContext = new ExecutionGroupContext<>(new LinkedList<>());
         batchExecutionUnits = new LinkedList<>();
     }
@@ -134,7 +138,7 @@ public final class BatchPreparedStatementExecutor {
     public int[] executeBatch(final SQLStatementContext<?> sqlStatementContext) throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
         JDBCExecutorCallback<int[]> callback = new JDBCExecutorCallback<int[]>(
-                metaDataContexts.getMetaData().getDatabases().get(databaseName).getResource().getDatabaseType(), sqlStatementContext.getSqlStatement(), isExceptionThrown) {
+                metaDataContexts.getMetaData().getDatabases().get(databaseName).getResource().getDatabaseType(), sqlStatementContext.getSqlStatement(), isExceptionThrown, eventBusContext) {
             
             @Override
             protected int[] executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {

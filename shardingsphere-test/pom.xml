@@ -30,6 +30,7 @@
     
     <modules>
         <module>shardingsphere-test-common</module>
+        <module>shardingsphere-test-fixture</module>
         <module>shardingsphere-integration-test</module>
         <module>shardingsphere-integration-driver-test</module>
         <module>shardingsphere-integration-agent-test</module>

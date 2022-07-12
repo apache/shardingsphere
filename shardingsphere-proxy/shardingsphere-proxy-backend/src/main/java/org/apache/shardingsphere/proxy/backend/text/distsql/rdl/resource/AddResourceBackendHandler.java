@@ -60,7 +60,7 @@ public final class AddResourceBackendHandler extends DatabaseRequiredBackendHand
         Map<String, DataSourceProperties> dataSourcePropsMap = ResourceSegmentsConverter.convert(databaseType, sqlStatement.getDataSources());
         validator.validate(dataSourcePropsMap);
         try {
-            ProxyContext.getInstance().getContextManager().addResource(databaseName, dataSourcePropsMap);
+            ProxyContext.getInstance().getContextManager().updateResources(databaseName, dataSourcePropsMap);
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
