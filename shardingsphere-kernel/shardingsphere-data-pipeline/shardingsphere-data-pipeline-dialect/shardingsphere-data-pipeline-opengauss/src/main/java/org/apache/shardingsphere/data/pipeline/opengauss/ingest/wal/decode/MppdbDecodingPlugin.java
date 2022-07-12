@@ -40,6 +40,7 @@ import java.sql.Date;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Mppdb decoding plugin in openGauss.
@@ -138,6 +139,9 @@ public final class MppdbDecodingPlugin implements DecodingPlugin {
     }
     
     private Object readColumnData(final String data, final String columnType) {
+        if (Objects.equals(data, "null")) {
+            return null;
+        }
         if (columnType.startsWith("numeric")) {
             return new BigDecimal(data);
         }
