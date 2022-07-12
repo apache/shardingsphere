@@ -91,7 +91,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
             throw new ShardingSphereException(ex);
         }
         String databaseName = yamlConfig.getDatabaseName();
-        checkDatabaseName(databaseName, file);
+        checkDatabase(databaseName, file);
         checkDataSource(yamlConfig.getDataSources(), file);
         addDatabase(databaseName);
         addResources(databaseName, yamlConfig.getDataSources());
@@ -103,10 +103,10 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         }
     }
     
-    private void checkDatabaseName(final String databaseName, final File file) {
+    private void checkDatabase(final String databaseName, final File file) {
         Preconditions.checkNotNull(databaseName, String.format("Property `databaseName` in file `%s` is required.", file.getName()));
         if (ProxyContext.getInstance().getAllDatabaseNames().contains(databaseName)) {
-            Preconditions.checkState(ProxyContext.getInstance().getDatabase(databaseName).getResource().getDataSources().isEmpty(), "Database `%s` exists.", databaseName);
+            Preconditions.checkState(ProxyContext.getInstance().getDatabase(databaseName).getResource().getDataSources().isEmpty(), "Database `%s` exists and is not empty.", databaseName);
         }
     }
     
