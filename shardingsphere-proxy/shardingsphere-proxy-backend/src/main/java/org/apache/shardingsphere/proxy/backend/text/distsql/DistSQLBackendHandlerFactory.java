@@ -20,11 +20,8 @@ package org.apache.shardingsphere.proxy.backend.text.distsql;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.CommonDistSQLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.QueryableScalingRALStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableScalingRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.infra.lock.LockContext;
@@ -58,21 +55,19 @@ public final class DistSQLBackendHandlerFactory {
             return RQLBackendHandlerFactory.newInstance((RQLStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof RDLStatement) {
-            checkLockedDatabase(connectionSession);
+            checkDatabaseLocked(connectionSession);
             return RDLBackendHandlerFactory.newInstance((RDLStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof RALStatement) {
-            if (sqlStatement instanceof CommonDistSQLStatement || sqlStatement instanceof QueryableRALStatement || sqlStatement instanceof QueryableScalingRALStatement
-                    || sqlStatement instanceof UpdatableScalingRALStatement) {
-                return RALBackendHandlerFactory.newInstance((RALStatement) sqlStatement, connectionSession);
+            if (sqlStatement instanceof UpdatableRALStatement) {
+                checkDatabaseLocked(connectionSession);
             }
-            checkLockedDatabase(connectionSession);
             return RALBackendHandlerFactory.newInstance((RALStatement) sqlStatement, connectionSession);
         }
         throw new UnsupportedOperationException(sqlStatement.getClass().getCanonicalName());
     }
     
-    private static void checkLockedDatabase(final ConnectionSession connectionSession) {
+    private static void checkDatabaseLocked(final ConnectionSession connectionSession) {
         String databaseName = connectionSession.getDatabaseName();
         if (null == databaseName) {
             return;

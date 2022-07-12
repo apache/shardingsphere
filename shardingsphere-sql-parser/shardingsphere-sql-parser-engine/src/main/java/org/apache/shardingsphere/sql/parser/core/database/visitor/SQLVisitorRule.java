@@ -44,6 +44,8 @@ public enum SQLVisitorRule {
     
     COPY("Copy", SQLStatementType.DML),
     
+    LOCKTABLE("LockTable", SQLStatementType.DML),
+    
     CREATE_TABLE("CreateTable", SQLStatementType.DDL),
     
     CREATE_AGGREGATE("CreateAggregate", SQLStatementType.DDL),
@@ -579,6 +581,10 @@ public enum SQLVisitorRule {
     ALTER_LIBRARY("AlterLibrary", SQLStatementType.DDL),
     
     ALTER_MATERIALIZED_ZONEMAP("AlterMaterializedZonemap", SQLStatementType.DDL),
+    
+    ALTER_JAVA("AlterJava", SQLStatementType.DDL),
+    
+    ALTER_AUDIT_POLICY("AlterAuditPolicy", SQLStatementType.DDL),
     
     CURSOR("Cursor", SQLStatementType.DDL),
     

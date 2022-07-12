@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.instance;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
@@ -28,8 +29,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Instance context.
@@ -45,14 +46,17 @@ public final class InstanceContext {
     
     private final LockContext lockContext;
     
+    private final EventBusContext eventBusContext;
+    
     private final Collection<ComputeNodeInstance> computeNodeInstances = new LinkedList<>();
     
-    public InstanceContext(final ComputeNodeInstance instance, final WorkerIdGenerator workerIdGenerator, final ModeConfiguration modeConfiguration, final LockContext lockContext) {
+    public InstanceContext(final ComputeNodeInstance instance, final WorkerIdGenerator workerIdGenerator,
+                           final ModeConfiguration modeConfiguration, final LockContext lockContext, final EventBusContext eventBusContext) {
         this.instance = instance;
         this.workerIdGenerator = workerIdGenerator;
         this.modeConfiguration = modeConfiguration;
         this.lockContext = lockContext;
-        getWorkerId();
+        this.eventBusContext = eventBusContext;
         lockContext.initLockState(this);
     }
     
@@ -78,17 +82,6 @@ public final class InstanceContext {
     }
     
     /**
-     * Update instance worker id.
-     * 
-     * @param workerId worker id
-     */
-    public void updateWorkerId(final Long workerId) {
-        if (!Objects.equals(workerId, instance.getWorkerId())) {
-            instance.setWorkerId(workerId);
-        }
-    }
-    
-    /**
      * Update instance label.
      * 
      * @param instanceId instance id
@@ -102,16 +95,13 @@ public final class InstanceContext {
     }
     
     /**
-     * Get worker id.
+     * Generate worker id.
      *
+     * @param props props
      * @return worker id
      */
-    public long getWorkerId() {
-        if (null == instance.getWorkerId()) {
-            // TODO process generate failed
-            Optional.of(workerIdGenerator.generate()).ifPresent(instance::setWorkerId);
-        }
-        return instance.getWorkerId();
+    public long generateWorkerId(final Properties props) {
+        return workerIdGenerator.generate(props);
     }
     
     /**

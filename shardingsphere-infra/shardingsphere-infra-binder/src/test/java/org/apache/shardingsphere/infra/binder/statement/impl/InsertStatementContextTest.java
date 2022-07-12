@@ -210,75 +210,75 @@ public final class InsertStatementContextTest {
     
     @Test
     public void assertUseDefaultColumnsForMySQL() {
-        assertUseDefaultColumns(new MySQLInsertStatement());
+        assertContainsInsertColumns(new MySQLInsertStatement());
     }
     
     @Test
     public void assertUseDefaultColumnsForOracle() {
-        assertUseDefaultColumns(new OracleInsertStatement());
+        assertContainsInsertColumns(new OracleInsertStatement());
     }
     
     @Test
     public void assertUseDefaultColumnsForPostgreSQL() {
-        assertUseDefaultColumns(new PostgreSQLInsertStatement());
+        assertContainsInsertColumns(new PostgreSQLInsertStatement());
     }
     
     @Test
     public void assertUseDefaultColumnsForSQL92() {
-        assertUseDefaultColumns(new SQL92InsertStatement());
+        assertContainsInsertColumns(new SQL92InsertStatement());
     }
     
     @Test
     public void assertUseDefaultColumnsForSQLServer() {
-        assertUseDefaultColumns(new SQLServerInsertStatement());
+        assertContainsInsertColumns(new SQLServerInsertStatement());
     }
     
-    private void assertUseDefaultColumns(final InsertStatement insertStatement) {
+    private void assertNotContainsInsertColumns(final InsertStatement insertStatement) {
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(""))));
         InsertStatementContext insertStatementContext = createInsertStatementContext(Collections.emptyList(), insertStatement);
-        assertTrue(insertStatementContext.useDefaultColumns());
+        assertFalse(insertStatementContext.containsInsertColumns());
     }
     
     @Test
     public void assertNotUseDefaultColumnsWithColumnsForMySQL() {
-        assertNotUseDefaultColumnsWithColumns(new MySQLInsertStatement());
+        assertNotContainsInsertColumns(new MySQLInsertStatement());
     }
     
     @Test
     public void assertNotUseDefaultColumnsWithColumnsForOracle() {
-        assertNotUseDefaultColumnsWithColumns(new OracleInsertStatement());
+        assertNotContainsInsertColumns(new OracleInsertStatement());
     }
     
     @Test
     public void assertNotUseDefaultColumnsWithColumnsForPostgreSQL() {
-        assertNotUseDefaultColumnsWithColumns(new PostgreSQLInsertStatement());
+        assertNotContainsInsertColumns(new PostgreSQLInsertStatement());
     }
     
     @Test
     public void assertNotUseDefaultColumnsWithColumnsForSQL92() {
-        assertNotUseDefaultColumnsWithColumns(new SQL92InsertStatement());
+        assertNotContainsInsertColumns(new SQL92InsertStatement());
     }
     
     @Test
     public void assertNotUseDefaultColumnsWithColumnsForSQLServer() {
-        assertNotUseDefaultColumnsWithColumns(new SQLServerInsertStatement());
+        assertNotContainsInsertColumns(new SQLServerInsertStatement());
     }
     
-    private void assertNotUseDefaultColumnsWithColumns(final InsertStatement insertStatement) {
+    private void assertContainsInsertColumns(final InsertStatement insertStatement) {
         InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("col"))));
         insertStatement.setInsertColumns(insertColumnsSegment);
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(""))));
         InsertStatementContext insertStatementContext = createInsertStatementContext(Collections.emptyList(), insertStatement);
-        assertFalse(insertStatementContext.useDefaultColumns());
+        assertTrue(insertStatementContext.containsInsertColumns());
     }
     
     @Test
-    public void assertNotUseDefaultColumnsWithSetAssignmentForMySQL() {
+    public void assertContainsInsertColumnsWithSetAssignmentForMySQL() {
         MySQLInsertStatement insertStatement = new MySQLInsertStatement();
         insertStatement.setSetAssignment(new SetAssignmentSegment(0, 0, Collections.emptyList()));
         insertStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue(""))));
         InsertStatementContext insertStatementContext = createInsertStatementContext(Collections.emptyList(), insertStatement);
-        assertFalse(insertStatementContext.useDefaultColumns());
+        assertTrue(insertStatementContext.containsInsertColumns());
     }
     
     @Test

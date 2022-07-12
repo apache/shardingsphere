@@ -21,6 +21,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
@@ -57,6 +58,8 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     private final SQLStatement sqlStatement;
     
     private final boolean isExceptionThrown;
+    
+    private final EventBusContext eventBusContext;
     
     @Override
     public final Collection<T> execute(final Collection<JDBCExecutionUnit> executionUnits, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
@@ -113,7 +116,7 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     
     private void finishReport(final Map<String, Object> dataMap, final SQLExecutionUnit executionUnit) {
         if (dataMap.containsKey(ExecuteProcessConstants.EXECUTE_ID.name())) {
-            ExecuteProcessEngine.finish(dataMap.get(ExecuteProcessConstants.EXECUTE_ID.name()).toString(), executionUnit);
+            ExecuteProcessEngine.finish(dataMap.get(ExecuteProcessConstants.EXECUTE_ID.name()).toString(), executionUnit, eventBusContext);
         }
     }
     

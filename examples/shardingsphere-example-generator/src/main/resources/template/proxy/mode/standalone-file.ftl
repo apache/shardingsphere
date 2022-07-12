@@ -18,7 +18,5 @@
 mode:
   type: Standalone
   repository:
-    type: file
-    props:
-      path: demo_yaml
+    type: H2
   overwrite: false

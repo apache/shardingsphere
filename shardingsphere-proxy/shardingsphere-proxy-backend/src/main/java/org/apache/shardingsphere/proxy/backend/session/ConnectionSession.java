@@ -40,7 +40,6 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Connection session.
@@ -62,11 +61,9 @@ public final class ConnectionSession {
     
     private final AttributeMap attributeMap;
     
-    @Getter(AccessLevel.NONE)
-    private final AtomicBoolean autoCommit = new AtomicBoolean(true);
+    private volatile boolean autoCommit = true;
     
-    @Getter(AccessLevel.NONE)
-    private AtomicBoolean readOnly = new AtomicBoolean(false);
+    private volatile boolean readOnly;
     
     private TransactionIsolationLevel defaultIsolationLevel;
     
@@ -132,41 +129,5 @@ public final class ConnectionSession {
      */
     public String getDefaultDatabaseName() {
         return databaseName;
-    }
-    
-    /**
-     * Is autocommit.
-     *
-     * @return is autocommit
-     */
-    public boolean isAutoCommit() {
-        return autoCommit.get();
-    }
-    
-    /**
-     * Set autocommit.
-     *
-     * @param autoCommit autocommit
-     */
-    public void setAutoCommit(final boolean autoCommit) {
-        this.autoCommit.set(autoCommit);
-    }
-    
-    /**
-     * Is readonly.
-     *
-     * @return is readonly
-     */
-    public boolean isReadOnly() {
-        return readOnly.get();
-    }
-    
-    /**
-     * Set readonly.
-     *
-     * @param readOnly readonly
-     */
-    public void setReadOnly(final boolean readOnly) {
-        this.readOnly.set(readOnly);
     }
 }
