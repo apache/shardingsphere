@@ -44,7 +44,7 @@ public final class PostgreSQLCreateTableSQLGenerator implements CreateTableSQLGe
             String tableSQL = generateCreateTableSQL(majorVersion, minorVersion, materials);
             String indexSQL = generateCreateIndexSQL(connection, majorVersion, minorVersion, materials);
             // TODO use ";" to split is not always correct
-            return Arrays.asList((tableSQL + System.lineSeparator() + indexSQL).split(DELIMITER));
+            return Arrays.asList((tableSQL + System.lineSeparator() + indexSQL).trim().split(DELIMITER));
         }
     }
     
