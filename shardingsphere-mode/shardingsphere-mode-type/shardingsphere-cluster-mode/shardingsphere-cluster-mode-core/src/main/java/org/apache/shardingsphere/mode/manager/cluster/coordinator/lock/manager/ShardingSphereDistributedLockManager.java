@@ -32,6 +32,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.s
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal.ShardingSphereInternalLockHolder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockDefinition;
+import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDefinition;
 
 /**
  * Distribute lock manager of ShardingSphere.
@@ -79,7 +80,7 @@ public final class ShardingSphereDistributedLockManager implements ShardingSpher
         return innerTryLock(lockDefinition.getLockMode(), lockDefinition.getLockNameDefinition(), timeoutMilliseconds);
     }
     
-    private synchronized boolean innerTryLock(final LockMode lockMode, final LockNameDefinition lockNameDefinition, final long timeoutMilliseconds) {
+    private synchronized boolean innerTryLock(final LockMode lockMode, final DatabaseLockNameDefinition lockNameDefinition, final long timeoutMilliseconds) {
         Preconditions.checkNotNull(lockNameDefinition, "Try Lock for database arg database name can not be null.");
         Preconditions.checkNotNull(lockMode, "Try Lock for database args lock mode can not be null.");
         switch (lockMode) {
