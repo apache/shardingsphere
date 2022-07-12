@@ -74,4 +74,4 @@ The following table can be used for comparison to help developers choose the sui
 | Applied scenarios  | Inconsistent processing by the business side | short transaction & low-level concurrency | long transaction & high concurrency |
 
 ## Related reference
-- [YAML distributed transaction configuration](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/transaction/)
+- [YAML distributed transaction configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/transaction/)
