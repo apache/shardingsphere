@@ -22,8 +22,6 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorCreator;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.MySQLSetCharsetExecutor;
-import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.NoResourceSetExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.NoResourceShowExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowConnectionIdExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowCreateDatabaseExecutor;
@@ -38,7 +36,6 @@ import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowTra
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.ShowVersionExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.UnicastResourceShowExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor.UseDatabaseExecutor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -54,7 +51,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcessListStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 
-import java.util.Iterator;
 import java.util.Optional;
 
 /**
@@ -97,12 +93,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
             return Optional.of(new ShowCreateDatabaseExecutor((MySQLShowCreateDatabaseStatement) sqlStatement));
         }
         if (sqlStatement instanceof SetStatement) {
-            if (!hasDatabases() || !hasResources()) {
-                return Optional.of(new NoResourceSetExecutor((SetStatement) sqlStatement));
-            }
-            if (isSetClientEncoding((SetStatement) sqlStatement)) {
-                return Optional.of(new MySQLSetCharsetExecutor((SetStatement) sqlStatement));
-            }
+            return Optional.of(new MySQLSetVariableAdminExecutor((SetStatement) sqlStatement));
         }
         if (sqlStatement instanceof SelectStatement) {
             if (isShowSpecialFunction((SelectStatement) sqlStatement, ShowConnectionIdExecutor.FUNCTION_NAME)) {
@@ -175,11 +166,6 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
     
     private boolean hasResources() {
         return ProxyContext.getInstance().getAllDatabaseNames().stream().anyMatch(each -> ProxyContext.getInstance().getDatabase(each).containsDataSource());
-    }
-    
-    private boolean isSetClientEncoding(final SetStatement setStatement) {
-        Iterator<VariableAssignSegment> iterator = setStatement.getVariableAssigns().iterator();
-        return iterator.hasNext() && "charset".equalsIgnoreCase(iterator.next().getVariable().getVariable());
     }
     
     @Override
