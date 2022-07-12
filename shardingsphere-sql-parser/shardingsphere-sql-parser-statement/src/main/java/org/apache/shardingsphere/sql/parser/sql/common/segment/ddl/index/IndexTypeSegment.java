@@ -28,12 +28,12 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import java.util.Optional;
 
 /**
- * Indextype segment.
+ * Index type segment.
  */
 @RequiredArgsConstructor
 @Getter
 @Setter
-public final class IndextypeSegment implements SQLSegment, OwnerAvailable {
+public final class IndexTypeSegment implements SQLSegment, OwnerAvailable {
     
     private final int startIndex;
     
