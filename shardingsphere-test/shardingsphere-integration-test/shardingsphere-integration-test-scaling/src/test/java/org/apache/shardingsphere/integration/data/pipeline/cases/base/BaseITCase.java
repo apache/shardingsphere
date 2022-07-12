@@ -251,13 +251,12 @@ public abstract class BaseITCase {
         executeWithLog(getCommonSQLCommand().getCreateOrderItemShardingAlgorithm());
     }
     
-    protected void getCreateOrderWithItemSharingTableRule() {
-        executeWithLog(commonSQLCommand.getCreateOrderWithItemSharingTableRule());
-        assertBeforeApplyScalingMetadataCorrectly();
+    protected void createOrderTableRule() {
+        executeWithLog(commonSQLCommand.getCreateOrderTableRule());
     }
     
-    protected void createOrderSharingTableRule() {
-        executeWithLog(commonSQLCommand.getCreateOrderShardingTableRule());
+    protected void createOrderItemTableRule() {
+        executeWithLog(commonSQLCommand.getCreateOrderItemTableRule());
     }
     
     protected void bindingShardingRule() {
@@ -270,7 +269,7 @@ public abstract class BaseITCase {
                 List<Map<String, Object>> scalingList = jdbcTemplate.queryForList("SHOW SCALING LIST");
                 for (Map<String, Object> each : scalingList) {
                     String id = each.get("id").toString();
-                    jdbcTemplate.execute(String.format("DROP SCALING %s", id));
+                    executeWithLog(String.format("DROP SCALING %s", id), 0);
                 }
             } catch (final DataAccessException ex) {
                 log.error("Failed to show scaling list. {}", ex.getMessage());
@@ -289,10 +288,14 @@ public abstract class BaseITCase {
         ThreadUtil.sleep(1, TimeUnit.SECONDS);
     }
     
-    protected void executeWithLog(final String sql) {
+    private void executeWithLog(final String sql, final Integer sleepSeconds) {
         log.info("jdbcTemplate execute:{}", sql);
         jdbcTemplate.execute(sql);
-        ThreadUtil.sleep(2, TimeUnit.SECONDS);
+        ThreadUtil.sleep(Math.max(sleepSeconds, 0), TimeUnit.SECONDS);
+    }
+    
+    protected void executeWithLog(final String sql) {
+        executeWithLog(sql, 2);
     }
     
     protected List<Map<String, Object>> queryForListWithLog(final String sql) {

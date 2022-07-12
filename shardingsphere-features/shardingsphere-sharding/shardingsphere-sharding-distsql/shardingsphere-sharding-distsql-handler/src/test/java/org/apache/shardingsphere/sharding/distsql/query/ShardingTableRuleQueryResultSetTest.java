@@ -53,11 +53,11 @@ public final class ShardingTableRuleQueryResultSetTest {
         assertThat(actual.get(0), is("t_order"));
         assertThat(actual.get(1), is("ds_${0..1}.t_order_${0..1}"));
         assertThat(actual.get(2), is(""));
-        assertThat(actual.get(3), is("INLINE"));
+        assertThat(actual.get(3), is("STANDARD"));
         assertThat(actual.get(4), is("user_id"));
         assertThat(actual.get(5), is("INLINE"));
         assertThat(actual.get(6), is("algorithm-expression=ds_${user_id % 2}"));
-        assertThat(actual.get(7), is("INLINE"));
+        assertThat(actual.get(7), is("STANDARD"));
         assertThat(actual.get(8), is("order_id"));
         assertThat(actual.get(9), is("INLINE"));
         assertThat(actual.get(10), is("algorithm-expression=t_order_${order_id % 2}"));

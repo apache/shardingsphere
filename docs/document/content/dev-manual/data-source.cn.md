@@ -5,11 +5,18 @@ weight = 4
 chapter = true
 +++
 
-## DatabaseType
+## SPI 接口
 
-| *SPI 名称*              | *详细说明*               |
-| ---------------------- | ----------------------- |
-| DatabaseType           | 支持的数据库类型           |
+| SPI 名称                     | 详细说明                         |
+| ---------------------------- | -------------------------------- |
+| DatabaseType                 | 支持的数据库类型                 |
+| DialectTableMetaDataLoader   | 用于使用数据库方言快速加载元数据 |
+| DataSourcePoolMetaData       | 数据源连接池元数据               |
+| DataSourcePoolActiveDetector | 数据源连接池活跃探测器           |
+
+## 示例
+
+### DatabaseType 已知实现类
 
 | *已知实现类*             | *详细说明*               |
 | ---------------------- | ----------------------- |
@@ -22,11 +29,7 @@ chapter = true
 | H2DatabaseType         | H2 数据库                |
 | OpenGaussDatabaseType  | OpenGauss 数据库         |
 
-## DialectTableMetaDataLoader
-
-| *SPI 名称*                    | *详细说明*                   |
-| ---------------------------- | --------------------------- |
-| DialectTableMetaDataLoader   | 用于使用数据库方言快速加载元数据  |
+### DialectTableMetaDataLoader 已知实现类
 
 | *已知实现类*                    | *详细说明*                   |
 | ----------------------------- | --------------------------- |
@@ -37,22 +40,14 @@ chapter = true
 | H2TableMetaDataLoader         | 使用 H2 方言加载元数据         |
 | OpenGaussTableMetaDataLoader  | 使用 OpenGauss 方言加载元数据  |
 
-## DataSourcePoolMetaData
-
-| *SPI 名称*                    | *详细说明*        |
-| ---------------------------- |-----------------|
-| DataSourcePoolMetaData       | 数据源连接池元数据 |
+### DataSourcePoolMetaData 已知实现类
 
 | *已知实现类*                   | *详细说明*              |
 |------------------------------|-----------------------|
 | DBCPDataSourcePoolMetaData   | DBCP 数据库连接池元数据   |
 | HikariDataSourcePoolMetaData | Hikari 数据源连接池元数据 |
 
-## DataSourcePoolActiveDetector
-
-| *SPI 名称*                           | *详细说明*                 |
-| ----------------------------------- | ------------------------- |
-| DataSourcePoolActiveDetector        | 数据源连接池活跃探测器        |
+### DataSourcePoolActiveDetector 已知实现类
 
 | *已知实现类*                          | *详细说明*                 |
 | ----------------------------------- | ------------------------- |

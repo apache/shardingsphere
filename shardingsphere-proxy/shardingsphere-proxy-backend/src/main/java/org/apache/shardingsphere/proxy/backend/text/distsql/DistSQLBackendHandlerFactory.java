@@ -25,9 +25,9 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatem
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.mode.manager.lock.definition.LockNameDefinitionFactory;
+import org.apache.shardingsphere.mode.manager.lock.definition.LockDefinitionFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.DatabaseLockedException;
+import org.apache.shardingsphere.proxy.backend.exception.UnsupportedUpdateOperationException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandlerFactory;
@@ -73,8 +73,8 @@ public final class DistSQLBackendHandlerFactory {
             return;
         }
         LockContext lockContext = ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext();
-        if (lockContext.isLocked(LockNameDefinitionFactory.newDatabaseDefinition(databaseName))) {
-            throw new DatabaseLockedException(databaseName);
+        if (lockContext.isLocked(LockDefinitionFactory.newDatabaseLockDefinition(databaseName))) {
+            throw new UnsupportedUpdateOperationException(databaseName);
         }
     }
 }

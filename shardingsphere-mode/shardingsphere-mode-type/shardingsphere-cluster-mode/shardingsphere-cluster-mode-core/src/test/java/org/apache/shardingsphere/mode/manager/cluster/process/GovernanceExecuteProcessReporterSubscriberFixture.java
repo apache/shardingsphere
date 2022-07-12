@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.manager.cluster.process;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessReportEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessSummaryReportEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessUnitReportEvent;
@@ -30,7 +29,7 @@ public final class GovernanceExecuteProcessReporterSubscriberFixture {
     private String value = "";
     
     public GovernanceExecuteProcessReporterSubscriberFixture() {
-        ShardingSphereEventBus.getInstance().register(this);
+        EventBusContextHolderFixture.EVENT_BUS_CONTEXT.register(this);
     }
     
     /**

@@ -39,28 +39,28 @@ public final class ReadwriteSplittingDataSourceRuleTest {
         readwriteSplittingDataSourceRule = new ReadwriteSplittingDataSourceRule(
                 new ReadwriteSplittingDataSourceRuleConfiguration("test_pr",
                         new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds_0", "read_ds_1")), null, null),
-                new RandomReplicaLoadBalanceAlgorithm());
+                new RandomReplicaLoadBalanceAlgorithm(), Collections.emptyList());
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewReadwriteSplittingDataSourceRuleWithoutName() {
         new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("",
                 new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds")),
-                null, null), new RoundRobinReplicaLoadBalanceAlgorithm());
+                null, null), new RoundRobinReplicaLoadBalanceAlgorithm(), Collections.emptyList());
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewReadwriteSplittingDataSourceRuleWithoutWriteDataSourceName() {
         new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("ds",
                 new StaticReadwriteSplittingStrategyConfiguration("", Arrays.asList("read_ds")),
-                null, null), new RoundRobinReplicaLoadBalanceAlgorithm());
+                null, null), new RoundRobinReplicaLoadBalanceAlgorithm(), Collections.emptyList());
     }
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewReadwriteSplittingDataSourceRuleWithEmptyReadDataSourceName() {
         new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("ds",
                 new StaticReadwriteSplittingStrategyConfiguration("write_ds", Collections.emptyList()),
-                null, null), new RoundRobinReplicaLoadBalanceAlgorithm());
+                null, null), new RoundRobinReplicaLoadBalanceAlgorithm(), Collections.emptyList());
     }
     
     @Test
