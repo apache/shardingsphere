@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.metadata;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -96,5 +97,13 @@ public final class ShardingSphereMetaDataTest {
         ShardingSphereDatabase actual = ShardingSphereDatabase.create("foo_db", databaseType, databaseType,
                 mock(DataSourceProvidedDatabaseConfiguration.class), new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
         assertNotNull(actual.getSchemas().get("public"));
+    }
+    
+    @Test
+    public void assertGetMySQLDefaultSchema() throws SQLException {
+        MySQLDatabaseType databaseType = new MySQLDatabaseType();
+        ShardingSphereDatabase actual = ShardingSphereDatabase.create("foo_db", databaseType, databaseType,
+                mock(DataSourceProvidedDatabaseConfiguration.class), new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
+        assertNotNull(actual.getSchemas().get("foo_db"));
     }
 }
