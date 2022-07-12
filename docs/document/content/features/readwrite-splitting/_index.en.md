@@ -45,6 +45,6 @@ Users can also expand the required algorithm according to the SPI mechanism. As 
 
 ## 相关参考
 [Java API](/en/user-manual/shardingsphere-jdbc/java-api/rules/readwrite-splitting)\
-[YAML Configuration](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/readwrite-splitting)\
-[Spring Boot Starter](/cn/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/readwrite-splitting)\
-[Spring Namespace](/cn/user-manual/shardingsphere-jdbc/spring-namespace/rules/readwrite-splitting)
+[YAML Configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/readwrite-splitting)\
+[Spring Boot Starter](/en/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/readwrite-splitting)\
+[Spring Namespace](/en/user-manual/shardingsphere-jdbc/spring-namespace/rules/readwrite-splitting)

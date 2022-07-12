@@ -18,7 +18,7 @@
 mode:
   type: Standalone
   repository:
-    type: File
+    type: H2
   overwrite: true
 
 dataSources:

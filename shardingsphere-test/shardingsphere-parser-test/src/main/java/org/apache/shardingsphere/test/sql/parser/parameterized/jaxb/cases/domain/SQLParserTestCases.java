@@ -114,6 +114,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterInmemoryJoinGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterJavaStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterAuditPolicyStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterClusterStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterLanguageStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterLibraryStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterMaterializedViewStatementTestCase;
@@ -1331,9 +1332,12 @@ public final class SQLParserTestCases {
     @XmlElement(name = "alter-audit-policy")
     private final List<AlterAuditPolicyStatementTestCase> alterAuditPolicyTestCases = new LinkedList<>();
     
+    @XmlElement(name = "alter-cluster")
+    private final List<AlterClusterStatementTestCase> alterClusterTestCases = new LinkedList<>();
+
     @XmlElement(name = "alter-index-type")
     private final List<AlterIndexTypeStatementTestCase> alterIndexTypeTestCases = new LinkedList<>();
-    
+
     @XmlElement(name = "alter-operator")
     private final List<AlterOperatorStatementTestCase> alterOperatorTestCases = new LinkedList<>();
     
@@ -1866,6 +1870,7 @@ public final class SQLParserTestCases {
         putAll(alterMaterializedViewTestCases, result);
         putAll(alterJavaTestCases, result);
         putAll(alterAuditPolicyTestCases, result);
+        putAll(alterClusterTestCases, result);
         putAll(alterIndexTypeTestCases, result);
         putAll(alterOperatorTestCases, result);
         putAll(createTextSearchTestCases, result);

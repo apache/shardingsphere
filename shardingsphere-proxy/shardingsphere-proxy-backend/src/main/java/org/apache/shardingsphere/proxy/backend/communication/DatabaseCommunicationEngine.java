@@ -26,7 +26,6 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefreshEngine;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.update.UpdateResult;
@@ -40,8 +39,8 @@ import org.apache.shardingsphere.mode.manager.lock.LockJudgeEngine;
 import org.apache.shardingsphere.mode.manager.lock.LockJudgeEngineBuilder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.DatabaseLockedException;
-import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilderEngine;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
@@ -104,7 +103,7 @@ public abstract class DatabaseCommunicationEngine<T> {
     protected void refreshMetaData(final ExecutionContext executionContext) throws SQLException {
         Optional<MetaDataRefreshedEvent> event = metadataRefreshEngine.refresh(executionContext.getSqlStatementContext(), executionContext.getRouteContext().getRouteUnits());
         if (ProxyContext.getInstance().getContextManager().getInstanceContext().isCluster() && event.isPresent()) {
-            ShardingSphereEventBus.getInstance().post(event.get());
+            ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext().post(event.get());
         }
     }
     

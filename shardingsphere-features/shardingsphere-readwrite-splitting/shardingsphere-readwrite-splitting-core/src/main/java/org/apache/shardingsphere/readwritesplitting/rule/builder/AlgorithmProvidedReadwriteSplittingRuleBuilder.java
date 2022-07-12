@@ -36,7 +36,7 @@ public final class AlgorithmProvidedReadwriteSplittingRuleBuilder implements Dat
     @Override
     public ReadwriteSplittingRule build(final AlgorithmProvidedReadwriteSplittingRuleConfiguration config, final String databaseName,
                                         final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
-        return new ReadwriteSplittingRule(config);
+        return new ReadwriteSplittingRule(config, builtRules);
     }
     
     @Override

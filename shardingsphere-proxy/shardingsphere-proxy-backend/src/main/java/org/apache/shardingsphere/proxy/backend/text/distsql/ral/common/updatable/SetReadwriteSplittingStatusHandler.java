@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableItemConstants;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.RuleExportEngine;
@@ -184,7 +183,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     private void updateStatus(final String databaseName, final Collection<String> groupNames, final String toBeDisableResource, final boolean isDisable) {
         groupNames.forEach(each -> {
             StorageNodeDataSource storageNodeDataSource = new StorageNodeDataSource(StorageNodeRole.MEMBER, isDisable ? StorageNodeStatus.DISABLED : StorageNodeStatus.ENABLED);
-            ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(databaseName, each, toBeDisableResource, storageNodeDataSource));
+            ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext().post(new DataSourceDisabledEvent(databaseName, each, toBeDisableResource, storageNodeDataSource));
         });
     }
     

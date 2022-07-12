@@ -40,10 +40,13 @@ public final class FixedReplicaRandomLoadBalanceAlgorithm implements ReadQueryLo
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
-        if (null == TransactionHolder.getReadWriteSplitRoutedReplica()) {
-            TransactionHolder.setReadWriteSplitRoutedReplica(readDataSourceNames.get(ThreadLocalRandom.current().nextInt(readDataSourceNames.size())));
+        if (TransactionHolder.isTransaction()) {
+            if (null == TransactionHolder.getReadWriteSplitRoutedReplica()) {
+                TransactionHolder.setReadWriteSplitRoutedReplica(readDataSourceNames.get(ThreadLocalRandom.current().nextInt(readDataSourceNames.size())));
+            }
+            return TransactionHolder.getReadWriteSplitRoutedReplica();
         }
-        return TransactionHolder.getReadWriteSplitRoutedReplica();
+        return readDataSourceNames.get(ThreadLocalRandom.current().nextInt(readDataSourceNames.size()));
     }
     
     @Override

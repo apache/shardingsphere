@@ -86,7 +86,7 @@ public class TextPrimaryKeyScalingIT extends BaseExtraSQLITCase {
         initShardingAlgorithm();
         assertTrue(waitShardingAlgorithmEffect(15));
         createScalingRule();
-        createOrderSharingTableRule();
+        createOrderTableRule();
         createOrderTable();
         batchInsertOrder();
         addTargetResource();

@@ -4,11 +4,28 @@ weight = 2
 chapter = true
 +++
 
+## 背景信息
+
 任何配置成为 Spring Bean 的数据源对象即可与 ShardingSphere-JDBC 的 Spring 命名空间配合使用。
 
-## 配置示例
+配置示例的数据库驱动为 MySQL，连接池为 HikariCP，可以更换为其他数据库驱动和连接池。
+当使用 ShardingSphere JDBC 时，JDBC 池的属性名取决于各自 JDBC 池自己的定义，并不由 ShardingSphere 硬定义，相关的处理可以参考类`org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator`。例如对于 Alibaba Druid 1.2.9 而言，使用`url`代替如下示例中的`jdbcUrl`是预期行为。
 
-示例的数据库驱动为 MySQL，连接池为 HikariCP，可以更换为其他数据库驱动和连接池。当使用 ShardingSphere JDBC 时，JDBC 池的属性名取决于各自 JDBC 池自己的定义，并不由 ShardingSphere 硬定义，相关的处理可以参考类`org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator`。例如对于 Alibaba Druid 1.2.9 而言，使用`url`代替如下示例中的`jdbcUrl`是预期行为。
+## 操作步骤
+
+### 1. 引入 MAVEN 依赖
+
+```xml
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-jdbc-core-spring-namespace</artifactId>
+    <version>${latest.release.version}</version>
+</dependency>
+```
+
+> 注意：请将 `${latest.release.version}` 更改为实际的版本号。
+
+## 配置示例
 
 ```xml
 <beans xmlns="http://www.springframework.org/schema/beans"

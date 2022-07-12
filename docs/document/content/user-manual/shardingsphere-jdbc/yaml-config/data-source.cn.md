@@ -4,11 +4,13 @@ weight = 2
 chapter = true
 +++
 
-数据源配置分为单数据源配置和多数据源配置。ShardingSphere-JDBC 支持所有的数据库 JDBC 驱动和连接池。
+## 背景信息
 
-示例的数据库驱动为 MySQL，连接池为 HikariCP，可以更换为其他数据库驱动和连接池。当使用 ShardingSphere JDBC 时，JDBC 池的属性名取决于各自 JDBC 池自己的定义，并不由 ShardingSphere 硬定义，相关的处理可以参考类`org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator`。例如对于 Alibaba Druid 1.2.9 而言，使用`url`代替如下示例中的`jdbcUrl`是预期行为。
+ShardingSphere-JDBC 支持所有的数据库 JDBC 驱动和连接池。
 
-### 配置项说明
+示例的数据库驱动为 MySQL，连接池为 HikariCP，可以更换为其他数据库驱动和连接池。当使用 ShardingSphere-JDBC 时，JDBC 池的属性名取决于各自 JDBC 池自己的定义，并不由 ShardingSphere 硬定义，相关的处理可以参考类`org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator`。例如对于 Alibaba Druid 1.2.9 而言，使用 `url` 代替如下示例中的 `jdbcUrl` 是预期行为。
+
+## 参数解释
 
 ```yaml
 dataSources: # 数据源配置，可配置多个 <data-source-name>
@@ -20,8 +22,7 @@ dataSources: # 数据源配置，可配置多个 <data-source-name>
     password: # 数据库密码，以数据库连接池自身配置为准
     # ... 数据库连接池的其它属性
 ```
-
-### 配置示例
+## 配置示例
 
 ```yaml
 dataSources:
