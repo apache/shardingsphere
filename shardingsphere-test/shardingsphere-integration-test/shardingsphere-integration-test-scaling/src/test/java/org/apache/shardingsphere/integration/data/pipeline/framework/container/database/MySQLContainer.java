@@ -46,7 +46,7 @@ public final class MySQLContainer extends DatabaseContainer {
         addEnv("MYSQL_ROOT_PASSWORD", username);
         addEnv("MYSQL_ROOT_HOST", "%");
         withClasspathResourceMapping("/env/mysql/my.cnf", "/etc/mysql/my.cnf", BindMode.READ_ONLY);
-        withExposedPorts(getPort());
+        withExposedPorts(port);
         setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(DATABASE_TYPE, "localhost", getFirstMappedPort()), "root", "root")));
     }
     
