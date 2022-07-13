@@ -69,30 +69,6 @@ public final class DatabaseTypeFactory {
         return DatabaseTypeFactory.getInstances().stream().filter(each -> matchURLs(url, each)).findAny().orElseGet(() -> DatabaseTypeFactory.getInstance("SQL92"));
     }
     
-    /**
-     * Get database type.
-     *
-     * @param dataSources data sources
-     * @return database type
-     */
-    public static DatabaseType getDatabaseType(final Collection<DataSource> dataSources) {
-        DatabaseType result = null;
-        for (DataSource each : dataSources) {
-            DatabaseType databaseType = getDatabaseType(each);
-            Preconditions.checkState(null == result || result == databaseType, "Database type inconsistent with '%s' and '%s'", result, databaseType);
-            result = databaseType;
-        }
-        return null == result ? DatabaseTypeFactory.getInstance(DEFAULT_DATABASE_TYPE) : result;
-    }
-    
-    private static DatabaseType getDatabaseType(final DataSource dataSource) {
-        try (Connection connection = dataSource.getConnection()) {
-            return getDatabaseType(connection.getMetaData().getURL());
-        } catch (final SQLException ex) {
-            throw new ShardingSphereException(ex.getMessage(), ex);
-        }
-    }
-    
     private static boolean matchURLs(final String url, final DatabaseType databaseType) {
         return databaseType.getJdbcUrlPrefixes().stream().anyMatch(url::startsWith);
     }

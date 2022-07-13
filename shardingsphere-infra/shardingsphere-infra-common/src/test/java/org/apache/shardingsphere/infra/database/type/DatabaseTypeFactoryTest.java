@@ -83,23 +83,4 @@ public final class DatabaseTypeFactoryTest {
     public void assertGetDatabaseTypeWithUnrecognizedURL() {
         assertThat(DatabaseTypeFactory.getDatabaseType("jdbc:sqlite:test").getType(), is("SQL92"));
     }
-    
-    private DataSource mockDataSource(final DatabaseType databaseType) throws SQLException {
-        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
-        when(connection.getMetaData().getURL()).thenReturn(getURL(databaseType));
-        return new MockedDataSource(connection);
-    }
-    
-    private String getURL(final DatabaseType databaseType) {
-        switch (databaseType.getType()) {
-            case "H2":
-                return "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL";
-            case "MySQL":
-                return "jdbc:mysql://localhost:3306/test";
-            case "PostgreSQL":
-                return "jdbc:postgresql://localhost:5432/test";
-            default:
-                throw new IllegalStateException("Unexpected value: " + databaseType.getType());
-        }
-    }
 }
