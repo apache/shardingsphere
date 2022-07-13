@@ -47,9 +47,7 @@ public final class ParameterizedArrayFactory {
             if ("Standalone".equalsIgnoreCase(each)) {
                 result.addAll(StandaloneParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
             } else if ("Cluster".equalsIgnoreCase(each)) {
-                // TODO Cluster mode need to be fixed
-//                result.addAll(ClusterParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
-                result.addAll(StandaloneParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
+                result.addAll(ClusterParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
             }
         }
         return result;
@@ -67,9 +65,7 @@ public final class ParameterizedArrayFactory {
             if ("Standalone".equalsIgnoreCase(each)) {
                 result.addAll(StandaloneParameterizedArrayGenerator.getCaseParameterized(sqlCommandType));
             } else if ("Cluster".equalsIgnoreCase(each)) {
-                // TODO Cluster mode need to be fixed
-//                result.addAll(ClusterParameterizedArrayGenerator.getCaseParameterized(sqlCommandType));
-                result.addAll(StandaloneParameterizedArrayGenerator.getCaseParameterized(sqlCommandType));
+                result.addAll(ClusterParameterizedArrayGenerator.getCaseParameterized(sqlCommandType));
             }
         }
         return result;
