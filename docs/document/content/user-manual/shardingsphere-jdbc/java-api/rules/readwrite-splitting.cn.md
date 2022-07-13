@@ -91,4 +91,3 @@ public DataSource getDataSource() throws SQLException {
 - [YAML配置：读写分离](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/readwrite-splitting/)
 - [Spring Boot Starter：读写分离](/cn/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/readwrite-splitting/)
 - [Spring 命名空间：读写分离](/cn/user-manual/shardingsphere-jdbc/spring-namespace/rules/readwrite-splitting/)
-
