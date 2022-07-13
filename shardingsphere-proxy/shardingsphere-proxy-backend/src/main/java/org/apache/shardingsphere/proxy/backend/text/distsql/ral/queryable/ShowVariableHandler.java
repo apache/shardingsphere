@@ -17,9 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.queryable;
 
-import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowVariableStatement;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -33,8 +31,6 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Show variable handler.
@@ -52,31 +48,7 @@ public final class ShowVariableHandler extends QueryableRALBackendHandler<ShowVa
     
     @Override
     protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
-        if (hasSpecifiedKey()) {
-            return buildSpecifiedRow(contextManager, getSqlStatement().getName());
-        } else {
-            return buildAllVariableRows(contextManager);
-        }
-    }
-    
-    private boolean hasSpecifiedKey() {
-        return !Strings.isNullOrEmpty(getSqlStatement().getName());
-    }
-    
-    private Collection<LocalDataQueryResultRow> buildAllVariableRows(final ContextManager contextManager) {
-        List<LocalDataQueryResultRow> result = new LinkedList<>();
-        ConfigurationProperties props = contextManager.getMetaDataContexts().getMetaData().getProps();
-        ConfigurationPropertyKey.getKeyNames().forEach(each -> {
-            String propertyValue = props.getValue(ConfigurationPropertyKey.valueOf(each)).toString();
-            result.add(new LocalDataQueryResultRow(each.toLowerCase(), propertyValue));
-        });
-        result.add(new LocalDataQueryResultRow(
-                VariableEnum.AGENT_PLUGINS_ENABLED.name().toLowerCase(), SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString())));
-        if (getConnectionSession().getBackendConnection() instanceof JDBCBackendConnection) {
-            result.add(new LocalDataQueryResultRow(VariableEnum.CACHED_CONNECTIONS.name().toLowerCase(), ((JDBCBackendConnection) getConnectionSession().getBackendConnection()).getConnectionSize()));
-        }
-        result.add(new LocalDataQueryResultRow(VariableEnum.TRANSACTION_TYPE.name().toLowerCase(), getConnectionSession().getTransactionStatus().getTransactionType().name()));
-        return result;
+        return buildSpecifiedRow(contextManager, getSqlStatement().getName());
     }
     
     private Collection<LocalDataQueryResultRow> buildSpecifiedRow(final ContextManager contextManager, final String key) {

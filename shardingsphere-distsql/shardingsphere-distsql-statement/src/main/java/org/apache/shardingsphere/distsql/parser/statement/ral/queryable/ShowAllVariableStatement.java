@@ -17,16 +17,10 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
- * Show variable statement.
+ * Show all variable statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class ShowVariableStatement extends QueryableRALStatement {
-    
-    private final String name;
+public final class ShowAllVariableStatement extends QueryableRALStatement {
 }
