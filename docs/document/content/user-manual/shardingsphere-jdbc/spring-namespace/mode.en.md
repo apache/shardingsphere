@@ -3,10 +3,6 @@ title = "Mode Configuration"
 weight = 1
 +++
 
-## Background
-
-The default configuration uses memory mode
-
 ## Parameters Explained
 
 ### Standalone Mode
@@ -14,11 +10,11 @@ The default configuration uses memory mode
 Namespace:[http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository-5.1.1.xsd](http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository-5.1.1.xsd)
 <standalone:repository />
 
-| *Name*     | *Type* | *Description*             |
-| --------- | ------ | ----------------- |
-| id        | Property   | Persistent repository Bean name |
-| type      | Property   | Persistent repository Type       |
-| props (?) |Tag  | Properties required for persistent repository |
+| *Name*    | *Type*   | *Description*                                 |
+| --------- | -------- | --------------------------------------------- |
+| id        | Property | Persistent repository Bean name               |
+| type      | Property | Persistent repository Type                    |
+| props (?) |Tag       | Properties required for persistent repository |
 
 ### Cluster Mode(Recommended)
 
@@ -26,13 +22,13 @@ Namespace：[http://shardingsphere.apache.org/schema/shardingsphere/mode-reposit
 
 <cluster:repository />
 
-| *Name*         | *Type* | *Description*             |
-| ------------- | ------ | ----------------- |
-| id            | Property   | Persistent repository Bean name |
-| type          | Property   | Persistent repository Type        |
-| namespace     | Property   | Registry Center namespace |
-| server-lists  | Property   | Registry Center Link|
-| props (?)     | Tag   | Properties required for persistent repository    |
+| *Name*        | *Type*   | *Description*                                 |
+| ------------- | -------- | --------------------------------------------- |
+| id            | Property | Persistent repository Bean name               |
+| type          | Property | Persistent repository Type                    |
+| namespace     | Property | Registry Center namespace                     |
+| server-lists  | Property | Registry Center Link                          |
+| props (?)     | Tag      | Properties required for persistent repository |
 
 ## Tips:
 

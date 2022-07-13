@@ -3,23 +3,17 @@ title = "Mode Configuration"
 weight = 1
 +++
 
-## Background
-
-The default configuration uses memory mode.
 ## Parameters
 
 ```yaml
-mode (?): # Default value is Memory
-  type: # Type of mode configuration. Values could be: Memory, Standalone, Cluster
-  repository (?): # Persist repository configuration. Memory type does not need persist
+mode (?): # Default value is Standalone
+  type: # Type of mode configuration. Values could be: Standalone or Cluster
+  repository (?): # Persist repository configuration
   overwrite: # Whether overwrite persistent configuration with local configuration
 ```
-### Memory Mode
-```yaml
-mode:
-  type: Memory
-```
+
 ### Standalone Mode
+
 ```yaml
 mode:
   type: Standalone
@@ -30,6 +24,7 @@ mode:
       bar_key: bar_value
   overwrite: # Whether overwrite persistent configuration with local configuration
 ```
+
 ### Cluster Mode (recommended)
 
 ```yaml
@@ -43,21 +38,25 @@ mode:
       foo_key: foo_value
       bar_key: bar_value
   overwrite: # Whether overwrite persistent configuration with local configuration
-``` 
+```
+
 ## Notes
 
 1. Cluster mode deployment is recommended for production environment.
-2. The 'ZooKeeper' registry center is recommended for cluster mode deployment.
+1. The 'ZooKeeper' registry center is recommended for cluster mode deployment.
+
 ## Sample
 
 ### Standalone Mode
+
 ```yaml
 mode:
   type: Standalone
   repository:
-    type: File
+    type: H2
   overwrite: false
 ```
+
 ### Cluster Mode (recommended)
 
 ```yaml
@@ -72,6 +71,8 @@ mode:
       timeToLiveSeconds: 60
   overwrite: false
 ```
+
 ## Related References
+
 - [Installation and Usage of ZooKeeper Registry Center](https://zookeeper.apache.org/doc/r3.7.1/zookeeperStarted.html)
 - Please refer to [Builtin Persist Repository List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/metadata-repository/) for more details about the type of repository.

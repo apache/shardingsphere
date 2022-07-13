@@ -7,18 +7,13 @@ chapter = true
 
 ## Background
 
-In order to meet the different needs of users for quick test startup, stand-alone running and cluster running, 
-Apache shardingsphere provides various mode such as memory, stand-alone and cluster.
-
-## Memory mode
-
-Suitable for fast integration testing, which is convenient for testing, such as for developers looking to perform fast integration function testing. 
-This is the default mode of Apache ShardingSphere.
+In order to meet the different needs of users for quick test startup, standalone running and cluster running, 
+Apache shardingsphere provides various mode such as standalone and cluster.
 
 ## Standalone mode
 
 Suitable in a standalone environment, through which data sources, rules, and metadata can be persisted. 
-Will create a `.shardingsphere` file in the root directory to store configuration data by default.
+Will use H2 database to store configuration data by default.
 
 ## Cluster mode
 
