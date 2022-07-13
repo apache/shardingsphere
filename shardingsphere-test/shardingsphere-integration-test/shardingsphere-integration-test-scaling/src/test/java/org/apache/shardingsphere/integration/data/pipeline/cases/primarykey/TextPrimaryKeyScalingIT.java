@@ -54,13 +54,13 @@ public class TextPrimaryKeyScalingIT extends BaseExtraSQLITCase {
         if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NONE) {
             return result;
         }
-        for (String version : ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER ? ENV.getMysqlVersions() : ENV.getNativeDatabaseVersions("mysql")) {
+        for (String version : ENV.listDatabaseDockerImageNames(new MySQLDatabaseType())) {
             result.add(new ScalingParameterized(new MySQLDatabaseType(), version, "env/scenario/primarykey/text_primary_key/mysql.xml"));
         }
-        for (String version : ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER ? ENV.getPostgresVersions() : ENV.getNativeDatabaseVersions("postgresql")) {
+        for (String version : ENV.listDatabaseDockerImageNames(new PostgreSQLDatabaseType())) {
             result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), version, "env/scenario/primarykey/text_primary_key/postgresql.xml"));
         }
-        for (String version : ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER ? ENV.getOpenGaussVersions() : ENV.getNativeDatabaseVersions("opengauss")) {
+        for (String version : ENV.listDatabaseDockerImageNames(new OpenGaussDatabaseType())) {
             result.add(new ScalingParameterized(new OpenGaussDatabaseType(), version, "env/scenario/primarykey/text_primary_key/postgresql.xml"));
         }
         return result;

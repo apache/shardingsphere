@@ -60,10 +60,10 @@ public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
         if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NONE) {
             return result;
         }
-        for (String dockerImageName : ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER ? ENV.getPostgresVersions() : ENV.getNativeDatabaseVersions("postgresql")) {
+        for (String dockerImageName : ENV.listDatabaseDockerImageNames(new PostgreSQLDatabaseType())) {
             result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), dockerImageName, "env/scenario/general/postgresql.xml"));
         }
-        for (String dockerImageName : ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER ? ENV.getOpenGaussVersions() : ENV.getNativeDatabaseVersions("opengauss")) {
+        for (String dockerImageName : ENV.listDatabaseDockerImageNames(new OpenGaussDatabaseType())) {
             result.add(new ScalingParameterized(new OpenGaussDatabaseType(), dockerImageName, "env/scenario/general/postgresql.xml"));
         }
         return result;

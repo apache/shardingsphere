@@ -59,8 +59,9 @@ public final class MySQLGeneralScalingIT extends BaseExtraSQLITCase {
         if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NONE) {
             return result;
         }
-        for (String version : ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER ? ENV.getMysqlVersions() : ENV.getNativeDatabaseVersions("mysql")) {
-            result.add(new ScalingParameterized(new MySQLDatabaseType(), version, "env/scenario/general/mysql.xml"));
+        MySQLDatabaseType databaseType = new MySQLDatabaseType();
+        for (String version : ENV.listDatabaseDockerImageNames(databaseType)) {
+            result.add(new ScalingParameterized(databaseType, version, "env/scenario/general/mysql.xml"));
         }
         return result;
     }

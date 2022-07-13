@@ -178,15 +178,25 @@ public final class IntegrationTestEnvironment {
     }
     
     /**
-     * Just get native database version. 
+     * List database docker image names.
+     *
      * @param databaseType database type.
-     * @return if matched return version, otherwise return empty.
+     * @return database docker image names
      */
-    public List<String> getNativeDatabaseVersions(final String databaseType) {
-        if (StringUtils.equalsIgnoreCase(databaseType, getNativeDatabaseType())) {
-            // Just to occupy the space, will not really use.
-            return Collections.singletonList("keep");
+    public List<String> listDatabaseDockerImageNames(final DatabaseType databaseType) {
+        // Native mode needn't use docker image, just return a list which contain one item
+        if (getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
+            return Collections.singletonList("");
         }
-        return Collections.emptyList();
+        switch (databaseType.getType()) {
+            case "MySQL":
+                return mysqlVersions;
+            case "PostgreSQL":
+                return postgresVersions;
+            case "openGauss":
+                return openGaussVersions;
+            default:
+                throw new UnsupportedOperationException("Unsupported database type: " + databaseType.getType());
+        }
     }
 }
