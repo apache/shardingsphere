@@ -164,7 +164,7 @@ connections=((core_count*2)+effective_spindle_count)
 那么，有没有一种方式，让 ResultSet 收到一条数据就可以立即消费呢？在 Connector/J 文档中有这样一句话：
 
 ```
-If you are working with ResultSets that have a large number of rows or large values and cannot allocate heap space in your JVM for the memory required , you can tell the driver to stream the results back one row at a time.
+If you are working with ResultSets that have a large number of rows or large values and cannot allocate heap space in your JVM for the memory required, you can tell the driver to stream the results back one row at a time.
 
 如果你使用 ResultSet 遇到查询结果太多，以致堆内存都装不下的情况，你可以指示驱动使用流式结果集，一次返回一条数据。
 ```

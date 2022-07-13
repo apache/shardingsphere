@@ -3,22 +3,12 @@ title = "模式配置"
 weight = 1
 +++
 
-## Background
-
-The default configuration uses standalone mode.
-
 ## Parameters
 
 ```properties
-spring.shardingsphere.mode.type= # Type of  mode configuration. Value could be: Memory, Standalone, Cluster
-spring.shardingsphere.mode.repository= # Persist repository configuration. Memory type does not need persist
+spring.shardingsphere.mode.type= # Type of mode configuration. Value could be: Standalone or Cluster
+spring.shardingsphere.mode.repository= # Persist repository configuration
 spring.shardingsphere.mode.overwrite= # Whether overwrite persistent configuration with local configuration
-```
-
-### Memory Mode
-
-```properties
-spring.shardingsphere.mode.type=Memory
 ```
 
 ### Standalone Mode
@@ -40,10 +30,11 @@ spring.shardingsphere.mode.repository.props.server-lists= # Server lists of regi
 spring.shardingsphere.mode.repository.props.<key>= # Properties of persist repository
 spring.shardingsphere.mode.overwrite= # Whether overwrite persistent configuration with local configuration
 ```
+
 ## Notes
 
 1. Cluster mode deployment is recommended for production environments.
-2. The 'ZooKeeper' registry center is recommended for cluster mode deployment.
+1. The 'ZooKeeper' registry center is recommended for cluster mode deployment.
 
 ## Procedure
 1. Import MAVEN dependency.
@@ -57,7 +48,9 @@ spring.shardingsphere.mode.overwrite= # Whether overwrite persistent configurati
 ```
 
 > Note: please change `${latest.release.version}' to the actual version number.
+> 
 ## Sample
+
 ### Standalone Mode
 
 ```properties

@@ -123,10 +123,8 @@
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
     </bean>
 </#if>
-    
-<#if mode!="memory">
-    <#include "../mode/spring-namespace/config/${mode}.ftl" />
-</#if>
+
+<#include "../mode/spring-namespace/config/${mode}.ftl" />
 <#assign ruleRefs="">
 <#list feature?split(",") as item>
     <#assign ruleRefs += toCamel(item) + "Rule" />

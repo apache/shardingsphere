@@ -14,11 +14,11 @@ chapter = true
 
 可配置属性：
 
-| *名称*      | *数据类型*                      | *说明*                                                                                                                                                                      | *默认值* |
-| ---------- | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| type       | String                         | 运行模式类型<br />可选配置：Memory、Standalone、Cluster                                                                                                                         | Memory  |
-| repository | PersistRepositoryConfiguration | 持久化仓库配置<br />Memory 类型无需持久化，可以为 null<br />Standalone 类型使用 StandalonePersistRepositoryConfiguration<br />Cluster 类型使用 ClusterPersistRepositoryConfiguration |         |
-| overwrite  | boolean                        | 是否使用本地配置覆盖持久化配置                                                                                                                                                   | false   |
+| *名称*      | *数据类型*                      | *说明*                                                                                                                                  | *默认值*     |
+| ---------- | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------- | ----------- |
+| type       | String                         | 运行模式类型<br />可选配置：Standalone、Cluster                                                                                             | Standalone |
+| repository | PersistRepositoryConfiguration | 持久化仓库配置<br />Standalone 类型使用 StandalonePersistRepositoryConfiguration<br />Cluster 类型使用 ClusterPersistRepositoryConfiguration |            |
+| overwrite  | boolean                        | 是否使用本地配置覆盖持久化配置                                                                                                               | false      |
 
 ### Standalone 持久化配置
 
@@ -51,7 +51,7 @@ chapter = true
 
 ## 操作步骤
 
-1. 引入Maven 依赖。
+### 引入Maven 依赖。
 
 ```xml
 <dependency>
@@ -60,6 +60,7 @@ chapter = true
  <version>${latest.release.version}</version>
 </dependency>
 ```
+
 > 注意：请将 `${latest.release.version}` 更改为实际的版本号。
 
 ## 配置示例
@@ -93,5 +94,6 @@ private ModeConfiguration createModeConfiguration() {
 ```
 
 ## 相关参考
+
 - [ZooKeeper 注册中心安装与使用](https://zookeeper.apache.org/doc/r3.7.1/zookeeperStarted.html)
 - 持久化仓库类型的详情，请参见[内置持久化仓库类型列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/metadata-repository/)。
