@@ -31,12 +31,12 @@ import java.util.Collection;
 public interface CreateTableSQLGenerator extends TypedSPI {
     
     /**
-    * Generate create table SQL.
+    * Generate create table SQLs.
     * 
     * @param tableName table name
     * @param schemaName schema name
     * @param dataSource dataSource
-    * @return generated SQL
+    * @return generated SQLs
     * @throws SQLException SQL exception
     */
     Collection<String> generate(String tableName, String schemaName, DataSource dataSource) throws SQLException;
