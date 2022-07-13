@@ -26,7 +26,7 @@
     <clear-sharding-hint sql-case-id="clear-sharding-hint" />
     <clear-hint sql-case-id="clear-hint" />
     <show-variable sql-case-id="show-variable" name="CACHED_CONNECTIONS" />
-    <show-variable sql-case-id="show-all-variables" />
+    <show-all-variable sql-case-id="show-all-variables" />
     <show-readwrite-splitting-hint-source sql-case-id="show-readwrite-splitting-hint-source" />
     <show-sharding-hint-status sql-case-id="show-sharding-hint-status" />
     <show-instance sql-case-id="show-instance" />
