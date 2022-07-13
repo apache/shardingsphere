@@ -2787,7 +2787,7 @@ alterIndexType
     ;
 
 addOrDropClause
-    : (ADD | DROP) operatorName LP_ parameterTypes RP_
+    : (ADD | DROP) operatorName LP_ parameterType RP_
     ;
 
 usingTypeClause
