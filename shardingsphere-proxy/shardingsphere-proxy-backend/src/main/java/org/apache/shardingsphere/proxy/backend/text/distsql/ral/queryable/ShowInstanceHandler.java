@@ -57,7 +57,7 @@ public final class ShowInstanceHandler extends QueryableRALBackendHandler<ShowIn
     @Override
     protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
         String modeType = contextManager.getInstanceContext().getModeConfiguration().getType();
-        if ("Memory".equalsIgnoreCase(modeType) || "Standalone".equalsIgnoreCase(modeType)) {
+        if ("Standalone".equalsIgnoreCase(modeType)) {
             return Collections.singletonList(buildRow(contextManager.getInstanceContext().getInstance(), modeType));
         }
         Collection<ComputeNodeInstance> instances = contextManager.getInstanceContext().getComputeNodeInstances().stream()

@@ -31,9 +31,9 @@ import javax.sql.DataSource;
 import java.util.Map;
 
 /**
- * Memory composed container.
+ * Standalone composed container.
  */
-public final class MemoryComposedContainer implements ComposedContainer {
+public final class StandaloneComposedContainer implements ComposedContainer {
     
     private final ITContainers containers;
     
@@ -41,7 +41,7 @@ public final class MemoryComposedContainer implements ComposedContainer {
     
     private final AdapterContainer adapterContainer;
     
-    public MemoryComposedContainer(final ParameterizedArray parameterizedArray) {
+    public StandaloneComposedContainer(final ParameterizedArray parameterizedArray) {
         String scenario = parameterizedArray.getScenario();
         containers = new ITContainers(scenario);
         storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), scenario),

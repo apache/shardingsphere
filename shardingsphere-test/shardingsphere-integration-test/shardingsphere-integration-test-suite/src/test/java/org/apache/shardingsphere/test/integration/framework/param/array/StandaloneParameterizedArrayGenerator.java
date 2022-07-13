@@ -30,10 +30,10 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Parameterized array generator for memory mode.
+ * Parameterized array generator for standalone mode.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class MemoryParameterizedArrayGenerator {
+public final class StandaloneParameterizedArrayGenerator {
     
     private static final Collection<String> ADAPTERS = Collections.singleton("jdbc");
     
