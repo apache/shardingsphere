@@ -32,11 +32,13 @@ weight = 1
 | props (?)     | 标签   | 持久化仓库所需属性    |
 
 ## 注意事项
+
 1. 生产环境建议使用集群模式部署。
-2. 集群模式部署推荐使用 `ZooKeeper` 注册中心。
+1. 集群模式部署推荐使用 `ZooKeeper` 注册中心。
 
 ## 操作步骤
-1. 引入 MAVEN 依赖
+
+引入 MAVEN 依赖
 
 ```xml
 <dependency>
@@ -64,17 +66,14 @@ weight = 1
                   http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone
                            http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository.xsd">
-    <standalone:repository id="standaloneRepository" type="File">
-        <props>
-            <prop key="path">.shardingsphere</prop>
-        </props>
-    </standalone:repository>
+    <standalone:repository id="standaloneRepository" type="H2"/>
 
-    <shardingsphere:data-source id="ds" database-name="foo_db" data-source-names="..." rule-refs="..." >
-        <shardingsphere:mode type="Standalone" repository-ref="standaloneRepository" overwrite="false" />
+    <shardingsphere:data-source id="ds" database-name="foo_db" data-source-names="..." rule-refs="...">
+        <shardingsphere:mode type="Standalone" repository-ref="standaloneRepository" />
     </shardingsphere:data-source>
 </beans>
 ```
+
 ### 集群模式
 
 ```xml
