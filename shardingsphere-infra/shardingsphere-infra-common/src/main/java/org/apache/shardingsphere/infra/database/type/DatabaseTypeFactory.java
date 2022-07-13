@@ -29,9 +29,7 @@ import java.util.Collection;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseTypeFactory {
-    
-    private static final String DEFAULT_DATABASE_TYPE = "MySQL";
-    
+
     static {
         ShardingSphereServiceLoader.register(DatabaseType.class);
     }
