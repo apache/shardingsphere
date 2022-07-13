@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.standalone.lock;
 import org.apache.shardingsphere.infra.lock.LockScope;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.lock.AbstractLockContext;
-import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDefinition;
+import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockDefinition;
 
 /**
  * Standalone lock context.
@@ -35,22 +35,22 @@ public final class StandaloneLockContext extends AbstractLockContext {
     }
     
     @Override
-    protected boolean tryLock(final DatabaseLockNameDefinition lockNameDefinition) {
-        return standaloneLock.tryLock(lockNameDefinition.getDatabaseName());
+    protected boolean tryLock(final DatabaseLockDefinition lockDefinition) {
+        return standaloneLock.tryLock(lockDefinition.getLockNameDefinition().getDatabaseName());
     }
     
     @Override
-    protected boolean tryLock(final DatabaseLockNameDefinition lockNameDefinition, final long timeoutMilliseconds) {
-        return standaloneLock.tryLock(lockNameDefinition.getDatabaseName(), timeoutMilliseconds);
+    protected boolean tryLock(final DatabaseLockDefinition lockDefinition, final long timeoutMilliseconds) {
+        return standaloneLock.tryLock(lockDefinition.getLockNameDefinition().getDatabaseName(), timeoutMilliseconds);
     }
     
     @Override
-    protected void releaseLock(final DatabaseLockNameDefinition lockNameDefinition) {
-        standaloneLock.releaseLock(lockNameDefinition.getDatabaseName());
+    protected void releaseLock(final DatabaseLockDefinition lockDefinition) {
+        standaloneLock.releaseLock(lockDefinition.getLockNameDefinition().getDatabaseName());
     }
     
     @Override
-    protected boolean isLocked(final DatabaseLockNameDefinition lockNameDefinition) {
-        return standaloneLock.isLocked(lockNameDefinition.getDatabaseName());
+    protected boolean isLocked(final DatabaseLockDefinition lockDefinition) {
+        return standaloneLock.isLocked(lockDefinition.getLockNameDefinition().getDatabaseName());
     }
 }

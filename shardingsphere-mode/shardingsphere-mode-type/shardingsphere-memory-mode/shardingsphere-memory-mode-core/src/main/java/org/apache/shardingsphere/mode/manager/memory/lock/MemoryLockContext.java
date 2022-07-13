@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.memory.lock;
 import org.apache.shardingsphere.infra.lock.LockScope;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.lock.AbstractLockContext;
-import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDefinition;
+import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockDefinition;
 
 /**
  * Memory lock context.
@@ -35,22 +35,22 @@ public final class MemoryLockContext extends AbstractLockContext {
     }
     
     @Override
-    protected boolean tryLock(final DatabaseLockNameDefinition lockNameDefinition) {
-        return memoryLock.tryLock(lockNameDefinition.getDatabaseName());
+    protected boolean tryLock(final DatabaseLockDefinition lockDefinition) {
+        return memoryLock.tryLock(lockDefinition.getLockNameDefinition().getDatabaseName());
     }
     
     @Override
-    protected boolean tryLock(final DatabaseLockNameDefinition lockNameDefinition, final long timeoutMilliseconds) {
-        return memoryLock.tryLock(lockNameDefinition.getDatabaseName(), timeoutMilliseconds);
+    protected boolean tryLock(final DatabaseLockDefinition lockDefinition, final long timeoutMilliseconds) {
+        return memoryLock.tryLock(lockDefinition.getLockNameDefinition().getDatabaseName(), timeoutMilliseconds);
     }
     
     @Override
-    protected void releaseLock(final DatabaseLockNameDefinition lockNameDefinition) {
-        memoryLock.releaseLock(lockNameDefinition.getDatabaseName());
+    protected void releaseLock(final DatabaseLockDefinition lockDefinition) {
+        memoryLock.releaseLock(lockDefinition.getLockNameDefinition().getDatabaseName());
     }
     
     @Override
-    protected boolean isLocked(final DatabaseLockNameDefinition lockNameDefinition) {
-        return memoryLock.isLocked(lockNameDefinition.getDatabaseName());
+    protected boolean isLocked(final DatabaseLockDefinition lockDefinition) {
+        return memoryLock.isLocked(lockDefinition.getLockNameDefinition().getDatabaseName());
     }
 }

@@ -94,7 +94,7 @@ public final class ImportDatabaseConfigurationHandlerTest extends ProxyContextRe
         featureMap.put(databaseDiscovery, dbDiscoveryFilePath);
     }
     
-    @Test
+    @Test(expected = IllegalStateException.class)
     public void assertImportDatabaseExecutorForSharding() throws Exception {
         init(sharding);
         Field shardingRuleConfigurationImportCheckerField = importDatabaseConfigurationHandler.getClass().getDeclaredField("shardingRuleConfigurationImportChecker");
@@ -105,7 +105,7 @@ public final class ImportDatabaseConfigurationHandlerTest extends ProxyContextRe
         assertThat(importDatabaseConfigurationHandler.execute(), instanceOf(UpdateResponseHeader.class));
     }
     
-    @Test
+    @Test(expected = IllegalStateException.class)
     public void assertImportDatabaseExecutorForReadwriteSplitting() throws Exception {
         init(readwriteSplitting);
         Field readwriteSplittingRuleConfigurationImportCheckerField = importDatabaseConfigurationHandler.getClass().getDeclaredField("readwriteSplittingRuleConfigurationImportChecker");
@@ -116,7 +116,7 @@ public final class ImportDatabaseConfigurationHandlerTest extends ProxyContextRe
         assertThat(importDatabaseConfigurationHandler.execute(), instanceOf(UpdateResponseHeader.class));
     }
     
-    @Test
+    @Test(expected = IllegalStateException.class)
     public void assertImportDatabaseExecutorForDatabaseDiscovery() throws Exception {
         init(databaseDiscovery);
         Field databaseDiscoveryRuleConfigurationImportCheckerField = importDatabaseConfigurationHandler.getClass().getDeclaredField("databaseDiscoveryRuleConfigurationImportChecker");

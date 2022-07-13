@@ -83,5 +83,5 @@ The picture below shows the processing flow and conversion logic when the encryp
 
 ## Related References
 
-- [Data encryption configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/encrypt/)
-- [Developer guide of data encryption](/en/dev-manual/encryption/)
+- [Configuration: Data Encryption](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/encrypt/)
+- [Developer Guide: Data Encryption](/en/dev-manual/encrypt/)
