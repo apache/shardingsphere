@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.infra.check;
 
-import lombok.Getter;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 /**
  * SQL check exception.
  */
-@Getter
 public final class SQLCheckException extends ShardingSphereException {
     
     private static final long serialVersionUID = 4183020614721058122L;

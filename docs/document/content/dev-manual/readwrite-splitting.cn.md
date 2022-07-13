@@ -5,22 +5,17 @@ weight = 8
 chapter = true
 +++
 
-## ReadwriteSplittingType
+## SPI 接口
+
+## ReadQueryLoadBalanceAlgorithm
 
 | *SPI 名称*                                 | *详细说明*              |
 | ----------------------------------------- | ----------------------- |
-| ReadwriteSplittingType                    | 读写分离类型              |
+| ReadQueryLoadBalanceAlgorithm             | 读库负载均衡算法           |
 
-| *已知实现类*                               | *详细说明*               |
-| ----------------------------------------- | ----------------------- |
-| StaticReadwriteSplittingType              | 静态读写分离类型          |
-| DynamicReadwriteSplittingType             | 动态读写分离类型          |
+## 示例
 
-## ReplicaLoadBalanceAlgorithm
-
-| *SPI 名称*                                 | *详细说明*              |
-| ----------------------------------------- | ----------------------- |
-| ReplicaLoadBalanceAlgorithm               | 读库负载均衡算法          |
+## ReadQueryLoadBalanceAlgorithm
 
 | *已知实现类*                               | *详细说明*               |
 | ----------------------------------------- | ----------------------- |

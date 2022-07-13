@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.executor;
 
-import lombok.Getter;
 import org.apache.shardingsphere.driver.executor.callback.ExecuteQueryCallback;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -52,7 +51,6 @@ public final class DriverJDBCExecutor {
     
     private final ContextManager contextManager;
     
-    @Getter
     private final JDBCExecutor jdbcExecutor;
     
     private final MetaDataRefreshEngine metadataRefreshEngine;

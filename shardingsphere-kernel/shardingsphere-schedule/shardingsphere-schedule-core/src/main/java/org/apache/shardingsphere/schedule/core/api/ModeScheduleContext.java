@@ -66,8 +66,6 @@ public final class ModeScheduleContext {
                 return initRegistryCenterForClusterMode(modeConfig);
             case "STANDALONE":
                 return null;
-            case "MEMORY":
-                return null;
             default:
                 // TODO ModeConfiguration.type is not limited, it could be any value
                 log.warn("Unknown mode type '{}'", modeType);
