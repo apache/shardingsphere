@@ -29,8 +29,7 @@ import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Show all variable handler.
@@ -48,16 +47,9 @@ public final class ShowAllVariableHandler extends QueryableRALBackendHandler<Sho
     
     @Override
     protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
-        return buildAllVariableRows(contextManager);
-    }
-    
-    private Collection<LocalDataQueryResultRow> buildAllVariableRows(final ContextManager contextManager) {
-        List<LocalDataQueryResultRow> result = new LinkedList<>();
         ConfigurationProperties props = contextManager.getMetaDataContexts().getMetaData().getProps();
-        ConfigurationPropertyKey.getKeyNames().forEach(each -> {
-            String propertyValue = props.getValue(ConfigurationPropertyKey.valueOf(each)).toString();
-            result.add(new LocalDataQueryResultRow(each.toLowerCase(), propertyValue));
-        });
+        Collection<LocalDataQueryResultRow> result = ConfigurationPropertyKey.getKeyNames().stream()
+                .map(each -> new LocalDataQueryResultRow(each.toLowerCase(), props.getValue(ConfigurationPropertyKey.valueOf(each)).toString())).collect(Collectors.toList());
         result.add(new LocalDataQueryResultRow(
                 VariableEnum.AGENT_PLUGINS_ENABLED.name().toLowerCase(), SystemPropertyUtil.getSystemProperty(VariableEnum.AGENT_PLUGINS_ENABLED.name(), Boolean.TRUE.toString())));
         if (getConnectionSession().getBackendConnection() instanceof JDBCBackendConnection) {
