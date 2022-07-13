@@ -88,7 +88,7 @@ public final class OptimizerContextTest {
     }
 
     @Test
-    public void assertAddSchema(){
+    public void assertAddSchema() {
         OptimizerContext optimizerContext = createOptimizerContext();
         assertFalse(optimizerContext.getFederationMetaData().getDatabases().get("foo_db").getSchemaMetadata("foo_schema_ts").isPresent());
         optimizerContext.addSchema("foo_db", "foo_schema_ts");
