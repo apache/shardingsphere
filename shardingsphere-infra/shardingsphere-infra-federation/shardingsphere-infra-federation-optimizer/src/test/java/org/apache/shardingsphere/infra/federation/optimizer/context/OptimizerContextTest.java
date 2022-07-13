@@ -90,9 +90,9 @@ public final class OptimizerContextTest {
     @Test
     public void assertAddSchema(){
         OptimizerContext optimizerContext = createOptimizerContext();
-        optimizerContext.addSchema("foo_db", "foo_schema");
-        assertTrue(optimizerContext.getFederationMetaData().getDatabases().get("foo_db").getSchemaMetadata("foo_schema").isPresent());
-        assertFalse(optimizerContext.getFederationMetaData().getDatabases().get("foo_db").getSchemaMetadata("foo_schema_1").isPresent());
+        assertFalse(optimizerContext.getFederationMetaData().getDatabases().get("foo_db").getSchemaMetadata("foo_schema_ts").isPresent());
+        optimizerContext.addSchema("foo_db", "foo_schema_ts");
+        assertTrue(optimizerContext.getFederationMetaData().getDatabases().get("foo_db").getSchemaMetadata("foo_schema_ts").isPresent());
     }
 
     private OptimizerContext createOptimizerContext() {
