@@ -15,12 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.scaling;
+package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.ScalingRALStatement;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
- * Updatable RAL statement.
+ * Show variable statement.
  */
-public abstract class UpdatableScalingRALStatement extends ScalingRALStatement {
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+public final class ShowVariableStatement extends QueryableRALStatement {
+    
+    private String name;
 }

@@ -15,12 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.scaling;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.updatable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.ScalingRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterTransactionRuleStatement;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
 
 /**
- * Updatable RAL statement.
+ * Prepare dist sql statement handler.
  */
-public abstract class UpdatableScalingRALStatement extends ScalingRALStatement {
+public final class PrepareDistSQLHandler extends UpdatableRALBackendHandler<AlterTransactionRuleStatement> {
+    
+    @Override
+    protected void update(final ContextManager contextManager) {
+        // TODO Metadata support required
+    }
 }

@@ -15,12 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.scaling;
+package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.ScalingRALStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
- * Updatable RAL statement.
+ * Show traffic rules statement.
  */
-public abstract class UpdatableScalingRALStatement extends ScalingRALStatement {
+@RequiredArgsConstructor
+@Getter
+public final class ShowTrafficRulesStatement extends QueryableRALStatement {
+    
+    private final String ruleName;
 }

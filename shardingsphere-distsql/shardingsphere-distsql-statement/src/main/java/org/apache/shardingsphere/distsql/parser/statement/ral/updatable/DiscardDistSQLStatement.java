@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.scaling;
+package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.ScalingRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 
 /**
- * Updatable RAL statement.
+ * Discard Dist SQL statement.
  */
-public abstract class UpdatableScalingRALStatement extends ScalingRALStatement {
+public final class DiscardDistSQLStatement extends UpdatableRALStatement {
 }

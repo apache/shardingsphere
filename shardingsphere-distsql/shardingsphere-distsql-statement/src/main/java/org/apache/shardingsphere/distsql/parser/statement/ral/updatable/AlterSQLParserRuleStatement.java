@@ -15,12 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.scaling;
+package org.apache.shardingsphere.distsql.parser.statement.ral.updatable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.ScalingRALStatement;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.segment.CacheOptionSegment;
+import org.apache.shardingsphere.distsql.parser.statement.ral.UpdatableRALStatement;
 
 /**
- * Updatable RAL statement.
+ * Alter SQL parser rule statement.
  */
-public abstract class UpdatableScalingRALStatement extends ScalingRALStatement {
+@RequiredArgsConstructor
+@Getter
+public final class AlterSQLParserRuleStatement extends UpdatableRALStatement {
+    
+    private final Boolean sqlCommentParseEnable;
+    
+    private final CacheOptionSegment parseTreeCache;
+    
+    private final CacheOptionSegment sqlStatementCache;
 }
