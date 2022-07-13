@@ -15,24 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.framework.container.atomic.governance.impl;
+package org.apache.shardingsphere.test.integration.framework.container.compose;
 
-import org.apache.shardingsphere.test.integration.framework.container.atomic.governance.GovernanceContainer;
-import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 /**
- * Zookeeper container.
+ * Cluster tinker.
+ *
+ * @deprecated remove me when integration tests support all scenarios
  */
-public final class ZookeeperContainer extends GovernanceContainer {
+@Deprecated
+public final class ClusterTinker {
     
-    public ZookeeperContainer() {
-        super("zookeeper", "zookeeper:3.6.2");
-        setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*PrepRequestProcessor \\(sid:[0-9]+\\) started.*"));
-        withExposedPorts(2181);
+    private static final Set<String> CLUSTER_SCENARIOS;
+    
+    static {
+        CLUSTER_SCENARIOS = new LinkedHashSet<>();
+        CLUSTER_SCENARIOS.add("empty_rules");
     }
     
-    @Override
-    public String getServerLists() {
-        return getHost() + ":" + getMappedPort(2181);
+    /**
+     * Is support cluster.
+     *
+     * @param scenario scenario
+     * @return is supported or not
+     */
+    public static boolean isSupportCluster(final String scenario) {
+        return CLUSTER_SCENARIOS.contains(scenario);
     }
 }
