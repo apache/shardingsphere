@@ -15,4 +15,4 @@ Apache ShardingSphere 提供分布式场景下的事务语义，当有事务需�
 
 ## 操作步骤
 
-参考 [ShardingSphere 使用 XA Narayana](cn/user-manual/shardingsphere-jdbc/special-api/transaction/)
+参考 [ShardingSphere 使用 XA Narayana](/cn/user-manual/shardingsphere-jdbc/special-api/transaction/narayana/)
