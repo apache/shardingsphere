@@ -403,6 +403,18 @@ chapter = true
             <b>Qunxing Lei</b>
         </td>
     </tr>
+    <tr>
+        <td>
+            <a href="https://github.com/mabaiwan" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/77398366?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
+    </tr>
+    <tr align="center">
+        <td>
+            <b>Chen Ma</b>
+        </td>
+    </tr>
 </table>
 
 ## Contributors
