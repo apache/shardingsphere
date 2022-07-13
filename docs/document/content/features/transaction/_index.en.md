@@ -124,5 +124,5 @@ The following table can be used for comparison to help developers choose the sui
 | Concurrent performance | no loss        | severe loss          | slight loss       |
 | Applied scenarios  | Inconsistent processing by the business side | short transaction & low-level concurrency | long transaction & high concurrency |
 
-## Related reference
+## Related references
 - [YAML distributed transaction configuration](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/transaction/)
