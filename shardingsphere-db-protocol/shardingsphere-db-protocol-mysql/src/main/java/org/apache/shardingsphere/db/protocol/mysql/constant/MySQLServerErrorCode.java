@@ -58,6 +58,8 @@ public enum MySQLServerErrorCode implements SQLErrorCode {
     
     ER_UNKNOWN_CHARACTER_SET(1115, "42000", "Unknown character set: '%s'"),
     
+    ER_MISMATCH_COLUMN_COUNT(1136, "21S01", "Column count doesn't match value count at row %d"),
+    
     ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE(3176, "HY000",
             "Please do not modify the %s table with an XA transaction. This is an internal system table used to store GTIDs for committed transactions. "
                     + "Although modifying it can lead to an inconsistent GTID state, if necessary you can modify it with a non-XA transaction.");

@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLErrorCode;
 import org.apache.shardingsphere.db.protocol.postgresql.constant.PostgreSQLMessageSeverityLevel;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLErrorResponsePacket;
+import org.apache.shardingsphere.infra.exception.ColumnMismatchException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.InTransactionException;
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedUpdateOperationException;
@@ -56,6 +57,9 @@ public final class PostgreSQLErrPacketFactory {
         }
         if (cause instanceof SQLException) {
             return createErrorResponsePacket((SQLException) cause);
+        }
+        if (cause instanceof ColumnMismatchException) {
+            return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.ERROR, PostgreSQLErrorCode.ER_MISMATCH_COLUMN_COUNT, cause.getMessage()).build();
         }
         if (cause instanceof InvalidAuthorizationSpecificationException) {
             return PostgreSQLErrorResponsePacket.newBuilder(PostgreSQLMessageSeverityLevel.FATAL, PostgreSQLErrorCode.INVALID_AUTHORIZATION_SPECIFICATION, cause.getMessage()).build();
