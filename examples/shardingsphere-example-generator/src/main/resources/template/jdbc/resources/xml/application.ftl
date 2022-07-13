@@ -124,7 +124,7 @@
     </bean>
 </#if>
 
-<#if null!=mode>
+<#if mode?exists>
     <#include "../mode/spring-namespace/config/${mode}.ftl" />
 </#if>
 <#assign ruleRefs="">
