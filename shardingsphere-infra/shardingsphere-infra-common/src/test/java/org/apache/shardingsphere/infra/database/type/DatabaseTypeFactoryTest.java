@@ -25,21 +25,15 @@ import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.SQL92DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.SQLServerDatabaseType;
-import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.fixture.FixtureDatabaseType;
 import org.junit.Test;
 
-import javax.sql.DataSource;
-import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public final class DatabaseTypeFactoryTest {
     
@@ -64,20 +58,16 @@ public final class DatabaseTypeFactoryTest {
         assertThat(iterator.next(), instanceOf(H2DatabaseType.class));
     }
     
-    @Test(expected = ShardingSphereException.class)
-    public void assertGetDatabaseTypeWhenGetConnectionError() throws SQLException {
-        DataSource dataSource = mock(DataSource.class);
-        when(dataSource.getConnection()).thenThrow(SQLException.class);
-        DatabaseTypeFactory.getDatabaseType(Collections.singleton(dataSource));
-    }
-    
     @Test
-    public void assertGetDatabaseTypeWithRecognizedURL() {
-        assertThat(DatabaseTypeFactory.getDatabaseType("jdbc:mysql://localhost:3306/test").getType(), is("MySQL"));
-    }
-    
-    @Test
-    public void assertGetDatabaseTypeWithUnrecognizedURL() {
-        assertThat(DatabaseTypeFactory.getDatabaseType("jdbc:sqlite:test").getType(), is("SQL92"));
+    public void assertGetDatabaseType() {
+        assertThat(DatabaseTypeFactory.getInstance("FIXTURE"), instanceOf(FixtureDatabaseType.class));
+        assertThat(DatabaseTypeFactory.getInstance("SQL92"), instanceOf(SQL92DatabaseType.class));
+        assertThat(DatabaseTypeFactory.getInstance("MySQL"), instanceOf(MySQLDatabaseType.class));
+        assertThat(DatabaseTypeFactory.getInstance("MariaDB"), instanceOf(MariaDBDatabaseType.class));
+        assertThat(DatabaseTypeFactory.getInstance("PostgreSQL"), instanceOf(PostgreSQLDatabaseType.class));
+        assertThat(DatabaseTypeFactory.getInstance("OpenGauss"), instanceOf(OpenGaussDatabaseType.class));
+        assertThat(DatabaseTypeFactory.getInstance("Oracle"), instanceOf(OracleDatabaseType.class));
+        assertThat(DatabaseTypeFactory.getInstance("SQLServer"), instanceOf(SQLServerDatabaseType.class));
+        assertThat(DatabaseTypeFactory.getInstance("H2"), instanceOf(H2DatabaseType.class));
     }
 }
