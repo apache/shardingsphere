@@ -324,8 +324,7 @@ public final class ShardingTableRuleStatementChecker {
         toBeCheckedRuleConfig.setBroadcastTables(new LinkedList<>(currentRuleConfig.getBroadcastTables()));
         toBeCheckedRuleConfig.setDefaultTableShardingStrategy(currentRuleConfig.getDefaultTableShardingStrategy());
         toBeCheckedRuleConfig.setDefaultDatabaseShardingStrategy(currentRuleConfig.getDefaultDatabaseShardingStrategy());
-        toBeCheckedRuleConfig.setDefaultKeyGenerateStrategy(null != currentRuleConfig.getDefaultKeyGenerateStrategy()
-                ? new KeyGenerateStrategyConfiguration(currentRuleConfig.getDefaultKeyGenerateStrategy().getColumn(), currentRuleConfig.getDefaultKeyGenerateStrategy().getKeyGeneratorName()) : null);
+        toBeCheckedRuleConfig.setDefaultKeyGenerateStrategy(currentRuleConfig.getDefaultKeyGenerateStrategy());
         toBeCheckedRuleConfig.setDefaultShardingColumn(currentRuleConfig.getDefaultShardingColumn());
         toBeCheckedRuleConfig.setShardingAlgorithms(new LinkedHashMap<>(currentRuleConfig.getShardingAlgorithms()));
         toBeCheckedRuleConfig.setKeyGenerators(new LinkedHashMap<>(currentRuleConfig.getKeyGenerators()));
