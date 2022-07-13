@@ -28,6 +28,7 @@ import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEn
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -174,5 +175,18 @@ public final class IntegrationTestEnvironment {
      */
     public static IntegrationTestEnvironment getInstance() {
         return INSTANCE;
+    }
+    
+    /**
+     * Just get native database version. 
+     * @param databaseType database type.
+     * @return if matched return version, otherwise return empty.
+     */
+    public List<String> getNativeDatabaseVersions(final String databaseType) {
+        if (StringUtils.equalsIgnoreCase(databaseType, getNativeDatabaseType())) {
+            // Just to occupy the space, will not really use.
+            return Collections.singletonList("keep");
+        }
+        return Collections.emptyList();
     }
 }

@@ -54,6 +54,7 @@ public final class OpenGaussContainer extends DatabaseContainer {
         withExposedPorts(port);
         if (ScalingITEnvTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItEnvType()) {
             addFixedExposedPort(port, port);
+            addFixedExposedPort(port + 1, port + 1);
         }
         setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(DATABASE_TYPE, "localhost", getFirstMappedPort(), "postgres"),
                 username, password)));
