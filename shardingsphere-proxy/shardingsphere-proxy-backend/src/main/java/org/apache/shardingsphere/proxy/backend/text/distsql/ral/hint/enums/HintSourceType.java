@@ -15,10 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint.enums;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Common RAL statement.
+ * Hint source type.
  */
-public abstract class CommonRALStatement extends RALStatement {
+@RequiredArgsConstructor
+@Getter
+public enum HintSourceType {
+    
+    AUTO("auto"),
+    
+    WRITE("write");
+    
+    private final String value;
+    
+    /**
+     * Convert string to HintSourceType.
+     *
+     * @param value value
+     * @return hint source type
+     */
+    public static HintSourceType typeOf(final String value) {
+        for (HintSourceType each : values()) {
+            if (each.value.equalsIgnoreCase(value)) {
+                return each;
+            }
+        }
+        throw new UnsupportedOperationException("unsupported hint source type: " + value);
+    }
 }

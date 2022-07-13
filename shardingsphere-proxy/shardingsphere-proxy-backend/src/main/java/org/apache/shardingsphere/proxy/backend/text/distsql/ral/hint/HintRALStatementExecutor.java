@@ -15,24 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.HintRALStatement;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.HintStatementExecutor;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+
+import java.sql.SQLException;
 
 /**
- * Abstract hint update executor.
+ * Hint RAL statement executor.
  */
-public abstract class AbstractHintUpdateExecutor<T extends HintDistSQLStatement> implements HintStatementExecutor<T> {
+public interface HintRALStatementExecutor<T extends HintRALStatement> {
     
-    @Override
-    public final boolean next() {
-        return false;
-    }
+    /**
+     * Execute hint RAL statement.
+     *
+     * @return backend response
+     */
+    ResponseHeader execute();
     
-    @Override
-    public final QueryResponseRow getQueryResponseRow() {
-        return null;
-    }
+    /**
+     * Goto next result value.
+     *
+     * @return has more result value or not
+     * @throws SQLException SQL exception
+     */
+    boolean next() throws SQLException;
+    
+    /**
+     * Get query response row.
+     *
+     * @return query response row
+     * @throws SQLException SQL exception
+     */
+    QueryResponseRow getQueryResponseRow() throws SQLException;
 }

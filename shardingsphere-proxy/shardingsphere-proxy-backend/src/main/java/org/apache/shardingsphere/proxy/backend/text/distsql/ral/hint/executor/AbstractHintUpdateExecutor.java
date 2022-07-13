@@ -15,36 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint.executor;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.HintRALStatement;
+import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint.HintRALStatementExecutor;
 
 /**
- * Hint source type.
+ * Abstract hint update executor.
  */
-@RequiredArgsConstructor
-@Getter
-public enum HintSourceType {
+public abstract class AbstractHintUpdateExecutor<T extends HintRALStatement> implements HintRALStatementExecutor<T> {
     
-    AUTO("auto"),
+    @Override
+    public final boolean next() {
+        return false;
+    }
     
-    WRITE("write");
-    
-    private final String value;
-    
-    /**
-     * Convert string to HintSourceType.
-     *
-     * @param value value
-     * @return hint source type
-     */
-    public static HintSourceType typeOf(final String value) {
-        for (HintSourceType each : values()) {
-            if (each.value.equalsIgnoreCase(value)) {
-                return each;
-            }
-        }
-        throw new UnsupportedOperationException("unsupported hint source type: " + value);
+    @Override
+    public final QueryResponseRow getQueryResponseRow() {
+        return null;
     }
 }
