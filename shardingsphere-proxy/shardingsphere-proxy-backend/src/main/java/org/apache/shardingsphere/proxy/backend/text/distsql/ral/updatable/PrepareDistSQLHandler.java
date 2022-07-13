@@ -15,16 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.updatable;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterTransactionRuleStatement;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
 
 /**
- * Apply dist sql statement handler.
+ * Prepare dist sql statement handler.
  */
-public final class ApplyDistSQLHandler extends UpdatableRALBackendHandler<AlterTransactionRuleStatement> {
+public final class PrepareDistSQLHandler extends UpdatableRALBackendHandler<AlterTransactionRuleStatement> {
     
     @Override
     protected void update(final ContextManager contextManager) {

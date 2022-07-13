@@ -15,46 +15,45 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.queryable;
 
-import com.google.gson.Gson;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowSQLParserRuleStatement;
+import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
+import org.apache.shardingsphere.authority.rule.AuthorityRule;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 /**
- * Show SQL parser rule handler.
+ * Show authority rule handler.
  */
-public final class ShowSQLParserRuleHandler extends QueryableRALBackendHandler<ShowSQLParserRuleStatement> {
+public final class ShowAuthorityRuleHandler extends QueryableRALBackendHandler<ShowAuthorityRuleStatement> {
     
-    private static final Gson GSON = new Gson();
+    private static final String USERS = "users";
     
-    private static final String SQL_COMMENT_PARSE_ENABLE = "sql_comment_parse_enable";
+    private static final String PROVIDER = "provider";
     
-    private static final String PARSE_TREE_CACHE = "parse_tree_cache";
-    
-    private static final String SQL_STATEMENT_CACHE = "sql_statement_cache";
+    private static final String PROPS = "props";
     
     @Override
     protected Collection<String> getColumnNames() {
-        return Arrays.asList(SQL_COMMENT_PARSE_ENABLE, PARSE_TREE_CACHE, SQL_STATEMENT_CACHE);
+        return Arrays.asList(USERS, PROVIDER, PROPS);
     }
     
     @Override
     protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
-        SQLParserRule sqlParserRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-        return Collections.singleton(getRow(sqlParserRule));
+        AuthorityRule rule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(AuthorityRule.class);
+        return Collections.singleton(getRow(rule.getConfiguration()));
     }
     
-    private LocalDataQueryResultRow getRow(final SQLParserRule sqlParserRule) {
-        return new LocalDataQueryResultRow(
-                String.valueOf(sqlParserRule.isSqlCommentParseEnabled()), GSON.toJson(sqlParserRule.getParseTreeCache()), GSON.toJson(sqlParserRule.getSqlStatementCache()));
+    private LocalDataQueryResultRow getRow(final AuthorityRuleConfiguration authorityRuleConfig) {
+        return new LocalDataQueryResultRow(authorityRuleConfig.getUsers().stream().map(each -> each.getGrantee().toString()).collect(Collectors.joining("; ")),
+                authorityRuleConfig.getProvider().getType(), authorityRuleConfig.getProvider().getProps().size() == 0 ? "" : authorityRuleConfig.getProvider().getProps());
     }
 }

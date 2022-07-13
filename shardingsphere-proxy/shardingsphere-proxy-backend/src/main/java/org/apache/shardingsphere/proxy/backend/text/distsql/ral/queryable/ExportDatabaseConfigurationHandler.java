@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.queryable;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportDatabaseConfigurationStatement;

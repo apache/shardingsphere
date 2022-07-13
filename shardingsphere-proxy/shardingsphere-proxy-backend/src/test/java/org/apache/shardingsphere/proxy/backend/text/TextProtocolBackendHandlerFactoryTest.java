@@ -36,7 +36,7 @@ import org.apache.shardingsphere.proxy.backend.text.data.impl.SchemaAssignedData
 import org.apache.shardingsphere.proxy.backend.text.data.impl.UnicastDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint.HintRALBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.SetVariableHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.updatable.SetVariableHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBackendHandler;
