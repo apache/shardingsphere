@@ -17,7 +17,5 @@
   -->
 
 <sql-parser-test-cases>
-    <alter-index-type sql-case-id="alter_index_type">
-        <index-type name="position_indextype" start-index="16" stop-index="33" />
-    </alter-index-type>
+    <alter-index-type sql-case-id="alter_index_type" />
 </sql-parser-test-cases>
