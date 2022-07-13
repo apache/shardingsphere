@@ -124,7 +124,9 @@
     </bean>
 </#if>
 
-<#include "../mode/spring-namespace/config/${mode}.ftl" />
+<#if null!=mode>
+    <#include "../mode/spring-namespace/config/${mode}.ftl" />
+</#if>
 <#assign ruleRefs="">
 <#list feature?split(",") as item>
     <#assign ruleRefs += toCamel(item) + "Rule" />
