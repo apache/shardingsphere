@@ -43,32 +43,32 @@ public interface LockContext {
     /**
      * Try lock.
      *
-     * @param lockNameDefinition lock name definition
+     * @param lockDefinition lock definition
      * @return is locked or not
      */
-    boolean tryLock(LockNameDefinition lockNameDefinition);
+    boolean tryLock(LockDefinition lockDefinition);
     
     /**
      * Try Lock.
      *
-     * @param lockNameDefinition lock name definition
+     * @param lockDefinition lock definition
      * @param timeoutMilliseconds timeout milliseconds
      * @return is locked or not
      */
-    boolean tryLock(LockNameDefinition lockNameDefinition, long timeoutMilliseconds);
+    boolean tryLock(LockDefinition lockDefinition, long timeoutMilliseconds);
     
     /**
      * Release lock.
      *
-     * @param lockNameDefinition lock name definition
+     * @param lockDefinition lock definition
      */
-    void releaseLock(LockNameDefinition lockNameDefinition);
+    void releaseLock(LockDefinition lockDefinition);
     
     /**
      *  Is locked.
      *
-     * @param lockNameDefinition lock name definition
+     * @param lockDefinition lock definition
      * @return is locked or not
      */
-    boolean isLocked(LockNameDefinition lockNameDefinition);
+    boolean isLocked(LockDefinition lockDefinition);
 }

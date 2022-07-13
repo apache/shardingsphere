@@ -3,7 +3,13 @@ title = "Use Spring Namespace"
 weight = 3
 +++
 
-## Import Maven Dependency
+## Background
+
+ShardingSphere-JDBC can be used through spring namespace.
+
+## Prerequisites
+
+Introducing Maven denpendency
 
 ```xml
 <dependency>
@@ -12,14 +18,21 @@ weight = 3
     <version>${shardingsphere.version}</version>
 </dependency>
 
-<!-- import if using XA transaction -->
+<!-- This module is required when using XA transactions -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>shardingsphere-transaction-xa-core</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
-<!-- import if using BASE transaction -->
+<!-- This module is required when using XA's Narayana mode -->
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
+    <version>${project.version}</version>
+</dependency>
+
+<!-- This module is required when using BASE transactions -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
@@ -27,10 +40,17 @@ weight = 3
 </dependency>
 ```
 
-## Configure Transaction Manager
+## Procedure
+
+1. Configure the transaction manager
+2. Use distributed transactions
+
+## Sample
+
+### Configure the transaction manager
 
 ```xml
-<!-- ShardingDataSource configuration -->
+<!-- Configuration of ShardingDataSource -->
 <!-- ...  -->
 
 <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
@@ -41,20 +61,20 @@ weight = 3
 </bean>
 <tx:annotation-driven />
 
-<!-- Enable auto scan @ShardingSphereTransactionType annotation to inject the transaction type before connection created -->
+<!-- Enable automatic scanning of @ShardingSphereTransactionType annotation and use Spring's native AOP for class and method enhancements -->
 <sharding:tx-type-annotation-driven />
 ```
 
-## Use Distributed Transaction
+### Use distributed transactions
 
 ```java
 @Transactional
-@ShardingSphereTransactionType(TransactionType.XA)  // Support TransactionType.LOCAL, TransactionType.XA, TransactionType.BASE
+@ShardingSphereTransactionType(TransactionType.XA)  // support TransactionType.LOCAL, TransactionType.XA, TransactionType.BASE
 public void insert() {
-    jdbcTemplate.execute("INSERT INTO t_order (user_id, status) VALUES (?, ?)", (PreparedStatementCallback<Object>) ps -> {
+        jdbcTemplate.execute("INSERT INTO t_order (user_id, status) VALUES (?, ?)", (PreparedStatementCallback<Object>) ps -> {
         ps.setObject(1, i);
         ps.setObject(2, "init");
         ps.executeUpdate();
-    });
-}
+        });
+        }
 ```

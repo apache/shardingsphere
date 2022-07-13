@@ -152,7 +152,7 @@ typeName
     : (owner DOT_)? name
     ;
 
-indextypeName
+indexTypeName
     : (owner DOT_)? name
     ;
 

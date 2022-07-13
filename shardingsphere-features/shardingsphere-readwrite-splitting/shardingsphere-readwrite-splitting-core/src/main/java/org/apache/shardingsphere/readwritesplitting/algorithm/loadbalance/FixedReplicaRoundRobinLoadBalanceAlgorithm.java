@@ -42,10 +42,13 @@ public final class FixedReplicaRoundRobinLoadBalanceAlgorithm implements ReadQue
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
-        if (null == TransactionHolder.getReadWriteSplitRoutedReplica()) {
-            TransactionHolder.setReadWriteSplitRoutedReplica(readDataSourceNames.get(Math.abs(count.getAndIncrement()) % readDataSourceNames.size()));
+        if (TransactionHolder.isTransaction()) {
+            if (null == TransactionHolder.getReadWriteSplitRoutedReplica()) {
+                TransactionHolder.setReadWriteSplitRoutedReplica(readDataSourceNames.get(Math.abs(count.getAndIncrement()) % readDataSourceNames.size()));
+            }
+            return TransactionHolder.getReadWriteSplitRoutedReplica();
         }
-        return TransactionHolder.getReadWriteSplitRoutedReplica();
+        return readDataSourceNames.get(Math.abs(count.getAndIncrement()) % readDataSourceNames.size());
     }
     
     @Override

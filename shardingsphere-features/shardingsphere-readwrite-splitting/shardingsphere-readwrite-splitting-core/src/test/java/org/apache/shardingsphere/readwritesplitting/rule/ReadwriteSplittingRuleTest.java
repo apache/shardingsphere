@@ -43,7 +43,7 @@ public final class ReadwriteSplittingRuleTest {
     
     @Test(expected = IllegalArgumentException.class)
     public void assertNewWithEmptyDataSourceRule() {
-        new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()));
+        new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()), Collections.emptyList());
     }
     
     @Test
@@ -62,7 +62,7 @@ public final class ReadwriteSplittingRuleTest {
         ReadwriteSplittingDataSourceRuleConfiguration config =
                 new ReadwriteSplittingDataSourceRuleConfiguration("readwrite", new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds_0", "read_ds_1")), null, "random");
         return new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(
-                Collections.singleton(config), Collections.singletonMap("random", new ShardingSphereAlgorithmConfiguration("RANDOM", new Properties()))));
+                Collections.singleton(config), Collections.singletonMap("random", new ShardingSphereAlgorithmConfiguration("RANDOM", new Properties()))), Collections.emptyList());
     }
     
     private void assertDataSourceRule(final ReadwriteSplittingDataSourceRule actual) {

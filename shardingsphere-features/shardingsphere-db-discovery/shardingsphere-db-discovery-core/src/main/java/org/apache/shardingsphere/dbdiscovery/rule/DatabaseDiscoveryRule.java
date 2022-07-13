@@ -30,14 +30,13 @@ import org.apache.shardingsphere.dbdiscovery.heartbeat.HeartbeatJob;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.datasource.strategy.DynamicDataSourceStrategyFactory;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DynamicStatusContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.metadata.storage.event.PrimaryDataSourceChangedEvent;
@@ -59,7 +58,7 @@ import java.util.Properties;
 /**
  * Database discovery rule.
  */
-public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceContainedRule, DynamicStatusContainedRule, ExportableRule {
+public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceContainedRule, DynamicDataSourceContainedRule, ExportableRule {
     
     @Getter
     private final RuleConfiguration configuration;
@@ -83,7 +82,7 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
         discoveryTypes = getDiscoveryProviderAlgorithms(ruleConfig.getDiscoveryTypes());
         dataSourceRules = getDataSourceRules(ruleConfig.getDataSources(), ruleConfig.getDiscoveryHeartbeats());
         findPrimaryReplicaRelationship(databaseName, dataSourceMap);
-        initAwareAndHeartBeatJobs(instanceContext);
+        initHeartBeatJobs(instanceContext.getInstance().getCurrentInstanceId());
     }
     
     public DatabaseDiscoveryRule(final String databaseName,
@@ -95,7 +94,7 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
         discoveryTypes = ruleConfig.getDiscoveryTypes();
         dataSourceRules = getDataSourceRules(ruleConfig.getDataSources(), ruleConfig.getDiscoveryHeartbeats());
         findPrimaryReplicaRelationship(databaseName, dataSourceMap);
-        initAwareAndHeartBeatJobs(instanceContext);
+        initHeartBeatJobs(instanceContext.getInstance().getCurrentInstanceId());
     }
     
     private static Map<String, DatabaseDiscoveryProviderAlgorithm> getDiscoveryProviderAlgorithms(final Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypesConfig) {
@@ -163,11 +162,6 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
         DatabaseDiscoveryDataSourceRule dataSourceRule = dataSourceRules.get(qualifiedDatabase.getGroupName());
         Preconditions.checkState(null != dataSourceRule, "Can 't find database discovery data source rule in database `%s`.", databaseName);
         dataSourceRule.changePrimaryDataSourceName(qualifiedDatabase.getDataSourceName());
-        initAwareAndHeartBeatJobs(instanceContext);
-    }
-    
-    private void initAwareAndHeartBeatJobs(final InstanceContext instanceContext) {
-        DynamicDataSourceStrategyFactory.findInstance().ifPresent(optional -> optional.init(this));
         initHeartBeatJobs(instanceContext.getInstance().getCurrentInstanceId());
     }
     
@@ -183,6 +177,16 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
                 modeScheduleContext.get().startCronJob(job);
             }
         }
+    }
+    
+    @Override
+    public String getPrimaryDataSourceName(final String dataSourceName) {
+        return dataSourceRules.get(dataSourceName).getPrimaryDataSourceName();
+    }
+    
+    @Override
+    public Collection<String> getReplicaDataSourceNames(final String dataSourceName) {
+        return dataSourceRules.get(dataSourceName).getReplicaDataSourceNames();
     }
     
     @Override

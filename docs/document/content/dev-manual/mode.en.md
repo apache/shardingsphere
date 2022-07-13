@@ -5,40 +5,38 @@ weight = 1
 chapter = true
 +++
 
-## StandalonePersistRepository
+## SPI Interface
 
-| *SPI Name*                     | *Description*                            |
-| ----------------------------- | ----------------------------------------  |
-| StandalonePersistRepository   | Standalone mode Configuration persistence |
+| *SPI Name*                     | *Description*                  |
+| ----------------------------- | -----------------------    |
+| StandalonePersistRepository   | Standalone mode configuration information persistence |
+| ClusterPersistRepository      | Cluster mode configuration information persistence    |
+| GovernanceWatcher             | Governance listener                   |
 
-| *Implementation Class*        | *Description*                             |
-| ----------------------------- | ----------------------------------------- |
-| FileRepository                | File persistence                          |
-| H2Repository                  | H2 persistence                            |
+## Sample
 
-## ClusterPersistRepository
+### StandalonePersistRepository
 
-| *SPI Name*                       | *Description*                        |
-| -------------------------------- | ------------------------------------ |
-| ClusterPersistRepository         | Registry center repository           |
+| *Implementation Class*                    | *Description*                  |
+| ----------------------------- | -------------------------- |
+| FileRepository                | File-based persistence           |
+| H2Repository                  | H2-based persistence             |
 
-| *Implementation Class*           | *Description*                        |
-| -------------------------------- | ------------------------------------ |
-| CuratorZookeeperRepository       | ZooKeeper registry center repository |
-| EtcdRepository                   | Etcd registry center repository      |
+### ClusterPersistRepository
 
-## GovernanceWatcher
+| *Implementation Class*                    | *Description*                 |
+| ----------------------------- | ------------------------- |
+| CuratorZookeeperRepository    | ZooKeeper-based persistence     |
+| EtcdRepository                | Etcd-based persistence          |
 
-| *SPI Name*                       | *Description*                 |
-| -------------------------------- | ----------------------------- |
-| GovernanceWatcher                | Governance watcher            |
+### GovernanceWatcher
 
-| *Implementation Class*           | *Description*                     |
-| -------------------------------- | --------------------------------- |
-| ComputeNodeStateChangedWatcher   | Compute node changed watcher      |
-| GlobalAckChangedWatcher          | Global ack changed watcher        |
-| GlobalLocksChangedWatcher        | Global locks changed watcher      |
-| GlobalRuleChangedWatcher         | Global rule changed watcher       |
-| MetaDataChangedWatcher           | Meta data changed watcher         |
-| PropertiesChangedWatcher         | Properties changed watcher        |
-| StorageNodeStateChangedWatcher   | Storage node changed watcher      |
+| *Implementation Class*                     | *Description*          |
+| -----------------------------  | ------------------ |
+| ComputeNodeStateChangedWatcher | Compute node state change listener |
+| DatabaseLockChangedWatcher     | Database lock state change listener |
+| DistributedLockChangedWatcher  | Distributed lock change listener     |
+| GlobalRuleChangedWatcher       | The global rule configuration change listener |
+| MetaDataChangedWatcher         | Metadata change listener      |
+| PropertiesChangedWatcher       | Property change listener        |
+| StorageNodeStateChangedWatcher | Storage node state change listener |

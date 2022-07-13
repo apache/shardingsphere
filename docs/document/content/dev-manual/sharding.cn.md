@@ -5,11 +5,19 @@ weight = 7
 chapter = true
 +++
 
-## ShardingAlgorithm
+## SPI 接口
 
-| *SPI 名称*                           | *详细说明*                |
-| ----------------------------------- | ------------------------ |
-| ShardingAlgorithm                   | 分片算法                   |
+| SPI 名称                  | 详细说明                 |
+|-------------------------| ------------------------ |
+| ShardingAlgorithm       | 分片算法                 |
+| KeyGenerateAlgorithm    | 分布式主键生成算法       |
+| ShardingAuditAlgorithm  | 分片审计算法 |
+| DatetimeService         | 获取当前时间进行路由     |
+| DatabaseSQLEntry        | 获取当前时间的数据库方言 |
+
+## 示例
+
+### ShardingAlgorithm 已知实现类
 
 | *已知实现类*                                 | *详细说明*                    |
 |-----------------------------------------|---------------------------|
@@ -27,11 +35,7 @@ chapter = true
 | CosIdIntervalShardingAlgorithm          | 基于 CosId 的固定时间范围的分片算法     |
 | CosIdSnowflakeIntervalShardingAlgorithm | 基于 CosId 的雪花ID固定时间范围的分片算法 |
 
-## KeyGenerateAlgorithm
-
-| *SPI 名称*                     | *详细说明*                 |
-| ----------------------------- | ------------------------- |
-| KeyGenerateAlgorithm          | 分布式主键生成算法           |
+### KeyGenerateAlgorithm 已知实现类
 
 | *已知实现类*                         | *详细说明*                         |
 |----------------------------------- |---------------------------------- |
@@ -41,32 +45,20 @@ chapter = true
 | CosIdSnowflakeKeyGenerateAlgorithm | 基于 CosId 的雪花算法分布式主键生成算法 |
 | NanoIdKeyGenerateAlgorithm         | 基于 NanoId 的分布式主键生成算法      |
 
-## ShardingAuditAlgorithm
-
-| *SPI 名称*                     | *详细说明*                 |
-| ----------------------------- | ------------------------- |
-| ShardingAuditAlgorithm        | 分片审计算法                |
+### ShardingAuditAlgorithm 已知实现类
 
 | *已知实现类*                                  | *详细说明*                         |
 |-------------------------------------------- |---------------------------------- |
 | DMLShardingConditionsShardingAuditAlgorithm | 禁止不带分片键的DML审计算法           |
 
-## DatetimeService
-
-| *SPI 名称*                       | *详细说明*                     |
-| ------------------------------- | ----------------------------- |
-| DatetimeService                 | 获取当前时间进行路由              |
+### DatetimeService 已知实现类
 
 | *已知实现类*                      | *详细说明*                     |
 | ------------------------------- | ----------------------------- |
 | DatabaseDatetimeServiceDelegate | 从数据库中获取当前时间进行路由      |
 | SystemDatetimeService           | 从应用系统时间中获取当前时间进行路由 |
 
-## DatabaseSQLEntry
-
-| *SPI 名称*                  | *详细说明*                         |
-| -------------------------- | --------------------------------- |
-| DatabaseSQLEntry           | 获取当前时间的数据库方言              |
+### DatabaseSQLEntry 已知实现类
 
 | *已知实现类*                 | *详细说明*                         |
 | -------------------------- | --------------------------------- |

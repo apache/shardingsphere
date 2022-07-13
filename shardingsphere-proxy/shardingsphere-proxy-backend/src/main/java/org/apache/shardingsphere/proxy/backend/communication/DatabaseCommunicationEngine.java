@@ -38,7 +38,7 @@ import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRul
 import org.apache.shardingsphere.mode.manager.lock.LockJudgeEngine;
 import org.apache.shardingsphere.mode.manager.lock.LockJudgeEngineBuilder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.exception.DatabaseLockedException;
+import org.apache.shardingsphere.proxy.backend.exception.UnsupportedUpdateOperationException;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
@@ -198,7 +198,7 @@ public abstract class DatabaseCommunicationEngine<T> {
     
     protected void checkLockedDatabase(final ExecutionContext executionContext) {
         if (lockJudgeEngine.isLocked(backendConnection.getConnectionSession().getDatabaseName(), executionContext.getSqlStatementContext())) {
-            throw new DatabaseLockedException(backendConnection.getConnectionSession().getDatabaseName());
+            throw new UnsupportedUpdateOperationException(backendConnection.getConnectionSession().getDatabaseName());
         }
     }
 }

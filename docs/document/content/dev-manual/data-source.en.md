@@ -5,11 +5,18 @@ weight = 4
 chapter = true
 +++
 
-## DatabaseType
+## SPI Interface
 
-| *SPI Name*             | *Description*           |
-| ---------------------- | ----------------------- |
-| DatabaseType           | Supported database type |
+| SPI Name                     | Description                                 |
+| ---------------------------- | ------------------------------------------- |
+| DatabaseType                 | Supported database types                    |
+| DialectTableMetaDataLoader   | Use SQL dialect to load meta data rapidly   |
+| DataSourcePoolMetaData       | Data source connection pool metadata        |
+| DataSourcePoolActiveDetector | Data source connection pool active detector |
+
+## Sample
+
+### DatabaseType Known Implementation Class
 
 | *Implementation Class* | *Description*           |
 | ---------------------- | ----------------------- |
@@ -22,11 +29,7 @@ chapter = true
 | H2DatabaseType         | H2 database             |
 | OpenGaussDatabaseType  | OpenGauss database      |
 
-## DialectTableMetaDataLoader
-
-| *SPI Name*                   | *Description*                             |
-| ---------------------------- | ----------------------------------------- |
-| DialectTableMetaDataLoader   | Use SQL dialect to load meta data rapidly |
+### DialectTableMetaDataLoader Known Implementation Class
 
 | *Implementation Class*       | *Description*                             |
 | ---------------------------- | ----------------------------------------- |
@@ -37,22 +40,14 @@ chapter = true
 | H2TableMetaDataLoader        | Use H2 dialect to load meta data          |
 | OpenGaussTableMetaDataLoader | Use OpenGauss dialect to load meta data   |
 
-## DataSourcePoolMetaData
-
-| *SPI Name*                    | *Description*              |
-| ---------------------------- |----------------------------|
-| DataSourcePoolMetaData        | Data source pool meta data |
+### DataSourcePoolMetaData Known Implementation Class
 
 | *Implementation Class*       | *Description*                     |
 |------------------------------|-----------------------------------|
 | DBCPDataSourcePoolMetaData   | DBCP data source pool meta data   |
 | HikariDataSourcePoolMetaData | Hikari data source pool meta data |
 
-## DataSourcePoolActiveDetector
-
-| *SPI Name*                          | *Description*                            |
-| ----------------------------------- | ---------------------------------------- |
-| DataSourcePoolActiveDetector        | Data source pool active detector         |
+### DataSourcePoolActiveDetector Known Implementation Class
 
 | *Implementation Class*              | *Description*                            |
 | ----------------------------------- | ---------------------------------------- |
