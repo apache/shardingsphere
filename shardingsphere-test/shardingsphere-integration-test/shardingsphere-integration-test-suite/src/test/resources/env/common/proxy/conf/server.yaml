@@ -15,8 +15,8 @@
 # limitations under the License.
 #
 
-mode:
-  type: Standalone
+#mode:
+#  type: Cluster
 #  repository:
 #    type: ZooKeeper
 #    props:
