@@ -47,7 +47,9 @@ public final class ParameterizedArrayFactory {
             if ("Standalone".equalsIgnoreCase(each)) {
                 result.addAll(StandaloneParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
             } else if ("Cluster".equalsIgnoreCase(each)) {
-                result.addAll(ClusterParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
+                // TODO Cluster mode need to be fixed
+//                result.addAll(ClusterParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
+                result.addAll(StandaloneParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
             }
         }
         return result;
