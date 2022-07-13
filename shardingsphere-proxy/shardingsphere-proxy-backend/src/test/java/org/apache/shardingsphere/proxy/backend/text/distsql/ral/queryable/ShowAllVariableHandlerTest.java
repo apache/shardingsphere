@@ -37,39 +37,40 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.Properties;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowAllVariableBackendHandlerTest extends ProxyContextRestorer {
-    
-    private ConnectionSession connectionSession;
+public final class ShowAllVariableHandlerTest extends ProxyContextRestorer {
     
     @Before
     public void setup() {
-        ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
-        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE)).thenReturn("JDBC");
-        connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, new DefaultAttributeMap());
+        ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
+        MetaDataContexts metaDataContexts = mockMetaDataContexts();
+        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
+        ProxyContext.init(contextManager);
+    }
+    
+    private MetaDataContexts mockMetaDataContexts() {
+        MetaDataContexts result = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
+        Properties props = new Properties();
+        props.setProperty(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE.getKey(), "JDBC");
+        when(result.getMetaData().getProps()).thenReturn(new ConfigurationProperties(props));
+        return result;
     }
     
     @Test
-    public void assertShowAllVariables() throws SQLException {
-        connectionSession.setCurrentDatabase("db");
-        ContextManager contextManager = mock(ContextManager.class);
-        ProxyContext.init(contextManager);
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        ShowAllVariableHandler backendHandler = new ShowAllVariableHandler();
-        backendHandler.init(new ShowAllVariableStatement(), connectionSession);
-        ResponseHeader actual = backendHandler.execute();
-        assertThat(actual, instanceOf(QueryResponseHeader.class));
+    public void assertExecute() throws SQLException {
+        ConnectionSession connectionSession = new ConnectionSession(mock(MySQLDatabaseType.class), TransactionType.LOCAL, new DefaultAttributeMap());
+        connectionSession.setCurrentDatabase("foo_db");
+        ShowAllVariableHandler handler = new ShowAllVariableHandler();
+        handler.init(new ShowAllVariableStatement(), connectionSession);
+        ResponseHeader actual = handler.execute();
         assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
-        backendHandler.next();
-        List<Object> rowData = backendHandler.getRowData().getData();
+        handler.next();
+        List<Object> rowData = handler.getRowData().getData();
         assertThat(rowData.get(0), is("sql_show"));
         assertThat(rowData.get(1), is(Boolean.FALSE.toString()));
     }
