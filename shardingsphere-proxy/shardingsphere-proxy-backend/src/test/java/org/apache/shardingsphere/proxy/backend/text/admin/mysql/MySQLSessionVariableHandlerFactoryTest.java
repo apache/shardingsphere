@@ -15,27 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
+package org.apache.shardingsphere.proxy.backend.text.admin.mysql;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
+import org.junit.Test;
 
-import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
 
-/**
- * No Resource set executor.
- */
-@Getter
-@RequiredArgsConstructor
-public final class NoResourceSetExecutor implements DatabaseAdminExecutor {
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class MySQLSessionVariableHandlerFactoryTest {
     
-    private final SetStatement sqlStatement;
-    
-    @Override
-    public void execute(final ConnectionSession connectionSession) throws SQLException {
-        return;
+    @Test
+    public void assertGetHandlers() {
+        List<MySQLSessionVariableHandler> actual = MySQLSessionVariableHandlerFactory.getHandlers(Arrays.asList("test_fixture", "test_fixture"));
+        assertThat(actual.size(), is(2));
+        assertThat(actual.get(0), instanceOf(TestFixtureSessionVariableHandler.class));
+        assertThat(actual.get(1), instanceOf(TestFixtureSessionVariableHandler.class));
     }
 }
