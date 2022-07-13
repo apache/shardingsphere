@@ -1317,3 +1317,11 @@ libraryName
 matchString
     : IDENTIFIER_ | ASTERISK_
     ;
+
+parameterType
+    : identifier
+    ;
+
+returnType
+    : identifier
+    ;

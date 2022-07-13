@@ -113,5 +113,6 @@ execute
     | alterJava
     | alterAuditPolicy
     | alterCluster
+    | alterOperator
     ) SEMI_?
     ;

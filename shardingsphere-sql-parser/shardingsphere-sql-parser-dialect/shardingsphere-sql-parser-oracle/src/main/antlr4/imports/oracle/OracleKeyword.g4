@@ -2858,3 +2858,19 @@ SHARE
 EXCLUSIVE
     : E X C L U S I V E
     ;
+
+ANCILLARY
+    : A N C I L L A R Y
+    ;
+
+BINDING
+    : B I N D I N G
+    ;
+
+SCAN
+    : S C A N
+    ;
+
+COMPUTE
+    : C O M P U T E
+    ;
