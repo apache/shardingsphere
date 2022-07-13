@@ -15,37 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint.executor;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.HintSourceType;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.HintManagerHolder;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.SetReadwriteSplittingHintStatement;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint.HintManagerHolder;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.AddShardingHintDatabaseValueStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 
 /**
- * Set readwrite-splitting hint statement executor.
+ * Add sharding hint database value executor.
  */
 @RequiredArgsConstructor
-public final class SetReadwriteSplittingHintExecutor extends AbstractHintUpdateExecutor<SetReadwriteSplittingHintStatement> {
+public final class AddShardingHintDatabaseValueExecutor extends AbstractHintUpdateExecutor<AddShardingHintDatabaseValueStatement> {
     
-    private final SetReadwriteSplittingHintStatement sqlStatement;
+    private final AddShardingHintDatabaseValueStatement sqlStatement;
     
     @Override
     public ResponseHeader execute() {
-        HintSourceType sourceType = HintSourceType.typeOf(sqlStatement.getSource());
-        switch (sourceType) {
-            case AUTO:
-                HintManagerHolder.get().setReadwriteSplittingAuto();
-                break;
-            case WRITE:
-                HintManagerHolder.get().setWriteRouteOnly();
-                break;
-            default:
-                break;
-        }
+        HintManagerHolder.get().addDatabaseShardingValue(sqlStatement.getLogicTableName(), sqlStatement.getShardingValue());
         return new UpdateResponseHeader(new EmptyStatement());
     }
 }

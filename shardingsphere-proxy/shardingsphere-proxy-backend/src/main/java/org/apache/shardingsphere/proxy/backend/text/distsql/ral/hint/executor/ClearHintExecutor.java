@@ -15,24 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.result;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint.executor;
 
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Collection;
-import java.util.LinkedList;
+import org.apache.shardingsphere.distsql.parser.statement.ral.hint.ClearHintStatement;
+import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint.HintManagerHolder;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 
 /**
- * Show sharding hint status result.
+ * Clear hint statement executor.
  */
-@Getter
 @RequiredArgsConstructor
-public final class ShowShardingHintStatusResult {
+public final class ClearHintExecutor extends AbstractHintUpdateExecutor<ClearHintStatement> {
     
-    private final String logicTable;
-    
-    private final Collection<String> databaseShardingValues = new LinkedList<>();
-    
-    private final Collection<String> tableShardingValues = new LinkedList<>();
+    @Override
+    public ResponseHeader execute() {
+        HintManagerHolder.get().close();
+        HintManagerHolder.remove();
+        return new UpdateResponseHeader(new EmptyStatement());
+    }
 }

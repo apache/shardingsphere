@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint.enums;
 
 /**
  * Hint sharding type.

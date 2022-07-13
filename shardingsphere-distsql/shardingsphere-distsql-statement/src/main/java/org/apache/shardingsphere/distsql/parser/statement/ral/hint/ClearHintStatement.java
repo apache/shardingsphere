@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.common;
+package org.apache.shardingsphere.distsql.parser.statement.ral.hint;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.CommonRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.HintRALStatement;
 
 /**
- * Hint Dist SQL statement.
+ * Clear hint statement.
  */
-public abstract class HintDistSQLStatement extends CommonRALStatement {
+public final class ClearHintStatement extends HintRALStatement {
 }
