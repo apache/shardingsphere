@@ -26,8 +26,12 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedRe
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.sql.Types;
+import java.util.Collection;
 import java.util.Collections;
 
 /**
@@ -38,7 +42,13 @@ public final class ShowConnectionIdExecutor implements DatabaseAdminQueryExecuto
     
     public static final String FUNCTION_NAME = "connection_id()";
     
+    private SelectStatement sqlStatement;
+    
     private MergedResult mergedResult;
+    
+    public ShowConnectionIdExecutor(final SelectStatement sqlStatement) {
+        this.sqlStatement = sqlStatement;
+    }
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
@@ -47,6 +57,16 @@ public final class ShowConnectionIdExecutor implements DatabaseAdminQueryExecuto
     
     @Override
     public QueryResultMetaData getQueryResultMetaData() {
-        return new RawQueryResultMetaData(Collections.singletonList(new RawQueryResultColumnMetaData("", FUNCTION_NAME, FUNCTION_NAME, Types.VARCHAR, "VARCHAR", 100, 0)));
+        return new RawQueryResultMetaData(Collections.singletonList(new RawQueryResultColumnMetaData("", FUNCTION_NAME, getLabel(), Types.VARCHAR, "VARCHAR", 100, 0)));
+    }
+    
+    private String getLabel() {
+        Collection<ProjectionSegment> projections = sqlStatement.getProjections().getProjections();
+        for (ProjectionSegment each : projections) {
+            if (each instanceof ExpressionProjectionSegment) {
+                return ((ExpressionProjectionSegment) each).getAlias().orElse(FUNCTION_NAME);
+            }
+        }
+        return FUNCTION_NAME;
     }
 }
