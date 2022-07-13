@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.infra.instance.metadata.proxy;
 
 import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
@@ -41,6 +43,7 @@ public final class ProxyInstanceMetaData implements InstanceMetaData {
         this.id = id;
         ip = IpUtils.getIp();
         this.port = port;
+        checkProperty();
     }
     
     public ProxyInstanceMetaData(final String id, final String attributes) {
@@ -48,8 +51,15 @@ public final class ProxyInstanceMetaData implements InstanceMetaData {
         String[] attributesList = attributes.split(DELIMITER);
         ip = attributesList[0];
         port = Integer.parseInt(attributesList[1]);
+        checkProperty();
     }
-    
+
+    private void checkProperty() {
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(id), "id can't be null.");
+        Preconditions.checkArgument(!Strings.isNullOrEmpty(ip), "ip can't be null.");
+        Preconditions.checkArgument(port > 0 && port <= 0xFFFF, "port out of range:: `%s`.", port);
+    }
+
     @Override
     public InstanceType getType() {
         return InstanceType.PROXY;

@@ -64,4 +64,14 @@ public final class InstanceMetaDataBuilderFactoryTest {
         assertThat(actual.getAttributes(), is("127.0.0.1@3307"));
         assertThat(actual.getType(), is(InstanceType.PROXY));
     }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void assertCreateProxyInstanceMetaDataWithInstanceIdIpIsError() {
+        InstanceMetaDataBuilderFactory.create("foo_id", InstanceType.PROXY, "@3307");
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void assertCreateProxyInstanceMetaDataWithInstanceIdPortIsError() {
+        InstanceMetaDataBuilderFactory.create("foo_id", InstanceType.PROXY, "127.0.0.1@0");
+    }
 }
