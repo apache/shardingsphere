@@ -40,8 +40,6 @@ public final class ComputeNodeInstance {
     
     private Collection<String> labels;
     
-    private Long workerId;
-    
     /**
      * Set labels.
      *

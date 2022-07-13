@@ -53,7 +53,7 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     
     public ProxyJDBCExecutorCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final JDBCDatabaseCommunicationEngine databaseCommunicationEngine,
                                      final boolean isReturnGeneratedKeys, final boolean isExceptionThrown, final boolean fetchMetaData) {
-        super(databaseType, sqlStatement, isExceptionThrown);
+        super(databaseType, sqlStatement, isExceptionThrown, ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext());
         this.databaseCommunicationEngine = databaseCommunicationEngine;
         this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         this.fetchMetaData = fetchMetaData;

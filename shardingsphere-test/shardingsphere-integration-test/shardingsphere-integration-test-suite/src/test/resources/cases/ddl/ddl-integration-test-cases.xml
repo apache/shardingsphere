@@ -243,6 +243,20 @@
             <initial-sql sql="CREATE TABLE t_user_details (user_id INT NOT NULL, address_id INT NOT NULL, number_plain VARCHAR(45) NULL, number_cipher VARCHAR(45) NULL, description varchar(10))" affected-table="t_user_details" />
         </assertion>
     </test-case>
-    
+
+    <test-case sql="LISTEN notify_async2" db-types="PostgreSQL" />
+
+    <test-case sql="NOTIFY notify_async2" db-types="PostgreSQL" />
+
+    <test-case sql="UNLISTEN notify_async2" db-types="PostgreSQL" />
+
+    <test-case sql="REINDEX (CONCURRENTLY) TABLE t_user_details" db-types="PostgreSQL" />
+
+    <test-case sql="SECURITY LABEL ON TABLE t_user_details IS 'classified'" db-types="PostgreSQL" />
+
+    <test-case sql="MOVE BACKWARD ALL FROM t_user_details" db-types="PostgreSQL" />
+
+    <test-case sql="REFRESH MATERIALIZED VIEW CONCURRENTLY mvtest_boxmv" db-types="PostgreSQL" />
+
     <!-- TODO add single table DDL test cases -->
 </integration-test-cases>

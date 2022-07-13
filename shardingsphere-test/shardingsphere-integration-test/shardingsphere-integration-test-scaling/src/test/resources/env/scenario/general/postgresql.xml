@@ -44,10 +44,6 @@
         CREATE INDEX "idx_user_id" ON test.t_order ( user_id );
     </create-table-index>
     
-    <create-column-comment>
-        COMMENT ON COLUMN test.t_order.user_id IS 'user id';
-    </create-column-comment>
-    
     <create-table-order-item>
         CREATE TABLE test.t_order_item (
         item_id int8 NOT NULL,

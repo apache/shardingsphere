@@ -105,6 +105,14 @@ public final class ShardingUpdateStatementValidatorTest {
                 Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class), createSingleRouteContext());
     }
     
+    @Test
+    public void assertPostValidateWhenTableNameIsBroadcastTable() {
+        mockShardingRuleForUpdateShardingColumn();
+        when(shardingRule.isBroadcastTable("user")).thenReturn(true);
+        new ShardingUpdateStatementValidator().postValidate(shardingRule, new UpdateStatementContext(createUpdateStatement()),
+                Collections.emptyList(), mock(ShardingSphereDatabase.class), mock(ConfigurationProperties.class), createSingleRouteContext());
+    }
+    
     @Test(expected = ShardingSphereException.class)
     public void assertPostValidateWhenUpdateShardingColumnWithDifferentRouteContext() {
         mockShardingRuleForUpdateShardingColumn();

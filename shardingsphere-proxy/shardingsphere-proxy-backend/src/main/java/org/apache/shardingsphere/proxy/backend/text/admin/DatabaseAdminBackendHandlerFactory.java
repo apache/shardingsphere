@@ -27,8 +27,6 @@ import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdmin
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorCreator;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorCreatorFactory;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
-import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseSetCharsetExecutor;
-import org.apache.shardingsphere.proxy.backend.text.encoding.DatabaseSetCharsetBackendHandler;
 
 import java.util.Optional;
 
@@ -79,9 +77,6 @@ public final class DatabaseAdminBackendHandlerFactory {
                                                                                final ConnectionSession connectionSession, final DatabaseAdminExecutor executor) {
         if (executor instanceof DatabaseAdminQueryExecutor) {
             return new DatabaseAdminQueryBackendHandler(connectionSession, (DatabaseAdminQueryExecutor) executor);
-        }
-        if (executor instanceof DatabaseSetCharsetExecutor) {
-            return new DatabaseSetCharsetBackendHandler(connectionSession, (DatabaseSetCharsetExecutor) executor);
         }
         return new DatabaseAdminUpdateBackendHandler(connectionSession, sqlStatementContext.getSqlStatement(), executor);
     }

@@ -23,8 +23,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.FormatStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.ParseStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.PreviewStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.CountInstanceRulesStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.HintRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ShowInstanceModeStatement;
@@ -55,8 +54,7 @@ import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.FormatSQLHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.ParseDistSQLHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.PreviewHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.HintDistSQLBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.CountInstanceRulesHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint.HintRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ExportDatabaseConfigurationHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ShowAuthorityRuleHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable.ShowInstanceHandler;
@@ -118,7 +116,6 @@ public final class RALBackendHandlerFactory {
         HANDLERS.put(ImportDatabaseConfigurationStatement.class, ImportDatabaseConfigurationHandler.class);
         HANDLERS.put(ShowInstanceStatement.class, ShowInstanceHandler.class);
         HANDLERS.put(ShowInstanceModeStatement.class, ShowInstanceModeHandler.class);
-        HANDLERS.put(CountInstanceRulesStatement.class, CountInstanceRulesHandler.class);
         HANDLERS.put(ShowVariableStatement.class, ShowVariableHandler.class);
         HANDLERS.put(ShowReadwriteSplittingReadResourcesStatement.class, ShowReadwriteSplittingReadResourcesHandler.class);
         HANDLERS.put(ShowAuthorityRuleStatement.class, ShowAuthorityRuleHandler.class);
@@ -141,8 +138,8 @@ public final class RALBackendHandlerFactory {
      * @throws SQLException SQL exception
      */
     public static TextProtocolBackendHandler newInstance(final RALStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
-        if (sqlStatement instanceof HintDistSQLStatement) {
-            return new HintDistSQLBackendHandler((HintDistSQLStatement) sqlStatement, connectionSession);
+        if (sqlStatement instanceof HintRALStatement) {
+            return new HintRALBackendHandler((HintRALStatement) sqlStatement, connectionSession);
         }
         if (sqlStatement instanceof QueryableScalingRALStatement) {
             return new QueryableScalingRALBackendHandler(sqlStatement, connectionSession, QueryableScalingRALBackendHandlerFactory.newInstance((QueryableScalingRALStatement) sqlStatement));

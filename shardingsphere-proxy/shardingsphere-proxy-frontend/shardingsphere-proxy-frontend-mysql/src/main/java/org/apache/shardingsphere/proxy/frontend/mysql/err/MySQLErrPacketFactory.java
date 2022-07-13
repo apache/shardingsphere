@@ -29,7 +29,7 @@ import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.CircuitBreakException;
 import org.apache.shardingsphere.proxy.backend.exception.DBCreateExistsException;
 import org.apache.shardingsphere.proxy.backend.exception.DBDropNotExistsException;
-import org.apache.shardingsphere.proxy.backend.exception.DatabaseLockedException;
+import org.apache.shardingsphere.proxy.backend.exception.UnsupportedUpdateOperationException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.ResourceNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
@@ -42,11 +42,11 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception
 import org.apache.shardingsphere.proxy.frontend.exception.FrontendTooManyConnectionsException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedCommandException;
 import org.apache.shardingsphere.proxy.frontend.exception.UnsupportedPreparedStatementException;
-import org.apache.shardingsphere.proxy.frontend.mysql.command.query.exception.UnknownCharacterSetException;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
 import org.apache.shardingsphere.sharding.route.engine.exception.TableExistsException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 
+import java.nio.charset.UnsupportedCharsetException;
 import java.sql.SQLException;
 
 /**
@@ -112,8 +112,8 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof RuleNotExistedException || cause instanceof ResourceNotExistedException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_SP_DOES_NOT_EXIST);
         }
-        if (cause instanceof DatabaseLockedException) {
-            DatabaseLockedException exception = (DatabaseLockedException) cause;
+        if (cause instanceof UnsupportedUpdateOperationException) {
+            UnsupportedUpdateOperationException exception = (UnsupportedUpdateOperationException) cause;
             return new MySQLErrPacket(1, CommonErrorCode.DATABASE_WRITE_LOCKED, exception.getDatabaseName());
         }
         if (cause instanceof TableLockWaitTimeoutException) {
@@ -132,7 +132,7 @@ public final class MySQLErrPacketFactory {
         if (cause instanceof FrontendTooManyConnectionsException) {
             return new MySQLErrPacket(0, MySQLServerErrorCode.ER_CON_COUNT_ERROR, MySQLServerErrorCode.ER_CON_COUNT_ERROR.getErrorMessage());
         }
-        if (cause instanceof UnknownCharacterSetException) {
+        if (cause instanceof UnsupportedCharsetException) {
             return new MySQLErrPacket(1, MySQLServerErrorCode.ER_UNKNOWN_CHARACTER_SET, cause.getMessage());
         }
         if (cause instanceof RuntimeException) {

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.executor.sql.execute.engine.jdbc;
 
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
@@ -75,7 +76,8 @@ public final class JDBCExecutorCallbackTest {
     @SuppressWarnings("unchecked")
     @Test
     public void assertExecute() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        JDBCExecutorCallback<?> jdbcExecutorCallback = new JDBCExecutorCallback<Integer>(DatabaseTypeFactory.getInstance("MySQL"), mock(SelectStatement.class), true) {
+        JDBCExecutorCallback<?> jdbcExecutorCallback = new JDBCExecutorCallback<Integer>(DatabaseTypeFactory.getInstance("MySQL"), mock(SelectStatement.class), true,
+                new EventBusContext()) {
             
             @Override
             protected Integer executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {

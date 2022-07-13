@@ -3,42 +3,84 @@ title = "Shadow Algorithm"
 weight = 6
 +++
 
-## Column Shadow Algorithm
+## Background
+The shadow DB feature carries out shadow measurement to SQL statements executed. Shadow measurement supports two types of algorithms, and users can choose one or a combination of them based on actual business needs.
 
-### Column Value Match Shadow Algorithm
+## Parameters
+### Column-based shadow algorithm
 
+#### Column value matching shadow algorithm
 Type：VALUE_MATCH
 
-Attributes:
+| *Attribute Name* | *Data Type* | *Description*  |
+| ----------- | ---------- | ------- |
+| column  | String    | shadow column |
+| operation  | String    | SQL operation type（INSERT, UPDATE, DELETE, SELECT）|
+| value | String    | value matched by shadow column |
 
-| *Name*      | *DataType* | *Description*  |
-| -------------- | --------- | ------- |
-| column         | String    | Shadow column |
-| operation      | String    | SQL operation type (INSERT, UPDATE, DELETE, SELECT) |
-| value          | String    | Shadow column matching value |
+#### Column-based Regex matching algorithm
+Type：REGEX_MATCH
 
-### Column Regex Match Shadow Algorithm
+| *Attribute Name* | *Data Type* | *Description*  |
+| ---------- | ---------- | -------- |
+| column | String  | match a column |
+| operation | String  | SQL operation type（INSERT, UPDATE, DELETE, SELECT）|
+| regex | String  | shadow column matching Regex |
 
-Type: REGEX_MATCH
+### Hint-based shadow algorithm
 
-Attributes:
+#### Simple Hint matching shadow algorithm
+Type：SIMPLE_HINT
 
-| *Name*      | *DataType* | *Description*  |
-| -------------- | --------- | ------- |
-| column         | String    | Shadow column |
-| operation      | String    | SQL operation type (insert, update, delete, select) |
-| regex          | String    | Shadow column matching regular expression |
+| *Attribute Name* | *Data Type*  | *Description*     |
+| ----------  | -----------  | --------- |
+| foo | String | bar       |
 
-## Hint Shadow Algorithm
+## Configuration sample
+- Java API
 
-### Simple Hint Shadow Algorithm
+```java
+public final class ShadowConfiguration {
+    // ...
+    
+    private ShardingSphereAlgorithmConfiguration createShadowAlgorithmConfiguration() {
+        Properties userIdInsertProps = new Properties();
+        userIdInsertProps.setProperty("operation", "insert");
+        userIdInsertProps.setProperty("column", "user_id");
+        userIdInsertProps.setProperty("value", "1");
+        return new ShardingSphereAlgorithmConfiguration("VALUE_MATCH", userIdInsertProps));
+    }
+    
+    // ...
+}
+```
 
-Type: SIMPLE_HINT
+- YAML:
+```yaml
+shadowAlgorithms:
+  user-id-insert-algorithm:
+    type: VALUE_MATCH
+    props:
+      column: user_id
+      operation: insert
+      value: 1
+```
 
-Attributes:
+- Spring Boot Starter:
+```properties
+spring.shardingsphere.rules.shadow.shadow-algorithms.user-id-insert-algorithm.type=VALUE_MATCH
+spring.shardingsphere.rules.shadow.shadow-algorithms.user-id-insert-algorithm.props.operation=insert
+spring.shardingsphere.rules.shadow.shadow-algorithms.user-id-insert-algorithm.props.column=user_id
+spring.shardingsphere.rules.shadow.shadow-algorithms.user-id-insert-algorithm.props.value=1
+```
 
-> Configure at least a set of arbitrary key-value pairs. For example: foo:bar
-
-| *Name*          | *DataType* | *Description*    |
-| --------------  | ---------  | --------- |
-| foo             | String     | bar       |
+- Spring Namespace:
+```xml
+<shadow:shadow-algorithm id="user-id-insert-algorithm" type="VALUE_MATCH">
+    <props>
+        <prop key="operation">insert</prop>
+        <prop key="column">user_id</prop>
+        <prop key="value">1</prop>
+    </props>
+</shadow:shadow-algorithm>
+```

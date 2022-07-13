@@ -58,9 +58,9 @@ public interface StandardShardingAlgorithm<T extends Comparable<?>> extends Shar
      * @return matched target name
      */
     default Optional<String> findMatchedTargetName(final Collection<String> availableTargetNames, final String suffix, final DataNodeInfo dataNodeInfo) {
-        String result = dataNodeInfo.getPrefix() + Strings.padStart(suffix, dataNodeInfo.getSuffixMinLength(), dataNodeInfo.getPaddingChar());
-        if (availableTargetNames.contains(result)) {
-            return Optional.of(result);
+        String targetName = dataNodeInfo.getPrefix() + Strings.padStart(suffix, dataNodeInfo.getSuffixMinLength(), dataNodeInfo.getPaddingChar());
+        if (availableTargetNames.contains(targetName)) {
+            return Optional.of(targetName);
         }
         return Optional.empty();
     }

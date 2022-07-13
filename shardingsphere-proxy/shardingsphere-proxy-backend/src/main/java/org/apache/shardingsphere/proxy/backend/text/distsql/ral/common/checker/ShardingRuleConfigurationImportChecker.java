@@ -40,7 +40,6 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -99,7 +98,7 @@ public final class ShardingRuleConfigurationImportChecker {
     
     private void checkInvalidAlgorithms(final String algorithmType, final Collection<ShardingSphereAlgorithmConfiguration> algorithmConfigs) throws DistSQLException {
         Collection<String> invalidAlgorithms = algorithmConfigs.stream()
-                .filter(each -> !TypedSPIRegistry.findRegisteredService(ALGORITHM_TYPE_MAP.get(algorithmType), each.getType(), new Properties()).isPresent())
+                .filter(each -> !TypedSPIRegistry.findRegisteredService(ALGORITHM_TYPE_MAP.get(algorithmType), each.getType(), each.getProps()).isPresent())
                 .map(ShardingSphereAlgorithmConfiguration::getType).collect(Collectors.toList());
         DistSQLException.predictionThrow(invalidAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException(algorithmType, invalidAlgorithms));
     }

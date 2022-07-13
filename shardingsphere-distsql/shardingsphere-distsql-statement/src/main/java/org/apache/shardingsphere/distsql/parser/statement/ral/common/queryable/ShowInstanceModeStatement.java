@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable;
 
-import lombok.Getter;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
  * Show instance mode statement.
  */
-@Getter
 public final class ShowInstanceModeStatement extends QueryableRALStatement {
 }

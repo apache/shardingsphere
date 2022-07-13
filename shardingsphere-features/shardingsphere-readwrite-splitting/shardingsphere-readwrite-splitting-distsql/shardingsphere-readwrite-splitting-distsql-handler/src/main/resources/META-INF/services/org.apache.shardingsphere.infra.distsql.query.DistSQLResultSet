@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.readwritesplitting.distsql.handler.query.ReadwriteSplittingRuleQueryResultSet
+org.apache.shardingsphere.readwritesplitting.distsql.handler.query.CountReadwriteSplittingRuleQueryResultSet

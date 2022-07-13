@@ -20,13 +20,13 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.BatchYamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.RestartHeartBeatJobRule;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceChangedEvent;
@@ -48,7 +48,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListTriggerEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListUnitCompleteEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.PrimaryStateChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.StorageNodeChangedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -62,6 +61,7 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -79,7 +79,7 @@ public final class ClusterContextManagerCoordinator {
         this.persistService = persistService;
         this.registryCenter = registryCenter;
         this.contextManager = contextManager;
-        ShardingSphereEventBus.getInstance().register(this);
+        contextManager.getInstanceContext().getEventBusContext().register(this);
         disableDataSources();
     }
     
@@ -122,16 +122,6 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final SchemaDeletedEvent event) {
         contextManager.dropSchema(event.getDatabaseName(), event.getSchemaName());
-    }
-    
-    /**
-     * Renew properties.
-     *
-     * @param event properties changed event
-     */
-    @Subscribe
-    public synchronized void renew(final PropertiesChangedEvent event) {
-        contextManager.alterProperties(event.getProps());
     }
     
     /**
@@ -178,9 +168,16 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final StorageNodeChangedEvent event) {
         QualifiedDatabase qualifiedDatabase = event.getQualifiedDatabase();
-        contextManager.getMetaDataContexts().getMetaData().getDatabases().get(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
-                .stream().filter(each -> each instanceof StatusContainedRule)
-                .forEach(each -> ((StatusContainedRule) each).updateStatus(new StorageNodeDataSourceChangedEvent(qualifiedDatabase, event.getDataSource())));
+        Optional<ShardingSphereRule> dynamicDataSourceRule = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(qualifiedDatabase.getDatabaseName()).getRuleMetaData()
+                .getRules().stream().filter(each -> each instanceof DynamicDataSourceContainedRule).findFirst();
+        if (dynamicDataSourceRule.isPresent()) {
+            ((DynamicDataSourceContainedRule) dynamicDataSourceRule.get()).updateStatus(new StorageNodeDataSourceChangedEvent(qualifiedDatabase, event.getDataSource()));
+            return;
+        }
+        Optional<ShardingSphereRule> staticDataSourceRule = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(qualifiedDatabase.getDatabaseName()).getRuleMetaData()
+                .getRules().stream().filter(each -> each instanceof StaticDataSourceContainedRule).findFirst();
+        staticDataSourceRule.ifPresent(shardingSphereRule -> ((StaticDataSourceContainedRule) shardingSphereRule)
+                .updateStatus(new StorageNodeDataSourceChangedEvent(qualifiedDatabase, event.getDataSource())));
     }
     
     /**
@@ -193,9 +190,9 @@ public final class ClusterContextManagerCoordinator {
         QualifiedDatabase qualifiedDatabase = event.getQualifiedDatabase();
         contextManager.getMetaDataContexts().getMetaData().getDatabases().get(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
                 .stream()
-                .filter(each -> each instanceof RestartHeartBeatJobRule)
-                .forEach(each -> ((RestartHeartBeatJobRule) each)
-                        .restart(new PrimaryDataSourceChangedEvent(qualifiedDatabase), contextManager.getInstanceContext()));
+                .filter(each -> each instanceof DynamicDataSourceContainedRule)
+                .forEach(each -> ((DynamicDataSourceContainedRule) each)
+                        .restartHeartBeatJob(new PrimaryDataSourceChangedEvent(qualifiedDatabase), contextManager.getInstanceContext()));
     }
     
     /**
@@ -217,18 +214,6 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final StateEvent event) {
         contextManager.getInstanceContext().updateInstanceStatus(event.getInstanceId(), event.getStatus());
-    }
-    
-    /**
-     * Renew instance worker id.
-     *
-     * @param event worker id event
-     */
-    @Subscribe
-    public synchronized void renew(final WorkerIdEvent event) {
-        if (contextManager.getInstanceContext().getInstance().getInstanceMetaData().getId().equals(event.getInstanceId())) {
-            contextManager.getInstanceContext().updateWorkerId(event.getWorkerId());
-        }
     }
     
     /**
@@ -276,6 +261,16 @@ public final class ClusterContextManagerCoordinator {
     }
     
     /**
+     * Renew properties.
+     *
+     * @param event properties changed event
+     */
+    @Subscribe
+    public synchronized void renew(final PropertiesChangedEvent event) {
+        contextManager.alterProperties(event.getProps());
+    }
+    
+    /**
      * Trigger show process list.
      *
      * @param event show process list trigger event
@@ -308,13 +303,13 @@ public final class ClusterContextManagerCoordinator {
     
     private void disableDataSources() {
         contextManager.getMetaDataContexts().getMetaData().getDatabases().forEach((key, value) -> value.getRuleMetaData().getRules().forEach(each -> {
-            if (each instanceof StatusContainedRule) {
-                disableDataSources((StatusContainedRule) each);
+            if (each instanceof StaticDataSourceContainedRule) {
+                disableDataSources((StaticDataSourceContainedRule) each);
             }
         }));
     }
     
-    private void disableDataSources(final StatusContainedRule rule) {
+    private void disableDataSources(final StaticDataSourceContainedRule rule) {
         Map<String, StorageNodeDataSource> storageNodes = registryCenter.getStorageNodeStatusService().loadStorageNodes();
         Map<String, StorageNodeDataSource> disableDataSources = storageNodes.entrySet().stream().filter(entry -> StorageNodeStatus.isDisable(entry.getValue().getStatus()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));

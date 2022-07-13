@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
-import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor.PostgreSQLSetCharsetExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.executor.SelectDatabaseExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
@@ -78,7 +77,7 @@ public final class PostgreSQLAdminExecutorFactoryTest {
         CommonSQLStatementContext<SetStatement> statementContext = new CommonSQLStatementContext<>(setStatement);
         Optional<DatabaseAdminExecutor> actual = postgreSQLAdminExecutorFactory.create(statementContext, null, null);
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(PostgreSQLSetCharsetExecutor.class));
+        assertThat(actual.get(), instanceOf(PostgreSQLSetVariableAdminExecutor.class));
     }
     
     @Test

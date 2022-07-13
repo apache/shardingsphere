@@ -82,7 +82,8 @@ public final class ProxySQLExecutor {
         boolean isSerialExecute = backendConnection.isSerialExecute();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         jdbcExecutor = new ProxyJDBCExecutor(type, backendConnection.getConnectionSession(), databaseCommunicationEngine, new JDBCExecutor(executorEngine, isSerialExecute));
-        rawExecutor = new RawExecutor(executorEngine, isSerialExecute, metaDataContexts.getMetaData().getProps());
+        rawExecutor = new RawExecutor(executorEngine, isSerialExecute, metaDataContexts.getMetaData().getProps(), ProxyContext.getInstance().getContextManager().getInstanceContext()
+                .getEventBusContext());
     }
     
     /**
@@ -152,7 +153,8 @@ public final class ProxySQLExecutor {
         executionGroupContext.setDatabaseName(backendConnection.getConnectionSession().getDatabaseName());
         executionGroupContext.setGrantee(backendConnection.getConnectionSession().getGrantee());
         // TODO handle query header
-        return rawExecutor.execute(executionGroupContext, executionContext.getLogicSQL(), new RawSQLExecutorCallback());
+        return rawExecutor.execute(executionGroupContext, executionContext.getLogicSQL(), new RawSQLExecutorCallback(ProxyContext.getInstance().getContextManager().getInstanceContext()
+                .getEventBusContext()));
     }
     
     private List<ExecuteResult> useDriverToExecute(final ExecutionContext executionContext, final Collection<ShardingSphereRule> rules,

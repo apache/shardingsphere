@@ -3,40 +3,83 @@ title = "模式配置"
 weight = 1
 +++
 
-缺省配置为使用内存模式。
+## Background
 
-## 配置项说明
+The default configuration uses memory mode.
+
+## Parameters
 
 ```properties
-spring.shardingsphere.mode.type= # 运行模式类型。可选配置：Memory、Standalone、Cluster
-spring.shardingsphere.mode.repository= # 持久化仓库配置。Memory 类型无需持久化
-spring.shardingsphere.mode.overwrite= # 是否使用本地配置覆盖持久化配置
+spring.shardingsphere.mode.type= # Type of  mode configuration. Value could be: Memory, Standalone, Cluster
+spring.shardingsphere.mode.repository= # Persist repository configuration. Memory type does not need persist
+spring.shardingsphere.mode.overwrite= # Whether overwrite persistent configuration with local configuration
 ```
 
-### 内存模式
+### Memory Mode
 
 ```properties
 spring.shardingsphere.mode.type=Memory
 ```
 
-### 单机模式
+### Standalone Mode
 
 ```properties
 spring.shardingsphere.mode.type=Standalone
-spring.shardingsphere.mode.repository.type= # 持久化仓库类型
-spring.shardingsphere.mode.repository.props.<key>= # 持久化仓库所需属性
-spring.shardingsphere.mode.overwrite= # 是否使用本地配置覆盖持久化配置
+spring.shardingsphere.mode.repository.type= # Type of persist repository
+spring.shardingsphere.mode.repository.props.<key>= # Properties of persist repository
+spring.shardingsphere.mode.overwrite= # Whether overwrite persistent configuration with local configuration
 ```
 
-### 集群模式
+### Cluster Mode (Recommended)
 
 ```properties
 spring.shardingsphere.mode.type=Cluster
-spring.shardingsphere.mode.repository.type= # 持久化仓库类型
-spring.shardingsphere.mode.repository.props.namespace= # 注册中心命名空间
-spring.shardingsphere.mode.repository.props.server-lists= # 注册中心连接地址
-spring.shardingsphere.mode.repository.props.<key>= # 持久化仓库所需属性
-spring.shardingsphere.mode.overwrite= # 是否使用本地配置覆盖持久化配置
+spring.shardingsphere.mode.repository.type= # Type of persist repository
+spring.shardingsphere.mode.repository.props.namespace= # Namespace of registry center
+spring.shardingsphere.mode.repository.props.server-lists= # Server lists of registry center
+spring.shardingsphere.mode.repository.props.<key>= # Properties of persist repository
+spring.shardingsphere.mode.overwrite= # Whether overwrite persistent configuration with local configuration
+```
+## Notes
+
+1. Cluster mode deployment is recommended for production environments.
+2. The 'ZooKeeper' registry center is recommended for cluster mode deployment.
+
+## Procedure
+1. Import MAVEN dependency.
+
+```xml
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-jdbc-core-spring-boot-starter</artifactId>
+    <version>${latest.release.version}</version>
+</dependency>
 ```
 
-持久化仓库类型的详情，请参见[内置持久化仓库类型列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/metadata-repository/)。
+> Note: please change `${latest.release.version}' to the actual version number.
+## Sample
+### Standalone Mode
+
+```properties
+spring.shardingsphere.mode.type=Standalone
+spring.shardingsphere.mode.repository.type=File
+spring.shardingsphere.mode.repository.props.path=.shardingsphere
+spring.shardingsphere.mode.overwrite=false
+```
+
+### Cluster Mode (Recommended)
+
+```properties
+spring.shardingsphere.mode.type=Cluster
+spring.shardingsphere.mode.repository.type=ZooKeeper
+spring.shardingsphere.mode.repository.props.namespace=governance
+spring.shardingsphere.mode.repository.props.server-lists=localhost:2181
+spring.shardingsphere.mode.repository.props.retryIntervalMilliseconds=500
+spring.shardingsphere.mode.repository.props.timeToLiveSeconds=60
+spring.shardingsphere.mode.overwrite=false
+```
+
+## Related References
+
+- [Installation and Usage of ZooKeeper Registry Center](https://zookeeper.apache.org/doc/r3.7.1/zookeeperStarted.html)
+- Please refer to [Builtin Persist Repository List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/metadata-repository/) for more details about type of repository.

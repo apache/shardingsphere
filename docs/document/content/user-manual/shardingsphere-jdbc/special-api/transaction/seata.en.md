@@ -3,13 +3,25 @@ title = "Seata Transaction"
 weight = 7
 +++
 
-## Startup Seata Server
+## Background
 
-Download seata server according to [seata-work-shop](https://github.com/seata/seata-workshop).
+Apache ShardingSphere provides BASE transactions that integrate the Seata implementation.
 
-## Create Undo Log Table
+## Procedure
 
-Create `undo_log` table in each physical database (sample for MySQL).
+1. Start Seata Server
+2. Create the log table
+3. Add the Seata configuration
+
+## Sample
+
+### Start Seata Server
+
+Refer to [seata-work-shop](https://github.com/seata/seata-workshop) to download and start the Seata server.
+
+### Create undo_log table
+
+Create the `undo_log` table in each shard database instance (take MySQL as an example).
 
 ```sql
 CREATE TABLE IF NOT EXISTS `undo_log`
@@ -29,15 +41,15 @@ CREATE TABLE IF NOT EXISTS `undo_log`
   DEFAULT CHARSET = utf8 COMMENT ='AT transaction mode undo table';
 ```
 
-## Update Configuration
+### Modify configuration
 
-Configure `seata.conf` file in classpath.
+Add the `seata.conf` file to the classpath.
 
 ```conf
 client {
-    application.id = example   ## application unique ID
-    transaction.service.group = my_test_tx_group   ## transaction group
+    application.id = example    ## Apply the only primary key
+    transaction.service.group = my_test_tx_group   ## The transaction group it belongs to.
 }
 ```
 
-Modify `file.conf` and `registry.conf` if needed.
+Modify the `file.conf` and `registry.conf` files of Seata as required.

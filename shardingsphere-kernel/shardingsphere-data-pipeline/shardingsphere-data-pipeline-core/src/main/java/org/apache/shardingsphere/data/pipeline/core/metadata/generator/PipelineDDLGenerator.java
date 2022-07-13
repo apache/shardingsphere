@@ -48,6 +48,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Tab
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
@@ -83,9 +84,9 @@ public final class PipelineDDLGenerator {
         ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(databaseName);
         log.info("generateLogicDDLSQL, databaseType={}, databaseName={}, schemaName={}, tableName={}, dataSourceNames={}",
                 databaseType.getType(), databaseName, schemaName, tableName, database.getResource().getDataSources().keySet());
-        String sql = generateActualDDLSQL(databaseType, schemaName, tableName, database);
+        Collection<String> multiSQL = generateActualDDLSQL(databaseType, schemaName, tableName, database);
         StringBuilder result = new StringBuilder();
-        for (String each : sql.split(DELIMITER)) {
+        for (String each : multiSQL) {
             Optional<String> logicSQL = decorate(databaseType, databaseName, schemaName, database, each);
             logicSQL.ifPresent(ddlSQL -> result.append(ddlSQL).append(DELIMITER).append(System.lineSeparator()));
         }
@@ -128,7 +129,7 @@ public final class PipelineDDLGenerator {
         return Optional.of(result);
     }
     
-    private String generateActualDDLSQL(final DatabaseType databaseType, final String schemaName, final String tableName, final ShardingSphereDatabase database) throws SQLException {
+    private Collection<String> generateActualDDLSQL(final DatabaseType databaseType, final String schemaName, final String tableName, final ShardingSphereDatabase database) throws SQLException {
         DataNodes dataNodes = new DataNodes(database.getRuleMetaData().getRules());
         Optional<DataNode> filteredDataNode = dataNodes.getDataNodes(tableName).stream()
                 .filter(each -> database.getResource().getDataSources().containsKey(each.getDataSourceName().contains(".") ? each.getDataSourceName().split("\\.")[0] : each.getDataSourceName()))

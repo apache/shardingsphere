@@ -24,5 +24,6 @@ execute
     | alterEncryptRule
     | dropEncryptRule
     | showEncryptRules
+    | countEncryptRule
     ) SEMI?
     ;

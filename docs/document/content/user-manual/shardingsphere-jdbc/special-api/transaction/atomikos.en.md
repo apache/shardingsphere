@@ -3,15 +3,51 @@ title = "Atomikos Transaction"
 weight = 4
 +++
 
-The default XA transaction manager of Apache ShardingSphere is Atomikos.
+## Background
 
-## Data Recovery
+Apache ShardingSphere provides XA transactions, and the default XA transaction manager is Atomikos.
 
-`xa_tx.log` generated in the project `logs` folder is necessary for the recovery when XA crashes. Please keep it.
+## Procedure
 
-## Update Configuration
+1. Configure the transaction type
+2. Configure Atomikos
 
-Developer can add `jta.properties` in classpath of the application to customize Atomikos configuration. 
-For detailed configuration rules.
+## Sample
 
-Please refer to [Atomikos official documentation](https://www.atomikos.com/Documentation/JtaProperties) for more details.
+### Configure the transaction type
+
+Yaml:
+
+```yaml
+- !TRANSACTION
+  defaultType: XA
+  providerType: Atomikos 
+```
+
+SpringBoot:
+
+```yaml
+spring:
+  shardingsphere:
+    props:
+      xa-transaction-manager-type: Atomikos
+```
+
+Spring Namespace:
+
+```xml
+<shardingsphere:data-source id="xxx" data-source-names="xxx" rule-refs="xxx">
+    <props>
+        <prop key="xa-transaction-manager-type">Atomikos</prop>
+    </props>
+</shardingsphere:data-source>
+```
+### Configure Atomikos
+
+Atomikos configuration items can be customized by adding `jta.properties` to the project's classpath.
+
+See [Atomikos's official documentation](https://www.atomikos.com/Documentation/JtaProperties) for more details.
+
+### Data Recovery
+
+`xa_tx.log` is generated in the `logs` directory of the project. This is the log required for recovering XA crash. Do not delete it. 

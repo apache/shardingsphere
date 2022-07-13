@@ -75,6 +75,10 @@ alterShardingKeyGenerator
     : ALTER SHARDING KEY GENERATOR keyGeneratorDefinition (COMMA keyGeneratorDefinition)*
     ;
 
+alterShardingAuditor
+    : ALTER SHARDING AUDITOR auditorDefinition (COMMA auditorDefinition)*
+    ;
+
 dropShardingTableRule
     : DROP SHARDING TABLE RULE ifExists? tableName (COMMA tableName)* withUnusedAlgorithmsClause?
     ;

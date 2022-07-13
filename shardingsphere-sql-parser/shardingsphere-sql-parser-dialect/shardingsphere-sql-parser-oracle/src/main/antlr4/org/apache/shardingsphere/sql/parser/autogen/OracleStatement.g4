@@ -28,6 +28,7 @@ execute
     | alterTable
     | dropTable
     | truncateTable
+    | lockTable
     | createIndex
     | dropIndex
     | alterIndex
@@ -109,5 +110,8 @@ execute
     | dropOperator
     | alterLibrary
     | alterMaterializedZonemap
+    | alterJava
+    | alterAuditPolicy
+    | alterCluster
     ) SEMI_?
     ;

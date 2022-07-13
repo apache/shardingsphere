@@ -32,5 +32,5 @@
         <column name="key_generator_type" />
         <column name="key_generator_props" />
     </metadata>
-    <row values="t_order| readwrite_ds_${0..9}.t_order_${0..9}| | IT.STANDARD.FIXTURE| user_id| IT.STANDARD.FIXTURE| | IT.STANDARD.FIXTURE| order_id| IT.STANDARD.FIXTURE| | | | " />
+    <row values="t_order| readwrite_ds_${0..9}.t_order_${0..9}| | STANDARD| user_id| IT.STANDARD.FIXTURE| | STANDARD| order_id| IT.STANDARD.FIXTURE| | | | " />
 </dataset>

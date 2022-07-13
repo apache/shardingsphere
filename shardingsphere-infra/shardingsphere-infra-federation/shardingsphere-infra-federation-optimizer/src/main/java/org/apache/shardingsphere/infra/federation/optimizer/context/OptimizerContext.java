@@ -26,7 +26,8 @@ import org.apache.shardingsphere.infra.federation.optimizer.context.planner.Opti
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationMetaData;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 
@@ -64,13 +65,13 @@ public final class OptimizerContext {
     /**
      * Alter database.
      *
-     * @param databaseName database name
-     * @param schemas schemas
+     * @param database to be altered database
+     * @param globalRuleMetaData global rule meta data
      */
-    public void alterDatabase(final String databaseName, final Map<String, ShardingSphereSchema> schemas) {
-        FederationDatabaseMetaData federationDatabaseMetaData = new FederationDatabaseMetaData(databaseName, schemas);
-        federationMetaData.getDatabases().put(databaseName, federationDatabaseMetaData);
-        plannerContexts.put(databaseName, OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
+    public void alterDatabase(final ShardingSphereDatabase database, final ShardingSphereRuleMetaData globalRuleMetaData) {
+        OptimizerContext toBeAlteredOptimizerContext = OptimizerContextFactory.create(Collections.singletonMap(database.getName(), database), globalRuleMetaData);
+        federationMetaData.getDatabases().put(database.getName(), toBeAlteredOptimizerContext.getFederationMetaData().getDatabases().get(database.getName()));
+        plannerContexts.put(database.getName(), toBeAlteredOptimizerContext.getPlannerContexts().get(database.getName()));
     }
     
     /**

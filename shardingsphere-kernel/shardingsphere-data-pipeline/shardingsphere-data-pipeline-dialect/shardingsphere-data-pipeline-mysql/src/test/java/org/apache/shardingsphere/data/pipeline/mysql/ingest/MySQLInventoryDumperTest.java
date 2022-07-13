@@ -17,15 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.mysql.ingest;
 
-import java.sql.Connection;
-import java.sql.Date;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
-import java.sql.SQLException;
-import java.sql.Statement;
-import java.sql.Types;
-import javax.sql.DataSource;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
@@ -39,7 +30,18 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
-import static org.junit.Assert.assertEquals;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.sql.Types;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -100,9 +102,9 @@ public final class MySQLInventoryDumperTest {
         String resultTimeStamp = (String) mysqlJdbcDumper.readValue(resultSet, 1);
         Object resultObject = mysqlJdbcDumper.readValue(resultSet, 2);
         Date resultDate = (Date) mysqlJdbcDumper.readValue(resultSet, 3);
-        assertEquals(resultTimeStamp, mockDateString);
-        assertEquals(resultObject, mockObject);
-        assertEquals(resultDate, mockDate);
+        assertThat(resultTimeStamp, is(mockDateString));
+        assertThat(resultObject, is(mockObject));
+        assertThat(resultDate, is(mockDate));
         verify(resultSet).getString(1);
         verify(resultSet).getObject(2);
         verify(resultSet).getObject(3);

@@ -26,9 +26,9 @@ import java.util.Collection;
 /**
  * Unlabel instance statement.
  */
-@Getter
 @RequiredArgsConstructor
-public class UnlabelInstanceStatement extends UpdatableRALStatement {
+@Getter
+public final class UnlabelInstanceStatement extends UpdatableRALStatement {
     
     private final String instanceId;
     
