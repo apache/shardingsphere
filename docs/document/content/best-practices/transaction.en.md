@@ -16,4 +16,4 @@ ShardingSphere provides three transaction modes: LOCAL, XA, and BASE to address 
 
 ## Procedure
 
-See [ShardingSphere Using XA Narayana](en/user-manual/shardingsphere-jdbc/special-api/transaction/narayana.en.md)
+See [ShardingSphere Using XA Narayana](en/user-manual/shardingsphere-jdbc/special-api/transaction/)
