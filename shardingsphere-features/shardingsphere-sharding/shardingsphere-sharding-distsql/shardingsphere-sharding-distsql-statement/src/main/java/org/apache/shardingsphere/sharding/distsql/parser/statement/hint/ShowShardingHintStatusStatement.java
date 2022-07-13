@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.sharding.distsql.parser.statement.hint;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.HintRALStatement;
 
 /**
  * Show sharding hint status statement.
  */
-public final class ShowShardingHintStatusStatement extends HintDistSQLStatement {
+public final class ShowShardingHintStatusStatement extends HintRALStatement {
 }

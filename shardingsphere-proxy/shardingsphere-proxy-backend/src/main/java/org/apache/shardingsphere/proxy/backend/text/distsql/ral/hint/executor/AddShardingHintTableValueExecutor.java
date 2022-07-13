@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.executor;
+package org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint.executor;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.hint.HintManagerHolder;
-import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint.ClearReadwriteSplittingHintStatement;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint.HintManagerHolder;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.hint.AddShardingHintTableValueStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
 
 /**
- * Clear readwrite-splitting hint executor.
+ * Add sharding hint table value executor.
  */
 @RequiredArgsConstructor
-public final class ClearReadwriteSplittingHintExecutor extends AbstractHintUpdateExecutor<ClearReadwriteSplittingHintStatement> {
+public final class AddShardingHintTableValueExecutor extends AbstractHintUpdateExecutor<AddShardingHintTableValueStatement> {
+    
+    private final AddShardingHintTableValueStatement sqlStatement;
     
     @Override
     public ResponseHeader execute() {
-        HintManagerHolder.get().setReadwriteSplittingAuto();
+        HintManagerHolder.get().addTableShardingValue(sqlStatement.getLogicTableName(), sqlStatement.getShardingValue());
         return new UpdateResponseHeader(new EmptyStatement());
     }
 }

@@ -11,7 +11,7 @@ chapter = true
 | ------------------------------------------------------------ | -------------------------------- |
 | DatabaseDiscoveryProviderAlgorithm                           | Database discovery provider algorithm                     |
 
-## Example
+## Sample
 
 ### DatabaseDiscoveryProviderAlgorithm
 

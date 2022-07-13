@@ -35,7 +35,7 @@ import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminUpdateBac
 import org.apache.shardingsphere.proxy.backend.text.data.impl.SchemaAssignedDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.UnicastDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.HintDistSQLBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint.HintRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.updatable.SetVariableHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
@@ -123,7 +123,7 @@ public final class TextProtocolBackendHandlerFactoryTest extends ProxyContextRes
         assertThat(actual, instanceOf(QueryableRALBackendHandler.class));
         sql = "set sharding hint database_value=1";
         actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
-        assertThat(actual, instanceOf(HintDistSQLBackendHandler.class));
+        assertThat(actual, instanceOf(HintRALBackendHandler.class));
     }
     
     @Test
