@@ -39,6 +39,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterI
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterLibraryContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterJavaContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterMaterializedZonemapContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterOperatorContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterOutlineContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterPackageContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterSequenceContext;
@@ -155,6 +156,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterJavaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterLibraryStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterMaterializedZonemapStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterOperatorStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterOutlineStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterPackageStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterSequenceStatement;
@@ -884,6 +886,11 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitDropRestorePoint(final DropRestorePointContext ctx) {
         return new OracleDropRestorePointStatement();
+    }
+    
+    @Override
+    public ASTNode visitAlterOperator(final AlterOperatorContext ctx) {
+        return new OracleAlterOperatorStatement();
     }
     
     @Override

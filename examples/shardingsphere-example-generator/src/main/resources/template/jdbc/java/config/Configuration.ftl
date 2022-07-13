@@ -81,13 +81,8 @@ public final class Configuration {
     private static final String PASSWORD = "${password}";
     
     public DataSource createDataSource() throws SQLException {
-    <#if mode=="memory">
-        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), createRuleConfiguration(), createProperties());
-    <#else>
         return ShardingSphereDataSourceFactory.createDataSource(createModeConfiguration(), createDataSourceMap(), createRuleConfiguration(), createProperties());
-    </#if>
     }
-<#if mode!="memory">
     
     private static ModeConfiguration createModeConfiguration() {
     <#if mode=="cluster-zookeeper">
@@ -100,7 +95,6 @@ public final class Configuration {
         return new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("File", new Properties()), true);
     </#if> 
     }
-</#if>
     
     private Map<String, DataSource> createDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>();

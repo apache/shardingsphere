@@ -52,7 +52,28 @@ I am glad to receive your votes, and the voting result is,
 Therefore, I will send the invitation to (nominee).
 ```
 
-**4. If the vote passes, send an offer to become a committer with @private CC’ed.**
+**4. (For PMC nomination) Send email to board@apache.org and ensure the private@shardingsphere.apache.org is copied.**
+
+After email sent, wait for 72 hours and ensure that there is no objection.
+
+```
+To: board@apache.org
+
+cc: private@shardingsphere.apache.org
+
+Title: [NOTICE] (nominee) for ShardingSphere PMC
+
+The Apache ShardingSphere project proposes to invite (nominee) to join the PMC.
+The vote result is available here:
+(Vote link here. The link should be a permalink from the https://lists.apache.org/ mail archive.)
+
+Thank you,
+(initiator)
+```
+
+Reference: <https://www.apache.org/dev/pmc.html#newpmc>
+
+**5. If the vote passes, send an offer to become a committer with @private CC’ed.**
 
 ```
 To: (nominee email address)
@@ -85,9 +106,9 @@ Best wishes,
 (PMC)
 
 ```
-**5. Nominee replies the invitation, including content like accept the offer and give thanks.**
+**6. Nominee replies the invitation, including content like accept the offer and give thanks.**
 
-**6. PMC replies the email.**
+**7. PMC replies the email.**
 ```
 Hi (nominee),
 
@@ -117,15 +138,15 @@ https://www.apache.org/foundation/policies/conduct.html
 Here is the guideline for all of the ShardingSphere committers:
 https://shardingsphere.apache.org/community/en/contribute/committer/
 ```
-**7. New committer signs iCLA, this step refers to [Sign ICLA Guide](https://shardingsphere.apache.org/community/en/contribute/icla/).**
+**8. New committer signs iCLA, this step refers to [Sign ICLA Guide](https://shardingsphere.apache.org/community/en/contribute/icla/).**
 
-**8. New committer waits for secretary to create a new account.**
+**9. New committer waits for secretary to create a new account.**
 
-**9. PMC adds new committer in [roster](https://whimsy.apache.org/roster/committee/shardingsphere).**
+**10. PMC adds new committer in [roster](https://whimsy.apache.org/roster/committee/shardingsphere).**
 
-**10. New committer could setup an account, refers to [apache setup](https://gitbox.apache.org/setup/).**
+**11. New committer could setup an account, refers to [apache setup](https://gitbox.apache.org/setup/).**
 
-**11. PMC announces new committer in the community.**  
+**12. PMC announces new committer in the community.**  
 
 ```
 To: dev@shardingsphere.apache.org
@@ -144,15 +165,4 @@ has invited (nominee) to become a committer and we are pleased to announce that 
 Thanks for your contributions.
 ```
 
-**12. New Committer updates [Team](/en/team/) list.**
-
-**13. Add one more step in a PMC voting process, send an email to board@apache.org. **
-```
-The Apache ShardingSphere project proposes to invite (nominee) to join the PMC.
-The vote result is available here:
-(vote link here)
-
-Thank you,
-(initiator)
-```
-
+**13. New Committer updates [Team](/en/team/) list.**

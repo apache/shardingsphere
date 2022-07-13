@@ -3,7 +3,12 @@ title = "读写分离"
 weight = 2
 +++
 
-## 配置入口
+## 背景信息
+Java API 形式配置的读写分离可以方便的适用于各种场景，不依赖额外的 jar 包，用户只需要通过 java 代码构造读写分离数据源便可以使用读写分离功能。
+
+## 参数解释
+
+### 配置入口
 
 类名称：org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration
 
@@ -47,3 +52,42 @@ weight = 2
 
 算法类型的详情，请参见[内置负载均衡算法列表](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/load-balance)。
 查询一致性路由的详情，请参见[使用规范](/cn/features/readwrite-splitting/use-norms)。
+
+## 操作步骤
+1. 添加读写分离数据源
+2. 设置负载均衡算法
+3. 使用读写分离数据源
+   
+## 配置示例
+
+```java
+public DataSource getDataSource() throws SQLException {
+        ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = new ReadwriteSplittingDataSourceRuleConfiguration(
+                "demo_read_query_ds", new StaticReadwriteSplittingStrategyConfiguration("demo_write_ds",
+                Arrays.asList("demo_read_ds_0", "demo_read_ds_1")), null,"demo_weight_lb");
+        Properties algorithmProps = new Properties();
+        algorithmProps.setProperty("demo_read_ds_0", "2");
+        algorithmProps.setProperty("demo_read_ds_1", "1");
+        Map<String, ShardingSphereAlgorithmConfiguration> algorithmConfigMap = new HashMap<>(1);
+        algorithmConfigMap.put("demo_weight_lb", new ShardingSphereAlgorithmConfiguration("WEIGHT", algorithmProps));
+        ReadwriteSplittingRuleConfiguration ruleConfig = new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceConfig), algorithmConfigMap);
+        Properties props = new Properties();
+        props.setProperty("sql-show", Boolean.TRUE.toString());
+        return ShardingSphereDataSourceFactory.createDataSource(createDataSourceMap(), Collections.singleton(ruleConfig), props);
+    }
+    
+    private Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new HashMap<>(3, 1);
+        result.put("demo_write_ds", DataSourceUtil.createDataSource("demo_write_ds"));
+        result.put("demo_read_ds_0", DataSourceUtil.createDataSource("demo_read_ds_0"));
+        result.put("demo_read_ds_1", DataSourceUtil.createDataSource("demo_read_ds_1"));
+        return result;
+    }
+```
+
+## 相关参考
+
+- [核心特性：读写分离](/cn/features/readwrite-splitting/)
+- [YAML配置：读写分离](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/readwrite-splitting/)
+- [Spring Boot Starter：读写分离](/cn/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/readwrite-splitting/)
+- [Spring 命名空间：读写分离](/cn/user-manual/shardingsphere-jdbc/spring-namespace/rules/readwrite-splitting/)

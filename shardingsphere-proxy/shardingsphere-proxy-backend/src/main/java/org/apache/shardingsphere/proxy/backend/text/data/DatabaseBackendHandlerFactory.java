@@ -52,7 +52,6 @@ public final class DatabaseBackendHandlerFactory {
             return new UnicastDatabaseBackendHandler(sqlStatementContext, sql, connectionSession);
         }
         if (sqlStatement instanceof SetStatement && null == connectionSession.getDatabaseName()) {
-            // TODO Handle SET GLOBAL and SET SESSION differently
             return new DatabaseBackendHandler() {
                 
                 @Override

@@ -1318,10 +1318,15 @@ matchString
     : IDENTIFIER_ | ASTERISK_
     ;
 
-parameterTypes
+parameterType
+    : identifier
+    ;
+
+returnType
     : identifier
     ;
 
 varrayType
     : (owner DOT_)? name
     ;
+

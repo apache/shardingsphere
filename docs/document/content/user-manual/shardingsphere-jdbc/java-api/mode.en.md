@@ -14,11 +14,11 @@ Class name: org.apache.shardingsphere.infra.config.mode.ModeConfiguration
 
 Attributes:
 
-| *Name*      | *DataType*                      | *Description*                                                                                                                                                                      | *Default Value* |
-| ---------- | ------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------- |
-| type       | String                         | Type of mode configuration<br />Values could be: Memory, Standalone, Cluster                                                                                                                         | Memory  |
-| repository | PersistRepositoryConfiguration | Persist repository configuration<br />Memory type does not need persist, could be null<br />Standalone type uses StandalonePersistRepositoryConfiguration<br />Cluster type uses ClusterPersistRepositoryConfiguration |         |
-| overwrite  | boolean                        | Whether overwrite persistent configuration with local configuration                                                                                                                                                   | false   |
+| *Name*     | *DataType*                     | *Description*                                                                                                                                                    | *Default Value* |
+| ---------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------- |
+| type       | String                         | Type of mode configuration<br />Values could be: Standalone or Cluster                                                                                           | Standalone      |
+| repository | PersistRepositoryConfiguration | Persist repository configuration<br />Standalone type uses StandalonePersistRepositoryConfiguration<br />Cluster type uses ClusterPersistRepositoryConfiguration |                 |
+| overwrite  | boolean                        | Whether overwrite persistent configuration with local configuration                                                                                              | false           |
 
 ### Standalone Persist Configuration
 
@@ -26,10 +26,10 @@ Class name: org.apache.shardingsphere.mode.repository.standalone.StandalonePersi
 
 Attributes:
 
-| *Name* | *DataType*  | *Description*           |
-| ----- | ---------- | --------------- |
-| type  | String     | Type of persist repository   |
-| props | Properties | Properties of persist repository |
+| *Name* | *DataType* | *Description*                    |
+| ------ | ---------- | -------------------------------- |
+| type   | String     | Type of persist repository       |
+| props  | Properties | Properties of persist repository |
 
 ### Cluster Persist Configuration
 
@@ -37,12 +37,12 @@ Class name: org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepo
 
 Attributes:
 
-| *Name*       | * Data Type*  | *Description*           |
-| ----------- | ---------- | --------------- |
-| type        | String     | Type of persist repository     |
-| namespace   | String     | Namespace of registry center   |
-| server-lists | String     | Server lists of registry center  |
-| props       | Properties | Properties of persist repository |
+| *Name*       | *Data Type* | *Description*                    |
+| ------------ | ----------- | -------------------------------- |
+| type         | String      | Type of persist repository       |
+| namespace    | String      | Namespace of registry center     |
+| server-lists | String      | Server lists of registry center  |
+| props        | Properties  | Properties of persist repository |
 
 ## Notes
 
@@ -51,7 +51,7 @@ Attributes:
 
 ## Procedure
 
-### 1. Introduce Maven Dependency
+### Introduce Maven Dependency
 
 ```xml
 <dependency>
@@ -60,6 +60,7 @@ Attributes:
  <version>${latest.release.version}</version>
 </dependency>
 ```
+
 > Notice: Please change `${latest.release.version}` to the actual version.
 
 ## Sample
@@ -93,5 +94,6 @@ private ModeConfiguration createModeConfiguration() {
 ```
 
 ## Related References
+
 - [Installation and Usage of ZooKeeper Registry Center](https://zookeeper.apache.org/doc/r3.7.1/zookeeperStarted.html)
 - Please refer to [Builtin Persist Repository List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/metadata-repository/) for more details about type of repository.

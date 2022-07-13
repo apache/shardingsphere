@@ -43,7 +43,7 @@ import static org.mockito.Mockito.when;
 
 public final class InstanceContextTest {
     
-    private final ModeConfiguration modeConfig = new ModeConfiguration("Memory", null, false);
+    private final ModeConfiguration modeConfig = new ModeConfiguration("Standalone", null, false);
     
     private final LockContext lockContext = mock(LockContext.class);
     
