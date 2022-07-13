@@ -5,11 +5,23 @@ weight = 5
 chapter = true
 +++
 
-## DatabaseTypedSQLParserFacade
+## SPI 接口
+
+### DatabaseTypedSQLParserFacade
 
 | *SPI 名称*                    | *详细说明*                            |
 | ---------------------------- | ----------------------------------- |
 | DatabaseTypedSQLParserFacade | 配置用于 SQL 解析的词法分析器和语法分析器入口 |
+
+### SQLVisitorFacade
+
+| *SPI 名称*                           | *详细说明*                                  |
+| ----------------------------------- | ------------------------------------------ |
+| SQLVisitorFacade                    | SQL 语法树访问器入口                          |
+
+## 示例
+
+### DatabaseTypedSQLParserFacade
 
 | *Implementation Class* | *Description*            |
 | ---------------------- |--------------------------|
@@ -20,17 +32,8 @@ chapter = true
 | SQL92ParserFacade      | 基于 SQL92 的 SQL 解析器入口      |
 | OpenGaussParserFacade  | 基于 openGauss 的 SQL 解析器入口  |
 
-## SQLVisitorFacade
+### SQLVisitorFacade
 
 | *SPI 名称*                           | *详细说明*                                  |
 | ----------------------------------- | ------------------------------------------ |
 | SQLVisitorFacade                    | SQL 语法树访问器入口                          |
-
-| *Implementation Class*              | *Description*                             |
-| ----------------------------------- | ----------------------------------------- |
-| MySQLStatementSQLVisitorFacade      | 基于 MySQL 的提取 SQL 语句的语法树访问器       |
-| PostgreSQLStatementSQLVisitorFacade | 基于 PostgreSQL 的提取 SQL 语句的语法树访问器  |
-| SQLServerStatementSQLVisitorFacade  | 基于 SQLServer 的提取 SQL 语句的语法树访问器   |
-| OracleStatementSQLVisitorFacade     | 基于 Oracle 的提取 SQL 语句的语法树访问器      |
-| SQL92StatementSQLVisitorFacade      | 基于 SQL92 的提取 SQL 语句的语法树访问器       |
-| OpenGaussStatementSQLVisitorFacade  | 基于 openGauss 的提取 SQL 语句的语法树访问器   |
