@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
 import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableItemConstants;
@@ -44,8 +43,6 @@ import java.util.Optional;
  */
 public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResultSet {
     
-    private static final String DYNAMIC = "Dynamic";
-    
     private Iterator<Collection<Object>> data = Collections.emptyIterator();
     
     private Map<String, Map<String, String>> exportableAutoAwareDataSource = Collections.emptyMap();
@@ -55,15 +52,15 @@ public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResult
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         Optional<ReadwriteSplittingRule> rule = database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
-        buildExportableMap(database);
-        rule.ifPresent(optional -> data = buildData(optional).iterator());
+        rule.ifPresent(optional -> {
+            buildExportableMap(optional);
+            data = buildData(optional).iterator();
+        });
     }
     
     @SuppressWarnings("unchecked")
-    private void buildExportableMap(final ShardingSphereDatabase database) {
-        Optional<ReadwriteSplittingRule> rule = database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
-        Preconditions.checkState(rule.isPresent());
-        Map<String, Object> exportedData = rule.get().getExportData();
+    private void buildExportableMap(final ReadwriteSplittingRule rule) {
+        Map<String, Object> exportedData = rule.getExportData();
         exportableAutoAwareDataSource = (Map<String, Map<String, String>>) exportedData.get(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE);
         exportableDataSourceMap = (Map<String, Map<String, String>>) exportedData.get(ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE);
     }
