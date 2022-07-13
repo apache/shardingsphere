@@ -76,7 +76,7 @@ public final class DataSourceBeanDefinitionParser extends AbstractBeanDefinition
     }
     
     private void addDefaultModeConfiguration(final BeanDefinitionBuilder factory) {
-        factory.addConstructorArgValue("Memory");
+        factory.addConstructorArgValue("Standalone");
         factory.addConstructorArgValue(null);
         factory.addConstructorArgValue(true);
     }

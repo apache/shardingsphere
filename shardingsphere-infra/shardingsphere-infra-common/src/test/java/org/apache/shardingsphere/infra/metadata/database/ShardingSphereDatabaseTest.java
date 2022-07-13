@@ -40,7 +40,7 @@ import static org.mockito.Mockito.mock;
 
 public final class ShardingSphereDatabaseTest {
     
-    private final ModeConfiguration modeConfig = new ModeConfiguration("Memory", null, false);
+    private final ModeConfiguration modeConfig = new ModeConfiguration("Standalone", null, false);
     
     @Test
     public void assertIsComplete() {

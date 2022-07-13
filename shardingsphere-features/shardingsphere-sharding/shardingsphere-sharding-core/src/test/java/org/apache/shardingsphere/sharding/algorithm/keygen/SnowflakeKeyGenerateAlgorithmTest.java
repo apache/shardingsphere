@@ -176,7 +176,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     public void assertSetWorkerIdFailureWhenNegative() {
         SnowflakeKeyGenerateAlgorithm algorithm = (SnowflakeKeyGenerateAlgorithm) KeyGenerateAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", new Properties()));
         algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(-1L),
-                new ModeConfiguration("Memory", null, false), mock(LockContext.class), new EventBusContext()));
+                new ModeConfiguration("Standalone", null, false), mock(LockContext.class), new EventBusContext()));
         algorithm.init(new Properties());
         algorithm.generateKey();
     }
@@ -192,7 +192,7 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     public void assertSetWorkerIdFailureWhenOutOfRange() {
         SnowflakeKeyGenerateAlgorithm algorithm = (SnowflakeKeyGenerateAlgorithm) KeyGenerateAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", new Properties()));
         algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE),
-                new ModeConfiguration("Memory", null, false), mock(LockContext.class), new EventBusContext()));
+                new ModeConfiguration("Standalone", null, false), mock(LockContext.class), new EventBusContext()));
         algorithm.generateKey();
     }
     

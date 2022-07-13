@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.driver.state.circuit.statement;
 
-import lombok.Getter;
 import org.apache.shardingsphere.driver.executor.DriverExecutor;
 import org.apache.shardingsphere.driver.jdbc.core.statement.StatementManager;
 import org.apache.shardingsphere.driver.jdbc.unsupported.AbstractUnsupportedOperationPreparedStatement;
@@ -46,7 +45,6 @@ import java.util.Collections;
 /**
  * Circuit breaker preparedStatement.
  */
-@Getter
 public final class CircuitBreakerPreparedStatement extends AbstractUnsupportedOperationPreparedStatement {
     
     @Override
