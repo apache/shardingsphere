@@ -19,24 +19,20 @@ package org.apache.shardingsphere.infra.exception;
 
 import lombok.Getter;
 
+/**
+ * Insert columns and values mismatched exception.
+ */
 @Getter
-public final class ColumnMismatchException extends ShardingSphereException {
-
+public final class InsertColumnsAndValuesMismatchedException extends ShardingSphereException {
+    
     private static final long serialVersionUID = 5676889868213244575L;
-
-    private static final String DEFAULT_MSG = "INSERT has more expressions than target columns";
-
-    private final int row;
-
-    private final String message;
-
-    public ColumnMismatchException(final int row, final String message) {
-        super(message);
-        this.row = row;
-        this.message = message;
-    }
-
-    public ColumnMismatchException(final int row) {
-        this(row, DEFAULT_MSG);
+    
+    private static final String ERROR_MESSAGE = "The count columns and values are mismatched in INSERT statement.";
+    
+    private final int mismatchedRowNumber;
+    
+    public InsertColumnsAndValuesMismatchedException(final int mismatchedRowNumber) {
+        super(ERROR_MESSAGE);
+        this.mismatchedRowNumber = mismatchedRowNumber;
     }
 }

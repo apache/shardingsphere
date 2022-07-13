@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementConte
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.datetime.DatetimeService;
 import org.apache.shardingsphere.infra.datetime.DatetimeServiceFactory;
-import org.apache.shardingsphere.infra.exception.ColumnMismatchException;
+import org.apache.shardingsphere.infra.exception.InsertColumnsAndValuesMismatchedException;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
@@ -73,9 +73,9 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
         Collection<String> columnNames = getColumnNames(sqlStatementContext);
         List<InsertValueContext> insertValueContexts = sqlStatementContext.getInsertValueContexts();
         List<ShardingCondition> result = new ArrayList<>(insertValueContexts.size());
-        int row = 0;
+        int rowNumber = 0;
         for (InsertValueContext each : insertValueContexts) {
-            result.add(createShardingCondition(tableName, columnNames.iterator(), each, parameters, ++row));
+            result.add(createShardingCondition(tableName, columnNames.iterator(), each, parameters, ++rowNumber));
         }
         return result;
     }
@@ -90,13 +90,13 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
         return insertStatementContext.getColumnNames();
     }
     
-    private ShardingCondition createShardingCondition(final String tableName, final Iterator<String> columnNames, final InsertValueContext insertValueContext,
-                                                      final List<Object> parameters, final int row) {
+    private ShardingCondition createShardingCondition(final String tableName, final Iterator<String> columnNames,
+                                                      final InsertValueContext insertValueContext, final List<Object> parameters, final int rowNumber) {
         ShardingCondition result = new ShardingCondition();
         DatetimeService datetimeService = null;
         for (ExpressionSegment each : insertValueContext.getValueExpressions()) {
             if (!columnNames.hasNext()) {
-                throw new ColumnMismatchException(row);
+                throw new InsertColumnsAndValuesMismatchedException(rowNumber);
             }
             Optional<String> shardingColumn = shardingRule.findShardingColumn(columnNames.next(), tableName);
             if (!shardingColumn.isPresent()) {
