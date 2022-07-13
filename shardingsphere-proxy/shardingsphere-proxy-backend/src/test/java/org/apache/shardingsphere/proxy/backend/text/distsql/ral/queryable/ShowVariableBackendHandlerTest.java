@@ -129,23 +129,4 @@ public final class ShowVariableBackendHandlerTest extends ProxyContextRestorer {
         assertThat(rowData.get(0), is("sql_show"));
         assertThat(rowData.get(1), is(Boolean.TRUE.toString()));
     }
-    
-    @Test
-    public void assertShowAllVariables() throws SQLException {
-        connectionSession.setCurrentDatabase("db");
-        ContextManager contextManager = mock(ContextManager.class);
-        ProxyContext.init(contextManager);
-        MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
-        when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
-        ShowVariableHandler backendHandler = new ShowVariableHandler();
-        backendHandler.init(new ShowVariableStatement(), connectionSession);
-        ResponseHeader actual = backendHandler.execute();
-        assertThat(actual, instanceOf(QueryResponseHeader.class));
-        assertThat(((QueryResponseHeader) actual).getQueryHeaders().size(), is(2));
-        backendHandler.next();
-        List<Object> rowData = backendHandler.getRowData().getData();
-        assertThat(rowData.get(0), is("sql_show"));
-        assertThat(rowData.get(1), is(Boolean.FALSE.toString()));
-    }
 }
