@@ -5,25 +5,20 @@ weight = 8
 chapter = true
 +++
 
-## ReadwriteSplittingType
+## SPI Interface
 
-| *SPI Name*                                 | *Description*                 |
-| ----------------------------------------- | ------------------------- |
-| ReadwriteSplittingType                    | Readwrite-splitting type  |
+## ReadQueryLoadBalanceAlgorithm
 
-| *Implementation Class*                               | *Description*                         |
-| ----------------------------------------- | -------------------------------- |
-| StaticReadwriteSplittingType              | Static readwrite-splitting type  |
-| DynamicReadwriteSplittingType             | Dynamic readwrite-splitting type |
+| *SPI Name*                                 | *Description*              |
+| ----------------------------------------- | ----------------------- |
+| ReadQueryLoadBalanceAlgorithm             | the read database load balancer algorithm           |
 
-## ReplicaLoadBalanceAlgorithm
+## Sample
 
-| *SPI Name*                            | *Description*                                           |
-| ------------------------------------- | ------------------------------------------------------- |
-| ReplicaLoadBalanceAlgorithm           | Load balance algorithm of replica databases             |
+## ReadQueryLoadBalanceAlgorithm
 
-| *Implementation Class*                | *Description*                                           |
-| ------------------------------------- | ------------------------------------------------------- |
-| RoundRobinReplicaLoadBalanceAlgorithm | Round robin load balance algorithm of replica databases |
-| RandomReplicaLoadBalanceAlgorithm     | Random load balance algorithm of replica databases      |
-| WeightReplicaLoadBalanceAlgorithm     | Weight load balance algorithm of replica databases      |
+| *known implementation class*              | *Description*               |
+| ----------------------------------------- | ----------------------- |
+| RoundRobinReplicaLoadBalanceAlgorithm     | the read database load balancer algorithm based on polling |
+| RandomReplicaLoadBalanceAlgorithm         | the read database load balancer algorithm based on random |
+| WeightReplicaLoadBalanceAlgorithm         | the read database load balancer algorithm based on weight |

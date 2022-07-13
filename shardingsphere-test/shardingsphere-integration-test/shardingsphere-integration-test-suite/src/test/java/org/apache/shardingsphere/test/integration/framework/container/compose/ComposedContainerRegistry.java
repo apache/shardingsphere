@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.framework.container.compose;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.integration.framework.container.compose.mode.ClusterComposedContainer;
-import org.apache.shardingsphere.test.integration.framework.container.compose.mode.MemoryComposedContainer;
+import org.apache.shardingsphere.test.integration.framework.container.compose.mode.StandaloneComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
 import javax.sql.DataSource;
@@ -53,7 +53,7 @@ public final class ComposedContainerRegistry implements AutoCloseable {
     }
     
     private ComposedContainer createComposedContainer(final ParameterizedArray parameterizedArray) {
-        return isMemoryMode(parameterizedArray) ? new MemoryComposedContainer(parameterizedArray) : new ClusterComposedContainer(parameterizedArray);
+        return isMemoryMode(parameterizedArray) ? new StandaloneComposedContainer(parameterizedArray) : new ClusterComposedContainer(parameterizedArray);
     }
     
     private boolean isMemoryMode(final ParameterizedArray parameterizedArray) {
