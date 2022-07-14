@@ -26,60 +26,63 @@
 <!--    </test-case>-->
 
     <test-case sql="SHOW SHARDING TABLE RULES" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion expected-data-file="show_rules.xml" />
+        <assertion expected-data-file="show_sharding_table_rules.xml" />
     </test-case>
 
     <test-case sql="SHOW SHARDING TABLE RULE t_order" scenario-types="db,tbl,readwrite_splitting,dbtbl_with_readwrite_splitting">
-        <assertion expected-data-file="show_table_rule.xml" />
+        <assertion expected-data-file="show_sharding_table_rule.xml" />
     </test-case>
 
     <test-case sql="SHOW SHARDING TABLE RULE t_user" scenario-types="dbtbl_with_readwrite_splitting_and_encrypt,encrypt">
-        <assertion expected-data-file="show_table_rule.xml" />
+        <assertion expected-data-file="show_sharding_table_rule.xml" />
     </test-case>
 
     <test-case sql="SHOW SHARDING ALGORITHMS" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion expected-data-file="show_algorithms.xml" />
+        <assertion expected-data-file="show_sharding_algorithms.xml" />
     </test-case>
 
     <test-case sql="SHOW UNUSED SHARDING ALGORITHMS" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion expected-data-file="show_unused_algorithms.xml" />
+        <assertion expected-data-file="show_unused_sharding_algorithms.xml" />
     </test-case>
     
     <test-case sql="SHOW SHARDING TABLE RULES USED ALGORITHM it_standard_fixture" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion expected-data-file="show_table_algorithms.xml" />
+        <assertion expected-data-file="show_sharding_table_algorithms.xml" />
     </test-case>
     
-    <!--FIXME! not support yet. #19020-->
-<!--    <test-case sql="SHOW SHARDING AUDITORS" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">-->
-<!--        <assertion expected-data-file="show_auditors.xml" />-->
-<!--    </test-case>-->
+    <test-case sql="SHOW SHARDING AUDITORS" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
+        <assertion expected-data-file="show_sharding_auditors.xml" />
+    </test-case>
     
     <test-case sql="SHOW SHARDING KEY GENERATORS" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion expected-data-file="show_generators.xml" />
+        <assertion expected-data-file="show_sharding_generators.xml" />
     </test-case>
     
     <test-case sql="SHOW UNUSED SHARDING KEY GENERATORS" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion expected-data-file="show_unused_generators.xml" />
+        <assertion expected-data-file="show_unused_sharding_generators.xml" />
     </test-case>
     
     <test-case sql="SHOW SHARDING TABLE RULES USED KEY GENERATOR constant" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion expected-data-file="show_table_generator.xml" />
+        <assertion expected-data-file="show_sharding_table_generator.xml" />
     </test-case>
     
     <test-case sql="SHOW DEFAULT SHARDING STRATEGY" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion expected-data-file="show_default_strategy.xml" />
+        <assertion expected-data-file="show_default_sharding_strategy.xml" />
     </test-case>
     
     <test-case sql="SHOW SHARDING TABLE NODES" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion expected-data-file="show_table_nodes.xml" />
+        <assertion expected-data-file="show_sharding_table_nodes.xml" />
     </test-case>
     
-    <test-case sql="SHOW SHARDING BINDING TABLE RULES" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion expected-data-file="show_binging_rules.xml" />
+    <test-case sql="SHOW SHARDING BINDING TABLE RULES" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
+        <assertion expected-data-file="show_sharding_binging_table_rules.xml" />
     </test-case>
     
-    <test-case sql="SHOW SHARDING BROADCAST TABLE RULES" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
-        <assertion expected-data-file="show_broadcast_rules.xml" />
+    <test-case sql="SHOW SHARDING BROADCAST TABLE RULES" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
+        <assertion expected-data-file="show_sharding_broadcast_rules.xml" />
+    </test-case>
+    
+    <test-case sql="SHOW SHARDING SCALING RULES" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
+        <assertion expected-data-file="show_sharding_scaling_rules.xml" />
     </test-case>
     
     <test-case sql="SHOW READWRITE_SPLITTING RULES" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">

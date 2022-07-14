@@ -28,6 +28,7 @@ import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEn
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -174,5 +175,28 @@ public final class IntegrationTestEnvironment {
      */
     public static IntegrationTestEnvironment getInstance() {
         return INSTANCE;
+    }
+    
+    /**
+     * List database docker image names.
+     *
+     * @param databaseType database type.
+     * @return database docker image names
+     */
+    public List<String> listDatabaseDockerImageNames(final DatabaseType databaseType) {
+        // Native mode needn't use docker image, just return a list which contain one item
+        if (getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
+            return Collections.singletonList("");
+        }
+        switch (databaseType.getType()) {
+            case "MySQL":
+                return mysqlVersions;
+            case "PostgreSQL":
+                return postgresVersions;
+            case "openGauss":
+                return openGaussVersions;
+            default:
+                throw new UnsupportedOperationException("Unsupported database type: " + databaseType.getType());
+        }
     }
 }

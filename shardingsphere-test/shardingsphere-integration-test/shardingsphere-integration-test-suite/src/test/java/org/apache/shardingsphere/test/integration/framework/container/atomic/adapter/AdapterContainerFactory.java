@@ -21,7 +21,8 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.impl.ShardingSphereJDBCContainer;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.impl.ShardingSphereProxyContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
+import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.impl.ShardingSphereProxyStandaloneContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
 
 /**
@@ -33,16 +34,20 @@ public final class AdapterContainerFactory {
     /**
      * Create new instance of adapter container.
      *
+     * @param mode mode
      * @param adapter adapter
      * @param databaseType database type
      * @param storageContainer storage container
      * @param scenario scenario
      * @return created instance
      */
-    public static AdapterContainer newInstance(final String adapter, final DatabaseType databaseType, final StorageContainer storageContainer, final String scenario) {
+    public static AdapterContainer newInstance(final String mode, final String adapter, final DatabaseType databaseType, final StorageContainer storageContainer, final String scenario) {
         switch (adapter) {
             case "proxy":
-                return new ShardingSphereProxyContainer(databaseType, scenario);
+                if ("Cluster".equalsIgnoreCase(mode)) {
+                    return new ShardingSphereProxyClusterContainer(databaseType, scenario);
+                }
+                return new ShardingSphereProxyStandaloneContainer(databaseType, scenario);
             case "jdbc":
                 return new ShardingSphereJDBCContainer(storageContainer, scenario);
             default:

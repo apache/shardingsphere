@@ -81,7 +81,6 @@ Delete all release records by default, add `--keep-history` to keep them.
 | -------------------- | ----------------------------------------------------- | ------ |
 | `governance.enabled` | Switch to enable or disable the governance helm chart | `true` |
 
-
 ### Governance-Node ZooKeeper parameters
 
 | Name                                             | Description                                          | Value               |
@@ -95,7 +94,6 @@ Delete all release records by default, add `--keep-history` to keep them.
 | `governance.zookeeper.resources.limits`          | The resources limits for the ZooKeeper containers    | `{}`                |
 | `governance.zookeeper.resources.requests.memory` | The requested memory for the ZooKeeper containers    | `256Mi`             |
 | `governance.zookeeper.resources.requests.cpu`    | The requested cpu for the ZooKeeper containers       | `250m`              |
-
 
 ### Compute-Node ShardingSphere-Proxy parameters
 
@@ -121,7 +119,6 @@ Delete all release records by default, add `--keep-history` to keep them.
 | `compute.serverConfig.authority.privilege.type`    | authority provider for storage node, the default value is ALL_PERMITTED                                                                        | `ALL_PRIVILEGES_PERMITTED` |
 | `compute.serverConfig.authority.users[0].password` | Password for compute node.                                                                                                                     | `root`                     |
 | `compute.serverConfig.authority.users[0].user`     | Username,authorized host for compute node. Format: <username>@<hostname> hostname is % or empty string means do not care about authorized host | `root@%`                   |
-
 
 ### Compute-Node ShardingSphere-Proxy ServerConfiguration mode Configuration parameters
 
