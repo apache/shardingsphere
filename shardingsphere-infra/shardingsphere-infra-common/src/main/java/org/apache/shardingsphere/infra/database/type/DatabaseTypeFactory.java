@@ -29,7 +29,7 @@ import java.util.Collection;
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseTypeFactory {
-
+    
     static {
         ShardingSphereServiceLoader.register(DatabaseType.class);
     }
