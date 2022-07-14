@@ -1,6 +1,6 @@
 +++
-pre = "<b>7.7. </b>"
-title = "测试"
+pre = "<b>7. </b>"
+title = "测试手册"
 weight = 7
 chapter = true
 +++
