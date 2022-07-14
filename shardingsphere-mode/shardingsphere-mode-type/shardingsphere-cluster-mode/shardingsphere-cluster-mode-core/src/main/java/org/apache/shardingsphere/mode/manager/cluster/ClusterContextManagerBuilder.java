@@ -20,14 +20,13 @@ package org.apache.shardingsphere.mode.manager.cluster;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
+import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
@@ -65,7 +64,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
         persistConfigurations(persistService, parameter);
         RegistryCenter registryCenter = new RegistryCenter(repository, new EventBusContext());
-        InstanceContext instanceContext = buildInstanceContext(registryCenter, parameter.getInstanceMetaData(), parameter.getModeConfiguration());
+        InstanceContext instanceContext = buildInstanceContext(registryCenter, parameter);
         registryCenter.getRepository().watchSessionConnection(instanceContext);
         MetaDataContexts metaDataContexts = buildMetaDataContexts(persistService, parameter, instanceContext);
         persistMetaData(metaDataContexts);
@@ -81,10 +80,11 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         }
     }
     
-    private InstanceContext buildInstanceContext(final RegistryCenter registryCenter, final InstanceMetaData instanceMetaData, final ModeConfiguration modeConfig) {
-        ClusterWorkerIdGenerator clusterWorkerIdGenerator = new ClusterWorkerIdGenerator(registryCenter.getRepository(), registryCenter, instanceMetaData);
-        DistributedLockContext distributedLockContext = new DistributedLockContext(registryCenter.getRepository());
-        return new InstanceContext(new ComputeNodeInstance(instanceMetaData), clusterWorkerIdGenerator, modeConfig, distributedLockContext, registryCenter.getEventBusContext());
+    private InstanceContext buildInstanceContext(final RegistryCenter registryCenter, final ContextManagerBuilderParameter parameter) {
+        ComputeNodeInstance computeNodeInstance = new ComputeNodeInstance(parameter.getInstanceMetaData());
+        WorkerIdGenerator workerIdGenerator = new ClusterWorkerIdGenerator(registryCenter.getRepository(), registryCenter, parameter.getInstanceMetaData());
+        return new InstanceContext(
+                computeNodeInstance, workerIdGenerator, parameter.getModeConfiguration(), new DistributedLockContext(registryCenter.getRepository()), registryCenter.getEventBusContext());
     }
     
     private MetaDataContexts buildMetaDataContexts(final MetaDataPersistService persistService,
