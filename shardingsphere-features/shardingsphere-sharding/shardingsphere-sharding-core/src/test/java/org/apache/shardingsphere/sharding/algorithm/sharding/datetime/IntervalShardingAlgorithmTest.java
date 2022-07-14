@@ -225,7 +225,7 @@ public final class IntervalShardingAlgorithmTest {
         result.setProperty("datetime-interval-unit", "Hours");
         return result;
     }
-
+    
     private void initShardingStrategyByYear() {
         int stepAmount = 2;
         shardingAlgorithmByYear = (IntervalShardingAlgorithm) ShardingAlgorithmFactory.newInstance(
@@ -234,7 +234,7 @@ public final class IntervalShardingAlgorithmTest {
             availableTablesForYearDataSources.add(String.format("t_order_%04d", i));
         }
     }
-
+    
     private Properties createYearProperties(final int stepAmount) {
         Properties result = new Properties();
         result.setProperty("datetime-pattern", "yyyy");
@@ -245,7 +245,7 @@ public final class IntervalShardingAlgorithmTest {
         result.setProperty("datetime-interval-unit", "Years");
         return result;
     }
-
+    
     private void initShardingStrategyByYearMonth() {
         int stepAmount = 2;
         shardingAlgorithmByYearMonth = (IntervalShardingAlgorithm) ShardingAlgorithmFactory.newInstance(
@@ -256,7 +256,7 @@ public final class IntervalShardingAlgorithmTest {
             }
         }
     }
-
+    
     private Properties createYearMonthProperties(final int stepAmount) {
         Properties result = new Properties();
         result.setProperty("datetime-pattern", "yyyy-MM");
@@ -267,7 +267,7 @@ public final class IntervalShardingAlgorithmTest {
         result.setProperty("datetime-interval-unit", "Years");
         return result;
     }
-
+    
     private void initShardingStrategyByMonthInJSR310() {
         int stepAmount = 2;
         shardingAlgorithmByMonthInJSR310 = (IntervalShardingAlgorithm) ShardingAlgorithmFactory.newInstance(
@@ -276,7 +276,7 @@ public final class IntervalShardingAlgorithmTest {
             availableTablesForMonthInJSR310DataSources.add(String.format("t_order_%02d", i));
         }
     }
-
+    
     private Properties createMonthInJSR310Properties(final int stepAmount) {
         Properties result = new Properties();
         result.setProperty("datetime-pattern", "MM");
@@ -432,7 +432,7 @@ public final class IntervalShardingAlgorithmTest {
                                 OffsetTime.of(12, 25, 27, 0, OffsetDateTime.now().getOffset()))));
         assertThat(actualAsOffsetTime.size(), is(6));
     }
-
+    
     @Test
     public void assertIntegerInJDBCType() {
         Collection<String> actualAsYear = shardingAlgorithmByYear.doSharding(availableTablesForYearDataSources,

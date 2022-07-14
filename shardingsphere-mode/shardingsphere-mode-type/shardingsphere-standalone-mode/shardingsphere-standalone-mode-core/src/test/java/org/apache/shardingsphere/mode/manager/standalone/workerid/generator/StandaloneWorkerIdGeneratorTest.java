@@ -15,40 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.instance.workerid;
+package org.apache.shardingsphere.mode.manager.standalone.workerid.generator;
+
+import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
+import org.junit.Test;
 
 import java.util.Properties;
 
-/**
- * Worker id generator.
- */
-public interface WorkerIdGenerator {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class StandaloneWorkerIdGeneratorTest {
     
-    String WORKER_ID_KEY = "worker-id";
-    
-    long DEFAULT_WORKER_ID = 0L;
-    
-    long MAX_WORKER_ID = 1023L;
-    
-    /**
-     * Generate worker id.
-     *
-     * @param props props
-     * @return worker id
-     */
-    long generate(Properties props);
-    
-    /**
-     * Parse worker id.
-     *
-     * @param props props
-     * @return worker id
-     */
-    default long parseWorkerId(final Properties props) {
-        if (null == props) {
-            return DEFAULT_WORKER_ID;
-        }
-        Object workerId = props.get(WORKER_ID_KEY);
-        return null == workerId ? DEFAULT_WORKER_ID : Long.parseLong(workerId.toString());
+    @Test
+    public void assertGenerate() {
+        assertThat(new StandaloneWorkerIdGenerator().generate(new Properties()), is(WorkerIdGenerator.DEFAULT_WORKER_ID));
     }
 }
