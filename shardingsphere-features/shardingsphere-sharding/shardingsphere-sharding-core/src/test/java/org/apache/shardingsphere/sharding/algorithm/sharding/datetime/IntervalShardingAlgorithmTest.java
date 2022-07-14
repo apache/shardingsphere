@@ -37,6 +37,7 @@ import java.time.Month;
 import java.time.OffsetDateTime;
 import java.time.OffsetTime;
 import java.time.Year;
+import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -64,6 +65,8 @@ public final class IntervalShardingAlgorithmTest {
     
     private final Collection<String> availableTablesForYearDataSources = new LinkedList<>();
     
+    private final Collection<String> availableTablesForYearMonthDataSources = new LinkedList<>();
+    
     private final Collection<String> availableTablesForMonthInJSR310DataSources = new LinkedList<>();
     
     private final Collection<String> availableTablesForDayWithMillisecondDataSources = new LinkedList<>();
@@ -82,6 +85,8 @@ public final class IntervalShardingAlgorithmTest {
     
     private IntervalShardingAlgorithm shardingAlgorithmByYear;
     
+    private IntervalShardingAlgorithm shardingAlgorithmByYearMonth;
+    
     private IntervalShardingAlgorithm shardingAlgorithmByMonthInJSR310;
     
     @Before
@@ -93,6 +98,7 @@ public final class IntervalShardingAlgorithmTest {
         initShardingStrategyByJDBCDate();
         initShardingStrategyByJDBCTime();
         initShardingStrategyByYear();
+        initShardingStrategyByYearMonth();
         initShardingStrategyByMonthInJSR310();
     }
     
@@ -235,6 +241,28 @@ public final class IntervalShardingAlgorithmTest {
         result.setProperty("datetime-lower", "2000");
         result.setProperty("datetime-upper", "2022");
         result.setProperty("sharding-suffix-pattern", "yyyy");
+        result.setProperty("datetime-interval-amount", Integer.toString(stepAmount));
+        result.setProperty("datetime-interval-unit", "Years");
+        return result;
+    }
+
+    private void initShardingStrategyByYearMonth() {
+        int stepAmount = 2;
+        shardingAlgorithmByYearMonth = (IntervalShardingAlgorithm) ShardingAlgorithmFactory.newInstance(
+                new ShardingSphereAlgorithmConfiguration("INTERVAL", createYearMonthProperties(stepAmount)));
+        for (int i = 2016; i <= 2021; i++) {
+            for (int j = 1; j <= 12; j++) {
+                availableTablesForYearMonthDataSources.add(String.format("t_order_%04d%02d", i, j));
+            }
+        }
+    }
+
+    private Properties createYearMonthProperties(final int stepAmount) {
+        Properties result = new Properties();
+        result.setProperty("datetime-pattern", "yyyy-MM");
+        result.setProperty("datetime-lower", "2016-01");
+        result.setProperty("datetime-upper", "2021-12");
+        result.setProperty("sharding-suffix-pattern", "yyyyMM");
         result.setProperty("datetime-interval-amount", Integer.toString(stepAmount));
         result.setProperty("datetime-interval-unit", "Years");
         return result;
@@ -410,6 +438,9 @@ public final class IntervalShardingAlgorithmTest {
         Collection<String> actualAsYear = shardingAlgorithmByYear.doSharding(availableTablesForYearDataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.closed(Year.of(2001), Year.of(2013))));
         assertThat(actualAsYear.size(), is(7));
+        Collection<String> actualAsYearMonth = shardingAlgorithmByYearMonth.doSharding(availableTablesForYearMonthDataSources,
+                new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.closed(YearMonth.of(2016,1), YearMonth.of(2020,1))));
+        assertThat(actualAsYearMonth.size(), is(3));
         Collection<String> actualAsMonth = shardingAlgorithmByMonthInJSR310.doSharding(availableTablesForMonthInJSR310DataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.closed(Month.of(4), Month.of(10))));
         assertThat(actualAsMonth.size(), is(4));
