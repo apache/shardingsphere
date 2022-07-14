@@ -26,9 +26,9 @@ import java.util.Properties;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
- * Fixed replica round-robin load-balance algorithm.
+ * Round-robin read query load-balance algorithm.
  */
-public final class FixedReplicaRoundRobinLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
+public final class RoundRobinReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
     
     private final AtomicInteger count = new AtomicInteger(0);
     
@@ -43,16 +43,18 @@ public final class FixedReplicaRoundRobinLoadBalanceAlgorithm implements ReadQue
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
         if (TransactionHolder.isTransaction()) {
-            if (null == TransactionHolder.getReadWriteSplitRoutedReplica()) {
-                TransactionHolder.setReadWriteSplitRoutedReplica(readDataSourceNames.get(Math.abs(count.getAndIncrement()) % readDataSourceNames.size()));
-            }
-            return TransactionHolder.getReadWriteSplitRoutedReplica();
+            return writeDataSourceName;
         }
         return readDataSourceNames.get(Math.abs(count.getAndIncrement()) % readDataSourceNames.size());
     }
     
     @Override
     public String getType() {
-        return "FIXED_REPLICA_ROUND_ROBIN";
+        return "ROUND_ROBIN";
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
     }
 }
