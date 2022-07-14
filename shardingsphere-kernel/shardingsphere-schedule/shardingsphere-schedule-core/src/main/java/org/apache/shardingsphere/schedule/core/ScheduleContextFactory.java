@@ -15,54 +15,59 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.schedule.core.api;
+package org.apache.shardingsphere.schedule.core;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.schedule.core.strategy.ScheduleStrategy;
+import org.apache.shardingsphere.schedule.core.strategy.type.ClusterScheduleStrategy;
+import org.apache.shardingsphere.schedule.core.strategy.type.StandaloneScheduleStrategy;
 
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Mode schedule context factory.
+ * Schedule context factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
-public final class ModeScheduleContextFactory {
+public final class ScheduleContextFactory {
     
-    private static final ModeScheduleContextFactory INSTANCE = new ModeScheduleContextFactory();
+    private static final ScheduleContextFactory INSTANCE = new ScheduleContextFactory();
     
-    private final Map<String, ModeScheduleContext> modeScheduleContexts = new ConcurrentHashMap<>();
+    private final Map<String, ScheduleStrategy> scheduleStrategy = new ConcurrentHashMap<>();
     
     /**
      * Get instance.
      *
      * @return singleton instance
      */
-    public static ModeScheduleContextFactory getInstance() {
+    public static ScheduleContextFactory getInstance() {
         return INSTANCE;
     }
     
     /**
-     * Init mode schedule context.
+     * Init schedule context.
      * 
      * @param instanceId instance id
      * @param modeConfig mode configuration
      */
     public void init(final String instanceId, final ModeConfiguration modeConfig) {
-        modeScheduleContexts.put(instanceId, new ModeScheduleContext(modeConfig));
+        scheduleStrategy.put(instanceId, "Cluster".equalsIgnoreCase(modeConfig.getType()) && "ZooKeeper".equalsIgnoreCase(modeConfig.getRepository().getType())
+                ? new ClusterScheduleStrategy(modeConfig.getRepository().getProps().getProperty("server-lists"), modeConfig.getRepository().getProps().getProperty("namespace"))
+                : new StandaloneScheduleStrategy());
     }
     
     /**
-     * Get mode schedule context.
+     * Get schedule strategy.
      * 
      * @param instanceId instance id
-     * @return got mode schedule context
+     * @return get schedule strategy
      */
-    public Optional<ModeScheduleContext> get(final String instanceId) {
-        return Optional.ofNullable(modeScheduleContexts.get(instanceId));
+    public Optional<ScheduleStrategy> get(final String instanceId) {
+        return Optional.ofNullable(scheduleStrategy.get(instanceId));
     }
 }

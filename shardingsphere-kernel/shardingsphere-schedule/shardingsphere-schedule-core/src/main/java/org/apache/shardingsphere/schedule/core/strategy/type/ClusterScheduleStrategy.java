@@ -15,8 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.schedule.core.api;
+package org.apache.shardingsphere.schedule.core.strategy.type;
 
+import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -29,77 +30,44 @@ import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperConfiguration;
 import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCenter;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.schedule.core.model.CronJob;
+import org.apache.shardingsphere.schedule.core.model.JobParameter;
+import org.apache.shardingsphere.schedule.core.strategy.ScheduleStrategy;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 import java.util.function.Consumer;
 
 /**
- * Mode schedule context, used for proxy and jdbc.
+ * Cluster schedule strategy.
  */
 @RequiredArgsConstructor
 @Slf4j
-public final class ModeScheduleContext {
+public final class ClusterScheduleStrategy implements ScheduleStrategy {
     
     private static final Map<String, ScheduleJobBootstrap> SCHEDULE_JOB_BOOTSTRAP_MAP = new HashMap<>();
     
-    private final ModeConfiguration modeConfig;
+    private final String serverList;
+    
+    private final String namespace;
     
     private final LazyInitializer<CoordinatorRegistryCenter> registryCenterLazyInitializer = new LazyInitializer<CoordinatorRegistryCenter>() {
         
         @Override
         protected CoordinatorRegistryCenter initialize() {
-            return initRegistryCenter(modeConfig);
+            return initRegisterCenter();
         }
     };
     
-    private CoordinatorRegistryCenter initRegistryCenter(final ModeConfiguration modeConfig) {
-        if (null == modeConfig) {
-            return null;
-        }
-        String modeType = modeConfig.getType().toUpperCase();
-        switch (modeType) {
-            // TODO do not hard-code mode type, refactor later
-            case "CLUSTER":
-                return initRegistryCenterForClusterMode(modeConfig);
-            case "STANDALONE":
-                return null;
-            default:
-                // TODO ModeConfiguration.type is not limited, it could be any value
-                log.warn("Unknown mode type '{}'", modeType);
-                return null;
-        }
-    }
-    
-    private CoordinatorRegistryCenter initRegistryCenterForClusterMode(final ModeConfiguration modeConfig) {
-        String clusterType = modeConfig.getRepository().getType();
-        Properties props = modeConfig.getRepository().getProps();
-        // TODO do not hard-code cluster type and property key, refactor later
-        if ("ZooKeeper".equalsIgnoreCase(clusterType)) {
-            ZookeeperConfiguration zkConfig = new ZookeeperConfiguration(props.getProperty("server-lists"), props.getProperty("namespace"));
-            // TODO add timeout settings; CoordinatorRegistryCenterInitializer could not be used for now since dependency;
-            CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(zkConfig);
-            result.init();
-            return result;
-        }
-        log.warn("Unsupported clusterType '{}'", clusterType);
-        return null;
-    }
-    
     /**
-     * Start cron job.
+     * Start schedule.
      *
      * @param job cron job
      */
     @SuppressWarnings("unchecked")
-    public void startCronJob(final CronJob job) {
+    public void startSchedule(final CronJob job) {
         CoordinatorRegistryCenter registryCenter = getRegistryCenter();
-        if (null == registryCenter) {
-            log.warn("registryCenter is null, ignore, jobName={}, cron={}", job.getJobName(), job.getCron());
-            return;
-        }
+        Preconditions.checkNotNull(registryCenter, "Coordinator registry center failed to initialize.");
         if (null != SCHEDULE_JOB_BOOTSTRAP_MAP.get(job.getJobName())) {
             SCHEDULE_JOB_BOOTSTRAP_MAP.get(job.getJobName()).shutdown();
         }
@@ -112,6 +80,12 @@ public final class ModeScheduleContext {
     @SneakyThrows(ConcurrentException.class)
     private CoordinatorRegistryCenter getRegistryCenter() {
         return registryCenterLazyInitializer.get();
+    }
+    
+    private CoordinatorRegistryCenter initRegisterCenter() {
+        CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(new ZookeeperConfiguration(serverList, namespace));
+        result.init();
+        return result;
     }
     
     @RequiredArgsConstructor

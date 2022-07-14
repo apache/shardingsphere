@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.schedule.core.api;
+package org.apache.shardingsphere.schedule.core.model;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
