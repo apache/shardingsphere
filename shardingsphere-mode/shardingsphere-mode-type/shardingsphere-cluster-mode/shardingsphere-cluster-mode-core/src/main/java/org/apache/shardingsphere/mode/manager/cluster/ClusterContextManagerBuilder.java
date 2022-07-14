@@ -74,9 +74,8 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private void persistConfigurations(final MetaDataPersistService persistService, final ContextManagerBuilderParameter parameter) {
-        boolean isOverwrite = parameter.getModeConfiguration().isOverwrite();
         if (!parameter.isEmpty()) {
-            persistService.persistConfigurations(parameter.getDatabaseConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), isOverwrite);
+            persistService.persistConfigurations(parameter.getDatabaseConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), parameter.getModeConfiguration().isOverwrite());
         }
     }
     
