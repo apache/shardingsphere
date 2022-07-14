@@ -60,7 +60,7 @@ public final class ClusterScheduleStrategy implements ScheduleStrategy {
     };
     
     /**
-     * Start cron job.
+     * Start schedule.
      *
      * @param job cron job
      */
