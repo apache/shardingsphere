@@ -15,21 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.schedule.core.api;
+package org.apache.shardingsphere.schedule.core.strategy;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.schedule.core.model.CronJob;
 
-import java.util.function.Consumer;
-
-@RequiredArgsConstructor
-@Getter
-public final class CronJob {
+/**
+ * Schedule Strategy.
+ */
+public interface SchedulerStrategy {
     
-    private final String jobName;
-    
-    @SuppressWarnings("rawtypes")
-    private final Consumer job;
-    
-    private final String cron;
+    /**
+     * Start schedule
+     *
+     * @param job cron job
+     */
+    void startSchedule(CronJob job);
 }
