@@ -134,6 +134,8 @@ Type: COMPLEX_INLINE
 ### Class Based Sharding Algorithm
 
 Realize custom extension by configuring the sharding strategy type and algorithm class name.
+`CLASS_BASED` allows additional custom properties to be passed into the algorithm class. The passed properties can be retrieved through the `java.util.Properties` class instance with the property name `props`. 
+Refer to Git's `org.apache.shardingsphere.example.extension.sharding.algortihm.classbased.fixture.ClassBasedStandardShardingAlgorithmFixture`.
 
 Type：CLASS_BASED
 
