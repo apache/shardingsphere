@@ -22,3 +22,10 @@ chapter = true
 | RoundRobinReplicaLoadBalanceAlgorithm     | 基于轮询的读库负载均衡算法 |
 | RandomReplicaLoadBalanceAlgorithm         | 基于随机的读库负载均衡算法 |
 | WeightReplicaLoadBalanceAlgorithm         | 基于权重的读库负载均衡算法 |
+| TransactionRandomReplicaLoadBalanceAlgorithm     | 无论是否在事务中，读请求采用随机策略路由到多个读库 |
+| TransactionRoundRobinReplicaLoadBalanceAlgorithm | 无论是否在事务中，读请求采用轮询策略路由到多个读库 |
+| TransactionWeightReplicaLoadBalanceAlgorithm     | 无论是否在事务中，读请求采用权重策略路由到多个读库 |
+| FixedReplicaRandomLoadBalanceAlgorithm           | 显示开启事务，读请求采用随机策略路由到一个固定读库；不开事务，每次读流量使用指定算法路由到不同的读库 |
+| FixedReplicaRoundRobinLoadBalanceAlgorithm       | 显示开启事务，读请求采用轮询策略路由到一个固定读库；不开事务，每次读流量使用指定算法路由到不同的读库 |
+| FixedReplicaWeightLoadBalanceAlgorithm           | 显示开启事务，读请求采用权重策略路由到多个读库；不开事务，每次读流量使用指定算法路由到不同的读库 |
+| FixedPrimaryLoadBalanceAlgorithm                 | 读请求全部路由到主库 |
