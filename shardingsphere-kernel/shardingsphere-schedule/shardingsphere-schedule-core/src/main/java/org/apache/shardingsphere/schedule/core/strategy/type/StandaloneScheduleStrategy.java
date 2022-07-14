@@ -23,7 +23,7 @@ import org.apache.shardingsphere.schedule.core.strategy.ScheduleStrategy;
 /**
  * Standalone schedule strategy.
  */
-public class StandaloneScheduleStrategy implements ScheduleStrategy {
+public final class StandaloneScheduleStrategy implements ScheduleStrategy {
     
     @Override
     public void startSchedule(final CronJob job) {

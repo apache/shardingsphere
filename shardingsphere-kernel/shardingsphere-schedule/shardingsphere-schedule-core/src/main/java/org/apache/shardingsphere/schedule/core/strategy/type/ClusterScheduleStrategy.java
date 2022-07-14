@@ -43,7 +43,7 @@ import java.util.function.Consumer;
  */
 @RequiredArgsConstructor
 @Slf4j
-public class ClusterScheduleStrategy implements ScheduleStrategy {
+public final class ClusterScheduleStrategy implements ScheduleStrategy {
     
     private static final Map<String, ScheduleJobBootstrap> SCHEDULE_JOB_BOOTSTRAP_MAP = new HashMap<>();
     
