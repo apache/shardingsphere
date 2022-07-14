@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmCo
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.factory.ReplicaLoadBalanceAlgorithmFactory;
+import org.apache.shardingsphere.readwritesplitting.factory.ReadQueryLoadBalanceAlgorithmFactory;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -81,7 +81,7 @@ public final class ReadwriteSplittingRuleConfigurationImportChecker {
     
     private void checkLoadBalancers(final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> notExistedLoadBalancers = currentRuleConfig.getLoadBalancers().values().stream().map(ShardingSphereAlgorithmConfiguration::getType)
-                .filter(each -> !ReplicaLoadBalanceAlgorithmFactory.contains(each)).collect(Collectors.toList());
+                .filter(each -> !ReadQueryLoadBalanceAlgorithmFactory.contains(each)).collect(Collectors.toList());
         DistSQLException.predictionThrow(notExistedLoadBalancers.isEmpty(), () -> new InvalidAlgorithmConfigurationException("Load balancers", notExistedLoadBalancers));
     }
 }
