@@ -44,12 +44,12 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     
     @Override
     public long generate(final Properties props) {
-        long result = registryCenter.getComputeNodeStatusService().loadInstanceWorkerId(instanceMetaData.getId()).orElseGet(this::reGenerate);
+        long result = registryCenter.getComputeNodeStatusService().loadInstanceWorkerId(instanceMetaData.getId()).orElseGet(this::generate);
         checkIneffectiveConfiguration(result, props);
         return result;
     }
     
-    private long reGenerate() {
+    private long generate() {
         long result;
         int reTryCount = 0;
         do {
