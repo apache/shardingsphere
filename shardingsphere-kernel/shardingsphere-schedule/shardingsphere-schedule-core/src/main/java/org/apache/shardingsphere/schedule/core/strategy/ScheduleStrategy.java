@@ -25,7 +25,7 @@ import org.apache.shardingsphere.schedule.core.model.CronJob;
 public interface ScheduleStrategy {
     
     /**
-     * Start schedule
+     * Start schedule.
      *
      * @param job cron job
      */

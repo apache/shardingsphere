@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.schedule.core.strategy.type;
 
+import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +51,14 @@ public class ClusterScheduleStrategy implements ScheduleStrategy {
     
     private final String namespace;
     
+    private final LazyInitializer<CoordinatorRegistryCenter> registryCenterLazyInitializer = new LazyInitializer<CoordinatorRegistryCenter>() {
+        
+        @Override
+        protected CoordinatorRegistryCenter initialize() {
+            return initRegisterCenter();
+        }
+    };
+    
     /**
      * Start cron job.
      *
@@ -58,6 +67,7 @@ public class ClusterScheduleStrategy implements ScheduleStrategy {
     @SuppressWarnings("unchecked")
     public void startSchedule(final CronJob job) {
         CoordinatorRegistryCenter registryCenter = getRegistryCenter();
+        Preconditions.checkState(null !=registryCenter, "Coordinator registry center failed to initialize.");
         if (null != SCHEDULE_JOB_BOOTSTRAP_MAP.get(job.getJobName())) {
             SCHEDULE_JOB_BOOTSTRAP_MAP.get(job.getJobName()).shutdown();
         }
@@ -72,17 +82,8 @@ public class ClusterScheduleStrategy implements ScheduleStrategy {
         return registryCenterLazyInitializer.get();
     }
     
-    private final LazyInitializer<CoordinatorRegistryCenter> registryCenterLazyInitializer = new LazyInitializer<CoordinatorRegistryCenter>() {
-        
-        @Override
-        protected CoordinatorRegistryCenter initialize() {
-            return initRegisterCenter();
-        }
-    };
-    
     private CoordinatorRegistryCenter initRegisterCenter() {
-        ZookeeperConfiguration zkConfig = new ZookeeperConfiguration(serverList, namespace);
-        CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(zkConfig);
+        CoordinatorRegistryCenter result = new ZookeeperRegistryCenter(new ZookeeperConfiguration(serverList, namespace));
         result.init();
         return result;
     }

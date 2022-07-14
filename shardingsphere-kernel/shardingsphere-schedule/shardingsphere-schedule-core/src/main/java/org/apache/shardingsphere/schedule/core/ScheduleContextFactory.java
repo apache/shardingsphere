@@ -56,7 +56,7 @@ public final class ScheduleContextFactory {
      * @param modeConfig mode configuration
      */
     public void init(final String instanceId, final ModeConfiguration modeConfig) {
-        scheduleStrategy.put(instanceId,  "Cluster".equalsIgnoreCase(modeConfig.getType()) && "ZooKeeper".equalsIgnoreCase(modeConfig.getRepository().getType())
+        scheduleStrategy.put(instanceId, "Cluster".equalsIgnoreCase(modeConfig.getType()) && "ZooKeeper".equalsIgnoreCase(modeConfig.getRepository().getType())
                 ? new ClusterScheduleStrategy(modeConfig.getRepository().getProps().getProperty("server-lists"), modeConfig.getRepository().getProps().getProperty("namespace"))
                 : new StandaloneScheduleStrategy());
     }
