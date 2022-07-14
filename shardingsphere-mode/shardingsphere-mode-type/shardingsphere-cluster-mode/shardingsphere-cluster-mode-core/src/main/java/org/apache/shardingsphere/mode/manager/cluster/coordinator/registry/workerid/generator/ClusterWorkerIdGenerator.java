@@ -76,9 +76,6 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     }
     
     private void checkConfigured(final long generatedWorkerId, final Properties props) {
-        if (null == props) {
-            return;
-        }
         long configuredWorkerId = parseWorkerId(props);
         if (0 != configuredWorkerId && !isWarned) {
             isWarned = true;
