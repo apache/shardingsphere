@@ -1,7 +1,6 @@
 --
 -- Licensed to the Apache Software Foundation (ASF) under one or more
 -- contributor license agreements.  See the NOTICE file distributed with
--- this work for additional information regarding copyright ownership.
 -- The ASF licenses this file to You under the Apache License, Version 2.0
 -- (the "License"); you may not use this file except in compliance with
 -- the License.  You may obtain a copy of the License at
@@ -14,8 +13,7 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 --
-
-CREATE USER IF NOT EXISTS 'scaling'@'%' IDENTIFIED BY 'root';
-GRANT Replication Client, Replication Slave, Select, Insert, Update, Delete, Index ON *.* TO `scaling`@`%`;
-# if needn't create or drop database, the following privileges isn't required
-GRANT Create, Drop ON *.* TO `scaling`@`%`;
+-- if the database already exists, need grant all privileges on database exist_database to scaling;
+CREATE USER scaling WITH ENCRYPTED PASSWORD 'root';
+CREATE DATABASE scaling;
+ALTER ROLE scaling CREATEDB REPLICATION;

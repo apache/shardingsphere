@@ -30,7 +30,6 @@ import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.CommonSQLCommand;
-import org.apache.shardingsphere.integration.data.pipeline.cases.entity.JdbcInfoEntity;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.BaseComposedContainer;
@@ -104,6 +103,10 @@ public abstract class BaseITCase {
     @Setter
     private Thread increaseTaskThread;
     
+    private String username;
+    
+    private String password;
+    
     public BaseITCase(final ScalingParameterized parameterized) {
         databaseType = parameterized.getDatabaseType();
         if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
@@ -112,6 +115,14 @@ public abstract class BaseITCase {
             composedContainer = new NativeComposedContainer(parameterized.getDatabaseType());
         }
         composedContainer.start();
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
+            DatabaseContainer databaseContainer = ((DockerComposedContainer) composedContainer).getDatabaseContainer();
+            username = databaseContainer.getUsername();
+            password = databaseContainer.getPassword();
+        } else if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
+            username = ENV.getActualDataSourceUsername(databaseType);
+            password = ENV.getActualDataSourcePassword(databaseType);
+        }
         initActualDataSources();
         commonSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseITCase.class.getClassLoader().getResource("env/common/command.xml")), CommonSQLCommand.class);
         createProxyDatabase(parameterized.getDatabaseType());
@@ -121,16 +132,9 @@ public abstract class BaseITCase {
     @SneakyThrows(SQLException.class)
     private void initActualDataSources() {
         String jdbcUrl;
-        JdbcInfoEntity jdbcInfo;
-        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
-            DockerComposedContainer dockerComposedContainer = (DockerComposedContainer) composedContainer;
-            DatabaseContainer databaseContainer = dockerComposedContainer.getDatabaseContainer();
-            jdbcUrl = databaseContainer.getJdbcUrl("");
-            jdbcInfo = new JdbcInfoEntity(databaseContainer.getUsername(), databaseContainer.getPassword(), databaseContainer.getPort());
-        } else {
-            jdbcInfo = ENV.getActualDatabaseJdbcInfo(getDatabaseType());
-            jdbcUrl = DataSourceEnvironment.getURL(databaseType, "localhost", jdbcInfo.getPort(), DatabaseTypeUtil.isOpenGauss(databaseType) ? "postgres" : "");
-            try (Connection connection = DriverManager.getConnection(jdbcUrl, jdbcInfo.getUsername(), jdbcInfo.getPassword())) {
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
+            jdbcUrl = DataSourceEnvironment.getURL(databaseType, "localhost", ENV.getActualDatabasePort(getDatabaseType()), DatabaseTypeUtil.isOpenGauss(databaseType) ? "postgres" : "");
+            try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)) {
                 for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {
                     try {
                         connection.createStatement().execute(String.format("DROP DATABASE %s", each));
@@ -139,8 +143,10 @@ public abstract class BaseITCase {
                     }
                 }
             }
+        } else {
+            jdbcUrl = ((DockerComposedContainer) composedContainer).getDatabaseContainer().getJdbcUrl("");
         }
-        try (Connection connection = DriverManager.getConnection(jdbcUrl, jdbcInfo.getUsername(), jdbcInfo.getPassword())) {
+        try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)) {
             for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {
                 try {
                     connection.createStatement().execute(String.format("CREATE DATABASE %s", each));
@@ -220,8 +226,8 @@ public abstract class BaseITCase {
     }
     
     private void addSourceResource0(final Connection connection) throws SQLException {
-        String addSourceResource = commonSQLCommand.getSourceAddResourceTemplate().replace("${user}", ENV.getActualDataSourceUsername(databaseType))
-                .replace("${password}", ENV.getActualDataSourcePassword(databaseType))
+        String addSourceResource = commonSQLCommand.getSourceAddResourceTemplate().replace("${user}", username)
+                .replace("${password}", password)
                 .replace("${ds0}", getActualJdbcUrlTemplate(DS_0))
                 .replace("${ds1}", getActualJdbcUrlTemplate(DS_1));
         executeWithLog(connection, addSourceResource);
@@ -229,8 +235,8 @@ public abstract class BaseITCase {
     
     @SneakyThrows
     protected void addTargetResource() {
-        String addTargetResource = commonSQLCommand.getTargetAddResourceTemplate().replace("${user}", ENV.getActualDataSourceUsername(databaseType))
-                .replace("${password}", ENV.getActualDataSourcePassword(databaseType))
+        String addTargetResource = commonSQLCommand.getTargetAddResourceTemplate().replace("${user}", username)
+                .replace("${password}", password)
                 .replace("${ds2}", getActualJdbcUrlTemplate(DS_2))
                 .replace("${ds3}", getActualJdbcUrlTemplate(DS_3))
                 .replace("${ds4}", getActualJdbcUrlTemplate(DS_4));

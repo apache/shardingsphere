@@ -39,11 +39,8 @@ public final class OpenGaussContainer extends DatabaseContainer {
     
     private final int port = 5432;
     
-    private String dockerImageName = "";
-    
     public OpenGaussContainer(final String dockerImageName) {
         super(DATABASE_TYPE, dockerImageName);
-        this.dockerImageName = dockerImageName;
     }
     
     @Override
