@@ -40,4 +40,5 @@
             <artifactId>shardingsphere-jdbc-core-spring-namespace</artifactId>
         </dependency>
     </dependencies>
+
 </project>
