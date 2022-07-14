@@ -74,14 +74,12 @@ public final class ShowConnectionIdExecutorTest {
     }
     
     private SelectStatement mockSelectStatement() {
-
         Collection<ProjectionSegment> projections = new LinkedList<>();
         ProjectionsSegment segment = mock(ProjectionsSegment.class);
         when(segment.getProjections()).thenReturn(projections);
-
-        SelectStatement statement = mock(SelectStatement.class);
-        when(statement.getProjections()).thenReturn(segment);
-        return statement;
+        SelectStatement result = mock(SelectStatement.class);
+        when(result.getProjections()).thenReturn(segment);
+        return result;
     }
     
     private SelectStatement mockSelectStatementWithAlias() {
@@ -91,9 +89,8 @@ public final class ShowConnectionIdExecutorTest {
         projections.add(projectionSegment);
         ProjectionsSegment segment = mock(ProjectionsSegment.class);
         when(segment.getProjections()).thenReturn(projections);
-
-        SelectStatement statement = mock(SelectStatement.class);
-        when(statement.getProjections()).thenReturn(segment);
-        return statement;
+        SelectStatement result = mock(SelectStatement.class);
+        when(result.getProjections()).thenReturn(segment);
+        return result;
     }
 }
