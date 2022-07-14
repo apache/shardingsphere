@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.state;
 
+import org.apache.shardingsphere.infra.lock.LockNameDefinition;
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.required.RequiredSPI;
 
@@ -29,22 +30,22 @@ public interface LockStateContext extends RequiredSPI {
     /**
      * Register lock state.
      *
-     * @param databaseName database name
+     * @param lockName lock name definition
      */
-    void register(String databaseName);
+    void register(LockNameDefinition lockName);
     
     /**
-     * Un register lock state.
+     * Un-register lock state.
      *
-     * @param databaseName database name
+     * @param lockName lock name definition
      */
-    void unregister(String databaseName);
+    void unregister(LockNameDefinition lockName);
     
     /**
      * Is locked.
      *
-     * @param databaseName database name
+     * @param lockName lock name definition
      * @return is locked or not
      */
-    boolean isLocked(String databaseName);
+    boolean isLocked(LockNameDefinition lockName);
 }

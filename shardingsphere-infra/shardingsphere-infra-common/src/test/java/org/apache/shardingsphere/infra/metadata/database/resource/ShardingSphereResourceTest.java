@@ -28,13 +28,14 @@ import static org.junit.Assert.assertTrue;
 
 public final class ShardingSphereResourceTest {
     
+    @SuppressWarnings("BusyWait")
     @Test
     public void assertClose() throws SQLException, IOException, InterruptedException {
         MockedDataSource dataSource = new MockedDataSource();
         new ShardingSphereResource(Collections.singletonMap("foo_ds", dataSource)).close(dataSource);
-        while (null == dataSource.getClosed() || !dataSource.getClosed()) {
+        while (!dataSource.isClosed()) {
             Thread.sleep(10L);
         }
-        assertTrue(dataSource.getClosed());
+        assertTrue(dataSource.isClosed());
     }
 }

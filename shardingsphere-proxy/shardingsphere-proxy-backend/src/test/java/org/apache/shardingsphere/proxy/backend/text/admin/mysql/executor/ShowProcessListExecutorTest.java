@@ -43,9 +43,9 @@ public final class ShowProcessListExecutorTest extends ProxyContextRestorer {
     
     @Before
     public void setUp() throws NoSuchFieldException, IllegalAccessException {
+        ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
         showProcessListExecutor = new ShowProcessListExecutor();
         setupBatchProcessContexts();
-        ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
     }
     
     private void setupBatchProcessContexts() throws NoSuchFieldException, IllegalAccessException {

@@ -5,31 +5,35 @@ weight = 5
 chapter = true
 +++
 
-## DatabaseTypedSQLParserFacade
+## SPI Interface
 
-| *SPI Name*                   | *Description*                          |
-| ---------------------------- | -------------------------------------- |
-| DatabaseTypedSQLParserFacade | SQL parser facade for lexer and parser |
+### DatabaseTypedSQLParserFacade
 
-| *Implementation Class* | *Description*                      |
-| ---------------------- |------------------------------------|
-| MySQLParserFacade      | SQL parser facade for MySQL        |
-| PostgreSQLParserFacade | SQL parser facade for PostgreSQL   |
-| SQLServerParserFacade  | SQL parser facade for SQLServer    |
-| OracleParserFacade     | SQL parser facade for Oracle       |
-| SQL92ParserFacade      | SQL parser facade for SQL92        |
-| OpenGaussParserFacade  | SQL parser facade for openGauss    |
+| *SPI Name*                    | *Description*                            |
+| ---------------------------- | ----------------------------------- |
+| DatabaseTypedSQLParserFacade | Configure the lexical and syntactic parser entry for SQL parsing |
 
-## SQLVisitorFacade
+### SQLVisitorFacade
 
-| *SPI Name*                          | *Description*                                            |
-| ----------------------------------- | -------------------------------------------------------- |
-| SQLVisitorFacade                    | SQL AST visitor facade                                   |
+| *SPI Name*                           | *Description*                                  |
+| ----------------------------------- | ------------------------------------------ |
+| SQLVisitorFacade                    | SQL syntax tree access portal                        |
 
-| *Implementation Class*              | *Description*                                            |
-| ----------------------------------- | -------------------------------------------------------- |
-| MySQLStatementSQLVisitorFacade      | SQL visitor of statement extracted facade for MySQL      |
-| PostgreSQLStatementSQLVisitorFacade | SQL visitor of statement extracted facade for PostgreSQL |
-| SQLServerStatementSQLVisitorFacade  | SQL visitor of statement extracted facade for SQLServer  |
-| OracleStatementSQLVisitorFacade     | SQL visitor of statement extracted facade for Oracle     |
-| SQL92StatementSQLVisitorFacade      | SQL visitor of statement extracted facade for SQL92      |
+## Sample
+
+### DatabaseTypedSQLParserFacade
+
+| *Implementation Class* | *Description*            |
+| ---------------------- |--------------------------|
+| MySQLParserFacade      | SQL parser entry based on MySQL |
+| PostgreSQLParserFacade | SQL parser entry based on PostgreSQL|
+| SQLServerParserFacade  | SQL parser entry based on SQLServer |
+| OracleParserFacade     | SQL parser entry based on Oracle|
+| SQL92ParserFacade      | SQL parser entry based on SQL92 |
+| OpenGaussParserFacade  | SQL parser entry based on openGauss |
+
+### SQLVisitorFacade
+
+| *SPI Name*                           | *Description*                                  |
+| ----------------------------------- | ------------------------------------------ |
+| SQLVisitorFacade                    | SQL syntax tree access portal                            |

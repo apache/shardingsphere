@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.MutexLockRegistryService;
@@ -48,23 +49,27 @@ public final class RegistryCenter {
     @Getter
     private final LockRegistryService lockService;
     
+    @Getter
+    private final EventBusContext eventBusContext;
+    
     private final GovernanceWatcherFactory listenerFactory;
     
-    public RegistryCenter(final ClusterPersistRepository repository) {
+    public RegistryCenter(final ClusterPersistRepository repository, final EventBusContext eventBusContext) {
         this.repository = repository;
+        this.eventBusContext = eventBusContext;
         storageNodeStatusService = new StorageNodeStatusService(repository);
         computeNodeStatusService = new ComputeNodeStatusService(repository);
         lockService = new MutexLockRegistryService(repository);
-        listenerFactory = new GovernanceWatcherFactory(repository);
+        listenerFactory = new GovernanceWatcherFactory(repository, eventBusContext);
         createSubscribers(repository);
     }
     
     private void createSubscribers(final ClusterPersistRepository repository) {
-        new SchemaMetaDataRegistrySubscriber(repository);
+        new SchemaMetaDataRegistrySubscriber(repository, eventBusContext);
         new ComputeNodeStatusSubscriber(this, repository);
-        new StorageNodeStatusSubscriber(repository);
-        new ScalingRegistrySubscriber(repository);
-        new ProcessRegistrySubscriber(repository);
+        new StorageNodeStatusSubscriber(repository, eventBusContext);
+        new ScalingRegistrySubscriber(repository, eventBusContext);
+        new ProcessRegistrySubscriber(repository, eventBusContext);
     }
     
     /**

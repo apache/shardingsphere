@@ -165,5 +165,8 @@ execute
     | prepareTransaction
     | reassignOwned
     | refreshMatViewStmt
+    | reindex
+    | securityLabelStmt
+    | createEventTrigger
     ) SEMI_? EOF
     ;

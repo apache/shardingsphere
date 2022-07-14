@@ -36,7 +36,7 @@ public enum PostgreSQLCharacterSets {
     EUC_KR(() -> Charset.forName("EUC_KR")),
     EUC_TW(() -> Charset.forName("EUC_TW")),
     EUC_JIS_2004(() -> Charset.forName("EUC_JIS_2004")),
-    UTF8(() -> StandardCharsets.UTF_8, "Unicode"),
+    UTF8(() -> StandardCharsets.UTF_8, "Unicode", "UTF_8"),
     MULE_INTERNAL(() -> Charset.forName("MULE_INTERNAL")),
     LATIN1(() -> StandardCharsets.ISO_8859_1, "ISO88591"),
     LATIN2(() -> Charset.forName("LATIN2"), "ISO88592"),

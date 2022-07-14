@@ -106,9 +106,9 @@ server.yaml 配置中默认集群运行模式，这里提供一份单机的运�
 mode:
  type: Standalone # 单机模式
  repository:
-   type: File
+   type: H2
    props:
-     path: /Users/xxx/software/apache-shardingsphere-5.1.0-shardingsphere-proxy/file # 元数据配置等持久化文件路径
+     jdbcUrl: jdbc:h2:file:~/config_data # 元数据持久化数据库连接 URL
  overwrite: false # 是否覆盖已存在的元数据
 
 rules: # 认证信息

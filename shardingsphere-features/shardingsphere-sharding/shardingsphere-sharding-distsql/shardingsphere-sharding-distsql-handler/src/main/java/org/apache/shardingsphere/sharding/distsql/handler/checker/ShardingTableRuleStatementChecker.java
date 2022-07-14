@@ -318,18 +318,18 @@ public final class ShardingTableRuleStatementChecker {
             return;
         }
         ShardingRuleConfiguration toBeCheckedRuleConfig = new ShardingRuleConfiguration();
-        toBeCheckedRuleConfig.setTables(currentRuleConfig.getTables());
-        toBeCheckedRuleConfig.setAutoTables(currentRuleConfig.getAutoTables());
-        toBeCheckedRuleConfig.setBindingTableGroups(currentRuleConfig.getBindingTableGroups());
-        toBeCheckedRuleConfig.setBroadcastTables(currentRuleConfig.getBroadcastTables());
+        toBeCheckedRuleConfig.setTables(new LinkedList<>(currentRuleConfig.getTables()));
+        toBeCheckedRuleConfig.setAutoTables(new LinkedList<>(currentRuleConfig.getAutoTables()));
+        toBeCheckedRuleConfig.setBindingTableGroups(new LinkedList<>(currentRuleConfig.getBindingTableGroups()));
+        toBeCheckedRuleConfig.setBroadcastTables(new LinkedList<>(currentRuleConfig.getBroadcastTables()));
         toBeCheckedRuleConfig.setDefaultTableShardingStrategy(currentRuleConfig.getDefaultTableShardingStrategy());
         toBeCheckedRuleConfig.setDefaultDatabaseShardingStrategy(currentRuleConfig.getDefaultDatabaseShardingStrategy());
         toBeCheckedRuleConfig.setDefaultKeyGenerateStrategy(currentRuleConfig.getDefaultKeyGenerateStrategy());
         toBeCheckedRuleConfig.setDefaultShardingColumn(currentRuleConfig.getDefaultShardingColumn());
-        toBeCheckedRuleConfig.setShardingAlgorithms(currentRuleConfig.getShardingAlgorithms());
-        toBeCheckedRuleConfig.setKeyGenerators(currentRuleConfig.getKeyGenerators());
+        toBeCheckedRuleConfig.setShardingAlgorithms(new LinkedHashMap<>(currentRuleConfig.getShardingAlgorithms()));
+        toBeCheckedRuleConfig.setKeyGenerators(new LinkedHashMap<>(currentRuleConfig.getKeyGenerators()));
         toBeCheckedRuleConfig.setScalingName(currentRuleConfig.getScalingName());
-        toBeCheckedRuleConfig.setScaling(currentRuleConfig.getScaling());
+        toBeCheckedRuleConfig.setScaling(new LinkedHashMap<>(currentRuleConfig.getScaling()));
         removeRuleConfiguration(toBeCheckedRuleConfig, toBeAlteredRuleConfig);
         addRuleConfiguration(toBeCheckedRuleConfig, toBeAlteredRuleConfig);
         Collection<String> dataSourceNames = getRequiredResource(toBeCheckedRuleConfig);

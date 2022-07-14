@@ -5,11 +5,17 @@ weight = 2
 chapter = true
 +++
 
-## RuleBuilder
+## SPI 接口
 
 | *SPI 名称*                                      | *详细说明*                                       |
 | ---------------------------------------------- | ----------------------------------------------- |
-| RuleBuilder                                    | 用于将用户配置转化为规则对象                         |
+| RuleBuilder                                    | 用于将用户配置转化为规则对象                        |
+| YamlRuleConfigurationSwapper                   | 用于将 YAML 配置转化为标准用户配置                  |
+| ShardingSphereYamlConstruct                    | 用于将定制化对象和 YAML 相互转化                    |
+
+## 示例
+
+### RuleBuilder 已知实现类
 
 | *已知实现类*                                        | *详细说明*                        |
 |------------------------------------------------|-------------------------------|
@@ -28,12 +34,7 @@ chapter = true
 | TransactionRuleBuilder                         | 用于将事务用户配置转化为事务规则对象            |
 | SQLParserRuleBuilder                           | 用于将 SQL 解析用户配置转化为 SQL 解析规则对象  |
 
-## YamlRuleConfigurationSwapper
-
-| *SPI 名称*                                                       | *详细说明*                                    |
-| --------------------------------------------------------------- | -------------------------------------------- |
-| YamlRuleConfigurationSwapper                                    | 用于将 YAML 配置转化为标准用户配置                |
-
+### YamlRuleConfigurationSwapper 已知实现类
 | *已知实现类*                                                      | *详细说明*                            |
 | --------------------------------------------------------------- |-----------------------------------|
 | ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapper | 用于将基于算法的读写分离配置转化为读写分离标准配置         |
@@ -49,13 +50,11 @@ chapter = true
 | ShadowRuleConfigurationYamlSwapper                              | 用于将影子库的 YAML 配置转化为影子库标准配置         |
 | TransactionRuleConfigurationYamlSwapper                         | 用于将事务的 YAML 配置转化为事务标准配置           |
 | SingleTableRuleConfigurationYamlSwapper                         | 用于将单表的 YAML 配置转化为单表标准配置           |
-| SQLParserRuleConfigurationYamlSwapper                         | 用于将 SQL 解析的 YAML 配置转化为 SQL 解析标准配置 |
+| SQLParserRuleConfigurationYamlSwapper                           | 用于将 SQL 解析的 YAML 配置转化为 SQL 解析标准配置 |
+| SQLTranslatorRuleConfigurationYamlSwapper                       | 用于将 SQL 转换的 YAML 配置转化为 SQL 转换标准配置 |
+| SQLTranslatorRuleConfigurationYamlSwapper                       | 用于将 SQL 转换的 YAML 配置转化为 SQL 转换标准配置 |
 
-## ShardingSphereYamlConstruct
-
-| *SPI 名称*                                      | *详细说明*                      |
-| ---------------------------------------------- | ------------------------------ |
-| ShardingSphereYamlConstruct                    | 用于将定制化对象和 YAML 相互转化    |
+### ShardingSphereYamlConstruct 已知实现类
 
 | *已知实现类*                                     | *详细说明*                       |
 | ---------------------------------------------- | ------------------------------- |

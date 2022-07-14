@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.algorithm.config;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.config.function.DistributedRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.config.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -56,13 +57,17 @@ public final class AlgorithmProvidedShardingRuleConfiguration implements Databas
     
     private KeyGenerateStrategyConfiguration defaultKeyGenerateStrategy;
     
-    private String defaultShardingColumn;
+    private ShardingAuditStrategyConfiguration defaultAuditStrategy;
     
-    private ShardingAuditStrategyConfiguration auditStrategy;
+    private String defaultShardingColumn;
     
     private Map<String, ShardingAlgorithm> shardingAlgorithms = new LinkedHashMap<>();
     
     private Map<String, KeyGenerateAlgorithm> keyGenerators = new LinkedHashMap<>();
     
     private Map<String, ShardingAuditAlgorithm> auditors = new LinkedHashMap<>();
+    
+    private String scalingName;
+    
+    private Map<String, OnRuleAlteredActionConfiguration> scaling = new LinkedHashMap<>();
 }

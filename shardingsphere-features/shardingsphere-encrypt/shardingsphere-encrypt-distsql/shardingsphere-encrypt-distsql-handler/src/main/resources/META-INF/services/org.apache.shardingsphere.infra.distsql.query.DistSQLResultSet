@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.encrypt.distsql.handler.query.EncryptRuleQueryResultSet
+org.apache.shardingsphere.encrypt.distsql.handler.query.CountEncryptRuleQueryResultSet

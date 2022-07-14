@@ -43,6 +43,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Objects;
 import java.util.regex.Pattern;
@@ -100,21 +101,21 @@ public final class PostgreSQLDDLGeneratorIT {
             int majorVersion = connection.getMetaData().getDatabaseMajorVersion();
             for (DDLGeneratorAssertionEntity each : rootEntity.getAssertions()) {
                 statement.execute(each.getInput().getSql());
-                String sql = CreateTableSQLGeneratorFactory.findInstance(parameterized.getDatabaseType()).orElseThrow(() -> new ShardingSphereException("Failed to get dialect ddl sql generator"))
-                        .generate(each.getInput().getTable(), DEFAULT_SCHEMA, dataSource);
-                assertThat(REPLACE_LINE_SPACE.matcher(sql).replaceAll(""), is(REPLACE_LINE_SPACE.matcher(getVersionOutput(each.getOutputs(), majorVersion)).replaceAll("")));
+                Collection<String> multiSQL = CreateTableSQLGeneratorFactory.findInstance(parameterized.getDatabaseType())
+                        .orElseThrow(() -> new ShardingSphereException("Failed to get dialect ddl sql generator")).generate(each.getInput().getTable(), DEFAULT_SCHEMA, dataSource);
+                assertIsCorrect(multiSQL, getVersionOutput(each.getOutputs(), majorVersion));
             }
         }
     }
     
-    private String getVersionOutput(final Collection<DDLGeneratorOutputEntity> outputs, final int majorVersion) {
-        String result = "";
+    private Collection<String> getVersionOutput(final Collection<DDLGeneratorOutputEntity> outputs, final int majorVersion) {
+        Collection<String> result = new LinkedList<>();
         for (DDLGeneratorOutputEntity each : outputs) {
             if ("default".equals(each.getVersion())) {
-                result = each.getSql();
+                result = each.getMultiSQL();
             }
             if (String.valueOf(majorVersion).equals(each.getVersion())) {
-                return each.getSql();
+                return each.getMultiSQL();
             }
         }
         return result;
@@ -129,6 +130,13 @@ public final class PostgreSQLDDLGeneratorIT {
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
+    }
+    
+    private void assertIsCorrect(final Collection<String> actualSQL, final Collection<String> expectedSQL) {
+        Iterator<String> expected = expectedSQL.iterator();
+        for (String each : actualSQL) {
+            assertThat(REPLACE_LINE_SPACE.matcher(each).replaceAll(""), is(REPLACE_LINE_SPACE.matcher(expected.next()).replaceAll("")));
+        }
     }
     
     @After

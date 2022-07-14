@@ -64,6 +64,11 @@ public final class YamlRuleAlteredJobConfiguration implements YamlConfiguration 
      */
     private Map<String, List<String>> alteredRuleYamlClassNameTablesMap;
     
+    /**
+     * Map{schema name, logic table names}.
+     */
+    private Map<String, List<String>> schemaTablesMap;
+    
     private String logicTables;
     
     /**

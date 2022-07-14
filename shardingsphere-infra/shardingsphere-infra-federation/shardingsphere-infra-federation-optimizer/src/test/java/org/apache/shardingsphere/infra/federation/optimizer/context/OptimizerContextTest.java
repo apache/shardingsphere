@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationS
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.junit.Test;
@@ -39,18 +40,73 @@ import static org.mockito.Mockito.mock;
 public final class OptimizerContextTest {
     
     @Test
+    public void assertDropDatabase() {
+        OptimizerContext optimizerContext = createOptimizerContext();
+        optimizerContext.dropDatabase("FOO_DB");
+        assertFalse(optimizerContext.getFederationMetaData().getDatabases().containsKey("foo_db"));
+    }
+    
+    @Test
+    public void assertAlterTable() {
+        OptimizerContext optimizerContext = createOptimizerContext();
+        optimizerContext.alterTable("FOO_DB", "foo_schema", createTable("bar_col"));
+        Optional<FederationSchemaMetaData> schemaMetaData = optimizerContext.getFederationMetaData().getDatabases().get("foo_db").getSchemaMetadata("foo_schema");
+        assertTrue(schemaMetaData.isPresent());
+        assertFalse(schemaMetaData.get().getTables().get("foo_tbl").getColumnNames().contains("foo_col"));
+        assertTrue(schemaMetaData.get().getTables().get("foo_tbl").getColumnNames().contains("bar_col"));
+    }
+    
+    @Test
     public void assertDropTable() {
-        String databaseName = "foo_db";
-        String schemaName = "foo_schema";
-        String tableName = "t_order";
-        ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName, new H2DatabaseType(), mock(ShardingSphereResource.class),
-                null, Collections.singletonMap(schemaName, new ShardingSphereSchema(Collections.singletonMap(tableName, mock(ShardingSphereTable.class)))));
-        OptimizerContext optimizerContext = OptimizerContextFactory.create(Collections.singletonMap(databaseName, database), mock(ShardingSphereRuleMetaData.class));
-        OptimizerPlannerContext beforeDroppedPlannerContext = optimizerContext.getPlannerContexts().get(databaseName);
-        optimizerContext.dropTable(databaseName, schemaName, tableName);
-        assertThat(beforeDroppedPlannerContext, not(optimizerContext.getPlannerContexts().get(databaseName)));
-        Optional<FederationSchemaMetaData> schemaMetadata = optimizerContext.getFederationMetaData().getDatabases().get(databaseName).getSchemaMetadata(schemaName);
+        OptimizerContext optimizerContext = createOptimizerContext();
+        OptimizerPlannerContext beforeDroppedPlannerContext = optimizerContext.getPlannerContexts().get("foo_db");
+        optimizerContext.dropTable("FOO_DB", "foo_schema", "foo_tbl");
+        assertThat(beforeDroppedPlannerContext, not(optimizerContext.getPlannerContexts().get("foo_db")));
+        Optional<FederationSchemaMetaData> schemaMetadata = optimizerContext.getFederationMetaData().getDatabases().get("foo_db").getSchemaMetadata("foo_schema");
         assertTrue(schemaMetadata.isPresent());
-        assertFalse(schemaMetadata.get().getTables().containsKey(tableName));
+        assertFalse(schemaMetadata.get().getTables().containsKey("foo_tbl"));
+    }
+    
+    @Test
+    public void assertAddDatabase() {
+        OptimizerContext optimizerContext = createOptimizerContext();
+        optimizerContext.addDatabase("BAR_DB", new H2DatabaseType());
+        assertTrue(optimizerContext.getFederationMetaData().getDatabases().containsKey("bar_db"));
+        assertTrue(optimizerContext.getParserContexts().containsKey("bar_db"));
+        assertTrue(optimizerContext.getPlannerContexts().containsKey("bar_db"));
+    }
+    
+    @Test
+    public void assertAlterDatabase() {
+        OptimizerContext optimizerContext = createOptimizerContext();
+        ShardingSphereDatabase database = createDatabase();
+        database.getSchemas().get("foo_schema").getTables().put("bar_tbl", mock(ShardingSphereTable.class));
+        optimizerContext.alterDatabase(database, mock(ShardingSphereRuleMetaData.class));
+        Optional<FederationSchemaMetaData> schemaMetadata = optimizerContext.getFederationMetaData().getDatabases().get("foo_db").getSchemaMetadata("foo_schema");
+        assertTrue(schemaMetadata.isPresent());
+        assertTrue(schemaMetadata.get().getTables().containsKey("bar_tbl"));
+    }
+    
+    @Test
+    public void assertAddSchema() {
+        OptimizerContext optimizerContext = createOptimizerContext();
+        optimizerContext.addSchema("FOO_DB", "foo_schema");
+        assertTrue(optimizerContext.getFederationMetaData().getDatabases().get("foo_db").getSchemas().containsKey("foo_schema"));
+        assertTrue(optimizerContext.getPlannerContexts().get("foo_db").getConverters().containsKey("foo_schema"));
+        assertTrue(optimizerContext.getPlannerContexts().get("foo_db").getValidators().containsKey("foo_schema"));
+    }
+    
+    private OptimizerContext createOptimizerContext() {
+        return OptimizerContextFactory.create(Collections.singletonMap("foo_db", createDatabase()), mock(ShardingSphereRuleMetaData.class));
+    }
+    
+    private ShardingSphereDatabase createDatabase() {
+        ShardingSphereSchema schema = new ShardingSphereSchema(Collections.singletonMap("foo_tbl", createTable("foo_col")));
+        return new ShardingSphereDatabase("foo_db", new H2DatabaseType(), mock(ShardingSphereResource.class), null, Collections.singletonMap("foo_schema", schema));
+    }
+    
+    private ShardingSphereTable createTable(final String columnName) {
+        ShardingSphereColumn toBeAlteredColumn = new ShardingSphereColumn(columnName, 0, false, false, true);
+        return new ShardingSphereTable("foo_tbl", Collections.singleton(toBeAlteredColumn), Collections.emptyList(), Collections.emptyList());
     }
 }

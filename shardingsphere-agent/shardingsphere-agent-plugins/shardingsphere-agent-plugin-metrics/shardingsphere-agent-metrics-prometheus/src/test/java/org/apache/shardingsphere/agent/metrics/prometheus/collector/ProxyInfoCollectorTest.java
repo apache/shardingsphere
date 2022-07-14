@@ -19,6 +19,7 @@ package org.apache.shardingsphere.agent.metrics.prometheus.collector;
 
 import org.apache.shardingsphere.agent.metrics.prometheus.ProxyContextRestorer;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -26,7 +27,7 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.manager.memory.workerid.generator.MemoryWorkerIdGenerator;
+import org.apache.shardingsphere.mode.manager.standalone.workerid.generator.StandaloneWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -41,7 +42,8 @@ public final class ProxyInfoCollectorTest extends ProxyContextRestorer {
     public void assertCollect() {
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(), mock(OptimizerContext.class));
         InstanceContext instanceContext = new InstanceContext(
-                new ComputeNodeInstance(mock(InstanceMetaData.class)), new MemoryWorkerIdGenerator(), new ModeConfiguration("Memory", null, false), mock(LockContext.class));
+                new ComputeNodeInstance(mock(InstanceMetaData.class)), new StandaloneWorkerIdGenerator(), new ModeConfiguration("Standalone", null, false), mock(LockContext.class),
+                new EventBusContext());
         ProxyContext.init(new ContextManager(metaDataContexts, instanceContext));
         assertFalse(new ProxyInfoCollector().collect().isEmpty());
     }

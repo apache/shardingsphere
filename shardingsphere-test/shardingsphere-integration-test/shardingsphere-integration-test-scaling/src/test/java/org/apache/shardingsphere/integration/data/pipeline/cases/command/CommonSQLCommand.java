@@ -38,23 +38,20 @@ public final class CommonSQLCommand {
     @XmlElement(name = "create-order-item-sharding-algorithm")
     private String createOrderItemShardingAlgorithm;
     
-    @XmlElement(name = "create-order-with-item-sharding-table-rule")
-    private String createOrderWithItemSharingTableRule;
+    @XmlElement(name = "create-order-table-rule")
+    private String createOrderTableRule;
     
-    @XmlElement(name = "create-order-sharding-table-rule")
-    private String createOrderShardingTableRule;
+    @XmlElement(name = "create-order-item-table-rule")
+    private String createOrderItemTableRule;
     
     @XmlElement(name = "alter-sharding-algorithm")
     private String alterShardingAlgorithm;
     
-    @XmlElement(name = "alter-sharding-table-rule")
-    private String alterShardingTableRule;
+    @XmlElement(name = "alter-order-with-item-auto-table-rule")
+    private String alterOrderWithItemAutoTableRule;
     
-    @XmlElement(name = "auto-alter-order-with-item-sharding-table-rule")
-    private String autoAlterOrderWithItemShardingTableRule;
-    
-    @XmlElement(name = "auto-alter-order-sharding-table-rule")
-    private String autoAlterOrderShardingTableRule;
+    @XmlElement(name = "alter-order-auto-table-rule")
+    private String alterOrderAutoTableRule;
     
     @XmlElement(name = "source-add-resource-template")
     private String sourceAddResourceTemplate;

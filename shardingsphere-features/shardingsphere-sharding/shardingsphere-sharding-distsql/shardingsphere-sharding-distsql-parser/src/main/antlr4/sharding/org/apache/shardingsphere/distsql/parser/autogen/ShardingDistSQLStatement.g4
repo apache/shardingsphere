@@ -50,10 +50,13 @@ execute
     | showShardingKeyGenerators
     | dropShardingKeyGenerator
     | showShardingAuditors
+    | createShardingAuditor
+    | alterShardingAuditor
     | showShardingDefaultShardingStrategy
     | alterDefaultShardingStrategy
     | dropDefaultShardingStrategy
     | showUnusedShardingAlgorithms
     | showUnusedShardingKeyGenerators
+    | countShardingRule
     ) SEMI?
     ;

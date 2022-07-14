@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.column.ExpectedColumn;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.function.ExpectedFunction;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedIndex;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedIndextype;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.index.ExpectedIndexType;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.packages.ExpectedPackage;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.table.ExpectedSimpleTable;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.type.ExpectedType;
@@ -57,6 +57,6 @@ public final class AssociateStatisticsStatementTestCase extends SQLParserTestCas
     @XmlElement(name = "type")
     private final List<ExpectedType> types = new LinkedList<>();
     
-    @XmlElement(name = "indextype")
-    private final List<ExpectedIndextype> indextypes = new LinkedList<>();
+    @XmlElement(name = "index-type")
+    private final List<ExpectedIndexType> indexTypes = new LinkedList<>();
 }

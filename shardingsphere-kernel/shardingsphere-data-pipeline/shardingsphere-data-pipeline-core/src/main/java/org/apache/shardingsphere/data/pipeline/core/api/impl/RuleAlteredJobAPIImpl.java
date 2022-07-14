@@ -46,12 +46,11 @@ import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsist
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.lock.LockNameDefinition;
+import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
-import org.apache.shardingsphere.mode.manager.lock.definition.LockNameDefinitionFactory;
+import org.apache.shardingsphere.mode.manager.lock.definition.LockDefinitionFactory;
 import org.apache.shardingsphere.scaling.core.job.environment.ScalingEnvironmentManager;
 
 import java.sql.SQLException;
@@ -172,19 +171,19 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         verifyManualMode(jobConfig);
         verifyJobNotStopped(jobConfigPOJO);
         verifyJobNotCompleted(jobConfig);
-        String databaseName = jobConfig.getDatabaseName();
-        stopClusterWriteDB(databaseName, jobId);
+        stopClusterWriteDB(jobConfig);
     }
     
     @Override
-    public void stopClusterWriteDB(final String databaseName, final String jobId) {
+    public void stopClusterWriteDB(final RuleAlteredJobConfiguration jobConfig) {
+        String databaseName = jobConfig.getDatabaseName();
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        LockNameDefinition lockNameDefinition = LockNameDefinitionFactory.newDatabaseDefinition(databaseName);
-        if (lockContext.isLocked(lockNameDefinition)) {
+        LockDefinition lockDefinition = LockDefinitionFactory.newDatabaseLockDefinition(databaseName);
+        if (lockContext.isLocked(lockDefinition)) {
             log.info("stopClusterWriteDB, already stopped");
             return;
         }
-        if (lockContext.tryLock(lockNameDefinition)) {
+        if (lockContext.tryLock(lockDefinition)) {
             log.info("stopClusterWriteDB, tryLockSuccess=true");
             return;
         }
@@ -198,17 +197,17 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         RuleAlteredJobConfiguration jobConfig = getJobConfig(jobConfigPOJO);
         verifyManualMode(jobConfig);
-        String databaseName = jobConfig.getDatabaseName();
-        restoreClusterWriteDB(databaseName, jobId);
+        restoreClusterWriteDB(jobConfig);
     }
     
     @Override
-    public void restoreClusterWriteDB(final String databaseName, final String jobId) {
+    public void restoreClusterWriteDB(final RuleAlteredJobConfiguration jobConfig) {
+        String databaseName = jobConfig.getDatabaseName();
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        LockNameDefinition lockNameDefinition = LockNameDefinitionFactory.newDatabaseDefinition(databaseName);
-        if (lockContext.isLocked(lockNameDefinition)) {
-            log.info("restoreClusterWriteDB, before releaseLock, databaseName={}, jobId={}", databaseName, jobId);
-            lockContext.releaseLock(lockNameDefinition);
+        LockDefinition lockDefinition = LockDefinitionFactory.newDatabaseLockDefinition(databaseName);
+        if (lockContext.isLocked(lockDefinition)) {
+            log.info("restoreClusterWriteDB, before releaseLock, databaseName={}, jobId={}", databaseName, jobConfig.getJobId());
+            lockContext.releaseLock(lockDefinition);
             return;
         }
         log.info("restoreClusterWriteDB, isLocked false, databaseName={}", databaseName);
@@ -324,7 +323,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
             }
         }
         ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(jobConfig.getDatabaseName(), jobConfig.getActiveVersion(), jobConfig.getNewVersion());
-        ShardingSphereEventBus.getInstance().post(taskFinishedEvent);
+        PipelineContext.getContextManager().getInstanceContext().getEventBusContext().post(taskFinishedEvent);
         // TODO rewrite job status update after job progress structure refactor
         RuleAlteredJobSchedulerCenter.updateJobStatus(jobId, JobStatus.FINISHED);
         for (int each : repositoryAPI.getShardingItems(jobId)) {

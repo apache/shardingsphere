@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdate
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionUpdater;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionUpdaterFactory;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.MetadataVersionPreparedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -134,9 +133,9 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private RuleConfiguration processAlter(final T sqlStatement, final RuleDefinitionAlterUpdater updater, final RuleConfiguration currentRuleConfig) {
-        RuleConfiguration result = updater.buildToBeAlteredRuleConfiguration(sqlStatement);
-        updater.updateCurrentRuleConfiguration(currentRuleConfig, result);
-        return result;
+        RuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(sqlStatement);
+        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
+        return currentRuleConfig;
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -151,14 +150,12 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     
     private void prepareScaling(final ShardingSphereDatabase database, final T sqlStatement, final RuleDefinitionAlterUpdater<?, ?> updater, final RuleConfiguration currentRuleConfig,
                                 final RuleDefinitionAlterPreprocessor<?> preprocessor) {
-        Optional<MetaDataPersistService> metaDataPersistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService();
-        if (metaDataPersistService.isPresent()) {
-            Optional<String> newVersion = metaDataPersistService.get().getDatabaseVersionPersistService().createNewVersion(database.getName());
-            if (!newVersion.isPresent()) {
-                throw new RuntimeException(String.format("Unable to get a new version for database: %s", database.getName()));
-            }
-            persistRuleConfigurationChange(metaDataPersistService.get(), newVersion.get(), database, currentRuleConfig, getAlteredRuleConfig(sqlStatement, updater, currentRuleConfig, preprocessor));
+        MetaDataPersistService persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService();
+        Optional<String> newVersion = persistService.getDatabaseVersionPersistService().createNewVersion(database.getName());
+        if (!newVersion.isPresent()) {
+            throw new RuntimeException(String.format("Unable to get a new version for database: %s", database.getName()));
         }
+        persistRuleConfigurationChange(persistService, newVersion.get(), database, currentRuleConfig, getAlteredRuleConfig(sqlStatement, updater, currentRuleConfig, preprocessor));
     }
     
     private void persistRuleConfigurationChange(final MetaDataPersistService persistService, final String version, final ShardingSphereDatabase database,
@@ -167,11 +164,11 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         configs.remove(currentRuleConfig);
         configs.add(alteredRuleConfig);
         persistService.getDatabaseRulePersistService().persist(database.getName(), version, configs);
-        ShardingSphereEventBus.getInstance().post(new MetadataVersionPreparedEvent(version, database.getName()));
+        ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext().post(new MetadataVersionPreparedEvent(version, database.getName()));
     }
     
     private void persistRuleConfigurationChange(final String databaseName, final Collection<RuleConfiguration> alteredConfigs) {
-        ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService().ifPresent(optional -> optional.getDatabaseRulePersistService().persist(databaseName, alteredConfigs));
+        ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService().getDatabaseRulePersistService().persist(databaseName, alteredConfigs);
     }
     
     private RuleConfiguration getAlteredRuleConfig(final T sqlStatement, final RuleDefinitionAlterUpdater updater,

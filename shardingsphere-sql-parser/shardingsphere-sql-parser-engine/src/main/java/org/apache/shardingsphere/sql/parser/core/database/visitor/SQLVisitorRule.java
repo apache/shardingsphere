@@ -44,6 +44,8 @@ public enum SQLVisitorRule {
     
     COPY("Copy", SQLStatementType.DML),
     
+    LOCKTABLE("LockTable", SQLStatementType.DML),
+    
     CREATE_TABLE("CreateTable", SQLStatementType.DDL),
     
     CREATE_AGGREGATE("CreateAggregate", SQLStatementType.DDL),
@@ -249,6 +251,10 @@ public enum SQLVisitorRule {
     NOTIFY("NotifyStmt", SQLStatementType.DDL),
     
     REFRESH_MATERIALIZED_VIEW("RefreshMatViewStmt", SQLStatementType.DDL),
+    
+    REINDEX("Reindex", SQLStatementType.DDL),
+    
+    SECURITY_LABEL("SecurityLabelStmt", SQLStatementType.DDL),
     
     UNLISTEN("Unlisten", SQLStatementType.DDL),
     
@@ -576,6 +582,12 @@ public enum SQLVisitorRule {
     
     ALTER_MATERIALIZED_ZONEMAP("AlterMaterializedZonemap", SQLStatementType.DDL),
     
+    ALTER_JAVA("AlterJava", SQLStatementType.DDL),
+    
+    ALTER_AUDIT_POLICY("AlterAuditPolicy", SQLStatementType.DDL),
+    
+    ALTER_CLUSTER("AlterCluster", SQLStatementType.DDL),
+    
     CURSOR("Cursor", SQLStatementType.DDL),
     
     CLOSE("Close", SQLStatementType.DDL),
@@ -596,7 +608,9 @@ public enum SQLVisitorRule {
     
     REASSIGN_OWNED("ReassignOwned", SQLStatementType.DCL),
     
-    CREATE_COLLATION("CreateCollation", SQLStatementType.DDL);
+    CREATE_COLLATION("CreateCollation", SQLStatementType.DDL),
+    
+    CREATE_EVENT_TRIGGER("CreateEventTrigger", SQLStatementType.DDL);
     
     private final String name;
     

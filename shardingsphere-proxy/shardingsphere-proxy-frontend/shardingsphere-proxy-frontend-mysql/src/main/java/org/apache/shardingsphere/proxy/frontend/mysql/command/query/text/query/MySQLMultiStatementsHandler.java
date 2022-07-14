@@ -181,7 +181,7 @@ public final class MySQLMultiStatementsHandler implements TextProtocolBackendHan
     private static class BatchedJDBCExecutorCallback extends JDBCExecutorCallback<int[]> {
         
         BatchedJDBCExecutorCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
-            super(databaseType, sqlStatement, isExceptionThrown);
+            super(databaseType, sqlStatement, isExceptionThrown, ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext());
         }
         
         @Override
