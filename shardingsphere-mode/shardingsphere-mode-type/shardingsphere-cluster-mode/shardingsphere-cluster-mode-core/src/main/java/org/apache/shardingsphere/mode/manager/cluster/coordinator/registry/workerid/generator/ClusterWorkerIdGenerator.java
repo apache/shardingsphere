@@ -68,6 +68,7 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     
     private long generateSequentialId() {
         String sequentialId = registryCenter.getRepository().getSequentialId(WorkerIdNode.getWorkerIdGeneratorPath(instanceMetaData.getId()), "");
+        // TODO maybe throw exception is better if `null == sequentialId`
         return null == sequentialId ? DEFAULT_WORKER_ID : Long.parseLong(sequentialId);
     }
     
