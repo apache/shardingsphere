@@ -34,7 +34,7 @@ import java.util.Properties;
 @Slf4j
 public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     
-    private static final int MAX_RE_TRY = 3;
+    private static final int MAX_RETRY = 3;
     
     private final RegistryCenter registryCenter;
     
@@ -56,9 +56,11 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
             reTryCount++;
             result = generateSequentialId();
             if (result > MAX_WORKER_ID) {
+                // TODO Can the work id keep unique?
                 result = result % MAX_WORKER_ID + 1;
             }
-            if (reTryCount > MAX_RE_TRY) {
+            // TODO check may retry should in the front of id generate
+            if (reTryCount > MAX_RETRY) {
                 throw new ShardingSphereException("System assigned %s failed, assigned %s was %s", WORKER_ID_KEY, WORKER_ID_KEY, result);
             }
         } while (isExist(result));
