@@ -38,6 +38,7 @@ import org.apache.shardingsphere.mode.manager.standalone.lock.StandaloneLockCont
 import org.apache.shardingsphere.mode.manager.standalone.workerid.generator.StandaloneWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryFactory;
 import org.apache.shardingsphere.schedule.core.ScheduleContextFactory;
 
@@ -55,7 +56,8 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     @Override
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
         ScheduleContextFactory.getInstance().init(parameter.getInstanceMetaData().getId(), parameter.getModeConfiguration());
-        MetaDataPersistService persistService = new MetaDataPersistService(StandalonePersistRepositoryFactory.getInstance(parameter.getModeConfiguration().getRepository()));
+        StandalonePersistRepository repository = StandalonePersistRepositoryFactory.getInstance(parameter.getModeConfiguration().getRepository());
+        MetaDataPersistService persistService = new MetaDataPersistService(repository);
         persistConfigurations(persistService, parameter);
         InstanceContext instanceContext = buildInstanceContext(parameter);
         return new ContextManager(buildMetaDataContexts(persistService, parameter, instanceContext), instanceContext);

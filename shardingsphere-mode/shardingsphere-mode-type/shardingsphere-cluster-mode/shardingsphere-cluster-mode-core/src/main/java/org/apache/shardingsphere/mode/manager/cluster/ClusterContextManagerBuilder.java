@@ -64,8 +64,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         ClusterPersistRepository repository = ClusterPersistRepositoryFactory.getInstance((ClusterPersistRepositoryConfiguration) parameter.getModeConfiguration().getRepository());
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
         persistConfigurations(persistService, parameter);
-        EventBusContext eventBusContext = new EventBusContext();
-        RegistryCenter registryCenter = new RegistryCenter(repository, eventBusContext);
+        RegistryCenter registryCenter = new RegistryCenter(repository, new EventBusContext());
         InstanceContext instanceContext = buildInstanceContext(registryCenter, parameter.getInstanceMetaData(), parameter.getModeConfiguration());
         registryCenter.getRepository().watchSessionConnection(instanceContext);
         MetaDataContexts metaDataContexts = buildMetaDataContexts(persistService, parameter, instanceContext);
@@ -80,6 +79,12 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         if (!parameter.isEmpty()) {
             persistService.persistConfigurations(parameter.getDatabaseConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), isOverwrite);
         }
+    }
+    
+    private InstanceContext buildInstanceContext(final RegistryCenter registryCenter, final InstanceMetaData instanceMetaData, final ModeConfiguration modeConfig) {
+        ClusterWorkerIdGenerator clusterWorkerIdGenerator = new ClusterWorkerIdGenerator(registryCenter.getRepository(), registryCenter, instanceMetaData);
+        DistributedLockContext distributedLockContext = new DistributedLockContext(registryCenter.getRepository());
+        return new InstanceContext(new ComputeNodeInstance(instanceMetaData), clusterWorkerIdGenerator, modeConfig, distributedLockContext, registryCenter.getEventBusContext());
     }
     
     private MetaDataContexts buildMetaDataContexts(final MetaDataPersistService persistService,
@@ -110,12 +115,6 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     private void persistMetaData(final MetaDataContexts metaDataContexts) {
         metaDataContexts.getMetaData().getDatabases().forEach((databaseName, schemas) -> schemas.getSchemas()
                 .forEach((schemaName, tables) -> metaDataContexts.getPersistService().getDatabaseMetaDataService().persistMetaData(databaseName, schemaName, tables)));
-    }
-    
-    private InstanceContext buildInstanceContext(final RegistryCenter registryCenter, final InstanceMetaData instanceMetaData, final ModeConfiguration modeConfig) {
-        ClusterWorkerIdGenerator clusterWorkerIdGenerator = new ClusterWorkerIdGenerator(registryCenter.getRepository(), registryCenter, instanceMetaData);
-        DistributedLockContext distributedLockContext = new DistributedLockContext(registryCenter.getRepository());
-        return new InstanceContext(new ComputeNodeInstance(instanceMetaData), clusterWorkerIdGenerator, modeConfig, distributedLockContext, registryCenter.getEventBusContext());
     }
     
     private void registerOnline(final MetaDataPersistService persistService, final RegistryCenter registryCenter,
