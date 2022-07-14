@@ -75,7 +75,7 @@ public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<
         if (databaseResource.isEmpty()) {
             return;
         }
-        if (stringBuilder.isEmpty()) {
+        if (null == stringBuilder) {
             stringBuilder.append("ADD RESOURCES");
         } else {
             stringBuilder.append(String.format(System.lineSeparator() + System.lineSeparator() + "ADD RESOURCES"));
