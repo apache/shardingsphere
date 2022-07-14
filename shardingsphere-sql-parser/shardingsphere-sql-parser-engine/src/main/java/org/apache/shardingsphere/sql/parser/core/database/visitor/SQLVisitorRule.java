@@ -608,7 +608,9 @@ public enum SQLVisitorRule {
     
     REASSIGN_OWNED("ReassignOwned", SQLStatementType.DCL),
     
-    CREATE_COLLATION("CreateCollation", SQLStatementType.DDL);
+    CREATE_COLLATION("CreateCollation", SQLStatementType.DDL),
+    
+    CREATE_EVENT_TRIGGER("CreateEventTrigger", SQLStatementType.DDL);
     
     private final String name;
     
