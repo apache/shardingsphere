@@ -203,7 +203,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         }
         return result;
     }
-
+    
     private Collection<String> doShardingInYear(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
         Set<String> result = new HashSet<>();
         Year dateTimeUpperAsYear = dateTimeUpper.query(Year::from);
@@ -217,7 +217,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         }
         return result;
     }
-
+    
     private Collection<String> doShardingInMonth(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
         Set<String> result = new HashSet<>();
         Month dateTimeUpperAsMonth = dateTimeUpper.query(Month::from);
@@ -231,7 +231,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         }
         return result;
     }
-
+    
     private Collection<String> doShardingInYearMonth(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
         Set<String> result = new HashSet<>();
         YearMonth dateTimeUpperAsYearMonth = dateTimeUpper.query(YearMonth::from);
@@ -272,7 +272,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         Range<LocalTime> dateTimeRange = Range.range(lower, lowerBoundType, upper, upperBoundType);
         return calculateRange.isConnected(dateTimeRange) && !calculateRange.intersection(dateTimeRange).isEmpty();
     }
-
+    
     private boolean hasIntersection(final Range<Year> calculateRange, final Range<Comparable<?>> range, final Year dateTimeLower, final Year dateTimeUpper) {
         Year lower = range.hasLowerBound() ? parseYear(range.lowerEndpoint()) : dateTimeLower;
         Year upper = range.hasUpperBound() ? parseYear(range.upperEndpoint()) : dateTimeUpper;
@@ -281,7 +281,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         Range<Year> dateTimeRange = Range.range(lower, lowerBoundType, upper, upperBoundType);
         return calculateRange.isConnected(dateTimeRange) && !calculateRange.intersection(dateTimeRange).isEmpty();
     }
-
+    
     private boolean hasIntersection(final Range<Month> calculateRange, final Range<Comparable<?>> range, final Month dateTimeLower, final Month dateTimeUpper) {
         Month lower = range.hasLowerBound() ? parseMonth(range.lowerEndpoint()) : dateTimeLower;
         Month upper = range.hasUpperBound() ? parseMonth(range.upperEndpoint()) : dateTimeUpper;
@@ -290,7 +290,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         Range<Month> dateTimeRange = Range.range(lower, lowerBoundType, upper, upperBoundType);
         return calculateRange.isConnected(dateTimeRange) && !calculateRange.intersection(dateTimeRange).isEmpty();
     }
-
+    
     private boolean hasIntersection(final Range<YearMonth> calculateRange, final Range<Comparable<?>> range, final YearMonth dateTimeLower, final YearMonth dateTimeUpper) {
         YearMonth lower = range.hasLowerBound() ? parseYearMonth(range.lowerEndpoint()) : dateTimeLower;
         YearMonth upper = range.hasUpperBound() ? parseYearMonth(range.upperEndpoint()) : dateTimeUpper;
@@ -311,15 +311,15 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     private LocalTime parseLocalTime(final Comparable<?> endpoint) {
         return LocalTime.parse(getDateTimeText(endpoint).substring(0, dateTimePatternLength), dateTimeFormatter);
     }
-
+    
     private Year parseYear(final Comparable<?> endpoint) {
         return Year.parse(getDateTimeText(endpoint).substring(0, dateTimePatternLength), dateTimeFormatter);
     }
-
+    
     private Month parseMonth(final Comparable<?> endpoint) {
         return (Month) endpoint;
     }
-
+    
     private YearMonth parseYearMonth(final Comparable<?> endpoint) {
         return YearMonth.parse(getDateTimeText(endpoint).substring(0, dateTimePatternLength), dateTimeFormatter);
     }
