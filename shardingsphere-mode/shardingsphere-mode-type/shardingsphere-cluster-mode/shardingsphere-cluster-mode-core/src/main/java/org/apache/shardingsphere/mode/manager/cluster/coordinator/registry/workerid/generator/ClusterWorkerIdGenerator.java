@@ -56,13 +56,14 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
             reTryCount++;
             result = generateSequentialId();
             if (result > MAX_WORKER_ID) {
-                // TODO Can the work id keep unique?
+                // TODO can the work id keep unique?
                 result = result % MAX_WORKER_ID + 1;
             }
             // TODO check may retry should in the front of id generate
             if (reTryCount > MAX_RETRY) {
                 throw new ShardingSphereException("System assigned %s failed, assigned %s was %s", WORKER_ID_KEY, WORKER_ID_KEY, result);
             }
+            // TODO how to finish the loop check condition?
         } while (isExist(result));
         registryCenter.getComputeNodeStatusService().persistInstanceWorkerId(instanceMetaData.getId(), result);
         return result;
