@@ -51,15 +51,15 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     
     private long generate() {
         long result;
-        int retryCount = 0;
+        int retryTimes = 0;
         do {
-            retryCount++;
+            retryTimes++;
             result = generateSequentialId();
             if (result > MAX_WORKER_ID) {
                 result = result % MAX_WORKER_ID + 1;
             }
             // TODO check may retry should in the front of id generate
-            if (retryCount > MAX_RETRY) {
+            if (retryTimes > MAX_RETRY) {
                 throw new ShardingSphereException("System assigned %s failed, assigned %s was %s", WORKER_ID_KEY, WORKER_ID_KEY, result);
             }
         } while (isAssignedWorkerId(result));
