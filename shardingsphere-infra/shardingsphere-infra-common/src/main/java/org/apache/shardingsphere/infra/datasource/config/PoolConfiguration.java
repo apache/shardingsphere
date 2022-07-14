@@ -42,4 +42,6 @@ public final class PoolConfiguration {
     private final Boolean readOnly;
     
     private final Properties customProperties;
+    
+    private final Properties properties;
 }

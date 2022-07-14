@@ -41,7 +41,7 @@ public final class DataSourcePropertiesCreatorTest {
     
     private DataSourceConfiguration createResourceConfiguration() {
         ConnectionConfiguration connectionConfig = new ConnectionConfiguration("jdbc:mysql://localhost:3306/demo_ds", "root", "root");
-        PoolConfiguration poolConfig = new PoolConfiguration(null, null, null, null, null, null, null);
+        PoolConfiguration poolConfig = new PoolConfiguration(null, null, null, null, null, null, null, null);
         return new DataSourceConfiguration(connectionConfig, poolConfig);
     }
     

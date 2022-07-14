@@ -72,6 +72,9 @@ public final class DataSourcePropertiesCreator {
         if (null != dataSourceConfig.getPool().getCustomProperties()) {
             result.putAll((Map) dataSourceConfig.getPool().getCustomProperties());
         }
+        if (null != dataSourceConfig.getPool().getProperties()) {
+            result.putAll((Map) dataSourceConfig.getPool().getProperties());
+        }
         return result;
     }
     

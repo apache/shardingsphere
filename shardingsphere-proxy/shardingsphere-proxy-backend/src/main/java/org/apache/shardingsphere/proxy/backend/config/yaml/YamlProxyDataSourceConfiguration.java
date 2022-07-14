@@ -30,6 +30,12 @@ import java.util.Properties;
 @Setter
 public final class YamlProxyDataSourceConfiguration implements YamlConfiguration {
     
+    private String host;
+    
+    private Long port;
+    
+    private String db;
+    
     private String url;
     
     private String username;
@@ -49,4 +55,6 @@ public final class YamlProxyDataSourceConfiguration implements YamlConfiguration
     private Boolean readOnly;
     
     private Properties customPoolProps;
+    
+    private Properties properties;
 }

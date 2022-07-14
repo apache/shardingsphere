@@ -18,23 +18,15 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.queryable;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.common.queryable.ConvertYamlConfigurationStatement;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperFactory;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 
-import javax.sql.DataSource;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
@@ -47,7 +39,7 @@ public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<
     
     @Override
     protected Collection<String> getColumnNames() {
-        return Collections.singleton("result");
+        return Collections.singleton("converted DistSQL");
     }
     
     @Override
@@ -59,68 +51,62 @@ public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<
         } catch (final IOException ex) {
             throw new ShardingSphereException(ex);
         }
-        String exportedData = generateExportData(yamlConfig.getDatabaseName());
-        if (getSqlStatement().getFilePath() != null) {
-            String filePath = getSqlStatement().getFilePath();
-            exportToFile(filePath, exportedData);
-            return Collections.singleton(new LocalDataQueryResultRow(String.format("Successfully exported to：'%s'", filePath)));
-        }
-        return Collections.singleton(new LocalDataQueryResultRow(exportedData));
+        String convertedDistSQL = generateConvertedDistSQL(yamlConfig);
+        return Collections.singleton(new LocalDataQueryResultRow(convertedDistSQL));
     }
     
-    private String generateExportData(final String databaseName) {
-        StringBuilder result = new StringBuilder();
-        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
-        appendDatabaseName(databaseName, result);
-        appendDataSourceConfigurations(database, result);
-        appendRuleConfigurations(database.getRuleMetaData().getConfigurations(), result);
-        return result.toString();
+    private String generateConvertedDistSQL(final YamlProxyDatabaseConfiguration yamlConfig) {
+        StringBuilder convetedDistSQL = new StringBuilder();
+        appendCreateDatabaseDistSQL(yamlConfig.getDatabaseName(), convetedDistSQL);
+        appendAddResourceDistSQL(yamlConfig.getDataSources(), convetedDistSQL);
+        return convetedDistSQL.toString();
     }
     
-    private void appendDatabaseName(final String databaseName, final StringBuilder stringBuilder) {
-        stringBuilder.append("databaseName").append(": ").append(databaseName);
-    }
-    
-    private void appendDataSourceConfigurations(final ShardingSphereDatabase database, final StringBuilder stringBuilder) {
-        if (database.getResource().getDataSources().isEmpty()) {
+    private void appendCreateDatabaseDistSQL(final String databaseName, final StringBuilder stringBuilder) {
+        if (databaseName == null) {
             return;
         }
-        stringBuilder.append(System.lineSeparator()).append("dataSources:").append(System.lineSeparator());
-        for (Map.Entry<String, DataSource> entry : database.getResource().getDataSources().entrySet()) {
-            appendDataSourceConfiguration(entry.getKey(), entry.getValue(), stringBuilder);
-        }
+        stringBuilder.append("CREATE DATABASE").append(" ").append(databaseName).append(";");
     }
     
-    private void appendDataSourceConfiguration(final String name, final DataSource dataSource, final StringBuilder stringBuilder) {
-        stringBuilder.append("  ").append(name).append(":").append(System.lineSeparator());
-        DataSourceProperties dataSourceProps = DataSourcePropertiesCreator.create(dataSource);
-        dataSourceProps.getConnectionPropertySynonyms().getStandardProperties()
-                .forEach((key, value) -> stringBuilder.append("    ").append(key).append(": ").append(value).append(System.lineSeparator()));
-        dataSourceProps.getPoolPropertySynonyms().getStandardProperties().forEach((key, value) -> stringBuilder.append("    ").append(key).append(": ").append(value).append(System.lineSeparator()));
-    }
-    
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private void appendRuleConfigurations(final Collection<RuleConfiguration> ruleConfigs, final StringBuilder stringBuilder) {
-        if (ruleConfigs.isEmpty()) {
+    private void appendAddResourceDistSQL(final Map<String, YamlProxyDataSourceConfiguration> databaseResource, final StringBuilder stringBuilder) {
+        if (databaseResource.isEmpty()) {
             return;
         }
-        stringBuilder.append("rules:").append(System.lineSeparator());
-        for (Map.Entry<RuleConfiguration, YamlRuleConfigurationSwapper> entry : YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurations(ruleConfigs).entrySet()) {
-            stringBuilder.append(YamlEngine.marshal(Collections.singletonList(entry.getValue().swapToYamlConfiguration(entry.getKey()))));
+        if (stringBuilder.length() == 0) {
+            stringBuilder.append("ADD RESOURCES");
+        } else {
+            stringBuilder.append(System.lineSeparator() + System.lineSeparator()).append("ADD RESOURCES");
         }
-    }
-    
-    @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void exportToFile(final String filePath, final String exportedData) {
-        File file = new File(filePath);
-        if (!file.exists()) {
-            file.getParentFile().mkdirs();
+        for (Map.Entry<String, YamlProxyDataSourceConfiguration> entry : databaseResource.entrySet()) {
+            stringBuilder.append(" ").append(entry.getKey()).append(" (" + System.lineSeparator());
+            if (entry.getValue().getUrl() != null) {
+                stringBuilder.append("    URL=").append(entry.getValue().getUrl()).append("," + System.lineSeparator());
+            } else {
+                stringBuilder.append("    HOST=").append(entry.getValue().getHost()).append("," + System.lineSeparator());
+                stringBuilder.append("    PORT=").append(entry.getValue().getPort()).append("," + System.lineSeparator());
+                stringBuilder.append("    DB=").append(entry.getValue().getDb()).append("," + System.lineSeparator());
+            }
+            stringBuilder.append("    USER=").append(entry.getValue().getUsername()).append("," + System.lineSeparator());
+            stringBuilder.append("    PASSWORD=").append(entry.getValue().getPassword()).append("" + System.lineSeparator());
+            stringBuilder.append("    PROPERTIES(");
+            if (entry.getValue().getProperties() != null) {
+                entry.getValue().getProperties().forEach((key, value) -> stringBuilder.append("\"" + key + "\"=").append(value).append(","));
+                stringBuilder.deleteCharAt(stringBuilder.length() - 1);
+            } else {
+                if (entry.getValue().getConnectionTimeoutMilliseconds() != null)
+                    stringBuilder.append("\"connectionTimeoutMilliseconds\"=").append(entry.getValue().getConnectionTimeoutMilliseconds()).append(",");
+                if (entry.getValue().getIdleTimeoutMilliseconds() != null)
+                    stringBuilder.append("\"idleTimeoutMilliseconds\"=").append(entry.getValue().getIdleTimeoutMilliseconds()).append(",");
+                if (entry.getValue().getMaxLifetimeMilliseconds() != null)
+                    stringBuilder.append("\"maxLifetimeMilliseconds\"=").append(entry.getValue().getMaxLifetimeMilliseconds()).append(",");
+                if (entry.getValue().getMaxPoolSize() != null)
+                    stringBuilder.append("\"maxPoolSize\"=").append(entry.getValue().getMaxPoolSize());
+                if (entry.getValue().getMinPoolSize() != null)
+                    stringBuilder.append("\"minPoolSize\"=").append(entry.getValue().getMinPoolSize());
+            }
+            stringBuilder.append(")").append(System.lineSeparator()).append("),");
         }
-        try (FileOutputStream output = new FileOutputStream(file)) {
-            output.write(exportedData.getBytes());
-            output.flush();
-        } catch (final IOException ex) {
-            throw new ShardingSphereException(ex);
-        }
+        stringBuilder.deleteCharAt(stringBuilder.length() - 1).append(";");
     }
 }
