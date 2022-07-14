@@ -519,9 +519,6 @@
     <sql-case id="create_by_mysql_source_test_case845" value="CREATE VIEW v1 AS SELECT GROUPING(a2345678901234567890123456789012345678901234.a), GROUPING(a2345678901234567890123456789012345678901234.a), GROUPING(a2345678901234567890123456789012345678901234.a) FROM t1 AS a2345678901234567890123456789012345678901234 GROUP BY a WITH ROLLUP" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case846" value="CREATE VIEW v1 AS SELECT NOW(6), CURTIME(4), LOCALTIME(3), CURRENT_TIME(2), CURRENT_TIMESTAMP(0), LOCALTIMESTAMP(1), UTC_TIME(4), UTC_TIMESTAMP(4)" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case847" value="CREATE VIEW v1 AS SELECT STDDEV_SAMP(a) OVER ( ORDER BY a ROWS CURRENT ROW) AS std_dev_samp FROM t" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case848" value="CREATE VIEW v1 AS SELECT TRIM(BOTH &apos;y&apos; FROM s) FROM t1" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case849" value="CREATE VIEW v1 AS SELECT TRIM(LEADING &apos;y&apos; FROM s) FROM t1" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case850" value="CREATE VIEW v1 AS SELECT TRIM(TRAILING &apos;y&apos; FROM s) FROM t1" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case851" value="CREATE VIEW v1 AS SELECT id, &apos;a&apos; AS name, a AS val FROM t1 UNION SELECT id, &apos;mn&apos;, HEX(LIKE_RANGE_MIN(a, 16)) AS min FROM t1 UNION SELECT id, &apos;mx&apos;, HEX(LIKE_RANGE_MAX(a, 16)) AS max FROM t1 UNION SELECT id, &apos;sp&apos;, REPEAT(&apos;-&apos;, 32) AS sep FROM t1 ORDER BY id, name" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case852" value="CREATE VIEW v1 AS SELECT test.bug12812()" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case853" value="CREATE VIEW v2 AS SELECT * FROM t1 USE KEY () ORDER BY a" db-types="MySQL" />
@@ -775,7 +772,6 @@
     <sql-case id="create_by_mysql_source_test_case1466" value="create view v1 as select t1.a as f1, dt.a as f2 from t1, lateral (select t1.a+t2.a as a from t2) dt" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1467" value="create view v1 as select test.`f``1` ()" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case1468" value="create view v3 as select bug23491_original.f1()" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case1" value="SELECT  COUNTRY  FROM t1 WHERE  trim(trailing &apos;a&apos; FROM COUNTRY)= &apos;Australi&apos;" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case2" value="SELECT  MAX(a) FROM t1 WHERE (b) IN (SELECT MIN(t2.b) FROM (SELECT b from t1) AS t2 GROUP BY t2.b WITH ROLLUP HAVING GROUPING (t2.b)=0)" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case3" value="SELECT  MAX(a) FROM t1 WHERE (b) IN (SELECT MIN(t2.b) FROM t1 AS t2 GROUP BY t2.b WITH ROLLUP HAVING GROUPING (t2.b)=0)" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case4" value="SELECT &apos;1&apos; IN (&apos;1&apos;, INET_NTOA(0))" db-types="MySQL" />
@@ -871,7 +867,6 @@
     <sql-case id="select_by_mysql_source_test_case101" value="SELECT 1 FROM t WHERE insert(a &amp; 0x111111,&apos;&apos;,&apos;&apos;,&apos;&apos;)" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case102" value="SELECT 1 FROM t WHERE insert(a &amp; NULL,&apos;&apos;,&apos;&apos;,&apos;&apos;)" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case103" value="SELECT 1 FROM t1 GROUP BY SUBSTRING(SYSDATE() FROM &apos;K&apos; FOR &apos;jxW&lt;&apos;)" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case104" value="SELECT 1 FROM t1 GROUP BY TRIM(LEADING RAND() FROM &apos;&apos;)" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case105" value="SELECT 1 FROM t1 GROUP BY insert(a,&apos;1&apos;,&apos;11&apos;,&apos;1&apos;)" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case106" value="SELECT 1 FROM v1 AS table1 RIGHT OUTER JOIN LATERAL (SELECT 1 FROM v1 AS table2 RIGHT OUTER JOIN LATERAL ( SELECT 1 FROM v1 AS table3 ) AS table4 ON table1.c1 = 1) AS table5 ON 1" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case107" value="SELECT 1 HAVING json_objectagg(utc_date(), 1416) &lt;&gt; 0" db-types="MySQL" />
@@ -1005,8 +1000,6 @@
     <sql-case id="select_by_mysql_source_test_case235" value="SELECT COUNT(*) FROM t1 GROUP BY t1.a  HAVING t1.a IN (SELECT t3.a FROM t1 AS t3 WHERE t3.b IN (SELECT b FROM t2, lateral (select t1.a) dt))" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case236" value="SELECT COUNT(*) FROM t1 LEFT JOIN json_table( &apos;{}&apos;,&apos;$[0][1]&apos; COLUMNS(a FOR ORDINALITY) ) AS t2 ON TRUE GROUP BY e*from_unixtime(0)" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case237" value="SELECT COUNT(*) FROM t1 WHERE c=REPEAT(&apos;a&apos;,256)" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case238" value="SELECT COUNTRY FROM t1 WHERE trim(leading  &apos;A&apos; FROM COUNTRY) = &apos;ustralia&apos; AND trim(trailing &apos;a&apos; FROM COUNTRY) = &apos;Australi&apos;" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case239" value="SELECT COUNTRY FROM t1 WHERE trim(leading &apos;A&apos; FROM  COUNTRY) = &apos;ustralia&apos;" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case240" value="SELECT CRC32(INSERT(&apos;foodyear&apos;, 1, 4, &apos;good&apos;))" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case241" value="SELECT CURRENT_TIME(6) RLIKE &apos;^[0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{6}$&apos;" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case242" value="SELECT CURRENT_TIMESTAMP(6) RLIKE &apos;^[0-9]{4}-[0-9]{2}-[0-9]{2} [0-9]{2}:[0-9]{2}:[0-9]{2}.[0-9]{6}$&apos;" db-types="MySQL" />
@@ -1030,8 +1023,6 @@
     <sql-case id="select_by_mysql_source_test_case262" value="SELECT GROUPING(1) FROM t1 GROUP BY 1 WITH ROLLUP" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case263" value="SELECT GROUPING(alias2.pk) AS field2 FROM t2 AS alias1 LEFT JOIN t1 AS alias2 ON 0 GROUP BY alias2.pk WITH ROLLUP ORDER BY GROUPING(alias2.pk)" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case264" value="SELECT GROUPING(table2.col_time) AS field1 FROM t1 AS table1,t1 as table2 WHERE table2.pk = 1 GROUP BY table2.col_time WITH ROLLUP ORDER BY GROUPING(table2.col_time)" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case265" value="SELECT HEX(LPAD(&apos;&apos;, 42, TRIM(BOTH c1 FROM x&apos;ff&apos;))) FROM t1" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case266" value="SELECT HEX(LPAD(&apos;&apos;, 42, TRIM(x&apos;ffff&apos; FROM c1))) FROM t1" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case270" value="SELECT HEX(_binary 0x0003 &lt;&lt; (_binary 0x38 | 0x38))" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case271" value="SELECT HEX(_binary 0x0003 &lt;&lt; (_binary 0x38 | NULL))" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case272" value="SELECT HEX(_binary 0x0003 &lt;&lt; (_binary 0x40 | 0x40))" db-types="MySQL" />
@@ -1158,14 +1149,6 @@
     <sql-case id="select_by_mysql_source_test_case395" value="SELECT TRACE RLIKE &apos;minmax_keypart_in_disjunctive_query&apos; AS OK FROM INFORMATION_SCHEMA.OPTIMIZER_TRACE" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case396" value="SELECT TRACE RLIKE &apos;minmax_keypart_in_disjunctive_query&apos; AS OK FROM INFORMATION_SCHEMA.OPTIMIZER_TRACE" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case397" value="SELECT TRACE RLIKE &apos;minmax_keypart_in_disjunctive_query&apos; AS OK FROM INFORMATION_SCHEMA.OPTIMIZER_TRACE" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case398" value="SELECT TRIM(BOTH &apos;y&apos; FROM s) FROM t1" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case399" value="SELECT TRIM(BOTH x&apos;F09F8DA3&apos; FROM _utf8mb4 x&apos;F09F8DA3F09F8DA3&apos;)" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case400" value="SELECT TRIM(BOTH x&apos;f0&apos; FROM _utf8mb4 x&apos;F09F8DA3F09F8DA3&apos;)" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case401" value="SELECT TRIM(LEADING &apos;\t&apos; FROM MID(argument,LOCATE(&apos;Query&apos;,argument)+5)) FROM test_log WHERE (argument LIKE &apos;%BY %&apos; OR argument LIKE &apos;%AS %&apos; OR argument LIKE &apos;%PASSWORD %&apos;) AND argument NOT LIKE &apos;%Prepare%&apos;" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case402" value="SELECT TRIM(LEADING &apos;y&apos; FROM s) FROM t1" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case403" value="SELECT TRIM(TRAILING &apos;y&apos; FROM s) FROM t1" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case404" value="SELECT TRIM(_latin2 x&apos;a3&apos; from _latin1 &quot;hello&quot;)" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case405" value="SELECT TRIM(leading _utf8mb4 x&apos;F09F8DA3&apos; from _gb18030 x&apos;9439B9376181308B33&apos;)" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case406" value="SELECT UNIX_TIMESTAMP(col_datetime_4_not_null) AS c1 FROM t1 WHERE col_time_4_key NOT BETWEEN &apos;2001-07-06&apos; AND LEAST(FROM_DAYS(col_timestamp_key), col_timestamp_5) OR CONVERT_TZ(MAKETIME(24, 5, 7), &apos;Japan&apos;, &apos;Japan&apos;) IS NULL OR CURRENT_TIMESTAMP() IS NOT NULL OR col_datetime_not_null_key &gt;= UTC_TIME() ORDER BY 1" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case407" value="SELECT UTC_DATE()" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case408" value="SELECT VALIDATE_PASSWORD_STRENGTH(REPEAT(&quot;aA1#&quot;, 26))" db-types="MySQL" />
@@ -1193,7 +1176,6 @@
     <sql-case id="select_by_mysql_source_test_case642" value="SELECT a, COUNT(*) AS c, a IN (SELECT a FROM t2 WHERE a=COUNT(t1.a)) AS s FROM t1 GROUP BY a" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case643" value="SELECT a, GROUPING(1) FROM t1 GROUP BY 1 WITH ROLLUP" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case644" value="SELECT a, GROUPING(SUM(a)) FROM t1 GROUP BY (a) WITH ROLLUP" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case645" value="SELECT a, MAX(TRIM(&apos;1&apos; FROM ~1)) FROM t GROUP BY a" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case646" value="SELECT a, SUM(a), SUM(a)+1, CONCAT(SUM(a),&apos;x&apos;), SUM(a)+SUM(a), SUM(a) FROM (SELECT 1 a, 2 b UNION SELECT 2,3 UNION SELECT 5,6 ) d GROUP BY a WITH ROLLUP ORDER BY GROUPING(a),a" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case647" value="SELECT a, b FROM t1 GROUP BY GROUPING(a),GROUPING(b) WITH ROLLUP" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case648" value="SELECT a, b FROM t1 GROUP BY a,b WITH ROLLUP HAVING GROUPING(b) = 1" db-types="MySQL" />
@@ -1220,9 +1202,6 @@
     <sql-case id="select_by_mysql_source_test_case670" value="SELECT bin_to_uuid(x&apos;&apos;, true)" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case671" value="SELECT bug18589_f1(REPEAT(&quot;a&quot;, 767))" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case672" value="SELECT c1 &lt;=  REPEAT( SUBSTR( UPPER(&apos;Rdlpikti&apos;) , 1 , 2 ), 8 ) FROM t1" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case673" value="SELECT c1, TRIM(BOTH &apos;𠻞&apos; FROM c1) FROM `表一`" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case674" value="SELECT c1, TRIM(LEADING &apos;𠻞&apos; FROM c1) FROM `表一`" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case675" value="SELECT c1, TRIM(TRAILING &apos;𠻞&apos; FROM c1) FROM `表一`" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case676" value="SELECT cast( &apos;2019-10-10 10:11&apos; AT TIME ZONE &apos;UTC&apos; AS DATETIME )" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case677" value="SELECT cast( &apos;2019-10-10&apos; AT TIME ZONE &apos;UTC&apos; AS DATETIME )" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case678" value="SELECT cast( 123 AT TIME ZONE &apos;UTC&apos; AS DATETIME )" db-types="MySQL" />
@@ -1470,9 +1449,6 @@
     <sql-case id="select_by_mysql_source_test_case951" value="select case 1/0 when &quot;a&quot; then &quot;true&quot; else &quot;false&quot; END" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case952" value="select collation(insert(_latin2&apos;abcd&apos;,2,3,_latin2&apos;ef&apos;)), coercibility(insert(_latin2&apos;abcd&apos;,2,3,_latin2&apos;ef&apos;))" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case953" value="select collation(repeat(_latin2&apos;a&apos;,10)), coercibility(repeat(_latin2&apos;a&apos;,10))" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case954" value="select collation(trim(BOTH _latin2&apos; &apos; FROM _latin2&apos;a&apos;)), coercibility(trim(BOTH _latin2&apos;a&apos; FROM _latin2&apos;a&apos;))" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case955" value="select collation(trim(LEADING _latin2&apos; &apos; FROM _latin2&apos;a&apos;)), coercibility(trim(LEADING _latin2&apos;a&apos; FROM _latin2&apos;a&apos;))" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case956" value="select collation(trim(TRAILING _latin2&apos; &apos; FROM _latin2&apos;a&apos;)), coercibility(trim(TRAILING _latin2&apos;a&apos; FROM _latin2&apos;a&apos;))" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case957" value="select concat(&quot;a&quot;,NULL),replace(NULL,&quot;a&quot;,&quot;b&quot;),replace(&quot;string&quot;,&quot;i&quot;,NULL),replace(&quot;string&quot;,NULL,&quot;i&quot;),insert(&quot;abc&quot;,1,1,NULL),left(NULL,1)" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case958" value="select concat(c1, repeat(&apos;xx&apos;, 250)) as cc from t2 group by cc order by 1" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case959" value="select conv(255 &quot;p1&quot;, 10, 16)" db-types="MySQL" />
@@ -1495,8 +1471,6 @@
     <sql-case id="select_by_mysql_source_test_case976" value="select db1_secret.db()" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case977" value="select default(str), default(strnull), default(intg), default(rel) from t1" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case978" value="select distinct concat(c1, repeat(&apos;xx&apos;, 250)) as cc from t2 order by 1" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case979" value="select domain from t1 where concat(&apos;@&apos;, trim(leading &apos;.&apos; from concat(&apos;.&apos;, domain))) = &apos;@hello.de&apos;" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case980" value="select domain from t1 where concat(&apos;@&apos;, trim(leading &apos;.&apos; from concat(&apos;.&apos;, domain))) = &apos;@test.de&apos;" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case981" value="select extract(DAY_HOUR FROM &quot;1999-01-02 10:11:12&quot;)" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case982" value="select extract(DAY_MICROSECOND FROM &quot;1999-01-02 10:11:12.000123&quot;)" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case983" value="select extract(DAY_MINUTE FROM &quot;02 10:11:12&quot;)" db-types="MySQL" />
@@ -1653,10 +1627,6 @@
     <sql-case id="select_by_mysql_source_test_case1138" value="select test.metaphon(&quot;Hello&quot;)" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case1139" value="select test.pi(), test.pi ()" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case1140" value="select test.pi(), test.pi ()" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case1141" value="select trim(&apos;xyz&apos; from null) as &quot;must_be_null&quot;" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case1142" value="select trim(leading NULL from &apos;kate&apos;) as &quot;must_be_null&quot;" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case1143" value="select trim(null from &apos;kate&apos;) as &quot;must_be_null&quot;" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case1144" value="select trim(trailing NULL from &apos;xyz&apos;) as &quot;must_be_null&quot;" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case1145" value="select vq1.b,dt.b from v1 vq1, lateral (select vq1.b) dt" db-types="MySQL" />
     <sql-case id="insert_by_mysql_source_test_case1" value="INSERT /*+ SET_VAR(time_zone = &apos;UTC&apos;) */ t1 VALUES (TIMEDIFF(NOW(), UTC_TIMESTAMP))" db-types="MySQL" />
     <sql-case id="insert_by_mysql_source_test_case2" value="INSERT IGNORE INTO t1 SELECT 101, REPEAT(&apos;ab&apos;, @max_allowed_packet)" db-types="MySQL" />
@@ -2256,10 +2226,6 @@
     <sql-case id="explain_by_mysql_source_test_case34" value="EXPLAIN SELECT myfunc_int(MIN(b) xx) as c FROM t1 GROUP BY a" db-types="MySQL" />
     <sql-case id="explain_by_mysql_source_test_case35" value="EXPLAIN SELECT myfunc_int(a AS attr_name) FROM t1" db-types="MySQL" />
     <sql-case id="explain_by_mysql_source_test_case36" value="EXPLAIN SELECT myfunc_int(test.fn(MIN(b))) as c FROM t1 GROUP BY a" db-types="MySQL" />
-    <sql-case id="explain_by_mysql_source_test_case37" value="EXPLAIN SELECT s FROM t1 WHERE TRIM(&apos;y&apos; FROM s) &gt; &apos;ab&apos;" db-types="MySQL" />
-    <sql-case id="explain_by_mysql_source_test_case38" value="EXPLAIN SELECT s FROM t1 WHERE TRIM(BOTH &apos;y&apos; FROM s) &gt; &apos;ab&apos;" db-types="MySQL" />
-    <sql-case id="explain_by_mysql_source_test_case39" value="EXPLAIN SELECT s FROM t1 WHERE TRIM(LEADING &apos;y&apos; FROM s) &gt; &apos;ab&apos;" db-types="MySQL" />
-    <sql-case id="explain_by_mysql_source_test_case40" value="EXPLAIN SELECT s FROM t1 WHERE TRIM(TRAILING &apos;y&apos; FROM s) &gt; &apos;ab&apos;" db-types="MySQL" />
     <sql-case id="explain_by_mysql_source_test_case41" value="EXPLAIN SELECT test.fn(MIN(b)) as c FROM t1 GROUP BY a" db-types="MySQL" />
     <sql-case id="explain_by_mysql_source_test_case42" value="EXPLAIN WITH cte AS ( SELECT alias1 . col_date AS field1 , alias1 . col_blob AS field2 , alias1 . pk AS field3 , alias1 . pk AS field4 FROM  dd AS alias1  LEFT  JOIN d AS alias2 ON  alias1 . col_varchar_key =  alias2 . col_varchar_key WHERE  alias2 . pk != 0 OR  alias2 . col_varchar_key &gt;= &apos;v&apos; ORDER BY field4 ) DELETE /*+ NO_MERGE(outrcte) */  outr2.* FROM d AS outr1 JOIN d AS outr2 ON ( outr1 . col_datetime_key = outr2 . col_date ) JOIN cte AS outrcte ON outr1 . pk = outrcte.field1 WHERE outr1 . col_int_key = ( SELECT  innr1 . col_int AS y FROM dd AS innr1 INNER JOIN cte AS innrcte ON innr1.col_int_key = innrcte.field1 WHERE innr1 . col_blob_key = &apos;h&apos; ORDER BY innr1 . col_varchar )" db-types="MySQL" />
     <sql-case id="explain_by_mysql_source_test_case43" value="EXPLAIN WITH cte AS ( SELECT alias1 . col_date AS field1 , alias2 . col_blob AS field2 FROM  view_d AS alias1  LEFT  JOIN view_dd AS alias2 ON  alias1 . col_blob_key =  alias2 . col_blob_key WHERE  alias1 . col_varchar_key IS  NULL AND  alias2 . col_int_key &gt; 6 AND alias2 . col_int_key &lt;= ( 7 + 5 ) OR alias1 . col_blob_key &gt;= &apos;a&apos; ) DELETE /*+ MERGE(outrcte) */ FROM outr1.*, outr2.* USING d AS outr1 LEFT OUTER JOIN d AS outr2 ON ( outr1 . col_date = outr2 . col_date ) JOIN cte AS outrcte ON outr2 . col_blob_key = outrcte.field1 WHERE outr1 . col_blob  IN ( SELECT DISTINCT innr1 . col_blob_key AS y FROM dd AS innr1 RIGHT OUTER JOIN cte AS innrcte ON innr1.pk &gt;= innrcte.field1 WHERE outr1 . col_int_key &gt; 6  )" db-types="MySQL" />
