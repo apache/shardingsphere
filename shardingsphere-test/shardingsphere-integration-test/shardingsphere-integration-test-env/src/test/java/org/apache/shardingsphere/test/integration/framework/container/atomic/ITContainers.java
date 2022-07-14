@@ -94,7 +94,7 @@ public final class ITContainers implements Startable {
                 .forEach(each -> {
                     while (!(each.isRunning() && each.isHealthy())) {
                         try {
-                            TimeUnit.MILLISECONDS.sleep(200L);
+                            TimeUnit.MILLISECONDS.sleep(500L);
                         } catch (final InterruptedException ignored) {
                         }
                     }

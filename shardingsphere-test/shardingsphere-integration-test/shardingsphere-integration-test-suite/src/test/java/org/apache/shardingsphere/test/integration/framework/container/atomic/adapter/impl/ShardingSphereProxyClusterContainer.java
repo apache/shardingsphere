@@ -18,12 +18,11 @@
 package org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.impl;
 
 import com.zaxxer.hikari.HikariDataSource;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
-import org.apache.shardingsphere.test.integration.framework.container.wait.JDBCConnectionWaitStrategy;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.AdapterContainer;
+import org.apache.shardingsphere.test.integration.framework.container.wait.JDBCConnectionWaitStrategy;
 import org.testcontainers.containers.BindMode;
 
 import javax.sql.DataSource;
@@ -32,10 +31,9 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * ShardingSphere proxy container.
+ * ShardingSphere proxy container for cluster mode.
  */
-@Slf4j
-public final class ShardingSphereProxyContainer extends DockerITContainer implements AdapterContainer {
+public final class ShardingSphereProxyClusterContainer extends DockerITContainer implements AdapterContainer {
     
     private static final String AGENT_HOME_IN_CONTAINER = "/usr/local/shardingsphere-agent";
     
@@ -47,7 +45,7 @@ public final class ShardingSphereProxyContainer extends DockerITContainer implem
     
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
     
-    public ShardingSphereProxyContainer(final DatabaseType databaseType, final String scenario) {
+    public ShardingSphereProxyClusterContainer(final DatabaseType databaseType, final String scenario) {
         super("ShardingSphere-Proxy", "apache/shardingsphere-proxy-test");
         this.databaseType = databaseType;
         this.scenario = scenario;
@@ -59,7 +57,7 @@ public final class ShardingSphereProxyContainer extends DockerITContainer implem
      * @param agentHome agent home
      * @return self
      */
-    public ShardingSphereProxyContainer withAgent(final String agentHome) {
+    public ShardingSphereProxyClusterContainer withAgent(final String agentHome) {
         withEnv(PROPERTY_AGENT_HOME, AGENT_HOME_IN_CONTAINER);
         withFileSystemBind(agentHome, AGENT_HOME_IN_CONTAINER, BindMode.READ_ONLY);
         return this;
@@ -73,7 +71,7 @@ public final class ShardingSphereProxyContainer extends DockerITContainer implem
     
     private void mapConfigurationFiles() {
         String containerPath = "/opt/shardingsphere-proxy/conf";
-        withClasspathResourceMapping("/env/common/proxy/conf/", containerPath, BindMode.READ_ONLY);
+        withClasspathResourceMapping("/env/common/cluster/proxy/conf/", containerPath, BindMode.READ_ONLY);
         withClasspathResourceMapping("/env/scenario/" + scenario + "/proxy/conf/" + databaseType.getType().toLowerCase(), containerPath, BindMode.READ_ONLY);
     }
     
