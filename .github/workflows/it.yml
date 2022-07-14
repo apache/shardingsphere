@@ -139,9 +139,17 @@ jobs:
         scenario: [ db, tbl, encrypt, readwrite_splitting, shadow ]
         mode: [Standalone, Cluster]
         exclude:
+          - adapter: jdbc
+            database: PostgreSQL
+            scenario: tbl
+            mode: Cluster
           - adapter: proxy
             database: PostgreSQL
             scenario: tbl
+            mode: Cluster
+          - adapter: jdbc
+            database: PostgreSQL
+            scenario: readwrite_splitting
             mode: Cluster
     steps:
       - uses: actions/checkout@v2
