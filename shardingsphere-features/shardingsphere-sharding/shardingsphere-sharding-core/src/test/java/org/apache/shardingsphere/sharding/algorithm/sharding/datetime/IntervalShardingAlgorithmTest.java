@@ -439,7 +439,7 @@ public final class IntervalShardingAlgorithmTest {
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.closed(Year.of(2001), Year.of(2013))));
         assertThat(actualAsYear.size(), is(7));
         Collection<String> actualAsYearMonth = shardingAlgorithmByYearMonth.doSharding(availableTablesForYearMonthDataSources,
-                new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.closed(YearMonth.of(2016,1), YearMonth.of(2020,1))));
+                new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.closed(YearMonth.of(2016, 1), YearMonth.of(2020, 1))));
         assertThat(actualAsYearMonth.size(), is(3));
         Collection<String> actualAsMonth = shardingAlgorithmByMonthInJSR310.doSharding(availableTablesForMonthInJSR310DataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.closed(Month.of(4), Month.of(10))));
