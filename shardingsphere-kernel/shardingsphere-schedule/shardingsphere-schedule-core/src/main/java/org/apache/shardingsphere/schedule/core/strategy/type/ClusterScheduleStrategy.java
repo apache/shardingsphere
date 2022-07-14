@@ -67,7 +67,7 @@ public class ClusterScheduleStrategy implements ScheduleStrategy {
     @SuppressWarnings("unchecked")
     public void startSchedule(final CronJob job) {
         CoordinatorRegistryCenter registryCenter = getRegistryCenter();
-        Preconditions.checkState(null !=registryCenter, "Coordinator registry center failed to initialize.");
+        Preconditions.checkNotNull(registryCenter, "Coordinator registry center failed to initialize.");
         if (null != SCHEDULE_JOB_BOOTSTRAP_MAP.get(job.getJobName())) {
             SCHEDULE_JOB_BOOTSTRAP_MAP.get(job.getJobName()).shutdown();
         }
