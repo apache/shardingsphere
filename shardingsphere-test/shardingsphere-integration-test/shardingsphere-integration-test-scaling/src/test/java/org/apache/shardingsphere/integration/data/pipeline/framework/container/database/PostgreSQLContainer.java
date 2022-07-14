@@ -43,13 +43,16 @@ public final class PostgreSQLContainer extends DatabaseContainer {
     protected void configure() {
         withCommand("--max_connections=600");
         withCommand("--wal_level=logical");
-        addEnv("POSTGRES_USER", "root");
-        addEnv("POSTGRES_PASSWORD", "adminpwd");
+        String rootUsername = "root";
+        String rootPassword = "root";
+        addEnv("POSTGRES_USER", rootUsername);
+        addEnv("POSTGRES_PASSWORD", rootPassword);
         withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/etc/postgresql/postgresql.conf", BindMode.READ_ONLY);
         withClasspathResourceMapping("/env/postgresql/initdb.sql", "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
         withExposedPorts(port);
+        addFixedExposedPort(port, port);
         setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(DATABASE_TYPE, "localhost", getFirstMappedPort(), "postgres"),
-                username, password)));
+                rootUsername, rootPassword)));
     }
     
     @Override

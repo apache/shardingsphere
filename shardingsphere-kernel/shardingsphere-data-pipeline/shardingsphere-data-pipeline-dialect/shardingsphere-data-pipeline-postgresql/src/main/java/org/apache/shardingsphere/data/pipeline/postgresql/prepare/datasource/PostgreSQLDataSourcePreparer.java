@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeEntry;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineIgnoredException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.generator.PipelineDDLGenerator;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.AbstractDataSourcePreparer;
@@ -51,9 +50,6 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
                 }
             }
         } catch (final SQLException ex) {
-            if (ex.getMessage().matches(".*HikariDataSource \\(HikariPool-\\d+\\) has been closed.*")) {
-                throw new PipelineIgnoredException("job stopped, the data source has been closed");
-            }
             throw new PipelineJobPrepareFailedException("prepare target tables failed.", ex);
         }
     }

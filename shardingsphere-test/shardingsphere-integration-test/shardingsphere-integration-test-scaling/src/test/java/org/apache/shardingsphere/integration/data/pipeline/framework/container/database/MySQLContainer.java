@@ -43,7 +43,7 @@ public final class MySQLContainer extends DatabaseContainer {
     protected void configure() {
         withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password", "--lower_case_table_names=1");
         addEnv("LANG", "C.UTF-8");
-        addEnv("MYSQL_ROOT_PASSWORD", "adminpwd");
+        addEnv("MYSQL_ROOT_PASSWORD", "root");
         addEnv("MYSQL_ROOT_HOST", "%");
         withClasspathResourceMapping("/env/mysql/my.cnf", "/etc/mysql/my.cnf", BindMode.READ_ONLY);
         withClasspathResourceMapping("/env/mysql/initdb.sql", "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);

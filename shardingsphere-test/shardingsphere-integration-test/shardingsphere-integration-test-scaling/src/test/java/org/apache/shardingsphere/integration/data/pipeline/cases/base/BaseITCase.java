@@ -132,9 +132,11 @@ public abstract class BaseITCase {
     @SneakyThrows(SQLException.class)
     private void initActualDataSources() {
         String jdbcUrl;
+        String rootUsername = DatabaseTypeUtil.isOpenGauss(getDatabaseType()) ? "gaussdb" : "root";
+        String rootPassword = DatabaseTypeUtil.isOpenGauss(getDatabaseType()) ? "Root@123" : "root";
         if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
             jdbcUrl = DataSourceEnvironment.getURL(databaseType, "localhost", ENV.getActualDatabasePort(getDatabaseType()), DatabaseTypeUtil.isOpenGauss(databaseType) ? "postgres" : "");
-            try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)) {
+            try (Connection connection = DriverManager.getConnection(jdbcUrl, rootUsername, rootPassword)) {
                 for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {
                     try {
                         connection.createStatement().execute(String.format("DROP DATABASE %s", each));
@@ -146,10 +148,13 @@ public abstract class BaseITCase {
         } else {
             jdbcUrl = ((DockerComposedContainer) composedContainer).getDatabaseContainer().getJdbcUrl("");
         }
-        try (Connection connection = DriverManager.getConnection(jdbcUrl, username, password)) {
+        try (Connection connection = DriverManager.getConnection(jdbcUrl, rootUsername, rootPassword)) {
             for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {
                 try {
                     connection.createStatement().execute(String.format("CREATE DATABASE %s", each));
+                    if (DatabaseTypeUtil.isOpenGauss(databaseType) || DatabaseTypeUtil.isPostgreSQL(databaseType)) {
+                        connection.createStatement().execute(String.format("GRANT ALL ON DATABASE %s TO %s", each, username));
+                    }
                 } catch (final SQLException ex) {
                     log.error("Error occurred when create database. error msg={}", ex.getMessage());
                 }
@@ -365,10 +370,6 @@ public abstract class BaseITCase {
         log.info("jobId: {}", jobId);
         Map<String, String> actualStatusMap = new HashMap<>(2, 1);
         String showScalingStatus = String.format("SHOW SCALING STATUS %s", jobId);
-        SCALING_EXECUTOR.execute(() -> {
-            stopScaling(jobId);
-            startScaling(jobId);
-        });
         for (int i = 0; i < 15; i++) {
             List<Map<String, Object>> showScalingStatusResMap = queryForListWithLog(showScalingStatus);
             log.info("{}: {}", showScalingStatus, showScalingStatusResMap);
@@ -391,6 +392,8 @@ public abstract class BaseITCase {
             assertBeforeApplyScalingMetadataCorrectly();
             ThreadUtil.sleep(4, TimeUnit.SECONDS);
         }
+        stopScaling(jobId);
+        startScaling(jobId);
         assertThat(actualStatusMap.values().stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet()), is(Collections.singleton(JobStatus.EXECUTE_INCREMENTAL_TASK.name())));
     }
     
