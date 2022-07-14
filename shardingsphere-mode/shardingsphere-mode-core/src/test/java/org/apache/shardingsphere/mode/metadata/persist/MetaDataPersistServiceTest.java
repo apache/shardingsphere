@@ -154,10 +154,4 @@ public final class MetaDataPersistServiceTest {
         Map<String, DataSource> resultEffectiveDataSources = metaDataPersistService.getEffectiveDataSources("foo_db", databaseConfigs);
         assertTrue(resultEffectiveDataSources.isEmpty());
     }
-    
-    private Properties createTransactionProperties() {
-        Properties result = new Properties();
-        result.setProperty("type", TransactionType.LOCAL.name());
-        return result;
-    }
 }
