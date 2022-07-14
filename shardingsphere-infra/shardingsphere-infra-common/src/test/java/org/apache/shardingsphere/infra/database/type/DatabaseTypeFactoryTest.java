@@ -65,16 +65,4 @@ public final class DatabaseTypeFactoryTest {
         assertThat(iterator.next(), instanceOf(SQLServerDatabaseType.class));
         assertThat(iterator.next(), instanceOf(H2DatabaseType.class));
     }
-    
-    @Test
-    public void assertGetDatabaseTypeWithUrl() {
-        assertThat(DatabaseTypeEngine.getDatabaseType("jdbc:mysql://localhost:3306/test").getType(), is("MySQL"));
-        assertThat(DatabaseTypeEngine.getDatabaseType("jdbc:sqlite:test").getType(), is("SQL92"));
-        assertThat(DatabaseTypeEngine.getDatabaseType("jdbc:postgresql://localhost:5432/test").getType(), is("PostgreSQL"));
-        assertThat(DatabaseTypeEngine.getDatabaseType("jdbc:mariadb://localhost:3306/test").getType(), is("MariaDB"));
-        assertThat(DatabaseTypeEngine.getDatabaseType("jdbc:opengauss://localhost:5432/test").getType(), is("openGauss"));
-        assertThat(DatabaseTypeEngine.getDatabaseType("jdbc:oracle:thin:localhost:1522/test").getType(), is("Oracle"));
-        assertThat(DatabaseTypeEngine.getDatabaseType("jdbc:microsoft:sqlserver://localhost:1433; DatabaseName=test").getType(), is("SQLServer"));
-        assertThat(DatabaseTypeEngine.getDatabaseType("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MySQL").getType(), is("H2"));
-    }
 }
