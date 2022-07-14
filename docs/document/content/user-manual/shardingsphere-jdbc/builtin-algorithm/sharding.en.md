@@ -89,6 +89,8 @@ Attributes:
 
 #### Interval Sharding Algorithm
 
+When the incoming sharding key is `java.time.Instant`, there is a special case, which will carry the time zone information of the system and convert it into the string format of `datetime-pattern`, and then proceed to the next sharding.
+
 Type: INTERVAL
 
 Attributes:
