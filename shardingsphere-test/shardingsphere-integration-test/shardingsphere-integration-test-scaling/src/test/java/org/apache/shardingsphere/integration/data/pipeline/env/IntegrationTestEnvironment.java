@@ -153,7 +153,7 @@ public final class IntegrationTestEnvironment {
     public List<String> listDatabaseDockerImageNames(final DatabaseType databaseType) {
         // Native mode needn't use docker image, just return a list which contain one item
         if (getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
-            return Collections.singletonList("");
+            return databaseType.getType().equalsIgnoreCase(getNativeDatabaseType()) ? Collections.singletonList("") : Collections.emptyList();
         }
         switch (databaseType.getType()) {
             case "MySQL":

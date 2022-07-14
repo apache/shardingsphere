@@ -50,7 +50,6 @@ public final class PostgreSQLContainer extends DatabaseContainer {
         withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/etc/postgresql/postgresql.conf", BindMode.READ_ONLY);
         withClasspathResourceMapping("/env/postgresql/initdb.sql", "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
         withExposedPorts(port);
-        addFixedExposedPort(port, port);
         setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(DATABASE_TYPE, "localhost", getFirstMappedPort(), "postgres"),
                 rootUsername, rootPassword)));
     }

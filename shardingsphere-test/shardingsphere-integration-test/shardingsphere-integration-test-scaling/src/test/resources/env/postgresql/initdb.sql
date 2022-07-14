@@ -14,7 +14,16 @@
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
 
--- if the database already exists, need grant all privileges on database exist_database to scaling;
+CREATE DATABASE scaling_it_0;
+CREATE DATABASE scaling_it_1;
+CREATE DATABASE scaling_it_2;
+CREATE DATABASE scaling_it_3;
+CREATE DATABASE scaling_it_4;
 CREATE USER scaling WITH ENCRYPTED PASSWORD 'root';
 CREATE DATABASE scaling;
 ALTER ROLE scaling CREATEDB REPLICATION;
+GRANT CREATE, CONNECT ON DATABASE scaling_it_0 TO scaling;
+GRANT CREATE, CONNECT ON DATABASE scaling_it_1 TO scaling;
+GRANT CREATE, CONNECT ON DATABASE scaling_it_2 TO scaling;
+GRANT CREATE, CONNECT ON DATABASE scaling_it_3 TO scaling;
+GRANT CREATE, CONNECT ON DATABASE scaling_it_4 TO scaling;

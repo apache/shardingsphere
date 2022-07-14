@@ -38,6 +38,15 @@ public abstract class BaseComposedContainer implements Startable {
      */
     public abstract String getProxyJdbcUrl(String databaseName);
     
+    /**
+     * Clean up database.
+     *
+     * @param databaseName database name
+     */
+    public void cleanUpDatabase(final String databaseName) {
+        
+    }
+    
     @Override
     public void start() {
         getContainers().start();

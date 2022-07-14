@@ -123,42 +123,17 @@ public abstract class BaseITCase {
             username = ENV.getActualDataSourceUsername(databaseType);
             password = ENV.getActualDataSourcePassword(databaseType);
         }
-        initActualDataSources();
-        commonSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseITCase.class.getClassLoader().getResource("env/common/command.xml")), CommonSQLCommand.class);
         createProxyDatabase(parameterized.getDatabaseType());
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
+            cleanUpDataSource();
+        }
+        commonSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseITCase.class.getClassLoader().getResource("env/common/command.xml")), CommonSQLCommand.class);
         scalingWatcher = new ScalingWatcher(composedContainer, jdbcTemplate);
     }
     
-    @SneakyThrows(SQLException.class)
-    private void initActualDataSources() {
-        String jdbcUrl;
-        String rootUsername = DatabaseTypeUtil.isOpenGauss(getDatabaseType()) ? "gaussdb" : "root";
-        String rootPassword = DatabaseTypeUtil.isOpenGauss(getDatabaseType()) ? "Root@123" : "root";
-        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
-            jdbcUrl = DataSourceEnvironment.getURL(databaseType, "localhost", ENV.getActualDatabasePort(getDatabaseType()), DatabaseTypeUtil.isOpenGauss(databaseType) ? "postgres" : "");
-            try (Connection connection = DriverManager.getConnection(jdbcUrl, rootUsername, rootPassword)) {
-                for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {
-                    try {
-                        connection.createStatement().execute(String.format("DROP DATABASE %s", each));
-                    } catch (final SQLException ex) {
-                        log.error("Error occurred when drop database. error msg={}", ex.getMessage());
-                    }
-                }
-            }
-        } else {
-            jdbcUrl = ((DockerComposedContainer) composedContainer).getDatabaseContainer().getJdbcUrl("");
-        }
-        try (Connection connection = DriverManager.getConnection(jdbcUrl, rootUsername, rootPassword)) {
-            for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {
-                try {
-                    connection.createStatement().execute(String.format("CREATE DATABASE %s", each));
-                    if (DatabaseTypeUtil.isOpenGauss(databaseType) || DatabaseTypeUtil.isPostgreSQL(databaseType)) {
-                        connection.createStatement().execute(String.format("GRANT ALL ON DATABASE %s TO %s", each, username));
-                    }
-                } catch (final SQLException ex) {
-                    log.error("Error occurred when create database. error msg={}", ex.getMessage());
-                }
-            }
+    private void cleanUpDataSource() {
+        for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {
+            composedContainer.cleanUpDatabase(each);
         }
     }
     
@@ -341,7 +316,7 @@ public abstract class BaseITCase {
     }
     
     protected void startScaling(final String jobId) {
-        executeWithLog(String.format("START SCALING %s", jobId));
+        executeWithLog(String.format("START SCALING %s", jobId), 5);
     }
     
     protected void applyScaling(final String jobId) {
@@ -355,9 +330,7 @@ public abstract class BaseITCase {
     }
     
     protected String getScalingJobId() {
-        assertBeforeApplyScalingMetadataCorrectly();
         List<Map<String, Object>> scalingListMap = queryForListWithLog("SHOW SCALING LIST");
-        assertThat(scalingListMap.size(), is(1));
         String jobId = scalingListMap.get(0).get("id").toString();
         log.info("jobId: {}", jobId);
         return jobId;
@@ -392,9 +365,9 @@ public abstract class BaseITCase {
             assertBeforeApplyScalingMetadataCorrectly();
             ThreadUtil.sleep(4, TimeUnit.SECONDS);
         }
+        assertThat(actualStatusMap.values().stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet()), is(Collections.singleton(JobStatus.EXECUTE_INCREMENTAL_TASK.name())));
         stopScaling(jobId);
         startScaling(jobId);
-        assertThat(actualStatusMap.values().stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet()), is(Collections.singleton(JobStatus.EXECUTE_INCREMENTAL_TASK.name())));
     }
     
     protected void assertCheckScalingSuccess(final String jobId) {

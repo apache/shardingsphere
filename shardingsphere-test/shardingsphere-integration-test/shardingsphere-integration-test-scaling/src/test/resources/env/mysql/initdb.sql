@@ -15,7 +15,11 @@
 -- limitations under the License.
 --
 
+CREATE DATABASE scaling_it_0;
+CREATE DATABASE scaling_it_1;
+CREATE DATABASE scaling_it_2;
+CREATE DATABASE scaling_it_3;
+CREATE DATABASE scaling_it_4;
 CREATE USER IF NOT EXISTS 'scaling'@'%' IDENTIFIED BY 'root';
 GRANT Replication Client, Replication Slave, Select, Insert, Update, Delete, Index ON *.* TO `scaling`@`%`;
-# if needn't create or drop database, the following privileges isn't required
-GRANT Create, Drop ON *.* TO `scaling`@`%`;
+GRANT Create, Drop ON TABLE *.* TO scaling;
