@@ -109,7 +109,7 @@ public final class ComputeNodeStatusServiceTest {
         assertThat(actual.get(1).getInstanceMetaData().getId(), is("foo_instance_3308"));
         assertThat(actual.get(1).getInstanceMetaData().getIp(), is("127.0.0.1"));
         assertThat(actual.get(1).getInstanceMetaData().getType(), is(InstanceType.PROXY));
-        assertThat(((ProxyInstanceMetaData)actual.get(1).getInstanceMetaData()).getPort(), is(3308));
+        assertThat(((ProxyInstanceMetaData) actual.get(1).getInstanceMetaData()).getPort(), is(3308));
     }
     
     @Test
