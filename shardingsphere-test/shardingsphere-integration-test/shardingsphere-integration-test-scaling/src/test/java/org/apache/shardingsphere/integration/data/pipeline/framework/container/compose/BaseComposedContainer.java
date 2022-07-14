@@ -43,9 +43,7 @@ public abstract class BaseComposedContainer implements Startable {
      *
      * @param databaseName database name
      */
-    public void cleanUpDatabase(final String databaseName) {
-        
-    }
+    public abstract void cleanUpDatabase(String databaseName);
     
     @Override
     public void start() {

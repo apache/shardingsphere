@@ -21,13 +21,13 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.integration.data.pipeline.util.ResultSetUtil;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Properties;
 
@@ -66,7 +66,7 @@ public final class NativeComposedContainer extends BaseComposedContainer {
                 properties.setProperty("allowPublicKeyRetrieval", "true");
                 try (Connection connection = DriverManager.getConnection(jdbcUrlAppender.appendQueryProperties(jdbcUrl, properties), username, password)) {
                     try (ResultSet resultSet = connection.createStatement().executeQuery(queryAllTables)) {
-                        List<String> actualTableNames = ResultSetUtil.getFirstColumnValueFromResult(resultSet);
+                        List<String> actualTableNames = getFirstColumnValueFromResult(resultSet);
                         for (String each : actualTableNames) {
                             connection.createStatement().executeUpdate(String.format("drop table %s", each));
                         }
@@ -85,10 +85,18 @@ public final class NativeComposedContainer extends BaseComposedContainer {
         }
     }
     
+    private static List<String> getFirstColumnValueFromResult(final ResultSet resultSet) throws SQLException {
+        List<String> result = new LinkedList<>();
+        while (resultSet.next()) {
+            result.add(resultSet.getString(1));
+        }
+        return result;
+    }
+    
     private void dropTableWithSchema(final Connection connection, final String schema) throws SQLException {
         String queryAllTables = "select tablename from pg_tables where schemaname='%s'";
         try (ResultSet resultSet = connection.createStatement().executeQuery(String.format(queryAllTables, schema))) {
-            List<String> actualTableNames = ResultSetUtil.getFirstColumnValueFromResult(resultSet);
+            List<String> actualTableNames = getFirstColumnValueFromResult(resultSet);
             for (String each : actualTableNames) {
                 connection.createStatement().executeUpdate(String.format("drop table %s.%s", schema, each));
             }
