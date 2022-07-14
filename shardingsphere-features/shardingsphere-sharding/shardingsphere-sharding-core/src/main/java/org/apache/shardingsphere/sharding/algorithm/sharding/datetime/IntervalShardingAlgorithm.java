@@ -26,13 +26,16 @@ import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingV
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.StandardShardingAlgorithm;
 
-import java.time.ZoneId;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.Month;
+import java.time.Year;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.time.temporal.TemporalAccessor;
 import java.time.temporal.TemporalQueries;
@@ -138,12 +141,18 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     
     private Collection<String> doSharding(final Collection<String> availableTargetNames, final Range<Comparable<?>> range) {
         TemporalAccessor calculateTime = dateTimeLower;
-        LocalDate queryToLocalDate = calculateTime.query(TemporalQueries.localDate());
-        LocalTime queryToLocalTime = calculateTime.query(TemporalQueries.localTime());
-        if (null == queryToLocalTime) {
-            return doShardingInLocalDate(availableTargetNames, range, calculateTime);
+        if (!calculateTime.isSupported(ChronoField.NANO_OF_DAY)) {
+            if (calculateTime.isSupported(ChronoField.EPOCH_DAY)) {
+                return doShardingInLocalDate(availableTargetNames, range, calculateTime);
+            }
+            if (calculateTime.isSupported(ChronoField.YEAR)) {
+                return doShardingInYear(availableTargetNames, range, calculateTime);
+            }
+            if (calculateTime.isSupported(ChronoField.MONTH_OF_YEAR)) {
+                return doShardingInMonth(availableTargetNames, range, calculateTime);
+            }
         }
-        if (null == queryToLocalDate) {
+        if (!calculateTime.isSupported(ChronoField.EPOCH_DAY)) {
             return doShardingInLocalTime(availableTargetNames, range, calculateTime);
         }
         return doShardingInLocalDateTime(availableTargetNames, range, calculateTime);
@@ -190,6 +199,34 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         }
         return result;
     }
+
+    private Collection<String> doShardingInYear(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
+        Set<String> result = new HashSet<>();
+        Year dateTimeUpperAsYear = dateTimeUpper.query(Year::from);
+        Year dateTimeLowerAsYear = dateTimeLower.query(Year::from);
+        Year calculateTimeAsView = calculateTime.query(Year::from);
+        while (!calculateTimeAsView.isAfter(dateTimeUpperAsYear)) {
+            if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount, stepUnit)), range, dateTimeLowerAsYear, dateTimeUpperAsYear)) {
+                result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
+            }
+            calculateTimeAsView = calculateTimeAsView.plus(stepAmount, stepUnit);
+        }
+        return result;
+    }
+
+    private Collection<String> doShardingInMonth(final Collection<String> availableTargetNames, final Range<Comparable<?>> range, final TemporalAccessor calculateTime) {
+        Set<String> result = new HashSet<>();
+        Month dateTimeUpperAsMonth = dateTimeUpper.query(Month::from);
+        Month dateTimeLowerAsMonth = dateTimeLower.query(Month::from);
+        Month calculateTimeAsView = calculateTime.query(Month::from);
+        while (!(calculateTimeAsView.getValue() > dateTimeUpperAsMonth.getValue()) && (calculateTimeAsView.getValue() + stepAmount) <= Month.DECEMBER.getValue()) {
+            if (hasIntersection(Range.closedOpen(calculateTimeAsView, calculateTimeAsView.plus(stepAmount)), range, dateTimeLowerAsMonth, dateTimeUpperAsMonth)) {
+                result.addAll(getMatchedTables(calculateTimeAsView, availableTargetNames));
+            }
+            calculateTimeAsView = calculateTimeAsView.plus(stepAmount);
+        }
+        return result;
+    }
     
     private boolean hasIntersection(final Range<LocalDateTime> calculateRange, final Range<Comparable<?>> range, final LocalDateTime dateTimeLower, final LocalDateTime dateTimeUpper) {
         LocalDateTime lower = range.hasLowerBound() ? parseLocalDateTime(range.lowerEndpoint()) : dateTimeLower;
@@ -217,6 +254,24 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         Range<LocalTime> dateTimeRange = Range.range(lower, lowerBoundType, upper, upperBoundType);
         return calculateRange.isConnected(dateTimeRange) && !calculateRange.intersection(dateTimeRange).isEmpty();
     }
+
+    private boolean hasIntersection(final Range<Year> calculateRange, final Range<Comparable<?>> range, final Year dateTimeLower, final Year dateTimeUpper) {
+        Year lower = range.hasLowerBound() ? parseYear(range.lowerEndpoint()) : dateTimeLower;
+        Year upper = range.hasUpperBound() ? parseYear(range.upperEndpoint()) : dateTimeUpper;
+        BoundType lowerBoundType = range.hasLowerBound() ? range.lowerBoundType() : BoundType.CLOSED;
+        BoundType upperBoundType = range.hasUpperBound() ? range.upperBoundType() : BoundType.CLOSED;
+        Range<Year> dateTimeRange = Range.range(lower, lowerBoundType, upper, upperBoundType);
+        return calculateRange.isConnected(dateTimeRange) && !calculateRange.intersection(dateTimeRange).isEmpty();
+    }
+
+    private boolean hasIntersection(final Range<Month> calculateRange, final Range<Comparable<?>> range, final Month dateTimeLower, final Month dateTimeUpper) {
+        Month lower = range.hasLowerBound() ? parseMonth(range.lowerEndpoint()) : dateTimeLower;
+        Month upper = range.hasUpperBound() ? parseMonth(range.upperEndpoint()) : dateTimeUpper;
+        BoundType lowerBoundType = range.hasLowerBound() ? range.lowerBoundType() : BoundType.CLOSED;
+        BoundType upperBoundType = range.hasUpperBound() ? range.upperBoundType() : BoundType.CLOSED;
+        Range<Month> dateTimeRange = Range.range(lower, lowerBoundType, upper, upperBoundType);
+        return calculateRange.isConnected(dateTimeRange) && !calculateRange.intersection(dateTimeRange).isEmpty();
+    }
     
     private LocalDateTime parseLocalDateTime(final Comparable<?> endpoint) {
         return LocalDateTime.parse(getDateTimeText(endpoint).substring(0, dateTimePatternLength), dateTimeFormatter);
@@ -228,6 +283,14 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     
     private LocalTime parseLocalTime(final Comparable<?> endpoint) {
         return LocalTime.parse(getDateTimeText(endpoint).substring(0, dateTimePatternLength), dateTimeFormatter);
+    }
+
+    private Year parseYear(final Comparable<?> endpoint) {
+        return Year.parse(getDateTimeText(endpoint).substring(0, dateTimePatternLength), dateTimeFormatter);
+    }
+
+    private Month parseMonth(final Comparable<?> endpoint) {
+        return (Month) endpoint;
     }
     
     private String getDateTimeText(final Comparable<?> endpoint) {
@@ -242,17 +305,25 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         }
         return endpoint.toString();
     }
-    
+
     private Collection<String> getMatchedTables(final TemporalAccessor dateTime, final Collection<String> availableTargetNames) {
-        LocalDate localDate = dateTime.query(TemporalQueries.localDate());
-        LocalTime localTime = dateTime.query(TemporalQueries.localTime());
         String tableSuffix;
-        if (null == localTime) {
-            tableSuffix = localDate.format(tableSuffixPattern);
-            return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
+        if (!dateTime.isSupported(ChronoField.NANO_OF_DAY)) {
+            if (dateTime.isSupported(ChronoField.EPOCH_DAY)) {
+                tableSuffix = tableSuffixPattern.format(dateTime.query(TemporalQueries.localDate()));
+                return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
+            }
+            if (dateTime.isSupported(ChronoField.YEAR)) {
+                tableSuffix = tableSuffixPattern.format(dateTime.query(Year::from));
+                return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
+            }
+            if (dateTime.isSupported(ChronoField.MONTH_OF_YEAR)) {
+                tableSuffix = tableSuffixPattern.format(dateTime.query(Month::from));
+                return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
+            }
         }
-        if (null == localDate) {
-            tableSuffix = localTime.format(tableSuffixPattern);
+        if (!dateTime.isSupported(ChronoField.EPOCH_DAY)) {
+            tableSuffix = dateTime.query(TemporalQueries.localTime()).format(tableSuffixPattern);
             return availableTargetNames.parallelStream().filter(each -> each.endsWith(tableSuffix)).collect(Collectors.toSet());
         }
         tableSuffix = LocalDateTime.from(dateTime).format(tableSuffixPattern);
