@@ -34,7 +34,6 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception
 import org.apache.shardingsphere.proxy.backend.util.SystemPropertyUtil;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
-import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -65,19 +64,18 @@ public final class SetVariableHandler extends UpdatableRALBackendHandler<SetVari
     private void handleConfigurationProperty(final ConfigurationPropertyKey propertyKey, final String value) {
         ContextManager contextManager = ProxyContext.getInstance().getContextManager();
         MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
-        Optional<MetaDataPersistService> metaDataPersistService = metaDataContexts.getPersistService();
+        MetaDataPersistService persistService = metaDataContexts.getPersistService();
         Properties props = new Properties(metaDataContexts.getMetaData().getProps().getProps());
         props.put(propertyKey.getKey(), getValue(propertyKey, value));
         contextManager.alterProperties(props);
-        if (metaDataPersistService.isPresent() && null != metaDataPersistService.get().getPropsService()) {
-            metaDataPersistService.get().getPropsService().persist(props, true);
+        if (null != persistService.getPropsService()) {
+            persistService.getPropsService().persist(props, true);
         }
     }
     
     private Object getValue(final ConfigurationPropertyKey propertyKey, final String value) {
         try {
-            TypedPropertyValue propertyValue = new TypedPropertyValue(propertyKey, value);
-            return propertyValue.getValue();
+            return new TypedPropertyValue(propertyKey, value).getValue();
         } catch (TypedPropertyValueException ex) {
             throw new InvalidValueException(value);
         }

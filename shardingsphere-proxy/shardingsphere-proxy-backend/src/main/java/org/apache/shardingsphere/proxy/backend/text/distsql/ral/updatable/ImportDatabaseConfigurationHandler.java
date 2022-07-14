@@ -171,6 +171,6 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         }
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         ProxyContext.getInstance().getContextManager().renewMetaDataContexts(metaDataContexts);
-        metaDataContexts.getPersistService().ifPresent(optional -> optional.getDatabaseRulePersistService().persist(databaseName, ruleConfigs));
+        metaDataContexts.getPersistService().getDatabaseRulePersistService().persist(databaseName, ruleConfigs);
     }
 }
