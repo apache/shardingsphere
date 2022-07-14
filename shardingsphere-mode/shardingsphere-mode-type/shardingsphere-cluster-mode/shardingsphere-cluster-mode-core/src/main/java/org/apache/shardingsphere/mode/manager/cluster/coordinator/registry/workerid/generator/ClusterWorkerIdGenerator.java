@@ -45,7 +45,7 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     @Override
     public long generate(final Properties props) {
         long result = registryCenter.getComputeNodeStatusService().loadInstanceWorkerId(instanceMetaData.getId()).orElseGet(this::reGenerate);
-        checkConfigured(result, props);
+        checkIneffectiveConfiguration(result, props);
         return result;
     }
     
@@ -75,9 +75,8 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
         return registryCenter.getComputeNodeStatusService().getUsedWorkerIds().contains(workerId);
     }
     
-    private void checkConfigured(final long generatedWorkerId, final Properties props) {
-        long configuredWorkerId = parseWorkerId(props);
-        if (0 != configuredWorkerId && !isWarned) {
+    private void checkIneffectiveConfiguration(final long generatedWorkerId, final Properties props) {
+        if (!isWarned && null != props && props.containsKey(WORKER_ID_KEY)) {
             isWarned = true;
             log.warn("No need to configured {} in cluster mode, system assigned {} was {}", WORKER_ID_KEY, WORKER_ID_KEY, generatedWorkerId);
         }
