@@ -24,8 +24,6 @@ import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 
-import java.util.Optional;
-
 /**
  * Meta data contexts.
  */
@@ -39,20 +37,8 @@ public final class MetaDataContexts implements AutoCloseable {
     
     private final OptimizerContext optimizerContext;
     
-    /**
-     * Get persist service.
-     *
-     * @return persist service
-     */
-    public Optional<MetaDataPersistService> getPersistService() {
-        return Optional.ofNullable(persistService);
-    }
-    
     @Override
     public void close() throws Exception {
-        if (null != persistService) {
-            persistService.getRepository().close();
-        }
         metaData.getGlobalRuleMetaData().findRules(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResource);
         metaData.getDatabases().values().forEach(each -> each.getRuleMetaData().findRules(ResourceHeldRule.class).forEach(ResourceHeldRule::closeStaleResource));
     }
