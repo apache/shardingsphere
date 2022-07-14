@@ -27,12 +27,14 @@ import org.junit.Test;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertTrue;
 
 public final class FixedReplicaWeightLoadBalanceAlgorithmTest {
     
@@ -46,12 +48,12 @@ public final class FixedReplicaWeightLoadBalanceAlgorithmTest {
     }
     
     @Test
-    public void assertGetSingleReadDataSource() {
+    public void assertGetSingleReadDataSourceInTransaction() {
         FixedReplicaWeightLoadBalanceAlgorithm fixedReplicaWeightLoadBalanceAlgorithm = createReplicaLoadBalanceAlgorithm(createSingleDataSourceProperties());
         TransactionHolder.isTransaction();
-        String routeDatasource = fixedReplicaWeightLoadBalanceAlgorithm.getDataSource("ds", "test_write_ds", Collections.singletonList("test_read_ds_1"));
-        assertThat(routeDatasource, is("test_read_ds_1"));
-        assertThat(fixedReplicaWeightLoadBalanceAlgorithm.getDataSource("ds", "test_write_ds", Collections.singletonList("test_read_ds_1")), is(routeDatasource));
+        String routeDataSource = fixedReplicaWeightLoadBalanceAlgorithm.getDataSource("ds", "test_write_ds", Collections.singletonList("test_read_ds_1"));
+        assertThat(routeDataSource, is("test_read_ds_1"));
+        assertThat(fixedReplicaWeightLoadBalanceAlgorithm.getDataSource("ds", "test_write_ds", Collections.singletonList("test_read_ds_1")), is(routeDataSource));
         TransactionHolder.clear();
     }
     
@@ -62,17 +64,32 @@ public final class FixedReplicaWeightLoadBalanceAlgorithmTest {
     }
     
     @Test
-    public void assertGetMultipleReadDataSources() {
+    public void assertGetMultipleReadDataSourcesWithoutTransaction() {
+        FixedReplicaWeightLoadBalanceAlgorithm fixedReplicaWeightLoadBalanceAlgorithm = createReplicaLoadBalanceAlgorithm(createMultipleDataSourcesProperties());
+        String writeDataSourceName = "test_write_ds";
+        String readDataSourceName1 = "test_read_ds_1";
+        String readDataSourceName2 = "test_read_ds_2";
+        List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
+        List<String> noTransactionReadDataSourceNames = new LinkedList<>();
+        for (int i = 0; i < 5; i++) {
+            String routeDataSource = fixedReplicaWeightLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames);
+            noTransactionReadDataSourceNames.add(routeDataSource);
+        }
+        assertTrue(noTransactionReadDataSourceNames.size() > 1);
+    }
+    
+    @Test
+    public void assertGetMultipleReadDataSourcesInTransaction() {
         FixedReplicaWeightLoadBalanceAlgorithm fixedReplicaWeightLoadBalanceAlgorithm = createReplicaLoadBalanceAlgorithm(createMultipleDataSourcesProperties());
         String writeDataSourceName = "test_write_ds";
         String readDataSourceName1 = "test_read_ds_1";
         String readDataSourceName2 = "test_read_ds_2";
         List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
         TransactionHolder.setInTransaction();
-        String routeDatasource = fixedReplicaWeightLoadBalanceAlgorithm.getDataSource("ds", "test_write_ds", readDataSourceNames);
-        assertThat(fixedReplicaWeightLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(routeDatasource));
-        assertThat(fixedReplicaWeightLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(routeDatasource));
-        assertThat(fixedReplicaWeightLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(routeDatasource));
+        String routeDataSource = fixedReplicaWeightLoadBalanceAlgorithm.getDataSource("ds", "test_write_ds", readDataSourceNames);
+        assertThat(fixedReplicaWeightLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(routeDataSource));
+        assertThat(fixedReplicaWeightLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(routeDataSource));
+        assertThat(fixedReplicaWeightLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(routeDataSource));
         TransactionHolder.clear();
     }
     

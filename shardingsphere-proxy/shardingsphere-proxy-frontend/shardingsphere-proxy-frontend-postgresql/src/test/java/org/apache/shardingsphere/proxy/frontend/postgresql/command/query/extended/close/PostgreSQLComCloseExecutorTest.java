@@ -18,12 +18,11 @@
 package org.apache.shardingsphere.proxy.frontend.postgresql.command.query.extended.close;
 
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
-import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.PostgreSQLPreparedStatementRegistry;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.close.PostgreSQLCloseCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.close.PostgreSQLComClosePacket;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.PreparedStatementRegistry;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -50,14 +49,9 @@ public final class PostgreSQLComCloseExecutorTest {
     @Mock
     private ConnectionSession connectionSession;
     
-    @Before
-    public void setup() {
-        PostgreSQLPreparedStatementRegistry.getInstance().register(1);
-        when(connectionSession.getConnectionId()).thenReturn(1);
-    }
-    
     @Test
     public void assertExecuteClosePreparedStatement() throws SQLException {
+        when(connectionSession.getPreparedStatementRegistry()).thenReturn(new PreparedStatementRegistry());
         when(packet.getType()).thenReturn(PostgreSQLComClosePacket.Type.PREPARED_STATEMENT);
         when(packet.getName()).thenReturn("S_1");
         PostgreSQLComCloseExecutor closeExecutor = new PostgreSQLComCloseExecutor(connectionContext, packet, connectionSession);

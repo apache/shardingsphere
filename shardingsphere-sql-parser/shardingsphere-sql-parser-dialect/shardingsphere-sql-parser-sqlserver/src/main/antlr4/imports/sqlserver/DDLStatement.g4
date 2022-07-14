@@ -104,35 +104,35 @@ alterSchema
     ;
 
 dropTable
-    : DROP TABLE ifExist? tableNames
+    : DROP TABLE ifExists? tableNames
     ;
 
 dropIndex
-    : DROP INDEX ifExist? indexName ON tableName
+    : DROP INDEX ifExists? indexName ON tableName
     ;
 
 dropDatabase
-    : DROP DATABASE ifExist? databaseName (COMMA_ databaseName)*
+    : DROP DATABASE ifExists? databaseName (COMMA_ databaseName)*
     ;
 
 dropFunction
-    : DROP FUNCTION ifExist? functionName (COMMA_ functionName)*
+    : DROP FUNCTION ifExists? functionName (COMMA_ functionName)*
     ;
 
 dropProcedure
-    : DROP (PROC | PROCEDURE) ifExist? procedureName (COMMA_ procedureName)*
+    : DROP (PROC | PROCEDURE) ifExists? procedureName (COMMA_ procedureName)*
     ;
 
 dropView
-    : DROP VIEW ifExist? viewName (COMMA_ viewName)*
+    : DROP VIEW ifExists? viewName (COMMA_ viewName)*
     ;
 
 dropTrigger
-    : DROP TRIGGER ifExist? triggerName (COMMA_ triggerName)* (ON (DATABASE | ALL SERVER))?
+    : DROP TRIGGER ifExists? triggerName (COMMA_ triggerName)* (ON (DATABASE | ALL SERVER))?
     ;
 
 dropSequence
-    : DROP SEQUENCE ifExist? sequenceName (COMMA_ sequenceName)*
+    : DROP SEQUENCE ifExists? sequenceName (COMMA_ sequenceName)*
     ;
 
 dropService
@@ -140,7 +140,7 @@ dropService
     ;
 
 dropSchema
-    : DROP SCHEMA (IF EXISTS)? schemaName
+    : DROP SCHEMA ifExists? schemaName
     ;
 
 truncateTable
@@ -450,7 +450,7 @@ alterDrop
     ;
 
 alterTableDropConstraint
-    : CONSTRAINT? ifExist? dropConstraintName (COMMA_ dropConstraintName)*
+    : CONSTRAINT? ifExists? dropConstraintName (COMMA_ dropConstraintName)*
     ;
 
 dropConstraintName
@@ -470,11 +470,11 @@ onOffOption
     ;
 
 dropColumnSpecification
-    : COLUMN ifExist? columnName (COMMA_ columnName)*
+    : COLUMN ifExists? columnName (COMMA_ columnName)*
     ;
 
 dropIndexSpecification
-    : INDEX ifExist? indexName (COMMA_ indexName)*
+    : INDEX ifExists? indexName (COMMA_ indexName)*
     ;
 
 alterCheckConstraint 
@@ -548,7 +548,7 @@ onHistoryTableClause
     : LP_ HISTORY_TABLE EQ_ tableName (COMMA_ DATA_CONSISTENCY_CHECK EQ_ onOffOption)? RP_
     ;
 
-ifExist
+ifExists
     : IF EXISTS
     ;
 

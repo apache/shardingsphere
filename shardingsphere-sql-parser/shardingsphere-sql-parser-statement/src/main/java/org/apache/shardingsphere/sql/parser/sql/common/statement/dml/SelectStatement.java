@@ -20,12 +20,12 @@ package org.apache.shardingsphere.sql.parser.sql.common.statement.dml;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.GroupBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.OrderBySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.HavingSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.CombineSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
@@ -53,7 +53,7 @@ public abstract class SelectStatement extends AbstractSQLStatement implements DM
     
     private OrderBySegment orderBy;
     
-    private Collection<CombineSegment> combines = new LinkedList<>();
+    private final Collection<CombineSegment> combines = new LinkedList<>();
     
     /**
      * Get where.

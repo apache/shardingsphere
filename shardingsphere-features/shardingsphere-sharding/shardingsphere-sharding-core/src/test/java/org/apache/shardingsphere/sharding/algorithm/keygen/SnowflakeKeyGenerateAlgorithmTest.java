@@ -20,9 +20,10 @@ package org.apache.shardingsphere.sharding.algorithm.keygen;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.sharding.algorithm.keygen.fixture.FixedTimeService;
 import org.apache.shardingsphere.sharding.algorithm.keygen.fixture.WorkerIdGeneratorFixture;
@@ -174,8 +175,8 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertSetWorkerIdFailureWhenNegative() {
         SnowflakeKeyGenerateAlgorithm algorithm = (SnowflakeKeyGenerateAlgorithm) KeyGenerateAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", new Properties()));
-        algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(-1L),
-                new ModeConfiguration("Memory", null, false), mock(LockContext.class)));
+        algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(-1L),
+                new ModeConfiguration("Standalone", null, false), mock(LockContext.class), new EventBusContext()));
         algorithm.init(new Properties());
         algorithm.generateKey();
     }
@@ -190,8 +191,8 @@ public final class SnowflakeKeyGenerateAlgorithmTest {
     @Test(expected = IllegalArgumentException.class)
     public void assertSetWorkerIdFailureWhenOutOfRange() {
         SnowflakeKeyGenerateAlgorithm algorithm = (SnowflakeKeyGenerateAlgorithm) KeyGenerateAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", new Properties()));
-        algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceDefinition.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE),
-                new ModeConfiguration("Memory", null, false), mock(LockContext.class)));
+        algorithm.setInstanceContext(new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE),
+                new ModeConfiguration("Standalone", null, false), mock(LockContext.class), new EventBusContext()));
         algorithm.generateKey();
     }
     

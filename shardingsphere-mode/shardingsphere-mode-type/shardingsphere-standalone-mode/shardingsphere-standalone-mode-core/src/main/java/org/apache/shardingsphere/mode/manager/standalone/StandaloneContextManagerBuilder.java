@@ -20,17 +20,24 @@ package org.apache.shardingsphere.mode.manager.standalone;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
 import org.apache.shardingsphere.mode.manager.standalone.lock.StandaloneLockContext;
 import org.apache.shardingsphere.mode.manager.standalone.workerid.generator.StandaloneWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.mode.metadata.MetaDataContextsBuilder;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryFactory;
 
@@ -47,51 +54,57 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     
     @Override
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
-        MetaDataPersistService metaDataPersistService = new MetaDataPersistService(StandalonePersistRepositoryFactory.getInstance(parameter.getModeConfig().getRepository()));
-        persistConfigurations(metaDataPersistService, parameter);
-        MetaDataContexts metaDataContexts = createMetaDataContextsBuilder(metaDataPersistService, parameter).build(metaDataPersistService);
-        return createContextManager(parameter, metaDataContexts);
+        ModeConfiguration modeConfig = null == parameter.getModeConfig() ? new ModeConfiguration("Standalone", null, true) : parameter.getModeConfig();
+        MetaDataPersistService persistService = new MetaDataPersistService(StandalonePersistRepositoryFactory.getInstance(modeConfig.getRepository()));
+        persistConfigurations(persistService, parameter, modeConfig);
+        InstanceContext instanceContext = buildInstanceContext(parameter, modeConfig);
+        return new ContextManager(buildMetaDataContexts(persistService, parameter, instanceContext), instanceContext);
     }
     
-    private void persistConfigurations(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) {
+    private void persistConfigurations(final MetaDataPersistService persistService, final ContextManagerBuilderParameter parameter, final ModeConfiguration modeConfig) {
         if (!parameter.isEmpty()) {
-            metaDataPersistService.persistConfigurations(parameter.getDatabaseConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), parameter.getModeConfig().isOverwrite());
+            persistService.persistConfigurations(parameter.getDatabaseConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), modeConfig.isOverwrite());
         }
     }
     
-    private MetaDataContextsBuilder createMetaDataContextsBuilder(final MetaDataPersistService metaDataPersistService, final ContextManagerBuilderParameter parameter) {
-        Collection<String> databaseNames = InstanceType.JDBC == parameter.getInstanceDefinition().getInstanceType()
+    private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter parameter, final ModeConfiguration modeConfig) {
+        return new InstanceContext(new ComputeNodeInstance(parameter.getInstanceMetaData()), new StandaloneWorkerIdGenerator(), modeConfig, new StandaloneLockContext(),
+                new EventBusContext());
+    }
+    
+    private MetaDataContexts buildMetaDataContexts(final MetaDataPersistService persistService,
+                                                   final ContextManagerBuilderParameter parameter, final InstanceContext instanceContext) throws SQLException {
+        Collection<String> databaseNames = parameter.getInstanceMetaData() instanceof JDBCInstanceMetaData
                 ? parameter.getDatabaseConfigs().keySet()
-                : metaDataPersistService.getSchemaMetaDataService().loadAllDatabaseNames();
-        Map<String, DatabaseConfiguration> databaseConfigMap = getDatabaseConfigMap(databaseNames, metaDataPersistService, parameter);
-        Collection<RuleConfiguration> globalRuleConfigs = metaDataPersistService.getGlobalRuleService().load();
-        ConfigurationProperties props = new ConfigurationProperties(metaDataPersistService.getPropsService().load());
-        return new MetaDataContextsBuilder(databaseConfigMap, globalRuleConfigs, props);
+                : persistService.getDatabaseMetaDataService().loadAllDatabaseNames();
+        Map<String, DatabaseConfiguration> databaseConfigMap = buildDatabaseConfigMap(databaseNames, persistService, parameter);
+        Collection<RuleConfiguration> globalRuleConfigs = persistService.getGlobalRuleService().load();
+        ConfigurationProperties props = new ConfigurationProperties(persistService.getPropsService().load());
+        Map<String, ShardingSphereDatabase> databases = ShardingSphereDatabasesFactory.create(databaseConfigMap, props, instanceContext);
+        ShardingSphereRuleMetaData globalMetaData = new ShardingSphereRuleMetaData(GlobalRulesBuilder.buildRules(globalRuleConfigs, databases, instanceContext));
+        return new MetaDataContexts(persistService, new ShardingSphereMetaData(databases, globalMetaData, props), OptimizerContextFactory.create(databases, globalMetaData));
     }
     
-    private Map<String, DatabaseConfiguration> getDatabaseConfigMap(final Collection<String> databaseNames, final MetaDataPersistService metaDataPersistService,
-                                                                    final ContextManagerBuilderParameter parameter) {
+    private Map<String, DatabaseConfiguration> buildDatabaseConfigMap(final Collection<String> databaseNames,
+                                                                      final MetaDataPersistService persistService, final ContextManagerBuilderParameter parameter) {
         Map<String, DatabaseConfiguration> result = new HashMap<>(databaseNames.size(), 1);
-        databaseNames.forEach(each -> result.put(each, createDatabaseConfiguration(each, metaDataPersistService, parameter)));
+        databaseNames.forEach(each -> result.put(each, buildDatabaseConfiguration(each, persistService, parameter)));
         return result;
     }
     
-    private DatabaseConfiguration createDatabaseConfiguration(final String databaseName, final MetaDataPersistService metaDataPersistService,
-                                                              final ContextManagerBuilderParameter parameter) {
-        Map<String, DataSource> dataSources = metaDataPersistService.getEffectiveDataSources(databaseName, parameter.getDatabaseConfigs());
-        Collection<RuleConfiguration> databaseRuleConfigs = metaDataPersistService.getDatabaseRulePersistService().load(databaseName);
+    private DatabaseConfiguration buildDatabaseConfiguration(final String databaseName, final MetaDataPersistService persistService, final ContextManagerBuilderParameter parameter) {
+        Map<String, DataSource> dataSources = persistService.getEffectiveDataSources(databaseName, parameter.getDatabaseConfigs());
+        Collection<RuleConfiguration> databaseRuleConfigs = persistService.getDatabaseRulePersistService().load(databaseName);
         return new DataSourceProvidedDatabaseConfiguration(dataSources, databaseRuleConfigs);
-    }
-    
-    private ContextManager createContextManager(final ContextManagerBuilderParameter parameter, final MetaDataContexts metaDataContexts) {
-        InstanceContext instanceContext = new InstanceContext(new ComputeNodeInstance(parameter.getInstanceDefinition()), new StandaloneWorkerIdGenerator(), parameter.getModeConfig(),
-                new StandaloneLockContext());
-        ContextManager result = new ContextManager(metaDataContexts, instanceContext);
-        return result;
     }
     
     @Override
     public String getType() {
         return "Standalone";
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
     }
 }

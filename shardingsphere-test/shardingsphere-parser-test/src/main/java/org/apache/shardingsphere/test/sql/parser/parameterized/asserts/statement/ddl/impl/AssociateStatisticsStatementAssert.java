@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndextypeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.packages.PackageSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.type.TypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAs
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.column.ColumnAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.expression.ExpressionAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.index.IndexAssert;
-import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.index.IndextypeAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.index.IndexTypeAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.packages.PackageAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.table.TableAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.segment.type.TypeAssert;
@@ -56,7 +56,7 @@ public final class AssociateStatisticsStatementAssert {
         assertFunctions(assertContext, actual, expected);
         assertPackages(assertContext, actual, expected);
         assertTypes(assertContext, actual, expected);
-        assertIndextypes(assertContext, actual, expected);
+        assertIndexTypes(assertContext, actual, expected);
     }
     
     private static void assertTables(final SQLCaseAssertContext assertContext, final OracleAssociateStatisticsStatement actual, final AssociateStatisticsStatementTestCase expected) {
@@ -115,11 +115,11 @@ public final class AssociateStatisticsStatementAssert {
         }
     }
     
-    private static void assertIndextypes(final SQLCaseAssertContext assertContext, final OracleAssociateStatisticsStatement actual, final AssociateStatisticsStatementTestCase expected) {
-        if (null != expected.getIndextypes()) {
+    private static void assertIndexTypes(final SQLCaseAssertContext assertContext, final OracleAssociateStatisticsStatement actual, final AssociateStatisticsStatementTestCase expected) {
+        if (null != expected.getIndexTypes()) {
             int count = 0;
-            for (IndextypeSegment each : actual.getIndextypes()) {
-                IndextypeAssert.assertIs(assertContext, each, expected.getIndextypes().get(count));
+            for (IndexTypeSegment each : actual.getIndexTypes()) {
+                IndexTypeAssert.assertIs(assertContext, each, expected.getIndexTypes().get(count));
                 count++;
             }
         }

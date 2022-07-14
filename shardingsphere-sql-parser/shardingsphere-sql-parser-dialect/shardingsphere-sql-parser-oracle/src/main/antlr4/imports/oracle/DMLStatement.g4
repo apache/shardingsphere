@@ -869,3 +869,20 @@ rowPatternNavCompound
 rowPatternAggregateFunc
     : (RUNNING | FINAL)? aggregationFunction
     ;
+
+lockTable
+    : LOCK TABLE (tableName | viewName) (partitionExtensionClause | AT_ dbLink)? (COMMA_ (tableName | viewName) (partitionExtensionClause | AT_ dbLink)? )* IN lockmodeClause MODE ( NOWAIT | WAIT INTEGER_)?
+    ;
+
+partitionExtensionClause
+    : PARTITION LP_ partitionName RP_
+    | PARTITION FOR LP_ partitionKeyValue (COMMA_ partitionKeyValue)* RP_
+    | SUBPARTITION LP_ subpartitionName RP_
+    | SUBPARTITION FOR LP_ subpartitionKeyValue (COMMA_ subpartitionKeyValue)* RP_
+    ;
+
+lockmodeClause
+    : ROW (SHARE | EXCLUSIVE)
+    | SHARE (UPDATE | ROW EXCLUSIVE)?
+    | EXCLUSIVE
+    ;

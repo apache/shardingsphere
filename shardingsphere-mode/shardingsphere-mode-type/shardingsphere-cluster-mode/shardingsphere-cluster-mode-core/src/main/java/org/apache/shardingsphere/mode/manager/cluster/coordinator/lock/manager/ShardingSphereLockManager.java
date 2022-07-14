@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager;
 
-import org.apache.shardingsphere.infra.lock.LockMode;
+import org.apache.shardingsphere.infra.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.lock.LockScope;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.ShardingSphereInterMutexLockHolder;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal.ShardingSphereInternalLockHolder;
+import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockDefinition;
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.required.RequiredSPI;
 
@@ -33,47 +35,47 @@ public interface ShardingSphereLockManager extends RequiredSPI {
      * Init lock manager.
      *
      * @param lockHolder lock holder
+     * @param eventBusContext event bus context                  
      */
-    void init(ShardingSphereInterMutexLockHolder lockHolder);
+    void init(ShardingSphereInternalLockHolder lockHolder, EventBusContext eventBusContext);
     
     /**
      * Get distributed lock.
      *
+     * @param lockScope lock scope
      * @return distributed lock
      */
-    ShardingSphereLock getDistributedLock();
+    ShardingSphereLock getDistributedLock(LockScope lockScope);
     
     /**
      * Try lock for database.
      *
-     * @param databaseName database name
-     * @param lockMode lock mode
+     * @param lockDefinition lock definition
      * @return is locked or not
      */
-    boolean tryLock(String databaseName, LockMode lockMode);
+    boolean tryLock(DatabaseLockDefinition lockDefinition);
     
     /**
-     * Try lock write for database.
+     * Try lock for database.
      *
-     * @param databaseName database name
-     * @param lockMode lock mode
+     * @param lockDefinition lock definition
      * @param timeoutMilliseconds timeout milliseconds
      * @return is locked or not
      */
-    boolean tryLock(String databaseName, LockMode lockMode, long timeoutMilliseconds);
+    boolean tryLock(DatabaseLockDefinition lockDefinition, long timeoutMilliseconds);
     
     /**
      * Release lock for database.
      *
-     * @param databaseName database name
+     * @param lockDefinition lock definition
      */
-    void releaseLock(String databaseName);
+    void releaseLock(DatabaseLockDefinition lockDefinition);
     
     /**
      * Is locked database.
      *
-     * @param databaseName database name
+     * @param lockDefinition lock definition
      * @return is locked or not
      */
-    boolean isLocked(String databaseName);
+    boolean isLocked(DatabaseLockDefinition lockDefinition);
 }

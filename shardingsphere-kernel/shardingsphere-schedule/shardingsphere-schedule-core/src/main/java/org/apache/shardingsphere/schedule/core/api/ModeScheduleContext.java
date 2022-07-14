@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.schedule.core.api;
 
+import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.concurrent.ConcurrentException;
@@ -38,10 +39,11 @@ import java.util.function.Consumer;
 /**
  * Mode schedule context, used for proxy and jdbc.
  */
+@RequiredArgsConstructor
 @Slf4j
 public final class ModeScheduleContext {
     
-    private static final Map<String, ScheduleJobBootstrap> SCHEDULE_JOB_BOOTSTRAP_MAP = new HashMap<>(16, 1);
+    private static final Map<String, ScheduleJobBootstrap> SCHEDULE_JOB_BOOTSTRAP_MAP = new HashMap<>();
     
     private final ModeConfiguration modeConfig;
     
@@ -53,10 +55,6 @@ public final class ModeScheduleContext {
         }
     };
     
-    public ModeScheduleContext(final ModeConfiguration modeConfig) {
-        this.modeConfig = modeConfig;
-    }
-    
     private CoordinatorRegistryCenter initRegistryCenter(final ModeConfiguration modeConfig) {
         if (null == modeConfig) {
             return null;
@@ -67,8 +65,6 @@ public final class ModeScheduleContext {
             case "CLUSTER":
                 return initRegistryCenterForClusterMode(modeConfig);
             case "STANDALONE":
-                return null;
-            case "MEMORY":
                 return null;
             default:
                 // TODO ModeConfiguration.type is not limited, it could be any value
@@ -92,11 +88,6 @@ public final class ModeScheduleContext {
         return null;
     }
     
-    @SneakyThrows(ConcurrentException.class)
-    private CoordinatorRegistryCenter getRegistryCenter() {
-        return registryCenterLazyInitializer.get();
-    }
-    
     /**
      * Start cron job.
      *
@@ -118,13 +109,15 @@ public final class ModeScheduleContext {
         SCHEDULE_JOB_BOOTSTRAP_MAP.get(job.getJobName()).schedule();
     }
     
+    @SneakyThrows(ConcurrentException.class)
+    private CoordinatorRegistryCenter getRegistryCenter() {
+        return registryCenterLazyInitializer.get();
+    }
+    
+    @RequiredArgsConstructor
     private static final class ConsumerSimpleJob implements SimpleJob {
         
         private final Consumer<JobParameter> job;
-        
-        ConsumerSimpleJob(final Consumer<JobParameter> job) {
-            this.job = job;
-        }
         
         @Override
         public void execute(final ShardingContext shardingContext) {

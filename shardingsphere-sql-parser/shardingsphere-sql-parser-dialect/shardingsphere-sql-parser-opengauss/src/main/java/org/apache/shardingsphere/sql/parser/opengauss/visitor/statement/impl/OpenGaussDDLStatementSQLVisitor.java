@@ -103,6 +103,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.Dro
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropRuleContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropSequenceContext;
+import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropServerContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropSynonymContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.OpenGaussStatementParser.DropTablespaceContext;
@@ -229,6 +230,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropSequenceStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropServerStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropSynonymStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussDropTablespaceStatement;
@@ -259,9 +261,8 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        OpenGaussCreateTableStatement result = new OpenGaussCreateTableStatement();
+        OpenGaussCreateTableStatement result = new OpenGaussCreateTableStatement(null != ctx.ifNotExists());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setContainsNotExistClause(null != ctx.notExistClause());
         if (null != ctx.createDefinitionClause()) {
             CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) visit(ctx.createDefinitionClause());
             for (CreateDefinitionSegment each : createDefinitions.getValue()) {
@@ -428,24 +429,15 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     public ASTNode visitColumnDefinition(final ColumnDefinitionContext ctx) {
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
         DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataType());
-        boolean isPrimaryKey = isPrimaryKey(ctx);
-        ColumnDefinitionSegment result = new ColumnDefinitionSegment(
-                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey);
+        boolean isPrimaryKey = ctx.columnConstraint().stream().anyMatch(each -> null != each.columnConstraintOption() && null != each.columnConstraintOption().primaryKey());
+        // TODO parse not null
+        ColumnDefinitionSegment result = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey, false);
         for (ColumnConstraintContext each : ctx.columnConstraint()) {
             if (null != each.columnConstraintOption().tableName()) {
                 result.getReferencedTables().add((SimpleTableSegment) visit(each.columnConstraintOption().tableName()));
             }
         }
         return result;
-    }
-    
-    private boolean isPrimaryKey(final ColumnDefinitionContext ctx) {
-        for (ColumnConstraintContext each : ctx.columnConstraint()) {
-            if (null != each.columnConstraintOption() && null != each.columnConstraintOption().primaryKey()) {
-                return true;
-            }
-        }
-        return false;
     }
     
     @Override
@@ -481,7 +473,7 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
         // TODO visit pk and table ref
         ColumnSegment column = (ColumnSegment) visit(ctx.modifyColumn().columnName());
         DataTypeSegment dataType = null == ctx.dataType() ? null : (DataTypeSegment) visit(ctx.dataType());
-        ColumnDefinitionSegment columnDefinition = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, false);
+        ColumnDefinitionSegment columnDefinition = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, false, false);
         return new ModifyColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnDefinition);
     }
     
@@ -498,9 +490,9 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        OpenGaussDropTableStatement result = new OpenGaussDropTableStatement();
+        boolean containsCascade = null != ctx.dropTableOpt() && null != ctx.dropTableOpt().CASCADE();
+        OpenGaussDropTableStatement result = new OpenGaussDropTableStatement(null != ctx.ifExists(), containsCascade);
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
-        result.setContainsExistClause(null != ctx.existClause());
         return result;
     }
     
@@ -517,7 +509,7 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
         OpenGaussCreateIndexStatement result = new OpenGaussCreateIndexStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setColumns(((CollectionValue<ColumnSegment>) visit(ctx.indexParams())).getValue());
+        result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.indexParams())).getValue());
         if (null != ctx.indexName()) {
             result.setIndex((IndexSegment) visit(ctx.indexName()));
         } else {
@@ -557,9 +549,8 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
-        OpenGaussDropIndexStatement result = new OpenGaussDropIndexStatement();
+        OpenGaussDropIndexStatement result = new OpenGaussDropIndexStatement(null != ctx.ifExists());
         result.getIndexes().addAll(createIndexSegments(((CollectionValue<SimpleTableSegment>) visit(ctx.qualifiedNameList())).getValue()));
-        result.setContainsExistClause(null != ctx.existClause());
         return result;
     }
     
@@ -653,8 +644,13 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     public ASTNode visitDropDatabase(final DropDatabaseContext ctx) {
         OpenGaussDropDatabaseStatement result = new OpenGaussDropDatabaseStatement();
         result.setDatabaseName(((IdentifierValue) visit(ctx.name())).getValue());
-        result.setContainsExistClause(null != ctx.existClause());
+        result.setIfExists(null != ctx.ifExists());
         return result;
+    }
+    
+    @Override
+    public ASTNode visitDropServer(final DropServerContext ctx) {
+        return new OpenGaussDropServerStatement();
     }
     
     @Override

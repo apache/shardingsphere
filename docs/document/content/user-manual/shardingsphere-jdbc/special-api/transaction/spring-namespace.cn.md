@@ -3,7 +3,12 @@ title = "使用 Spring 命名空间"
 weight = 3
 +++
 
-## 引入 Maven 依赖
+## 背景信息
+
+使用 ShardingSphere-JDBC 时，可以通过 spring namespace 的方式使用。
+## 前提条件
+
+引入 Maven 依赖
 
 ```xml
 <dependency>
@@ -19,6 +24,13 @@ weight = 3
     <version>${shardingsphere.version}</version>
 </dependency>
 
+<!-- 使用 XA 的 Narayana模式时，需要引入此模块 -->
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
+    <version>${project.version}</version>
+</dependency>
+
 <!-- 使用 BASE 事务时，需要引入此模块 -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
@@ -27,7 +39,14 @@ weight = 3
 </dependency>
 ```
 
-## 配置事务管理器
+## 操作步骤
+
+1. 配置事务管理器
+2. 使用分布式事务
+
+## 配置示例
+
+### 配置事务管理器
 
 ```xml
 <!-- ShardingDataSource 的相关配置 -->
@@ -45,16 +64,16 @@ weight = 3
 <sharding:tx-type-annotation-driven />
 ```
 
-## 使用分布式事务
+### 使用分布式事务
 
 ```java
 @Transactional
 @ShardingSphereTransactionType(TransactionType.XA)  // 支持TransactionType.LOCAL, TransactionType.XA, TransactionType.BASE
 public void insert() {
-    jdbcTemplate.execute("INSERT INTO t_order (user_id, status) VALUES (?, ?)", (PreparedStatementCallback<Object>) ps -> {
+        jdbcTemplate.execute("INSERT INTO t_order (user_id, status) VALUES (?, ?)", (PreparedStatementCallback<Object>) ps -> {
         ps.setObject(1, i);
         ps.setObject(2, "init");
         ps.executeUpdate();
-    });
-}
+        });
+        }
 ```

@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolD
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseVersionPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.SchemaMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseMetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.DataSourcePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.DatabaseRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.GlobalRulePersistService;
@@ -52,7 +52,7 @@ public final class MetaDataPersistService {
     
     private final DataSourcePersistService dataSourceService;
     
-    private final SchemaMetaDataPersistService schemaMetaDataService;
+    private final DatabaseMetaDataPersistService databaseMetaDataService;
     
     private final DatabaseRulePersistService databaseRulePersistService;
     
@@ -65,7 +65,7 @@ public final class MetaDataPersistService {
     public MetaDataPersistService(final PersistRepository repository) {
         this.repository = repository;
         dataSourceService = new DataSourcePersistService(repository);
-        schemaMetaDataService = new SchemaMetaDataPersistService(repository);
+        databaseMetaDataService = new DatabaseMetaDataPersistService(repository);
         databaseRulePersistService = new DatabaseRulePersistService(repository);
         globalRuleService = new GlobalRulePersistService(repository);
         propsService = new PropertiesPersistService(repository);
@@ -75,21 +75,21 @@ public final class MetaDataPersistService {
     /**
      * Persist configurations.
      *
-     * @param schemaConfigs schema configurations
+     * @param databaseConfigs database configurations
      * @param globalRuleConfigs global rule configurations
      * @param props properties
      * @param isOverwrite whether overwrite registry center's configuration if existed
      */
-    public void persistConfigurations(final Map<String, ? extends DatabaseConfiguration> schemaConfigs,
+    public void persistConfigurations(final Map<String, ? extends DatabaseConfiguration> databaseConfigs,
                                       final Collection<RuleConfiguration> globalRuleConfigs, final Properties props, final boolean isOverwrite) {
         globalRuleService.persist(globalRuleConfigs, isOverwrite);
         propsService.persist(props, isOverwrite);
-        for (Entry<String, ? extends DatabaseConfiguration> entry : schemaConfigs.entrySet()) {
+        for (Entry<String, ? extends DatabaseConfiguration> entry : databaseConfigs.entrySet()) {
             String databaseName = entry.getKey();
             Map<String, DataSourceProperties> dataSourcePropertiesMap = getDataSourcePropertiesMap(entry.getValue().getDataSources());
             Collection<RuleConfiguration> ruleConfigurations = entry.getValue().getRuleConfigurations();
             if (dataSourcePropertiesMap.isEmpty() && ruleConfigurations.isEmpty()) {
-                schemaMetaDataService.persistDatabase(databaseName);
+                databaseMetaDataService.persistDatabase(databaseName);
             } else {
                 dataSourceService.persist(databaseName, getDataSourcePropertiesMap(entry.getValue().getDataSources()), isOverwrite);
                 databaseRulePersistService.persist(databaseName, entry.getValue().getRuleConfigurations(), isOverwrite);

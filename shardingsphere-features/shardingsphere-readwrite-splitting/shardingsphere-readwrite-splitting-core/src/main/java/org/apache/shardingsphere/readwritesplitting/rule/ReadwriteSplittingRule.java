@@ -23,10 +23,12 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableItemConstants;
+import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StorageConnectorReusableRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.exportable.ExportableRule;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
@@ -49,7 +51,7 @@ import java.util.Optional;
 /**
  * Readwrite-splitting rule.
  */
-public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceContainedRule, StatusContainedRule, ExportableRule, StorageConnectorReusableRule {
+public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceContainedRule, StaticDataSourceContainedRule, ExportableRule, StorageConnectorReusableRule {
     
     @Getter
     private final RuleConfiguration configuration;
@@ -58,7 +60,7 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     
     private final Map<String, ReadwriteSplittingDataSourceRule> dataSourceRules;
     
-    public ReadwriteSplittingRule(final ReadwriteSplittingRuleConfiguration ruleConfig) {
+    public ReadwriteSplittingRule(final ReadwriteSplittingRuleConfiguration ruleConfig, final Collection<ShardingSphereRule> builtRules) {
         configuration = ruleConfig;
         Preconditions.checkArgument(!ruleConfig.getDataSources().isEmpty(), "Replica query data source rules can not be empty.");
         ruleConfig.getLoadBalancers().forEach((key, value) -> loadBalancers.put(key, ReplicaLoadBalanceAlgorithmFactory.newInstance(value)));
@@ -68,11 +70,11 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
             ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = Strings.isNullOrEmpty(each.getLoadBalancerName()) || !loadBalancers.containsKey(each.getLoadBalancerName())
                     ? ReplicaLoadBalanceAlgorithmFactory.newInstance()
                     : loadBalancers.get(each.getLoadBalancerName());
-            dataSourceRules.put(each.getName(), new ReadwriteSplittingDataSourceRule(each, loadBalanceAlgorithm));
+            dataSourceRules.put(each.getName(), new ReadwriteSplittingDataSourceRule(each, loadBalanceAlgorithm, builtRules));
         }
     }
     
-    public ReadwriteSplittingRule(final AlgorithmProvidedReadwriteSplittingRuleConfiguration ruleConfig) {
+    public ReadwriteSplittingRule(final AlgorithmProvidedReadwriteSplittingRuleConfiguration ruleConfig, final Collection<ShardingSphereRule> builtRules) {
         configuration = ruleConfig;
         Preconditions.checkArgument(!ruleConfig.getDataSources().isEmpty(), "Replica query data source rules can not be empty.");
         loadBalancers.putAll(ruleConfig.getLoadBalanceAlgorithms());
@@ -82,7 +84,7 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
             ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = Strings.isNullOrEmpty(each.getLoadBalancerName()) || !loadBalancers.containsKey(each.getLoadBalancerName())
                     ? ReplicaLoadBalanceAlgorithmFactory.newInstance()
                     : loadBalancers.get(each.getLoadBalancerName());
-            dataSourceRules.put(each.getName(), new ReadwriteSplittingDataSourceRule(each, loadBalanceAlgorithm));
+            dataSourceRules.put(each.getName(), new ReadwriteSplittingDataSourceRule(each, loadBalanceAlgorithm, builtRules));
         }
     }
     
@@ -116,13 +118,11 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     
     @Override
     public void updateStatus(final DataSourceStatusChangedEvent event) {
-        if (event instanceof StorageNodeDataSourceChangedEvent) {
-            for (Entry<String, ReadwriteSplittingDataSourceRule> entry : dataSourceRules.entrySet()) {
-                StorageNodeDataSourceChangedEvent dataSourceChangedEvent = (StorageNodeDataSourceChangedEvent) event;
-                entry.getValue().updateDisabledDataSourceNames(dataSourceChangedEvent.getQualifiedDatabase().getDataSourceName(),
-                        StorageNodeStatus.isDisable(dataSourceChangedEvent.getDataSource().getStatus()));
-            }
-        }
+        StorageNodeDataSourceChangedEvent dataSourceEvent = (StorageNodeDataSourceChangedEvent) event;
+        QualifiedDatabase qualifiedDatabase = dataSourceEvent.getQualifiedDatabase();
+        ReadwriteSplittingDataSourceRule dataSourceRule = dataSourceRules.get(qualifiedDatabase.getGroupName());
+        Preconditions.checkState(null != dataSourceRule, "Can 't find readwrite-splitting data source rule in database `%s`.", qualifiedDatabase.getDatabaseName());
+        dataSourceRule.updateDisabledDataSourceNames(dataSourceEvent.getQualifiedDatabase().getDataSourceName(), StorageNodeStatus.isDisable(dataSourceEvent.getDataSource().getStatus()));
     }
     
     @Override

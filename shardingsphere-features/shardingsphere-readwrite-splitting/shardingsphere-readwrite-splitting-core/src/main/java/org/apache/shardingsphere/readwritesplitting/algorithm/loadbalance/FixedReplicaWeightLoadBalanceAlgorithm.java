@@ -48,10 +48,13 @@ public final class FixedReplicaWeightLoadBalanceAlgorithm implements ReadQueryLo
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
         double[] weight = WEIGHT_MAP.containsKey(name) ? WEIGHT_MAP.get(name) : initWeight(readDataSourceNames);
         WEIGHT_MAP.putIfAbsent(name, weight);
-        if (null == TransactionHolder.getReadWriteSplitRoutedReplica()) {
-            TransactionHolder.setReadWriteSplitRoutedReplica(getDataSourceName(readDataSourceNames, weight));
+        if (TransactionHolder.isTransaction()) {
+            if (null == TransactionHolder.getReadWriteSplitRoutedReplica()) {
+                TransactionHolder.setReadWriteSplitRoutedReplica(getDataSourceName(readDataSourceNames, weight));
+            }
+            return TransactionHolder.getReadWriteSplitRoutedReplica();
         }
-        return TransactionHolder.getReadWriteSplitRoutedReplica();
+        return getDataSourceName(readDataSourceNames, weight);
     }
     
     private String getDataSourceName(final List<String> readDataSourceNames, final double[] weight) {

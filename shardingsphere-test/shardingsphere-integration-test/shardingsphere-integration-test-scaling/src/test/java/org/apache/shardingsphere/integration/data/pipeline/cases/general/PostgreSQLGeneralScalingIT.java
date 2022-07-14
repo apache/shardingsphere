@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseTy
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseExtraSQLITCase;
 import org.apache.shardingsphere.integration.data.pipeline.cases.task.PostgreSQLIncrementTask;
-import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
@@ -46,8 +46,6 @@ import static org.junit.Assert.assertTrue;
 @RunWith(Parameterized.class)
 public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
     
-    private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
-    
     private final ScalingParameterized parameterized;
     
     public PostgreSQLGeneralScalingIT(final ScalingParameterized parameterized) {
@@ -59,10 +57,13 @@ public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
     @Parameters(name = "{0}")
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
-        for (String dockerImageName : ENV.getPostgresVersions()) {
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NONE) {
+            return result;
+        }
+        for (String dockerImageName : ENV.listDatabaseDockerImageNames(new PostgreSQLDatabaseType())) {
             result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), dockerImageName, "env/scenario/general/postgresql.xml"));
         }
-        for (String dockerImageName : ENV.getOpenGaussVersions()) {
+        for (String dockerImageName : ENV.listDatabaseDockerImageNames(new OpenGaussDatabaseType())) {
             result.add(new ScalingParameterized(new OpenGaussDatabaseType(), dockerImageName, "env/scenario/general/postgresql.xml"));
         }
         return result;
@@ -75,17 +76,20 @@ public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
         assertTrue(waitShardingAlgorithmEffect(15));
         createScalingRule();
         createSchema("test");
-        getCreateOrderWithItemSharingTableRule();
+        createOrderTableRule();
+        createOrderItemTableRule();
         createOrderTable();
-        createTableIndexList();
         createOrderItemTable();
+        // TODO wait kernel support create index if not exists
+        // createTableIndexList("test");
+        executeWithLog("COMMENT ON COLUMN test.t_order.user_id IS 'user id';");
         SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
         Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(keyGenerateAlgorithm, parameterized.getDatabaseType(), 3000);
         getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
         getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
-        startIncrementTask(new PostgreSQLIncrementTask(getJdbcTemplate(), new SnowflakeKeyGenerateAlgorithm(), "test", true));
         addTargetResource();
-        executeWithLog(getCommonSQLCommand().getAutoAlterOrderWithItemShardingTableRule());
+        startIncrementTask(new PostgreSQLIncrementTask(getJdbcTemplate(), new SnowflakeKeyGenerateAlgorithm(), "test", true));
+        executeWithLog(getCommonSQLCommand().getAlterOrderWithItemAutoTableRule());
         String jobId = getScalingJobId();
         waitScalingFinished(jobId);
         assertCheckScalingSuccess(jobId);

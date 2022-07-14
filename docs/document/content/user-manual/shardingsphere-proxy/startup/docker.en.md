@@ -3,14 +3,26 @@ title = "Use Docker"
 weight = 2
 +++
 
-## Pull Official Docker Image
+## Background
 
+This chapter is an introduction about how to start ShardingSphere-Proxy via Docker
+
+## Notice
+
+Using Docker to start ShardingSphere-Proxy does not require additional package supoort.
+
+## Steps
+
+1. Acquire Docker Image
+
+* Method 1 (Recommended): Pull from DockerHub
 ```bash
 docker pull apache/shardingsphere-proxy
 ```
 
-## Build Docker Image Manually (Optional)
+* Method 2: Acquire latest master branch image master: <https://github.com/apache/shardingsphere/pkgs/container/shardingsphere-proxy>
 
+* Method 3: Build your own image
 ```bash
 git clone https://github.com/apache/shardingsphere
 mvn clean install
@@ -18,61 +30,53 @@ cd shardingsphere-distribution/shardingsphere-proxy-distribution
 mvn clean package -Prelease,docker
 ```
 
-## Configure ShardingSphere-Proxy
-
-Create `server.yaml` and `config-xxx.yaml` to configure sharding rules and server rule in `/${your_work_dir}/conf/`. 
-Please refer to [Configuration Manual](/en/user-manual/shardingsphere-proxy/yaml-config/).
-Please refer to [Example](https://github.com/apache/shardingsphere/tree/master/shardingsphere-proxy/shardingsphere-proxy-bootstrap/src/main/resources/conf).
-
-## Run Docker
-
-```bash
-docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -e PORT=3308 -p13308:3308 apache/shardingsphere-proxy:latest
+If the following problems emerge, please make sure Docker daemon Process is running.
+```
+I/O exception (java.io.IOException) caught when processing request to {}->unix://localhost:80: Connection refused？
 ```
 
-**Notice**
+2. Configure `conf/server.yaml` and `conf/config-*.yaml`
 
-* You can define port `3308` and `13308` by yourself. `3308` refers to docker port; `13308` refers to the host port.
-* You have to volume conf dir to `/opt/shardingsphere-proxy/conf`.
-
+Configuration file template can be attained from the Docker container and can be copied to any directory on the host:
 ```bash
-docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -e JVM_OPTS="-Djava.awt.headless=true" -e PORT=3308 -p13308:3308 apache/shardingsphere-proxy:latest
+docker run -d --name tmp --entrypoint=bash apache/shardingsphere-proxy
+docker cp tmp:/opt/shardingsphere-proxy/conf /host/path/to/conf
+docker rm tmp
 ```
 
-**Notice**
+Since the network conditions inside the container may differ from those of the host, if errors such as "cannot connect to the database" occurs, please make sure that the IP of the database specified in the `conf/config-*.yaml` configuration file can be accessed from inside the Docker container.
 
-* You can define JVM related parameters to environment variable `JVM_OPTS`.
+For details, please refer to [ShardingSphere-Proxy quick start manual - binary distribution packages](/en/user-manual/shardingsphere-proxy/startup/bin/).
+
+3. (Optional) Introduce third-party dependencies or customized algorithms
+
+If you have any of the following requirements:
+* ShardingSphere-Proxy Backend use MySQL Database;
+* Implement customized algorithms;
+* Use Etcd as Registry Center in cluster mode.
+
+Please create `ext-lib` directory anywhere inside the host and refer to the steps in [ShardingSphere-Proxy quick start manual - binary distribution packages](/en/user-manual/shardingsphere-proxy/startup/bin/).
+
+4. Start ShardingSphere-Proxy container
+
+Mount the `conf` and `ext-lib` directories from the host to the container. Start the container:
 
 ```bash
-docker run -d -v /${your_work_dir}/conf:/opt/shardingsphere-proxy/conf -v /${your_work_dir}/ext-lib:/opt/shardingsphere-proxy/ext-lib -p13308:3308 apache/shardingsphere-proxy:latest
+docker run -d \
+    -v /host/path/to/conf:/opt/shardingsphere-proxy/conf \
+    -v /host/path/to/ext-lib:/opt/shardingsphere-proxy/ext-lib \
+    -e PORT=3308 -p13308:3308 apache/shardingsphere-proxy:latest
 ```
 
-**Notice**
+`ext-lib` is not necessary during the process. Users can mount it at will.
+ShardingSphere-Proxy default portal `3307` can be designated according to environment variable `-e PORT`
+Customized JVM related parameters can be set according to environment variable `JVM_OPTS`
 
-* If you need to import external jar packages (such as MySQL/openGauss JDBC driver, custom algorithm, etc.), you may bind mount a volume to `/opt/shardingsphere-proxy/ext-lib`.
+5. Use Client to connect to ShardingSphere-Proxy
 
-## Access ShardingSphere-Proxy
+Please refer to [ShardingSphere-Proxy quick start manual - binary distribution packages](/en/user-manual/shardingsphere-proxy/startup/bin/).
 
-It is in the same way as connecting to PostgreSQL.
+## Configuration Example
 
-```bash
-psql -U ${your_username} -h ${your_host} -p 13308
-```
-
-## FAQ
-
-Question 1: there is I/O exception (`java.io.IOException`) when process request to `{}->unix://localhost:80: Connection` is refused.
-
-Answer: before building image, please make sure docker daemon thread is running.
-
-Question 2: there is error report of being unable to connect to the database.
-
-Answer: please make sure the designated PostgreSQL's IP in `/${your_work_dir}/conf/config-xxx.yaml` configuration is accessible to Docker container.
-
-Question 3：How to start ShardingSphere-Proxy whose backend databases are MySQL or openGauss.
-
-Answer：Mount the directory where `mysql-connector.jar` or `opengauss-jdbc.jar` stores to `/opt/shardingsphere-proxy/ext-lib`.
-
-Question 4：How to import user-defined sharding strategy？
-
-Answer: Volume the directory where `shardingsphere-strategy.jar` stores to `/opt/shardingsphere-proxy/ext-lib`.
+For full configuration, please refer to the examples given in ShardingSphere library:
+<https://github.com/apache/shardingsphere/tree/master/examples/shardingsphere-proxy-example>

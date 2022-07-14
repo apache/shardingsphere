@@ -26,4 +26,9 @@ public final class NoneShardingStrategyConfiguration implements ShardingStrategy
     public String getShardingAlgorithmName() {
         return "";
     }
+    
+    @Override
+    public String getType() {
+        return "";
+    }
 }

@@ -93,7 +93,7 @@ public final class UnicastDatabaseBackendHandlerTest extends ProxyContextRestore
         Map<String, ShardingSphereDatabase> result = new HashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-            when(database.hasDataSource()).thenReturn(true);
+            when(database.containsDataSource()).thenReturn(true);
             when(database.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
             result.put(String.format(DATABASE_PATTERN, i), database);
         }
@@ -122,7 +122,7 @@ public final class UnicastDatabaseBackendHandlerTest extends ProxyContextRestore
     public void assertDatabaseUsingStream() throws SQLException {
         unicastDatabaseBackendHandler.execute();
         while (unicastDatabaseBackendHandler.next()) {
-            assertThat(unicastDatabaseBackendHandler.getRowData().size(), is(1));
+            assertThat(unicastDatabaseBackendHandler.getRowData().getData().size(), is(1));
         }
     }
 }

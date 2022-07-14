@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.node;
 
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -58,6 +58,11 @@ public final class ComputeNodeTest {
     @Test
     public void assertGetInstanceWorkerIdNodePath() {
         assertThat(ComputeNode.getInstanceWorkerIdNodePath("foo_instance"), is("/nodes/compute_nodes/worker_id/foo_instance"));
+    }
+    
+    @Test
+    public void assertGetInstanceWorkerIdRootNodePath() {
+        assertThat(ComputeNode.getInstanceWorkerIdRootNodePath(), is("/nodes/compute_nodes/worker_id"));
     }
     
     @Test

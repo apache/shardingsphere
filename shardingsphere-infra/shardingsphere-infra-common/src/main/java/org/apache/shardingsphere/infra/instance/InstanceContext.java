@@ -19,8 +19,9 @@ package org.apache.shardingsphere.infra.instance;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.infra.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.lock.LockContext;
 
@@ -28,8 +29,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
+import java.util.Properties;
 
 /**
  * Instance context.
@@ -45,14 +46,17 @@ public final class InstanceContext {
     
     private final LockContext lockContext;
     
+    private final EventBusContext eventBusContext;
+    
     private final Collection<ComputeNodeInstance> computeNodeInstances = new LinkedList<>();
     
-    public InstanceContext(final ComputeNodeInstance instance, final WorkerIdGenerator workerIdGenerator, final ModeConfiguration modeConfiguration, final LockContext lockContext) {
+    public InstanceContext(final ComputeNodeInstance instance, final WorkerIdGenerator workerIdGenerator,
+                           final ModeConfiguration modeConfiguration, final LockContext lockContext, final EventBusContext eventBusContext) {
         this.instance = instance;
         this.workerIdGenerator = workerIdGenerator;
         this.modeConfiguration = modeConfiguration;
         this.lockContext = lockContext;
-        getWorkerId();
+        this.eventBusContext = eventBusContext;
         lockContext.initLockState(this);
     }
     
@@ -63,7 +67,7 @@ public final class InstanceContext {
      * @param status status
      */
     public void updateInstanceStatus(final String instanceId, final Collection<String> status) {
-        if (instance.getInstanceDefinition().getInstanceId().equals(instanceId)) {
+        if (instance.getInstanceMetaData().getId().equals(instanceId)) {
             instance.switchState(status);
         }
         updateRelatedComputeNodeInstancesStatus(instanceId, status);
@@ -71,20 +75,9 @@ public final class InstanceContext {
     
     private void updateRelatedComputeNodeInstancesStatus(final String instanceId, final Collection<String> status) {
         for (ComputeNodeInstance each : computeNodeInstances) {
-            if (each.getInstanceDefinition().getInstanceId().equals(instanceId)) {
+            if (each.getInstanceMetaData().getId().equals(instanceId)) {
                 each.switchState(status);
             }
-        }
-    }
-    
-    /**
-     * Update instance worker id.
-     * 
-     * @param workerId worker id
-     */
-    public void updateWorkerId(final Long workerId) {
-        if (!Objects.equals(workerId, instance.getWorkerId())) {
-            instance.setWorkerId(workerId);
         }
     }
     
@@ -95,23 +88,20 @@ public final class InstanceContext {
      * @param labels collection of label
      */
     public void updateLabel(final String instanceId, final Collection<String> labels) {
-        if (instance.getInstanceDefinition().getInstanceId().equals(instanceId)) {
+        if (instance.getInstanceMetaData().getId().equals(instanceId)) {
             instance.setLabels(labels);
         }
-        computeNodeInstances.stream().filter(each -> each.getInstanceDefinition().getInstanceId().equals(instanceId)).forEach(each -> each.setLabels(labels));
+        computeNodeInstances.stream().filter(each -> each.getInstanceMetaData().getId().equals(instanceId)).forEach(each -> each.setLabels(labels));
     }
     
     /**
-     * Get worker id.
+     * Generate worker id.
      *
+     * @param props props
      * @return worker id
      */
-    public long getWorkerId() {
-        if (null == instance.getWorkerId()) {
-            // TODO process generate failed
-            Optional.of(workerIdGenerator.generate()).ifPresent(instance::setWorkerId);
-        }
-        return instance.getWorkerId();
+    public long generateWorkerId(final Properties props) {
+        return workerIdGenerator.generate(props);
     }
     
     /**
@@ -120,7 +110,7 @@ public final class InstanceContext {
      * @param instance compute node instance
      */
     public void addComputeNodeInstance(final ComputeNodeInstance instance) {
-        computeNodeInstances.removeIf(each -> each.getInstanceDefinition().getInstanceId().equalsIgnoreCase(instance.getInstanceDefinition().getInstanceId()));
+        computeNodeInstances.removeIf(each -> each.getInstanceMetaData().getId().equalsIgnoreCase(instance.getInstanceMetaData().getId()));
         computeNodeInstances.add(instance);
     }
     
@@ -130,7 +120,7 @@ public final class InstanceContext {
      * @param instance compute node instance
      */
     public void deleteComputeNodeInstance(final ComputeNodeInstance instance) {
-        computeNodeInstances.removeIf(each -> each.getInstanceDefinition().getInstanceId().equalsIgnoreCase(instance.getInstanceDefinition().getInstanceId()));
+        computeNodeInstances.removeIf(each -> each.getInstanceMetaData().getId().equalsIgnoreCase(instance.getInstanceMetaData().getId()));
     }
     
     /**
@@ -140,11 +130,11 @@ public final class InstanceContext {
      * @param labels collection of contained label
      * @return compute node instances
      */
-    public List<InstanceDefinition> getComputeNodeInstances(final InstanceType instanceType, final Collection<String> labels) {
-        List<InstanceDefinition> result = new ArrayList<>(computeNodeInstances.size());
+    public List<InstanceMetaData> getComputeNodeInstances(final InstanceType instanceType, final Collection<String> labels) {
+        List<InstanceMetaData> result = new ArrayList<>(computeNodeInstances.size());
         for (ComputeNodeInstance each : computeNodeInstances) {
-            if (each.getInstanceDefinition().getInstanceType() == instanceType && labels.stream().anyMatch(((Collection<String>) each.getLabels())::contains)) {
-                result.add(each.getInstanceDefinition());
+            if (each.getInstanceMetaData().getType() == instanceType && labels.stream().anyMatch(((Collection<String>) each.getLabels())::contains)) {
+                result.add(each.getInstanceMetaData());
             }
         }
         return result;

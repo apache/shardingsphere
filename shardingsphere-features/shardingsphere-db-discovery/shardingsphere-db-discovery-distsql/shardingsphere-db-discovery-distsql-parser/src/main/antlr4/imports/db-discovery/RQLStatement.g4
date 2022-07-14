@@ -31,6 +31,10 @@ showDatabaseDiscoveryHeartbeats
     : SHOW DB_DISCOVERY HEARTBEATS (FROM databaseName)?
     ;
 
+countDatabaseDiscoveryRule
+    : COUNT DB_DISCOVERY RULE (FROM databaseName)?
+    ;
+
 databaseName
     : IDENTIFIER
     ;

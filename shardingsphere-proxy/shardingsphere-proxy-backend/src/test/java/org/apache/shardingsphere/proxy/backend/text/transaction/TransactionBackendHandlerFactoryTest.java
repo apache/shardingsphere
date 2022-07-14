@@ -26,7 +26,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JD
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.data.impl.BroadcastDatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.data.impl.SchemaAssignedDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
@@ -92,7 +92,7 @@ public final class TransactionBackendHandlerFactoryTest extends ProxyContextRest
     public void assertBroadcastBackendHandlerReturnedWhenTCLStatementNotHit() {
         SQLStatementContext<TCLStatement> context = mock(SQLStatementContext.class);
         when(context.getSqlStatement()).thenReturn(mock(TCLStatement.class));
-        assertThat(TransactionBackendHandlerFactory.newInstance(context, null, mock(ConnectionSession.class)), instanceOf(BroadcastDatabaseBackendHandler.class));
+        assertThat(TransactionBackendHandlerFactory.newInstance(context, null, mock(ConnectionSession.class)), instanceOf(SchemaAssignedDatabaseBackendHandler.class));
     }
     
     @SuppressWarnings("unchecked")

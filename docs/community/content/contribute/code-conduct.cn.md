@@ -73,6 +73,7 @@ chapter = true
  - 精确断言，尽量不使用 `not`，`containsString` 断言。
  - 测试用例的真实值应名为为 actual XXX，期望值应命名为 expected XXX。
  - 测试类和 `@Test` 标注的方法无需 javadoc。
+ - 使用 Mockito mockStatic 和 mockConstruction 方法必须搭配 try-with-resource 或在清理方法中关闭，避免泄漏。
 
 ## G4 编码规范
  - 公共规范

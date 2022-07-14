@@ -31,8 +31,11 @@ import org.apache.shardingsphere.infra.route.SQLRouterFactory;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
+import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.LockSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -62,7 +65,7 @@ public final class ReadwriteSplittingSQLRouterTest {
     
     private static final String DATASOURCE_NAME = "ds";
     
-    private static final String NONE_READWRITE_SPLITTING_DATASOURCE_NAME = "noneReadwriteSplittingDatasource";
+    private static final String NONE_READWRITE_SPLITTING_DATASOURCE_NAME = "noneReadwriteSplittingDataSource";
     
     private static final String WRITE_DATASOURCE = "write";
     
@@ -81,25 +84,17 @@ public final class ReadwriteSplittingSQLRouterTest {
     
     @Before
     public void setUp() {
-        rule = new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(Collections.singleton(
-                new ReadwriteSplittingDataSourceRuleConfiguration(DATASOURCE_NAME, "Static", createProperties(), "")), Collections.emptyMap()));
+        rule = new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(Collections.singleton(new ReadwriteSplittingDataSourceRuleConfiguration(DATASOURCE_NAME,
+                new StaticReadwriteSplittingStrategyConfiguration(WRITE_DATASOURCE, Collections.singletonList(READ_DATASOURCE)), null, "")),
+                Collections.emptyMap()), Collections.emptyList());
         sqlRouter = (ReadwriteSplittingSQLRouter) SQLRouterFactory.getInstances(Collections.singleton(rule)).get(rule);
-        dynamicRule = new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(Collections.singleton(
-                new ReadwriteSplittingDataSourceRuleConfiguration(DATASOURCE_NAME, "Dynamic", createDynamicProperties(), "")), Collections.emptyMap()));
+        DynamicDataSourceContainedRule dynamicDataSourceRule = mock(DynamicDataSourceContainedRule.class, RETURNS_DEEP_STUBS);
+        when(dynamicDataSourceRule.getPrimaryDataSourceName("readwrite_ds")).thenReturn(WRITE_DATASOURCE);
+        when(dynamicDataSourceRule.getReplicaDataSourceNames("readwrite_ds")).thenReturn(Collections.emptyList());
+        dynamicRule = new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(Collections.singleton(new ReadwriteSplittingDataSourceRuleConfiguration(DATASOURCE_NAME, null,
+                new DynamicReadwriteSplittingStrategyConfiguration("readwrite_ds", "true"), "")), Collections.emptyMap()),
+                Collections.singleton(dynamicDataSourceRule));
         dynamicSqlRouter = (ReadwriteSplittingSQLRouter) SQLRouterFactory.getInstances(Collections.singleton(dynamicRule)).get(dynamicRule);
-    }
-    
-    private Properties createProperties() {
-        Properties result = new Properties();
-        result.setProperty("write-data-source-name", WRITE_DATASOURCE);
-        result.setProperty("read-data-source-names", READ_DATASOURCE);
-        return result;
-    }
-    
-    private Properties createDynamicProperties() {
-        Properties result = new Properties();
-        result.setProperty("auto-aware-data-source-name", "readwrite_ds");
-        return result;
     }
     
     @Test

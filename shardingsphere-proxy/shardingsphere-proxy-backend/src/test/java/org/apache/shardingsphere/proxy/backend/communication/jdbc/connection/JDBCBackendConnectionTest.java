@@ -124,16 +124,8 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     private ShardingSphereRuleMetaData mockGlobalRuleMetaData() {
         ShardingSphereRuleMetaData result = mock(ShardingSphereRuleMetaData.class);
         TransactionRule transactionRule = mock(TransactionRule.class);
-        when(transactionRule.getResources()).thenReturn(createTransactionManagerEngines());
+        when(transactionRule.getResource()).thenReturn(new ShardingSphereTransactionManagerEngine());
         when(result.getSingleRule(TransactionRule.class)).thenReturn(transactionRule);
-        return result;
-    }
-    
-    private Map<String, ShardingSphereTransactionManagerEngine> createTransactionManagerEngines() {
-        Map<String, ShardingSphereTransactionManagerEngine> result = new HashMap<>(10, 1);
-        for (int i = 0; i < 10; i++) {
-            result.put(String.format(SCHEMA_PATTERN, i), new ShardingSphereTransactionManagerEngine());
-        }
         return result;
     }
     

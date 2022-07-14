@@ -113,7 +113,7 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     public void assertExecuteShardingTableRuleContext() throws SQLException {
         setContextManager(true);
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase("db");
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(mock(CreateShardingTableRuleStatement.class), connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
@@ -264,7 +264,9 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     
     private void setContextManager(final boolean isGovernance) {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = isGovernance ? mockMetaDataContexts() : new MetaDataContexts(mock(MetaDataPersistService.class));
+        MetaDataContexts metaDataContexts = isGovernance
+                ? mockMetaDataContexts()
+                : new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(), mock(OptimizerContext.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
     }
@@ -275,6 +277,7 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
         when(database.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(database.getResource().getDataSources()).thenReturn(Collections.emptyMap());
         when(database.getResource().getNotExistedResources(any())).thenReturn(Collections.emptyList());
+        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
         when(result.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("db", database));
         return result;
     }

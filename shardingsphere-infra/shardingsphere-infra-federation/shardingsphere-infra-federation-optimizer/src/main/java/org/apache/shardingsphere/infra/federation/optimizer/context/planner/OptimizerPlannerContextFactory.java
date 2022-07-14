@@ -42,11 +42,11 @@ import org.apache.shardingsphere.infra.federation.optimizer.metadata.calcite.Fed
 import org.apache.shardingsphere.infra.federation.optimizer.planner.QueryOptimizePlannerFactory;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Optimizer planner context factory.
@@ -61,7 +61,7 @@ public final class OptimizerPlannerContextFactory {
      * @return created optimizer planner context map
      */
     public static Map<String, OptimizerPlannerContext> create(final FederationMetaData metaData) {
-        Map<String, OptimizerPlannerContext> result = new HashMap<>(metaData.getDatabases().size(), 1);
+        Map<String, OptimizerPlannerContext> result = new ConcurrentHashMap<>(metaData.getDatabases().size(), 1);
         for (Entry<String, FederationDatabaseMetaData> entry : metaData.getDatabases().entrySet()) {
             result.put(entry.getKey(), create(entry.getValue()));
         }
@@ -71,13 +71,13 @@ public final class OptimizerPlannerContextFactory {
     /**
      * Create optimizer planner context.
      *
-     * @param schemaMetaData federation schema meta data
+     * @param databaseMetaData federation database meta data
      * @return created optimizer planner context
      */
-    public static OptimizerPlannerContext create(final FederationDatabaseMetaData schemaMetaData) {
+    public static OptimizerPlannerContext create(final FederationDatabaseMetaData databaseMetaData) {
         Map<String, SqlValidator> validators = new LinkedHashMap<>();
         Map<String, SqlToRelConverter> converters = new LinkedHashMap<>();
-        FederationDatabase federationDatabase = new FederationDatabase(schemaMetaData);
+        FederationDatabase federationDatabase = new FederationDatabase(databaseMetaData);
         for (Entry<String, Schema> entry : federationDatabase.getSubSchemaMap().entrySet()) {
             CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(createConnectionProperties());
             RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();

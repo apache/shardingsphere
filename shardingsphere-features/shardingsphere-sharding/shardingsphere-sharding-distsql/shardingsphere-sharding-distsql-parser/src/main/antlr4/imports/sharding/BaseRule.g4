@@ -31,6 +31,6 @@ keyGeneratorName
     : IDENTIFIER
     ;
 
-existsClause
+ifExists
     : IF EXISTS
     ;

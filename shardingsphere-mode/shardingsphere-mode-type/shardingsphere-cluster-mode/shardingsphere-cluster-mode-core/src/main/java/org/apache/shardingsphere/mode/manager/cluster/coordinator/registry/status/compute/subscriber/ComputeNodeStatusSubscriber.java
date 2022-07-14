@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 
 import com.google.common.base.Strings;
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.ComputeNodeStatus;
@@ -44,7 +43,7 @@ public final class ComputeNodeStatusSubscriber {
     public ComputeNodeStatusSubscriber(final RegistryCenter registryCenter, final ClusterPersistRepository repository) {
         this.registryCenter = registryCenter;
         this.repository = repository;
-        ShardingSphereEventBus.getInstance().register(this);
+        registryCenter.getEventBusContext().register(this);
     }
     
     /**

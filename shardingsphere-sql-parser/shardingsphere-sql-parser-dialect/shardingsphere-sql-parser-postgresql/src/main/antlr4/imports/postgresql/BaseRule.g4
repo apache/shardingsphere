@@ -275,6 +275,7 @@ unreservedWord
     | MOD
     | NAME
     | NAMES
+    | NATIONAL
     | NEW
     | NEXT
     | NFC
@@ -307,6 +308,7 @@ unreservedWord
     | PARTITION
     | PASSING
     | PASSWORD
+    | PATH
     | PLAIN
     | PLANS
     | POLICY
@@ -892,6 +894,10 @@ qualifiedName
     ;
 
 colId
+    : identifier
+    ;
+
+channelName
     : identifier
     ;
 
@@ -1849,12 +1855,12 @@ event
 typeNameList
     : typeName (COMMA_ typeName)*
     ;
-    
-notExistClause
+
+ifNotExists
     : IF NOT EXISTS
     ;
-    
-existClause
+
+ifExists
     : IF EXISTS
     ;
 

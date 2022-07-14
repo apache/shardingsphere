@@ -28,8 +28,6 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineIgnoredExc
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingReleaseDatabaseLevelLockEvent;
 
 /**
  * Rule altered job scheduler.
@@ -55,6 +53,7 @@ public final class RuleAlteredJobScheduler implements Runnable {
     public void stop() {
         jobContext.setStopping(true);
         log.info("stop, jobId={}, shardingItem={}", jobContext.getJobId(), jobContext.getShardingItem());
+        // TODO blocking stop
         for (InventoryTask each : jobContext.getInventoryTasks()) {
             log.info("stop inventory task {} - {}", jobContext.getJobId(), each.getTaskId());
             each.stop();
@@ -76,7 +75,6 @@ public final class RuleAlteredJobScheduler implements Runnable {
         } catch (final PipelineIgnoredException ex) {
             log.info("pipeline ignore exception: {}", ex.getMessage());
             RuleAlteredJobCenter.stop(jobId);
-            ShardingSphereEventBus.getInstance().post(new ScalingReleaseDatabaseLevelLockEvent(jobContext.getJobConfig().getDatabaseName()));
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
@@ -84,8 +82,6 @@ public final class RuleAlteredJobScheduler implements Runnable {
             RuleAlteredJobCenter.stop(jobId);
             jobContext.setStatus(JobStatus.PREPARING_FAILURE);
             governanceRepositoryAPI.persistJobProgress(jobContext);
-            ScalingReleaseDatabaseLevelLockEvent event = new ScalingReleaseDatabaseLevelLockEvent(jobContext.getJobConfig().getDatabaseName());
-            ShardingSphereEventBus.getInstance().post(event);
             throw ex;
         }
         if (jobContext.isStopping()) {
@@ -133,10 +129,8 @@ public final class RuleAlteredJobScheduler implements Runnable {
             @Override
             public void onFailure(final Throwable throwable) {
                 log.error("Inventory task execute failed.", throwable);
-                stop();
                 jobContext.setStatus(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE);
-                ScalingReleaseDatabaseLevelLockEvent event = new ScalingReleaseDatabaseLevelLockEvent(jobContext.getJobConfig().getDatabaseName());
-                ShardingSphereEventBus.getInstance().post(event);
+                stop();
             }
         };
     }
@@ -167,10 +161,8 @@ public final class RuleAlteredJobScheduler implements Runnable {
             @Override
             public void onFailure(final Throwable throwable) {
                 log.error("Incremental task execute failed.", throwable);
-                stop();
                 jobContext.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE);
-                ScalingReleaseDatabaseLevelLockEvent event = new ScalingReleaseDatabaseLevelLockEvent(jobContext.getJobConfig().getDatabaseName());
-                ShardingSphereEventBus.getInstance().post(event);
+                stop();
             }
         };
     }

@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.hint;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.HintRALStatement;
 
 /**
  * Show readwrite-splitting hint status statement.
  */
-public final class ShowReadwriteSplittingHintStatusStatement extends HintDistSQLStatement {
+public final class ShowReadwriteSplittingHintStatusStatement extends HintRALStatement {
 }

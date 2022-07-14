@@ -25,6 +25,7 @@ import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementConte
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.datetime.DatetimeService;
 import org.apache.shardingsphere.infra.datetime.DatetimeServiceFactory;
+import org.apache.shardingsphere.infra.exception.InsertColumnsAndValuesMismatchedException;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.route.engine.condition.ExpressionConditionUtils;
@@ -33,6 +34,7 @@ import org.apache.shardingsphere.sharding.route.engine.condition.engine.Sharding
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShardingConditionValue;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
@@ -71,8 +73,9 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
         Collection<String> columnNames = getColumnNames(sqlStatementContext);
         List<InsertValueContext> insertValueContexts = sqlStatementContext.getInsertValueContexts();
         List<ShardingCondition> result = new ArrayList<>(insertValueContexts.size());
+        int rowNumber = 0;
         for (InsertValueContext each : insertValueContexts) {
-            result.add(createShardingCondition(tableName, columnNames.iterator(), each, parameters));
+            result.add(createShardingCondition(tableName, columnNames.iterator(), each, parameters, ++rowNumber));
         }
         return result;
     }
@@ -87,16 +90,22 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
         return insertStatementContext.getColumnNames();
     }
     
-    private ShardingCondition createShardingCondition(final String tableName, final Iterator<String> columnNames, final InsertValueContext insertValueContext, final List<Object> parameters) {
+    private ShardingCondition createShardingCondition(final String tableName, final Iterator<String> columnNames,
+                                                      final InsertValueContext insertValueContext, final List<Object> parameters, final int rowNumber) {
         ShardingCondition result = new ShardingCondition();
         DatetimeService datetimeService = null;
         for (ExpressionSegment each : insertValueContext.getValueExpressions()) {
+            if (!columnNames.hasNext()) {
+                throw new InsertColumnsAndValuesMismatchedException(rowNumber);
+            }
             Optional<String> shardingColumn = shardingRule.findShardingColumn(columnNames.next(), tableName);
             if (!shardingColumn.isPresent()) {
                 continue;
             }
             if (each instanceof SimpleExpressionSegment) {
                 result.getValues().add(new ListShardingConditionValue<>(shardingColumn.get(), tableName, Collections.singletonList(getShardingValue((SimpleExpressionSegment) each, parameters))));
+            } else if (each instanceof CommonExpressionSegment) {
+                generateShardingCondition((CommonExpressionSegment) each, result, shardingColumn.get(), tableName);
             } else if (ExpressionConditionUtils.isNowExpression(each)) {
                 if (null == datetimeService) {
                     datetimeService = DatetimeServiceFactory.getInstance();
@@ -107,6 +116,15 @@ public final class InsertClauseShardingConditionEngine implements ShardingCondit
             }
         }
         return result;
+    }
+    
+    private void generateShardingCondition(final CommonExpressionSegment expressionSegment, final ShardingCondition result, final String shardingColumn, final String tableName) {
+        try {
+            Integer value = Integer.valueOf(expressionSegment.getText());
+            result.getValues().add(new ListShardingConditionValue<>(shardingColumn, tableName, Collections.singletonList(value)));
+        } catch (NumberFormatException ex) {
+            result.getValues().add(new ListShardingConditionValue<>(shardingColumn, tableName, Collections.singletonList(expressionSegment.getText())));
+        }
     }
     
     @SuppressWarnings("rawtypes")

@@ -275,6 +275,7 @@ targetEl
     | aExpr identifier
     | aExpr
     | ASTERISK_
+    | colId DOT_ASTERISK_ AS identifier
     ;
 
 groupClause
@@ -441,21 +442,6 @@ dostmtOptList
 
 dostmtOptItem
     : STRING_ | LANGUAGE nonReservedWordOrSconst
-    ;
-
-lock
-    : LOCK TABLE? relationExprList (IN lockType MODE)? NOWAIT?
-    ;
-
-lockType
-    : ACCESS SHARE
-    | ROW SHARE
-    | ROW EXCLUSIVE
-    | SHARE UPDATE EXCLUSIVE
-    | SHARE
-    | SHARE ROW EXCLUSIVE
-    | EXCLUSIVE
-    | ACCESS EXCLUSIVE
     ;
 
 checkpoint

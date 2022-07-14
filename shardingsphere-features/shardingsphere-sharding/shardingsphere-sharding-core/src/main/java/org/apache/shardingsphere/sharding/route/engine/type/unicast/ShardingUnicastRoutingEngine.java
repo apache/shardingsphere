@@ -81,25 +81,25 @@ public final class ShardingUnicastRoutingEngine implements ShardingRouteEngine {
     
     private void routeWithMultipleTables(final RouteContext routeContext, final ShardingRule shardingRule) throws ShardingSphereConfigurationException {
         List<RouteMapper> tableMappers = new ArrayList<>(logicTables.size());
-        Set<String> availableDatasourceNames = Collections.emptySet();
+        Set<String> availableDataSourceNames = Collections.emptySet();
         boolean first = true;
         for (String each : logicTables) {
             TableRule tableRule = shardingRule.getTableRule(each);
             DataNode dataNode = tableRule.getActualDataNodes().get(0);
             tableMappers.add(new RouteMapper(each, dataNode.getTableName()));
             Set<String> currentDataSourceNames = tableRule.getActualDataNodes().stream().map(DataNode::getDataSourceName).collect(
-                    Collectors.toCollection(() -> new HashSet<>(tableRule.getActualDatasourceNames().size())));
+                    Collectors.toCollection(() -> new HashSet<>(tableRule.getActualDataSourceNames().size())));
             if (first) {
-                availableDatasourceNames = currentDataSourceNames;
+                availableDataSourceNames = currentDataSourceNames;
                 first = false;
             } else {
-                availableDatasourceNames = Sets.intersection(availableDatasourceNames, currentDataSourceNames);
+                availableDataSourceNames = Sets.intersection(availableDataSourceNames, currentDataSourceNames);
             }
         }
-        if (availableDatasourceNames.isEmpty()) {
+        if (availableDataSourceNames.isEmpty()) {
             throw new ShardingSphereConfigurationException("Cannot find actual datasource intersection for logic tables: %s", logicTables);
         }
-        String dataSourceName = getRandomDataSourceName(availableDatasourceNames);
+        String dataSourceName = getRandomDataSourceName(availableDataSourceNames);
         routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), tableMappers));
     }
     

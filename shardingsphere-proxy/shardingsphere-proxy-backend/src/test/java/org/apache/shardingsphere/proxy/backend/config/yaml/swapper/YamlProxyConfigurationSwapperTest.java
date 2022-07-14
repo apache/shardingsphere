@@ -34,10 +34,12 @@ import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertNotNull;
 
 public final class YamlProxyConfigurationSwapperTest {
     
@@ -78,10 +80,9 @@ public final class YamlProxyConfigurationSwapperTest {
         assertThat(actual.getDataSources().size(), is(1));
         ReadwriteSplittingDataSourceRuleConfiguration dataSource = actual.getDataSources().iterator().next();
         assertThat(dataSource.getName(), is("readwrite_ds"));
-        assertThat(dataSource.getType(), is("Static"));
-        assertThat(dataSource.getProps().size(), is(2));
-        assertThat(dataSource.getProps().getProperty("read-data-source-names"), is("foo_db"));
-        assertThat(dataSource.getProps().getProperty("write-data-source-name"), is("foo_db"));
+        assertNotNull(dataSource.getStaticStrategy());
+        assertThat(dataSource.getStaticStrategy().getWriteDataSourceName(), is("foo_db"));
+        assertThat(dataSource.getStaticStrategy().getReadDataSourceNames(), is(Arrays.asList("foo_db")));
         assertThat(actual.getLoadBalancers().size(), is(1));
         ShardingSphereAlgorithmConfiguration loadBalancer = actual.getLoadBalancers().get("round_robin");
         assertThat(loadBalancer.getProps().size(), is(1));

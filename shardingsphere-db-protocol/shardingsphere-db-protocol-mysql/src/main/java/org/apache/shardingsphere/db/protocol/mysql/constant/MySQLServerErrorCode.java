@@ -52,11 +52,13 @@ public enum MySQLServerErrorCode implements SQLErrorCode {
     
     ER_NOT_SUPPORTED_YET(1235, "42000", "This version of ShardingSphere-Proxy doesn't yet support this SQL. '%s'"),
     
-    ER_SP_DOES_NOT_EXIST(1305, "42000", "Message: Datasource or ShardingSphere rule does not exist"),
+    ER_SP_DOES_NOT_EXIST(1305, "42000", "Message: Data Source or ShardingSphere rule does not exist"),
     
     ER_CON_COUNT_ERROR(1040, "HY000", "Too many connections"),
     
     ER_UNKNOWN_CHARACTER_SET(1115, "42000", "Unknown character set: '%s'"),
+    
+    ER_WRONG_VALUE_COUNT_ON_ROW(1136, "21S01", "Column count doesn't match value count at row %d"),
     
     ER_ERROR_ON_MODIFYING_GTID_EXECUTED_TABLE(3176, "HY000",
             "Please do not modify the %s table with an XA transaction. This is an internal system table used to store GTIDs for committed transactions. "

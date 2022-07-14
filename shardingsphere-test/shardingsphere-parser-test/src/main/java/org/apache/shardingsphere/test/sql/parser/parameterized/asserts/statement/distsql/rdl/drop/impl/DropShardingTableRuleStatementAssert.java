@@ -50,7 +50,7 @@ public final class DropShardingTableRuleStatementAssert {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
             assertThat(assertContext.getText("Sharding table rule assertion error: "), actual.getTableNames().stream().map(each -> each.getIdentifier().getValue()).collect(Collectors.toList()),
                     is(expected.getTables()));
-            assertThat(assertContext.getText("Sharding table rule assertion error: "), actual.isContainsExistClause(), is(expected.isContainsExistClause()));
+            assertThat(assertContext.getText("Sharding table rule assertion error: "), actual.isIfExists(), is(expected.isIfExists()));
         }
     }
 }

@@ -32,6 +32,7 @@ import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateShadowAlg
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CreateShadowRuleStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateDefaultShardingStrategyStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingAlgorithmStatement;
+import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingAuditorStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingBindingTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingBroadcastTableRulesStatement;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.CreateShardingKeyGeneratorStatement;
@@ -48,6 +49,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rdl.create.impl.CreateShadowAlgorithmStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rdl.create.impl.CreateShadowRuleStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rdl.create.impl.CreateShardingAlgorithmStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rdl.create.impl.CreateShardingAuditorStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rdl.create.impl.CreateShardingBindingTableRulesStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rdl.create.impl.CreateShardingBroadcastTableRulesStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rdl.create.impl.CreateShardingKeyGeneratorStatementAssert;
@@ -64,6 +66,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShadowAlgorithmStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShadowRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShardingAlgorithmStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShardingAuditorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShardingBindingTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShardingBroadcastTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.create.CreateShardingKeyGeneratorStatementTestCase;
@@ -111,12 +114,13 @@ public final class CreateRuleStatementAssert {
         } else if (actual instanceof CreateDefaultShadowAlgorithmStatement) {
             CreateDefaultShadowAlgorithmStatementAssert.assertIs(assertContext, (CreateDefaultShadowAlgorithmStatement) actual, (CreateDefaultShadowAlgorithmStatementTestCase) expected);
         } else if (actual instanceof CreateDefaultSingleTableRuleStatement) {
-            CreateDefaultSingleTableRuleStatementAssert.assertIs(assertContext, (CreateDefaultSingleTableRuleStatement) actual,
-                    (CreateDefaultSingleTableRuleStatementTestCase) expected);
+            CreateDefaultSingleTableRuleStatementAssert.assertIs(assertContext, (CreateDefaultSingleTableRuleStatement) actual, (CreateDefaultSingleTableRuleStatementTestCase) expected);
         } else if (actual instanceof CreateShardingKeyGeneratorStatement) {
             CreateShardingKeyGeneratorStatementAssert.assertIs(assertContext, (CreateShardingKeyGeneratorStatement) actual, (CreateShardingKeyGeneratorStatementTestCase) expected);
         } else if (actual instanceof CreateShardingScalingRuleStatement) {
             CreateShardingScalingRuleStatementAssert.assertIs(assertContext, (CreateShardingScalingRuleStatement) actual, (CreateShardingScalingRuleStatementTestCase) expected);
+        } else if (actual instanceof CreateShardingAuditorStatement) {
+            CreateShardingAuditorStatementAssert.assertIs(assertContext, (CreateShardingAuditorStatement) actual, (CreateShardingAuditorStatementTestCase) expected);
         }
     }
 }

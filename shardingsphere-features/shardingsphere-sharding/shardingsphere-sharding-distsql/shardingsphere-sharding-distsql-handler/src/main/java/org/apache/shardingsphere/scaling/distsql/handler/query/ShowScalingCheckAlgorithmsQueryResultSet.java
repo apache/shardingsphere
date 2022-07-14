@@ -30,7 +30,7 @@ import java.util.Iterator;
 import java.util.stream.Collectors;
 
 /**
- * Show scaling check algorithms query result set.
+ * Query result set for show scaling check algorithms.
  */
 public final class ShowScalingCheckAlgorithmsQueryResultSet implements DistSQLResultSet {
     

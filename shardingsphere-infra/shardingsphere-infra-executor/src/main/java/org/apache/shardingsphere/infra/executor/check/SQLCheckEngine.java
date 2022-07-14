@@ -19,10 +19,12 @@ package org.apache.shardingsphere.infra.executor.check;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.check.SQLCheckException;
+import org.apache.shardingsphere.infra.check.SQLCheckResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;
 import java.util.List;
@@ -58,7 +60,7 @@ public final class SQLCheckEngine {
     /**
      * Check SQL.
      *
-     * @param sqlStatement SQL statement
+     * @param sqlStatementContext SQL statement context
      * @param parameters SQL parameters
      * @param rules rules
      * @param currentDatabase current database
@@ -66,10 +68,10 @@ public final class SQLCheckEngine {
      * @param grantee grantee
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public static void check(final SQLStatement sqlStatement, final List<Object> parameters, final Collection<ShardingSphereRule> rules,
+    public static void check(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, final Collection<ShardingSphereRule> rules,
                              final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final Grantee grantee) {
         for (Entry<ShardingSphereRule, SQLChecker> entry : SQLCheckerFactory.getInstance(rules).entrySet()) {
-            SQLCheckResult checkResult = entry.getValue().check(sqlStatement, parameters, grantee, currentDatabase, databases, entry.getKey());
+            SQLCheckResult checkResult = entry.getValue().check(sqlStatementContext, parameters, grantee, currentDatabase, databases, entry.getKey());
             if (!checkResult.isPassed()) {
                 throw new SQLCheckException(checkResult.getErrorMessage());
             }

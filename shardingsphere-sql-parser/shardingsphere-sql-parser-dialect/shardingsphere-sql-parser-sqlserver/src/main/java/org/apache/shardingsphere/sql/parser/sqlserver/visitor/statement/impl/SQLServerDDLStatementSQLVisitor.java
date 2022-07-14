@@ -134,24 +134,16 @@ public final class SQLServerDDLStatementSQLVisitor extends SQLServerStatementSQL
         super(props);
     }
     
-    @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateTable(final CreateTableContext ctx) {
-        SQLServerCreateTableStatement result;
-        if (null != ctx.createTableClause()) {
-            result = (SQLServerCreateTableStatement) visit(ctx.createTableClause());
-        } else {
-            result = (SQLServerCreateTableStatement) visit(ctx.createTableAsSelectClause());
-        }
-        return result;
+        return null == ctx.createTableClause() ? visit(ctx.createTableAsSelectClause()) : visit(ctx.createTableClause());
     }
     
     @Override
     public ASTNode visitCreateTableClause(final CreateTableClauseContext ctx) {
         SQLServerCreateTableStatement result = new SQLServerCreateTableStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        CollectionValue<CreateDefinitionSegment> createDefinitions =
-                (CollectionValue<CreateDefinitionSegment>) generateCreateDefinitionSegment(ctx.createDefinitionClause().createTableDefinitions());
+        CollectionValue<CreateDefinitionSegment> createDefinitions = (CollectionValue<CreateDefinitionSegment>) generateCreateDefinitionSegment(ctx.createDefinitionClause().createTableDefinitions());
         for (CreateDefinitionSegment each : createDefinitions.getValue()) {
             if (each instanceof ColumnDefinitionSegment) {
                 result.getColumnDefinitions().add((ColumnDefinitionSegment) each);
@@ -180,8 +172,8 @@ public final class SQLServerDDLStatementSQLVisitor extends SQLServerStatementSQL
         ColumnSegment column = (ColumnSegment) visit(ctx.columnName());
         DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataType());
         boolean isPrimaryKey = isPrimaryKey(ctx);
-        ColumnDefinitionSegment result = new ColumnDefinitionSegment(
-                ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey);
+        // TODO parse not null
+        ColumnDefinitionSegment result = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, isPrimaryKey, false);
         for (ColumnDefinitionOptionContext each : ctx.columnDefinitionOption()) {
             for (ColumnConstraintContext columnConstraint : each.columnConstraint()) {
                 if (null != columnConstraint.columnForeignKeyConstraint()) {
@@ -302,7 +294,7 @@ public final class SQLServerDDLStatementSQLVisitor extends SQLServerStatementSQL
         // TODO visit pk and table ref
         ColumnSegment column = (ColumnSegment) visit(ctx.alterColumnOperation().columnName());
         DataTypeSegment dataType = (DataTypeSegment) visit(ctx.dataType());
-        ColumnDefinitionSegment columnDefinition = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, false);
+        ColumnDefinitionSegment columnDefinition = new ColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), column, dataType, false, false);
         return new ModifyColumnDefinitionSegment(ctx.getStart().getStartIndex(), ctx.getStop().getStopIndex(), columnDefinition);
     }
     
@@ -318,9 +310,8 @@ public final class SQLServerDDLStatementSQLVisitor extends SQLServerStatementSQL
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitDropTable(final DropTableContext ctx) {
-        SQLServerDropTableStatement result = new SQLServerDropTableStatement();
+        SQLServerDropTableStatement result = new SQLServerDropTableStatement(null != ctx.ifExists());
         result.getTables().addAll(((CollectionValue<SimpleTableSegment>) visit(ctx.tableNames())).getValue());
-        result.setContainsExistClause(null != ctx.ifExist());
         return result;
     }
     
@@ -336,7 +327,7 @@ public final class SQLServerDDLStatementSQLVisitor extends SQLServerStatementSQL
         SQLServerCreateIndexStatement result = new SQLServerCreateIndexStatement();
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.setIndex((IndexSegment) visit(ctx.indexName()));
-        result.setColumns(((CollectionValue) visit(ctx.columnNamesWithSort())).getValue());
+        result.getColumns().addAll(((CollectionValue) visit(ctx.columnNamesWithSort())).getValue());
         return result;
     }
     
@@ -366,10 +357,9 @@ public final class SQLServerDDLStatementSQLVisitor extends SQLServerStatementSQL
     
     @Override
     public ASTNode visitDropIndex(final DropIndexContext ctx) {
-        SQLServerDropIndexStatement result = new SQLServerDropIndexStatement();
+        SQLServerDropIndexStatement result = new SQLServerDropIndexStatement(null != ctx.ifExists());
         result.getIndexes().add((IndexSegment) visit(ctx.indexName()));
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
-        result.setContainsExistClause(null != ctx.ifExist());
         return result;
     }
     

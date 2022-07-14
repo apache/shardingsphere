@@ -19,8 +19,11 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.container.
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.integration.data.pipeline.factory.DatabaseContainerFactory;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.cluster.ZookeeperContainer;
+import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.DatabaseContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.proxy.ShardingSphereProxyDockerContainer;
+import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.integration.util.NetworkAliasUtil;
 
@@ -30,15 +33,20 @@ import org.apache.shardingsphere.test.integration.util.NetworkAliasUtil;
 @Getter
 public final class DockerComposedContainer extends BaseComposedContainer {
     
+    private final DatabaseType databaseType;
+    
     private final GovernanceContainer governanceContainer;
     
     private final ShardingSphereProxyDockerContainer proxyContainer;
     
+    private final DatabaseContainer databaseContainer;
+    
     public DockerComposedContainer(final DatabaseType databaseType, final String dockerImageName) {
-        super(databaseType, dockerImageName);
+        this.databaseType = databaseType;
         ShardingSphereProxyDockerContainer proxyContainer = new ShardingSphereProxyDockerContainer(databaseType);
         governanceContainer = getContainers().registerContainer(new ZookeeperContainer(), NetworkAliasUtil.getNetworkAlias("zk"));
-        proxyContainer.dependsOn(governanceContainer, getDatabaseContainer());
+        databaseContainer = getContainers().registerContainer(DatabaseContainerFactory.newInstance(databaseType, dockerImageName), NetworkAliasUtil.getNetworkAlias("db"));
+        proxyContainer.dependsOn(governanceContainer, databaseContainer);
         this.proxyContainer = getContainers().registerContainer(proxyContainer, NetworkAliasUtil.getNetworkAlias("sharding-proxy"));
     }
     
@@ -50,6 +58,6 @@ public final class DockerComposedContainer extends BaseComposedContainer {
     
     @Override
     public String getProxyJdbcUrl(final String databaseName) {
-        return getDatabaseContainer().getJdbcUrl(getProxyContainer().getHost(), getProxyContainer().getFirstMappedPort(), databaseName);
+        return DataSourceEnvironment.getURL(databaseType, proxyContainer.getHost(), proxyContainer.getFirstMappedPort(), databaseName);
     }
 }

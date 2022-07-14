@@ -103,7 +103,7 @@ showColumns
     ;
 
 showCreateDatabase
-    : SHOW CREATE (DATABASE | SCHEMA) notExistClause? schemaName
+    : SHOW CREATE (DATABASE | SCHEMA) ifNotExists? schemaName
     ;
 
 showCreateEvent
@@ -401,7 +401,7 @@ resetOption
     ;
 
 resetPersist
-    : RESET PERSIST (existClause? identifier)?
+    : RESET PERSIST (ifExists? identifier)?
     ;
 
 restart

@@ -19,6 +19,7 @@ org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableRuleQueryR
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingBindingTableRuleQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingBroadcastTableRuleQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingAlgorithmsQueryResultSet
+org.apache.shardingsphere.sharding.distsql.handler.query.ShardingAuditorsQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableNodesQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingKeyGeneratorsQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.DefaultShardingStrategyQueryResultSet
@@ -31,3 +32,4 @@ org.apache.shardingsphere.sharding.distsql.handler.query.UnusedShardingAlgorithm
 org.apache.shardingsphere.sharding.distsql.handler.query.UnusedShardingKeyGeneratorsQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableRulesUsedAlgorithmQueryResultSet
 org.apache.shardingsphere.sharding.distsql.handler.query.ShardingTableRulesUsedKeyGeneratorQueryResultSet
+org.apache.shardingsphere.sharding.distsql.handler.query.CountShardingRuleQueryResultSet

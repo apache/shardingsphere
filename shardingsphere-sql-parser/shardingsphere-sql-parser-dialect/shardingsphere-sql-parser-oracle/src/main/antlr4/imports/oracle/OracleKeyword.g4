@@ -2834,3 +2834,43 @@ CLEAN
 GUARANTEE
     : G U A R A N T E E
     ;
+
+PRUNING
+    : P R U N I N G
+    ;
+
+DEMAND
+    : D E M A N D
+    ;
+
+RESOLVE
+   : R E S O L V E
+   ;
+
+RESOLVER
+   : R E S O L V E R
+   ;
+
+SHARE
+    : S H A R E
+    ;
+
+EXCLUSIVE
+    : E X C L U S I V E
+    ;
+
+ANCILLARY
+    : A N C I L L A R Y
+    ;
+
+BINDING
+    : B I N D I N G
+    ;
+
+SCAN
+    : S C A N
+    ;
+
+COMPUTE
+    : C O M P U T E
+    ;

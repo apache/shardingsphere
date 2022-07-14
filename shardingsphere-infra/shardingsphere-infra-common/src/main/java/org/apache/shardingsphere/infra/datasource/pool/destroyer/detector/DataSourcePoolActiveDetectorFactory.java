@@ -37,6 +37,7 @@ public final class DataSourcePoolActiveDetectorFactory {
      * @return got instance
      */
     public static DataSourcePoolActiveDetector getInstance(final String dataSourceClassName) {
-        return TypedSPIRegistry.findRegisteredService(DataSourcePoolActiveDetector.class, dataSourceClassName).orElse(RequiredSPIRegistry.getRegisteredService(DataSourcePoolActiveDetector.class));
+        return TypedSPIRegistry.findRegisteredService(DataSourcePoolActiveDetector.class, dataSourceClassName)
+                .orElseGet(() -> RequiredSPIRegistry.getRegisteredService(DataSourcePoolActiveDetector.class));
     }
 }

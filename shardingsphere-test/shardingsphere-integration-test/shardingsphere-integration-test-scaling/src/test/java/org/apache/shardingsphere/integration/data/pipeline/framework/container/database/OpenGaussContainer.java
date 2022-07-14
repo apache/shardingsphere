@@ -17,10 +17,9 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.framework.container.database;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.integration.data.pipeline.env.enums.ITEnvTypeEnum;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.framework.container.wait.JDBCConnectionWaitStrategy;
 import org.testcontainers.containers.BindMode;
@@ -28,38 +27,53 @@ import org.testcontainers.containers.BindMode;
 import java.sql.DriverManager;
 
 /**
- * OpenGauss container for Scaling IT. 
+ * OpenGauss container for Scaling IT.
  */
-public final class OpenGaussContainer extends DockerDatabaseContainer {
+public final class OpenGaussContainer extends DatabaseContainer {
     
     private static final DatabaseType DATABASE_TYPE = new OpenGaussDatabaseType();
     
+    private final String username = "gaussdb";
+    
+    private final String password = "Root@123";
+    
+    private final int port = 5432;
+    
+    private String dockerImageName = "";
+    
     public OpenGaussContainer(final String dockerImageName) {
         super(DATABASE_TYPE, dockerImageName);
+        this.dockerImageName = dockerImageName;
     }
     
     @Override
     protected void configure() {
-        super.configure();
         withCommand("--max_connections=600");
-        addEnv("GS_PASSWORD", "Root@123");
+        addEnv("GS_PASSWORD", password);
         withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/usr/local/opengauss/share/postgresql/postgresql.conf.sample", BindMode.READ_ONLY);
         withPrivilegedMode(true);
-        withExposedPorts(5432);
-        if (ITEnvTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItEnvType()) {
-            addFixedExposedPort(5432, 5432);
-        }
+        withExposedPorts(port);
         setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(DATABASE_TYPE, "localhost", getFirstMappedPort(), "postgres"),
-                "gaussdb", "Root@123")));
+                username, password)));
     }
     
     @Override
-    public String getJdbcUrl(final String host, final int port, final String databaseName) {
-        return DataSourceEnvironment.getURL(DATABASE_TYPE, host, port, databaseName);
+    public String getJdbcUrl(final String databaseName) {
+        return DataSourceEnvironment.getURL(DATABASE_TYPE, getHost(), getFirstMappedPort(), StringUtils.isBlank(databaseName) ? "postgres" : databaseName);
+    }
+    
+    @Override
+    public String getUsername() {
+        return username;
+    }
+    
+    @Override
+    public String getPassword() {
+        return password;
     }
     
     @Override
     public int getPort() {
-        return 5432;
+        return port;
     }
 }

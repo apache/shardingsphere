@@ -54,4 +54,17 @@ public final class PostgreSQLCommandCompletePacketTest {
         packet.write(payload);
         assertThat(payload.readStringNul(), is(expectedString));
     }
+    
+    @Test
+    public void assertMoveReadWrite() {
+        String sqlCommand = "MOVE";
+        long rowCount = 1;
+        String expectedString = sqlCommand + " " + rowCount;
+        int expectedStringLength = expectedString.length();
+        PostgreSQLPacketPayload payload = new PostgreSQLPacketPayload(ByteBufTestUtils.createByteBuf(expectedStringLength + 1), StandardCharsets.ISO_8859_1);
+        PostgreSQLCommandCompletePacket packet = new PostgreSQLCommandCompletePacket(sqlCommand, rowCount);
+        assertThat(packet.getIdentifier(), is(PostgreSQLMessagePacketType.COMMAND_COMPLETE));
+        packet.write(payload);
+        assertThat(payload.readStringNul(), is(expectedString));
+    }
 }

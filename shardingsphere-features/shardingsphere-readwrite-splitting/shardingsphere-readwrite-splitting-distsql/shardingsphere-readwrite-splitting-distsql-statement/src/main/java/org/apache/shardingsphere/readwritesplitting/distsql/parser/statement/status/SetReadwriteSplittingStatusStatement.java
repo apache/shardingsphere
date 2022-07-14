@@ -28,8 +28,8 @@ import java.util.Optional;
 /**
  * Set readwrite-splitting status statement.
  */
-@Getter
 @RequiredArgsConstructor
+@Getter
 public class SetReadwriteSplittingStatusStatement extends UpdatableRALStatement implements FromDatabaseAvailable {
     
     private final String status;
