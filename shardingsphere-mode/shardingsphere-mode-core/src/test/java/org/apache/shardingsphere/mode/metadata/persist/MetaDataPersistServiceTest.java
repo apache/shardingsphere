@@ -32,7 +32,6 @@ import org.apache.shardingsphere.mode.metadata.persist.service.impl.GlobalRulePe
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.PropertiesPersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
-import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
