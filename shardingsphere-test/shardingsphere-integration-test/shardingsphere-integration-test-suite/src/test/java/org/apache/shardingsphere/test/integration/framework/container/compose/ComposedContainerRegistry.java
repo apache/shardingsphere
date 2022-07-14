@@ -53,12 +53,12 @@ public final class ComposedContainerRegistry implements AutoCloseable {
     }
     
     private ComposedContainer createComposedContainer(final ParameterizedArray parameterizedArray) {
-        return isSupportClusterMode(parameterizedArray) ? new ClusterComposedContainer(parameterizedArray) : new StandaloneComposedContainer(parameterizedArray);
+        return isClusterMode(parameterizedArray) ? new ClusterComposedContainer(parameterizedArray) : new StandaloneComposedContainer(parameterizedArray);
     }
     
-    private boolean isSupportClusterMode(final ParameterizedArray parameterizedArray) {
+    private boolean isClusterMode(final ParameterizedArray parameterizedArray) {
         // TODO cluster mode often throw exception sometimes, issue is #15517
-        return ClusterTinker.isSupportCluster(parameterizedArray.getScenario());
+        return "Cluster".equalsIgnoreCase(parameterizedArray.getMode());
     }
     
     @Override

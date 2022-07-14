@@ -24,7 +24,6 @@ import org.apache.shardingsphere.test.integration.framework.container.atomic.ada
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.adapter.impl.ShardingSphereProxyStandaloneContainer;
 import org.apache.shardingsphere.test.integration.framework.container.atomic.storage.StorageContainer;
-import org.apache.shardingsphere.test.integration.framework.container.compose.ClusterTinker;
 
 /**
  * Adapter container factory.
@@ -35,16 +34,17 @@ public final class AdapterContainerFactory {
     /**
      * Create new instance of adapter container.
      *
+     * @param mode mode
      * @param adapter adapter
      * @param databaseType database type
      * @param storageContainer storage container
      * @param scenario scenario
      * @return created instance
      */
-    public static AdapterContainer newInstance(final String adapter, final DatabaseType databaseType, final StorageContainer storageContainer, final String scenario) {
+    public static AdapterContainer newInstance(final String mode, final String adapter, final DatabaseType databaseType, final StorageContainer storageContainer, final String scenario) {
         switch (adapter) {
             case "proxy":
-                if (ClusterTinker.isSupportCluster(scenario)) {
+                if ("Cluster".equalsIgnoreCase(mode)) {
                     return new ShardingSphereProxyClusterContainer(databaseType, scenario);
                 }
                 return new ShardingSphereProxyStandaloneContainer(databaseType, scenario);
