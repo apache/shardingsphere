@@ -31,18 +31,18 @@ import org.apache.shardingsphere.elasticjob.reg.zookeeper.ZookeeperRegistryCente
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 import org.apache.shardingsphere.schedule.core.model.CronJob;
 import org.apache.shardingsphere.schedule.core.model.JobParameter;
-import org.apache.shardingsphere.schedule.core.strategy.SchedulerStrategy;
+import org.apache.shardingsphere.schedule.core.strategy.ScheduleStrategy;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
 /**
- * Cluster scheduler strategy.
+ * Cluster schedule strategy.
  */
 @RequiredArgsConstructor
 @Slf4j
-public class ClusterSchedulerStrategy implements SchedulerStrategy {
+public class ClusterScheduleStrategy implements ScheduleStrategy {
     
     private static final Map<String, ScheduleJobBootstrap> SCHEDULE_JOB_BOOTSTRAP_MAP = new HashMap<>();
     

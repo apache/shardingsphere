@@ -18,12 +18,12 @@
 package org.apache.shardingsphere.schedule.core.strategy.type;
 
 import org.apache.shardingsphere.schedule.core.model.CronJob;
-import org.apache.shardingsphere.schedule.core.strategy.SchedulerStrategy;
+import org.apache.shardingsphere.schedule.core.strategy.ScheduleStrategy;
 
 /**
- * Standalone scheduler strategy.
+ * Standalone schedule strategy.
  */
-public class StandaloneSchedulerStrategy implements SchedulerStrategy {
+public class StandaloneScheduleStrategy implements ScheduleStrategy {
     
     @Override
     public void startSchedule(final CronJob job) {

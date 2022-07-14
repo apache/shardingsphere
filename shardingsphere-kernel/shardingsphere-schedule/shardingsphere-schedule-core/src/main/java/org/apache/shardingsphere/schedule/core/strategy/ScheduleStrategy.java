@@ -22,7 +22,7 @@ import org.apache.shardingsphere.schedule.core.model.CronJob;
 /**
  * Schedule Strategy.
  */
-public interface SchedulerStrategy {
+public interface ScheduleStrategy {
     
     /**
      * Start schedule

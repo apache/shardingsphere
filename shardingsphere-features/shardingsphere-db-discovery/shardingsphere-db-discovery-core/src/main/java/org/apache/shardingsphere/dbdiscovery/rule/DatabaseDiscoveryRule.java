@@ -42,8 +42,8 @@ import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.metadata.storage.event.PrimaryDataSourceChangedEvent;
 import org.apache.shardingsphere.mode.metadata.storage.event.StorageNodeDataSourceChangedEvent;
 import org.apache.shardingsphere.schedule.core.model.CronJob;
-import org.apache.shardingsphere.schedule.core.SchedulerContextFactory;
-import org.apache.shardingsphere.schedule.core.strategy.SchedulerStrategy;
+import org.apache.shardingsphere.schedule.core.ScheduleContextFactory;
+import org.apache.shardingsphere.schedule.core.strategy.ScheduleStrategy;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -166,7 +166,7 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
     }
     
     private void initHeartBeatJobs(final String instanceId) {
-        Optional<SchedulerStrategy> scheduleStrategy = SchedulerContextFactory.getInstance().get(instanceId);
+        Optional<ScheduleStrategy> scheduleStrategy = ScheduleContextFactory.getInstance().get(instanceId);
         if (scheduleStrategy.isPresent()) {
             for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
                 DatabaseDiscoveryDataSourceRule rule = entry.getValue();
