@@ -25,7 +25,7 @@ weight = 1
   - Embed 环境由测试框架自动搭建嵌入式 MySQL，适用于 ShardingSphere-JDBC 的本地环境测试。
 
 当前默认采用 Native 环境，使用 ShardingSphere-JDBC + H2 数据库运行测试用例。
-通过 Maven 的 `-P -Pit.env.docker` 参数可以指定 Docker 环境的运行方式。
+通过 Maven 的 `-Pit.env.docker` 参数可以指定 Docker 环境的运行方式。
 未来将采用 Embed 环境的 ShardingSphere-JDBC + MySQL，替换 Native 执行测试用例的默认环境类型。 
 
 数据库类型目前支持 MySQL、PostgreSQL、SQLServer 和 Oracle，并且可以支持使用 ShardingSphere-JDBC 或是使用 ShardingSphere-Proxy 执行测试用例。
