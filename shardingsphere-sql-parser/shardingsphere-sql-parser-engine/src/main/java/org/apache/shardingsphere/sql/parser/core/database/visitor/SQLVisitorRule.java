@@ -588,6 +588,8 @@ public enum SQLVisitorRule {
     
     ALTER_CLUSTER("AlterCluster", SQLStatementType.DDL),
     
+    ALTER_DISKGROUP("AlterDiskgroup", SQLStatementType.DDL),
+    
     CURSOR("Cursor", SQLStatementType.DDL),
     
     CLOSE("Close", SQLStatementType.DDL),
