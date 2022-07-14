@@ -35,4 +35,9 @@ public final class StandardShardingStrategyConfiguration implements ShardingStra
         this.shardingColumn = shardingColumn;
         this.shardingAlgorithmName = shardingAlgorithmName;
     }
+    
+    @Override
+    public String getType() {
+        return "STANDARD";
+    }
 }

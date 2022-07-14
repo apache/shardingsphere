@@ -188,7 +188,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     private static class BatchedStatementsJDBCExecutorCallback extends JDBCExecutorCallback<int[]> {
         
         BatchedStatementsJDBCExecutorCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
-            super(databaseType, sqlStatement, isExceptionThrown);
+            super(databaseType, sqlStatement, isExceptionThrown, ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext());
         }
         
         @Override

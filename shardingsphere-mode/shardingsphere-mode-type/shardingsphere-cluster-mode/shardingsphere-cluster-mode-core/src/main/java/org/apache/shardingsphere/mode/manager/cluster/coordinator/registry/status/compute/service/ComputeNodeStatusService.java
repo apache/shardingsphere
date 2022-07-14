@@ -21,16 +21,20 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
-import org.apache.shardingsphere.infra.instance.definition.InstanceDefinition;
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilderFactory;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -45,10 +49,10 @@ public final class ComputeNodeStatusService {
     /**
      * Register online.
      * 
-     * @param instanceDefinition instance definition
+     * @param instanceMetaData instance definition
      */
-    public void registerOnline(final InstanceDefinition instanceDefinition) {
-        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceDefinition.getInstanceId(), instanceDefinition.getInstanceType()), instanceDefinition.getAttributes());
+    public void registerOnline(final InstanceMetaData instanceMetaData) {
+        repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceMetaData.getId(), instanceMetaData.getType()), instanceMetaData.getAttributes());
     }
     
     /**
@@ -126,23 +130,36 @@ public final class ComputeNodeStatusService {
         return result;
     }
     
-    private Collection<ComputeNodeInstance> loadComputeNodeInstances(final InstanceType type) {
-        Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(type));
-        return onlineComputeNodes.stream()
-                .map(each -> loadComputeNodeInstance(new InstanceDefinition(type, each, repository.get(ComputeNode.getOnlineInstanceNodePath(each, type))))).collect(Collectors.toList());
+    private Collection<ComputeNodeInstance> loadComputeNodeInstances(final InstanceType instanceType) {
+        Collection<String> onlineComputeNodes = repository.getChildrenKeys(ComputeNode.getOnlineNodePath(instanceType));
+        return onlineComputeNodes.stream().map(each -> loadComputeNodeInstance(
+                InstanceMetaDataBuilderFactory.create(each, instanceType, repository.get(ComputeNode.getOnlineInstanceNodePath(each, instanceType))))).collect(Collectors.toList());
     }
     
     /**
      * Load compute node instance by instance definition.
      *
-     * @param instanceDefinition instance definition
+     * @param instanceMetaData instance definition
      * @return compute node instance
      */
-    public ComputeNodeInstance loadComputeNodeInstance(final InstanceDefinition instanceDefinition) {
-        ComputeNodeInstance result = new ComputeNodeInstance(instanceDefinition);
-        result.setLabels(loadInstanceLabels(instanceDefinition.getInstanceId()));
-        result.switchState(loadInstanceStatus(instanceDefinition.getInstanceId()));
-        loadInstanceWorkerId(instanceDefinition.getInstanceId()).ifPresent(result::setWorkerId);
+    public ComputeNodeInstance loadComputeNodeInstance(final InstanceMetaData instanceMetaData) {
+        ComputeNodeInstance result = new ComputeNodeInstance(instanceMetaData);
+        result.setLabels(loadInstanceLabels(instanceMetaData.getId()));
+        result.switchState(loadInstanceStatus(instanceMetaData.getId()));
+        return result;
+    }
+    
+    /**
+     * Get used worker ids.
+     *
+     * @return used worker ids
+     */
+    public Set<Long> getUsedWorkerIds() {
+        Set<Long> result = new LinkedHashSet<>();
+        List<String> childrenKeys = repository.getChildrenKeys(ComputeNode.getInstanceWorkerIdRootNodePath());
+        for (String each : childrenKeys) {
+            result.add(Long.parseLong(repository.get(ComputeNode.getInstanceWorkerIdNodePath(each))));
+        }
         return result;
     }
 }

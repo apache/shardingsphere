@@ -275,6 +275,7 @@ unreservedWord
     | MOD
     | NAME
     | NAMES
+    | NATIONAL
     | NEW
     | NEXT
     | NFC
@@ -307,6 +308,7 @@ unreservedWord
     | PARTITION
     | PASSING
     | PASSWORD
+    | PATH
     | PLAIN
     | PLANS
     | POLICY

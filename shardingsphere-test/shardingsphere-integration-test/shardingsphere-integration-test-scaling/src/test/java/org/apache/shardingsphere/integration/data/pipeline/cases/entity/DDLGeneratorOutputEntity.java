@@ -24,6 +24,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.util.Collection;
 
 /**
  * DDL generator output entity for JAXB.
@@ -36,6 +37,6 @@ public final class DDLGeneratorOutputEntity {
     @XmlAttribute
     private String version;
     
-    @XmlElement
-    private String sql;
+    @XmlElement(required = true, name = "sql")
+    private Collection<String> multiSQL;
 }

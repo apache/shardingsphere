@@ -5,37 +5,40 @@ weight = 10
 chapter = true
 +++
 
-## ShardingSphereTransactionManager
+## SPI Interface
 
-| *SPI Name*                              | *Description*                         |
-| --------------------------------------- | ------------------------------------- |
-| ShardingSphereTransactionManager        | Distributed transaction manager       |
+### ShardingSphereTransactionManager
 
-| *Implementation Class*                  | *Description*                         |
-| --------------------------------------- | ------------------------------------- |
-| XAShardingSphereTransactionManager      | XA distributed transaction manager    |
-| SeataATShardingSphereTransactionManager | Seata distributed transaction manager |
+| *SPI Name*                                | *Description*                 |
+| ---------------------------------------- | ------------------------- |
+| ShardingSphereTransactionManager         | Distributed transaction manager             |
+| XATransactionManagerProvider         | XA distributed transaction manager                  |
+| XADataSourceDefinition           | Auto convert Non XA data source to XA data source                            |
+| DataSourcePropertyProvider | Used to get standard properties of data source pool     |
 
-## XATransactionManagerProvider
 
-| *SPI Name*                           | *Description*                                        |
-| ------------------------------------ | ---------------------------------------------------- |
-| XATransactionManagerProvider         | XA distributed transaction manager                   |
 
-| *Implementation Class*               | *Description*                                        |
-| ------------------------------------ | ---------------------------------------------------- |
+## Sample
+
+### ShardingSphereTransactionManager
+
+| *Implementation Class*                               | *Description*                 |
+| ---------------------------------------- | ------------------------- |
+| XAShardingSphereTransactionManager       | XA distributed transaction manager    |
+| SeataATShardingSphereTransactionManager  | Seata distributed transaction manager |
+
+### XATransactionManagerProvider
+
+| *Implementation Class*                           | *Description*                        |
+| ------------------------------------ | -------------------------------- |
 | AtomikosTransactionManagerProvider   | XA distributed transaction manager based on Atomikos |
 | NarayanaXATransactionManagerProvider | XA distributed transaction manager based on Narayana |
 | BitronixXATransactionManagerProvider | XA distributed transaction manager based on Bitronix |
 
-## XADataSourceDefinition
+### XADataSourceDefinition
 
-| *SPI Name*                       | *Description*                                                           |
-| -------------------------------- | ----------------------------------------------------------------------- |
-| XADataSourceDefinition           | Auto convert Non XA data source to XA data source                       |
-
-| *Implementation Class*           | *Description*                                                           |
-| -------------------------------- | ----------------------------------------------------------------------- |
+| *Implementation Class*                       | *Description*                                               |
+| -------------------------------- | ------------------------------------------------------- |
 | MySQLXADataSourceDefinition      | Auto convert Non XA MySQL data source to XA MySQL data source           |
 | MariaDBXADataSourceDefinition    | Auto convert Non XA MariaDB data source to XA MariaDB data source       |
 | PostgreSQLXADataSourceDefinition | Auto convert Non XA PostgreSQL data source to XA PostgreSQL data source |
@@ -43,12 +46,8 @@ chapter = true
 | SQLServerXADataSourceDefinition  | Auto convert Non XA SQLServer data source to XA SQLServer data source   |
 | H2XADataSourceDefinition         | Auto convert Non XA H2 data source to XA H2 data source                 |
 
-## DataSourcePropertyProvider
+### DataSourcePropertyProvider
 
-| *SPI Name*                 | *Description*                                       |
-| -------------------------- | --------------------------------------------------- |
-| DataSourcePropertyProvider | Used to get standard properties of data source pool |
-
-| *Implementation Class*     | *Description*                                       |
-| -------------------------- | --------------------------------------------------- |
-| HikariCPPropertyProvider   | Used to get standard properties of HikariCP         |
+| *Implementation Class*                 | *Description*                      |
+| -------------------------- | ------------------------------ |
+| HikariCPPropertyProvider   | Used to get standard properties of HikariCP |

@@ -40,6 +40,7 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -47,6 +48,15 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ReadwriteSplittingRuleQueryResultSetTest {
+    
+    @Test
+    public void assertGetEmptyRule() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class)).thenReturn(Optional.empty());
+        ReadwriteSplittingRuleQueryResultSet resultSet = new ReadwriteSplittingRuleQueryResultSet();
+        resultSet.init(database, mock(ShowReadwriteSplittingRulesStatement.class));
+        assertFalse(resultSet.next());
+    }
     
     @Test
     public void assertGetRowData() {
@@ -58,7 +68,7 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
         ReadwriteSplittingRuleQueryResultSet resultSet = new ReadwriteSplittingRuleQueryResultSet();
         resultSet.init(database, mock(ShowReadwriteSplittingRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
-        assertThat(actual.size(), is(6));
+        assertThat(actual.size(), is(7));
         assertTrue(actual.contains("readwrite_ds"));
         assertTrue(actual.contains("ds_primary"));
         assertTrue(actual.contains("ds_slave_0,ds_slave_1"));
@@ -92,7 +102,7 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
         ReadwriteSplittingRuleQueryResultSet resultSet = new ReadwriteSplittingRuleQueryResultSet();
         resultSet.init(database, mock(ShowReadwriteSplittingRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
-        assertThat(actual.size(), is(6));
+        assertThat(actual.size(), is(7));
         assertTrue(actual.contains("readwrite_ds"));
         assertTrue(actual.contains("write_ds"));
         assertTrue(actual.contains("read_ds_0,read_ds_1"));
@@ -115,9 +125,10 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
         ReadwriteSplittingRuleQueryResultSet resultSet = new ReadwriteSplittingRuleQueryResultSet();
         resultSet.init(metaData, mock(ShowReadwriteSplittingRulesStatement.class));
         Collection<Object> actual = resultSet.getRowData();
-        assertThat(actual.size(), is(6));
+        assertThat(actual.size(), is(7));
         assertTrue(actual.contains("readwrite_ds"));
         assertTrue(actual.contains("rd_rs"));
+        assertTrue(actual.contains("false"));
         assertTrue(actual.contains("write_ds"));
         assertTrue(actual.contains("read_ds_0,read_ds_1"));
     }
@@ -154,7 +165,7 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
     
     private RuleConfiguration createRuleConfigurationWithAutoAwareDataSource() {
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceRuleConfig = new ReadwriteSplittingDataSourceRuleConfiguration("readwrite_ds", null,
-                new DynamicReadwriteSplittingStrategyConfiguration("rd_rs"), "");
+                new DynamicReadwriteSplittingStrategyConfiguration("rd_rs", "false"), "");
         return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceRuleConfig), null);
     }
 }

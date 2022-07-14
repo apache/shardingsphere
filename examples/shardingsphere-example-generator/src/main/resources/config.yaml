@@ -19,9 +19,9 @@
 products:
   - jdbc
 
-# supported: memory,cluster-zookeeper,cluster-etcd,standalone-file
+# supported: cluster-zookeeper,cluster-etcd,standalone
 modes: 
-  - memory
+  - standalone
 
 # supported: local, xa-atomikos, xa-narayana, base-seata
 transactions: 

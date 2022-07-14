@@ -19,14 +19,14 @@ package org.apache.shardingsphere.sharding.distsql.parser.statement.hint;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.common.HintDistSQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.HintRALStatement;
 
 /**
  * Add sharding hint database value statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class AddShardingHintDatabaseValueStatement extends HintDistSQLStatement {
+public final class AddShardingHintDatabaseValueStatement extends HintRALStatement {
     
     private final String logicTableName;
     

@@ -67,8 +67,7 @@ public final class DatabaseDiscoveryDataSourceRuleTest {
     
     private Map<String, Collection<String>> getExpectedDataSourceMapper() {
         Map<String, Collection<String>> result = new LinkedHashMap<>(2, 1);
-        result.put("ds_0", Collections.singletonList("ds_0"));
-        result.put("ds_1", Collections.singletonList("ds_1"));
+        result.put("test_pr", Collections.singletonList("ds_1"));
         return result;
     }
 }

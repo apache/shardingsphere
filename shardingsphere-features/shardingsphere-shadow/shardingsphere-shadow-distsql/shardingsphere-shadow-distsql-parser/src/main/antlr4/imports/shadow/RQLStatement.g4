@@ -35,6 +35,10 @@ shadowRule
     : RULE ruleName
     ;
 
+countShadowRule
+    : COUNT SHADOW RULE (FROM databaseName)?
+    ;
+
 databaseName
     : IDENTIFIER
     ;

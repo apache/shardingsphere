@@ -69,10 +69,7 @@ public final class InsertStatementHandler implements SQLStatementHandler {
      * @return set assignment segment
      */
     public static Optional<SetAssignmentSegment> getSetAssignmentSegment(final InsertStatement insertStatement) {
-        if (insertStatement instanceof MySQLStatement) {
-            return ((MySQLInsertStatement) insertStatement).getSetAssignment();
-        }
-        return Optional.empty();
+        return insertStatement instanceof MySQLStatement ? ((MySQLInsertStatement) insertStatement).getSetAssignment() : Optional.empty();
     }
     
     /**

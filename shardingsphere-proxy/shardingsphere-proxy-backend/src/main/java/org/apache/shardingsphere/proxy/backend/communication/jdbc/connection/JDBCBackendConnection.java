@@ -20,8 +20,8 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.connection;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
-import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCConnectionManager;
@@ -43,10 +43,12 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * JDBC backend connection.
  */
+@RequiredArgsConstructor
 @Getter
 @Setter
 public final class JDBCBackendConnection implements BackendConnection<Void>, ExecutorJDBCConnectionManager {
@@ -65,14 +67,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     
     private final ResourceLock resourceLock = new ResourceLock();
     
-    private final AtomicBoolean closed;
-    
-    private volatile int connectionReferenceCount;
-    
-    public JDBCBackendConnection(final ConnectionSession connectionSession) {
-        this.connectionSession = connectionSession;
-        closed = new AtomicBoolean(false);
-    }
+    private final AtomicBoolean closed = new AtomicBoolean(false);
     
     @Override
     public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
@@ -180,10 +175,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     
     @Override
     public Void prepareForTaskExecution() {
-        synchronized (this) {
-            connectionReferenceCount++;
-            return null;
-        }
+        return null;
     }
     
     @Override
@@ -198,9 +190,6 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     @Override
     public Void closeExecutionResources() throws BackendConnectionException {
         synchronized (this) {
-            if (connectionReferenceCount > 0 && connectionReferenceCount-- > 1) {
-                return null;
-            }
             Collection<Exception> result = new LinkedList<>();
             result.addAll(closeDatabaseCommunicationEngines(false));
             result.addAll(closeFederationExecutor());
@@ -262,32 +251,23 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
      */
     public Collection<SQLException> closeConnections(final boolean forceRollback) {
         Collection<SQLException> result = new LinkedList<>();
-        for (Connection each : cachedConnections.values()) {
-            try {
-                if (forceRollback && connectionSession.getTransactionStatus().isInTransaction()) {
-                    each.rollback();
+        synchronized (cachedConnections) {
+            for (Connection each : cachedConnections.values()) {
+                try {
+                    if (forceRollback && connectionSession.getTransactionStatus().isInTransaction()) {
+                        each.rollback();
+                    }
+                    each.close();
+                } catch (final SQLException ex) {
+                    result.add(ex);
                 }
-                resetConnection(each);
-                each.close();
-            } catch (final SQLException ex) {
-                result.add(ex);
             }
+            cachedConnections.clear();
         }
-        cachedConnections.clear();
-        connectionPostProcessors.clear();
+        if (!forceRollback) {
+            connectionPostProcessors.clear();
+        }
         return result;
-    }
-    
-    private void resetConnection(final Connection connection) throws SQLException {
-        if (null == connection) {
-            return;
-        }
-        if (connectionSession.isReadOnly()) {
-            connection.setReadOnly(false);
-        }
-        if (null != connectionSession.getDefaultIsolationLevel()) {
-            connection.setTransactionIsolation(TransactionUtil.getTransactionIsolationLevel(connectionSession.getIsolationLevel()));
-        }
     }
     
     /**

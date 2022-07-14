@@ -38,9 +38,11 @@ import org.junit.Test;
 
 import java.sql.SQLException;
 import java.util.Collections;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -79,12 +81,7 @@ public final class ShowDatabasesExecutorTest extends ProxyContextRestorer {
     public void assertExecute() throws SQLException {
         showDatabasesExecutor.execute(mockConnectionSession());
         assertThat(showDatabasesExecutor.getQueryResultMetaData().getColumnCount(), is(1));
-        int count = 0;
-        while (showDatabasesExecutor.getMergedResult().next()) {
-            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is(String.format(DATABASE_PATTERN, count)));
-            count++;
-        }
-        assertThat(count, is(10));
+        assertThat(getActual(), is(getExpected()));
     }
     
     @Test
@@ -96,12 +93,25 @@ public final class ShowDatabasesExecutorTest extends ProxyContextRestorer {
         showDatabasesStatement.setFilter(showFilterSegment);
         showDatabasesExecutor = new ShowDatabasesExecutor(showDatabasesStatement);
         showDatabasesExecutor.execute(mockConnectionSession());
-        int count = 0;
+        assertThat(getActual(), is(getExpected()));
+    }
+    
+    private Collection<String> getActual() throws SQLException {
+        Map<String, String> result = new ConcurrentHashMap<>(10, 1);
         while (showDatabasesExecutor.getMergedResult().next()) {
-            assertThat(showDatabasesExecutor.getMergedResult().getValue(1, Object.class), is(String.format(DATABASE_PATTERN, count)));
-            count++;
+            String value = showDatabasesExecutor.getMergedResult().getValue(1, Object.class).toString();
+            result.put(value, value);
         }
-        assertThat(count, is(10));
+        return result.keySet();
+    }
+    
+    private Collection<String> getExpected() {
+        Map<String, String> result = new ConcurrentHashMap<>(10, 1);
+        for (int i = 0; i < 10; i++) {
+            String value = String.format(DATABASE_PATTERN, i);
+            result.put(value, value);
+        }
+        return result.keySet();
     }
     
     @Test

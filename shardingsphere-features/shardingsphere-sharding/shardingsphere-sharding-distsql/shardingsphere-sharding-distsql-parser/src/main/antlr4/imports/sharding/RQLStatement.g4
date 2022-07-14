@@ -35,6 +35,10 @@ showShardingAlgorithms
     : SHOW SHARDING ALGORITHMS (FROM databaseName)?
     ;
 
+showShardingAuditors
+    : SHOW SHARDING AUDITORS (FROM databaseName)?
+    ;
+
 showShardingTableNodes
     : SHOW SHARDING TABLE NODES tableName? (FROM databaseName)?
     ;
@@ -62,7 +66,11 @@ showShardingTableRulesUsedAlgorithm
 showShardingTableRulesUsedKeyGenerator
     : SHOW SHARDING TABLE RULES USED KEY GENERATOR keyGeneratorName (FROM databaseName)?
     ;
- 
+
+countShardingRule
+    : COUNT SHARDING RULE (FROM databaseName)?
+    ;
+
 tableRule
     : RULE tableName
     ;

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndextypeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.index.IndexTypeSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CommentStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.handler.SQLStatementHandler;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
@@ -39,9 +39,9 @@ public final class CommentStatementHandler implements SQLStatementHandler {
      * @param commentStatement comment statement
      * @return index type segment
      */
-    public static Optional<IndextypeSegment> getIndextype(final CommentStatement commentStatement) {
+    public static Optional<IndexTypeSegment> getIndexType(final CommentStatement commentStatement) {
         if (commentStatement instanceof OracleStatement) {
-            return Optional.ofNullable(((OracleCommentStatement) commentStatement).getIndextype());
+            return Optional.ofNullable(((OracleCommentStatement) commentStatement).getIndexType());
         }
         return Optional.empty();
     }

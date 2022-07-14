@@ -18,8 +18,12 @@
 package org.apache.shardingsphere.driver.jdbc.core.driver;
 
 import com.google.common.base.Preconditions;
+import lombok.SneakyThrows;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Objects;
 
 /**
@@ -46,13 +50,16 @@ public final class ShardingSphereDriverURL {
     }
     
     /**
-     * Generate to configuration file.
+     * Generate to configuration bytes.
      * 
-     * @return generated configuration file
+     * @return generated configuration bytes
      */
-    public File toConfigurationFile() {
-        return new File(inClasspath
-                ? Objects.requireNonNull(ShardingSphereDriverURL.class.getResource("/" + file), String.format("Can not find configuration file `%s` in classpath.", file)).getFile()
-                : file);
+    @SneakyThrows(IOException.class)
+    public byte[] toConfigurationBytes() {
+        try (InputStream stream = inClasspath ? ShardingSphereDriverURL.class.getResourceAsStream("/" + file) : Files.newInputStream(new File(file).toPath())) {
+            byte[] result = new byte[null == stream ? 0 : stream.available()];
+            Objects.requireNonNull(stream, String.format("Can not find configuration file `%s`.", file)).read(result);
+            return result;
+        }
     }
 }

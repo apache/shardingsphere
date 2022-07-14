@@ -35,9 +35,9 @@ import java.util.stream.Stream;
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotNull;
 
 public final class ReadwriteSplittingRuleStatementConverterTest {
     
@@ -117,6 +117,6 @@ public final class ReadwriteSplittingRuleStatementConverterTest {
     }
     
     private ReadwriteSplittingRuleSegment createReadwriteSplittingRuleSegment(final String name, final String autoAwareResource, final String loadBalancer, final Properties props) {
-        return new ReadwriteSplittingRuleSegment(name, autoAwareResource, loadBalancer, props);
+        return new ReadwriteSplittingRuleSegment(name, autoAwareResource, "false", loadBalancer, props);
     }
 }

@@ -19,19 +19,20 @@
     <metadata>
         <column name="name" />
         <column name="auto_aware_data_source_name" />
+        <column name="write_data_source_query_enabled" />
         <column name="write_data_source_name" />
         <column name="read_data_source_names" />
         <column name="load_balancer_type" />
         <column name="load_balancer_props" />
     </metadata>
-    <row values="readwrite_ds_0| | encrypt_write_ds_0| encrypt_read_ds_0| ROUND_ROBIN| " />
-    <row values="readwrite_ds_1| | encrypt_write_ds_1| encrypt_read_ds_1| ROUND_ROBIN| " />
-    <row values="readwrite_ds_2| | encrypt_write_ds_2| encrypt_read_ds_2| ROUND_ROBIN| " />
-    <row values="readwrite_ds_3| | encrypt_write_ds_3| encrypt_read_ds_3| ROUND_ROBIN| " />
-    <row values="readwrite_ds_4| | encrypt_write_ds_4| encrypt_read_ds_4| ROUND_ROBIN| " />
-    <row values="readwrite_ds_5| | encrypt_write_ds_5| encrypt_read_ds_5| ROUND_ROBIN| " />
-    <row values="readwrite_ds_6| | encrypt_write_ds_6| encrypt_read_ds_6| ROUND_ROBIN| " />
-    <row values="readwrite_ds_7| | encrypt_write_ds_7| encrypt_read_ds_7| ROUND_ROBIN| " />
-    <row values="readwrite_ds_8| | encrypt_write_ds_8| encrypt_read_ds_8| ROUND_ROBIN| " />
-    <row values="readwrite_ds_9| | encrypt_write_ds_9| encrypt_read_ds_9| ROUND_ROBIN| " />
+    <row values="readwrite_ds_0| | | encrypt_write_ds_0| encrypt_read_ds_0| ROUND_ROBIN| " />
+    <row values="readwrite_ds_1| | | encrypt_write_ds_1| encrypt_read_ds_1| ROUND_ROBIN| " />
+    <row values="readwrite_ds_2| | | encrypt_write_ds_2| encrypt_read_ds_2| ROUND_ROBIN| " />
+    <row values="readwrite_ds_3| | | encrypt_write_ds_3| encrypt_read_ds_3| ROUND_ROBIN| " />
+    <row values="readwrite_ds_4| | | encrypt_write_ds_4| encrypt_read_ds_4| ROUND_ROBIN| " />
+    <row values="readwrite_ds_5| | | encrypt_write_ds_5| encrypt_read_ds_5| ROUND_ROBIN| " />
+    <row values="readwrite_ds_6| | | encrypt_write_ds_6| encrypt_read_ds_6| ROUND_ROBIN| " />
+    <row values="readwrite_ds_7| | | encrypt_write_ds_7| encrypt_read_ds_7| ROUND_ROBIN| " />
+    <row values="readwrite_ds_8| | | encrypt_write_ds_8| encrypt_read_ds_8| ROUND_ROBIN| " />
+    <row values="readwrite_ds_9| | | encrypt_write_ds_9| encrypt_read_ds_9| ROUND_ROBIN| " />
 </dataset>

@@ -29,7 +29,6 @@ import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionCreateUpdate
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionDropUpdater;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionUpdater;
 import org.apache.shardingsphere.infra.distsql.update.RuleDefinitionUpdaterFactory;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.MetadataVersionPreparedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -134,9 +133,9 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     
     @SuppressWarnings({"rawtypes", "unchecked"})
     private RuleConfiguration processAlter(final T sqlStatement, final RuleDefinitionAlterUpdater updater, final RuleConfiguration currentRuleConfig) {
-        RuleConfiguration result = updater.buildToBeAlteredRuleConfiguration(sqlStatement);
-        updater.updateCurrentRuleConfiguration(currentRuleConfig, result);
-        return result;
+        RuleConfiguration toBeAlteredRuleConfig = updater.buildToBeAlteredRuleConfiguration(sqlStatement);
+        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfig);
+        return currentRuleConfig;
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -161,13 +160,13 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
         }
     }
     
-    private void persistRuleConfigurationChange(final MetaDataPersistService metaDataPersistService, final String version, final ShardingSphereDatabase database,
+    private void persistRuleConfigurationChange(final MetaDataPersistService persistService, final String version, final ShardingSphereDatabase database,
                                                 final RuleConfiguration currentRuleConfig, final RuleConfiguration alteredRuleConfig) {
         Collection<RuleConfiguration> configs = new LinkedList<>(database.getRuleMetaData().getConfigurations());
         configs.remove(currentRuleConfig);
         configs.add(alteredRuleConfig);
-        metaDataPersistService.getDatabaseRulePersistService().persist(database.getName(), version, configs);
-        ShardingSphereEventBus.getInstance().post(new MetadataVersionPreparedEvent(version, database.getName()));
+        persistService.getDatabaseRulePersistService().persist(database.getName(), version, configs);
+        ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext().post(new MetadataVersionPreparedEvent(version, database.getName()));
     }
     
     private void persistRuleConfigurationChange(final String databaseName, final Collection<RuleConfiguration> alteredConfigs) {

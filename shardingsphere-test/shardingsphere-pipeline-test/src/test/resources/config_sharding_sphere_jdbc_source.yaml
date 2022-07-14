@@ -49,6 +49,9 @@ rules:
       type: INLINE
       props:
         algorithm-expression: t_order
+  keyGenerators:
+    snowflake:
+      type: SNOWFLAKE
   scalingName: default_scaling
   scaling:
     default_scaling:
