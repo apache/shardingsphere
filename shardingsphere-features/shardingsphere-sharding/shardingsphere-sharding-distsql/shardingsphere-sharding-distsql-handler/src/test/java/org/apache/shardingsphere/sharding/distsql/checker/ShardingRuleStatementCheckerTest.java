@@ -86,7 +86,10 @@ public final class ShardingRuleStatementCheckerTest {
         rules.add(createCompleteTableRule());
         ShardingTableRuleStatementChecker.checkCreation(database, rules, shardingRuleConfig);
         rules.clear();
-        rules.add(new AutoTableRuleSegment("t_order", Arrays.asList("ds_0", "ds_1")));
+        rules.add(new AutoTableRuleSegment("t_order", Arrays.asList("ds_0", "ds_1"), "order_id",
+                new AlgorithmSegment("MOD", newProperties("sharding-count", "2")), null));
+        rules.add(new AutoTableRuleSegment("t_order_item", Arrays.asList("ds_0", "ds_1"), "order_id",
+                new AlgorithmSegment("MOD", newProperties("sharding-count", "2")), null));
         ShardingTableRuleStatementChecker.checkAlteration(database, rules, shardingRuleConfig);
     }
     
@@ -207,11 +210,12 @@ public final class ShardingRuleStatementCheckerTest {
         tableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_algorithm"));
         result.getTables().add(tableRuleConfig);
         ShardingAutoTableRuleConfiguration autoTableRuleConfig = new ShardingAutoTableRuleConfiguration("t_order_item", "ds_0");
-        autoTableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_item_algorithm"));
+        autoTableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_algorithm"));
         autoTableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_item_id", "t_order_item_snowflake"));
         result.getAutoTables().add(autoTableRuleConfig);
         result.getShardingAlgorithms().put("t_order_algorithm", new ShardingSphereAlgorithmConfiguration("hash_mod", newProperties("sharding-count", "4")));
         result.getKeyGenerators().put("t_order_item_snowflake", new ShardingSphereAlgorithmConfiguration("snowflake", new Properties()));
+        result.getBindingTableGroups().add("t_order,t_order_item");
         return result;
     }
     
