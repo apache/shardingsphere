@@ -98,14 +98,14 @@ public abstract class BaseITCase {
     
     private final DatabaseType databaseType;
     
+    private final String username;
+    
+    private final String password;
+    
     private JdbcTemplate jdbcTemplate;
     
     @Setter
     private Thread increaseTaskThread;
-    
-    private final String username;
-    
-    private final String password;
     
     public BaseITCase(final ScalingParameterized parameterized) {
         databaseType = parameterized.getDatabaseType();
