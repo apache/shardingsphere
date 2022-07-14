@@ -24,7 +24,6 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.node.WorkerIdNode;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Optional;
 import java.util.Properties;
@@ -32,13 +31,11 @@ import java.util.Properties;
 /**
  * Worker id generator for cluster mode.
  */
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     
     private static final int MAX_RE_TRY = 3;
-    
-    private final ClusterPersistRepository repository;
     
     private final RegistryCenter registryCenter;
     
@@ -71,7 +68,7 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     }
     
     private long generateSequentialId() {
-        String sequentialId = repository.getSequentialId(WorkerIdNode.getWorkerIdGeneratorPath(instanceMetaData.getId()), "");
+        String sequentialId = registryCenter.getRepository().getSequentialId(WorkerIdNode.getWorkerIdGeneratorPath(instanceMetaData.getId()), "");
         return null == sequentialId ? DEFAULT_WORKER_ID : Long.parseLong(sequentialId);
     }
     
