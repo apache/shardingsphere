@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.node.WorkerIdNode;
 
-import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -80,8 +79,8 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
         if (null == props) {
             return;
         }
-        Optional<Long> configuredWorkerId = parseWorkerId(props);
-        if (configuredWorkerId.isPresent() && !isWarned) {
+        long configuredWorkerId = parseWorkerId(props);
+        if (0 != configuredWorkerId && !isWarned) {
             isWarned = true;
             log.warn("No need to configured {} in cluster mode, system assigned {} was {}", WORKER_ID_KEY, WORKER_ID_KEY, generatedWorkerId);
         }
