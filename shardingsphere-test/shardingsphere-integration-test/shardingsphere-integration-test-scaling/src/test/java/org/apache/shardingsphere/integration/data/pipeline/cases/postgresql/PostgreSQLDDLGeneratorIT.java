@@ -125,8 +125,8 @@ public final class PostgreSQLDDLGeneratorIT {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseContainer.getDatabaseType()));
         result.setJdbcUrl(databaseContainer.getJdbcUrl("postgres"));
-        result.setUsername("root");
-        result.setPassword("root");
+        result.setUsername(databaseContainer.getUsername());
+        result.setPassword(databaseContainer.getPassword());
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
