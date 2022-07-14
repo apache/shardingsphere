@@ -27,7 +27,6 @@ import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
-import org.apache.shardingsphere.transaction.rule.TransactionRule;
 import org.junit.After;
 import org.junit.Test;
 
@@ -58,7 +57,6 @@ public final class ShardingSphereDataSourceTest {
         ShardingSphereDataSource actual = new ShardingSphereDataSource(DefaultDatabase.LOGIC_NAME, null);
         ContextManager contextManager = getContextManager(actual);
         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabases().containsKey(DefaultDatabase.LOGIC_NAME));
-        TransactionRule transactionRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
         assertThat(contextManager.getInstanceContext().getInstance().getState().getCurrentState(), is(StateType.OK));
         assertTrue(contextManager.getDataSourceMap(DefaultDatabase.LOGIC_NAME).isEmpty());
     }
@@ -70,7 +68,6 @@ public final class ShardingSphereDataSourceTest {
         ShardingSphereDataSource actual = createShardingSphereDataSource(new MockedDataSource(connection));
         ContextManager contextManager = getContextManager(actual);
         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabases().containsKey(DefaultDatabase.LOGIC_NAME));
-        TransactionRule transactionRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
         assertThat(contextManager.getInstanceContext().getInstance().getState().getCurrentState(), is(StateType.OK));
         assertThat(contextManager.getDataSourceMap(DefaultDatabase.LOGIC_NAME).size(), is(1));
         assertThat(contextManager.getDataSourceMap(DefaultDatabase.LOGIC_NAME).get("ds").getConnection().getMetaData().getURL(), is("jdbc:mock://127.0.0.1/foo_ds"));
