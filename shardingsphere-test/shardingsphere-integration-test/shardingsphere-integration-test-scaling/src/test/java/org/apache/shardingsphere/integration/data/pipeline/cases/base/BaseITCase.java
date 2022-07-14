@@ -59,6 +59,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -84,6 +86,8 @@ public abstract class BaseITCase {
     protected static final String DS_3 = "scaling_it_3";
     
     protected static final String DS_4 = "scaling_it_4";
+    
+    protected static final Executor SCALING_EXECUTOR = Executors.newFixedThreadPool(5);
     
     @Rule
     @Getter(AccessLevel.NONE)
@@ -125,7 +129,7 @@ public abstract class BaseITCase {
             jdbcInfo = new JdbcInfoEntity(databaseContainer.getUsername(), databaseContainer.getPassword(), databaseContainer.getPort());
         } else {
             jdbcInfo = ENV.getActualDatabaseJdbcInfo(getDatabaseType());
-            jdbcUrl = DataSourceEnvironment.getURL(databaseType, "localhost", jdbcInfo.getPort());
+            jdbcUrl = DataSourceEnvironment.getURL(databaseType, "localhost", jdbcInfo.getPort(), DatabaseTypeUtil.isOpenGauss(databaseType) ? "postgres" : "");
             try (Connection connection = DriverManager.getConnection(jdbcUrl, jdbcInfo.getUsername(), jdbcInfo.getPassword())) {
                 for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {
                     try {
@@ -321,6 +325,14 @@ public abstract class BaseITCase {
         executeWithLog(String.format("STOP SCALING SOURCE WRITING %s", jobId));
     }
     
+    protected void stopScaling(final String jobId) {
+        executeWithLog(String.format("STOP SCALING %s", jobId), 5);
+    }
+    
+    protected void startScaling(final String jobId) {
+        executeWithLog(String.format("START SCALING %s", jobId));
+    }
+    
     protected void applyScaling(final String jobId) {
         executeWithLog(String.format("APPLY SCALING %s", jobId));
     }
@@ -347,6 +359,10 @@ public abstract class BaseITCase {
         log.info("jobId: {}", jobId);
         Map<String, String> actualStatusMap = new HashMap<>(2, 1);
         String showScalingStatus = String.format("SHOW SCALING STATUS %s", jobId);
+        SCALING_EXECUTOR.execute(() -> {
+            stopScaling(jobId);
+            startScaling(jobId);
+        });
         for (int i = 0; i < 15; i++) {
             List<Map<String, Object>> showScalingStatusResMap = queryForListWithLog(showScalingStatus);
             log.info("{}: {}", showScalingStatus, showScalingStatusResMap);
@@ -367,9 +383,9 @@ public abstract class BaseITCase {
                 break;
             }
             assertBeforeApplyScalingMetadataCorrectly();
-            TimeUnit.SECONDS.sleep(2);
+            ThreadUtil.sleep(4, TimeUnit.SECONDS);
         }
-        assertThat(actualStatusMap.values().stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet()).size(), is(1));
+        assertThat(actualStatusMap.values().stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet()), is(Collections.singleton(JobStatus.EXECUTE_INCREMENTAL_TASK.name())));
     }
     
     protected void assertCheckScalingSuccess(final String jobId) {
