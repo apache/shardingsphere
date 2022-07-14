@@ -64,6 +64,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -102,9 +103,9 @@ public abstract class BaseITCase {
     @Setter
     private Thread increaseTaskThread;
     
-    private String username;
+    private final String username;
     
-    private String password;
+    private final String password;
     
     public BaseITCase(final ScalingParameterized parameterized) {
         databaseType = parameterized.getDatabaseType();
@@ -118,7 +119,7 @@ public abstract class BaseITCase {
             DatabaseContainer databaseContainer = ((DockerComposedContainer) composedContainer).getDatabaseContainer();
             username = databaseContainer.getUsername();
             password = databaseContainer.getPassword();
-        } else if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
+        } else {
             username = ENV.getActualDataSourceUsername(databaseType);
             password = ENV.getActualDataSourcePassword(databaseType);
         }
@@ -374,10 +375,9 @@ public abstract class BaseITCase {
             boolean finished = true;
             for (Map<String, Object> entry : showScalingStatusResMap) {
                 String status = entry.get("status").toString();
-                // TODO stop scaling async maybe cause the exception, not assert 
-//                assertThat(status, not(JobStatus.PREPARING_FAILURE.name()));
-//                assertThat(status, not(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name()));
-//                assertThat(status, not(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name()));
+                assertThat(status, not(JobStatus.PREPARING_FAILURE.name()));
+                assertThat(status, not(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name()));
+                assertThat(status, not(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name()));
                 String datasourceName = entry.get("data_source").toString();
                 actualStatusMap.put(datasourceName, status);
                 if (!Objects.equals(status, JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
