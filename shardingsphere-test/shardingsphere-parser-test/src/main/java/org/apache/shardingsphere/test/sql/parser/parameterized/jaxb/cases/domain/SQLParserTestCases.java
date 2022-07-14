@@ -1586,17 +1586,25 @@ public final class SQLParserTestCases {
         Map<String, SQLParserTestCase> result = new HashMap<>();
         Field[] fields = SQLParserTestCases.class.getDeclaredFields();
         for (Field each : fields) {
-            each.setAccessible(true);
-            if (each.isAnnotationPresent(XmlElement.class) && List.class == each.getType() && each.getGenericType() instanceof ParameterizedType) {
-                Class<?> actualTypeArgument = (Class<?>) ((ParameterizedType) each.getGenericType()).getActualTypeArguments()[0];
-                if (SQLParserTestCase.class.isAssignableFrom(actualTypeArgument)) {
-                    putAll((List<? extends SQLParserTestCase>) each.get(this), result);
+            if (isSQLParserTestCasesField(each)) {
+                each.setAccessible(true);
+                List<? extends SQLParserTestCase> testCases = (List<? extends SQLParserTestCase>) each.get(this);
+                if (!testCases.isEmpty()) {
+                    putAll(testCases, result);
                 }
             }
         }
         return result;
     }
     // CHECKSTYLE:ON
+    
+    private boolean isSQLParserTestCasesField(final Field field) {
+        if (field.isAnnotationPresent(XmlElement.class) && List.class == field.getType() && field.getGenericType() instanceof ParameterizedType) {
+            Class<?> actualTypeArgument = (Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
+            return SQLParserTestCase.class.isAssignableFrom(actualTypeArgument);
+        }
+        return false;
+    }
     
     private void putAll(final List<? extends SQLParserTestCase> sqlParserTestCases, final Map<String, SQLParserTestCase> target) {
         Map<String, SQLParserTestCase> sqlParserTestCaseMap = getSQLParserTestCases(sqlParserTestCases);
