@@ -23,6 +23,7 @@ import org.slf4j.bridge.SLF4JBridgeHandler;
 /**
  * Event bus context.
  */
+@SuppressWarnings("UnstableApiUsage")
 public final class EventBusContext {
     
     private final EventBus eventBus = new EventBus();
