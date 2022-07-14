@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.manager.standalone;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
@@ -55,23 +54,22 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
     
     @Override
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
-        ModeConfiguration modeConfig = null == parameter.getModeConfig() ? new ModeConfiguration("Standalone", null, true) : parameter.getModeConfig();
-        ScheduleContextFactory.getInstance().init(parameter.getInstanceMetaData().getId(), modeConfig);
-        MetaDataPersistService persistService = new MetaDataPersistService(StandalonePersistRepositoryFactory.getInstance(modeConfig.getRepository()));
-        persistConfigurations(persistService, parameter, modeConfig);
-        InstanceContext instanceContext = buildInstanceContext(parameter, modeConfig);
+        ScheduleContextFactory.getInstance().init(parameter.getInstanceMetaData().getId(), parameter.getModeConfiguration());
+        MetaDataPersistService persistService = new MetaDataPersistService(StandalonePersistRepositoryFactory.getInstance(parameter.getModeConfiguration().getRepository()));
+        persistConfigurations(persistService, parameter);
+        InstanceContext instanceContext = buildInstanceContext(parameter);
         return new ContextManager(buildMetaDataContexts(persistService, parameter, instanceContext), instanceContext);
     }
     
-    private void persistConfigurations(final MetaDataPersistService persistService, final ContextManagerBuilderParameter parameter, final ModeConfiguration modeConfig) {
+    private void persistConfigurations(final MetaDataPersistService persistService, final ContextManagerBuilderParameter parameter) {
         if (!parameter.isEmpty()) {
-            persistService.persistConfigurations(parameter.getDatabaseConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), modeConfig.isOverwrite());
+            persistService.persistConfigurations(parameter.getDatabaseConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), parameter.getModeConfiguration().isOverwrite());
         }
     }
     
-    private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter parameter, final ModeConfiguration modeConfig) {
-        return new InstanceContext(new ComputeNodeInstance(parameter.getInstanceMetaData()), new StandaloneWorkerIdGenerator(), modeConfig, new StandaloneLockContext(),
-                new EventBusContext());
+    private InstanceContext buildInstanceContext(final ContextManagerBuilderParameter parameter) {
+        return new InstanceContext(
+                new ComputeNodeInstance(parameter.getInstanceMetaData()), new StandaloneWorkerIdGenerator(), parameter.getModeConfiguration(), new StandaloneLockContext(), new EventBusContext());
     }
     
     private MetaDataContexts buildMetaDataContexts(final MetaDataPersistService persistService,
