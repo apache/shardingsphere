@@ -305,7 +305,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
         }
         return endpoint.toString();
     }
-
+    
     private Collection<String> getMatchedTables(final TemporalAccessor dateTime, final Collection<String> availableTargetNames) {
         String tableSuffix;
         if (!dateTime.isSupported(ChronoField.NANO_OF_DAY)) {
