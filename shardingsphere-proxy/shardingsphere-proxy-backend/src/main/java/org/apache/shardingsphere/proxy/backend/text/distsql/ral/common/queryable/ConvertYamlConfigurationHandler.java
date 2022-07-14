@@ -37,6 +37,8 @@ import java.util.Map;
  */
 public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<ConvertYamlConfigurationStatement> {
     
+    static String whiteSpace = " ";
+    
     @Override
     protected Collection<String> getColumnNames() {
         return Collections.singleton("converted DistSQL");
@@ -63,49 +65,49 @@ public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<
     }
     
     private void appendCreateDatabaseDistSQL(final String databaseName, final StringBuilder stringBuilder) {
-        if (databaseName == null) {
+        if (databaseName.isEmpty()) {
             return;
         }
-        stringBuilder.append("CREATE DATABASE").append(" ").append(databaseName).append(";");
+        stringBuilder.append(String.format("CREATE DATABASE %s;", databaseName));
     }
     
     private void appendAddResourceDistSQL(final Map<String, YamlProxyDataSourceConfiguration> databaseResource, final StringBuilder stringBuilder) {
         if (databaseResource.isEmpty()) {
             return;
         }
-        if (stringBuilder.length() == 0) {
+        if (stringBuilder.isEmpty()) {
             stringBuilder.append("ADD RESOURCES");
         } else {
-            stringBuilder.append(System.lineSeparator() + System.lineSeparator()).append("ADD RESOURCES");
+            stringBuilder.append(String.format(System.lineSeparator() + System.lineSeparator() + "ADD RESOURCES"));
         }
         for (Map.Entry<String, YamlProxyDataSourceConfiguration> entry : databaseResource.entrySet()) {
-            stringBuilder.append(" ").append(entry.getKey()).append(" (" + System.lineSeparator());
-            if (entry.getValue().getUrl() != null) {
-                stringBuilder.append("    URL=").append(entry.getValue().getUrl()).append("," + System.lineSeparator());
+            stringBuilder.append(String.format("%s%s (" + System.lineSeparator(), whiteSpace, entry.getKey()));
+            if (null != entry.getValue().getUrl()) {
+                stringBuilder.append(String.format("%4sURL=%s," + System.lineSeparator(), whiteSpace, entry.getValue().getUrl()));
             } else {
-                stringBuilder.append("    HOST=").append(entry.getValue().getHost()).append("," + System.lineSeparator());
-                stringBuilder.append("    PORT=").append(entry.getValue().getPort()).append("," + System.lineSeparator());
-                stringBuilder.append("    DB=").append(entry.getValue().getDb()).append("," + System.lineSeparator());
+                stringBuilder.append(String.format("%4sHOST=%s," + System.lineSeparator(), whiteSpace, entry.getValue().getHost()));
+                stringBuilder.append(String.format("%4sPORT=%s," + System.lineSeparator(), whiteSpace, entry.getValue().getPort()));
+                stringBuilder.append(String.format("%4sDB=%s," + System.lineSeparator(), whiteSpace, entry.getValue().getDb()));
             }
-            stringBuilder.append("    USER=").append(entry.getValue().getUsername()).append("," + System.lineSeparator());
-            stringBuilder.append("    PASSWORD=").append(entry.getValue().getPassword()).append("" + System.lineSeparator());
-            stringBuilder.append("    PROPERTIES(");
-            if (entry.getValue().getProperties() != null) {
-                entry.getValue().getProperties().forEach((key, value) -> stringBuilder.append("\"" + key + "\"=").append(value).append(","));
+            stringBuilder.append(String.format("%4sUSER=%s," + System.lineSeparator(), whiteSpace, entry.getValue().getUsername()));
+            stringBuilder.append(String.format("%4sPASSWORD=%s" + System.lineSeparator(), whiteSpace, entry.getValue().getPassword()));
+            stringBuilder.append(String.format("%4sPROPERTIES(", whiteSpace));
+            if (null != entry.getValue().getProperties()) {
+                entry.getValue().getProperties().forEach((key, value) -> stringBuilder.append(String.format("\"%s\"=%s,", key, value)));
                 stringBuilder.deleteCharAt(stringBuilder.length() - 1);
             } else {
-                if (entry.getValue().getConnectionTimeoutMilliseconds() != null)
-                    stringBuilder.append("\"connectionTimeoutMilliseconds\"=").append(entry.getValue().getConnectionTimeoutMilliseconds()).append(",");
-                if (entry.getValue().getIdleTimeoutMilliseconds() != null)
-                    stringBuilder.append("\"idleTimeoutMilliseconds\"=").append(entry.getValue().getIdleTimeoutMilliseconds()).append(",");
-                if (entry.getValue().getMaxLifetimeMilliseconds() != null)
-                    stringBuilder.append("\"maxLifetimeMilliseconds\"=").append(entry.getValue().getMaxLifetimeMilliseconds()).append(",");
-                if (entry.getValue().getMaxPoolSize() != null)
-                    stringBuilder.append("\"maxPoolSize\"=").append(entry.getValue().getMaxPoolSize());
-                if (entry.getValue().getMinPoolSize() != null)
-                    stringBuilder.append("\"minPoolSize\"=").append(entry.getValue().getMinPoolSize());
+                if (null != entry.getValue().getConnectionTimeoutMilliseconds())
+                    stringBuilder.append(String.format("\"connectionTimeoutMilliseconds\"=%s,", entry.getValue().getConnectionTimeoutMilliseconds()));
+                if (null != entry.getValue().getIdleTimeoutMilliseconds())
+                    stringBuilder.append(String.format("\"idleTimeoutMilliseconds\"=%s,", entry.getValue().getIdleTimeoutMilliseconds()));
+                if (null != entry.getValue().getMaxLifetimeMilliseconds())
+                    stringBuilder.append(String.format("\"maxLifetimeMilliseconds\"=%s,", entry.getValue().getMaxLifetimeMilliseconds()));
+                if (null != entry.getValue().getMaxPoolSize())
+                    stringBuilder.append(String.format("\"maxPoolSize\"=%s,", entry.getValue().getMaxPoolSize()));
+                if (null != entry.getValue().getMinPoolSize())
+                    stringBuilder.append(String.format("\"minPoolSize\"=%s", entry.getValue().getMinPoolSize()));
             }
-            stringBuilder.append(")").append(System.lineSeparator()).append("),");
+            stringBuilder.append(")" + System.lineSeparator() + "),");
         }
         stringBuilder.deleteCharAt(stringBuilder.length() - 1).append(";");
     }
