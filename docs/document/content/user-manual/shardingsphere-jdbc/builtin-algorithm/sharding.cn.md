@@ -86,6 +86,8 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 
 #### 时间范围分片算法
 
+当传入的分片键为 `java.time.Instant` 时存在特例处理，其会携带上系统的时区信息后转化为 `datetime-pattern` 的字符串格式, 再进行下一步分片。
+
 类型：INTERVAL
 
 可配置属性：
