@@ -81,6 +81,12 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         }
     }
     
+    private InstanceContext buildInstanceContext(final RegistryCenter registryCenter, final InstanceMetaData instanceMetaData, final ModeConfiguration modeConfig) {
+        ClusterWorkerIdGenerator clusterWorkerIdGenerator = new ClusterWorkerIdGenerator(registryCenter.getRepository(), registryCenter, instanceMetaData);
+        DistributedLockContext distributedLockContext = new DistributedLockContext(registryCenter.getRepository());
+        return new InstanceContext(new ComputeNodeInstance(instanceMetaData), clusterWorkerIdGenerator, modeConfig, distributedLockContext, registryCenter.getEventBusContext());
+    }
+    
     private MetaDataContexts buildMetaDataContexts(final MetaDataPersistService persistService,
                                                    final ContextManagerBuilderParameter parameter, final InstanceContext instanceContext) throws SQLException {
         Collection<String> databaseNames = parameter.getInstanceMetaData() instanceof JDBCInstanceMetaData
@@ -109,12 +115,6 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     private void persistMetaData(final MetaDataContexts metaDataContexts) {
         metaDataContexts.getMetaData().getDatabases().forEach((databaseName, schemas) -> schemas.getSchemas()
                 .forEach((schemaName, tables) -> metaDataContexts.getPersistService().getDatabaseMetaDataService().persistMetaData(databaseName, schemaName, tables)));
-    }
-    
-    private InstanceContext buildInstanceContext(final RegistryCenter registryCenter, final InstanceMetaData instanceMetaData, final ModeConfiguration modeConfig) {
-        ClusterWorkerIdGenerator clusterWorkerIdGenerator = new ClusterWorkerIdGenerator(registryCenter.getRepository(), registryCenter, instanceMetaData);
-        DistributedLockContext distributedLockContext = new DistributedLockContext(registryCenter.getRepository());
-        return new InstanceContext(new ComputeNodeInstance(instanceMetaData), clusterWorkerIdGenerator, modeConfig, distributedLockContext, registryCenter.getEventBusContext());
     }
     
     private void registerOnline(final MetaDataPersistService persistService, final RegistryCenter registryCenter,
