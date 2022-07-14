@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
@@ -35,6 +36,7 @@ import java.util.Properties;
 @Getter
 public final class ContextManagerBuilderParameter {
     
+    @Getter(AccessLevel.NONE)
     private final ModeConfiguration modeConfig;
     
     private final Map<String, DatabaseConfiguration> databaseConfigs;
@@ -55,5 +57,14 @@ public final class ContextManagerBuilderParameter {
     public boolean isEmpty() {
         return globalRuleConfigs.isEmpty() && props.isEmpty()
                 && databaseConfigs.entrySet().stream().allMatch(entry -> entry.getValue().getDataSources().isEmpty() && entry.getValue().getRuleConfigurations().isEmpty());
+    }
+    
+    /**
+     * Get mode configuration.
+     * 
+     * @return mode configuration
+     */
+    public ModeConfiguration getModeConfiguration() {
+        return null == modeConfig ? new ModeConfiguration("Standalone", null, true) : modeConfig;
     }
 }
