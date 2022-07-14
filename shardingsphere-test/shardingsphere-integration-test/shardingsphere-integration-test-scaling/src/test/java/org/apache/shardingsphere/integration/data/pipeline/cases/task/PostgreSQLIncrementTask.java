@@ -39,10 +39,12 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     
     private final boolean incrementOrderItemTogether;
     
+    private final int executeCountLimit;
+    
     @Override
     public void run() {
         int executeCount = 0;
-        while (executeCount < 20 && !Thread.currentThread().isInterrupted()) {
+        while (executeCount < executeCountLimit && !Thread.currentThread().isInterrupted()) {
             Object orderPrimaryKey = insertOrder();
             if (executeCount % 2 == 0) {
                 jdbcTemplate.update(prefixSchema("DELETE FROM ${schema}t_order WHERE id = ?", schema), orderPrimaryKey);

@@ -278,7 +278,7 @@ public abstract class BaseITCase {
         ThreadUtil.sleep(1, TimeUnit.SECONDS);
     }
     
-    private void executeWithLog(final String sql, final Integer sleepSeconds) {
+    private void executeWithLog(final String sql, final int sleepSeconds) {
         log.info("jdbcTemplate execute:{}", sql);
         jdbcTemplate.execute(sql);
         ThreadUtil.sleep(Math.max(sleepSeconds, 0), TimeUnit.SECONDS);
@@ -366,8 +366,6 @@ public abstract class BaseITCase {
             ThreadUtil.sleep(4, TimeUnit.SECONDS);
         }
         assertThat(actualStatusMap.values().stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet()), is(Collections.singleton(JobStatus.EXECUTE_INCREMENTAL_TASK.name())));
-        stopScaling(jobId);
-        startScaling(jobId);
     }
     
     protected void assertCheckScalingSuccess(final String jobId) {
