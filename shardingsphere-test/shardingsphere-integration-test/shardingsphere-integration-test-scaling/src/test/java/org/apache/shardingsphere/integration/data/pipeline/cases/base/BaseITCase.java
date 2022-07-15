@@ -316,7 +316,7 @@ public abstract class BaseITCase {
     }
     
     protected void startScaling(final String jobId) {
-        executeWithLog(String.format("START SCALING %s", jobId), 5);
+        executeWithLog(String.format("START SCALING %s", jobId), 8);
     }
     
     protected void applyScaling(final String jobId) {
