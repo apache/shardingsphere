@@ -78,7 +78,7 @@ public final class CreateTrafficRuleHandlerTest extends ProxyContextRestorer {
         handler.init(new CreateTrafficRuleStatement(Collections.singleton(trafficRuleSegment)), null);
         try {
             handler.execute();
-        } catch (IllegalStateException ex) {
+        } catch (final IllegalStateException ex) {
             TrafficRule currentRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
             assertNotNull(currentRule);
             throw ex;
