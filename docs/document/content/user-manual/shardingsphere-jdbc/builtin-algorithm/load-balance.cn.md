@@ -13,7 +13,7 @@ ShardingSphere 内置提供了多种负载均衡算法，具体包括了轮询�
 | -------- | ------------- | ------------ |
 | ROUND_ROBIN  | 事务内，读请求路由到 primary，事务外，采用轮询策略路由到 replica | |
 | RANDOM    |事务内，读请求路由到 primary，事务外，采用随机策略路由到 replica| |
-| WEIGHT    | 事务内，读请求路由到 primary，事务外，采用 weight 策略路由到 replica| 需配置属性，属性名：${replica-name}，数据类型：double, 属性名字使用读库名字，参数填写读库对应的权重值。权重参数范围最小值 > 0，合计 <= Double.MAX_VALUE。|
+| WEIGHT    | 事务内，读请求路由到 primary，事务外，采用权重策略路由到 replica| 需配置属性，属性名：${replica-name}，数据类型：double, 属性名字使用读库名字，参数填写读库对应的权重值。权重参数范围最小值 > 0，合计 <= Double.MAX_VALUE。|
 | TRANSACTION_RANDOM  |显示/非显示开启事务，读请求采用随机策略路由到多个 replica| |
 | TRANSACTION_ROUND_ROBIN  |显示/非显示开启事务，读请求采用轮询策略路由到多个 replica| |
 | TRANSACTION_WEIGHT  |显示/非显示开启事务，读请求采用权重策略路由到多个 replica| 需配置属性，属性名：${replica-name}，数据类型：double, 属性名字使用读库名字，参数填写读库对应的权重值。权重参数范围最小值 > 0，合计 <= Double.MAX_VALUE。 |
