@@ -13,6 +13,8 @@ chapter = true
 
 ## Sample
 
+### ShadowAlgorithm
+
 | *Implementation Class* | *Description* |
 |-------------------------------- |----------------------- |
 | ColumnValueMatchShadowAlgorithm | Match shadow algorithms based on field values     |
