@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL alter routine statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLAlterRoutineStatement extends AlterRoutineStatement implements PostgreSQLStatement {
 }

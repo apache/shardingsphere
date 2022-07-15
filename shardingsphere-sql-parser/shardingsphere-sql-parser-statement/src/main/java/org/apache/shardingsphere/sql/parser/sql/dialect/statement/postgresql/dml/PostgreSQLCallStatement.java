@@ -30,9 +30,9 @@ import java.util.LinkedList;
 /**
  * PostgreSQL call statement.
  */
-@ToString
 @Getter
 @Setter
+@ToString(callSuper = true)
 public final class PostgreSQLCallStatement extends CallStatement implements PostgreSQLStatement {
     
     private String procedureName;

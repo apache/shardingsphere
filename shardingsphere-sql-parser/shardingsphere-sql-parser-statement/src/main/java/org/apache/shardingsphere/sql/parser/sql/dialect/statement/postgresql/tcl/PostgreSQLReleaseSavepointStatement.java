@@ -23,5 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL release savepoint statement.
  */
+@ToString(callSuper = true)
 public final class PostgreSQLReleaseSavepointStatement extends ReleaseSavepointStatement implements PostgreSQLStatement {
 }

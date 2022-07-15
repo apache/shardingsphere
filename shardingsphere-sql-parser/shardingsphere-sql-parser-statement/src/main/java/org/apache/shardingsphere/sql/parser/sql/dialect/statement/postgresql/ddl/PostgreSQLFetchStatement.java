@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL fetch statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLFetchStatement extends FetchStatement implements PostgreSQLStatement {
 }

@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL unlisten statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLUnlistenStatement extends UnlistenStatement implements PostgreSQLStatement {
 }

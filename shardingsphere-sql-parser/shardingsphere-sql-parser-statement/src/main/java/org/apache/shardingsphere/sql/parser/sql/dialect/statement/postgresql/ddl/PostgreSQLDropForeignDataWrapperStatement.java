@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL drop foreign data wrapper statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLDropForeignDataWrapperStatement extends DropForeignDataWrapperStatement implements PostgreSQLStatement {
 }

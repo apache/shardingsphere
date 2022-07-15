@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL create access method statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLCreateAccessMethodStatement extends CreateAccessMethodStatement implements PostgreSQLStatement {
 }
