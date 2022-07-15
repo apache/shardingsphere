@@ -17,7 +17,8 @@
 
 <dataset>
     <metadata>
-        <column name="name" />
-        <column name="resource_name" />
+        <column name="table_name"/>
+        <column name="resource_name"/>
     </metadata>
+    <row values="t_single_table| write-read-ds"/>
 </dataset>

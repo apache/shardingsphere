@@ -17,7 +17,7 @@
 
 <dataset>
     <metadata>
-        <column name="name" />
-        <column name="resource_name" />
+        <column name="table_name"/>
+        <column name="resource_name"/>
     </metadata>
 </dataset>
