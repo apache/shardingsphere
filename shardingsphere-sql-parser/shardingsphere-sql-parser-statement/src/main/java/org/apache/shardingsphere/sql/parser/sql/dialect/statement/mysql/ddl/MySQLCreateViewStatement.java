@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL create view statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLCreateViewStatement extends CreateViewStatement implements MySQLStatement {
 }

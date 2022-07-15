@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Drop aggregate statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class DropAggregateStatement extends AbstractSQLStatement implements DDLStatement {
 }

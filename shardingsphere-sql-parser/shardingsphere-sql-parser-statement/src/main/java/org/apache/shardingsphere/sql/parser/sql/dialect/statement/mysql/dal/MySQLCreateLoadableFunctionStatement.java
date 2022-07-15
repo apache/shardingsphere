@@ -25,6 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL create loadable function statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLCreateLoadableFunctionStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 }

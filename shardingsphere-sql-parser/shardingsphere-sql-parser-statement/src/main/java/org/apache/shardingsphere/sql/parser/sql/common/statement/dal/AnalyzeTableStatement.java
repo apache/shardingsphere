@@ -29,7 +29,7 @@ import java.util.LinkedList;
  * Analyze table statement.
  */
 @Getter
-@ToString
+@ToString(callSuper = true)
 public abstract class AnalyzeTableStatement extends AbstractSQLStatement implements DALStatement {
     
     private final Collection<SimpleTableSegment> tables = new LinkedList<>();

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.NumberLiteralValue;
 
 /**
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.Number
  */
 @Getter
 @Setter
+@ToString(callSuper = true)
 public final class ResetMasterOptionSegment extends ResetOptionSegment {
     
     private int startIndex;

@@ -29,7 +29,7 @@ import java.util.LinkedList;
  * Drop index statement.
  */
 @Getter
-@ToString
+@ToString(callSuper = true)
 public abstract class DropIndexStatement extends AbstractSQLStatement implements DDLStatement {
     
     private final Collection<IndexSegment> indexes = new LinkedList<>();

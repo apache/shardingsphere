@@ -28,9 +28,9 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment.
 /**
  * MySQL clone statement.
  */
-@ToString
 @Getter
 @Setter
+@ToString(callSuper = true)
 public final class MySQLCloneStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     private CloneActionSegment cloneActionSegment;
