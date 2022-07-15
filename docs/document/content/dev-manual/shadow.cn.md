@@ -13,6 +13,8 @@ chapter = true
 
 ## 示例
 
+### ShadowAlgorithm
+
 | *已知实现类*                      | *详细说明*              |
 |-------------------------------- |----------------------- |
 | ColumnValueMatchShadowAlgorithm | 基于字段值匹配影子算法     |
