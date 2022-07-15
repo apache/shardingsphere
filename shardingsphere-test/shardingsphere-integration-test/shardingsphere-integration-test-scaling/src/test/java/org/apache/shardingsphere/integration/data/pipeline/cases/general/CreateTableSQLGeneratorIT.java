@@ -15,16 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.cases.postgresql;
+package org.apache.shardingsphere.integration.data.pipeline.cases.general;
 
-import com.google.common.base.Strings;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGeneratorFactory;
+import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.integration.data.pipeline.cases.entity.DDLGeneratorAssertionEntity;
-import org.apache.shardingsphere.integration.data.pipeline.cases.entity.DDLGeneratorAssertionsRootEntity;
-import org.apache.shardingsphere.integration.data.pipeline.cases.entity.DDLGeneratorOutputEntity;
+import org.apache.shardingsphere.integration.data.pipeline.cases.entity.CreateTableSQLGeneratorAssertionEntity;
+import org.apache.shardingsphere.integration.data.pipeline.cases.entity.CreateTableSQLGeneratorAssertionsRootEntity;
+import org.apache.shardingsphere.integration.data.pipeline.cases.entity.CreateTableSQLGeneratorOutputEntity;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.factory.DatabaseContainerFactory;
@@ -52,13 +53,19 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 @RunWith(Parameterized.class)
-public final class PostgreSQLDDLGeneratorIT {
+public final class CreateTableSQLGeneratorIT {
     
-    private static final String CASE_FILE_PATH = "ddlgenerator.xml";
+    private static final String POSTGRES_CASE_FILE_PATH = "postgresql/create-table-sql-generator.xml";
     
-    private static final String PARENT_PATH = "env/scenario/ddlgenerator/postgresql";
+    private static final String MYSQL_CASE_FILE_PATH = "mysql/create-table-sql-generator.xml";
+    
+    private static final String OPEN_GAUSS_CASE_FILE_PATH = "openGauss/create-table-sql-generator.xml";
+    
+    private static final String PARENT_PATH = "env/scenario/createtablegenerator";
     
     private static final String DEFAULT_SCHEMA = "public";
+    
+    private static final String DEFAULT_DATABASE = "ds";
     
     private static final Pattern REPLACE_LINE_SPACE = Pattern.compile("\\s*|\t|\r|\n");
     
@@ -68,12 +75,12 @@ public final class PostgreSQLDDLGeneratorIT {
     
     private final ScalingParameterized parameterized;
     
-    private final DDLGeneratorAssertionsRootEntity rootEntity;
+    private final CreateTableSQLGeneratorAssertionsRootEntity rootEntity;
     
-    public PostgreSQLDDLGeneratorIT(final ScalingParameterized parameterized) {
+    public CreateTableSQLGeneratorIT(final ScalingParameterized parameterized) {
         this.parameterized = parameterized;
-        this.rootEntity = JAXB.unmarshal(Objects.requireNonNull(PostgreSQLDDLGeneratorIT.class.getClassLoader().getResource(parameterized.getScenario())),
-                DDLGeneratorAssertionsRootEntity.class);
+        this.rootEntity = JAXB.unmarshal(Objects.requireNonNull(CreateTableSQLGeneratorIT.class.getClassLoader().getResource(parameterized.getScenario())),
+                CreateTableSQLGeneratorAssertionsRootEntity.class);
         this.databaseContainer = DatabaseContainerFactory.newInstance(parameterized.getDatabaseType(), parameterized.getDockerImageName());
         databaseContainer.start();
     }
@@ -85,48 +92,45 @@ public final class PostgreSQLDDLGeneratorIT {
             return result;
         }
         for (String each : ENV.getPostgresVersions()) {
-            if (!Strings.isNullOrEmpty(each)) {
-                result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), each, String.join("/", PARENT_PATH, CASE_FILE_PATH)));
-            }
+            result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), each, String.join("/", PARENT_PATH, POSTGRES_CASE_FILE_PATH)));
+        }
+        for (String each : ENV.getMysqlVersions()) {
+            result.add(new ScalingParameterized(new MySQLDatabaseType(), each, String.join("/", PARENT_PATH, MYSQL_CASE_FILE_PATH)));
+        }
+        for (String each : ENV.getOpenGaussVersions()) {
+            result.add(new ScalingParameterized(new OpenGaussDatabaseType(), each, String.join("/", PARENT_PATH, OPEN_GAUSS_CASE_FILE_PATH)));
         }
         return result;
     }
     
     @Test
-    public void assertGenerateDDLSQL() throws SQLException {
-        DataSource dataSource = createDataSource();
+    public void assertGenerateCreateTableSQL() throws SQLException {
+        initData();
+        DataSource dataSource = createDataSource(DEFAULT_DATABASE);
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             int majorVersion = connection.getMetaData().getDatabaseMajorVersion();
-            for (DDLGeneratorAssertionEntity each : rootEntity.getAssertions()) {
+            for (CreateTableSQLGeneratorAssertionEntity each : rootEntity.getAssertions()) {
                 statement.execute(each.getInput().getSql());
                 Collection<String> multiSQL = CreateTableSQLGeneratorFactory.findInstance(parameterized.getDatabaseType())
-                        .orElseThrow(() -> new ShardingSphereException("Failed to get dialect ddl sql generator")).generate(each.getInput().getTable(), DEFAULT_SCHEMA, dataSource);
+                        .orElseThrow(() -> new ShardingSphereException("Failed to get create table sql generator")).generate(each.getInput().getTable(), DEFAULT_SCHEMA, dataSource);
                 assertIsCorrect(multiSQL, getVersionOutput(each.getOutputs(), majorVersion));
             }
         }
     }
     
-    private Collection<String> getVersionOutput(final Collection<DDLGeneratorOutputEntity> outputs, final int majorVersion) {
-        Collection<String> result = new LinkedList<>();
-        for (DDLGeneratorOutputEntity each : outputs) {
-            if ("default".equals(each.getVersion())) {
-                result = each.getMultiSQL();
-            }
-            if (String.valueOf(majorVersion).equals(each.getVersion())) {
-                return each.getMultiSQL();
-            }
-        }
-        return result;
+    private void initData() throws SQLException {
+        DataSource dataSource = createDataSource("");
+        dataSource.getConnection().createStatement().execute("CREATE DATABASE " + DEFAULT_DATABASE);
     }
     
-    private DataSource createDataSource() {
+    private DataSource createDataSource(final String databaseName) {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseContainer.getDatabaseType()));
-        result.setJdbcUrl(databaseContainer.getJdbcUrl("postgres"));
-        result.setUsername("root");
-        result.setPassword("root");
+        result.setJdbcUrl(databaseContainer.getJdbcUrl(databaseName));
+        result.setUsername(databaseContainer.getUsername());
+        result.setPassword(databaseContainer.getPassword());
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
@@ -137,6 +141,19 @@ public final class PostgreSQLDDLGeneratorIT {
         for (String each : actualSQL) {
             assertThat(REPLACE_LINE_SPACE.matcher(each).replaceAll(""), is(REPLACE_LINE_SPACE.matcher(expected.next()).replaceAll("")));
         }
+    }
+    
+    private Collection<String> getVersionOutput(final Collection<CreateTableSQLGeneratorOutputEntity> outputs, final int majorVersion) {
+        Collection<String> result = new LinkedList<>();
+        for (CreateTableSQLGeneratorOutputEntity each : outputs) {
+            if ("default".equals(each.getVersion())) {
+                result = each.getMultiSQL();
+            }
+            if (String.valueOf(majorVersion).equals(each.getVersion())) {
+                return each.getMultiSQL();
+            }
+        }
+        return result;
     }
     
     @After

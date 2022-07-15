@@ -24,18 +24,22 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import java.util.Collection;
 
 /**
- * DDL generator input entity for JAXB.
+ * Create table sql generator entity for JAXB.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class DDLGeneratorInputEntity {
+public final class CreateTableSQLGeneratorAssertionEntity {
     
-    @XmlAttribute
-    private String table;
+    @XmlAttribute(required = true)
+    private String id;
     
-    @XmlElement
-    private String sql;
+    @XmlElement(required = true)
+    private CreateTableSQLGeneratorInputEntity input;
+    
+    @XmlElement(required = true, name = "output")
+    private Collection<CreateTableSQLGeneratorOutputEntity> outputs;
 }
