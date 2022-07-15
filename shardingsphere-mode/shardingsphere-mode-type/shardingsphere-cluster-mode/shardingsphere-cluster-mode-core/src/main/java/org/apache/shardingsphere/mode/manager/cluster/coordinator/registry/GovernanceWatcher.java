@@ -35,9 +35,10 @@ public interface GovernanceWatcher<T> {
     /**
      * Get watching keys.
      *
+     * @param databaseName database name
      * @return watching keys
      */
-    Collection<String> getWatchingKeys();
+    Collection<String> getWatchingKeys(String databaseName);
     
     /**
      * Get watching types.
