@@ -87,7 +87,7 @@ public final class ShowVersionExecutorTest {
     
     private SelectStatement mockSelectStatementWithAlias() {
         Collection<ProjectionSegment> projections = new LinkedList<>();
-        ExpressionProjectionSegment projectionSegment = new ExpressionProjectionSegment(0, 0, "connection_id()");
+        ExpressionProjectionSegment projectionSegment = new ExpressionProjectionSegment(0, 0, "version()");
         projectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("test_alias")));
         projections.add(projectionSegment);
         ProjectionsSegment segment = mock(ProjectionsSegment.class);
