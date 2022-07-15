@@ -162,7 +162,7 @@ jobs:
         run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dit.run.modes=Standalone -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
 
   it-single-rule-cluster:
-    name: single rule
+    name: single rule cluster
     needs: it-single-rule
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -183,6 +183,10 @@ jobs:
             database: PostgreSQL
             scenario: shadow
           - adapter: proxy
+            database: PostgreSQL
+            scenario: readwrite_splitting
+            # Only failed on GitHub Action
+          - adapter: jdbc
             database: PostgreSQL
             scenario: readwrite_splitting
     steps:
@@ -245,7 +249,7 @@ jobs:
         run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dit.run.modes=Standalone -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
 
   it-mixture-rule-cluster:
-    name: mixture rule
+    name: mixture rule cluster
     needs: [ it-empty-rule, it-single-rule, it-single-rule-cluster, it-mixture-rule ]
     runs-on: ubuntu-latest
     timeout-minutes: 10
