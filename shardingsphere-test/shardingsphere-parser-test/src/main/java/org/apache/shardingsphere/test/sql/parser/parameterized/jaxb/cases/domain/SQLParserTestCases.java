@@ -1349,7 +1349,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "alter-index-type")
     private final List<AlterIndexTypeStatementTestCase> alterIndexTypeTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-operator")
     private final List<AlterOperatorStatementTestCase> alterOperatorTestCases = new LinkedList<>();
     
@@ -1617,7 +1617,7 @@ public final class SQLParserTestCases {
         }
         return false;
     }
-
+    
     private void putAll(final List<? extends SQLParserTestCase> sqlParserTestCases, final Map<String, SQLParserTestCase> target) {
         Map<String, SQLParserTestCase> sqlParserTestCaseMap = getSQLParserTestCases(sqlParserTestCases);
         Collection<String> sqlParserTestCaseIds = new HashSet<>(sqlParserTestCaseMap.keySet());
