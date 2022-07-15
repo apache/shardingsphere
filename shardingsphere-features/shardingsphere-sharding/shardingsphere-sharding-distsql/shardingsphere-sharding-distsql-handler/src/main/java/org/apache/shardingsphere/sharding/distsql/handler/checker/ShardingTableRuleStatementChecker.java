@@ -158,7 +158,7 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     private static Collection<String> parseDateSource(final String dateSource) {
-        return InlineExpressionParser.isInlineExpression(dateSource) ? new InlineExpressionParser(dateSource).splitAndEvaluate() : Collections.singletonList(dateSource);
+        return new InlineExpressionParser(dateSource).splitAndEvaluate();
     }
     
     private static Collection<String> getDataSourceNames(final Collection<String> actualDataNodes) {
