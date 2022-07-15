@@ -1343,10 +1343,10 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "alter-diskgroup")
     private final List<AlterDiskgroupStatementTestCase> alterDiskgroupTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-index-type")
     private final List<AlterIndexTypeStatementTestCase> alterIndexTypeTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-operator")
     private final List<AlterOperatorStatementTestCase> alterOperatorTestCases = new LinkedList<>();
     
@@ -1583,7 +1583,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "create-event-trigger")
     private final List<CreateEventTriggerStatementTestCase> createEventTriggerStatementTestCases = new LinkedList<>();
-
+    
     /**
      * Get all SQL parser test cases.
      *

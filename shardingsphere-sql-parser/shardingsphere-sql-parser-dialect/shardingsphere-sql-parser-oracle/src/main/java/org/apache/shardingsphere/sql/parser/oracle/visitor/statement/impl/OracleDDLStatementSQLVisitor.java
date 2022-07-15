@@ -924,12 +924,12 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     public ASTNode visitAlterCluster(final AlterClusterContext ctx) {
         return new OracleAlterClusterStatement();
     }
-
+    
     @Override
     public ASTNode visitAlterDiskgroup(final AlterDiskgroupContext ctx) {
         return new OracleAlterDiskgroupStatement();
     }
-
+    
     @Override
     public ASTNode visitAlterIndexType(final AlterIndexTypeContext ctx) {
         return new OracleAlterIndexTypeStatement();
