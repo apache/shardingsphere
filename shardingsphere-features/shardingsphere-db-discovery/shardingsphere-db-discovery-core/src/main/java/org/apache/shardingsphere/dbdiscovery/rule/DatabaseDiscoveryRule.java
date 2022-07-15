@@ -41,9 +41,9 @@ import org.apache.shardingsphere.infra.rule.identifier.type.exportable.Exportabl
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
 import org.apache.shardingsphere.mode.metadata.storage.event.PrimaryDataSourceChangedEvent;
 import org.apache.shardingsphere.mode.metadata.storage.event.StorageNodeDataSourceChangedEvent;
-import org.apache.shardingsphere.schedule.core.api.CronJob;
-import org.apache.shardingsphere.schedule.core.api.ModeScheduleContext;
-import org.apache.shardingsphere.schedule.core.api.ModeScheduleContextFactory;
+import org.apache.shardingsphere.schedule.core.model.CronJob;
+import org.apache.shardingsphere.schedule.core.ScheduleContextFactory;
+import org.apache.shardingsphere.schedule.core.strategy.ScheduleStrategy;
 
 import javax.sql.DataSource;
 import java.util.Collection;
@@ -166,15 +166,15 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
     }
     
     private void initHeartBeatJobs(final String instanceId) {
-        Optional<ModeScheduleContext> modeScheduleContext = ModeScheduleContextFactory.getInstance().get(instanceId);
-        if (modeScheduleContext.isPresent()) {
+        Optional<ScheduleStrategy> scheduleStrategy = ScheduleContextFactory.getInstance().get(instanceId);
+        if (scheduleStrategy.isPresent()) {
             for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
                 DatabaseDiscoveryDataSourceRule rule = entry.getValue();
                 String jobName = rule.getDatabaseDiscoveryProviderAlgorithm().getType() + "-" + databaseName + "-" + rule.getGroupName();
                 CronJob job = new CronJob(jobName, each -> new HeartbeatJob(databaseName, rule.getGroupName(), rule.getPrimaryDataSourceName(), rule.getDataSourceGroup(dataSourceMap),
                         rule.getDatabaseDiscoveryProviderAlgorithm(), rule.getDisabledDataSourceNames(), instanceContext.getEventBusContext()).execute(null),
                         rule.getHeartbeatProps().getProperty("keep-alive-cron"));
-                modeScheduleContext.get().startCronJob(job);
+                scheduleStrategy.get().startSchedule(job);
             }
         }
     }

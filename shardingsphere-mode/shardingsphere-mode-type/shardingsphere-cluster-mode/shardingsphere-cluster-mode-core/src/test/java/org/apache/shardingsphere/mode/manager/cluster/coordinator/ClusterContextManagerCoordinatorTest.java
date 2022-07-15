@@ -137,8 +137,7 @@ public final class ClusterContextManagerCoordinatorTest {
     @Before
     public void setUp() throws SQLException {
         contextManager = new ClusterContextManagerBuilder().build(createContextManagerBuilderParameter());
-        assertTrue(contextManager.getMetaDataContexts().getPersistService().isPresent());
-        contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getPersistService().get(),
+        contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getPersistService(),
                 new ShardingSphereMetaData(createDatabases(), contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(new Properties())),
                 createOptimizerContext()));
         coordinator = new ClusterContextManagerCoordinator(persistService, new RegistryCenter(mock(ClusterPersistRepository.class), new EventBusContext()), contextManager);

@@ -1029,8 +1029,8 @@ charFunction
     ;
     
 trimFunction
-    : TRIM LP_ ((LEADING | BOTH | TRAILING) string_? FROM)? string_ RP_
-    | TRIM LP_ (string_ FROM)? string_ RP_
+    : TRIM LP_ ((LEADING | BOTH | TRAILING) expr? FROM)? expr RP_
+    | TRIM LP_ (expr FROM)? expr RP_
     ;
     
 valuesFunction

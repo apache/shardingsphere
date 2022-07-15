@@ -28,6 +28,7 @@ public final class ZookeeperContainer extends GovernanceContainer {
     public ZookeeperContainer() {
         super("zookeeper", "zookeeper:3.6.2");
         setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*PrepRequestProcessor \\(sid:[0-9]+\\) started.*"));
+        withExposedPorts(2181);
     }
     
     @Override

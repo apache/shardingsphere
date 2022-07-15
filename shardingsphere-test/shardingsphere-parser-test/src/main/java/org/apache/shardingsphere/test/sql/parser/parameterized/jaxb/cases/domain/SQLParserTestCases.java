@@ -158,6 +158,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDiskgroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDomainStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateEditionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateEventTriggerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateExtensionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateFlashbackArchiveStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateFunctionStatementTestCase;
@@ -1572,6 +1573,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "reassign-owned")
     private final List<ReassignOwnedStatementTestCase> reassignOwnedStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "create-event-trigger")
+    private final List<CreateEventTriggerStatementTestCase> createEventTriggerStatementTestCases = new LinkedList<>();
+    
     /**
      * Get all SQL parser test cases.
      *
@@ -1964,6 +1968,7 @@ public final class SQLParserTestCases {
         putAll(createCollationStatementTestCases, result);
         putAll(prepareTransactionTestCases, result);
         putAll(reassignOwnedStatementTestCases, result);
+        putAll(createEventTriggerStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON

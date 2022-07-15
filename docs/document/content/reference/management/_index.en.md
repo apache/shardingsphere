@@ -1,7 +1,7 @@
 +++
-pre = "<b>8.1. </b>"
+pre = "<b>8.2. </b>"
 title = "Management"
-weight = 1
+weight = 2
 +++
 
 ## Data Structure in Registry Center

@@ -167,5 +167,6 @@ execute
     | refreshMatViewStmt
     | reindex
     | securityLabelStmt
+    | createEventTrigger
     ) SEMI_? EOF
     ;
