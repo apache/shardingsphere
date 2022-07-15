@@ -57,11 +57,11 @@ public final class AuthorityRuleTest {
 
     @Test
     public void assertRefresh() {
-        AuthorityRule rule = createAuthorityRule();
         Collection<ShardingSphereUser> users = new LinkedList<>();
         users.add(new ShardingSphereUser("root", "root", "localhost"));
         users.add(new ShardingSphereUser("admin", "123456", "localhost"));
         users.add(new ShardingSphereUser("sharding-sphere", "123456", "127.0.0.1"));
+        AuthorityRule rule = createAuthorityRule();
         rule.refresh(Collections.emptyMap(), users);
         Optional<ShardingSpherePrivileges> privileges = rule.findPrivileges(new Grantee("sharding-sphere", "localhost"));
         assertTrue(privileges.isPresent());
