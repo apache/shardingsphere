@@ -7,7 +7,6 @@ chapter = true
 
 ## SPI Interface
 
-## ReadQueryLoadBalanceAlgorithm
 
 | *SPI Name*                                 | *Description*              |
 | ----------------------------------------- | ----------------------- |
@@ -15,7 +14,7 @@ chapter = true
 
 ## Sample
 
-## ReadQueryLoadBalanceAlgorithm
+### ReadQueryLoadBalanceAlgorithm
 
 | *known implementation class*                        | *Description*                                                                                                                                                                                                        |
 |-----------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
