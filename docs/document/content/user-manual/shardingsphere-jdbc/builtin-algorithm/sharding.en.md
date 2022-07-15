@@ -89,6 +89,8 @@ Attributes:
 
 #### Interval Sharding Algorithm
 
+This algorithm actively ignores the time zone information of `datetime-pattern`. 
+This means that when `datetime-lower`, `datetime-upper` and the incoming shard key contain time zone information, time zone conversion will not occur due to time zone inconsistencies.
 When the incoming sharding key is `java.time.Instant`, there is a special case, which will carry the time zone information of the system and convert it into the string format of `datetime-pattern`, and then proceed to the next sharding.
 
 Type: INTERVAL
