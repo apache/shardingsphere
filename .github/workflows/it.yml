@@ -53,7 +53,7 @@ on:
 
 concurrency:
   group: it-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true
@@ -189,6 +189,10 @@ jobs:
           - adapter: jdbc
             database: PostgreSQL
             scenario: readwrite_splitting
+          - adapter: jdbc
+            database: PostgreSQL
+            scenario: db
+
     steps:
       - uses: actions/checkout@v2
       - name: Cache Maven Repos
