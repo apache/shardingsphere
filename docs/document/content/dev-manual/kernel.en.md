@@ -6,40 +6,14 @@ chapter = true
 +++
 
 ## SPI Interface
-### SQLRouter
 
 | *SPI Name*                           | *Description*             |
 | ----------------------------------- | --------------------- |
 | SQLRouter                           | Used to process routing results         |
-
-### SQLRewriteContextDecorator
-
-| *SPI Name*                          | *Description*          |
-| ---------------------------------- | ------------------ |
 | SQLRewriteContextDecorator         | Used to handle SQL rewrite results |
-
-### SQLExecutionHook
-
-| *SPI Name*                     | *Description*       |
-| ----------------------------- | --------------- |
 | SQLExecutionHook              | SQL execution process listener |
-
-### ResultProcessEngine
-
-| *SPI Name*                    | *Description*           |
-| ---------------------------- | ------------------- |
 | ResultProcessEngine          | Used to process result sets        |
-
-### StoragePrivilegeHandler
-
-| *SPI Name*                  | *Description*                      |
-| -------------------------- | ------------------------------ |
 | StoragePrivilegeHandler    | Use SQL dialect to process privilege metadata          |
-
-### DynamicDataSourceStrategy
-
-| *SPI Name*                                  | *Description*                      |
-| ------------------------------------------ | ------------------------------ |
 | DynamicDataSourceStrategy                  | Dynamic data source fetch strategy                 |
 
 ## Sample
