@@ -20,6 +20,9 @@ package org.apache.shardingsphere.data.pipeline.core.util;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
 import org.junit.Test;
 
 public final class ReflectionUtilTest {
@@ -54,31 +57,14 @@ public final class ReflectionUtilTest {
 
     private static class ReflectionSimple {
 
+        @Setter
         private static String type;
 
+        @Getter
+        @Setter(AccessLevel.PRIVATE)
         private String name;
 
-        private final Integer age;
-
-        ReflectionSimple() {
-            age = 18;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        private void setName(final String name) {
-            this.name = name;
-        }
-
-        public static void setType(final String type) {
-            ReflectionSimple.type = type;
-        }
-
-        private Integer getAge() {
-            return age;
-        }
+        @Getter(AccessLevel.PRIVATE)
+        private final int age = 18;
     }
-
 }
