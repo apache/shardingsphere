@@ -42,6 +42,17 @@ public final class ShardingSphereDataSourceFactory {
     /**
      * Create ShardingSphere data source.
      *
+     * @param modeConfig mode configuration
+     * @return ShardingSphere data source
+     * @throws SQLException SQL exception
+     */
+    public static DataSource createDataSource(final ModeConfiguration modeConfig) throws SQLException {
+        return createDataSource(DefaultDatabase.LOGIC_NAME, modeConfig);
+    }
+    
+    /**
+     * Create ShardingSphere data source.
+     *
      * @param databaseName database name
      * @param modeConfig mode configuration
      * @return ShardingSphere data source
@@ -49,17 +60,6 @@ public final class ShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final String databaseName, final ModeConfiguration modeConfig) throws SQLException {
         return new ShardingSphereDataSource(getDatabaseName(databaseName), modeConfig);
-    }
-    
-    /**
-     * Create ShardingSphere data source.
-     *
-     * @param modeConfig mode configuration
-     * @return ShardingSphere data source
-     * @throws SQLException SQL exception
-     */
-    public static DataSource createDataSource(final ModeConfiguration modeConfig) throws SQLException {
-        return createDataSource(DefaultDatabase.LOGIC_NAME, modeConfig);
     }
     
     /**
