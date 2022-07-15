@@ -17,12 +17,10 @@
 
 package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.ToString;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
  * Alter index type statement test case.
  */
-@ToString
 public final class AlterIndexTypeStatementTestCase extends SQLParserTestCase {
 }
