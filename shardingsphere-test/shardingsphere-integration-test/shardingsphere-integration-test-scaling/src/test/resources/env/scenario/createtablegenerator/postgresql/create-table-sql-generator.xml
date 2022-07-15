@@ -113,4 +113,49 @@
             </sql>
         </output>
     </create-table-generator-assertion>
+    
+    <create-table-generator-assertion id="t_log">
+        <input table="t_log">
+            <sql>
+                CREATE UNLOGGED TABLE t_log(id int, status varchar(10));
+            </sql>
+        </input>
+        <output version="default">
+            <sql>
+                CREATE UNLOGGED TABLE IF NOT EXISTS public.t_log
+                (
+                id integer
+                ,
+                status character varying(10) COLLATE pg_catalog."default"
+                )
+                TABLESPACE pg_default
+            </sql>
+        </output>
+        <output version="10">
+            <sql>
+                CREATE UNLOGGED TABLE IF NOT EXISTS public.t_log
+                (
+                id integer
+                ,
+                status character varying(10) COLLATE pg_catalog."default"
+                )
+                WITH (
+                OIDS = FALSE)
+                TABLESPACE pg_default
+            </sql>
+        </output>
+        <output version="11">
+            <sql>
+                CREATE UNLOGGED TABLE IF NOT EXISTS public.t_log
+                (
+                id integer
+                ,
+                status character varying(10) COLLATE pg_catalog."default"
+                )
+                WITH (
+                OIDS = FALSE)
+                TABLESPACE pg_default
+            </sql>
+        </output>
+    </create-table-generator-assertion>
 </create-table-generator-assertions>
