@@ -2420,16 +2420,9 @@ dropFlashbackArchive
     ;
 
 createDiskgroup
-    : CREATE DISKGROUP diskgroupName (redundancyClause REDUNDANCY)? diskClause+ attribute?
+    : CREATE DISKGROUP diskgroupName ((HIGH | NORMAL | FLEX | EXTENDED (SITE siteName)? | EXTERNAL) REDUNDANCY)? diskClause+ attribute?
     ;
 
-redundancyClause
-    : HIGH
-    | NORMAL
-    | FLEX
-    | EXTENDED (SITE siteName)?
-    | EXTERNAL
-    ;
 
 diskClause
     : (QUORUM | REGULAR)? (FAILGROUP diskgroupName)? DISK qualifieDiskClause (COMMA_ qualifieDiskClause)*
@@ -2552,7 +2545,7 @@ resolveClause
 alterAuditPolicy
     : ALTER AUDIT POLICY policyName
       ((ADD | DROP) subAuditClause)?
-      (CONDITION (DROP | condition EVALUATE PER (STATEMENT | SESSION | INSTANCE)))?
+      (CONDITION (DROP | SQ_ condition SQ_ EVALUATE PER (STATEMENT | SESSION | INSTANCE)))?
     ;
 
 subAuditClause
@@ -2780,4 +2773,259 @@ usingFunctionClause
 
 dropBindingClause
     : DROP BINDING LP_ parameterType (COMMA_ parameterType)* RP_ FORCE?
+    ;
+
+alterDiskgroup
+    : ALTER DISKGROUP ((diskgroupName ((((addDiskClause | dropDiskClause) (COMMA_ (addDiskClause | dropDiskClause))* | resizeDiskClause) (rebalanceDiskgroupClause)?)
+    | replaceDiskClause
+    | renameDiskClause
+    | diskOnlineClause
+    | diskOfflineClause
+    | rebalanceDiskgroupClause
+    | checkDiskgroupClause
+    | diskgroupTemplateClauses
+    | diskgroupDirectoryClauses
+    | diskgroupAliasClauses
+    | diskgroupVolumeClauses
+    | diskgroupAttributes
+    | modifyDiskgroupFile
+    | dropDiskgroupFileClause
+    | convertRedundancyClause
+    | usergroupClauses
+    | userClauses
+    | filePermissionsClause
+    | fileOwnerClause
+    | scrubClause
+    | quotagroupClauses
+    | filegroupClauses))
+    | (((diskgroupName (COMMA_ diskgroupName)*) | ALL) (undropDiskClause | diskgroupAvailability | enableDisableVolume)))
+    ;
+
+addDiskClause
+    : ADD ((SITE siteName)? (QUORUM | REGULAR)? (FAILGROUP failgroupName)? DISK qualifiedDiskClause (COMMA_ qualifiedDiskClause)*)+
+    ;
+
+qualifiedDiskClause
+    : searchString (NAME diskName)? (SIZE sizeClause)? (FORCE | NOFORCE)?
+    ;
+
+dropDiskClause
+    : DROP ((QUORUM | REGULAR)? DISK diskName (FORCE | NOFORCE)? (COMMA diskName (FORCE | NOFORCE)?)*
+    | DISKS IN (QUORUM | REGULAR)? FAILGROUP failgroupName (FORCE | NOFORCE)? (COMMA_ failgroupName (FORCE | NOFORCE)?)*)
+    ;
+
+resizeDiskClause
+    : RESIZE ALL (SIZE sizeClause)?
+    ;
+
+rebalanceDiskgroupClause
+    : REBALANCE ((((WITH withPhases) | (WITHOUT withoutPhases))? (POWER INTEGER_)? (WAIT | NOWAIT)?)
+    | (MODIFY POWER (INTEGER_)?))?
+    ;
+
+withPhases
+    : withPhase (COMMA_ withPhase)*
+    ;
+
+withPhase
+    : RESTORE | BALANCE | PREPARE | COMPACT
+    ;
+
+withoutPhases
+    : withoutPhase (COMMA_ withoutPhase)*
+    ;
+
+withoutPhase
+    : BALANCE | PREPARE | COMPACT
+    ;
+
+replaceDiskClause
+    : REPLACE DISK diskName WITH pathString (FORCE | NOFORCE)?
+    (COMMA_ diskName WITH pathString (FORCE | NOFORCE)?)*
+    (POWER INTEGER_)? (WAIT | NOWAIT)?
+    ;
+
+renameDiskClause
+    : RENAME (DISK diskName TO diskName (COMMA_ diskName TO diskName)* | DISKS ALL)
+    ;
+
+diskOnlineClause
+    : ONLINE (((QUORUM | REGULAR)? DISK diskName (COMMA_ diskName)*
+    | DISKS IN (QUORUM | REGULAR)? FAILGROUP failgroupName (COMMA_ failgroupName)*)+
+    | ALL) (POWER INTEGER_)? (WAIT | NOWAIT)?
+    ;
+
+diskOfflineClause
+    : OFFLINE ((QUORUM | REGULAR)? DISK diskName (COMMA_ diskName)*
+    | DISKS IN (QUORUM | REGULAR)? FAILGROUP failgroupName (COMMA_ failgroupName)*)+ (timeoutClause)?
+    ;
+
+timeoutClause
+    : DROP AFTER INTEGER_ (M | H)
+    ;
+
+checkDiskgroupClause
+    : CHECK (REPAIR | NOREPAIR)?
+    ;
+
+diskgroupTemplateClauses
+    : (((ADD | MODIFY) TEMPLATE templateName qualifiedTemplateClause (COMMA_ templateName qualifiedTemplateClause)*)
+    | (DROP TEMPLATE templateName (COMMA_ templateName)*))
+    ;
+
+qualifiedTemplateClause
+    : ATTRIBUTE LP_ redundancyClause stripingClause diskRegionClause RP_
+    ;
+
+redundancyClause
+    : (MIRROR | HIGH | UNPROTECTED | PARITY)?
+    ;
+
+stripingClause
+    : (FINE | COARSE)?
+    ;
+
+diskRegionClause
+    : (HOT | COLD)? (MIRRORHOT | MIRRORCOLD)?
+    ;
+
+diskgroupDirectoryClauses
+    : (ADD DIRECTORY fileName (COMMA_ fileName)*
+    | DROP DIRECTORY fileName (FORCE | NOFORCE)? (COMMA_ fileName (FORCE | NOFORCE)?)*
+    | RENAME DIRECTORY directoryName TO directoryName (COMMA_ directoryName TO directoryName)*)
+    ;
+
+diskgroupAliasClauses
+    : ((ADD ALIAS aliasName FOR fileName (COMMA_ aliasName FOR fileName)*)
+    | (DROP ALIAS aliasName (COMMA_ aliasName)*)
+    | (RENAME ALIAS aliasName TO aliasName (COMMA_ aliasName TO aliasName)*))
+    ;
+
+diskgroupVolumeClauses
+    : (addVolumeClause
+    | modifyVolumeClause
+    | RESIZE VOLUME asmVolumeName SIZE sizeClause
+    | DROP VOLUME asmVolumeName)
+    ;
+
+addVolumeClause
+    : ADD VOLUME asmVolumeName SIZE sizeClause (redundancyClause)? (STRIPE_WIDTH INTEGER_ (K | M))? (STRIPE_COLUMNS INTEGER_)? (ATTRIBUTE (diskRegionClause))?
+    ;
+
+modifyVolumeClause
+    : MODIFY VOLUME asmVolumeName (ATTRIBUTE (diskRegionClause))? (MOUNTPATH mountpathName)? (USAGE usageName)?
+    ;
+
+diskgroupAttributes
+    : SET ATTRIBUTE attributeNameAndValue
+    ;
+
+modifyDiskgroupFile
+    : MODIFY FILE fileName ATTRIBUTE LP_ diskRegionClause RP_ (COMMA_ fileName ATTRIBUTE ( diskRegionClause ))*
+    ;
+
+dropDiskgroupFileClause
+    : DROP FILE fileName (COMMA_ fileName)*
+    ;
+
+convertRedundancyClause
+    : CONVERT REDUNDANCY TO FLEX
+    ;
+
+usergroupClauses
+    : (ADD USERGROUP SQ_ usergroupName SQ_ WITH MEMBER SQ_ username SQ_ (COMMA_ SQ_ username SQ_)*
+    | MODIFY USERGROUP SQ_ usergroupName SQ_ (ADD | DROP) MEMBER SQ_ username SQ_ (COMMA_ SQ_ username SQ_)*
+    | DROP USERGROUP SQ_ usergroupName SQ_)
+    ;
+
+userClauses
+    : (ADD USER SQ_ username SQ_ (COMMA_ SQ_ username SQ_)*
+    | DROP USER SQ_ username SQ_ (COMMA_ SQ_ username SQ_)* (CASCADE)?
+    | REPLACE USER SQ_ username SQ_ WITH SQ_ username SQ_ (COMMA_ SQ_ username SQ_ WITH SQ_ username SQ_)*)
+    ;
+
+filePermissionsClause
+    : SET PERMISSION (OWNER | GROUP | OTHER) EQ_ (NONE | READ ONLY | READ WRITE) (COMMA_ (OWNER | GROUP | OTHER | ALL)
+    EQ_ (NONE | READ ONLY | READ WRITE))* FOR FILE fileName (COMMA_ fileName)*
+    ;
+
+fileOwnerClause
+    : SET OWNERSHIP (setOwnerClause (COMMA_ setOwnerClause)*) FOR FILE fileName (COMMA_ fileName)*
+    ;
+
+setOwnerClause
+    :OWNER EQ_ SQ_ username SQ_ | GROUP EQ_ SQ_ usergroupName SQ_
+    ;
+
+scrubClause
+    : SCRUB (FILE asmFileName | DISK diskName)? (REPAIR | NOREPAIR)?
+    (POWER (AUTO | LOW | HIGH | MAX))? (WAIT | NOWAIT)? (FORCE | NOFORCE)? (STOP)?
+    ;
+
+quotagroupClauses
+    : (ADD QUOTAGROUP quotagroupName (setPropertyClause)?
+    | MODIFY QUOTAGROUP quotagroupName setPropertyClause
+    | MOVE FILEGROUP filegroupName TO quotagroupName
+    | DROP QUOTAGROUP quotagroupName)
+    ;
+
+setPropertyClause
+    : SET propertyName EQ_ propertyValue
+    ;
+
+quotagroupName
+    : identifier
+    ;
+
+propertyName
+    : QUOTA
+    ;
+
+propertyValue
+    : sizeClause | UNLIMITED
+    ;
+
+filegroupName
+    : identifier
+    ;
+
+filegroupClauses
+    : (addFilegroupClause
+    | modifyFilegroupClause
+    | moveToFilegroupClause
+    | dropFilegroupClause)
+    ;
+
+addFilegroupClause
+    : ADD FILEGROUP filegroupName (DATABASE databaseName
+    | CLUSTER clusterName
+    | VOLUME asmVolumeName) (setFileTypePropertyclause)?
+    ;
+
+setFileTypePropertyclause
+    :SET SQ_ (fileType DOT_)? propertyName SQ_ EQ_ SQ_ propertyValue SQ_
+    ;
+
+modifyFilegroupClause
+    : MODIFY FILEGROUP filegroupName setFileTypePropertyclause
+    ;
+
+moveToFilegroupClause
+    : MOVE FILE asmFileName TO FILEGROUP filegroupName
+    ;
+
+dropFilegroupClause
+    : DROP FILEGROUP filegroupName (CASCADE)?
+    ;
+
+undropDiskClause
+    : UNDROP DISKS
+    ;
+
+diskgroupAvailability
+    : ((MOUNT (RESTRICTED | NORMAL)? (FORCE | NOFORCE)?) | (DISMOUNT (FORCE | NOFORCE)?))
+    ;
+
+enableDisableVolume
+    : (ENABLE | DISABLE) VOLUME (asmVolumeName (COMMA_ asmVolumeName)* | ALL)
     ;
