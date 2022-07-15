@@ -48,7 +48,7 @@ public final class StandaloneParameterizedArrayGenerator {
      * @return assertion parameterized array
      */
     public static Collection<AssertionParameterizedArray> getAssertionParameterized(final SQLCommandType sqlCommandType) {
-        return new ParameterizedArrayGenerator(ADAPTERS, ENV.getScenarios(), DATABASE_TYPES).getAssertionParameterized(sqlCommandType);
+        return new ParameterizedArrayGenerator(ADAPTERS, ENV.getScenarios(), "Standalone", DATABASE_TYPES).getAssertionParameterized(sqlCommandType);
     }
     
     /**
@@ -58,6 +58,6 @@ public final class StandaloneParameterizedArrayGenerator {
      * @return case parameterized array
      */
     public static Collection<ParameterizedArray> getCaseParameterized(final SQLCommandType sqlCommandType) {
-        return new ParameterizedArrayGenerator(ADAPTERS, ENV.getScenarios(), DATABASE_TYPES).getCaseParameterized(sqlCommandType);
+        return new ParameterizedArrayGenerator(ADAPTERS, ENV.getScenarios(), "Standalone", DATABASE_TYPES).getCaseParameterized(sqlCommandType);
     }
 }

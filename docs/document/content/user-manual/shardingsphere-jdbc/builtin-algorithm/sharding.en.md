@@ -89,6 +89,10 @@ Attributes:
 
 #### Interval Sharding Algorithm
 
+This algorithm actively ignores the time zone information of `datetime-pattern`. 
+This means that when `datetime-lower`, `datetime-upper` and the incoming shard key contain time zone information, time zone conversion will not occur due to time zone inconsistencies.
+When the incoming sharding key is `java.time.Instant`, there is a special case, which will carry the time zone information of the system and convert it into the string format of `datetime-pattern`, and then proceed to the next sharding.
+
 Type: INTERVAL
 
 Attributes:
@@ -132,6 +136,8 @@ Type: COMPLEX_INLINE
 ### Class Based Sharding Algorithm
 
 Realize custom extension by configuring the sharding strategy type and algorithm class name.
+`CLASS_BASED` allows additional custom properties to be passed into the algorithm class. The passed properties can be retrieved through the `java.util.Properties` class instance with the property name `props`. 
+Refer to Git's `org.apache.shardingsphere.example.extension.sharding.algortihm.classbased.fixture.ClassBasedStandardShardingAlgorithmFixture`.
 
 Type：CLASS_BASED
 

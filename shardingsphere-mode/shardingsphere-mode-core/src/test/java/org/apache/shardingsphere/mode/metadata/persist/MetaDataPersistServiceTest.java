@@ -32,8 +32,6 @@ import org.apache.shardingsphere.mode.metadata.persist.service.impl.GlobalRulePe
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.PropertiesPersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
-import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
-import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -51,16 +49,12 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class MetaDataPersistServiceTest {
@@ -158,21 +152,5 @@ public final class MetaDataPersistServiceTest {
         Map<String, DatabaseConfiguration> databaseConfigs = Collections.singletonMap("foo_db", new DataSourceProvidedDatabaseConfiguration(dataSourceMap, ruleConfigs));
         Map<String, DataSource> resultEffectiveDataSources = metaDataPersistService.getEffectiveDataSources("foo_db", databaseConfigs);
         assertTrue(resultEffectiveDataSources.isEmpty());
-    }
-    
-    @Test
-    public void assertPersistTransactionRule() {
-        when(globalRuleService.load()).thenReturn(Collections.singleton(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), null, new Properties())));
-        Properties props = createTransactionProperties();
-        metaDataPersistService.persistTransactionRule(props, true);
-        Optional<RuleConfiguration> actual = globalRuleService.load().stream().filter(each -> each instanceof TransactionRuleConfiguration).findFirst();
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), is(new TransactionRuleConfiguration(TransactionType.LOCAL.name(), null, createTransactionProperties())));
-    }
-    
-    private Properties createTransactionProperties() {
-        Properties result = new Properties();
-        result.setProperty("type", TransactionType.LOCAL.name());
-        return result;
     }
 }

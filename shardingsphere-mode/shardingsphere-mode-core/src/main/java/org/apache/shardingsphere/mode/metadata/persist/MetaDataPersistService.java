@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.metadata.persist;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
@@ -32,14 +31,12 @@ import org.apache.shardingsphere.mode.metadata.persist.service.impl.DatabaseRule
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.GlobalRulePersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.impl.PropertiesPersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
-import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -135,22 +132,5 @@ public final class MetaDataPersistService {
             }
         }
         return result;
-    }
-    
-    /**
-     * Persist transaction rule.
-     *
-     * @param props transaction props
-     * @param isOverwrite whether overwrite registry center's configuration if existed
-     */
-    public void persistTransactionRule(final Properties props, final boolean isOverwrite) {
-        Collection<RuleConfiguration> ruleConfigs = globalRuleService.load();
-        Optional<RuleConfiguration> ruleConfig = ruleConfigs.stream().filter(each -> each instanceof TransactionRuleConfiguration).findFirst();
-        Preconditions.checkState(ruleConfig.isPresent());
-        if (!props.equals(((TransactionRuleConfiguration) ruleConfig.get()).getProps())) {
-            ((TransactionRuleConfiguration) ruleConfig.get()).getProps().clear();
-            ((TransactionRuleConfiguration) ruleConfig.get()).getProps().putAll(props);
-            globalRuleService.persist(ruleConfigs, isOverwrite);
-        }
     }
 }

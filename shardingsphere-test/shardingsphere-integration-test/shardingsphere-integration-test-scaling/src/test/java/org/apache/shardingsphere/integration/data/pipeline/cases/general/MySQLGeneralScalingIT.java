@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.integration.data.pipeline.cases.general;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseExtraSQLITCase;
@@ -60,13 +59,9 @@ public final class MySQLGeneralScalingIT extends BaseExtraSQLITCase {
         if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NONE) {
             return result;
         }
-        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
-            for (String version : ENV.getMysqlVersions()) {
-                result.add(new ScalingParameterized(new MySQLDatabaseType(), version, "env/scenario/general/mysql.xml"));
-            }
-        }
-        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE && StringUtils.equalsIgnoreCase(ENV.getNativeDatabaseType(), "MySQL")) {
-            result.add(new ScalingParameterized(new MySQLDatabaseType(), "", "env/scenario/general/mysql.xml"));
+        MySQLDatabaseType databaseType = new MySQLDatabaseType();
+        for (String version : ENV.listDatabaseDockerImageNames(databaseType)) {
+            result.add(new ScalingParameterized(databaseType, version, "env/scenario/general/mysql.xml"));
         }
         return result;
     }
@@ -90,7 +85,7 @@ public final class MySQLGeneralScalingIT extends BaseExtraSQLITCase {
         }
         addTargetResource();
         startIncrementTask(new MySQLIncrementTask(getJdbcTemplate(), keyGenerateAlgorithm, true));
-        executeWithLog(getCommonSQLCommand().getAutoAlterOrderWithItemShardingTableRule());
+        executeWithLog(getCommonSQLCommand().getAlterOrderWithItemAutoTableRule());
         String jobId = getScalingJobId();
         waitScalingFinished(jobId);
         assertCheckScalingSuccess(jobId);

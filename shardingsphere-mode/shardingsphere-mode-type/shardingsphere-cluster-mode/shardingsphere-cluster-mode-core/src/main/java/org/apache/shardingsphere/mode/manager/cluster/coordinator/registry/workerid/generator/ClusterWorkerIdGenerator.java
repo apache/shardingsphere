@@ -24,21 +24,17 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.node.WorkerIdNode;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
-import java.util.Optional;
 import java.util.Properties;
 
 /**
  * Worker id generator for cluster mode.
  */
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     
-    private static final int MAX_RE_TRY = 3;
-    
-    private final ClusterPersistRepository repository;
+    private static final int MAX_RETRY = 3;
     
     private final RegistryCenter registryCenter;
     
@@ -48,43 +44,41 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     
     @Override
     public long generate(final Properties props) {
-        long result = registryCenter.getComputeNodeStatusService().loadInstanceWorkerId(instanceMetaData.getId()).orElseGet(this::reGenerate);
-        checkConfigured(result, props);
+        long result = registryCenter.getComputeNodeStatusService().loadInstanceWorkerId(instanceMetaData.getId()).orElseGet(this::generate);
+        checkIneffectiveConfiguration(result, props);
         return result;
     }
     
-    private long reGenerate() {
+    private long generate() {
         long result;
-        int reTryCount = 0;
+        int retryTimes = 0;
         do {
-            reTryCount++;
+            retryTimes++;
             result = generateSequentialId();
             if (result > MAX_WORKER_ID) {
                 result = result % MAX_WORKER_ID + 1;
             }
-            if (reTryCount > MAX_RE_TRY) {
+            // TODO check may retry should in the front of id generate
+            if (retryTimes > MAX_RETRY) {
                 throw new ShardingSphereException("System assigned %s failed, assigned %s was %s", WORKER_ID_KEY, WORKER_ID_KEY, result);
             }
-        } while (isExist(result));
+        } while (isAssignedWorkerId(result));
         registryCenter.getComputeNodeStatusService().persistInstanceWorkerId(instanceMetaData.getId(), result);
         return result;
     }
     
     private long generateSequentialId() {
-        String sequentialId = repository.getSequentialId(WorkerIdNode.getWorkerIdGeneratorPath(instanceMetaData.getId()), "");
+        String sequentialId = registryCenter.getRepository().getSequentialId(WorkerIdNode.getWorkerIdGeneratorPath(instanceMetaData.getId()), "");
+        // TODO maybe throw exception is better if `null == sequentialId`
         return null == sequentialId ? DEFAULT_WORKER_ID : Long.parseLong(sequentialId);
     }
     
-    private boolean isExist(final long workerId) {
+    private boolean isAssignedWorkerId(final long workerId) {
         return registryCenter.getComputeNodeStatusService().getUsedWorkerIds().contains(workerId);
     }
     
-    private void checkConfigured(final long generatedWorkerId, final Properties props) {
-        if (null == props) {
-            return;
-        }
-        Optional<Long> configuredWorkerId = parseWorkerId(props);
-        if (configuredWorkerId.isPresent() && !isWarned) {
+    private void checkIneffectiveConfiguration(final long generatedWorkerId, final Properties props) {
+        if (!isWarned && null != props && props.containsKey(WORKER_ID_KEY)) {
             isWarned = true;
             log.warn("No need to configured {} in cluster mode, system assigned {} was {}", WORKER_ID_KEY, WORKER_ID_KEY, generatedWorkerId);
         }

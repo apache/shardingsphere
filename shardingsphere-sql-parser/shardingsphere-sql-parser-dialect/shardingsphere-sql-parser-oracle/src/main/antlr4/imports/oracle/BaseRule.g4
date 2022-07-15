@@ -224,9 +224,6 @@ parameterValue
     : literals | identifier
     ;
 
-directoryName
-    : identifier
-    ;
 
 dispatcherName
     : stringLiterals
@@ -620,10 +617,102 @@ fileName
     ;
 
 asmFileName
-    : STRING_
+    : fullyQualifiedFileName
+    | numericFileName
+    | incompleteFileName
+    | aliasFileName
+    ;
+
+fullyQualifiedFileName
+    : PLUS_ diskgroupName SLASH_ dbName SLASH_ fileType SLASH_ fileTypeTag DOT_ fileNumber DOT_ incarnationNumber
+    ;
+
+dbName
+    : identifier
+    ;
+
+fileType
+    : CONTROLFILE
+    | DATAFILE
+    | ONLINELOG
+    | ARCHIVELOG
+    | TEMPFILE
+    | BACKUPSET
+    | PARAMETERFILE
+    | DATAGUARDCONFIG
+    | FLASHBACK
+    | CHANGETRACKING
+    | DUMPSET
+    | XTRANSPORT
+    | AUTOBACKUP
+    ;
+
+fileTypeTag
+    : currentBackup
+    | tablespaceName
+    | groupGroup POUND_
+    | threadThread POUND_ UL_ seqSequence POUND_
+    | hasspfileTimestamp
+    | serverParameterFile
+    | dbName
+    | logLog POUND_
+    | changeTrackingFile
+    | userObj POUND_ UL_ fileName POUND_
+    ;
+
+currentBackup
+    : identifier
+    ;
+
+groupGroup
+    : identifier
+    ;
+
+threadThread
+    : identifier
+    ;
+
+seqSequence
+    : identifier
+    ;
+
+hasspfileTimestamp
+    : timestampValue
+    ;
+
+serverParameterFile
+    : identifier
+    ;
+
+logLog
+    : identifier
+    ;
+
+changeTrackingFile
+    : identifier
+    ;
+
+userObj
+    : identifier
+    ;
+
+numericFileName
+    : PLUS_ diskgroupName DOT_ fileNumber DOT_ incarnationNumber
+    ;
+
+incompleteFileName
+    : PLUS_ diskgroupName (LP_ templateName RP_)?
+    ;
+
+aliasFileName
+    : PLUS_ diskgroupName (LP_ templateName RP_)? SLASH_ aliasName
     ;
 
 fileNumber
+    : INTEGER_
+    ;
+
+incarnationNumber
     : INTEGER_
     ;
 
@@ -668,7 +757,7 @@ templateName
     ;
 
 aliasName
-    : identifier
+    : pathString
     ;
 
 domain
@@ -1324,4 +1413,24 @@ parameterType
 
 returnType
     : identifier
+    ;
+
+failgroupName
+    : identifier
+    ;
+
+asmVolumeName
+    : identifier
+    ;
+
+mountpathName
+    : identifier
+    ;
+
+usageName
+    : identifier
+    ;
+
+usergroupName
+    : STRING_
     ;

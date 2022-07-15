@@ -588,6 +588,8 @@ public enum SQLVisitorRule {
     
     ALTER_CLUSTER("AlterCluster", SQLStatementType.DDL),
     
+    ALTER_DISKGROUP("AlterDiskgroup", SQLStatementType.DDL),
+    
     CURSOR("Cursor", SQLStatementType.DDL),
     
     CLOSE("Close", SQLStatementType.DDL),
@@ -608,7 +610,9 @@ public enum SQLVisitorRule {
     
     REASSIGN_OWNED("ReassignOwned", SQLStatementType.DCL),
     
-    CREATE_COLLATION("CreateCollation", SQLStatementType.DDL);
+    CREATE_COLLATION("CreateCollation", SQLStatementType.DDL),
+    
+    CREATE_EVENT_TRIGGER("CreateEventTrigger", SQLStatementType.DDL);
     
     private final String name;
     
