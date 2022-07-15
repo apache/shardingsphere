@@ -15,26 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
+package org.apache.shardingsphere.mode.manager.standalone.workerid.generator;
 
+import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.List;
+import java.util.Properties;
 
-import static org.junit.Assert.assertThat;
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-public final class FixedPrimaryLoadBalanceAlgorithmTest {
-    
-    private final FixedPrimaryLoadBalanceAlgorithm fixedPrimaryLoadBalanceAlgorithm = new FixedPrimaryLoadBalanceAlgorithm();
+public final class StandaloneWorkerIdGeneratorTest {
     
     @Test
-    public void assertGetDataSource() {
-        String writeDataSourceName = "test_write_ds";
-        String readDataSourceName1 = "test_replica_ds_1";
-        String readDataSourceName2 = "test_replica_ds_2";
-        List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
-        assertThat(fixedPrimaryLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(writeDataSourceName));
+    public void assertGenerate() {
+        assertThat(new StandaloneWorkerIdGenerator().generate(new Properties()), is(WorkerIdGenerator.DEFAULT_WORKER_ID));
     }
 }

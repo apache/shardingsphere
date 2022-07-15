@@ -28,6 +28,6 @@ public final class StandaloneWorkerIdGenerator implements WorkerIdGenerator {
     
     @Override
     public long generate(final Properties props) {
-        return parseWorkerId(props).orElse(DEFAULT_WORKER_ID);
+        return parseWorkerId(props);
     }
 }

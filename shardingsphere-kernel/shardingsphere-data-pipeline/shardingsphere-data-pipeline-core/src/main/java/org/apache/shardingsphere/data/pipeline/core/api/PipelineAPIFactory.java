@@ -33,11 +33,8 @@ import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobOperateAPI;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.api.JobStatisticsAPI;
 import org.apache.shardingsphere.elasticjob.reg.base.CoordinatorRegistryCenter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
-
-import java.util.Optional;
 
 /**
  * Pipeline API factory.
@@ -49,11 +46,7 @@ public final class PipelineAPIFactory {
         
         @Override
         protected GovernanceRepositoryAPI initialize() {
-            Optional<MetaDataPersistService> persistService = PipelineContext.getContextManager().getMetaDataContexts().getPersistService();
-            if (!persistService.isPresent()) {
-                throw new RuntimeException("persistService is not present");
-            }
-            return new GovernanceRepositoryAPIImpl((ClusterPersistRepository) persistService.get().getRepository());
+            return new GovernanceRepositoryAPIImpl((ClusterPersistRepository) PipelineContext.getContextManager().getMetaDataContexts().getPersistService().getRepository());
         }
     };
     

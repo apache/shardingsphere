@@ -19,17 +19,16 @@ package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import lombok.Getter;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
-import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Random replica load-balance algorithm.
+ * Transaction random read query load-balance algorithm.
  */
 @Getter
-public final class RandomReplicaLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
+public final class TransactionRandomReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
     
     private Properties props = new Properties();
     
@@ -40,14 +39,11 @@ public final class RandomReplicaLoadBalanceAlgorithm implements ReadQueryLoadBal
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
-        if (TransactionHolder.isTransaction()) {
-            return writeDataSourceName;
-        }
         return readDataSourceNames.get(ThreadLocalRandom.current().nextInt(readDataSourceNames.size()));
     }
     
     @Override
     public String getType() {
-        return "RANDOM";
+        return "TRANSACTION_RANDOM";
     }
 }
