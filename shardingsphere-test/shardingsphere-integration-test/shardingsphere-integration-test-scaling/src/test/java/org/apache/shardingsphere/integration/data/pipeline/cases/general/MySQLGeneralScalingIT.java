@@ -90,7 +90,7 @@ public final class MySQLGeneralScalingIT extends BaseExtraSQLITCase {
         waitScalingFinished(jobId);
         stopScaling(jobId);
         // TODO need netty leak fixed
-//        getJdbcTemplate().update("INSERT INTO t_order (id,order_id,user_id,status) VALUES (?, ?, ?, ?)", keyGenerateAlgorithm.generateKey(), 1, 1, "afterStopScaling");
+        getJdbcTemplate().update("INSERT INTO t_order (id,order_id,user_id,status) VALUES (?, ?, ?, ?)", keyGenerateAlgorithm.generateKey(), 1, 1, "afterStopScaling");
         startScaling(jobId);
         assertCheckScalingSuccess(jobId);
         applyScaling(jobId);
