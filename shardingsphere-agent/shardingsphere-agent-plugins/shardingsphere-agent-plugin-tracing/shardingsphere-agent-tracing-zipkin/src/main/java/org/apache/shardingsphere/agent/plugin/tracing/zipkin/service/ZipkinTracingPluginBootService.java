@@ -21,6 +21,7 @@ import brave.Tracing;
 import brave.sampler.BoundarySampler;
 import brave.sampler.RateLimitingSampler;
 import brave.sampler.Sampler;
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.agent.config.PluginConfiguration;
 import org.apache.shardingsphere.agent.exception.PluginConfigurationException;
 import org.apache.shardingsphere.agent.spi.boot.PluginBootService;
@@ -43,7 +44,7 @@ public final class ZipkinTracingPluginBootService implements PluginBootService {
     
     @Override
     public void start(final PluginConfiguration pluginConfig) {
-        if (!checkConfig(pluginConfig)) {
+        if (Strings.isNullOrEmpty(pluginConfig.getHost()) || pluginConfig.getPort() < 1) {
             throw new PluginConfigurationException("zipkin config error, host is null or port is %s", pluginConfig.getPort());
         }
         Properties props = pluginConfig.getProps();
@@ -53,6 +54,23 @@ public final class ZipkinTracingPluginBootService implements PluginBootService {
         Sampler sampler = createSampler(pluginConfig);
         zipkinSpanHandler = AsyncZipkinSpanHandler.create(sender);
         tracing = Tracing.newBuilder().localServiceName(serviceName).sampler(sampler).addSpanHandler(zipkinSpanHandler).build();
+    }
+    
+    private Sampler createSampler(final PluginConfiguration pluginConfig) {
+        String samplerType = Optional.ofNullable(pluginConfig.getProps().getProperty("SAMPLER_TYPE")).orElse("const");
+        String samplerParameter = Optional.ofNullable(pluginConfig.getProps().getProperty("SAMPLER_PARAM")).orElse("1");
+        switch (samplerType) {
+            case "const":
+                return "0".equals(samplerParameter) ? Sampler.NEVER_SAMPLE : Sampler.ALWAYS_SAMPLE;
+            case "counting":
+                return Sampler.create(Float.parseFloat(samplerParameter));
+            case "ratelimiting":
+                return RateLimitingSampler.create(Integer.parseInt(samplerParameter));
+            case "boundary":
+                return BoundarySampler.create(Float.parseFloat(samplerParameter));
+            default:
+                return Sampler.ALWAYS_SAMPLE;
+        }
     }
     
     @Override
@@ -71,32 +89,5 @@ public final class ZipkinTracingPluginBootService implements PluginBootService {
     @Override
     public String getType() {
         return "Zipkin";
-    }
-    
-    private boolean checkConfig(final PluginConfiguration pluginConfig) {
-        String host = pluginConfig.getHost();
-        int port = pluginConfig.getPort();
-        return null != host && !"".equalsIgnoreCase(host) && port > 0;
-    }
-    
-    private Sampler createSampler(final PluginConfiguration pluginConfig) {
-        String samplerType = Optional.ofNullable(pluginConfig.getProps().getProperty("SAMPLER_TYPE")).orElse("const");
-        String samplerParameter = Optional.ofNullable(pluginConfig.getProps().getProperty("SAMPLER_PARAM")).orElse("1");
-        switch (samplerType) {
-            case "const":
-                if ("0".equals(samplerParameter)) {
-                    return Sampler.NEVER_SAMPLE;
-                }
-                return Sampler.ALWAYS_SAMPLE;
-            case "counting":
-                return Sampler.create(Float.parseFloat(samplerParameter));
-            case "ratelimiting":
-                return RateLimitingSampler.create(Integer.parseInt(samplerParameter));
-            case "boundary":
-                return BoundarySampler.create(Float.parseFloat(samplerParameter));
-            default:
-                break;
-        }
-        return Sampler.ALWAYS_SAMPLE;
     }
 }
