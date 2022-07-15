@@ -15,7 +15,7 @@ chapter = true
 
 ## 示例
 
-### RuleBuilder 已知实现类
+### RuleBuilder
 
 | *已知实现类*                                        | *详细说明*                        |
 |------------------------------------------------|-------------------------------|
@@ -34,7 +34,7 @@ chapter = true
 | TransactionRuleBuilder                         | 用于将事务用户配置转化为事务规则对象            |
 | SQLParserRuleBuilder                           | 用于将 SQL 解析用户配置转化为 SQL 解析规则对象  |
 
-### YamlRuleConfigurationSwapper 已知实现类
+### YamlRuleConfigurationSwapper 
 | *已知实现类*                                                      | *详细说明*                            |
 | --------------------------------------------------------------- |-----------------------------------|
 | ReadwriteSplittingRuleAlgorithmProviderConfigurationYamlSwapper | 用于将基于算法的读写分离配置转化为读写分离标准配置         |
@@ -54,7 +54,7 @@ chapter = true
 | SQLTranslatorRuleConfigurationYamlSwapper                       | 用于将 SQL 转换的 YAML 配置转化为 SQL 转换标准配置 |
 | SQLTranslatorRuleConfigurationYamlSwapper                       | 用于将 SQL 转换的 YAML 配置转化为 SQL 转换标准配置 |
 
-### ShardingSphereYamlConstruct 已知实现类
+### ShardingSphereYamlConstruct
 
 | *已知实现类*                                     | *详细说明*                       |
 | ---------------------------------------------- | ------------------------------- |
