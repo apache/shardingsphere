@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Alter synonym statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class AlterSynonymStatement extends AbstractSQLStatement implements DDLStatement {
 }

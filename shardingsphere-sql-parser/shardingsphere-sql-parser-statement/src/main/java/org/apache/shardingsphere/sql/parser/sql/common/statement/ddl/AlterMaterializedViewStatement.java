@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Alter materialized view statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class AlterMaterializedViewStatement extends AbstractSQLStatement implements DDLStatement {
 }

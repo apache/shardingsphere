@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Notify statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class NotifyStmtStatement extends AbstractSQLStatement implements DDLStatement {
 }

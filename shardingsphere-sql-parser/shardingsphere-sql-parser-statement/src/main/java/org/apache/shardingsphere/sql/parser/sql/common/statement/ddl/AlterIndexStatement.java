@@ -28,7 +28,7 @@ import java.util.Optional;
  * Alter index statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public abstract class AlterIndexStatement extends AbstractSQLStatement implements DDLStatement {
     
     private IndexSegment index;

@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL create database statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLCreateDatabaseStatement extends CreateDatabaseStatement implements MySQLStatement {
 }

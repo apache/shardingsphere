@@ -30,10 +30,10 @@ import java.util.List;
 /**
  * MySQL call statement.
  */
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@ToString(callSuper = true)
 public final class MySQLCallStatement extends CallStatement implements MySQLStatement {
     
     private String procedureName;

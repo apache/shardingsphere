@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.ComplexExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 
@@ -31,6 +32,7 @@ import java.util.LinkedList;
  */
 @RequiredArgsConstructor
 @Getter
+@ToString
 public final class FunctionSegment implements ComplexExpressionSegment {
     
     private final int startIndex;

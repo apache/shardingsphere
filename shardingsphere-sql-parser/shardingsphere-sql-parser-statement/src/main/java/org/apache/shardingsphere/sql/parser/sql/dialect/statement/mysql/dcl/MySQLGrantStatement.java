@@ -33,9 +33,9 @@ import java.util.LinkedList;
 /**
  * MySQL grant statement.
  */
-@ToString
 @Getter
 @Setter
+@ToString(callSuper = true)
 public final class MySQLGrantStatement extends GrantStatement implements MySQLStatement {
     
     private final Collection<MySQLRoleOrPrivilegeSegment> roleOrPrivileges = new LinkedList<>();

@@ -27,8 +27,8 @@ import java.util.Optional;
 /**
  * Explain statement.
  */
-@ToString
 @Setter
+@ToString(callSuper = true)
 public abstract class ExplainStatement extends AbstractSQLStatement implements DALStatement {
     
     private SQLStatement statement;

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.charset;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
 /**
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
  */
 @RequiredArgsConstructor
 @Getter
+@ToString
 public final class CharsetNameSegment implements SQLSegment {
     
     private final int startIndex;

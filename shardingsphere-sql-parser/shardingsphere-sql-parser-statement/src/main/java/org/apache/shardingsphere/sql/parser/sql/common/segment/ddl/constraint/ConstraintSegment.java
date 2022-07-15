@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
  */
 @RequiredArgsConstructor
 @Getter
+@ToString
 public final class ConstraintSegment implements SQLSegment {
     
     private final int startIndex;

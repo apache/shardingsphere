@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL execute statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLExecuteStatement extends ExecuteStatement implements MySQLStatement {
 }

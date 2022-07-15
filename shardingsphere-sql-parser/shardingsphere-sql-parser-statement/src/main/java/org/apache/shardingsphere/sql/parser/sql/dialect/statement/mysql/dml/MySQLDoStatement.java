@@ -30,10 +30,10 @@ import java.util.List;
 /**
  * MySQL do statement.
  */
-@ToString
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@ToString(callSuper = true)
 public final class MySQLDoStatement extends DoStatement implements MySQLStatement {
     
     private List<ExpressionSegment> parameters;
