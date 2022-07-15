@@ -30,7 +30,7 @@ import java.util.Optional;
  * MySQL show character set statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class MySQLShowCharacterSetStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     private ShowFilterSegment filter;

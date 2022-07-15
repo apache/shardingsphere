@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.a
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.ConstraintSegment;
 
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.constraint.Co
  */
 @RequiredArgsConstructor
 @Getter
+@ToString
 public final class ValidateConstraintDefinitionSegment implements AlterDefinitionSegment {
     
     private final int startIndex;

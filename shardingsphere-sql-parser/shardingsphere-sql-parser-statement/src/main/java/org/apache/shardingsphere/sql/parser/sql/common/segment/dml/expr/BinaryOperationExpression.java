@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 /**
  * Binary operation expression.
@@ -27,6 +28,7 @@ import lombok.Setter;
 @RequiredArgsConstructor
 @Getter
 @Setter
+@ToString
 public final class BinaryOperationExpression implements ExpressionSegment {
     
     private final int startIndex;

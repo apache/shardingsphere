@@ -16,7 +16,7 @@
   -->
 <command>
     <create-table-order>
-        CREATE TABLE `t_order` (
+        CREATE TABLE `T_ORDER` (
         `id` varchar(255) NOT NULL COMMENT 'pk id',
         `order_id` INT NOT NULL,
         `user_id` INT NOT NULL,

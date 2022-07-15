@@ -31,9 +31,9 @@ import java.util.LinkedList;
 /**
  * MySQL checksum table statement.
  */
-@ToString
 @Setter
 @Getter
+@ToString(callSuper = true)
 public final class MySQLChecksumTableStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     private final Collection<SimpleTableSegment> tables = new LinkedList<>();

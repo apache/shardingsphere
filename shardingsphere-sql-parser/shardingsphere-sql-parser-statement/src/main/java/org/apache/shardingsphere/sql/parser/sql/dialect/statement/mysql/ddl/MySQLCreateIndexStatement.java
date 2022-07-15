@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL create index statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLCreateIndexStatement extends CreateIndexStatement implements MySQLStatement {
 }

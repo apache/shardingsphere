@@ -16,7 +16,7 @@ chapter = true
 
 ## Sample
 
-### DatabaseType Known Implementation Class
+### DatabaseType
 
 | *Implementation Class* | *Description*           |
 | ---------------------- | ----------------------- |
@@ -29,7 +29,7 @@ chapter = true
 | H2DatabaseType         | H2 database             |
 | OpenGaussDatabaseType  | OpenGauss database      |
 
-### DialectTableMetaDataLoader Known Implementation Class
+### DialectTableMetaDataLoader
 
 | *Implementation Class*       | *Description*                             |
 | ---------------------------- | ----------------------------------------- |
@@ -40,14 +40,14 @@ chapter = true
 | H2TableMetaDataLoader        | Use H2 dialect to load meta data          |
 | OpenGaussTableMetaDataLoader | Use OpenGauss dialect to load meta data   |
 
-### DataSourcePoolMetaData Known Implementation Class
+### DataSourcePoolMetaData 
 
 | *Implementation Class*       | *Description*                     |
 |------------------------------|-----------------------------------|
 | DBCPDataSourcePoolMetaData   | DBCP data source pool meta data   |
 | HikariDataSourcePoolMetaData | Hikari data source pool meta data |
 
-### DataSourcePoolActiveDetector Known Implementation Class
+### DataSourcePoolActiveDetector
 
 | *Implementation Class*              | *Description*                            |
 | ----------------------------------- | ---------------------------------------- |

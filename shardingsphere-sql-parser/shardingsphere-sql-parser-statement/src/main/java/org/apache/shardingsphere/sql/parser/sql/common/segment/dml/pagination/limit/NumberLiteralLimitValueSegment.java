@@ -18,12 +18,14 @@
 package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.limit;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.NumberLiteralPaginationValueSegment;
 
 /**
  * Limit value segment for number literal.
  */
 @Getter
+@ToString(callSuper = true)
 public final class NumberLiteralLimitValueSegment extends LimitValueSegment implements NumberLiteralPaginationValueSegment {
     
     private final long value;

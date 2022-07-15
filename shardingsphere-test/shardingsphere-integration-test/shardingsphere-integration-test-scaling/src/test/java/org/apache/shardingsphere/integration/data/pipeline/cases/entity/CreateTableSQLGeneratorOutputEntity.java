@@ -27,19 +27,16 @@ import javax.xml.bind.annotation.XmlElement;
 import java.util.Collection;
 
 /**
- * DDL generator entity for JAXB.
+ * Create table sql generator output entity for JAXB.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class DDLGeneratorAssertionEntity {
+public final class CreateTableSQLGeneratorOutputEntity {
     
-    @XmlAttribute(required = true)
-    private String id;
+    @XmlAttribute
+    private String version;
     
-    @XmlElement(required = true)
-    private DDLGeneratorInputEntity input;
-    
-    @XmlElement(required = true, name = "output")
-    private Collection<DDLGeneratorOutputEntity> outputs;
+    @XmlElement(required = true, name = "sql")
+    private Collection<String> multiSQL;
 }

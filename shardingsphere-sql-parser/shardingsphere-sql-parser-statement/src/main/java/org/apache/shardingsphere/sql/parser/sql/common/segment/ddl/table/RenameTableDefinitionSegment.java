@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.table;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
@@ -29,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
 @RequiredArgsConstructor
 @Getter
 @Setter
+@ToString
 public final class RenameTableDefinitionSegment implements AlterDefinitionSegment {
     
     private final int startIndex;
