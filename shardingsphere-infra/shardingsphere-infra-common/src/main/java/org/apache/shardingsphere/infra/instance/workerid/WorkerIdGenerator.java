@@ -37,18 +37,4 @@ public interface WorkerIdGenerator {
      * @return worker id
      */
     long generate(Properties props);
-    
-    /**
-     * Parse worker id.
-     *
-     * @param props props
-     * @return worker id
-     */
-    default long parseWorkerId(final Properties props) {
-        if (null == props) {
-            return DEFAULT_WORKER_ID;
-        }
-        Object workerId = props.get(WORKER_ID_KEY);
-        return null == workerId ? DEFAULT_WORKER_ID : Long.parseLong(workerId.toString());
-    }
 }

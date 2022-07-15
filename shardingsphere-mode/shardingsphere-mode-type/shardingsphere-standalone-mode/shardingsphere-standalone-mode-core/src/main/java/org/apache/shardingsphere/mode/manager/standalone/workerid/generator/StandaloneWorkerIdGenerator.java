@@ -28,6 +28,11 @@ public final class StandaloneWorkerIdGenerator implements WorkerIdGenerator {
     
     @Override
     public long generate(final Properties props) {
-        return parseWorkerId(props);
+        if (null == props) {
+            return DEFAULT_WORKER_ID;
+        }
+        Object workerId = props.get(WORKER_ID_KEY);
+        // TODO check can not exceed MAX_WORKER_ID
+        return null == workerId ? DEFAULT_WORKER_ID : Long.parseLong(workerId.toString());
     }
 }
