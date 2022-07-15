@@ -342,10 +342,9 @@ public abstract class BaseITCase {
         }
         log.info("jobId: {}", jobId);
         Map<String, String> actualStatusMap = new HashMap<>(2, 1);
-        String showScalingStatus = String.format("SHOW SCALING STATUS %s", jobId);
         for (int i = 0; i < 15; i++) {
-            List<Map<String, Object>> showScalingStatusResMap = queryForListWithLog(showScalingStatus);
-            log.info("{}: {}", showScalingStatus, showScalingStatusResMap);
+            List<Map<String, Object>> showScalingStatusResMap = showScalingStatus(jobId);
+            log.info("show scaling status result: {}", showScalingStatusResMap);
             boolean finished = true;
             for (Map<String, Object> entry : showScalingStatusResMap) {
                 String status = entry.get("status").toString();
@@ -368,7 +367,19 @@ public abstract class BaseITCase {
         assertThat(actualStatusMap.values().stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet()), is(Collections.singleton(JobStatus.EXECUTE_INCREMENTAL_TASK.name())));
     }
     
+    protected List<Map<String, Object>> showScalingStatus(final String jobId) {
+        return queryForListWithLog(String.format("SHOW SCALING STATUS %s", jobId));
+    }
+    
     protected void assertCheckScalingSuccess(final String jobId) {
+        for (int i = 0; i < 3; i++) {
+            if (checkJobIncrementTaskFinished(jobId)) {
+                break;
+            }
+            ThreadUtil.sleep(10, TimeUnit.SECONDS);
+        }
+        boolean secondCheckJobResult = checkJobIncrementTaskFinished(jobId);
+        log.info("second check job result: {}", secondCheckJobResult);
         stopScalingSourceWriting(jobId);
         assertStopScalingSourceWriting();
         List<Map<String, Object>> checkScalingResults = queryForListWithLog(String.format("CHECK SCALING %s BY TYPE (NAME=DATA_MATCH)", jobId));
@@ -376,6 +387,21 @@ public abstract class BaseITCase {
         for (Map<String, Object> entry : checkScalingResults) {
             assertTrue(Boolean.parseBoolean(entry.get("records_content_matched").toString()));
         }
+    }
+    
+    private boolean checkJobIncrementTaskFinished(final String jobId) {
+        List<Map<String, Object>> listScalingStatus = showScalingStatus(jobId);
+        log.info("listScalingStatus result: {}", listScalingStatus);
+        for (Map<String, Object> entry : listScalingStatus) {
+            if (JobStatus.EXECUTE_INCREMENTAL_TASK.name().equalsIgnoreCase(entry.get("status").toString())) {
+                return false;
+            }
+            int incrementalIdleSeconds = Integer.parseInt(entry.get("incremental_idle_seconds").toString());
+            if (incrementalIdleSeconds <= 10) {
+                return false;
+            }
+        }
+        return true;
     }
     
     protected void assertPreviewTableSuccess(final String tableName, final List<String> expect) {

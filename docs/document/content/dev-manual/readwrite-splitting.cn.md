@@ -7,6 +7,7 @@ chapter = true
 
 ## SPI 接口
 
+### ReadQueryLoadBalanceAlgorithm
 
 | *SPI 名称*                                 | *详细说明*              |
 | ----------------------------------------- | ----------------------- |
