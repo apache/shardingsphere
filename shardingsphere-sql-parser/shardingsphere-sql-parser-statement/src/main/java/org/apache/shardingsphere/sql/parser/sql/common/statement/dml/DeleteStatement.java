@@ -30,7 +30,7 @@ import java.util.Optional;
  * Delete statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public abstract class DeleteStatement extends AbstractSQLStatement implements DMLStatement {
     
     @Getter

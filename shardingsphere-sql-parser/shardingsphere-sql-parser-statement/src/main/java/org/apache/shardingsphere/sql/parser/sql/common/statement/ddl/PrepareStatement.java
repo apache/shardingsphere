@@ -31,9 +31,9 @@ import java.util.Optional;
 /**
  * Prepare statement.
  */
-@ToString
 @Getter
 @Setter
+@ToString(callSuper = true)
 public abstract class PrepareStatement extends AbstractSQLStatement implements DDLStatement {
     
     private SelectStatement select;

@@ -25,12 +25,12 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 /**
- * DDL generator root entity for JAXB.
+ * Create table generator root entity for JAXB.
  */
-@XmlRootElement(name = "ddl-generator-assertions")
+@XmlRootElement(name = "create-table-generator-assertions")
 @Getter
-public final class DDLGeneratorAssertionsRootEntity {
+public final class CreateTableSQLGeneratorAssertionsRootEntity {
     
-    @XmlElement(name = "ddl-generator-assertion")
-    private final Collection<DDLGeneratorAssertionEntity> assertions = new LinkedList<>();
+    @XmlElement(name = "create-table-generator-assertion")
+    private final Collection<CreateTableSQLGeneratorAssertionEntity> assertions = new LinkedList<>();
 }

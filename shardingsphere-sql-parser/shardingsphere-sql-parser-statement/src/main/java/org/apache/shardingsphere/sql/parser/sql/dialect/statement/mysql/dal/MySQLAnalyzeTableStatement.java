@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL analyze table statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLAnalyzeTableStatement extends AnalyzeTableStatement implements MySQLStatement {
 }

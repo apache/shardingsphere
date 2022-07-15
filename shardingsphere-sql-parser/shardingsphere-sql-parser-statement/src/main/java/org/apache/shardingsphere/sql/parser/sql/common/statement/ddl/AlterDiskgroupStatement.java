@@ -15,28 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.cases.entity;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import lombok.Getter;
-import lombok.Setter;
-
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import java.util.Collection;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * DDL generator output entity for JAXB.
+ * Alter diskgroup statement.
  */
-@XmlAccessorType(XmlAccessType.FIELD)
-@Getter
-@Setter
-public final class DDLGeneratorOutputEntity {
-    
-    @XmlAttribute
-    private String version;
-    
-    @XmlElement(required = true, name = "sql")
-    private Collection<String> multiSQL;
+public abstract class AlterDiskgroupStatement extends AbstractSQLStatement implements DDLStatement {
 }

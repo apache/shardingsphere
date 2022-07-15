@@ -5,11 +5,15 @@ weight = 15
 chapter = true
 +++
 
-## PluginDefinitionService
+## SPI 接口
 
 | *SPI 名称*       | *详细说明*   |
 |---------------- |------------ |
 | PluginDefinitionService | Agent 插件定义 |
+| PluginBootService | 插件启动服务定义 |
+
+## 示例
+### PluginDefinitionService
 
 | *已知实现类*                      | *详细说明*              |
 |-------------------------------- |----------------------- |
@@ -21,11 +25,7 @@ chapter = true
 | ZipkinPluginDefinitionService    | Zipkin plugin |
 
 
-## PluginBootService
-
-| *SPI 名称*       | *详细说明*   |
-|---------------- |------------ |
-| PluginBootService | 插件启动服务定义 |
+### PluginBootService
 
 | *已知实现类*                      | *详细说明*              |
 |-------------------------------- |----------------------- |

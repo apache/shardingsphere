@@ -5,11 +5,14 @@ weight = 12
 chapter = true
 +++
 
-## SQLChecker
+## SPI Interface
 
 | *SPI Name*             | *Description*     |
 | ---------------------- | ----------------- |
 | SQLChecker             | SQL checker       |
+
+## Sample
+### SQLChecker
 
 | *Implementation Class* | *Description*          |
 | ---------------------- | ---------------------- |

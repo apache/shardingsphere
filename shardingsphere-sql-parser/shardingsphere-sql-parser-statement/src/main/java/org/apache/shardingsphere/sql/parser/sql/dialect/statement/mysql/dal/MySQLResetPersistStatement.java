@@ -30,7 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
+@ToString(callSuper = true)
 public final class MySQLResetPersistStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     private final boolean ifExists;

@@ -28,9 +28,9 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL show relay log events statement.
  */
-@ToString
 @Getter
 @Setter
+@ToString(callSuper = true)
 public final class MySQLShowRelaylogEventsStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     private String logName;

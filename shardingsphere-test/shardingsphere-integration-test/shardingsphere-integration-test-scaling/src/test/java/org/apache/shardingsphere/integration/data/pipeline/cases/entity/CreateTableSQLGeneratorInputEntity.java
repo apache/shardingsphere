@@ -26,12 +26,12 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * DDL generator input entity for JAXB.
+ * Create table sql generator input entity for JAXB.
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @Getter
 @Setter
-public final class DDLGeneratorInputEntity {
+public final class CreateTableSQLGeneratorInputEntity {
     
     @XmlAttribute
     private String table;

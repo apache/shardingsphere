@@ -30,8 +30,8 @@ import java.util.List;
 /**
  * MySQL reset statement.
  */
-@ToString
 @Getter
+@ToString(callSuper = true)
 public final class MySQLResetStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     private final List<ResetOptionSegment> options = new LinkedList<>();
