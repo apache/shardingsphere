@@ -21,19 +21,24 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
+        <artifactId>spi-based-sharding-algorithm-example</artifactId>
         <groupId>org.apache.shardingsphere.example</groupId>
-        <artifactId>custom-sharding-algortihm-example</artifactId>
         <version>${revision}</version>
     </parent>
-    <artifactId>spi-based-sharding-algorithm-example</artifactId>
+    <artifactId>spi-based-sharding-spring-namespace-mybatis-example</artifactId>
     <name>${project.artifactId}</name>
-    <packaging>pom</packaging>
-    
-    <modules>
-        <module>spi-based-sharding-raw-jdbc-example</module>
-        <module>spi-based-sharding-spring-boot-mybatis-example</module>
-        <module>spi-based-sharding-spring-namespace-jpa-example</module>
-        <module>spi-based-sharding-spring-namespace-mybatis-example</module>
-        <module>spi-based-sharding-spring-boot-jpa-example</module>
-    </modules>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.shardingsphere.example</groupId>
+            <artifactId>example-spring-mybatis</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-jdbc-core-spring-namespace</artifactId>
+        </dependency>
+    </dependencies>
+
 </project>
