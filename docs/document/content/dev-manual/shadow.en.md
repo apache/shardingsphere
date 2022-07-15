@@ -1,7 +1,7 @@
 +++
-pre = "<b>6.14. </b>"
+pre = "<b>6.13. </b>"
 title = "Shadow DB"
-weight = 14
+weight = 13
 chapter = true
 +++
 
