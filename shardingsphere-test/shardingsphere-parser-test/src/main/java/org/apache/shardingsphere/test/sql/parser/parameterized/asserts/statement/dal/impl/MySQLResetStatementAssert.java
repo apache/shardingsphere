@@ -66,14 +66,14 @@ public final class MySQLResetStatementAssert {
     
     private static void assertMasterOption(final SQLCaseAssertContext assertContext, final ResetMasterOptionSegment actual, final ExpectedResetOptionSegment expected) {
         if (null != expected.getBinaryLogFileIndexNumber()) {
-            assertThat(assertContext.getText("Actual reset master binlog index does not match: "), actual.getBinaryLogFileIndexNumber().getValue(), is(expected.getBinaryLogFileIndexNumber()));
+            assertThat(assertContext.getText("Actual reset master binlog index does not match: "), actual.getBinaryLogFileIndexNumber(), is(expected.getBinaryLogFileIndexNumber()));
         }
     }
     
     private static void assertSlaveOption(final SQLCaseAssertContext assertContext, final ResetSlaveOptionSegment actual, final ExpectedResetOptionSegment expected) {
         assertThat(assertContext.getText("Actual reset slave all does not match: "), actual.isAll(), is(expected.isAll()));
         if (null != expected.getChannel()) {
-            assertThat(assertContext.getText("Actual reset slave channel does not match: "), actual.getChannelOption().getValue(), is(expected.getChannel()));
+            assertThat(assertContext.getText("Actual reset slave channel does not match: "), actual.getChannelOption(), is(expected.getChannel()));
         }
     }
 }

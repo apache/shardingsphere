@@ -363,7 +363,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
         if (null != ctx.MASTER()) {
             ResetMasterOptionSegment result = new ResetMasterOptionSegment();
             if (null != ctx.binaryLogFileIndexNumber()) {
-                result.setBinaryLogFileIndexNumber((NumberLiteralValue) visit(ctx.binaryLogFileIndexNumber()));
+                result.setBinaryLogFileIndexNumber(((NumberLiteralValue) visit(ctx.binaryLogFileIndexNumber())).getValue().longValue());
             }
             result.setStartIndex(ctx.start.getStartIndex());
             result.setStopIndex(ctx.stop.getStopIndex());
@@ -374,7 +374,7 @@ public final class MySQLDALStatementSQLVisitor extends MySQLStatementSQLVisitor 
             result.setAll(true);
         }
         if (null != ctx.channelOption()) {
-            result.setChannelOption((StringLiteralValue) visit(ctx.channelOption()));
+            result.setChannelOption(((StringLiteralValue) visit(ctx.channelOption())).getValue());
         }
         result.setStartIndex(ctx.start.getStartIndex());
         result.setStopIndex(ctx.stop.getStopIndex());

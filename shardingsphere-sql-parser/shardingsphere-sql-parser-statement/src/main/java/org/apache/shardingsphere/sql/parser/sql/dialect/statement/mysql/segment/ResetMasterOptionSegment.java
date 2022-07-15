@@ -20,7 +20,6 @@ package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.segment
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.value.literal.impl.NumberLiteralValue;
 
 /**
  * MySQL reset master option segment.
@@ -34,5 +33,5 @@ public final class ResetMasterOptionSegment extends ResetOptionSegment {
     
     private int stopIndex;
     
-    private NumberLiteralValue binaryLogFileIndexNumber;
+    private Long binaryLogFileIndexNumber;
 }
