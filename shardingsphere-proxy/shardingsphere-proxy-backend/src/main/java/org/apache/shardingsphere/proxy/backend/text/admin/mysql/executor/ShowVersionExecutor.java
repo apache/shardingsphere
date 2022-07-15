@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
@@ -39,18 +40,15 @@ import java.util.Collections;
  * Show version executor.
  */
 @Getter
+@RequiredArgsConstructor
 public final class ShowVersionExecutor implements DatabaseAdminQueryExecutor {
     
     public static final String FUNCTION_NAME = "version()";
     
-    private SelectStatement sqlStatement;
+    private final SelectStatement sqlStatement;
     
     private MergedResult mergedResult;
-    
-    public ShowVersionExecutor(final SelectStatement sqlStatement) {
-        this.sqlStatement = sqlStatement;
-    }
-    
+
     @Override
     public void execute(final ConnectionSession connectionSession) {
         mergedResult = new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow(MySQLServerInfo.getServerVersion(connectionSession.getDatabaseName()))));
