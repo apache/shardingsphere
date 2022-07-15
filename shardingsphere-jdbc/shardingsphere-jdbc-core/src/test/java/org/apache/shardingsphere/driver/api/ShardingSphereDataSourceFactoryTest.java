@@ -17,23 +17,23 @@
 
 package org.apache.shardingsphere.driver.api;
 
-import java.lang.reflect.Field;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Properties;
-import javax.sql.DataSource;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
+import javax.sql.DataSource;
+import java.lang.reflect.Field;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Properties;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-
-import lombok.SneakyThrows;
 
 public final class ShardingSphereDataSourceFactoryTest {
     
@@ -50,32 +50,25 @@ public final class ShardingSphereDataSourceFactoryTest {
         DataSource testDataSource2 = ShardingSphereDataSourceFactory.createDataSource("", null);
         assertTrue(testDataSource2 instanceof ShardingSphereDataSource);
         assertThat(getDatabaseName(testDataSource2), is(DefaultDatabase.LOGIC_NAME));
-        DataSource testDataSource3 = ShardingSphereDataSourceFactory.createDataSource(new HashMap<String, DataSource>(), new LinkedList<>(), new Properties());
+        DataSource testDataSource3 = ShardingSphereDataSourceFactory.createDataSource(new HashMap<>(), new LinkedList<>(), new Properties());
         assertThat(getDatabaseName(testDataSource3), is(DefaultDatabase.LOGIC_NAME));
         DataSource testDataSource4 = ShardingSphereDataSourceFactory.createDataSource(new MockedDataSource(), new LinkedList<>(), new Properties());
         assertThat(getDatabaseName(testDataSource4), is(DefaultDatabase.LOGIC_NAME));
         DataSource testDataSource5 = ShardingSphereDataSourceFactory.createDataSource("test_db5", new MockedDataSource(), new LinkedList<>(), new Properties());
         assertTrue(testDataSource5 instanceof ShardingSphereDataSource);
         assertThat(getDatabaseName(testDataSource5), is("test_db5"));
-        DataSource testDataSource6 = ShardingSphereDataSourceFactory.createDataSource("test_db6", new HashMap<String, DataSource>(), new LinkedList<>(), new Properties());
+        DataSource testDataSource6 = ShardingSphereDataSourceFactory.createDataSource("test_db6", new HashMap<>(), new LinkedList<>(), new Properties());
         assertTrue(testDataSource6 instanceof ShardingSphereDataSource);
         assertThat(getDatabaseName(testDataSource6), is("test_db6"));
-        DataSource testDataSource7 = ShardingSphereDataSourceFactory.createDataSource("test_db6", modeConfig, new HashMap<String, DataSource>(), null, null);
+        DataSource testDataSource7 = ShardingSphereDataSourceFactory.createDataSource("test_db6", modeConfig, new HashMap<>(), null, null);
         assertTrue(testDataSource7 instanceof ShardingSphereDataSource);
         assertThat(getDatabaseName(testDataSource7), is("test_db6"));
     }
-
-
-    /**
-     * get database name.
-     *
-     * @param shardingSphereDataSource dataSource
-     * @return databaseName
-     */
+    
     @SneakyThrows(ReflectiveOperationException.class)
-    public static String getDatabaseName(final DataSource shardingSphereDataSource) {
+    private static String getDatabaseName(final DataSource dataSource) {
         Field field = ShardingSphereDataSource.class.getDeclaredField("databaseName");
         field.setAccessible(true);
-        return (String) field.get(shardingSphereDataSource);
+        return (String) field.get(dataSource);
     }
 }

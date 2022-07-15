@@ -17,20 +17,25 @@
 
 databaseName: logic_db
 
-rules:
-  - !SHARDING
-    autoTables:
-      t_order:
-        actualDataSources: ds_0,ds_1
-        shardingStrategy:
-          standard:
-            shardingColumn: order_id
-            shardingAlgorithmName: auto-mod
-    shardingAlgorithms:
-      auto-mod:
-        type: MOD
-        props:
-          sharding-count: 4
+dataSources:
+  ds_0:
+    dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
+    url: jdbc:mock:://localhost:3306/logic_ds_01
+  ds_1:
+    dataSourceClassName: org.apache.shardingsphere.test.mock.MockedDataSource
+    url: jdbc:mock:://localhost:3306/logic_ds_02
 
-mode:
-  type: Standalone
+rules:
+- !SHARDING
+  autoTables:
+    t_order:
+      actualDataSources: ds_0,ds_1
+      shardingStrategy:
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithmName: auto-mod
+  shardingAlgorithms:
+    auto-mod:
+      type: MOD
+      props:
+        sharding-count: 4
