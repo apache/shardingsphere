@@ -28,7 +28,7 @@ import org.junit.Test;
 public final class ConfigurationPropertyKeyTest {
     
     @Test
-    public void assertGetValue() {
+    public void assertKeyNames() {
         Collection<String> configurationPropertyKeyNames = ConfigurationPropertyKey.getKeyNames();
         assertThat(configurationPropertyKeyNames.size(), is(ConfigurationPropertyKey.values().length));
         configurationPropertyKeyNames.forEach(keyName -> assertNotNull(ConfigurationPropertyKey.valueOf(keyName)));
