@@ -5,11 +5,15 @@ weight = 15
 chapter = true
 +++
 
-## PluginDefinitionService
+## SPI Interface
 
 | *SPI Name*       | *Description*   |
 |---------------- |------------ |
 | PluginDefinitionService | Agent plugin definition |
+| PluginBootService | Plugin startup service definition |
+
+## Sample
+### PluginDefinitionService
 
 | *Implementation Class*       |        *Description*       |
 |-------------------------------- |----------------------- |
@@ -21,11 +25,8 @@ chapter = true
 | ZipkinPluginDefinitionService    | Zipkin plugin |
 
 
-## PluginBootService
+### PluginBootService
 
-| *SPI Name*       | *Description*   |
-|---------------- |------------ |
-| PluginBootService | Plugin startup service definition |
 
 | *Implementation Class*          | *Description*   |
 |-------------------------------- |---------------- |
