@@ -614,7 +614,9 @@ public enum SQLVisitorRule {
     
     CREATE_COLLATION("CreateCollation", SQLStatementType.DDL),
     
-    CREATE_EVENT_TRIGGER("CreateEventTrigger", SQLStatementType.DDL);
+    CREATE_EVENT_TRIGGER("CreateEventTrigger", SQLStatementType.DDL),
+    
+    CREATE_FOREIGN_DATA_WRAPPER("CreateForeignDataWrapper", SQLStatementType.DDL);
     
     private final String name;
     
