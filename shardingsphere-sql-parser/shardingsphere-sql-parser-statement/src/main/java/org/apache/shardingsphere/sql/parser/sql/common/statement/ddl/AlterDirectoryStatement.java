@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Alter directory statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class AlterDirectoryStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
  */
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public abstract class DeclareStatement extends AbstractSQLStatement implements DDLStatement {
     
     private CursorNameSegment cursorName;

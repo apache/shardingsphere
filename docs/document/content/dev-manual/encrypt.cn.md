@@ -13,7 +13,7 @@ chapter = true
 
 ## 示例
 
-### EncryptAlgorithm 已知实现类
+### EncryptAlgorithm
 
 | *已知实现类*         | *详细说明*             |
 | ------------------- | --------------------- |

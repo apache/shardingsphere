@@ -19,10 +19,12 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dal;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
 @Getter
 @Setter
+@ToString
 public final class VariableAssignSegment implements SQLSegment {
     
     private int startIndex;

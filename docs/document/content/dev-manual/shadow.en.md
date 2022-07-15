@@ -6,11 +6,15 @@ chapter = true
 +++
 
 ## SPI Interface
+
 | *SPI Name*       | *Description*   |
 |---------------- |------------ |
 | ShadowAlgorithm | shadow routing algorithm |
 
 ## Sample
+
+### ShadowAlgorithm
+
 | *Implementation Class* | *Description* |
 |-------------------------------- |----------------------- |
 | ColumnValueMatchShadowAlgorithm | Match shadow algorithms based on field values     |

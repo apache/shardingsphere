@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.common.statement.dcl;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 import java.util.Collection;
@@ -27,6 +28,7 @@ import java.util.LinkedList;
  * Drop user statement.
  */
 @Getter
+@ToString(callSuper = true)
 public abstract class DropUserStatement extends AbstractSQLStatement implements DCLStatement {
     
     private final Collection<String> users = new LinkedList<>();

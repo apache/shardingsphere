@@ -53,7 +53,7 @@ Namespace: [http://shardingsphere.apache.org/schema/shardingsphere/readwrite-spl
 | props (?) | Tag        | Load balance algorithm properties |
 
 Please refer to [Built-in Load Balance Algorithm List](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/load-balance) for more details about type of algorithm.
-Please refer to [Use Norms](/en/features/readwrite-splitting/use-norms) for more details about query consistent routing.
+Please refer to [Read-write splitting-Core features](/en/features/readwrite-splitting/) for more details about query consistent routing.
 
 ## Operating Procedures
 1. Add read/write splitting data source.

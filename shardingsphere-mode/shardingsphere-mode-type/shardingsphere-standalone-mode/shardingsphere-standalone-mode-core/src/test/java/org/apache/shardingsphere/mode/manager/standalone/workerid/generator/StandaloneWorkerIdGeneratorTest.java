@@ -28,7 +28,26 @@ import static org.junit.Assert.assertThat;
 public final class StandaloneWorkerIdGeneratorTest {
     
     @Test
-    public void assertGenerate() {
+    public void assertGenerateWithNullProperties() {
+        assertThat(new StandaloneWorkerIdGenerator().generate(null), is(WorkerIdGenerator.DEFAULT_WORKER_ID));
+    }
+    
+    @Test
+    public void assertGenerateWithEmptyProperties() {
         assertThat(new StandaloneWorkerIdGenerator().generate(new Properties()), is(WorkerIdGenerator.DEFAULT_WORKER_ID));
+    }
+    
+    @Test
+    public void assertGenerateWithProperties() {
+        Properties props = new Properties();
+        props.setProperty(WorkerIdGenerator.WORKER_ID_KEY, "1");
+        assertThat(new StandaloneWorkerIdGenerator().generate(props), is(1L));
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void assertGenerateWithInvalidProperties() {
+        Properties props = new Properties();
+        props.setProperty(WorkerIdGenerator.WORKER_ID_KEY, "1024");
+        new StandaloneWorkerIdGenerator().generate(props);
     }
 }

@@ -15,8 +15,8 @@
   ~ limitations under the License.
   -->
 
-<ddl-generator-assertions>
-    <ddl-generator-assertion id="t_order">
+<create-table-generator-assertions>
+    <create-table-generator-assertion id="t_order">
         <input table="t_order">
             <sql>
                 CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));
@@ -59,9 +59,9 @@
                 TABLESPACE pg_default
             </sql>
         </output>
-    </ddl-generator-assertion>
+    </create-table-generator-assertion>
 
-    <ddl-generator-assertion id="t_order_item">
+    <create-table-generator-assertion id="t_order_item">
         <input table="t_order_item">
             <sql>
                 CREATE TABLE t_order_item (item_id INT NOT NULL, order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
@@ -112,5 +112,5 @@
                 TABLESPACE pg_default
             </sql>
         </output>
-    </ddl-generator-assertion>
-</ddl-generator-assertions>
+    </create-table-generator-assertion>
+</create-table-generator-assertions>

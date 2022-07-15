@@ -15,22 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.cases.entity;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.Getter;
-
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Collection;
-import java.util.LinkedList;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * DDL generator root entity for JAXB.
+ * Alter diskgroup statement test case.
  */
-@XmlRootElement(name = "ddl-generator-assertions")
-@Getter
-public final class DDLGeneratorAssertionsRootEntity {
-    
-    @XmlElement(name = "ddl-generator-assertion")
-    private final Collection<DDLGeneratorAssertionEntity> assertions = new LinkedList<>();
+public final class AlterDiskgroupStatementTestCase extends SQLParserTestCase {
 }

@@ -11,29 +11,18 @@ Moreover, considering the complexity of the business scenario, the built-in algo
 
 ## Parameters
 
-### Round Robin Algorithm
-
-Type: ROUND_ROBIN
-
-Attributes: None
-
-### Random Algorithm
-
-Type: RANDOM
-
-Attributes: None
-
-### Weight Algorithm
-
-Type: WEIGHT
-
-Attributes: 
-
-> All read data in use must be configured with weights
-
-| *Name*                 | *DataType* | *Description*                              |
-| ---------------------------------- | ---------- | ---------------------------------------------- |
-| \- <read-data_source-name> (+) | double     | The attribute name uses the read database name, and the parameter fills in the weight value corresponding to the read database.The minimum value of the weight parameter range>0,the total <=Double.MAX_VALUE. |
+|    *Type*   | *Describe* | *Limitations* |
+| -------- | ------------- | ------------ |
+| ROUND_ROBIN  | Within the transaction, read query are routed to the primary, and outside the transaction, the round-robin strategy is used to route to the replica | |
+| RANDOM    |Within the transaction, read query are routed to the primary, and outside the transaction, the random strategy is used to route to the replica| |
+| WEIGHT    | Within the transaction, read query are routed to the primary, and outside the transaction, the weight strategy is used to route to the replica| Attributes need to be configured, attribute name: ${replica-name}, data type: double, attribute name uses the name of the replica, and the parameter fills in the weight value corresponding to the replica. Weight parameter range min > 0, total <= Double.MAX_VALUE.|
+| TRANSACTION_RANDOM  |Display/non-display open transaction, read query are routed to multiple replicas using random strategy| |
+| TRANSACTION_ROUND_ROBIN  |Display/non-display open transaction, read query are routed to multiple replicas using round-robin strategy| |
+| TRANSACTION_WEIGHT  |Display/non-display open transaction, read query are routed to multiple replicas using weight strategy| Attributes need to be configured, attribute name: ${replica-name}, data type: double, attribute name uses the name of the replica, and the parameter fills in the weight value corresponding to the replica. Weight parameter range min > 0, total <= Double.MAX_VALUE.|
+| FIXED_REPLICA_RANDOM  |Open transaction displayed, and the read query is routed to a fixed replica using random strategy; otherwise, each read traffic is routed to a different replica using random strategy| |
+| FIXED_REPLICA_ROUND_ROBIN  |Open transaction displayed, and the read query is routed to a fixed replica using round-robin strategy; otherwise, each read traffic is routed to a different replica using round-robin strategy| |
+| FIXED_REPLICA_WEIGHT  |Open transaction displayed, and the read query is routed to a fixed replica using weight strategy; otherwise, each read traffic is routed to a different replica using weight strategy| Attributes need to be configured, attribute name: ${replica-name}, data type: double, attribute name uses the name of the replica, and the parameter fills in the weight value corresponding to the replica. Weight parameter range min > 0, total <= Double.MAX_VALUE. |
+| FIXED_PRIMARY  |All read query are routed to the primary|
 
 ## Procedure
 

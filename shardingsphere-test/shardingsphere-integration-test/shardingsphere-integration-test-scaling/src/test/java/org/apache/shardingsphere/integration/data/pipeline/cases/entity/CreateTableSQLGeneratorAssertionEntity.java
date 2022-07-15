@@ -17,16 +17,29 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.entity;
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
-@RequiredArgsConstructor
-@Data
-public final class JdbcInfoEntity {
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import java.util.Collection;
+
+/**
+ * Create table sql generator entity for JAXB.
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
+@Getter
+@Setter
+public final class CreateTableSQLGeneratorAssertionEntity {
     
-    private final String username;
+    @XmlAttribute(required = true)
+    private String id;
     
-    private final String password;
+    @XmlElement(required = true)
+    private CreateTableSQLGeneratorInputEntity input;
     
-    private final int port;
+    @XmlElement(required = true, name = "output")
+    private Collection<CreateTableSQLGeneratorOutputEntity> outputs;
 }

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.routine;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTableStatement;
@@ -39,6 +40,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Getter
 @Setter
+@ToString
 public class ValidStatementSegment implements SQLSegment {
     
     private final int startIndex;

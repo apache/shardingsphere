@@ -17,7 +17,7 @@ chapter = true
 
 ## Sample
 
-### ShardingAlgorithm Known Implementation Class
+### ShardingAlgorithm
 
 | *Implementation Class*                  | *Description*                                                           |
 |-----------------------------------------|-------------------------------------------------------------------------|
@@ -35,7 +35,7 @@ chapter = true
 | CosIdIntervalShardingAlgorithm          | Fixed interval sharding algorithm provided by CosId                     |
 | CosIdSnowflakeIntervalShardingAlgorithm | Snowflake key-based fixed interval sharding algorithm provided by CosId |
 
-### KeyGenerateAlgorithm Known Implementation Class
+### KeyGenerateAlgorithm
 
 | *Implementation Class*             | *Description*                                      |
 |----------------------------------- |--------------------------------------------------- |
@@ -45,20 +45,20 @@ chapter = true
 | CosIdSnowflakeKeyGenerateAlgorithm | Snowflake key generate algorithm provided by CosId |
 | NanoIdKeyGenerateAlgorithm         | NanoId key generate algorithm                      |
 
-### ShardingAuditAlgorithm Known Implementation Class
+### ShardingAuditAlgorithm
 
 | *Implementation Class*                           | *Description*                                                 |
 |------------------------------------------------- |-------------------------------------------------------------- |
 | DMLShardingConditionsShardingAuditAlgorithm      | Prohibit DML auditing algorithm without sharding conditions   |
 
-### DatetimeService Known Implementation Class
+### DatetimeService
 
 | *Implementation Class*          | *Description*                                                |
 | ------------------------------- | ------------------------------------------------------------ |
 | DatabaseDatetimeServiceDelegate | Get the current time from the database for routing           |
 | SystemDatetimeService           | Get the current time from the application system for routing |
 
-### DatabaseSQLEntry Known Implementation Class
+### DatabaseSQLEntry
 
 | *Implementation Class*     | *Description*                           |
 | -------------------------- | --------------------------------------- |
