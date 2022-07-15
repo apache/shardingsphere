@@ -55,5 +55,4 @@ public final class ClusterWorkerIdGeneratorTest {
         props.setProperty(WorkerIdGenerator.WORKER_ID_KEY, "1024");
         new ClusterWorkerIdGenerator(new RegistryCenter(mock(ClusterPersistRepository.class), new EventBusContext()), mock(InstanceMetaData.class)).generate(props);
     }
-
 }
