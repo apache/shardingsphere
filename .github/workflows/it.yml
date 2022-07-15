@@ -53,7 +53,7 @@ on:
 
 concurrency:
   group: it-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3 -Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true
@@ -169,13 +169,10 @@ jobs:
     strategy:
       matrix:
         env: [ docker ]
-        adapter: [ proxy, jdbc ]
+        adapter: [ proxy ]
         database: [ MySQL, PostgreSQL ]
         scenario: [ db, encrypt, tbl, shadow, readwrite_splitting ]
         exclude:
-          - adapter: jdbc
-            database: PostgreSQL
-            scenario: tbl
           - adapter: proxy
             database: PostgreSQL
             scenario: tbl
@@ -185,14 +182,6 @@ jobs:
           - adapter: proxy
             database: PostgreSQL
             scenario: readwrite_splitting
-            # Only failed on GitHub Action
-          - adapter: jdbc
-            database: PostgreSQL
-            scenario: readwrite_splitting
-          - adapter: jdbc
-            database: PostgreSQL
-            scenario: db
-
     steps:
       - uses: actions/checkout@v2
       - name: Cache Maven Repos
@@ -260,7 +249,7 @@ jobs:
     strategy:
       matrix:
         env: [ docker ]
-        adapter: [ proxy, jdbc ]
+        adapter: [ proxy ]
         database: [ MySQL, PostgreSQL ]
         scenario: [ dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt ]
     steps:
