@@ -104,6 +104,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDefaultPrivilegesTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDimensionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDirectoryStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDiskgroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDomainStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterExtensionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterFlashbackArchiveStatementTestCase;
@@ -159,6 +160,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDiskgroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDomainStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateEditionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateEventTriggerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateExtensionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateFlashbackArchiveStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateFunctionStatementTestCase;
@@ -1339,9 +1341,12 @@ public final class SQLParserTestCases {
     @XmlElement(name = "alter-cluster")
     private final List<AlterClusterStatementTestCase> alterClusterTestCases = new LinkedList<>();
     
+    @XmlElement(name = "alter-diskgroup")
+    private final List<AlterDiskgroupStatementTestCase> alterDiskgroupTestCases = new LinkedList<>();
+
     @XmlElement(name = "alter-index-type")
     private final List<AlterIndexTypeStatementTestCase> alterIndexTypeTestCases = new LinkedList<>();
-    
+
     @XmlElement(name = "alter-operator")
     private final List<AlterOperatorStatementTestCase> alterOperatorTestCases = new LinkedList<>();
     
@@ -1576,6 +1581,9 @@ public final class SQLParserTestCases {
     @XmlElement(name = "reassign-owned")
     private final List<ReassignOwnedStatementTestCase> reassignOwnedStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "create-event-trigger")
+    private final List<CreateEventTriggerStatementTestCase> createEventTriggerStatementTestCases = new LinkedList<>();
+
     /**
      * Get all SQL parser test cases.
      *
@@ -1876,6 +1884,7 @@ public final class SQLParserTestCases {
         putAll(alterJavaTestCases, result);
         putAll(alterAuditPolicyTestCases, result);
         putAll(alterClusterTestCases, result);
+        putAll(alterDiskgroupTestCases, result);
         putAll(alterIndexTypeTestCases, result);
         putAll(alterOperatorTestCases, result);
         putAll(createTextSearchTestCases, result);
@@ -1969,6 +1978,7 @@ public final class SQLParserTestCases {
         putAll(createCollationStatementTestCases, result);
         putAll(prepareTransactionTestCases, result);
         putAll(reassignOwnedStatementTestCases, result);
+        putAll(createEventTriggerStatementTestCases, result);
         return result;
     }
     // CHECKSTYLE:ON

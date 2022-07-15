@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.integration.data.pipeline.cases.primarykey;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
@@ -55,27 +54,14 @@ public class TextPrimaryKeyScalingIT extends BaseExtraSQLITCase {
         if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NONE) {
             return result;
         }
-        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
-            for (String version : ENV.getMysqlVersions()) {
-                result.add(new ScalingParameterized(new MySQLDatabaseType(), version, "env/scenario/primarykey/text_primary_key/mysql.xml"));
-            }
-            for (String version : ENV.getPostgresVersions()) {
-                result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), version, "env/scenario/primarykey/text_primary_key/postgresql.xml"));
-            }
-            for (String version : ENV.getOpenGaussVersions()) {
-                result.add(new ScalingParameterized(new OpenGaussDatabaseType(), version, "env/scenario/primarykey/text_primary_key/postgresql.xml"));
-            }
+        for (String version : ENV.listDatabaseDockerImageNames(new MySQLDatabaseType())) {
+            result.add(new ScalingParameterized(new MySQLDatabaseType(), version, "env/scenario/primarykey/text_primary_key/mysql.xml"));
         }
-        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
-            if (StringUtils.equalsIgnoreCase(ENV.getNativeDatabaseType(), "MySQL")) {
-                result.add(new ScalingParameterized(new MySQLDatabaseType(), "", "env/scenario/primarykey/text_primary_key/mysql.xml"));
-            }
-            if (StringUtils.equalsIgnoreCase(ENV.getNativeDatabaseType(), "PostgreSQL")) {
-                result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), "", "env/scenario/primarykey/text_primary_key/postgresql.xml"));
-            }
-            if (StringUtils.equalsIgnoreCase(ENV.getNativeDatabaseType(), "openGauss")) {
-                result.add(new ScalingParameterized(new OpenGaussDatabaseType(), "", "env/scenario/primarykey/text_primary_key/postgresql.xml"));
-            }
+        for (String version : ENV.listDatabaseDockerImageNames(new PostgreSQLDatabaseType())) {
+            result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), version, "env/scenario/primarykey/text_primary_key/postgresql.xml"));
+        }
+        for (String version : ENV.listDatabaseDockerImageNames(new OpenGaussDatabaseType())) {
+            result.add(new ScalingParameterized(new OpenGaussDatabaseType(), version, "env/scenario/primarykey/text_primary_key/postgresql.xml"));
         }
         return result;
     }
@@ -90,7 +76,7 @@ public class TextPrimaryKeyScalingIT extends BaseExtraSQLITCase {
         createOrderTable();
         batchInsertOrder();
         addTargetResource();
-        executeWithLog(getCommonSQLCommand().getAutoAlterOrderShardingTableRule());
+        executeWithLog(getCommonSQLCommand().getAlterOrderAutoTableRule());
         String jobId = getScalingJobId();
         waitScalingFinished(jobId);
         assertCheckScalingSuccess(jobId);

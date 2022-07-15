@@ -19,5 +19,5 @@
 <sql-cases>
     <sql-case id="alter_audit_policy_add" value="ALTER AUDIT POLICY dml_pol ADD PRIVILEGES CREATE ANY TABLE, DROP ANY TABLE;" db-types="Oracle" />
     <sql-case id="alter_audit_policy_drop" value="ALTER AUDIT POLICY table_pol DROP PRIVILEGES CREATE ANY TABLE;" db-types="Oracle" />
-    <sql-case id="alter_audit_policy_modify" value="ALTER AUDIT POLICY emp_updates_pol CONDITION UID = 102 EVALUATE PER STATEMENT;" db-types="Oracle" />
+    <sql-case id="alter_audit_policy_modify" value="ALTER AUDIT POLICY emp_updates_pol CONDITION 'UID = 102' EVALUATE PER STATEMENT;" db-types="Oracle" />
 </sql-cases>

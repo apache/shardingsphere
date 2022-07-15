@@ -47,7 +47,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -86,7 +85,7 @@ public final class ConnectionManagerTest {
         Map<String, DataSource> dataSourceMap = mockDataSourceMap();
         MetaDataPersistService persistService = mockMetaDataPersistService();
         when(result.getDataSourceMap(DefaultDatabase.LOGIC_NAME)).thenReturn(dataSourceMap);
-        when(result.getMetaDataContexts().getPersistService()).thenReturn(Optional.of(persistService));
+        when(result.getMetaDataContexts().getPersistService()).thenReturn(persistService);
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(result.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(globalRuleMetaData.getSingleRule(TransactionRule.class)).thenReturn(mock(TransactionRule.class, RETURNS_DEEP_STUBS));

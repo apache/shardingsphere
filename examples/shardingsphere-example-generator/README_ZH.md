@@ -19,7 +19,7 @@
 | *属性名称*    | *说明*      | *可选项*                                                                                                                             |
 |:----------- | ---------- |:----------------------------------------------------------------------------------------------------------------------------------- |
 | product     | 产品        | jdbc、proxy                                                                                                                         |
-| mode        | 运行模式     | cluster-zookeeper、cluster-etcd、standalone-file                                                                                    |
+| mode        | 运行模式     | cluster-zookeeper、cluster-etcd、standalone                                                                                         |
 | transaction | 事务类型     | local                                                                                                                              |
 | features    | 功能        | sharding、readwrite-splitting、db-discovery、encrypt                                                                                |
 | frameworks  | 框架        | jdbc、spring-boot-starter-jdbc、spring-boot-starter-jpa、spring-boot-starter-mybatis、spring-namespace-jpa、spring-namespace-mybatis |

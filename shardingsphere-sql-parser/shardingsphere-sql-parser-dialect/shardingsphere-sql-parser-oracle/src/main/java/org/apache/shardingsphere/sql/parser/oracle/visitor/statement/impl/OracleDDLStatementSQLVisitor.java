@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterD
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterDatabaseLinkContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterDefinitionClauseContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterDimensionContext;
+import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterDiskgroupContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterFlashbackArchiveContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterIndexContext;
 import org.apache.shardingsphere.sql.parser.autogen.OracleStatementParser.AlterIndexTypeContext;
@@ -149,6 +150,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.Ora
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterDatabaseLinkStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterDimensionStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterDiskgroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterFlashbackArchiveStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterIndexStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleAlterIndexTypeStatement;
@@ -922,7 +924,12 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     public ASTNode visitAlterCluster(final AlterClusterContext ctx) {
         return new OracleAlterClusterStatement();
     }
-    
+
+    @Override
+    public ASTNode visitAlterDiskgroup(final AlterDiskgroupContext ctx) {
+        return new OracleAlterDiskgroupStatement();
+    }
+
     @Override
     public ASTNode visitAlterIndexType(final AlterIndexTypeContext ctx) {
         return new OracleAlterIndexTypeStatement();

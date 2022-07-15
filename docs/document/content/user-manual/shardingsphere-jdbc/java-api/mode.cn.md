@@ -75,7 +75,7 @@ Properties props = ... // 构建属性配置
 DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(databaseName, modeConfig, dataSourceMap, ruleConfigs, props);
 
 private ModeConfiguration createModeConfiguration() {
-    return new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("File", new Properties()), true);
+    return new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("H2", new Properties()), true);
 }
 ```
 

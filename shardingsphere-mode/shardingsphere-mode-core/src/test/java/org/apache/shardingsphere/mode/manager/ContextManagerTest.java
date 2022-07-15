@@ -218,7 +218,7 @@ public final class ContextManagerTest {
         databases.put("foo_db", new ShardingSphereDatabase("foo_db", new MySQLDatabaseType(), resource, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap()));
         when(metaDataContexts.getMetaData().getDatabases()).thenReturn(databases);
         when(metaDataContexts.getMetaData().getGlobalRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
-        when(metaDataContexts.getPersistService()).thenReturn(Optional.of(mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS)));
+        when(metaDataContexts.getPersistService()).thenReturn(mock(MetaDataPersistService.class, RETURNS_DEEP_STUBS));
         // TODO TransactionRule is global rule, do not use it in database rule test
         RuleConfiguration ruleConfig = new TransactionRuleConfiguration("LOCAL", null, new Properties());
         contextManager.alterRuleConfiguration("foo_db", Collections.singleton(ruleConfig));
@@ -271,9 +271,9 @@ public final class ContextManagerTest {
     public void assertReloadDatabase() {
         when(metaDataContexts.getMetaData().getDatabases().get("foo_db").getResource().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", new MockedDataSource()));
         DatabaseMetaDataPersistService databaseMetaDataPersistService = mock(DatabaseMetaDataPersistService.class, RETURNS_DEEP_STUBS);
-        MetaDataPersistService metaDataPersistService = mock(MetaDataPersistService.class);
-        when(metaDataPersistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataPersistService);
-        when(metaDataContexts.getPersistService()).thenReturn(Optional.of(metaDataPersistService));
+        MetaDataPersistService persistService = mock(MetaDataPersistService.class);
+        when(persistService.getDatabaseMetaDataService()).thenReturn(databaseMetaDataPersistService);
+        when(metaDataContexts.getPersistService()).thenReturn(persistService);
         contextManager.reloadDatabase("foo_db");
         verify(databaseMetaDataPersistService, times(1)).deleteSchema(eq("foo_db"), eq("foo_schema"));
         verify(databaseMetaDataPersistService, times(1)).persistMetaData(eq("foo_db"), eq("foo_db"), any(ShardingSphereSchema.class));
@@ -282,8 +282,8 @@ public final class ContextManagerTest {
     @Test
     public void assertReloadTable() {
         when(metaDataContexts.getMetaData().getDatabases().get("foo_db").getResource().getDataSources()).thenReturn(Collections.singletonMap("foo_ds", new MockedDataSource()));
-        MetaDataPersistService metaDataPersistService = mock(MetaDataPersistService.class);
-        when(metaDataContexts.getPersistService()).thenReturn(Optional.of(metaDataPersistService));
+        MetaDataPersistService persistService = mock(MetaDataPersistService.class);
+        when(metaDataContexts.getPersistService()).thenReturn(persistService);
         contextManager.reloadTable("foo_db", "foo_schema", "foo_table");
         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("foo_db").getResource().getDataSources().containsKey("foo_ds"));
     }

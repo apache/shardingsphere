@@ -20,14 +20,12 @@ package org.apache.shardingsphere.mode.manager.cluster;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
-import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
@@ -45,7 +43,7 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryFactory;
-import org.apache.shardingsphere.schedule.core.api.ModeScheduleContextFactory;
+import org.apache.shardingsphere.schedule.core.ScheduleContextFactory;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -60,13 +58,12 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     @Override
     public ContextManager build(final ContextManagerBuilderParameter parameter) throws SQLException {
-        ModeScheduleContextFactory.getInstance().init(parameter.getInstanceMetaData().getId(), parameter.getModeConfig());
-        ClusterPersistRepository repository = ClusterPersistRepositoryFactory.getInstance((ClusterPersistRepositoryConfiguration) parameter.getModeConfig().getRepository());
+        ScheduleContextFactory.getInstance().init(parameter.getInstanceMetaData().getId(), parameter.getModeConfiguration());
+        ClusterPersistRepository repository = ClusterPersistRepositoryFactory.getInstance((ClusterPersistRepositoryConfiguration) parameter.getModeConfiguration().getRepository());
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
         persistConfigurations(persistService, parameter);
-        EventBusContext eventBusContext = new EventBusContext();
-        RegistryCenter registryCenter = new RegistryCenter(repository, eventBusContext);
-        InstanceContext instanceContext = buildInstanceContext(registryCenter, parameter.getInstanceMetaData(), parameter.getModeConfig());
+        RegistryCenter registryCenter = new RegistryCenter(repository, new EventBusContext());
+        InstanceContext instanceContext = buildInstanceContext(registryCenter, parameter);
         registryCenter.getRepository().watchSessionConnection(instanceContext);
         MetaDataContexts metaDataContexts = buildMetaDataContexts(persistService, parameter, instanceContext);
         persistMetaData(metaDataContexts);
@@ -76,10 +73,14 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private void persistConfigurations(final MetaDataPersistService persistService, final ContextManagerBuilderParameter parameter) {
-        boolean isOverwrite = parameter.getModeConfig().isOverwrite();
         if (!parameter.isEmpty()) {
-            persistService.persistConfigurations(parameter.getDatabaseConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), isOverwrite);
+            persistService.persistConfigurations(parameter.getDatabaseConfigs(), parameter.getGlobalRuleConfigs(), parameter.getProps(), parameter.getModeConfiguration().isOverwrite());
         }
+    }
+    
+    private InstanceContext buildInstanceContext(final RegistryCenter registryCenter, final ContextManagerBuilderParameter parameter) {
+        return new InstanceContext(new ComputeNodeInstance(parameter.getInstanceMetaData()), new ClusterWorkerIdGenerator(registryCenter, parameter.getInstanceMetaData()),
+                parameter.getModeConfiguration(), new DistributedLockContext(registryCenter.getRepository()), registryCenter.getEventBusContext());
     }
     
     private MetaDataContexts buildMetaDataContexts(final MetaDataPersistService persistService,
@@ -109,13 +110,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     
     private void persistMetaData(final MetaDataContexts metaDataContexts) {
         metaDataContexts.getMetaData().getDatabases().forEach((databaseName, schemas) -> schemas.getSchemas()
-                .forEach((schemaName, tables) -> metaDataContexts.getPersistService().ifPresent(optional -> optional.getDatabaseMetaDataService().persistMetaData(databaseName, schemaName, tables))));
-    }
-    
-    private InstanceContext buildInstanceContext(final RegistryCenter registryCenter, final InstanceMetaData instanceMetaData, final ModeConfiguration modeConfig) {
-        ClusterWorkerIdGenerator clusterWorkerIdGenerator = new ClusterWorkerIdGenerator(registryCenter.getRepository(), registryCenter, instanceMetaData);
-        DistributedLockContext distributedLockContext = new DistributedLockContext(registryCenter.getRepository());
-        return new InstanceContext(new ComputeNodeInstance(instanceMetaData), clusterWorkerIdGenerator, modeConfig, distributedLockContext, registryCenter.getEventBusContext());
+                .forEach((schemaName, tables) -> metaDataContexts.getPersistService().getDatabaseMetaDataService().persistMetaData(databaseName, schemaName, tables)));
     }
     
     private void registerOnline(final MetaDataPersistService persistService, final RegistryCenter registryCenter,
