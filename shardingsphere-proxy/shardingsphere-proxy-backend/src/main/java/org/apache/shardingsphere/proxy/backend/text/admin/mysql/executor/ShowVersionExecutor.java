@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLServerInfo;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
@@ -27,20 +28,27 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataMergedRe
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.sql.Types;
+import java.util.Collection;
 import java.util.Collections;
 
 /**
  * Show version executor.
  */
 @Getter
+@RequiredArgsConstructor
 public final class ShowVersionExecutor implements DatabaseAdminQueryExecutor {
     
     public static final String FUNCTION_NAME = "version()";
     
-    private MergedResult mergedResult;
+    private final SelectStatement sqlStatement;
     
+    private MergedResult mergedResult;
+
     @Override
     public void execute(final ConnectionSession connectionSession) {
         mergedResult = new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow(MySQLServerInfo.getServerVersion(connectionSession.getDatabaseName()))));
@@ -48,6 +56,16 @@ public final class ShowVersionExecutor implements DatabaseAdminQueryExecutor {
     
     @Override
     public QueryResultMetaData getQueryResultMetaData() {
-        return new RawQueryResultMetaData(Collections.singletonList(new RawQueryResultColumnMetaData("", FUNCTION_NAME, FUNCTION_NAME, Types.VARCHAR, "VARCHAR", 100, 0)));
+        return new RawQueryResultMetaData(Collections.singletonList(new RawQueryResultColumnMetaData("", FUNCTION_NAME, getLabel(), Types.VARCHAR, "VARCHAR", 100, 0)));
+    }
+    
+    private String getLabel() {
+        Collection<ProjectionSegment> projections = sqlStatement.getProjections().getProjections();
+        for (ProjectionSegment each : projections) {
+            if (each instanceof ExpressionProjectionSegment) {
+                return ((ExpressionProjectionSegment) each).getAlias().orElse(FUNCTION_NAME);
+            }
+        }
+        return FUNCTION_NAME;
     }
 }
