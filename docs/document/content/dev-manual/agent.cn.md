@@ -25,7 +25,7 @@ chapter = true
 | ZipkinPluginDefinitionService    | Zipkin plugin |
 
 
-## PluginBootService
+### PluginBootService
 
 | *已知实现类*                      | *详细说明*              |
 |-------------------------------- |----------------------- |
