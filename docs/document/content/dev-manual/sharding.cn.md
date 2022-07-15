@@ -17,7 +17,7 @@ chapter = true
 
 ## 示例
 
-### ShardingAlgorithm 已知实现类
+### ShardingAlgorithm 
 
 | *已知实现类*                                 | *详细说明*                    |
 |-----------------------------------------|---------------------------|
@@ -35,7 +35,7 @@ chapter = true
 | CosIdIntervalShardingAlgorithm          | 基于 CosId 的固定时间范围的分片算法     |
 | CosIdSnowflakeIntervalShardingAlgorithm | 基于 CosId 的雪花ID固定时间范围的分片算法 |
 
-### KeyGenerateAlgorithm 已知实现类
+### KeyGenerateAlgorithm 
 
 | *已知实现类*                         | *详细说明*                         |
 |----------------------------------- |---------------------------------- |
@@ -45,20 +45,20 @@ chapter = true
 | CosIdSnowflakeKeyGenerateAlgorithm | 基于 CosId 的雪花算法分布式主键生成算法 |
 | NanoIdKeyGenerateAlgorithm         | 基于 NanoId 的分布式主键生成算法      |
 
-### ShardingAuditAlgorithm 已知实现类
+### ShardingAuditAlgorithm 
 
 | *已知实现类*                                  | *详细说明*                         |
 |-------------------------------------------- |---------------------------------- |
 | DMLShardingConditionsShardingAuditAlgorithm | 禁止不带分片键的DML审计算法           |
 
-### DatetimeService 已知实现类
+### DatetimeService 
 
 | *已知实现类*                      | *详细说明*                     |
 | ------------------------------- | ----------------------------- |
 | DatabaseDatetimeServiceDelegate | 从数据库中获取当前时间进行路由      |
 | SystemDatetimeService           | 从应用系统时间中获取当前时间进行路由 |
 
-### DatabaseSQLEntry 已知实现类
+### DatabaseSQLEntry 
 
 | *已知实现类*                 | *详细说明*                         |
 | -------------------------- | --------------------------------- |
