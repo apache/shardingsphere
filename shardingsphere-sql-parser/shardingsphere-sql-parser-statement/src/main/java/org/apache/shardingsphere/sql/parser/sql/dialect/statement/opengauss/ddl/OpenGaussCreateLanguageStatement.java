@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 /**
  * OpenGauss create language statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OpenGaussCreateLanguageStatement extends CreateLanguageStatement implements OpenGaussStatement {
 }

@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 /**
  * OpenGauss copy statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OpenGaussCopyStatement extends CopyStatement implements OpenGaussStatement {
 }

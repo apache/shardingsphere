@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 /**
  * OpenGauss alter procedure statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OpenGaussAlterProcedureStatement extends AlterProcedureStatement implements OpenGaussStatement {
 }
