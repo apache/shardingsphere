@@ -43,7 +43,6 @@ public final class AuthorityRuleTest {
         assertTrue(adminUser.isPresent());
         assertThat(adminUser.get().getGrantee().getUsername(), is("admin"));
         assertThat(adminUser.get().getGrantee().getHostname(), is("localhost"));
-
         Optional<ShardingSphereUser> notFindUser = rule.findUser(new Grantee("admin", "127.0.0.1"));
         assertFalse(notFindUser.isPresent());
     }
