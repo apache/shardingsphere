@@ -5,34 +5,44 @@ weight = 15
 chapter = true
 +++
 
-## SPI Interface
+## PluginBootService
 
-| *SPI Name*       | *Description*   |
-|---------------- |------------ |
-| PluginDefinitionService | Agent plugin definition |
-| PluginBootService | Plugin startup service definition |
+### Fully-qualified class name
 
-## Sample
-### PluginDefinitionService
+[`org.apache.shardingsphere.agent.spi.boot.PluginBootService`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-agent/shardingsphere-agent-api/src/main/java/org/apache/shardingsphere/agent/spi/boot/PluginBootService.java)
 
-| *Implementation Class*       |        *Description*       |
-|-------------------------------- |----------------------- |
-| PrometheusPluginDefinitionService | Prometheus plugin     |
-| BaseLoggingPluginDefinitionService | Logging plugin  |
-| JaegerPluginDefinitionService    | Jaeger plugin |
-| OpenTelemetryTracingPluginDefinitionService    | OpenTelemetryTracing plugin |
-| OpenTracingPluginDefinitionService    | OpenTracing plugin |
-| ZipkinPluginDefinitionService    | Zipkin plugin |
+### Definition
 
+Plugin startup service definition
 
-### PluginBootService
+### Implementation classes
 
+| *Implementation Class*                | *Description*                             | *Fully-qualified class name* |
+| ------------------------------------- | ----------------------------------------- | ---------------------------- |
+| PrometheusPluginBootService           | Prometheus plugin startup class           | TODO |
+| BaseLoggingPluginBootService          | Logging plugin startup class              | TODO |
+| JaegerTracingPluginBootService        | Jaeger plugin startup class               | TODO |
+| OpenTelemetryTracingPluginBootService | OpenTelemetryTracing plugin startup class | TODO |
+| OpenTracingPluginBootService          | OpenTracing plugin startup class          | TODO |
+| ZipkinTracingPluginBootService        | Zipkin plugin startup class               | TODO |
 
-| *Implementation Class*          | *Description*   |
-|-------------------------------- |---------------- |
-| PrometheusPluginBootService | Prometheus plugin startup class |
-| BaseLoggingPluginBootService | Logging plugin startup class   |
-| JaegerTracingPluginBootService | Jaeger plugin startup class  |
-| OpenTelemetryTracingPluginBootService | OpenTelemetryTracing plugin startup class |
-| OpenTracingPluginBootService | OpenTracing plugin startup class  |
-| ZipkinTracingPluginBootService | Zipkin plugin startup class |
+## PluginDefinitionService
+
+### Fully-qualified class name
+
+[`org.apache.shardingsphere.agent.spi.definition.PluginDefinitionService`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-agent/shardingsphere-agent-api/src/main/java/org/apache/shardingsphere/agent/spi/definition/PluginDefinitionService.java)
+
+### Definition
+
+Agent plugin definition
+
+### Implementation classes
+
+| *Implementation Classes*                    |        *Description*                   | *Fully-qualified class name* |
+| ------------------------------------------- |--------------------------------------- | ---------------------------- |
+| PrometheusPluginDefinitionService           | Prometheus plugin definition           | [`org.apache.shardingsphere.agent.metrics.prometheus.definition.PrometheusPluginDefinitionService`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-agent/shardingsphere-agent-plugins/shardingsphere-agent-plugin-metrics/shardingsphere-agent-metrics-prometheus/src/main/java/org/apache/shardingsphere/agent/metrics/prometheus/definition/PrometheusPluginDefinitionService.java) |
+| BaseLoggingPluginDefinitionService          | Logging plugin definition              | TODO |
+| JaegerPluginDefinitionService               | Jaeger plugin definition               | TODO |
+| OpenTelemetryTracingPluginDefinitionService | OpenTelemetryTracing plugin definition | TODO |
+| OpenTracingPluginDefinitionService          | OpenTracing plugin definition          | TODO |
+| ZipkinPluginDefinitionService               | Zipkin plugin definition               | TODO |
