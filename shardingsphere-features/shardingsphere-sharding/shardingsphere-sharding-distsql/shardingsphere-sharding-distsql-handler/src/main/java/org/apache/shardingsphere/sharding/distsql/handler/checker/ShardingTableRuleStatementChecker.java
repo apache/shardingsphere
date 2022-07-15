@@ -164,8 +164,7 @@ public final class ShardingTableRuleStatementChecker {
     private static Collection<String> getDataSourceNames(final Collection<String> actualDataNodes) {
         Collection<String> result = new HashSet<>();
         for (String each : actualDataNodes) {
-            String dataSourceName = isValidDataNode(each) ? new DataNode(each).getDataSourceName() : each;
-            result.add(dataSourceName);
+            result.add(isValidDataNode(each) ? new DataNode(each).getDataSourceName() : each);
         }
         return result;
     }
