@@ -39,11 +39,8 @@ public final class OpenGaussContainer extends DatabaseContainer {
     
     private final int port = 5432;
     
-    private String dockerImageName = "";
-    
     public OpenGaussContainer(final String dockerImageName) {
         super(DATABASE_TYPE, dockerImageName);
-        this.dockerImageName = dockerImageName;
     }
     
     @Override
@@ -51,6 +48,8 @@ public final class OpenGaussContainer extends DatabaseContainer {
         withCommand("--max_connections=600");
         addEnv("GS_PASSWORD", password);
         withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/usr/local/opengauss/share/postgresql/postgresql.conf.sample", BindMode.READ_ONLY);
+        withClasspathResourceMapping("/env/postgresql/initdb.sql", "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
+    
         withPrivilegedMode(true);
         withExposedPorts(port);
         setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(DATABASE_TYPE, "localhost", getFirstMappedPort(), "postgres"),
