@@ -13,7 +13,7 @@ chapter = true
 
 ## Sample
 
-### EncryptAlgorithm Known Implementation Class
+### EncryptAlgorithm
 
 | *Implementation Class*        | *Description*              |
 | ----------------------------- | -------------------------- |
