@@ -1273,10 +1273,10 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "alter-sql-parser-rule")
     private final List<AlterSQLParserRuleStatementTestCase> alterSQLParserRuleTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-local-transaction-rule")
     private final List<AlterLocalTransactionRuleStatementTestCase> alterLocalTransactionRuleTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-xa-transaction-rule")
     private final List<AlterXATransactionRuleStatementTestCase> alterXATransactionRuleTestCases = new LinkedList<>();
     

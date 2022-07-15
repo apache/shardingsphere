@@ -17,83 +17,85 @@
 
 package org.apache.shardingsphere.driver.api.yaml;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.net.URL;
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
-import javax.sql.DataSource;
-import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactoryTest;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.driver.jdbc.core.datasource.ShardingSphereDataSource;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
-public final class YamlShardingSphereDataSourceFactoryTest {
+import javax.sql.DataSource;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.net.URL;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class YamlShardingSphereDataSourceFactoryTest {
+    
     @Test
     public void assertCreateDataSourceWithFile() throws Exception {
-        URL url = YamlShardingSphereDataSourceFactoryTest.class.getResource("/yaml/configWithDataSourceWithRules.yaml");
-        assertNotNull(url);
-        File yamlFile = new File(url.toURI());
-        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(yamlFile);
-        assertNotNull(dataSource);
-        assertTrue(dataSource instanceof ShardingSphereDataSource);
-        assertThat(ShardingSphereDataSourceFactoryTest.getDatabaseName(dataSource), is("logic_db"));
-
+        assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(new File(getYamlFileUrl().toURI())));
     }
-
+    
     @Test
     public void assertCreateDataSourceWithBytes() throws SQLException, IOException {
-        URL url = YamlShardingSphereDataSourceFactoryTest.class.getResource("/yaml/configWithDataSourceWithRules.yaml");
-        assertNotNull(url);
-        StringBuilder yamlContent = new StringBuilder();
+        assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(readFile(getYamlFileUrl()).getBytes()));
+    }
+    
+    @Test
+    public void assertCreateDataSourceWithFileForExternalDataSources() throws Exception {
+        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
+        dataSourceMap.put("ds_0", new MockedDataSource());
+        dataSourceMap.put("ds_1", new MockedDataSource());
+        assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, new File(getYamlFileUrl().toURI())));
+    }
+    
+    @Test
+    public void assertCreateDataSourceWithFileForExternalSingleDataSource() throws Exception {
+        assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(new MockedDataSource(), new File(getYamlFileUrl().toURI())));
+    }
+    
+    @Test
+    public void assertCreateDataSourceWithBytesForExternalDataSources() throws Exception {
+        Map<String, DataSource> dataSourceMap = new HashMap<>(2, 1);
+        dataSourceMap.put("ds_0", new MockedDataSource());
+        dataSourceMap.put("ds_1", new MockedDataSource());
+        assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, readFile(getYamlFileUrl()).getBytes()));
+    }
+    
+    @Test
+    public void assertCreateDataSourceWithBytesForExternalSingleDataSource() throws Exception {
+        assertDataSource(YamlShardingSphereDataSourceFactory.createDataSource(new MockedDataSource(), readFile(getYamlFileUrl()).getBytes()));
+    }
+    
+    private URL getYamlFileUrl() {
+        return Objects.requireNonNull(YamlShardingSphereDataSourceFactoryTest.class.getResource("/config/factory/config-for-factory-test.yaml"));
+    }
+    
+    private String readFile(final URL url) throws IOException {
+        StringBuilder result = new StringBuilder();
         try (
                 FileReader fileReader = new FileReader(url.getFile());
                 BufferedReader reader = new BufferedReader(fileReader)) {
             String line;
             while (null != (line = reader.readLine())) {
-                yamlContent.append(line).append(System.lineSeparator());
+                result.append(line).append(System.lineSeparator());
             }
         }
-
-        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(yamlContent.toString().getBytes());
-        assertNotNull(dataSource);
-        assertTrue(dataSource instanceof ShardingSphereDataSource);
-        assertThat(ShardingSphereDataSourceFactoryTest.getDatabaseName(dataSource), is("logic_db"));
+        return result.toString();
     }
-
-    @Test
-    public void assertCreateDataSourceWithoutDataSource() throws Exception {
-        URL url = YamlShardingSphereDataSourceFactoryTest.class.getResource("/yaml/configWithoutDataSourceWithRules.yaml");
-        assertNotNull(url);
-        File yamlFile = new File(url.toURI());
-        Map<String, DataSource> dataSourceMap = new HashMap<>();
-        dataSourceMap.put("ds_0", new MockedDataSource("jdbc:mock:://localhost:3306/logic_ds_01", "root", "root"));
-        dataSourceMap.put("ds_1", new MockedDataSource("jdbc:mock:://localhost:3306/logic_ds_01", "root", "root"));
-        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(dataSourceMap, yamlFile);
-        assertNotNull(dataSource);
-        assertTrue(dataSource instanceof ShardingSphereDataSource);
-        assertThat(ShardingSphereDataSourceFactoryTest.getDatabaseName(dataSource), is("logic_db"));
-    }
-
-    @Test
-    public void assertCreateDataSourceWithOnlyDataSource() throws Exception {
-        URL url = YamlShardingSphereDataSourceFactoryTest.class.getResource("/yaml/configWithoutRules.yaml");
-        assertNotNull(url);
-        File yamlFile = new File(url.toURI());
-        MockedDataSource mockedDataSource = new MockedDataSource("jdbc:mock:://localhost:3306/logic_ds_01", "root", "root");
-        DataSource dataSource = YamlShardingSphereDataSourceFactory.createDataSource(mockedDataSource, yamlFile);
-        assertNotNull(dataSource);
-        assertTrue(dataSource instanceof ShardingSphereDataSource);
-        assertThat(ShardingSphereDataSourceFactoryTest.getDatabaseName(dataSource), is("logic_db"));
-
+    
+    @SneakyThrows(ReflectiveOperationException.class)
+    private void assertDataSource(final DataSource dataSource) {
+        Field field = ShardingSphereDataSource.class.getDeclaredField("databaseName");
+        field.setAccessible(true);
+        assertThat((String) field.get(dataSource), is("logic_db"));
     }
 }

@@ -48,7 +48,7 @@ public final class ShardingSphereDataSourceFactory {
      * @throws SQLException SQL exception
      */
     public static DataSource createDataSource(final String databaseName, final ModeConfiguration modeConfig) throws SQLException {
-        return new ShardingSphereDataSource(getDatabaseNameOrDefault(databaseName), modeConfig);
+        return new ShardingSphereDataSource(getDatabaseName(databaseName), modeConfig);
     }
     
     /**
@@ -75,7 +75,7 @@ public final class ShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final String databaseName, final ModeConfiguration modeConfig,
                                               final Map<String, DataSource> dataSourceMap, final Collection<RuleConfiguration> configs, final Properties props) throws SQLException {
-        return new ShardingSphereDataSource(getDatabaseNameOrDefault(databaseName), modeConfig, dataSourceMap, null == configs ? new LinkedList<>() : configs, props);
+        return new ShardingSphereDataSource(getDatabaseName(databaseName), modeConfig, dataSourceMap, null == configs ? new LinkedList<>() : configs, props);
     }
     
     /**
@@ -106,7 +106,7 @@ public final class ShardingSphereDataSourceFactory {
      */
     public static DataSource createDataSource(final String databaseName, final ModeConfiguration modeConfig,
                                               final DataSource dataSource, final Collection<RuleConfiguration> configs, final Properties props) throws SQLException {
-        return createDataSource(databaseName, modeConfig, Collections.singletonMap(getDatabaseNameOrDefault(databaseName), dataSource), configs, props);
+        return createDataSource(databaseName, modeConfig, Collections.singletonMap(getDatabaseName(databaseName), dataSource), configs, props);
     }
     
     /**
@@ -179,7 +179,7 @@ public final class ShardingSphereDataSourceFactory {
         return createDataSource((ModeConfiguration) null, dataSource, configs, props);
     }
     
-    private static String getDatabaseNameOrDefault(final String databaseName) {
+    private static String getDatabaseName(final String databaseName) {
         return Strings.isNullOrEmpty(databaseName) ? DefaultDatabase.LOGIC_NAME : databaseName;
     }
 }
