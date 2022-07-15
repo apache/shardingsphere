@@ -49,7 +49,6 @@ public final class OpenGaussContainer extends DatabaseContainer {
         addEnv("GS_PASSWORD", password);
         withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/usr/local/opengauss/share/postgresql/postgresql.conf.sample", BindMode.READ_ONLY);
         withClasspathResourceMapping("/env/postgresql/initdb.sql", "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
-        
         withPrivilegedMode(true);
         withExposedPorts(port);
         setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(DATABASE_TYPE, "localhost", getFirstMappedPort(), "postgres"),
