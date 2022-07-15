@@ -19,7 +19,9 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.stat
 
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
+import org.apache.shardingsphere.infra.instance.utils.IpUtils;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -103,7 +105,12 @@ public final class ComputeNodeStatusServiceTest {
         when(repository.get("/nodes/compute_nodes/online/proxy/foo_instance_3308")).thenReturn("127.0.0.1@3308");
         List<ComputeNodeInstance> actual = new ArrayList<>(new ComputeNodeStatusService(repository).loadAllComputeNodeInstances());
         assertThat(actual.size(), is(2));
-        // TODO assert more
+        assertThat(actual.get(0).getInstanceMetaData().getId(), is("foo_instance_3307"));
+        assertThat(actual.get(0).getInstanceMetaData().getIp(), is(IpUtils.getIp()));
+        assertThat(actual.get(1).getInstanceMetaData().getId(), is("foo_instance_3308"));
+        assertThat(actual.get(1).getInstanceMetaData().getIp(), is("127.0.0.1"));
+        assertThat(actual.get(1).getInstanceMetaData().getType(), is(InstanceType.PROXY));
+        assertThat(((ProxyInstanceMetaData) actual.get(1).getInstanceMetaData()).getPort(), is(3308));
     }
     
     @Test

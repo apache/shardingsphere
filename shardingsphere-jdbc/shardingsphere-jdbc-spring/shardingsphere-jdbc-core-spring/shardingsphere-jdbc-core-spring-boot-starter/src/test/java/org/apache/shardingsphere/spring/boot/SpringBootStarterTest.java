@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.readwritesplitting.strategy.type.StaticReadwriteSplittingStrategy;
@@ -144,7 +144,7 @@ public class SpringBootStarterTest {
         StaticReadwriteSplittingStrategy staticReadwriteSplittingType = (StaticReadwriteSplittingStrategy) dataSourceRule.getReadwriteSplittingStrategy();
         assertThat(staticReadwriteSplittingType.getWriteDataSource(), is("write_ds"));
         assertThat(staticReadwriteSplittingType.getReadDataSources(), is(Arrays.asList("read_ds_0", "read_ds_1")));
-        assertThat(dataSourceRule.getLoadBalancer(), instanceOf(RandomReplicaLoadBalanceAlgorithm.class));
+        assertThat(dataSourceRule.getLoadBalancer(), instanceOf(RandomReadQueryLoadBalanceAlgorithm.class));
     }
     
     private void assertEncryptRule(final EncryptRule actual) {

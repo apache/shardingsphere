@@ -114,5 +114,6 @@ execute
     | alterAuditPolicy
     | alterCluster
     | alterOperator
+    | alterDiskgroup
     ) SEMI_?
     ;

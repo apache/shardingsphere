@@ -162,12 +162,11 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     private static Collection<String> getDataSourceNames(final Collection<String> actualDataNodes) {
-        return actualDataNodes.stream().map(each -> {
-            if (isValidDataNode(each)) {
-                return actualDataNodes.stream().map(each1 -> new DataNode(each1).getDataSourceName()).collect(Collectors.toList());
-            }
-            return Collections.singletonList(each);
-        }).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
+        Collection<String> result = new HashSet<>();
+        for (String each : actualDataNodes) {
+            result.add(isValidDataNode(each) ? new DataNode(each).getDataSourceName() : each);
+        }
+        return result;
     }
     
     private static Collection<String> getDataSourceNames(final Collection<ShardingTableRuleConfiguration> tableRuleConfigs,

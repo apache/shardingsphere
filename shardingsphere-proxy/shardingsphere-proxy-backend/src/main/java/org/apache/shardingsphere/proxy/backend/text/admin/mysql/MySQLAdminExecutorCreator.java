@@ -97,7 +97,7 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
         }
         if (sqlStatement instanceof SelectStatement) {
             if (isShowSpecialFunction((SelectStatement) sqlStatement, ShowConnectionIdExecutor.FUNCTION_NAME)) {
-                return Optional.of(new ShowConnectionIdExecutor());
+                return Optional.of(new ShowConnectionIdExecutor((SelectStatement) sqlStatement));
             }
             if (isShowSpecialFunction((SelectStatement) sqlStatement, ShowVersionExecutor.FUNCTION_NAME)) {
                 return Optional.of(new ShowVersionExecutor());

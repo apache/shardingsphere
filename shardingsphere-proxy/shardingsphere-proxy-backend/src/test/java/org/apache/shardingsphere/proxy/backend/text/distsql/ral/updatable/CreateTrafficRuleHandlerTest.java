@@ -69,6 +69,22 @@ public final class CreateTrafficRuleHandlerTest extends ProxyContextRestorer {
         handler.execute();
     }
     
+    @Test(expected = IllegalStateException.class)
+    public void assertExecuteWithLoadBalancerCannotBeNull() throws SQLException {
+        mockContextManager();
+        TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("input_rule_name", Arrays.asList("olap", "order_by"),
+                new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), null);
+        CreateTrafficRuleHandler handler = new CreateTrafficRuleHandler();
+        handler.init(new CreateTrafficRuleStatement(Collections.singleton(trafficRuleSegment)), null);
+        try {
+            handler.execute();
+        } catch (final IllegalStateException ex) {
+            TrafficRule currentRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
+            assertNotNull(currentRule);
+            throw ex;
+        }
+    }
+    
     @Test
     public void assertExecute() throws SQLException {
         ContextManager contextManager = mockContextManager();
