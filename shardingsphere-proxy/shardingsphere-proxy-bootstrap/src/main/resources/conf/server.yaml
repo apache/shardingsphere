@@ -34,11 +34,11 @@
 #      operationTimeoutMilliseconds: 500
 #  overwrite: false
 #
-rules:
-  - !AUTHORITY
-    users:
-      - root@%:root
-      - sharding@:sharding
+#rules:
+#  - !AUTHORITY
+#    users:
+#      - root@%:root
+#      - sharding@:sharding
 #    provider:
 #      type: ALL_PERMITTED
 #  - !TRANSACTION
