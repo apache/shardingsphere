@@ -60,5 +60,6 @@ execute
     | exportDatabaseConfiguration
     | showRulesUsedResource
     | importDatabaseConfiguration
+    | convertYamlConfiguration
     ) SEMI?
     ;

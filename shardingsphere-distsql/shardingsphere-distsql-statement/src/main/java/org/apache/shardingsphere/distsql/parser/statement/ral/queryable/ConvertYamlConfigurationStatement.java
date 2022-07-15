@@ -15,33 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.datasource.config;
+package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-
-import java.util.Properties;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
- * Pool configuration.
+ * Transfer yaml configuration statement.
  */
 @RequiredArgsConstructor
 @Getter
-public final class PoolConfiguration {
+public class ConvertYamlConfigurationStatement extends QueryableRALStatement {
     
-    private final Long connectionTimeoutMilliseconds;
-    
-    private final Long idleTimeoutMilliseconds;
-    
-    private final Long maxLifetimeMilliseconds;
-    
-    private final Integer maxPoolSize;
-    
-    private final Integer minPoolSize;
-    
-    private final Boolean readOnly;
-    
-    private final Properties customProperties;
-    
-    private final Properties properties;
+    private final String filePath;
 }
