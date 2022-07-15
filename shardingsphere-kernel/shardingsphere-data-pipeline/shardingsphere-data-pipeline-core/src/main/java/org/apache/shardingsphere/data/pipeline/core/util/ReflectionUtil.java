@@ -92,22 +92,8 @@ public final class ReflectionUtil {
         throw new ClassCastException("field " + fieldName + " is " + value.getClass().getName() + " can cast to " + valueClass.getName());
     }
     
-    /**
-     * Get field from class.
-     *
-     * @param targetClass target class
-     * @param fieldName field name
-     * @param isDeclared is declared
-     * @return {@link Field}
-     * @throws NoSuchFieldException no such field exception
-     */
-    public static Field getField(final Class<?> targetClass, final String fieldName, final boolean isDeclared) throws NoSuchFieldException {
-        Field result;
-        if (isDeclared) {
-            result = targetClass.getDeclaredField(fieldName);
-        } else {
-            result = targetClass.getField(fieldName);
-        }
+    private static Field getField(final Class<?> targetClass, final String fieldName, final boolean isDeclared) throws NoSuchFieldException {
+        Field result = isDeclared ? targetClass.getDeclaredField(fieldName) : targetClass.getField(fieldName);
         result.setAccessible(true);
         return result;
     }
