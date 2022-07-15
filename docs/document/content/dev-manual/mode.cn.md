@@ -15,21 +15,21 @@ chapter = true
 
 ## 示例
 
-### StandalonePersistRepository 已知实现类
+### StandalonePersistRepository
 
 | *已知实现类*                    | *详细说明*                  |
 | ----------------------------- | -------------------------- |
 | FileRepository                | 基于 File 的持久化           |
 | H2Repository                  | 基于 H2 的持久化             |
 
-### ClusterPersistRepository 已知实现类
+### ClusterPersistRepository
 
 | *已知实现类*                    | *详细说明*                 |
 | ----------------------------- | ------------------------- |
 | CuratorZookeeperRepository    | 基于 ZooKeeper 的持久化     |
 | EtcdRepository                | 基于 Etcd 的持久化          |
 
-### GovernanceWatcher 已知实现类
+### GovernanceWatcher 
 
 | *已知实现类*                     | *详细说明*          |
 | -----------------------------  | ------------------ |

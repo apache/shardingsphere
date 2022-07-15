@@ -29,7 +29,7 @@ public final class MySQLContainer extends DatabaseContainer {
     
     private static final DatabaseType DATABASE_TYPE = new MySQLDatabaseType();
     
-    private final String username = "root";
+    private final String username = "scaling";
     
     private final String password = "root";
     
@@ -41,13 +41,14 @@ public final class MySQLContainer extends DatabaseContainer {
     
     @Override
     protected void configure() {
-        withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password");
+        withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password", "--lower_case_table_names=1");
         addEnv("LANG", "C.UTF-8");
-        addEnv("MYSQL_ROOT_PASSWORD", username);
+        addEnv("MYSQL_ROOT_PASSWORD", "root");
         addEnv("MYSQL_ROOT_HOST", "%");
         withClasspathResourceMapping("/env/mysql/my.cnf", "/etc/mysql/my.cnf", BindMode.READ_ONLY);
+        withClasspathResourceMapping("/env/mysql/initdb.sql", "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
         withExposedPorts(port);
-        setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(DATABASE_TYPE, "localhost", getFirstMappedPort()), "root", "root")));
+        setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(DATABASE_TYPE, "localhost", getFirstMappedPort()), username, password)));
     }
     
     @Override

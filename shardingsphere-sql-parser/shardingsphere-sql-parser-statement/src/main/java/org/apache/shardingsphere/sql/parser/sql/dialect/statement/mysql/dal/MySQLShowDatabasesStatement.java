@@ -30,7 +30,7 @@ import java.util.Optional;
  * MySQL show databases statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class MySQLShowDatabasesStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     private ShowFilterSegment filter;

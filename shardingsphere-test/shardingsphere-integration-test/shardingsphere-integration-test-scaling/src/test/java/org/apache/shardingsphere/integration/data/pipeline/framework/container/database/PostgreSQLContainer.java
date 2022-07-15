@@ -29,7 +29,7 @@ public final class PostgreSQLContainer extends DatabaseContainer {
     
     private static final DatabaseType DATABASE_TYPE = new PostgreSQLDatabaseType();
     
-    private final String username = "root";
+    private final String username = "scaling";
     
     private final String password = "root";
     
@@ -43,12 +43,15 @@ public final class PostgreSQLContainer extends DatabaseContainer {
     protected void configure() {
         withCommand("--max_connections=600");
         withCommand("--wal_level=logical");
-        addEnv("POSTGRES_USER", username);
-        addEnv("POSTGRES_PASSWORD", password);
+        String rootUsername = "root";
+        String rootPassword = "root";
+        addEnv("POSTGRES_USER", rootUsername);
+        addEnv("POSTGRES_PASSWORD", rootPassword);
         withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/etc/postgresql/postgresql.conf", BindMode.READ_ONLY);
+        withClasspathResourceMapping("/env/postgresql/initdb.sql", "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
         withExposedPorts(port);
         setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(DATABASE_TYPE, "localhost", getFirstMappedPort(), "postgres"),
-                username, password)));
+                rootUsername, rootPassword)));
     }
     
     @Override

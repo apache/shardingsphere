@@ -13,7 +13,7 @@ chapter = true
 
 ## 示例
 
-### DatabaseDiscoveryProviderAlgorithm 已知实现类
+### DatabaseDiscoveryProviderAlgorithm 
 
 | *已知实现类*                                                   | *详细说明*                         |
 | ------------------------------------------------------------ | --------------------------------- |

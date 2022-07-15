@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Create cast statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class CreateCastStatement extends AbstractSQLStatement implements DDLStatement {
 }

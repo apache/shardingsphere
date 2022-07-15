@@ -25,6 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL drop trigger statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLDropTriggerStatement extends AbstractSQLStatement implements DDLStatement, MySQLStatement {
 }

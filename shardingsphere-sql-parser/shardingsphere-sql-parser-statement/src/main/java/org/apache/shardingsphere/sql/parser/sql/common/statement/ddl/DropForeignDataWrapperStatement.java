@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Drop foreign data wrapper statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class DropForeignDataWrapperStatement extends AbstractSQLStatement implements DDLStatement {
 }

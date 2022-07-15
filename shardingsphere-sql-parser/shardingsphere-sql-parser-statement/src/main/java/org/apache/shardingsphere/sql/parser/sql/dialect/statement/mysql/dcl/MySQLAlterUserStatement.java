@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL alter user statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLAlterUserStatement extends AlterUserStatement implements MySQLStatement {
 }

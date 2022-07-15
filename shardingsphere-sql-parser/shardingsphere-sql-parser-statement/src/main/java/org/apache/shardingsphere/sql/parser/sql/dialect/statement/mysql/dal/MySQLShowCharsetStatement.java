@@ -25,6 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL show charset statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLShowCharsetStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 }

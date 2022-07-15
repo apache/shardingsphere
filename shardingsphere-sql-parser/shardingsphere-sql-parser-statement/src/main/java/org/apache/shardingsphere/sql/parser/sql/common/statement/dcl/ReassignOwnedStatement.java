@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.dcl;
 
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
  * Reassign owned statement.
  */
+@ToString(callSuper = true)
 public abstract class ReassignOwnedStatement extends AbstractSQLStatement implements DCLStatement {
 }

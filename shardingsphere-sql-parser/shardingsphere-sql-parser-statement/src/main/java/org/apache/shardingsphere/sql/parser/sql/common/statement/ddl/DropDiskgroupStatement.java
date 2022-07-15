@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Drop diskgroup statement.
  */
-@ToString
-public class DropDiskgroupStatement extends AbstractSQLStatement implements DDLStatement {
+@ToString(callSuper = true)
+public abstract class DropDiskgroupStatement extends AbstractSQLStatement implements DDLStatement {
 }

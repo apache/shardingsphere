@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Drop foreign table statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class DropForeignTableStatement extends AbstractSQLStatement implements DDLStatement {
 }
