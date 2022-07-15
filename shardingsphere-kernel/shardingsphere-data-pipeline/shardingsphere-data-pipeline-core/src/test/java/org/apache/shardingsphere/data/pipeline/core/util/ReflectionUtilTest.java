@@ -17,54 +17,52 @@
 
 package org.apache.shardingsphere.data.pipeline.core.util;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.junit.Test;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 public final class ReflectionUtilTest {
-
+    
     @Test
-    public void assertSetFieldValue() throws Exception {
-        ReflectionSimple reflectionSimple = new ReflectionSimple();
-        ReflectionUtil.setFieldValue(reflectionSimple, "name", "sharding-sphere");
-        assertThat(reflectionSimple.getName(), is("sharding-sphere"));
+    public void assertSetFieldValue() throws NoSuchFieldException, IllegalAccessException {
+        ReflectionFixture reflectionFixture = new ReflectionFixture();
+        ReflectionUtil.setFieldValue(reflectionFixture, "value", "foo");
+        assertThat(reflectionFixture.getValue(), is("foo"));
     }
-
+    
     @Test
-    public void assertGetFieldValue() throws Exception {
-        ReflectionSimple reflectionSimple = new ReflectionSimple();
-        Integer age = ReflectionUtil.getFieldValue(reflectionSimple, "age", Integer.class);
-        assertThat(age, is(18));
+    public void assertGetFieldValue() throws NoSuchFieldException, IllegalAccessException {
+        ReflectionFixture reflectionFixture = new ReflectionFixture("bar");
+        assertThat(ReflectionUtil.getFieldValue(reflectionFixture, "value", String.class), is("bar"));
     }
-
+    
     @Test
-    public void assertGetStaticFieldValue() throws Exception {
-        ReflectionSimple.setType("ReflectionSimple");
-        String fieldValue = ReflectionUtil.getStaticFieldValue(ReflectionSimple.class, "type", String.class);
-        assertThat(fieldValue, is("ReflectionSimple"));
+    public void assertGetStaticFieldValue() throws NoSuchFieldException, IllegalAccessException {
+        assertThat(ReflectionUtil.getStaticFieldValue(ReflectionFixture.class, "staticValue", String.class), is("static_value"));
     }
-
+    
     @Test
-    public void assertInvokeMethodAndGetFieldValue() throws Exception {
-        ReflectionSimple reflectionSimple = new ReflectionSimple();
-        ReflectionUtil.invokeMethod(reflectionSimple, "setName", new Class[]{String.class}, new Object[]{"apache"});
-        assertThat(reflectionSimple.getName(), is("apache"));
+    public void assertInvokeMethod() throws Exception {
+        ReflectionFixture reflectionFixture = new ReflectionFixture();
+        ReflectionUtil.invokeMethod(reflectionFixture, "setValue", new Class[]{String.class}, new Object[]{"new_value"});
+        assertThat(reflectionFixture.getValue(), is("new_value"));
     }
-
-    private static class ReflectionSimple {
-
-        @Setter
-        private static String type;
-
+    
+    @AllArgsConstructor
+    @NoArgsConstructor
+    private static final class ReflectionFixture {
+        
+        @SuppressWarnings("unused")
+        private final static String staticValue = "static_value";
+        
         @Getter
         @Setter(AccessLevel.PRIVATE)
-        private String name;
-
-        @Getter(AccessLevel.PRIVATE)
-        private final int age = 18;
+        private String value;
     }
 }
