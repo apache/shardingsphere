@@ -31,17 +31,17 @@ public final class ReplicaLoadBalanceAlgorithmFactoryTest {
     
     @Test
     public void assertNewInstance() {
-        assertThat(ReadQueryLoadBalanceAlgorithmFactory.newInstance(), instanceOf(ReadQueryLoadBalanceAlgorithmFixture.class));
+        assertThat(ReplicaLoadBalanceAlgorithmFactory.newInstance(), instanceOf(ReadQueryLoadBalanceAlgorithmFixture.class));
     }
     
     @Test
     public void assertNewInstanceWithShardingSphereAlgorithmConfiguration() {
         ShardingSphereAlgorithmConfiguration configuration = new ShardingSphereAlgorithmConfiguration("FIXTURE", new Properties());
-        assertThat(ReadQueryLoadBalanceAlgorithmFactory.newInstance(configuration), instanceOf(ReadQueryLoadBalanceAlgorithmFixture.class));
+        assertThat(ReplicaLoadBalanceAlgorithmFactory.newInstance(configuration), instanceOf(ReadQueryLoadBalanceAlgorithmFixture.class));
     }
     
     @Test
     public void assertContains() {
-        assertTrue(ReadQueryLoadBalanceAlgorithmFactory.contains("FIXTURE"));
+        assertTrue(ReplicaLoadBalanceAlgorithmFactory.contains("FIXTURE"));
     }
 }

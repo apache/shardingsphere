@@ -19,6 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import lombok.Getter;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
+import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -27,14 +28,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Transaction weight read query load-balance algorithm.
+ * Weight replica load-balance algorithm.
  */
 @Getter
-public final class TransactionWeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
+public final class WeightReplicaLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
     
     private static final double ACCURACY_THRESHOLD = 0.0001;
     
-    private static final ConcurrentHashMap<String, double[]> WEIGHT_MAP = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<String, double[]> weightMap = new ConcurrentHashMap<>();
     
     private Properties props;
     
@@ -45,8 +46,11 @@ public final class TransactionWeightReadQueryLoadBalanceAlgorithm implements Rea
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
-        double[] weight = WEIGHT_MAP.containsKey(name) ? WEIGHT_MAP.get(name) : initWeight(readDataSourceNames);
-        WEIGHT_MAP.putIfAbsent(name, weight);
+        if (TransactionHolder.isTransaction()) {
+            return writeDataSourceName;
+        }
+        double[] weight = weightMap.containsKey(name) ? weightMap.get(name) : initWeight(readDataSourceNames);
+        weightMap.putIfAbsent(name, weight);
         return getDataSourceName(readDataSourceNames, weight);
     }
     
@@ -118,6 +122,6 @@ public final class TransactionWeightReadQueryLoadBalanceAlgorithm implements Rea
     
     @Override
     public String getType() {
-        return "TRANSACTION_WEIGHT";
+        return "WEIGHT";
     }
 }

@@ -28,14 +28,14 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Weight read query load-balance algorithm.
+ * Fixed replica weight load-balance algorithm.
  */
 @Getter
-public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
+public final class FixedReplicaWeightLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
     
     private static final double ACCURACY_THRESHOLD = 0.0001;
     
-    private final ConcurrentHashMap<String, double[]> weightMap = new ConcurrentHashMap<>();
+    private static final ConcurrentHashMap<String, double[]> WEIGHT_MAP = new ConcurrentHashMap<>();
     
     private Properties props;
     
@@ -46,11 +46,14 @@ public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
     
     @Override
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
+        double[] weight = WEIGHT_MAP.containsKey(name) ? WEIGHT_MAP.get(name) : initWeight(readDataSourceNames);
+        WEIGHT_MAP.putIfAbsent(name, weight);
         if (TransactionHolder.isTransaction()) {
-            return writeDataSourceName;
+            if (null == TransactionHolder.getReadWriteSplitRoutedReplica()) {
+                TransactionHolder.setReadWriteSplitRoutedReplica(getDataSourceName(readDataSourceNames, weight));
+            }
+            return TransactionHolder.getReadWriteSplitRoutedReplica();
         }
-        double[] weight = weightMap.containsKey(name) ? weightMap.get(name) : initWeight(readDataSourceNames);
-        weightMap.putIfAbsent(name, weight);
         return getDataSourceName(readDataSourceNames, weight);
     }
     
@@ -122,6 +125,6 @@ public final class WeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadB
     
     @Override
     public String getType() {
-        return "WEIGHT";
+        return "FIXED_REPLICA_WEIGHT";
     }
 }

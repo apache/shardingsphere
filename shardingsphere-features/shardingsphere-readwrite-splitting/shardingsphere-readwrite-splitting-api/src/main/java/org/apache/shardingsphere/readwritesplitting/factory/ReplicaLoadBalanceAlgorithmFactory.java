@@ -30,14 +30,14 @@ import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
  * Read query load-balance algorithm factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ReadQueryLoadBalanceAlgorithmFactory {
+public final class ReplicaLoadBalanceAlgorithmFactory {
     
     static {
         ShardingSphereServiceLoader.register(ReadQueryLoadBalanceAlgorithm.class);
     }
     
     /**
-     * Create new instance of read query load-balance algorithm.
+     * Create new instance of replica load-balance algorithm.
      *
      * @return created instance
      */
@@ -46,22 +46,22 @@ public final class ReadQueryLoadBalanceAlgorithmFactory {
     }
     
     /**
-     * Create new instance of read query load-balance algorithm.
+     * Create new instance of replica load-balance algorithm.
      * 
-     * @param readQueryLoadBalanceAlgorithmConfig read query load-balance algorithm configuration
+     * @param replicaLoadBalanceAlgorithmConfig replica load-balance algorithm configuration
      * @return created instance
      */
-    public static ReadQueryLoadBalanceAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration readQueryLoadBalanceAlgorithmConfig) {
-        return ShardingSphereAlgorithmFactory.createAlgorithm(readQueryLoadBalanceAlgorithmConfig, ReadQueryLoadBalanceAlgorithm.class);
+    public static ReadQueryLoadBalanceAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration replicaLoadBalanceAlgorithmConfig) {
+        return ShardingSphereAlgorithmFactory.createAlgorithm(replicaLoadBalanceAlgorithmConfig, ReadQueryLoadBalanceAlgorithm.class);
     }
     
     /**
-     * Judge whether contains read query load-balance algorithm.
+     * Judge whether contains load-balance algorithm.
      *
-     * @param readQueryLoadBalanceAlgorithmType read query load-balance algorithm type
-     * @return contains read query load-balance algorithm or not
+     * @param replicaLoadBalanceAlgorithmType replica load-balance algorithm type
+     * @return contains replica load-balance algorithm or not
      */
-    public static boolean contains(final String readQueryLoadBalanceAlgorithmType) {
-        return TypedSPIRegistry.findRegisteredService(ReadQueryLoadBalanceAlgorithm.class, readQueryLoadBalanceAlgorithmType).isPresent();
+    public static boolean contains(final String replicaLoadBalanceAlgorithmType) {
+        return TypedSPIRegistry.findRegisteredService(ReadQueryLoadBalanceAlgorithm.class, replicaLoadBalanceAlgorithmType).isPresent();
     }
 }

@@ -24,13 +24,13 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertThat;
+import static org.hamcrest.CoreMatchers.is;
 
-public final class FixedReplicaRoundRobinReadQueryLoadBalanceAlgorithmTest {
+public final class FixedReplicaRandomLoadBalanceAlgorithmTest {
     
-    private final FixedReplicaRoundRobinReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = new FixedReplicaRoundRobinReadQueryLoadBalanceAlgorithm();
+    private final FixedReplicaRandomLoadBalanceAlgorithm fixedReplicaRandomLoadBalanceAlgorithm = new FixedReplicaRandomLoadBalanceAlgorithm();
     
     @Test
     public void assertGetDataSourceInTransaction() {
@@ -39,11 +39,10 @@ public final class FixedReplicaRoundRobinReadQueryLoadBalanceAlgorithmTest {
         String readDataSourceName2 = "test_replica_ds_2";
         List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
         TransactionHolder.setInTransaction();
-        String routeDataSource = loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames);
-        assertTrue(readDataSourceNames.contains(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames)));
-        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(routeDataSource));
-        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(routeDataSource));
-        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(routeDataSource));
+        String routeDataSource = fixedReplicaRandomLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames);
+        assertTrue(readDataSourceNames.contains(fixedReplicaRandomLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames)));
+        assertThat(fixedReplicaRandomLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(routeDataSource));
+        assertThat(fixedReplicaRandomLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(routeDataSource));
         TransactionHolder.clear();
     }
     
@@ -55,7 +54,7 @@ public final class FixedReplicaRoundRobinReadQueryLoadBalanceAlgorithmTest {
         List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
         List<String> noTransactionReadDataSourceNames = new LinkedList<>();
         for (int i = 0; i < 5; i++) {
-            String routeDataSource = loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames);
+            String routeDataSource = fixedReplicaRandomLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames);
             noTransactionReadDataSourceNames.add(routeDataSource);
         }
         assertTrue(noTransactionReadDataSourceNames.size() > 1);

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
 import lombok.Getter;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
-import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.util.Arrays;
 import java.util.List;
@@ -28,10 +27,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * Fixed replica weight read query load-balance algorithm.
+ * Transaction weight replica load-balance algorithm.
  */
 @Getter
-public final class FixedReplicaWeightReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
+public final class TransactionWeightReplicaLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
     
     private static final double ACCURACY_THRESHOLD = 0.0001;
     
@@ -48,12 +47,6 @@ public final class FixedReplicaWeightReadQueryLoadBalanceAlgorithm implements Re
     public String getDataSource(final String name, final String writeDataSourceName, final List<String> readDataSourceNames) {
         double[] weight = WEIGHT_MAP.containsKey(name) ? WEIGHT_MAP.get(name) : initWeight(readDataSourceNames);
         WEIGHT_MAP.putIfAbsent(name, weight);
-        if (TransactionHolder.isTransaction()) {
-            if (null == TransactionHolder.getReadWriteSplitRoutedReplica()) {
-                TransactionHolder.setReadWriteSplitRoutedReplica(getDataSourceName(readDataSourceNames, weight));
-            }
-            return TransactionHolder.getReadWriteSplitRoutedReplica();
-        }
         return getDataSourceName(readDataSourceNames, weight);
     }
     
@@ -125,6 +118,6 @@ public final class FixedReplicaWeightReadQueryLoadBalanceAlgorithm implements Re
     
     @Override
     public String getType() {
-        return "FIXED_REPLICA_WEIGHT";
+        return "TRANSACTION_WEIGHT";
     }
 }

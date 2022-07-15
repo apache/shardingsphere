@@ -24,9 +24,9 @@ import java.util.List;
 import java.util.Properties;
 
 /**
- * Fixed primary read query load-balance algorithm.
+ * Fixed primary load-balance algorithm.
  */
-public final class FixedPrimaryReadQueryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
+public final class FixedPrimaryLoadBalanceAlgorithm implements ReadQueryLoadBalanceAlgorithm {
     
     @Getter
     private Properties props;

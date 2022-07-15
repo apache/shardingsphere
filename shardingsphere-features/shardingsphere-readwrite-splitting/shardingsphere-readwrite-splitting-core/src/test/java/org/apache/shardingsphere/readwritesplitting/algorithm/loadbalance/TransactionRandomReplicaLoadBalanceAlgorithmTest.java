@@ -17,24 +17,28 @@
 
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
+import org.apache.shardingsphere.transaction.TransactionHolder;
 import org.junit.Test;
 
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.assertThat;
-import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertTrue;
 
-public final class FixedPrimaryReadQueryLoadBalanceAlgorithmTest {
+public final class TransactionRandomReplicaLoadBalanceAlgorithmTest {
     
-    private final FixedPrimaryReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = new FixedPrimaryReadQueryLoadBalanceAlgorithm();
+    private final TransactionRandomReplicaLoadBalanceAlgorithm transactionRandomReplicaLoadBalanceAlgorithm = new TransactionRandomReplicaLoadBalanceAlgorithm();
     
     @Test
-    public void assertGetDataSource() {
+    public void assertGetDataSourceInTransaction() {
         String writeDataSourceName = "test_write_ds";
         String readDataSourceName1 = "test_replica_ds_1";
         String readDataSourceName2 = "test_replica_ds_2";
         List<String> readDataSourceNames = Arrays.asList(readDataSourceName1, readDataSourceName2);
-        assertThat(loadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames), is(writeDataSourceName));
+        TransactionHolder.setInTransaction();
+        assertTrue(readDataSourceNames.contains(transactionRandomReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames)));
+        assertTrue(readDataSourceNames.contains(transactionRandomReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames)));
+        assertTrue(readDataSourceNames.contains(transactionRandomReplicaLoadBalanceAlgorithm.getDataSource("ds", writeDataSourceName, readDataSourceNames)));
+        TransactionHolder.clear();
     }
 }
