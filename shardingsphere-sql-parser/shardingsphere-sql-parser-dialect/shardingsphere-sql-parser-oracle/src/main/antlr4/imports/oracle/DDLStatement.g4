@@ -2423,7 +2423,6 @@ createDiskgroup
     : CREATE DISKGROUP diskgroupName ((HIGH | NORMAL | FLEX | EXTENDED (SITE siteName)? | EXTERNAL) REDUNDANCY)? diskClause+ attribute?
     ;
 
-
 diskClause
     : (QUORUM | REGULAR)? (FAILGROUP diskgroupName)? DISK qualifieDiskClause (COMMA_ qualifieDiskClause)*
     ;
@@ -3029,3 +3028,28 @@ diskgroupAvailability
 enableDisableVolume
     : (ENABLE | DISABLE) VOLUME (asmVolumeName (COMMA_ asmVolumeName)* | ALL)
     ;
+
+alterIndexType
+    : ALTER INDEXTYPE indexTypeName ((addOrDropClause (COMMA_ addOrDropClause)* usingTypeClause?) | COMPILE) withLocalClause
+    ;
+
+addOrDropClause
+    : (ADD | DROP) operatorName LP_ parameterType RP_
+    ;
+
+usingTypeClause
+    : USING implementationType arrayDMLClause?
+    ;
+
+withLocalClause
+    : (WITH LOCAL RANGE? PARTITION)? storageTableClause?
+    ;
+
+arrayDMLClause
+   : (WITH | WITHOUT)? ARRAY DML arryDMLSubClause (COMMA_ arryDMLSubClause)*
+   ;
+
+arryDMLSubClause
+   : LP_ typeName (COMMA_ varrayType)? RP_
+   ;
+
