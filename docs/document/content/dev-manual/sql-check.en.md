@@ -12,6 +12,7 @@ chapter = true
 | SQLChecker             | SQL checker       |
 
 ## Sample
+### SQLChecker
 
 | *Implementation Class* | *Description*          |
 | ---------------------- | ---------------------- |
