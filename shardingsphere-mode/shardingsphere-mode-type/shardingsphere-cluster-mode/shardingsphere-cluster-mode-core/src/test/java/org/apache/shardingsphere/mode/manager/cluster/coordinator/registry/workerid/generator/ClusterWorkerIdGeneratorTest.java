@@ -17,42 +17,40 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.generator;
 
-import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Test;
 
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class ClusterWorkerIdGeneratorTest {
-
+    
     @Test
-    public void assertGenerateWithNullProperties() {
-        assertThat(new ClusterWorkerIdGenerator(new RegistryCenter(mock(ClusterPersistRepository.class), new EventBusContext()), mock(InstanceMetaData.class)).generate(null), is(WorkerIdGenerator.DEFAULT_WORKER_ID));
-    }
-
-    @Test
-    public void assertGenerateWithEmptyProperties() {
-        assertThat(new ClusterWorkerIdGenerator(new RegistryCenter(mock(ClusterPersistRepository.class), new EventBusContext()), mock(InstanceMetaData.class)).generate(new Properties()), is(WorkerIdGenerator.DEFAULT_WORKER_ID));
-    }
-
-    @Test
-    public void assertGenerateWithProperties() {
+    public void assertGenerateWithExistedWorkerId() {
         Properties props = new Properties();
         props.setProperty(WorkerIdGenerator.WORKER_ID_KEY, "1");
-        assertThat(new ClusterWorkerIdGenerator(new RegistryCenter(mock(ClusterPersistRepository.class), new EventBusContext()), mock(InstanceMetaData.class)).generate(props), is(1L));
+        InstanceMetaData instanceMetaData = mock(InstanceMetaData.class);
+        when(instanceMetaData.getId()).thenReturn("foo_id");
+        RegistryCenter registryCenter = mock(RegistryCenter.class, RETURNS_DEEP_STUBS);
+        when(registryCenter.getComputeNodeStatusService().loadInstanceWorkerId("foo_id")).thenReturn(Optional.of(10L));
+        assertThat(new ClusterWorkerIdGenerator(registryCenter, instanceMetaData).generate(props), is(10L));
     }
-
-    @Test(expected = IllegalStateException.class)
-    public void assertGenerateWithInvalidProperties() {
-        Properties props = new Properties();
-        props.setProperty(WorkerIdGenerator.WORKER_ID_KEY, "1024");
-        new ClusterWorkerIdGenerator(new RegistryCenter(mock(ClusterPersistRepository.class), new EventBusContext()), mock(InstanceMetaData.class)).generate(props);
+    
+    @Test
+    public void assertGenerateWithoutExistedWorkerId() {
+        InstanceMetaData instanceMetaData = mock(InstanceMetaData.class);
+        when(instanceMetaData.getId()).thenReturn("foo_id");
+        RegistryCenter registryCenter = mock(RegistryCenter.class, RETURNS_DEEP_STUBS);
+        when(registryCenter.getComputeNodeStatusService().loadInstanceWorkerId("foo_id")).thenReturn(Optional.empty());
+        when(registryCenter.getRepository().getSequentialId("/worker_id/foo_id", "")).thenReturn("100");
+        assertThat(new ClusterWorkerIdGenerator(registryCenter, instanceMetaData).generate(new Properties()), is(100L));
     }
 }
