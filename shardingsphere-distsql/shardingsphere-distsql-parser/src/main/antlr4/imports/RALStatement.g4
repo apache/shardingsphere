@@ -144,7 +144,7 @@ filePath
     ;
 
 transactionRuleDefinition
-    : LP DEFAULT EQ defaultType COMMA providerDefinition
+    : LP DEFAULT EQ defaultType (COMMA providerDefinition)?
     ;
 
 providerDefinition

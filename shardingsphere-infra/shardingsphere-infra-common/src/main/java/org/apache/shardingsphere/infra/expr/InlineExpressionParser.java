@@ -50,16 +50,6 @@ public final class InlineExpressionParser {
     private final String inlineExpression;
     
     /**
-     * Judge whether the expression is an inline expression.
-     *
-     * @param expression expression to be judged
-     * @return whether the expression is an inline expression
-     */
-    public static boolean isInlineExpression(final String expression) {
-        return expression.contains("${") || expression.contains("$->{");
-    }
-    
-    /**
      * Replace all inline expression placeholders.
      * 
      * @param inlineExpression inline expression with {@code $->}

@@ -36,10 +36,12 @@ public final class MySQLIncrementTask extends BaseIncrementTask {
     
     private final Boolean incrementOrderItemTogether;
     
+    private final int executeCountLimit;
+    
     @Override
     public void run() {
         int executeCount = 0;
-        while (executeCount < 20 && !Thread.currentThread().isInterrupted()) {
+        while (executeCount < executeCountLimit && !Thread.currentThread().isInterrupted()) {
             Object orderPrimaryKey = insertOrder();
             if (executeCount % 2 == 0) {
                 jdbcTemplate.update("DELETE FROM t_order WHERE id = ?", orderPrimaryKey);

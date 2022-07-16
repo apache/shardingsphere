@@ -30,7 +30,7 @@ import java.util.Optional;
  * MySQL show procedure status statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class MySQLShowProcedureStatusStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     private ShowFilterSegment filter;

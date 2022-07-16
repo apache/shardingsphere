@@ -83,6 +83,7 @@ import org.apache.shardingsphere.distsql.parser.segment.TrafficRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TransactionProviderSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.hint.ClearHintStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportDatabaseConfigurationStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAllVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceModeStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceStatement;
@@ -295,7 +296,7 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     
     @Override
     public ASTNode visitShowAllVariables(final ShowAllVariablesContext ctx) {
-        return new ShowVariableStatement();
+        return new ShowAllVariableStatement();
     }
     
     @Override
@@ -343,8 +344,11 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     @Override
     public ASTNode visitTransactionRuleDefinition(final TransactionRuleDefinitionContext ctx) {
         String defaultType = getIdentifierValue(ctx.defaultType());
-        TransactionProviderSegment provider = (TransactionProviderSegment) visit(ctx.providerDefinition());
-        return new AlterTransactionRuleStatement(defaultType, provider);
+        if (null != ctx.providerDefinition()) {
+            TransactionProviderSegment provider = (TransactionProviderSegment) visit(ctx.providerDefinition());
+            return new AlterTransactionRuleStatement(defaultType, provider);
+        }
+        return new AlterTransactionRuleStatement(defaultType, new TransactionProviderSegment(null, null));
     }
     
     @Override

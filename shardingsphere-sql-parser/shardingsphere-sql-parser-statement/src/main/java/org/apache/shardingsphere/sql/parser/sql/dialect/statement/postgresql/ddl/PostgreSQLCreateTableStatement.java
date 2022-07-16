@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLCreateTableStatement extends CreateTableStatement implements PostgreSQLStatement {
     
     private final boolean ifNotExists;

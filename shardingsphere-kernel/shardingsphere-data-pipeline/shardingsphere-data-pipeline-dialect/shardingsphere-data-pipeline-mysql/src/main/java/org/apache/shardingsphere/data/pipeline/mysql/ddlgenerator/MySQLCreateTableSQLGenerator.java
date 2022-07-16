@@ -21,6 +21,7 @@ import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGe
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -39,7 +40,8 @@ public final class MySQLCreateTableSQLGenerator implements CreateTableSQLGenerat
     @Override
     public Collection<String> generate(final String tableName, final String schemaName, final DataSource dataSource) throws SQLException {
         try (
-                Statement statement = dataSource.getConnection().createStatement();
+                Connection connection = dataSource.getConnection();
+                Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(String.format(SHOW_CREATE_SQL, tableName))) {
             if (resultSet.next()) {
                 return Collections.singletonList(resultSet.getString(COLUMN_LABEL));

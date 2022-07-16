@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 
 import java.util.Collection;
@@ -28,6 +29,7 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
+@ToString
 public final class InsertColumnsSegment implements SQLSegment {
     
     private final int startIndex;

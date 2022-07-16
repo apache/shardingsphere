@@ -25,6 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL show master status statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLShowMasterStatusStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
 }

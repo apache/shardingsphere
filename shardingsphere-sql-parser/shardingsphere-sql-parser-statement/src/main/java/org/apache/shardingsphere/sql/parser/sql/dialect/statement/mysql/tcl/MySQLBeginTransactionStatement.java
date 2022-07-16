@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL begin transaction statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLBeginTransactionStatement extends BeginTransactionStatement implements MySQLStatement {
 }

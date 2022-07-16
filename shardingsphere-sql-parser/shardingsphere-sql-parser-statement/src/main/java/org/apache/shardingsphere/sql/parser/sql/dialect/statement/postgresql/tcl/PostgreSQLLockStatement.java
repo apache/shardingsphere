@@ -32,7 +32,7 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLLockStatement extends LockStatement implements PostgreSQLStatement {
     
     private final Collection<SimpleTableSegment> tables = new LinkedList<>();

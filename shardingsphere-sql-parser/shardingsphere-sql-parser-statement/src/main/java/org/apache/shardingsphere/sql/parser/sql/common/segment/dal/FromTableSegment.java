@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dal;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
@@ -27,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sim
  */
 @Getter
 @Setter
+@ToString
 public final class FromTableSegment implements SQLSegment {
     
     private int startIndex;

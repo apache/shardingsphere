@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL vacuum statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLVacuumStatement extends VacuumStatement implements PostgreSQLStatement {
 }

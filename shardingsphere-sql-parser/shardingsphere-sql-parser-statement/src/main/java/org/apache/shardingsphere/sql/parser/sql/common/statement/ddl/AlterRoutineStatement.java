@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Alter routine statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class AlterRoutineStatement extends AbstractSQLStatement implements DDLStatement {
 }

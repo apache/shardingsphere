@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL drop event trigger statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLDropEventTriggerStatement extends DropEventTriggerStatement implements PostgreSQLStatement {
 }

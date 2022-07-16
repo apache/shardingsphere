@@ -1,7 +1,7 @@
 +++
-pre = "<b>6.13. </b>"
+pre = "<b>6.12. </b>"
 title = "数据加密"
-weight = 13
+weight = 12
 chapter = true
 +++
 
@@ -13,7 +13,7 @@ chapter = true
 
 ## 示例
 
-### EncryptAlgorithm 已知实现类
+### EncryptAlgorithm
 
 | *已知实现类*         | *详细说明*             |
 | ------------------- | --------------------- |

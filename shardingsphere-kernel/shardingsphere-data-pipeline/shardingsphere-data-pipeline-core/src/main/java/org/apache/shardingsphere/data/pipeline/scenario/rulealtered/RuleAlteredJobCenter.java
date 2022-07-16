@@ -62,5 +62,6 @@ public final class RuleAlteredJobCenter {
             return;
         }
         job.stop();
+        JOB_MAP.remove(jobId);
     }
 }

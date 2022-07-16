@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Alter domain statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class AlterDomainStatement extends AbstractSQLStatement implements DDLStatement {
 }

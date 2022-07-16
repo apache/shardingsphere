@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Drop synonym statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class DropSynonymStatement extends AbstractSQLStatement implements DDLStatement {
 }

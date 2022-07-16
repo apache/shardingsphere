@@ -1,7 +1,7 @@
 +++
-pre = "<b>6.13. </b>"
+pre = "<b>6.12. </b>"
 title = "Encryption"
-weight = 13
+weight = 12
 chapter = true
 +++
 
@@ -13,7 +13,7 @@ chapter = true
 
 ## Sample
 
-### EncryptAlgorithm Known Implementation Class
+### EncryptAlgorithm
 
 | *Implementation Class*        | *Description*              |
 | ----------------------------- | -------------------------- |

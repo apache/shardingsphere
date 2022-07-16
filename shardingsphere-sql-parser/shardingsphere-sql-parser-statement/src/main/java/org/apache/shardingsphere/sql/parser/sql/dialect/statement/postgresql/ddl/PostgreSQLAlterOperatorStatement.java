@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL alter operator statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLAlterOperatorStatement extends AlterOperatorStatement implements PostgreSQLStatement {
 }

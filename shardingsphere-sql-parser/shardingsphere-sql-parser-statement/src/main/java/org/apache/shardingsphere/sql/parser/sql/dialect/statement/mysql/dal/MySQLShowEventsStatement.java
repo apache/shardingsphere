@@ -31,7 +31,7 @@ import java.util.Optional;
  * MySQL show events statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class MySQLShowEventsStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     private FromSchemaSegment fromSchema;

@@ -25,9 +25,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Create sequence statement.
  */
-@ToString
 @Getter
 @Setter
+@ToString(callSuper = true)
 public abstract class CreateSequenceStatement extends AbstractSQLStatement implements DDLStatement {
     
     private String sequenceName;

@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.tcl;
 
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
  * Prepare transaction statement.
  */
+@ToString(callSuper = true)
 public abstract class PrepareTransactionStatement extends AbstractSQLStatement implements TCLStatement {
 }

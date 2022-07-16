@@ -89,7 +89,7 @@ public final class RuleAlteredJobPreparer {
         try {
             initIncrementalTasks(jobContext);
             if (jobContext.isStopping()) {
-                throw new PipelineJobPrepareFailedException("Job stopping, jobId=" + jobContext.getJobId());
+                throw new PipelineIgnoredException("Job stopping, jobId=" + jobContext.getJobId());
             }
             initInventoryTasks(jobContext);
             log.info("prepare, jobId={}, shardingItem={}, inventoryTasks={}, incrementalTasks={}",

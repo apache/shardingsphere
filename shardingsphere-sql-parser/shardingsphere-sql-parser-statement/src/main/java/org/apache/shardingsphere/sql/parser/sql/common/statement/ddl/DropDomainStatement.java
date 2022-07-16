@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Drop domain statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class DropDomainStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -17,12 +17,21 @@
 
 package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.sql.SQLException;
+import java.util.Collection;
+import java.util.LinkedList;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -34,9 +43,25 @@ public final class ShowConnectionIdExecutorTest {
     
     @Test
     public void assertExecute() throws SQLException {
-        ShowConnectionIdExecutor executor = new ShowConnectionIdExecutor();
+        ShowConnectionIdExecutor executor = new ShowConnectionIdExecutor(mockSelectStatement());
         executor.execute(mockConnectionSession());
-        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
+        QueryResultMetaData metaData = executor.getQueryResultMetaData();
+        assertThat(metaData.getColumnCount(), is(1));
+        assertThat(metaData.getColumnName(1), is(ShowConnectionIdExecutor.FUNCTION_NAME));
+        assertThat(metaData.getColumnLabel(1), is(ShowConnectionIdExecutor.FUNCTION_NAME));
+        while (executor.getMergedResult().next()) {
+            assertThat(executor.getMergedResult().getValue(1, Object.class), is(109));
+        }
+    }
+    
+    @Test
+    public void assertExecuteWithAlias() throws SQLException {
+        ShowConnectionIdExecutor executor = new ShowConnectionIdExecutor(mockSelectStatementWithAlias());
+        executor.execute(mockConnectionSession());
+        QueryResultMetaData metaData = executor.getQueryResultMetaData();
+        assertThat(metaData.getColumnCount(), is(1));
+        assertThat(metaData.getColumnName(1), is(ShowConnectionIdExecutor.FUNCTION_NAME));
+        assertThat(metaData.getColumnLabel(1), is("test_alias"));
         while (executor.getMergedResult().next()) {
             assertThat(executor.getMergedResult().getValue(1, Object.class), is(109));
         }
@@ -45,6 +70,27 @@ public final class ShowConnectionIdExecutorTest {
     private ConnectionSession mockConnectionSession() {
         ConnectionSession result = mock(ConnectionSession.class);
         when(result.getConnectionId()).thenReturn(109);
+        return result;
+    }
+    
+    private SelectStatement mockSelectStatement() {
+        Collection<ProjectionSegment> projections = new LinkedList<>();
+        ProjectionsSegment segment = mock(ProjectionsSegment.class);
+        when(segment.getProjections()).thenReturn(projections);
+        SelectStatement result = mock(SelectStatement.class);
+        when(result.getProjections()).thenReturn(segment);
+        return result;
+    }
+    
+    private SelectStatement mockSelectStatementWithAlias() {
+        Collection<ProjectionSegment> projections = new LinkedList<>();
+        ExpressionProjectionSegment projectionSegment = new ExpressionProjectionSegment(0, 0, "connection_id()");
+        projectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue("test_alias")));
+        projections.add(projectionSegment);
+        ProjectionsSegment segment = mock(ProjectionsSegment.class);
+        when(segment.getProjections()).thenReturn(projections);
+        SelectStatement result = mock(SelectStatement.class);
+        when(result.getProjections()).thenReturn(segment);
         return result;
     }
 }

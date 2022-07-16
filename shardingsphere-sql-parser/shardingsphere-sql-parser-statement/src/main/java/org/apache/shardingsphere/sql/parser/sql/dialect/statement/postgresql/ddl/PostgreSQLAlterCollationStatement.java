@@ -25,6 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL alter collation statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLAlterCollationStatement extends AbstractSQLStatement implements DDLStatement, PostgreSQLStatement {
 }

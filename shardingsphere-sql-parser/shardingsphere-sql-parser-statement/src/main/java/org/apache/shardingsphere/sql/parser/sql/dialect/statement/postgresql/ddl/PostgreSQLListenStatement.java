@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL listen statement.
  */
-@ToString
+@ToString(callSuper = true)
 public class PostgreSQLListenStatement extends ListenStatement implements PostgreSQLStatement {
 }

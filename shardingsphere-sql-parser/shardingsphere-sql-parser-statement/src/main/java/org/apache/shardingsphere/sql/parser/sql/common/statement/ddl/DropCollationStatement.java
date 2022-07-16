@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Drop collation statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class DropCollationStatement extends AbstractSQLStatement implements DDLStatement {
 }

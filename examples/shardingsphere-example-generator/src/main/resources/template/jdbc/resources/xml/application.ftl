@@ -123,8 +123,8 @@
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
     </bean>
 </#if>
-    
-<#if mode!="memory">
+
+<#if mode?exists>
     <#include "../mode/spring-namespace/config/${mode}.ftl" />
 </#if>
 <#assign ruleRefs="">
