@@ -90,6 +90,18 @@ public final class ShardingRuleStatementCheckerTest {
         ShardingTableRuleStatementChecker.checkAlteration(database, rules, shardingRuleConfig);
     }
     
+    @Test
+    public void assertCheckerBindingTableSuccess() throws DistSQLException {
+        ShardingRuleConfiguration shardingRuleConfiguration = createShardingRuleConfiguration();
+        shardingRuleConfiguration.getBindingTableGroups().add("t_order,t_order_item");
+        Collection<AbstractTableRuleSegment> rules = new LinkedList<>();
+        rules.add(new AutoTableRuleSegment("t_order", Arrays.asList("ds_0", "ds_1"), "order_id",
+                new AlgorithmSegment("MOD", newProperties("sharding-count", "2")), null));
+        rules.add(new AutoTableRuleSegment("t_order_item", Arrays.asList("ds_0", "ds_1"), "order_id",
+                new AlgorithmSegment("MOD", newProperties("sharding-count", "2")), null));
+        ShardingTableRuleStatementChecker.checkAlteration(database, rules, shardingRuleConfiguration);
+    }
+    
     @Test(expected = DuplicateRuleException.class)
     public void assertCheckCreationWithDuplicated() throws DistSQLException {
         List<AbstractTableRuleSegment> rules = Arrays.asList(
@@ -207,7 +219,7 @@ public final class ShardingRuleStatementCheckerTest {
         tableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_algorithm"));
         result.getTables().add(tableRuleConfig);
         ShardingAutoTableRuleConfiguration autoTableRuleConfig = new ShardingAutoTableRuleConfiguration("t_order_item", "ds_0");
-        autoTableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_item_algorithm"));
+        autoTableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_algorithm"));
         autoTableRuleConfig.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_item_id", "t_order_item_snowflake"));
         result.getAutoTables().add(autoTableRuleConfig);
         result.getShardingAlgorithms().put("t_order_algorithm", new ShardingSphereAlgorithmConfiguration("hash_mod", newProperties("sharding-count", "4")));
