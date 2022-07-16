@@ -48,10 +48,6 @@ public final class RegistryCenter {
     @Getter
     private final StorageNodeStatusService storageNodeStatusService;
     
-    private final InstanceMetaData instanceMetaData;
-    
-    private final Map<String, DatabaseConfiguration> databaseConfigs;
-    
     @Getter
     private final ComputeNodeStatusService computeNodeStatusService;
     
@@ -60,6 +56,10 @@ public final class RegistryCenter {
     
     @Getter
     private final EventBusContext eventBusContext;
+    
+    private final InstanceMetaData instanceMetaData;
+    
+    private final Map<String, DatabaseConfiguration> databaseConfigs;
     
     private final GovernanceWatcherFactory listenerFactory;
     
