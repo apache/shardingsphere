@@ -31,6 +31,9 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
@@ -85,7 +88,7 @@ public final class ProjectionEngine {
             return Optional.of(createProjection((ColumnProjectionSegment) projectionSegment));
         }
         if (projectionSegment instanceof ExpressionProjectionSegment) {
-            return Optional.of(createProjection((ExpressionProjectionSegment) projectionSegment));
+            return Optional.of(createProjection(table, (ExpressionProjectionSegment) projectionSegment));
         }
         if (projectionSegment instanceof AggregationDistinctProjectionSegment) {
             return Optional.of(createProjection((AggregationDistinctProjectionSegment) projectionSegment));
@@ -125,8 +128,16 @@ public final class ProjectionEngine {
         return new ColumnProjection(owner, projectionSegment.getColumn().getIdentifier().getValue(), projectionSegment.getAlias().orElse(null));
     }
     
-    private ExpressionProjection createProjection(final ExpressionProjectionSegment projectionSegment) {
-        return new ExpressionProjection(projectionSegment.getText(), projectionSegment.getAlias().orElse(null));
+    private ExpressionProjection createProjection(final TableSegment table, final ExpressionProjectionSegment projectionSegment) {
+        ExpressionProjection result = new ExpressionProjection(projectionSegment.getText(), projectionSegment.getAlias().orElse(null));
+        ExpressionSegment expr = projectionSegment.getExpr();
+        if (expr instanceof FunctionSegment) {
+            batchAddExpressionProjectionParameters(table, result, ((FunctionSegment) expr).getParameters());
+        }
+        if (expr instanceof BinaryOperationExpression) {
+            addExpressionProjectionParametersByBinaryOperationExpression(table, result, (BinaryOperationExpression) expr);
+        }
+        return result;
     }
     
     private AggregationDistinctProjection createProjection(final AggregationDistinctProjectionSegment projectionSegment) {
@@ -148,6 +159,32 @@ public final class ProjectionEngine {
             // TODO replace avg to constant, avoid calculate useless avg
         }
         return result;
+    }
+    
+    private void batchAddExpressionProjectionParameters(final TableSegment table, final ExpressionProjection result, final Collection<ExpressionSegment> expressionSegments) {
+        if (expressionSegments.isEmpty()) {
+            return;
+        }
+        expressionSegments.forEach(expressionSegment -> addExpressionProjectionParameters(table, result, expressionSegment));
+    }
+    
+    private void addExpressionProjectionParameters(final TableSegment table, final ExpressionProjection result, final ExpressionSegment expressionSegment) {
+        if (null == expressionSegment) {
+            return;
+        }
+        if (expressionSegment instanceof ProjectionSegment) {
+            createProjection(table, (ProjectionSegment) expressionSegment).ifPresent(result.getParameters()::add);
+        }
+        if (expressionSegment instanceof BinaryOperationExpression) {
+            addExpressionProjectionParametersByBinaryOperationExpression(table, result, (BinaryOperationExpression) expressionSegment);
+        }
+    }
+    
+    private void addExpressionProjectionParametersByBinaryOperationExpression(final TableSegment table, final ExpressionProjection result, final BinaryOperationExpression expressionSegment) {
+        ExpressionSegment right = expressionSegment.getRight();
+        addExpressionProjectionParameters(table, result, right);
+        ExpressionSegment left = expressionSegment.getLeft();
+        addExpressionProjectionParameters(table, result, left);
     }
     
     private Collection<ColumnProjection> getShorthandColumnsFromSimpleTableSegment(final TableSegment table, final String owner) {

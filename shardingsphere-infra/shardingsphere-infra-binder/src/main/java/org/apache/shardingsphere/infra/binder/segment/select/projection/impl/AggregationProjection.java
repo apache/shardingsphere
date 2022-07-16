@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.binder.segment.select.projection.impl;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
@@ -35,7 +34,6 @@ import java.util.Optional;
 /**
  * Aggregation projection.
  */
-@RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
 @ToString
@@ -45,7 +43,8 @@ public class AggregationProjection implements Projection {
     
     private final String innerExpression;
     
-    private final String alias;
+    @Setter
+    private String alias;
     
     private final DatabaseType databaseType;
     
@@ -53,6 +52,13 @@ public class AggregationProjection implements Projection {
     
     @Setter
     private int index = -1;
+    
+    public AggregationProjection(final AggregationType type, final String innerExpression, final String alias, final DatabaseType databaseType) {
+        this.type = type;
+        this.innerExpression = innerExpression;
+        this.alias = alias;
+        this.databaseType = databaseType;
+    }
     
     @Override
     public final String getExpression() {

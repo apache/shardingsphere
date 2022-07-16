@@ -22,6 +22,7 @@ import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationDistinctProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.AggregationProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.DerivedProjection;
+import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ExpressionProjection;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.impl.ShorthandProjection;
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
@@ -147,8 +148,26 @@ public final class ProjectionsContext {
                 result.add(aggregationProjection);
                 result.addAll(aggregationProjection.getDerivedAggregationProjections());
             }
+            if (each instanceof ExpressionProjection) {
+                addExpressionProjectionInsideAggregationProjection((ExpressionProjection) each, result);
+            }
         }
         return result;
+    }
+    
+    private void addExpressionProjectionInsideAggregationProjection(final ExpressionProjection expressionProjection, final List<AggregationProjection> result) {
+        Collection<Projection> parameters = expressionProjection.getParameters();
+        if (parameters.isEmpty()) {
+            return;
+        }
+        String alias = expressionProjection.getAlias().orElse(expressionProjection.getExpression());
+        parameters.forEach(parameter -> {
+            if (parameter instanceof AggregationProjection) {
+                ((AggregationProjection) parameter).setAlias(alias);
+                result.add((AggregationProjection) parameter);
+                result.addAll(((AggregationProjection) parameter).getDerivedAggregationProjections());
+            }
+        });
     }
     
     private boolean isContainsLastInsertIdProjection(final Collection<Projection> projections) {

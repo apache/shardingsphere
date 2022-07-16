@@ -23,6 +23,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -37,6 +39,8 @@ public final class ExpressionProjection implements Projection {
     private final String expression;
     
     private final String alias;
+    
+    private final Collection<Projection> parameters = new LinkedList<>();
     
     @Override
     public Optional<String> getAlias() {
