@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDa
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
-import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -52,14 +51,15 @@ public final class MetaDataContextsFactory {
      * 
      * @param persistService persist service
      * @param databaseConfigs database configurations
-     * @param instanceMetaData instance meta data
      * @param instanceContext instance context
      * @return meta data contexts
      * @throws SQLException SQL exception
      */
     public static MetaDataContexts create(final MetaDataPersistService persistService, final Map<String, DatabaseConfiguration> databaseConfigs,
-                                          final InstanceMetaData instanceMetaData, final InstanceContext instanceContext) throws SQLException {
-        Collection<String> databaseNames = instanceMetaData instanceof JDBCInstanceMetaData ? databaseConfigs.keySet() : persistService.getDatabaseMetaDataService().loadAllDatabaseNames();
+                                          final InstanceContext instanceContext) throws SQLException {
+        Collection<String> databaseNames = instanceContext.getInstance().getInstanceMetaData() instanceof JDBCInstanceMetaData
+                ? databaseConfigs.keySet()
+                : persistService.getDatabaseMetaDataService().loadAllDatabaseNames();
         Map<String, DatabaseConfiguration> effectiveDatabaseConfigs = createEffectiveDatabaseConfigurations(databaseNames, databaseConfigs, persistService);
         Collection<RuleConfiguration> globalRuleConfigs = persistService.getGlobalRuleService().load();
         ConfigurationProperties props = new ConfigurationProperties(persistService.getPropsService().load());
