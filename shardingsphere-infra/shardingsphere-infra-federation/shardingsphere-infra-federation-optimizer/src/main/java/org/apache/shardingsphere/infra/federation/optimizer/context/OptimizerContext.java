@@ -56,7 +56,7 @@ public final class OptimizerContext {
      * @param protocolType protocol database type
      */
     public void addDatabase(final String databaseName, final DatabaseType protocolType) {
-        FederationDatabaseMetaData federationDatabaseMetaData = new FederationDatabaseMetaData(databaseName.toLowerCase(), Collections.emptyMap());
+        FederationDatabaseMetaData federationDatabaseMetaData = new FederationDatabaseMetaData(databaseName, Collections.emptyMap());
         federationMetaData.getDatabases().put(databaseName.toLowerCase(), federationDatabaseMetaData);
         parserContexts.put(databaseName.toLowerCase(), OptimizerParserContextFactory.create(protocolType));
         plannerContexts.put(databaseName.toLowerCase(), OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
@@ -71,7 +71,7 @@ public final class OptimizerContext {
     public void alterDatabase(final ShardingSphereDatabase database, final ShardingSphereRuleMetaData globalRuleMetaData) {
         String databaseName = database.getName().toLowerCase();
         OptimizerContext toBeAlteredOptimizerContext = OptimizerContextFactory.create(Collections.singletonMap(databaseName, database), globalRuleMetaData);
-        federationMetaData.getDatabases().put(databaseName, toBeAlteredOptimizerContext.getFederationMetaData().getDatabases().get(databaseName));
+        federationMetaData.getDatabases().put(databaseName, toBeAlteredOptimizerContext.getFederationMetaData().getDatabase(databaseName));
         plannerContexts.put(databaseName, toBeAlteredOptimizerContext.getPlannerContexts().get(databaseName));
     }
     
@@ -95,7 +95,7 @@ public final class OptimizerContext {
     public void addSchema(final String databaseName, final String schemaName) {
         federationMetaData.getDatabases().get(databaseName.toLowerCase()).putTable(schemaName, new ShardingSphereTable());
         // TODO add schema only
-        plannerContexts.put(databaseName.toLowerCase(), OptimizerPlannerContextFactory.create(federationMetaData.getDatabases().get(databaseName.toLowerCase())));
+        plannerContexts.put(databaseName.toLowerCase(), OptimizerPlannerContextFactory.create(federationMetaData.getDatabase(databaseName)));
     }
     
     /**
@@ -119,7 +119,7 @@ public final class OptimizerContext {
      * @param toBeDeletedTableName to be deleted table name
      */
     public void dropTable(final String databaseName, final String schemaName, final String toBeDeletedTableName) {
-        FederationDatabaseMetaData federationDatabaseMetaData = federationMetaData.getDatabases().get(databaseName.toLowerCase());
+        FederationDatabaseMetaData federationDatabaseMetaData = federationMetaData.getDatabase(databaseName);
         federationDatabaseMetaData.removeTableMetadata(schemaName, toBeDeletedTableName);
         plannerContexts.put(databaseName.toLowerCase(), OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
     }

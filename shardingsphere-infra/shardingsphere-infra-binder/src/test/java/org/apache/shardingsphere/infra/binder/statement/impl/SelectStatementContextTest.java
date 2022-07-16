@@ -18,8 +18,11 @@
 package org.apache.shardingsphere.infra.binder.statement.impl;
 
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
@@ -58,11 +61,13 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
+import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -599,5 +604,10 @@ public final class SelectStatementContextTest {
         ColumnProjectionSegment columnProjectionSegment = new ColumnProjectionSegment(columnSegment);
         columnProjectionSegment.setAlias(new AliasSegment(0, 0, new IdentifierValue(hasAlias ? "n" : null)));
         return columnProjectionSegment;
+    }
+    
+    private ShardingSphereMetaData mockMetaData() {
+        return new ShardingSphereMetaData(Collections.singletonMap(DefaultDatabase.LOGIC_NAME,
+                mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS)), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties()));
     }
 }

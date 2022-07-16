@@ -101,12 +101,12 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         if (null == databaseName) {
             throw new NoDatabaseException();
         }
-        ShardingSphereDatabase database = databases.get(databaseName);
+        ShardingSphereDatabase database = databases.get(databaseName.toLowerCase());
         if (null == database) {
             throw new DatabaseNotExistedException(databaseName);
         }
-        String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(getDatabaseType(), databaseName);
-        return tablesContext.getSchemaName().map(optional -> database.getSchemas().get(optional)).orElseGet(() -> database.getSchemas().get(defaultSchema));
+        String schemaName = tablesContext.getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(getDatabaseType(), databaseName)).toLowerCase();
+        return database.getSchemas().get(schemaName);
     }
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {

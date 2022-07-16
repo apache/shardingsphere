@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -62,8 +63,19 @@ public final class ShardingSphereMetaData {
      */
     public void addDatabase(final String databaseName, final DatabaseType protocolType) throws SQLException {
         ShardingSphereDatabase database = ShardingSphereDatabase.create(databaseName, protocolType);
-        databases.put(databaseName, database);
+        databases.put(databaseName.toLowerCase(), database);
         globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.addResource(database));
+    }
+    
+    /**
+     * Put all databases.
+     *
+     * @param databases databases
+     */
+    public void putAllDatabases(final Map<String, ShardingSphereDatabase> databases) {
+        for (Entry<String, ShardingSphereDatabase> entry : databases.entrySet()) {
+            databases.put(entry.getKey().toLowerCase(), entry.getValue());
+        }
     }
     
     /**
@@ -72,14 +84,34 @@ public final class ShardingSphereMetaData {
      * @param databaseName database name
      */
     public void dropDatabase(final String databaseName) {
-        closeResources(databases.remove(databaseName));
+        closeResources(databases.remove(databaseName.toLowerCase()));
+    }
+    
+    /**
+     * Get database.
+     *
+     * @param databaseName database name
+     * @return database
+     */
+    public ShardingSphereDatabase getDatabase(final String databaseName) {
+        return databases.get(databaseName.toLowerCase());
+    }
+    
+    /**
+     * Judge whether contains database or not.
+     *
+     * @param databaseName database name
+     * @return whether contains database or not
+     */
+    public boolean containsDatabase(final String databaseName) {
+        return databases.containsKey(databaseName.toLowerCase());
     }
     
     private void closeResources(final ShardingSphereDatabase database) {
         if (null != database.getResource()) {
             database.getResource().getDataSources().values().forEach(each -> database.getResource().close(each));
         }
-        String databaseName = database.getName();
+        String databaseName = database.getName().toLowerCase();
         globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.closeStaleResource(databaseName));
         database.getRuleMetaData().findRules(ResourceHeldRule.class).forEach(each -> each.closeStaleResource(databaseName));
     }

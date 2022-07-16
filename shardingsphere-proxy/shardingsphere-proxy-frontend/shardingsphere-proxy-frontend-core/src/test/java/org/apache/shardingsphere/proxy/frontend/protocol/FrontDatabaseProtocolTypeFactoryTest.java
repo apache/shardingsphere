@@ -84,7 +84,7 @@ public final class FrontDatabaseProtocolTypeFactoryTest extends ProxyContextRest
         DatabaseType databaseType = FrontDatabaseProtocolTypeFactory.getDatabaseType();
         assertThat(databaseType, instanceOf(DatabaseType.class));
         assertThat(databaseType.getType(), is("PostgreSQL"));
-        assertThat(metaDataContexts.getMetaData().getDatabases().get(DefaultDatabase.LOGIC_NAME).getResource().getDatabaseType(), instanceOf(MySQLDatabaseType.class));
+        assertThat(metaDataContexts.getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME).getResource().getDatabaseType(), instanceOf(MySQLDatabaseType.class));
     }
     
     private Properties createProperties() {

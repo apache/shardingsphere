@@ -88,8 +88,8 @@ public final class MySQLMultiStatementsHandlerTest {
         MySQLUpdateStatement expectedStatement = mock(MySQLUpdateStatement.class);
         try (MockedStatic<ProxyContext> mockedStatic = mockStatic(ProxyContext.class)) {
             mockedStatic.when(ProxyContext::getInstance).thenReturn(proxyContext);
-            when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().get("").getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-            when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().get("").getProtocolType()).thenReturn(new MySQLDatabaseType());
+            when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("").getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+            when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("").getProtocolType()).thenReturn(new MySQLDatabaseType());
             ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
             when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
             when(globalRuleMetaData.getSingleRule(SQLParserRule.class)).thenReturn(new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()));
