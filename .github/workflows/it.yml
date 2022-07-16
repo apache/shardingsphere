@@ -203,7 +203,6 @@ jobs:
           name: it-image
           path: /tmp/
       - name: Load IT image
-        if: matrix.adapter == 'proxy'
         run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
         run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
@@ -273,7 +272,6 @@ jobs:
           name: it-image
           path: /tmp/
       - name: Load IT image
-        if: matrix.adapter == 'proxy'
         run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
         run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
