@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.instance;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.eventbus.EventBusContext;
@@ -40,6 +41,7 @@ public final class InstanceContext {
     
     private final ComputeNodeInstance instance;
     
+    @Getter(AccessLevel.NONE)
     private final WorkerIdGenerator workerIdGenerator;
     
     private final ModeConfiguration modeConfiguration;
@@ -97,7 +99,7 @@ public final class InstanceContext {
     /**
      * Generate worker id.
      *
-     * @param props props
+     * @param props properties
      * @return worker id
      */
     public long generateWorkerId(final Properties props) {
