@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL drop conversion statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLDropConversionStatement extends DropConversionStatement implements PostgreSQLStatement {
 }

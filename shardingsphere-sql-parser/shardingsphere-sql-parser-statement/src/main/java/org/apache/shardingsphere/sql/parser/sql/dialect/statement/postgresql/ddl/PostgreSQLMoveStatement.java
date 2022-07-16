@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL move statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLMoveStatement extends MoveStatement implements PostgreSQLStatement {
 }

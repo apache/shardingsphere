@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL alter rule statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLAlterRuleStatement extends AlterRuleStatement implements PostgreSQLStatement {
 }

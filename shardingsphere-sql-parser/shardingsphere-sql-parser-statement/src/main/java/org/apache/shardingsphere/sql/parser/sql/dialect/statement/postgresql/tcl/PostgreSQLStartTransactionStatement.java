@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL start transaction statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLStartTransactionStatement extends StartTransactionStatement implements PostgreSQLStatement {
 }

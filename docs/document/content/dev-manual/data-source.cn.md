@@ -16,7 +16,7 @@ chapter = true
 
 ## 示例
 
-### DatabaseType 已知实现类
+### DatabaseType
 
 | *已知实现类*             | *详细说明*               |
 | ---------------------- | ----------------------- |
@@ -29,7 +29,7 @@ chapter = true
 | H2DatabaseType         | H2 数据库                |
 | OpenGaussDatabaseType  | OpenGauss 数据库         |
 
-### DialectTableMetaDataLoader 已知实现类
+### DialectTableMetaDataLoader
 
 | *已知实现类*                    | *详细说明*                   |
 | ----------------------------- | --------------------------- |
@@ -40,14 +40,14 @@ chapter = true
 | H2TableMetaDataLoader         | 使用 H2 方言加载元数据         |
 | OpenGaussTableMetaDataLoader  | 使用 OpenGauss 方言加载元数据  |
 
-### DataSourcePoolMetaData 已知实现类
+### DataSourcePoolMetaData
 
 | *已知实现类*                   | *详细说明*              |
 |------------------------------|-----------------------|
 | DBCPDataSourcePoolMetaData   | DBCP 数据库连接池元数据   |
 | HikariDataSourcePoolMetaData | Hikari 数据源连接池元数据 |
 
-### DataSourcePoolActiveDetector 已知实现类
+### DataSourcePoolActiveDetector 
 
 | *已知实现类*                          | *详细说明*                 |
 | ----------------------------------- | ------------------------- |

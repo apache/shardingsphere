@@ -85,6 +85,18 @@
         <assertion expected-data-file="show_sharding_scaling_rules.xml" />
     </test-case>
     
+    <test-case sql="SHOW SINGLE TABLE RULES" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
+        <assertion expected-data-file="show_single_table_rules.xml" />
+    </test-case>
+    
+    <test-case sql="SHOW SINGLE TABLE t_single_table" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
+        <assertion expected-data-file="show_single_table.xml" />
+    </test-case>
+    
+    <test-case sql="SHOW SINGLE TABLES" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
+        <assertion expected-data-file="show_single_tables.xml" />
+    </test-case>
+    
     <test-case sql="SHOW READWRITE_SPLITTING RULES" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
         <assertion expected-data-file="show_readwrite_splitting_rules.xml" />
     </test-case>

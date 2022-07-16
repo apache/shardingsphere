@@ -60,7 +60,8 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
         persistConfigurations(persistService, parameter);
         InstanceContext instanceContext = buildInstanceContext(parameter);
-        return new ContextManager(buildMetaDataContexts(persistService, parameter, instanceContext), instanceContext);
+        MetaDataContexts metaDataContexts = buildMetaDataContexts(persistService, parameter, instanceContext);
+        return new ContextManager(metaDataContexts, instanceContext);
     }
     
     private void persistConfigurations(final MetaDataPersistService persistService, final ContextManagerBuilderParameter parameter) {

@@ -6,40 +6,15 @@ chapter = true
 +++
 
 ## SPI 接口
-## SQLRouter
+
 
 | *SPI 名称*                           | *详细说明*             |
 | ----------------------------------- | --------------------- |
 | SQLRouter                           | 用于处理路由结果         |
-
-### SQLRewriteContextDecorator
-
-| *SPI 名称*                          | *详细说明*          |
-| ---------------------------------- | ------------------ |
 | SQLRewriteContextDecorator         | 用于处理 SQL 改写结果 |
-
-### SQLExecutionHook
-
-| *SPI 名称*                     | *详细说明*       |
-| ----------------------------- | --------------- |
 | SQLExecutionHook              | SQL 执行过程监听器 |
-
-### ResultProcessEngine
-
-| *SPI 名称*                    | *详细说明*           |
-| ---------------------------- | ------------------- |
 | ResultProcessEngine          | 用于处理结果集        |
-
-### StoragePrivilegeHandler
-
-| *SPI 名称*                  | *详细说明*                      |
-| -------------------------- | ------------------------------ |
 | StoragePrivilegeHandler    | 使用数据库方言处理权限信息          |
-
-### DynamicDataSourceStrategy
-
-| *SPI 名称*                                  | *详细说明*                      |
-| ------------------------------------------ | ------------------------------ |
 | DynamicDataSourceStrategy                  | 动态数据源获取策略                 |
 
 ## 示例

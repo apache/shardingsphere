@@ -344,8 +344,11 @@ public final class CommonDistSQLStatementVisitor extends CommonDistSQLStatementB
     @Override
     public ASTNode visitTransactionRuleDefinition(final TransactionRuleDefinitionContext ctx) {
         String defaultType = getIdentifierValue(ctx.defaultType());
-        TransactionProviderSegment provider = (TransactionProviderSegment) visit(ctx.providerDefinition());
-        return new AlterTransactionRuleStatement(defaultType, provider);
+        if (null != ctx.providerDefinition()) {
+            TransactionProviderSegment provider = (TransactionProviderSegment) visit(ctx.providerDefinition());
+            return new AlterTransactionRuleStatement(defaultType, provider);
+        }
+        return new AlterTransactionRuleStatement(defaultType, new TransactionProviderSegment(null, null));
     }
     
     @Override

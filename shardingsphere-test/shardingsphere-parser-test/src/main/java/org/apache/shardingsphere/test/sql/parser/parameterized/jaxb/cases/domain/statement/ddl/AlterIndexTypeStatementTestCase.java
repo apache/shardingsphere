@@ -15,18 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.cases.entity;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
-@RequiredArgsConstructor
-@Data
-public final class JdbcInfoEntity {
-    
-    private final String username;
-    
-    private final String password;
-    
-    private final int port;
+/**
+ * Alter index type statement test case.
+ */
+public final class AlterIndexTypeStatementTestCase extends SQLParserTestCase {
 }
