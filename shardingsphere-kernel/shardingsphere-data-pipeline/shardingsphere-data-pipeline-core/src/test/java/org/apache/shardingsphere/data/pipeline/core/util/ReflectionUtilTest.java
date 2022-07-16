@@ -43,11 +43,6 @@ public final class ReflectionUtilTest {
     }
     
     @Test
-    public void assertGetStaticFieldValue() throws NoSuchFieldException, IllegalAccessException {
-        assertThat(ReflectionUtil.getStaticFieldValue(ReflectionFixture.class, "STATIC_VALUE", String.class), is("static_value"));
-    }
-    
-    @Test
     public void assertInvokeMethod() throws Exception {
         ReflectionFixture reflectionFixture = new ReflectionFixture();
         ReflectionUtil.invokeMethod(reflectionFixture, "setValue", new Class[]{String.class}, new Object[]{"new_value"});
@@ -57,9 +52,6 @@ public final class ReflectionUtilTest {
     @AllArgsConstructor
     @NoArgsConstructor
     private static final class ReflectionFixture {
-        
-        @SuppressWarnings("unused")
-        private static final String STATIC_VALUE = "static_value";
         
         @Getter
         @Setter(AccessLevel.PRIVATE)
