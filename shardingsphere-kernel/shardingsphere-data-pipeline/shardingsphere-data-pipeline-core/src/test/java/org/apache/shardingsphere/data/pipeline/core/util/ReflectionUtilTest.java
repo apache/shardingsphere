@@ -44,7 +44,7 @@ public final class ReflectionUtilTest {
     
     @Test
     public void assertGetStaticFieldValue() throws NoSuchFieldException, IllegalAccessException {
-        assertThat(ReflectionUtil.getStaticFieldValue(ReflectionFixture.class, "staticValue", String.class), is("static_value"));
+        assertThat(ReflectionUtil.getStaticFieldValue(ReflectionFixture.class, "STATIC_VALUE", String.class), is("static_value"));
     }
     
     @Test
@@ -59,7 +59,7 @@ public final class ReflectionUtilTest {
     private static final class ReflectionFixture {
         
         @SuppressWarnings("unused")
-        private final static String staticValue = "static_value";
+        private static final String STATIC_VALUE = "static_value";
         
         @Getter
         @Setter(AccessLevel.PRIVATE)

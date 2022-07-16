@@ -48,7 +48,7 @@ public final class ShowVersionExecutor implements DatabaseAdminQueryExecutor {
     private final SelectStatement sqlStatement;
     
     private MergedResult mergedResult;
-
+    
     @Override
     public void execute(final ConnectionSession connectionSession) {
         mergedResult = new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow(MySQLServerInfo.getServerVersion(connectionSession.getDatabaseName()))));
