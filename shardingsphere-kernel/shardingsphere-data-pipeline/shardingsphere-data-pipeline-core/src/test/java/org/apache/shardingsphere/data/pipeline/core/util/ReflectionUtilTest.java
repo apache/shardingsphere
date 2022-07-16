@@ -59,7 +59,7 @@ public final class ReflectionUtilTest {
     private static final class ReflectionFixture {
         
         @SuppressWarnings("unused")
-        private final static String STATIC_VALUE = "static_value";
+        private static final String STATIC_VALUE = "static_value";
         
         @Getter
         @Setter(AccessLevel.PRIVATE)
