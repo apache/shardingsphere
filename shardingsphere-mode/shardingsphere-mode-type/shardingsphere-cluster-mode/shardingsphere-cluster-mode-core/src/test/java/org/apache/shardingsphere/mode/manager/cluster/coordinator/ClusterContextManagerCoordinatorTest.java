@@ -141,7 +141,7 @@ public final class ClusterContextManagerCoordinatorTest {
                 new ShardingSphereMetaData(createDatabases(), contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(new Properties())),
                 createOptimizerContext()));
         coordinator = new ClusterContextManagerCoordinator(persistService, new RegistryCenter(mock(ClusterPersistRepository.class),
-                new EventBusContext(),mock(ProxyInstanceMetaData.class), null), contextManager);
+                new EventBusContext(), mock(ProxyInstanceMetaData.class), null), contextManager);
     }
 
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {
