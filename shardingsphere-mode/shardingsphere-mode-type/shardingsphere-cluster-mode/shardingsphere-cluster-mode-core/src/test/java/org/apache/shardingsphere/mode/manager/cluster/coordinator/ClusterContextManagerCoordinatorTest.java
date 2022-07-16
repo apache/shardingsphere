@@ -290,7 +290,7 @@ public final class ClusterContextManagerCoordinatorTest {
     public void assertRenewInstanceStatus() {
         Collection<String> testStates = new LinkedList<>();
         testStates.add(StateType.OK.name());
-        StateEvent mockStateEvent = new StateEvent(contextManager.getInstanceContext().getInstance().getInstanceMetaData().getId(), testStates);
+        StateEvent mockStateEvent = new StateEvent(contextManager.getInstanceContext().getInstance().getMetaData().getId(), testStates);
         coordinator.renew(mockStateEvent);
         assertThat(contextManager.getInstanceContext().getInstance().getState().getCurrentState(), is(StateType.OK));
         testStates.add(StateType.CIRCUIT_BREAK.name());
@@ -301,14 +301,14 @@ public final class ClusterContextManagerCoordinatorTest {
     @Test
     public void assertRenewInstanceLabels() {
         Collection<String> labels = Collections.singleton("test");
-        coordinator.renew(new LabelsEvent(contextManager.getInstanceContext().getInstance().getInstanceMetaData().getId(), labels));
+        coordinator.renew(new LabelsEvent(contextManager.getInstanceContext().getInstance().getMetaData().getId(), labels));
         assertThat(contextManager.getInstanceContext().getInstance().getLabels(), is(labels));
     }
     
     @Test
     public void assertRenewInstanceOfflineEvent() {
-        coordinator.renew(new InstanceOfflineEvent(contextManager.getInstanceContext().getInstance().getInstanceMetaData()));
-        assertThat(((ProxyInstanceMetaData) contextManager.getInstanceContext().getInstance().getInstanceMetaData()).getPort(), is(3307));
+        coordinator.renew(new InstanceOfflineEvent(contextManager.getInstanceContext().getInstance().getMetaData()));
+        assertThat(((ProxyInstanceMetaData) contextManager.getInstanceContext().getInstance().getMetaData()).getPort(), is(3307));
     }
     
     @Test
@@ -330,15 +330,15 @@ public final class ClusterContextManagerCoordinatorTest {
         InstanceOnlineEvent instanceOnlineEvent1 = new InstanceOnlineEvent(instanceMetaData1);
         coordinator.renew(instanceOnlineEvent1);
         assertThat(contextManager.getInstanceContext().getComputeNodeInstances().size(), is(1));
-        assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getComputeNodeInstances()).get(0).getInstanceMetaData(), is(instanceMetaData1));
+        assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getComputeNodeInstances()).get(0).getMetaData(), is(instanceMetaData1));
         InstanceMetaData instanceMetaData2 = new ProxyInstanceMetaData("foo_instance_3308", 3308);
         InstanceOnlineEvent instanceOnlineEvent2 = new InstanceOnlineEvent(instanceMetaData2);
         coordinator.renew(instanceOnlineEvent2);
         assertThat(contextManager.getInstanceContext().getComputeNodeInstances().size(), is(2));
-        assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getComputeNodeInstances()).get(1).getInstanceMetaData(), is(instanceMetaData2));
+        assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getComputeNodeInstances()).get(1).getMetaData(), is(instanceMetaData2));
         coordinator.renew(instanceOnlineEvent1);
         assertThat(contextManager.getInstanceContext().getComputeNodeInstances().size(), is(2));
-        assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getComputeNodeInstances()).get(1).getInstanceMetaData(), is(instanceMetaData1));
+        assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getComputeNodeInstances()).get(1).getMetaData(), is(instanceMetaData1));
     }
     
     @Test
@@ -372,7 +372,7 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertTriggerShowProcessList() throws NoSuchFieldException, IllegalAccessException {
-        String instanceId = contextManager.getInstanceContext().getInstance().getInstanceMetaData().getId();
+        String instanceId = contextManager.getInstanceContext().getInstance().getMetaData().getId();
         ShowProcessListManager.getInstance().putProcessContext("foo_execution_id", new YamlExecuteProcessContext(mock(ExecuteProcessContext.class)));
         String showProcessListId = "foo_process_id";
         coordinator.triggerShowProcessList(new ShowProcessListTriggerEvent(instanceId, showProcessListId));
