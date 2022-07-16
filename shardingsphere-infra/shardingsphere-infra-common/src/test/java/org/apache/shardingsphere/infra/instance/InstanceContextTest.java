@@ -98,14 +98,6 @@ public final class InstanceContextTest {
     }
     
     @Test
-    public void assertGetWorkerIdGenerator() {
-        WorkerIdGeneratorFixture expected = new WorkerIdGeneratorFixture(Long.MIN_VALUE);
-        InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), expected, modeConfig, lockContext, eventBusContext);
-        WorkerIdGeneratorFixture actual = (WorkerIdGeneratorFixture) context.getWorkerIdGenerator();
-        assertThat(actual, is(expected));
-    }
-    
-    @Test
     public void assertGetModeConfiguration() {
         InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfig, lockContext, eventBusContext);
         ModeConfiguration actual = context.getModeConfiguration();
