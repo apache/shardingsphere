@@ -46,7 +46,7 @@ public final class DistributedLockContext extends AbstractLockContext {
     
     @Override
     public void initLockState(final InstanceContext instanceContext) {
-        loadLockManager(new ShardingSphereInternalLockHolder(repository, instanceContext.getInstance(), instanceContext.getComputeNodeInstances()), instanceContext.getEventBusContext());
+        loadLockManager(new ShardingSphereInternalLockHolder(repository, instanceContext.getInstance(), instanceContext.getAllClusterInstances()), instanceContext.getEventBusContext());
     }
     
     private void loadLockManager(final ShardingSphereInternalLockHolder lockHolder, final EventBusContext eventBusContext) {
