@@ -92,14 +92,14 @@ public final class ShardingRuleStatementCheckerTest {
     
     @Test
     public void assertCheckerBindingTableSuccess() throws DistSQLException {
-        ShardingRuleConfiguration shardingRuleConfiguration = createShardingRuleConfiguration();
-        shardingRuleConfiguration.getBindingTableGroups().add("t_order,t_order_item");
+        ShardingRuleConfiguration shardingRuleConfig = createShardingRuleConfiguration();
+        shardingRuleConfig.getBindingTableGroups().add("t_order,t_order_item");
         Collection<AbstractTableRuleSegment> rules = new LinkedList<>();
         rules.add(new AutoTableRuleSegment("t_order", Arrays.asList("ds_0", "ds_1"), "order_id",
                 new AlgorithmSegment("MOD", newProperties("sharding-count", "2")), null));
         rules.add(new AutoTableRuleSegment("t_order_item", Arrays.asList("ds_0", "ds_1"), "order_id",
                 new AlgorithmSegment("MOD", newProperties("sharding-count", "2")), null));
-        ShardingTableRuleStatementChecker.checkAlteration(database, rules, shardingRuleConfiguration);
+        ShardingTableRuleStatementChecker.checkAlteration(database, rules, shardingRuleConfig);
     }
     
     @Test(expected = DuplicateRuleException.class)
