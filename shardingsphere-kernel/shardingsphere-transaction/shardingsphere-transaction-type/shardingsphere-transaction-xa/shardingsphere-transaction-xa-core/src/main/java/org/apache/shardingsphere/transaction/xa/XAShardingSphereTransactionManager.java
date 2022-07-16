@@ -121,6 +121,8 @@ public final class XAShardingSphereTransactionManager implements ShardingSphereT
             each.close();
         }
         cachedDataSources.clear();
-        xaTransactionManagerProvider.close();
+        if (null != xaTransactionManagerProvider) {
+            xaTransactionManagerProvider.close();
+        }
     }
 }
