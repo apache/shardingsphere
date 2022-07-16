@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL create extension statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLCreateExtensionStatement extends CreateExtensionStatement implements PostgreSQLStatement {
 }

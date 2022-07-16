@@ -28,7 +28,7 @@ import java.util.Optional;
  * PostgreSQL create index statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLCreateIndexStatement extends CreateIndexStatement implements PostgreSQLStatement {
     
     private Integer generatedIndexStartIndex;

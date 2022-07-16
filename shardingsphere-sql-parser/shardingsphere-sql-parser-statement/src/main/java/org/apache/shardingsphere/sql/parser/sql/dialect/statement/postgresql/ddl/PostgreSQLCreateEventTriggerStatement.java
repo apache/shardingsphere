@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL create event trigger statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLCreateEventTriggerStatement extends CreateEventTriggerStatement implements PostgreSQLStatement {
 }
