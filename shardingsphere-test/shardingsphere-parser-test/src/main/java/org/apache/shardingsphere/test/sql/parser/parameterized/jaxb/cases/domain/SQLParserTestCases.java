@@ -1600,12 +1600,11 @@ public final class SQLParserTestCases {
      *
      * @return all SQL parser test cases
      */
-    // CHECKSTYLE:OFF
+    @SuppressWarnings("unchecked")
     @SneakyThrows(IllegalAccessException.class)
     public Map<String, SQLParserTestCase> getAllSQLParserTestCases() {
         Map<String, SQLParserTestCase> result = new HashMap<>();
-        Field[] fields = SQLParserTestCases.class.getDeclaredFields();
-        for (Field each : fields) {
+        for (Field each : SQLParserTestCases.class.getDeclaredFields()) {
             if (isSQLParserTestCasesField(each)) {
                 each.setAccessible(true);
                 List<? extends SQLParserTestCase> testCases = (List<? extends SQLParserTestCase>) each.get(this);
@@ -1616,7 +1615,6 @@ public final class SQLParserTestCases {
         }
         return result;
     }
-    // CHECKSTYLE:ON
     
     private boolean isSQLParserTestCasesField(final Field field) {
         if (field.isAnnotationPresent(XmlElement.class) && List.class == field.getType() && field.getGenericType() instanceof ParameterizedType) {
