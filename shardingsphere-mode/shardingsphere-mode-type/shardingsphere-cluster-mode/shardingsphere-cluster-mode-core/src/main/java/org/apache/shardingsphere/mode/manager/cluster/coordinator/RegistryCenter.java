@@ -72,11 +72,11 @@ public final class RegistryCenter {
         storageNodeStatusService = new StorageNodeStatusService(repository);
         computeNodeStatusService = new ComputeNodeStatusService(repository);
         lockService = new MutexLockRegistryService(repository);
-        listenerFactory = new GovernanceWatcherFactory(repository, eventBusContext, getJDBCDataBaseName());
+        listenerFactory = new GovernanceWatcherFactory(repository, eventBusContext, getJDBCDatabaseName());
         createSubscribers(repository);
     }
     
-    private String getJDBCDataBaseName() {
+    private String getJDBCDatabaseName() {
         return instanceMetaData instanceof JDBCInstanceMetaData ? databaseConfigs.keySet().stream().findFirst().get() : null;
     }
     
