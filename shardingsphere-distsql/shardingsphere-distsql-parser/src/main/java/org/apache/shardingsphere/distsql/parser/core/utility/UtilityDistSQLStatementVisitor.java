@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.core.advanced;
+package org.apache.shardingsphere.distsql.parser.core.utility;
 
-import org.apache.shardingsphere.distsql.parser.autogen.AdvancedDistSQLStatementBaseVisitor;
-import org.apache.shardingsphere.distsql.parser.autogen.AdvancedDistSQLStatementParser.FormatSQLContext;
-import org.apache.shardingsphere.distsql.parser.autogen.AdvancedDistSQLStatementParser.ParseSQLContext;
-import org.apache.shardingsphere.distsql.parser.autogen.AdvancedDistSQLStatementParser.PreviewSQLContext;
+import org.apache.shardingsphere.distsql.parser.autogen.UtilityDistSQLStatementBaseVisitor;
+import org.apache.shardingsphere.distsql.parser.autogen.UtilityDistSQLStatementParser.FormatSQLContext;
+import org.apache.shardingsphere.distsql.parser.autogen.UtilityDistSQLStatementParser.ParseSQLContext;
+import org.apache.shardingsphere.distsql.parser.autogen.UtilityDistSQLStatementParser.PreviewSQLContext;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.FormatStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.ParseStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.PreviewStatement;
@@ -28,9 +28,9 @@ import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
- * SQL statement visitor for advanced dist SQL.
+ * SQL statement visitor for utility dist SQL.
  */
-public final class AdvancedDistSQLStatementVisitor extends AdvancedDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
+public final class UtilityDistSQLStatementVisitor extends UtilityDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     
     @Override
     public ASTNode visitPreviewSQL(final PreviewSQLContext ctx) {

@@ -15,18 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.core.common;
+package org.apache.shardingsphere.distsql.parser.core.utility;
 
-import org.antlr.v4.runtime.CharStream;
-import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementLexer;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.TokenStream;
+import org.apache.shardingsphere.distsql.parser.autogen.UtilityDistSQLStatementParser;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
- * SQL lexer for common dist SQL.
+ * SQL parser for utility dist SQL.
  */
-public final class CommonDistSQLLexer extends CommonDistSQLStatementLexer implements SQLLexer {
+public final class UtilityDistSQLParser extends UtilityDistSQLStatementParser implements SQLParser {
     
-    public CommonDistSQLLexer(final CharStream input) {
+    public UtilityDistSQLParser(final TokenStream input) {
         super(input);
+    }
+    
+    @Override
+    public ASTNode parse() {
+        return new ParseASTNode(execute(), (CommonTokenStream) getTokenStream());
     }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.core.advanced;
+package org.apache.shardingsphere.distsql.parser.core.utility;
 
 import org.antlr.v4.runtime.misc.ParseCancellationException;
 import org.antlr.v4.runtime.tree.ErrorNode;
@@ -26,9 +26,9 @@ import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * SQL statement parser engine for advanced dist SQL.
+ * SQL statement parser engine for utility dist SQL.
  */
-public final class AdvancedDistSQLStatementParserEngine {
+public final class UtilityDistSQLStatementParserEngine {
     
     /**
      * Parse SQL.
@@ -43,7 +43,7 @@ public final class AdvancedDistSQLStatementParserEngine {
     
     private ASTNode parseToASTNode(final String sql) {
         try {
-            return SQLParserFactory.newInstance(sql, AdvancedDistSQLLexer.class, AdvancedDistSQLParser.class).parse();
+            return SQLParserFactory.newInstance(sql, UtilityDistSQLLexer.class, UtilityDistSQLParser.class).parse();
         } catch (final ParseCancellationException | SQLParsingException ignored) {
             throw new SQLParsingException("You have an error in your SQL syntax.");
         }
@@ -53,6 +53,6 @@ public final class AdvancedDistSQLStatementParserEngine {
         if (parseASTNode.getRootNode() instanceof ErrorNode) {
             throw new SQLParsingException("Unsupported SQL of `%s`", sql);
         }
-        return (SQLStatement) (new AdvancedDistSQLStatementVisitor()).visit(parseASTNode.getRootNode());
+        return (SQLStatement) (new UtilityDistSQLStatementVisitor()).visit(parseASTNode.getRootNode());
     }
 }
