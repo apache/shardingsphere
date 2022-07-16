@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL drop access method statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLDropAccessMethodStatement extends DropAccessMethodStatement implements PostgreSQLStatement {
 }

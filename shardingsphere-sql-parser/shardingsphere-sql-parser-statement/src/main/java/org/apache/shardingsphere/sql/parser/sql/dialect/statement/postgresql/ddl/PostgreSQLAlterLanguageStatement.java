@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL alter language statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLAlterLanguageStatement extends AlterLanguageStatement implements PostgreSQLStatement {
 }

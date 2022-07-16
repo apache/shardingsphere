@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL explain statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLExplainStatement extends ExplainStatement implements PostgreSQLStatement {
 }

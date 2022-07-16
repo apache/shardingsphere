@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL alter tablespace statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLAlterTablespaceStatement extends AlterTablespaceStatement implements PostgreSQLStatement {
 }

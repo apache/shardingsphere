@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL create conversion statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLCreateConversionStatement extends CreateConversionStatement implements PostgreSQLStatement {
 }
