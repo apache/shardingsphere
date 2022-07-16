@@ -57,7 +57,7 @@ public final class MetaDataContextsFactory {
      */
     public static MetaDataContexts create(final MetaDataPersistService persistService, final Map<String, DatabaseConfiguration> databaseConfigs,
                                           final InstanceContext instanceContext) throws SQLException {
-        Collection<String> databaseNames = instanceContext.getInstance().getInstanceMetaData() instanceof JDBCInstanceMetaData
+        Collection<String> databaseNames = instanceContext.getInstance().getMetaData() instanceof JDBCInstanceMetaData
                 ? databaseConfigs.keySet()
                 : persistService.getDatabaseMetaDataService().loadAllDatabaseNames();
         Map<String, DatabaseConfiguration> effectiveDatabaseConfigs = createEffectiveDatabaseConfigurations(databaseNames, databaseConfigs, persistService);

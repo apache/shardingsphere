@@ -67,7 +67,7 @@ public final class InstanceContext {
      * @param status status
      */
     public void updateInstanceStatus(final String instanceId, final Collection<String> status) {
-        if (instance.getInstanceMetaData().getId().equals(instanceId)) {
+        if (instance.getMetaData().getId().equals(instanceId)) {
             instance.switchState(status);
         }
         updateRelatedComputeNodeInstancesStatus(instanceId, status);
@@ -75,7 +75,7 @@ public final class InstanceContext {
     
     private void updateRelatedComputeNodeInstancesStatus(final String instanceId, final Collection<String> status) {
         for (ComputeNodeInstance each : computeNodeInstances) {
-            if (each.getInstanceMetaData().getId().equals(instanceId)) {
+            if (each.getMetaData().getId().equals(instanceId)) {
                 each.switchState(status);
             }
         }
@@ -88,10 +88,10 @@ public final class InstanceContext {
      * @param labels collection of label
      */
     public void updateLabel(final String instanceId, final Collection<String> labels) {
-        if (instance.getInstanceMetaData().getId().equals(instanceId)) {
+        if (instance.getMetaData().getId().equals(instanceId)) {
             instance.setLabels(labels);
         }
-        computeNodeInstances.stream().filter(each -> each.getInstanceMetaData().getId().equals(instanceId)).forEach(each -> each.setLabels(labels));
+        computeNodeInstances.stream().filter(each -> each.getMetaData().getId().equals(instanceId)).forEach(each -> each.setLabels(labels));
     }
     
     /**
@@ -110,7 +110,7 @@ public final class InstanceContext {
      * @param instance compute node instance
      */
     public void addComputeNodeInstance(final ComputeNodeInstance instance) {
-        computeNodeInstances.removeIf(each -> each.getInstanceMetaData().getId().equalsIgnoreCase(instance.getInstanceMetaData().getId()));
+        computeNodeInstances.removeIf(each -> each.getMetaData().getId().equalsIgnoreCase(instance.getMetaData().getId()));
         computeNodeInstances.add(instance);
     }
     
@@ -120,7 +120,7 @@ public final class InstanceContext {
      * @param instance compute node instance
      */
     public void deleteComputeNodeInstance(final ComputeNodeInstance instance) {
-        computeNodeInstances.removeIf(each -> each.getInstanceMetaData().getId().equalsIgnoreCase(instance.getInstanceMetaData().getId()));
+        computeNodeInstances.removeIf(each -> each.getMetaData().getId().equalsIgnoreCase(instance.getMetaData().getId()));
     }
     
     /**
@@ -133,8 +133,8 @@ public final class InstanceContext {
     public List<InstanceMetaData> getComputeNodeInstances(final InstanceType instanceType, final Collection<String> labels) {
         List<InstanceMetaData> result = new ArrayList<>(computeNodeInstances.size());
         for (ComputeNodeInstance each : computeNodeInstances) {
-            if (each.getInstanceMetaData().getType() == instanceType && labels.stream().anyMatch(((Collection<String>) each.getLabels())::contains)) {
-                result.add(each.getInstanceMetaData());
+            if (each.getMetaData().getType() == instanceType && labels.stream().anyMatch(((Collection<String>) each.getLabels())::contains)) {
+                result.add(each.getMetaData());
             }
         }
         return result;
