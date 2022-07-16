@@ -1439,3 +1439,6 @@ varrayType
     : (owner DOT_)? name
     ;
 
+scopeTableName
+    : identifier
+    ;
