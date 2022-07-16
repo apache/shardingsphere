@@ -29,11 +29,9 @@ import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryRes
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.sql.Types;
-import java.util.Collection;
 import java.util.Collections;
 
 /**
@@ -60,12 +58,7 @@ public final class ShowVersionExecutor implements DatabaseAdminQueryExecutor {
     }
     
     private String getLabel() {
-        Collection<ProjectionSegment> projections = sqlStatement.getProjections().getProjections();
-        for (ProjectionSegment each : projections) {
-            if (each instanceof ExpressionProjectionSegment) {
-                return ((ExpressionProjectionSegment) each).getAlias().orElse(FUNCTION_NAME);
-            }
-        }
-        return FUNCTION_NAME;
+        return sqlStatement.getProjections().getProjections().stream()
+                .filter(each -> each instanceof ExpressionProjectionSegment).findFirst().map(each -> ((ExpressionProjectionSegment) each).getAlias().orElse(FUNCTION_NAME)).orElse(FUNCTION_NAME);
     }
 }

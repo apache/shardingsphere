@@ -38,8 +38,8 @@ public final class ProjectionsSegment implements SQLSegment {
     
     private final int stopIndex;
     
+    private final Collection<ProjectionSegment> projections = new LinkedList<>();
+    
     @Setter
     private boolean distinctRow;
-    
-    private final Collection<ProjectionSegment> projections = new LinkedList<>();
 }
