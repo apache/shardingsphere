@@ -329,16 +329,16 @@ public final class ClusterContextManagerCoordinatorTest {
         InstanceMetaData instanceMetaData1 = new ProxyInstanceMetaData("foo_instance_3307", 3307);
         InstanceOnlineEvent instanceOnlineEvent1 = new InstanceOnlineEvent(instanceMetaData1);
         coordinator.renew(instanceOnlineEvent1);
-        assertThat(contextManager.getInstanceContext().getComputeNodeInstances().size(), is(1));
-        assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getComputeNodeInstances()).get(0).getMetaData(), is(instanceMetaData1));
+        assertThat(contextManager.getInstanceContext().getAllClusterInstances().size(), is(1));
+        assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getAllClusterInstances()).get(0).getMetaData(), is(instanceMetaData1));
         InstanceMetaData instanceMetaData2 = new ProxyInstanceMetaData("foo_instance_3308", 3308);
         InstanceOnlineEvent instanceOnlineEvent2 = new InstanceOnlineEvent(instanceMetaData2);
         coordinator.renew(instanceOnlineEvent2);
-        assertThat(contextManager.getInstanceContext().getComputeNodeInstances().size(), is(2));
-        assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getComputeNodeInstances()).get(1).getMetaData(), is(instanceMetaData2));
+        assertThat(contextManager.getInstanceContext().getAllClusterInstances().size(), is(2));
+        assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getAllClusterInstances()).get(1).getMetaData(), is(instanceMetaData2));
         coordinator.renew(instanceOnlineEvent1);
-        assertThat(contextManager.getInstanceContext().getComputeNodeInstances().size(), is(2));
-        assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getComputeNodeInstances()).get(1).getMetaData(), is(instanceMetaData1));
+        assertThat(contextManager.getInstanceContext().getAllClusterInstances().size(), is(2));
+        assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getAllClusterInstances()).get(1).getMetaData(), is(instanceMetaData1));
     }
     
     @Test

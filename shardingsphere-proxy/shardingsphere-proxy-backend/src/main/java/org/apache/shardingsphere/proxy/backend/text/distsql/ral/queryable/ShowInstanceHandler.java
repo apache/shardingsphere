@@ -60,7 +60,7 @@ public final class ShowInstanceHandler extends QueryableRALBackendHandler<ShowIn
         if ("Standalone".equalsIgnoreCase(modeType)) {
             return Collections.singletonList(buildRow(contextManager.getInstanceContext().getInstance(), modeType));
         }
-        Collection<ComputeNodeInstance> instances = contextManager.getInstanceContext().getComputeNodeInstances().stream()
+        Collection<ComputeNodeInstance> instances = contextManager.getInstanceContext().getAllClusterInstances().stream()
                 .filter(each -> InstanceType.PROXY == each.getMetaData().getType()).collect(Collectors.toList());
         return instances.isEmpty() ? Collections.emptyList() : instances.stream().filter(Objects::nonNull).map(each -> buildRow(each, modeType)).collect(Collectors.toList());
     }
