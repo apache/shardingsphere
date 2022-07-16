@@ -168,5 +168,6 @@ execute
     | reindex
     | securityLabelStmt
     | createEventTrigger
+    | createForeignDataWrapper
     ) SEMI_? EOF
     ;
