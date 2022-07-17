@@ -28,7 +28,6 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -65,17 +64,6 @@ public final class ShardingSphereMetaData {
         ShardingSphereDatabase database = ShardingSphereDatabase.create(databaseName, protocolType);
         databases.put(databaseName.toLowerCase(), database);
         globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.addResource(database));
-    }
-    
-    /**
-     * Put all databases.
-     *
-     * @param databases databases
-     */
-    public void putAllDatabases(final Map<String, ShardingSphereDatabase> databases) {
-        for (Entry<String, ShardingSphereDatabase> entry : databases.entrySet()) {
-            databases.put(entry.getKey().toLowerCase(), entry.getValue());
-        }
     }
     
     /**
