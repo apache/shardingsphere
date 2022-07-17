@@ -28,17 +28,16 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertNotNull;
 
-public class PipelineDataSourceFactoryTest {
+public final class PipelineDataSourceFactoryTest {
 
     @Test
-    public void testNewInstance() {
-        Map<String, Object> yamlDataSourceConfig = new HashMap<>();
+    public void assertNewInstance() {
+        Map<String, Object> yamlDataSourceConfig = new HashMap<>(3);
         yamlDataSourceConfig.put("url", "jdbc:mysql://localhost:3306/database");
         yamlDataSourceConfig.put("username", "username");
         yamlDataSourceConfig.put("password", "password");
         StandardPipelineDataSourceConfiguration standardPipelineDataSourceConfiguration = new StandardPipelineDataSourceConfiguration(yamlDataSourceConfig);
         PipelineDataSourceWrapper pipelineDataSourceWrapper = PipelineDataSourceFactory.newInstance(standardPipelineDataSourceConfiguration);
-        assertNotNull(pipelineDataSourceWrapper);
         assertThat(pipelineDataSourceWrapper.getDatabaseType(), is(standardPipelineDataSourceConfiguration.getDatabaseType()));
     }
 }
