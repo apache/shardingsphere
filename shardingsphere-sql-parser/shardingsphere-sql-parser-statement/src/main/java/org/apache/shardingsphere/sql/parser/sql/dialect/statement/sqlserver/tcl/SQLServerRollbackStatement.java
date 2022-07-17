@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
 /**
  * SQLServer rollback statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class SQLServerRollbackStatement extends RollbackStatement implements SQLServerStatement {
 }

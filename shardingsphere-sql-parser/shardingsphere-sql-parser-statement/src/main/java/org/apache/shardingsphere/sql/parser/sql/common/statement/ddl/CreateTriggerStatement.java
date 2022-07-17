@@ -15,15 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.dcl;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dcl.DropUserStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * SQLServer drop user statement.
+ * Create trigger statement.
  */
 @ToString(callSuper = true)
-public final class SQLServerDropUserStatement extends DropUserStatement implements SQLServerStatement {
+public abstract class CreateTriggerStatement extends AbstractSQLStatement implements DDLStatement {
 }
