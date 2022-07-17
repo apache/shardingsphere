@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
 
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropServerStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
 /**
  * MySQL drop server statement.
  */
 @ToString(callSuper = true)
-public final class MySQLDropServerStatement extends AbstractSQLStatement implements DDLStatement, MySQLStatement {
+public final class MySQLDropServerStatement extends DropServerStatement implements DDLStatement, MySQLStatement {
 }
