@@ -20,12 +20,14 @@ package org.apache.shardingsphere.data.pipeline.spi.fixture;
 import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGenerator;
 
 import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.Collections;
 
 public final class CreateTableSQLGeneratorFixture implements CreateTableSQLGenerator {
     
     @Override
-    public String generate(final String tableName, final String schemaName, final DataSource dataSource) {
-        return "";
+    public Collection<String> generate(final String tableName, final String schemaName, final DataSource dataSource) {
+        return Collections.singletonList("");
     }
     
     @Override

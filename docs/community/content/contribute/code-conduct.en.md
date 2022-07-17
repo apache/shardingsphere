@@ -71,6 +71,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - For accurate asserts, try not to use `not`, `containsString` to make assertions.
  - Actual values of test cases should be named `actualXXX`, expected values `expectedXXX`.
  - Class for test case and `@Test` annotation do not need javadoc.
+ - Mockito mockStatic and mockConstruction methods must be used with try-with-resource or closed in the teardown method to avoid leaks.
 
 ## Contributor Covenant G4 Code of Conduct
  - Common Conduct
@@ -86,3 +87,4 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
    - If a rule's branch is over than `5`, every branch take a new line.
    - Rule name of parser should same with java variable's camel case.
    - Define separate files for every SQL type, file name should consist of `database` + `SQL type` + `Statement`. For example: `MySQLDQLStatement.g4`.
+   - Each `SQLStatement` and `SQLSegment` implementation class must add lombok `@ToString` annotation, if the implementation class inherits a parent class, you need to add `callSuper = true` parameter.

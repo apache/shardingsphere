@@ -5,71 +5,58 @@ weight = 3
 chapter = true
 +++
 
-## SQLRouter
+## SPI Interface
 
-| *SPI Name*                          | *Description*                                         |
-| ----------------------------------- | ----------------------------------------------------- |
-| SQLRouter                           | Used to process routing results                       |
+| *SPI Name*                           | *Description*             |
+| ----------------------------------- | --------------------- |
+| SQLRouter                           | Used to process routing results         |
+| SQLRewriteContextDecorator         | Used to handle SQL rewrite results |
+| SQLExecutionHook              | SQL execution process listener |
+| ResultProcessEngine          | Used to process result sets        |
+| StoragePrivilegeHandler    | Use SQL dialect to process privilege metadata          |
+| DynamicDataSourceStrategy                  | Dynamic data source fetch strategy                 |
 
-| *Implementation Class*              | *Description*                                         |
-| ----------------------------------- | ----------------------------------------------------- |
-| ReadwriteSplittingSQLRouter         | Used to process read-write separation routing results |
-| DatabaseDiscoverySQLRouter          | Used to process database discovery routing results    |
-| SingleTableSQLRouter                | Used to process single-table routing results          |
-| ShardingSQLRouter                   | Used to process sharding routing results              |
-| ShadowSQLRouter                     | Used to process shadow database routing results       |
+## Sample
 
-## SQLRewriteContextDecorator
+### SQLRouter
 
-| *SPI Name*                         | *Description*                                  |
-| ---------------------------------- | ---------------------------------------------- |
-| SQLRewriteContextDecorator         | Used to process SQL rewrite results            |
+| *Implementation Class*                          | *Description*             |
+| ----------------------------------- | --------------------- |
+| ReadwriteSplittingSQLRouter         | Used to process read-write splitting routing results  |
+| DatabaseDiscoverySQLRouter          | Used to process database discovery routing results |
+| SingleTableSQLRouter                | Used to process single-table routing results      |
+| ShardingSQLRouter                   | Used to process sharding routing results      |
+| ShadowSQLRouter                     | Used to process shadow database routing results    |
 
-| *SPI Name*                         | *Description*                                  |
-| ---------------------------------- | ---------------------------------------------- |
-| ShardingSQLRewriteContextDecorator | Used to process sharding SQL rewrite results   |
+### SQLRewriteContextDecorator
+| *Implementation Class*                         | *Description*              |
+| ---------------------------------- | --------------------- |
+| ShardingSQLRewriteContextDecorator | Used to process sharding SQL rewrite results |
 | EncryptSQLRewriteContextDecorator  | Used to process encryption SQL rewrite results |
 
-## SQLExecutionHook
-
-| *SPI Name*                    | *Description*                     |
-| ----------------------------- | --------------------------------- |
-| SQLExecutionHook              | Hook of SQL execution             |
-
-| *Implementation Class*        | *Description*                     |
-| ----------------------------- | --------------------------------- |
+### SQLExecutionHook
+| *Implementation Class*                    | *Description*                 |
+| ----------------------------- | ------------------------- |
 | TransactionalSQLExecutionHook | Transaction hook of SQL execution |
 
-## ResultProcessEngine
+### ResultProcessEngine
 
-| *SPI Name*                   | *Description*                                         |
-| ---------------------------- | ----------------------------------------------------- |
-| ResultProcessEngine          | Used by merge engine to process result set            |
+| *Implementation Class*                   | *Description*           |
+| ---------------------------- | ------------------- |
+| ShardingResultMergerEngine   | Used to handle sharding result set merge |
+| EncryptResultDecoratorEngine | Used to handle encrypted result set overrides |
 
-| *Implementation Class*       | *Description*                                         |
-| ---------------------------- | ----------------------------------------------------- |
-| ShardingResultMergerEngine   | Used by merge engine to process sharding result set   |
-| EncryptResultDecoratorEngine | Used by merge engine to process encryption result set |
+### StoragePrivilegeHandler
 
-## StoragePrivilegeHandler
+| *Implementation Class*                 | *Description*                      |
+| -------------------------- | ------------------------------ |
+| PostgreSQLPrivilegeHandler | Use PostgreSQL dialect to process privilege metadata   |
+| SQLServerPrivilegeHandler  | Use SQLServer dialect to process privilege metadata    |
+| OraclePrivilegeHandler     | Use Oracle dialect to process privilege metadata       |
+| MySQLPrivilegeHandler      | Use MySQL dialect to process privilege metadata        |
 
-| *SPI Name*                 | *Description*                                        |
-| -------------------------- | ---------------------------------------------------- |
-| StoragePrivilegeHandler    | Use SQL dialect to process privilege metadata        |
+### DynamicDataSourceStrategy
 
-| *Implementation Class*     | *Description*                                        |
-| -------------------------- | ---------------------------------------------------- |
-| PostgreSQLPrivilegeHandler | Use PostgreSQL dialect to process privilege metadata |
-| SQLServerPrivilegeHandler  | Use SQLServer dialect to process privilege metadata  |
-| OraclePrivilegeHandler     | Use Oracle dialect to process privilege metadata     |
-| MySQLPrivilegeHandler      | Use MySQL dialect to process privilege metadata      |
-
-## DynamicDataSourceStrategy
-
-| *SPI Name*                                 | *Description*                                       |
-| ------------------------------------------ | --------------------------------------------------- |
-| DynamicDataSourceStrategy                  | Dynamic data source fetch strategy                  |
-
-| *Implementation Class*                     | *Description*                                       |
-| ------------------------------------------ | --------------------------------------------------- |
+| *Implementation Class*                                 | *Description*                       |
+| ------------------------------------------ | ------------------------------- |
 | DatabaseDiscoveryDynamicDataSourceStrategy | Use database discovery to dynamic fetch data source |

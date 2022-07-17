@@ -2858,3 +2858,51 @@ SHARE
 EXCLUSIVE
     : E X C L U S I V E
     ;
+
+ANCILLARY
+    : A N C I L L A R Y
+    ;
+
+BINDING
+    : B I N D I N G
+    ;
+
+SCAN
+    : S C A N
+    ;
+
+COMPUTE
+    : C O M P U T E
+    ;
+
+UNDROP
+    : U N D R O P
+    ;
+
+DISKS
+    : D I S K S
+    ;
+
+COARSE
+    : C O A R S E
+    ;
+
+FINE
+    : F I N E
+    ;
+
+ALIAS
+    : A L I A S
+    ;
+
+SCRUB
+    : S C R U B
+    ;
+
+DISMOUNT
+    : D I S M O U N T
+    ;
+
+REBALANCE
+    : R E B A L A N C E
+    ;

@@ -20,13 +20,15 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.Collection;
 import java.util.LinkedList;
 
+@RequiredArgsConstructor
 @Getter
 @Setter
-@RequiredArgsConstructor
+@ToString
 public final class InExpression implements ExpressionSegment {
     
     private final int startIndex;

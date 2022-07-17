@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Create edition statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class CreateEditionStatement extends AbstractSQLStatement implements DDLStatement {
 }

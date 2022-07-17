@@ -257,7 +257,6 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
                     if (forceRollback && connectionSession.getTransactionStatus().isInTransaction()) {
                         each.rollback();
                     }
-                    resetConnection(each);
                     each.close();
                 } catch (final SQLException ex) {
                     result.add(ex);
@@ -269,18 +268,6 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
             connectionPostProcessors.clear();
         }
         return result;
-    }
-    
-    private void resetConnection(final Connection connection) throws SQLException {
-        if (null == connection) {
-            return;
-        }
-        if (connectionSession.isReadOnly()) {
-            connection.setReadOnly(false);
-        }
-        if (null != connectionSession.getDefaultIsolationLevel()) {
-            connection.setTransactionIsolation(TransactionUtil.getTransactionIsolationLevel(connectionSession.getIsolationLevel()));
-        }
     }
     
     /**

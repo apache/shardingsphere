@@ -27,9 +27,9 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL binlog statement.
  */
-@Getter
-@ToString
 @RequiredArgsConstructor
+@Getter
+@ToString(callSuper = true)
 public final class MySQLBinlogStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     private final String base64Str;

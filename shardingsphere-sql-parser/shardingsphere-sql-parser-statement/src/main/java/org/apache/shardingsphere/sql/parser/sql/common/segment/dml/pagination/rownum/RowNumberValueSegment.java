@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.r
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.PaginationValueSegment;
 
 /**
@@ -26,6 +27,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.pagination.Pa
  */
 @RequiredArgsConstructor
 @Getter
+@ToString
 public abstract class RowNumberValueSegment implements PaginationValueSegment {
     
     private final int startIndex;

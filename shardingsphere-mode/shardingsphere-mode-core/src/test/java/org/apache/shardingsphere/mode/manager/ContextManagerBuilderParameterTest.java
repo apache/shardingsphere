@@ -19,13 +19,19 @@ package org.apache.shardingsphere.mode.manager;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.junit.Test;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -74,5 +80,22 @@ public final class ContextManagerBuilderParameterTest {
         Properties result = new Properties();
         result.setProperty("foo", "foo_value");
         return result;
+    }
+    
+    @Test
+    public void assertGetDefaultModeConfiguration() {
+        ContextManagerBuilderParameter parameter = new ContextManagerBuilderParameter(null, Collections.emptyMap(), Collections.emptyList(), new Properties(), null, null);
+        assertThat(parameter.getModeConfiguration().getType(), is("Standalone"));
+        assertNull(parameter.getModeConfiguration().getRepository());
+        assertTrue(parameter.getModeConfiguration().isOverwrite());
+    }
+    
+    @Test
+    public void assertGetModeConfiguration() {
+        ModeConfiguration modeConfig = new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class), false);
+        ContextManagerBuilderParameter parameter = new ContextManagerBuilderParameter(modeConfig, Collections.emptyMap(), Collections.emptyList(), new Properties(), null, null);
+        assertThat(parameter.getModeConfiguration().getType(), is("Cluster"));
+        assertNotNull(parameter.getModeConfiguration().getRepository());
+        assertFalse(parameter.getModeConfiguration().isOverwrite());
     }
 }

@@ -39,7 +39,6 @@ import java.util.Properties;
 import java.util.UUID;
 
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class StandaloneContextManagerBuilderTextTest {
@@ -48,8 +47,7 @@ public final class StandaloneContextManagerBuilderTextTest {
     public void assertBuild() throws SQLException {
         ContextManager actual = new StandaloneContextManagerBuilder().build(createContextManagerBuilderParameter());
         assertNotNull(actual.getMetaDataContexts().getMetaData().getDatabases().get("foo_db"));
-        assertTrue(actual.getMetaDataContexts().getPersistService().isPresent());
-        PersistRepository repository = actual.getMetaDataContexts().getPersistService().get().getRepository();
+        PersistRepository repository = actual.getMetaDataContexts().getPersistService().getRepository();
         assertNotNull(repository.get(GlobalNode.getGlobalRuleNode()));
         assertNotNull(repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath("foo_db", "0")));
         assertNotNull(repository.get(DatabaseMetaDataNode.getRulePath("foo_db", "0")));

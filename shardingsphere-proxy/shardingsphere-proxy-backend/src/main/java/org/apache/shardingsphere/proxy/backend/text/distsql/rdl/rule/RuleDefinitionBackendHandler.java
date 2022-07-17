@@ -150,14 +150,12 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     
     private void prepareScaling(final ShardingSphereDatabase database, final T sqlStatement, final RuleDefinitionAlterUpdater<?, ?> updater, final RuleConfiguration currentRuleConfig,
                                 final RuleDefinitionAlterPreprocessor<?> preprocessor) {
-        Optional<MetaDataPersistService> metaDataPersistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService();
-        if (metaDataPersistService.isPresent()) {
-            Optional<String> newVersion = metaDataPersistService.get().getDatabaseVersionPersistService().createNewVersion(database.getName());
-            if (!newVersion.isPresent()) {
-                throw new RuntimeException(String.format("Unable to get a new version for database: %s", database.getName()));
-            }
-            persistRuleConfigurationChange(metaDataPersistService.get(), newVersion.get(), database, currentRuleConfig, getAlteredRuleConfig(sqlStatement, updater, currentRuleConfig, preprocessor));
+        MetaDataPersistService persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService();
+        Optional<String> newVersion = persistService.getDatabaseVersionPersistService().createNewVersion(database.getName());
+        if (!newVersion.isPresent()) {
+            throw new RuntimeException(String.format("Unable to get a new version for database: %s", database.getName()));
         }
+        persistRuleConfigurationChange(persistService, newVersion.get(), database, currentRuleConfig, getAlteredRuleConfig(sqlStatement, updater, currentRuleConfig, preprocessor));
     }
     
     private void persistRuleConfigurationChange(final MetaDataPersistService persistService, final String version, final ShardingSphereDatabase database,
@@ -170,7 +168,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     }
     
     private void persistRuleConfigurationChange(final String databaseName, final Collection<RuleConfiguration> alteredConfigs) {
-        ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService().ifPresent(optional -> optional.getDatabaseRulePersistService().persist(databaseName, alteredConfigs));
+        ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService().getDatabaseRulePersistService().persist(databaseName, alteredConfigs);
     }
     
     private RuleConfiguration getAlteredRuleConfig(final T sqlStatement, final RuleDefinitionAlterUpdater updater,

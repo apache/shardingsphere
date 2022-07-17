@@ -1,15 +1,18 @@
 +++
-pre = "<b>6.12. </b>"
+pre = "<b>6.11. </b>"
 title = "SQL Checker"
-weight = 12
+weight = 11
 chapter = true
 +++
 
-## SQLChecker
+## SPI Interface
 
 | *SPI Name*             | *Description*     |
 | ---------------------- | ----------------- |
 | SQLChecker             | SQL checker       |
+
+## Sample
+### SQLChecker
 
 | *Implementation Class* | *Description*          |
 | ---------------------- | ---------------------- |

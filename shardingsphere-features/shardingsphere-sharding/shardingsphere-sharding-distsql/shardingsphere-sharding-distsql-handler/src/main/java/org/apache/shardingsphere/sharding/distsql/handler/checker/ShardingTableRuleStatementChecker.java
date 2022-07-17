@@ -158,16 +158,15 @@ public final class ShardingTableRuleStatementChecker {
     }
     
     private static Collection<String> parseDateSource(final String dateSource) {
-        return InlineExpressionParser.isInlineExpression(dateSource) ? new InlineExpressionParser(dateSource).splitAndEvaluate() : Collections.singletonList(dateSource);
+        return new InlineExpressionParser(dateSource).splitAndEvaluate();
     }
     
     private static Collection<String> getDataSourceNames(final Collection<String> actualDataNodes) {
-        return actualDataNodes.stream().map(each -> {
-            if (isValidDataNode(each)) {
-                return actualDataNodes.stream().map(each1 -> new DataNode(each1).getDataSourceName()).collect(Collectors.toList());
-            }
-            return Collections.singletonList(each);
-        }).flatMap(Collection::stream).collect(Collectors.toCollection(LinkedHashSet::new));
+        Collection<String> result = new HashSet<>();
+        for (String each : actualDataNodes) {
+            result.add(isValidDataNode(each) ? new DataNode(each).getDataSourceName() : each);
+        }
+        return result;
     }
     
     private static Collection<String> getDataSourceNames(final Collection<ShardingTableRuleConfiguration> tableRuleConfigs,
@@ -318,18 +317,18 @@ public final class ShardingTableRuleStatementChecker {
             return;
         }
         ShardingRuleConfiguration toBeCheckedRuleConfig = new ShardingRuleConfiguration();
-        toBeCheckedRuleConfig.setTables(currentRuleConfig.getTables());
-        toBeCheckedRuleConfig.setAutoTables(currentRuleConfig.getAutoTables());
-        toBeCheckedRuleConfig.setBindingTableGroups(currentRuleConfig.getBindingTableGroups());
-        toBeCheckedRuleConfig.setBroadcastTables(currentRuleConfig.getBroadcastTables());
+        toBeCheckedRuleConfig.setTables(new LinkedList<>(currentRuleConfig.getTables()));
+        toBeCheckedRuleConfig.setAutoTables(new LinkedList<>(currentRuleConfig.getAutoTables()));
+        toBeCheckedRuleConfig.setBindingTableGroups(new LinkedList<>(currentRuleConfig.getBindingTableGroups()));
+        toBeCheckedRuleConfig.setBroadcastTables(new LinkedList<>(currentRuleConfig.getBroadcastTables()));
         toBeCheckedRuleConfig.setDefaultTableShardingStrategy(currentRuleConfig.getDefaultTableShardingStrategy());
         toBeCheckedRuleConfig.setDefaultDatabaseShardingStrategy(currentRuleConfig.getDefaultDatabaseShardingStrategy());
         toBeCheckedRuleConfig.setDefaultKeyGenerateStrategy(currentRuleConfig.getDefaultKeyGenerateStrategy());
         toBeCheckedRuleConfig.setDefaultShardingColumn(currentRuleConfig.getDefaultShardingColumn());
-        toBeCheckedRuleConfig.setShardingAlgorithms(currentRuleConfig.getShardingAlgorithms());
-        toBeCheckedRuleConfig.setKeyGenerators(currentRuleConfig.getKeyGenerators());
+        toBeCheckedRuleConfig.setShardingAlgorithms(new LinkedHashMap<>(currentRuleConfig.getShardingAlgorithms()));
+        toBeCheckedRuleConfig.setKeyGenerators(new LinkedHashMap<>(currentRuleConfig.getKeyGenerators()));
         toBeCheckedRuleConfig.setScalingName(currentRuleConfig.getScalingName());
-        toBeCheckedRuleConfig.setScaling(currentRuleConfig.getScaling());
+        toBeCheckedRuleConfig.setScaling(new LinkedHashMap<>(currentRuleConfig.getScaling()));
         removeRuleConfiguration(toBeCheckedRuleConfig, toBeAlteredRuleConfig);
         addRuleConfiguration(toBeCheckedRuleConfig, toBeAlteredRuleConfig);
         Collection<String> dataSourceNames = getRequiredResource(toBeCheckedRuleConfig);

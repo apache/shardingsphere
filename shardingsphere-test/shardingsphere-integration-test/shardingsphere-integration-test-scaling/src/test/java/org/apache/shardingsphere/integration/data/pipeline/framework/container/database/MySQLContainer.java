@@ -19,8 +19,6 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.container.
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.framework.container.wait.JDBCConnectionWaitStrategy;
 import org.testcontainers.containers.BindMode;
@@ -31,7 +29,7 @@ public final class MySQLContainer extends DatabaseContainer {
     
     private static final DatabaseType DATABASE_TYPE = new MySQLDatabaseType();
     
-    private final String username = "root";
+    private final String username = "scaling";
     
     private final String password = "root";
     
@@ -43,16 +41,14 @@ public final class MySQLContainer extends DatabaseContainer {
     
     @Override
     protected void configure() {
-        withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password");
+        withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password", "--lower_case_table_names=1");
         addEnv("LANG", "C.UTF-8");
-        addEnv("MYSQL_ROOT_PASSWORD", username);
+        addEnv("MYSQL_ROOT_PASSWORD", "root");
         addEnv("MYSQL_ROOT_HOST", "%");
         withClasspathResourceMapping("/env/mysql/my.cnf", "/etc/mysql/my.cnf", BindMode.READ_ONLY);
-        withExposedPorts(getPort());
-        if (ScalingITEnvTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItEnvType()) {
-            addFixedExposedPort(port, port);
-        }
-        setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(DATABASE_TYPE, "localhost", getFirstMappedPort()), "root", "root")));
+        withClasspathResourceMapping("/env/mysql/initdb.sql", "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
+        withExposedPorts(port);
+        setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(DATABASE_TYPE, "localhost", getFirstMappedPort()), username, password)));
     }
     
     @Override

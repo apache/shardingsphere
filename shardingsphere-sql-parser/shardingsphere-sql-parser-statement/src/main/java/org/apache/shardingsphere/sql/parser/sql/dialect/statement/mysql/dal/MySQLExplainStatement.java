@@ -30,7 +30,7 @@ import java.util.Optional;
  * MySQL explain statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class MySQLExplainStatement extends ExplainStatement implements MySQLStatement {
     
     private SimpleTableSegment table;

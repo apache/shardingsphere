@@ -43,7 +43,7 @@ import static org.mockito.Mockito.when;
 
 public final class InstanceContextTest {
     
-    private final ModeConfiguration modeConfig = new ModeConfiguration("Memory", null, false);
+    private final ModeConfiguration modeConfig = new ModeConfiguration("Standalone", null, false);
     
     private final LockContext lockContext = mock(LockContext.class);
     
@@ -95,14 +95,6 @@ public final class InstanceContextTest {
         InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfig, lockContext, eventBusContext);
         StateContext actual = context.getInstance().getState();
         assertNotNull(actual);
-    }
-    
-    @Test
-    public void assertGetWorkerIdGenerator() {
-        WorkerIdGeneratorFixture expected = new WorkerIdGeneratorFixture(Long.MIN_VALUE);
-        InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), expected, modeConfig, lockContext, eventBusContext);
-        WorkerIdGeneratorFixture actual = (WorkerIdGeneratorFixture) context.getWorkerIdGenerator();
-        assertThat(actual, is(expected));
     }
     
     @Test

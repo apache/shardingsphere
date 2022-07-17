@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL checkpoint statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLCheckpointStatement extends CheckpointStatement implements PostgreSQLStatement {
 }

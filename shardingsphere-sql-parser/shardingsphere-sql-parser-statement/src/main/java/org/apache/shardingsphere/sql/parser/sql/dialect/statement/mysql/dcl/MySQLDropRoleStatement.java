@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL drop role statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLDropRoleStatement extends DropRoleStatement implements MySQLStatement {
 }

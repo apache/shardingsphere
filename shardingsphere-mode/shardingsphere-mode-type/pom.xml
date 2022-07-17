@@ -29,7 +29,6 @@
     <name>${project.artifactId}</name>
     
     <modules>
-        <module>shardingsphere-memory-mode</module>
         <module>shardingsphere-standalone-mode</module>
         <module>shardingsphere-cluster-mode</module>
     </modules>

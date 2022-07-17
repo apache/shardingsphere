@@ -31,7 +31,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public abstract class MoveStatement extends AbstractSQLStatement implements DDLStatement {
     
     private CursorNameSegment cursorName;

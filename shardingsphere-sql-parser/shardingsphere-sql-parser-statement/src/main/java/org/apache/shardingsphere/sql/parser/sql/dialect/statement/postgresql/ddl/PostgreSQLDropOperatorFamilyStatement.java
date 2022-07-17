@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL drop operator family statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLDropOperatorFamilyStatement extends DropOperatorFamilyStatement implements PostgreSQLStatement {
 }

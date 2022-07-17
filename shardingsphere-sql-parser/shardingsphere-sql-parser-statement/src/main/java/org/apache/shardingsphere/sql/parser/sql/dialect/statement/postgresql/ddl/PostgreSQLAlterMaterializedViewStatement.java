@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL alter materialized view statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLAlterMaterializedViewStatement extends AlterMaterializedViewStatement implements PostgreSQLStatement {
 }

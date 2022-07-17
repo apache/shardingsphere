@@ -17,7 +17,8 @@
 
 # You can get more configuration items about proxy conf from the following URL:
 # https://shardingsphere.apache.org/document/current/en/user-manual/shardingsphere-proxy/configuration/
-<#if mode!="memory">
+
+<#if mode?exists>
     <#include "mode/${mode}.ftl" />
 </#if>
 

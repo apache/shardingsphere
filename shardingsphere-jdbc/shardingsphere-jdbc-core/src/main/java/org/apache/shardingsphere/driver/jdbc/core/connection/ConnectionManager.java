@@ -85,15 +85,15 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
     
     private Map<String, DataSource> getTrafficDataSourceMap(final String schema, final ContextManager contextManager) {
         TrafficRule trafficRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
-        Optional<MetaDataPersistService> metaDataPersistService = contextManager.getMetaDataContexts().getPersistService();
-        if (trafficRule.getStrategyRules().isEmpty() || !metaDataPersistService.isPresent()) {
+        MetaDataPersistService persistService = contextManager.getMetaDataContexts().getPersistService();
+        if (trafficRule.getStrategyRules().isEmpty()) {
             return Collections.emptyMap();
         }
-        Map<String, DataSourceProperties> dataSourcePropsMap = metaDataPersistService.get().getDataSourceService().load(schema);
+        Map<String, DataSourceProperties> dataSourcePropsMap = persistService.getDataSourceService().load(schema);
         Preconditions.checkState(!dataSourcePropsMap.isEmpty(), "Can not get data source properties from meta data.");
         DataSourceProperties dataSourcePropsSample = dataSourcePropsMap.values().iterator().next();
-        Collection<ShardingSphereUser> users = metaDataPersistService.get().getGlobalRuleService().loadUsers();
-        Collection<InstanceMetaData> instances = contextManager.getInstanceContext().getComputeNodeInstances(InstanceType.PROXY, trafficRule.getLabels());
+        Collection<ShardingSphereUser> users = persistService.getGlobalRuleService().loadUsers();
+        Collection<InstanceMetaData> instances = contextManager.getInstanceContext().getAllClusterInstances(InstanceType.PROXY, trafficRule.getLabels());
         return DataSourcePoolCreator.create(createDataSourcePropertiesMap(instances, users, dataSourcePropsSample, schema));
     }
     
