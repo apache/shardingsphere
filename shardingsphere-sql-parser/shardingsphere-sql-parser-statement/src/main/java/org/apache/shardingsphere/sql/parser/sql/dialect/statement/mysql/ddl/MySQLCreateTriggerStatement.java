@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl;
 
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateTriggerStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
 
@@ -26,5 +26,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
  * MySQL create trigger statement.
  */
 @ToString(callSuper = true)
-public final class MySQLCreateTriggerStatement extends CreateTriggerStatement implements DDLStatement, MySQLStatement {
+public final class MySQLCreateTriggerStatement extends AbstractSQLStatement implements DDLStatement, MySQLStatement {
 }
