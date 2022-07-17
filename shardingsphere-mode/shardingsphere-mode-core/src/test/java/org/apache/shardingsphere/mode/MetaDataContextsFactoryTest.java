@@ -1,0 +1,148 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.apache.shardingsphere.mode;
+
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
+import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabasesFactory;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.builder.global.GlobalRulesBuilder;
+import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
+import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
+import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseMetaDataPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.impl.DatabaseRulePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.impl.GlobalRulePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.impl.PropertiesPersistService;
+import org.junit.Assert;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.MockedConstruction;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.*;
+
+import static org.mockito.Mockito.mockConstruction;
+import static org.mockito.Mockito.mockStatic;
+
+@RunWith(MockitoJUnitRunner.class)
+public class MetaDataContextsFactoryTest {
+
+    @Test
+    public void createFactorySuccessfullyTestWithJDBCInstanceMetadata() {
+
+        try(MockedStatic<ShardingSphereDatabasesFactory> mockedShardingSphereDatabasesFactory = mockStatic(ShardingSphereDatabasesFactory.class);
+            MockedStatic<GlobalRulesBuilder> mockedGlobalRulesBuilder = mockStatic(GlobalRulesBuilder.class);
+            MockedConstruction<ShardingSphereRuleMetaData> mockedConstruction = mockConstruction(ShardingSphereRuleMetaData.class)) {
+
+            InstanceContext mockInstanceContext = Mockito.mock(InstanceContext.class);
+            ComputeNodeInstance mockComputeNodeInstance = Mockito.mock(ComputeNodeInstance.class);
+            JDBCInstanceMetaData mockInstanceMetadata = Mockito.mock(JDBCInstanceMetaData.class);
+            MetaDataPersistService mockMetadataPersistService = Mockito.mock(MetaDataPersistService.class);
+            DatabaseRulePersistService mockDatabaseRulePersistService = Mockito.mock(DatabaseRulePersistService.class);
+            GlobalRulePersistService mockGlobalRulePersistService = Mockito.mock(GlobalRulePersistService.class);
+            PropertiesPersistService mockPropertiesPersistService = Mockito.mock(PropertiesPersistService.class);
+            Properties mockProperties = Mockito.mock(Properties.class);
+
+            Map<String, DatabaseConfiguration> mockDatabaseConfigs = Mockito.mock(HashMap.class);
+            Map<String, DataSource> mockEffectiveDataSources = Mockito.mock(HashMap.class);
+            Collection<RuleConfiguration> mockDatabaseRuleConfigs = Mockito.mock(Collection.class);
+            Map<String, ShardingSphereDatabase> mockDatabases = Mockito.mock(HashMap.class);
+            Collection<ShardingSphereRule> mockShardingSphereRules = new HashSet<>();
+            Set<String> mockDatabaseNames = new HashSet<>();
+            mockDatabaseNames.add("testdb");
+
+            Mockito.when(mockInstanceContext.getInstance()).thenReturn(mockComputeNodeInstance);
+            Mockito.when(mockComputeNodeInstance.getMetaData()).thenReturn(mockInstanceMetadata);
+            Mockito.when(mockDatabaseConfigs.keySet()).thenReturn(mockDatabaseNames);
+            Mockito.when(mockMetadataPersistService.getEffectiveDataSources(Mockito.anyString(), Mockito.anyMap())).thenReturn(mockEffectiveDataSources);
+            Mockito.when(mockMetadataPersistService.getDatabaseRulePersistService()).thenReturn(mockDatabaseRulePersistService);
+            Mockito.when(mockDatabaseRulePersistService.load(Mockito.anyString())).thenReturn(mockDatabaseRuleConfigs);
+            Mockito.when(mockMetadataPersistService.getGlobalRuleService()).thenReturn(mockGlobalRulePersistService);
+            Mockito.when(mockGlobalRulePersistService.load()).thenReturn(mockDatabaseRuleConfigs);
+            Mockito.when(mockMetadataPersistService.getPropsService()).thenReturn(mockPropertiesPersistService);
+            Mockito.when(mockPropertiesPersistService.load()).thenReturn(mockProperties);
+            Mockito.when(mockProperties.getOrDefault(Mockito.any(), Mockito.any())).thenReturn("123");
+            mockedShardingSphereDatabasesFactory.when(() -> ShardingSphereDatabasesFactory.create(Mockito.anyMap(), Mockito.any(ConfigurationProperties.class), Mockito.any(InstanceContext.class))).thenReturn(mockDatabases);
+            mockedGlobalRulesBuilder.when(() -> GlobalRulesBuilder.buildRules(Mockito.anyCollection(), Mockito.anyMap(), Mockito.any(InstanceContext.class))).thenReturn(mockShardingSphereRules);
+
+            MetaDataContexts actualResponse = MetaDataContextsFactory.create(mockMetadataPersistService, mockDatabaseConfigs, mockInstanceContext);
+            Assert.assertNotNull(actualResponse);
+        } catch (SQLException e) {
+            Assert.fail();
+        }
+    }
+
+    @Test
+    public void createFactorySuccessfullyTestWithoutJDBCInstanceMetadata() {
+
+        try(MockedStatic<ShardingSphereDatabasesFactory> mockedShardingSphereDatabasesFactory = mockStatic(ShardingSphereDatabasesFactory.class);
+            MockedStatic<GlobalRulesBuilder> mockedGlobalRulesBuilder = mockStatic(GlobalRulesBuilder.class);
+            MockedConstruction<ShardingSphereRuleMetaData> mockedConstruction = mockConstruction(ShardingSphereRuleMetaData.class)) {
+
+            InstanceContext mockInstanceContext = Mockito.mock(InstanceContext.class);
+            ComputeNodeInstance mockComputeNodeInstance = Mockito.mock(ComputeNodeInstance.class);
+            ProxyInstanceMetaData mockInstanceMetadata = Mockito.mock(ProxyInstanceMetaData.class);
+            MetaDataPersistService mockMetadataPersistService = Mockito.mock(MetaDataPersistService.class);
+            DatabaseMetaDataPersistService mockDatabaseMetaDataPersistService = Mockito.mock(DatabaseMetaDataPersistService.class);
+            DatabaseRulePersistService mockDatabaseRulePersistService = Mockito.mock(DatabaseRulePersistService.class);
+            GlobalRulePersistService mockGlobalRulePersistService = Mockito.mock(GlobalRulePersistService.class);
+            PropertiesPersistService mockPropertiesPersistService = Mockito.mock(PropertiesPersistService.class);
+            Properties mockProperties = Mockito.mock(Properties.class);
+
+            Map<String, DatabaseConfiguration> mockDatabaseConfigs = Mockito.mock(HashMap.class);
+            Map<String, DataSource> mockEffectiveDataSources = Mockito.mock(HashMap.class);
+            Collection<RuleConfiguration> mockDatabaseRuleConfigs = Mockito.mock(Collection.class);
+            Map<String, ShardingSphereDatabase> mockDatabases = Mockito.mock(HashMap.class);
+            Collection<ShardingSphereRule> mockShardingSphereRules = new HashSet<>();
+            Collection<String> mockDatabaseNames = new HashSet<>();
+            mockDatabaseNames.add("testdb");
+
+            Mockito.when(mockInstanceContext.getInstance()).thenReturn(mockComputeNodeInstance);
+            Mockito.when(mockComputeNodeInstance.getMetaData()).thenReturn(mockInstanceMetadata);
+            Mockito.when(mockMetadataPersistService.getDatabaseMetaDataService()).thenReturn(mockDatabaseMetaDataPersistService);
+            Mockito.when(mockDatabaseMetaDataPersistService.loadAllDatabaseNames()).thenReturn(mockDatabaseNames);
+            Mockito.when(mockMetadataPersistService.getEffectiveDataSources(Mockito.anyString(), Mockito.anyMap())).thenReturn(mockEffectiveDataSources);
+            Mockito.when(mockMetadataPersistService.getDatabaseRulePersistService()).thenReturn(mockDatabaseRulePersistService);
+            Mockito.when(mockDatabaseRulePersistService.load(Mockito.anyString())).thenReturn(mockDatabaseRuleConfigs);
+            Mockito.when(mockMetadataPersistService.getGlobalRuleService()).thenReturn(mockGlobalRulePersistService);
+            Mockito.when(mockGlobalRulePersistService.load()).thenReturn(mockDatabaseRuleConfigs);
+            Mockito.when(mockMetadataPersistService.getPropsService()).thenReturn(mockPropertiesPersistService);
+            Mockito.when(mockPropertiesPersistService.load()).thenReturn(mockProperties);
+            Mockito.when(mockProperties.getOrDefault(Mockito.any(), Mockito.any())).thenReturn("123");
+            mockedShardingSphereDatabasesFactory.when(() -> ShardingSphereDatabasesFactory.create(Mockito.anyMap(), Mockito.any(ConfigurationProperties.class), Mockito.any(InstanceContext.class))).thenReturn(mockDatabases);
+            mockedGlobalRulesBuilder.when(() -> GlobalRulesBuilder.buildRules(Mockito.anyCollection(), Mockito.anyMap(), Mockito.any(InstanceContext.class))).thenReturn(mockShardingSphereRules);
+
+            MetaDataContexts actualResponse = MetaDataContextsFactory.create(mockMetadataPersistService, mockDatabaseConfigs, mockInstanceContext);
+            Assert.assertNotNull(actualResponse);
+        } catch (SQLException e) {
+            Assert.fail();
+        }
+    }
+}
