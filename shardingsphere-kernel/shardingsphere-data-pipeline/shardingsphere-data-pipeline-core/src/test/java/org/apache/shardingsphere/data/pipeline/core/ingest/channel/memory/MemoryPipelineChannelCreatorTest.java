@@ -30,7 +30,7 @@ import static org.junit.Assert.assertThat;
 public final class MemoryPipelineChannelCreatorTest {
 
     @Test
-    public void testInit() throws Exception {
+    public void assertInit() throws Exception {
         Properties result = new Properties();
         result.setProperty("block-queue-size", "200");
         MemoryPipelineChannelCreator memoryPipelineChannelCreator = new MemoryPipelineChannelCreator();
@@ -41,7 +41,7 @@ public final class MemoryPipelineChannelCreatorTest {
     }
 
     @Test
-    public void testCreatePipelineChannel() {
+    public void assertCreatePipelineChannel() {
         MemoryPipelineChannelCreator memoryPipelineChannelCreator = new MemoryPipelineChannelCreator();
         PipelineChannel pipelineChannel = memoryPipelineChannelCreator.createPipelineChannel(1, records -> { });
         assertThat(pipelineChannel, instanceOf(SimpleMemoryPipelineChannel.class));
