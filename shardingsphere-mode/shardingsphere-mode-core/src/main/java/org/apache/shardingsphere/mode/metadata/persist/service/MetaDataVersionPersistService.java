@@ -25,10 +25,10 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Database version persist service.
+ * Meta data version persist service.
  */
 @RequiredArgsConstructor
-public final class DatabaseVersionPersistService {
+public final class MetaDataVersionPersistService {
     
     private final PersistRepository repository;
     

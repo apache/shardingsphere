@@ -24,7 +24,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.MetadataVersionPreparedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
-import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseVersionPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Optional;
@@ -39,14 +39,14 @@ public final class ScalingRegistrySubscriber {
     
     private final ClusterPersistRepository repository;
     
-    private final DatabaseVersionPersistService databaseVersionPersistService;
+    private final MetaDataVersionPersistService metaDataVersionPersistService;
     
     private final EventBusContext eventBusContext;
     
     public ScalingRegistrySubscriber(final ClusterPersistRepository repository, final EventBusContext eventBusContext) {
         this.repository = repository;
         this.eventBusContext = eventBusContext;
-        databaseVersionPersistService = new DatabaseVersionPersistService(repository);
+        metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
         eventBusContext.register(this);
     }
     
@@ -58,7 +58,7 @@ public final class ScalingRegistrySubscriber {
     @Subscribe
     public void startScaling(final MetadataVersionPreparedEvent event) {
         String databaseName = event.getDatabaseName();
-        String activeVersion = databaseVersionPersistService.getActiveVersion(databaseName).get();
+        String activeVersion = metaDataVersionPersistService.getActiveVersion(databaseName).get();
         String sourceDataSource = repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, activeVersion));
         String targetDataSource = repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, event.getVersion()));
         String sourceRule = repository.get(DatabaseMetaDataNode.getRulePath(databaseName, activeVersion));
@@ -78,10 +78,10 @@ public final class ScalingRegistrySubscriber {
     public void scalingTaskFinished(final ScalingTaskFinishedEvent event) {
         log.info("scalingTaskFinished, event={}", event);
         int targetActiveVersion = event.getTargetActiveVersion();
-        Optional<String> activeVersion = databaseVersionPersistService.getActiveVersion(event.getTargetSchemaName());
+        Optional<String> activeVersion = metaDataVersionPersistService.getActiveVersion(event.getTargetSchemaName());
         if (activeVersion.isPresent() && targetActiveVersion == Integer.parseInt(activeVersion.get())) {
-            databaseVersionPersistService.persistActiveVersion(event.getTargetSchemaName(), event.getTargetNewVersion() + "");
-            databaseVersionPersistService.deleteVersion(event.getTargetSchemaName(), targetActiveVersion + "");
+            metaDataVersionPersistService.persistActiveVersion(event.getTargetSchemaName(), event.getTargetNewVersion() + "");
+            metaDataVersionPersistService.deleteVersion(event.getTargetSchemaName(), targetActiveVersion + "");
         } else {
             log.error("targetActiveVersion does not match current activeVersion, targetActiveVersion={}, activeVersion={}", targetActiveVersion, activeVersion.orElse(null));
         }
