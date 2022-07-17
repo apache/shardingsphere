@@ -32,6 +32,7 @@ import java.util.Optional;
 /**
  * Scaling registry subscriber.
  */
+@SuppressWarnings("UnstableApiUsage")
 @Slf4j
 // TODO move to scaling module
 public final class ScalingRegistrySubscriber {
@@ -57,7 +58,7 @@ public final class ScalingRegistrySubscriber {
     @Subscribe
     public void startScaling(final MetadataVersionPreparedEvent event) {
         String databaseName = event.getDatabaseName();
-        String activeVersion = databaseVersionPersistService.getDatabaseActiveVersion(databaseName).get();
+        String activeVersion = databaseVersionPersistService.getActiveVersion(databaseName).get();
         String sourceDataSource = repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, activeVersion));
         String targetDataSource = repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, event.getVersion()));
         String sourceRule = repository.get(DatabaseMetaDataNode.getRulePath(databaseName, activeVersion));
@@ -77,7 +78,7 @@ public final class ScalingRegistrySubscriber {
     public void scalingTaskFinished(final ScalingTaskFinishedEvent event) {
         log.info("scalingTaskFinished, event={}", event);
         int targetActiveVersion = event.getTargetActiveVersion();
-        Optional<String> activeVersion = databaseVersionPersistService.getDatabaseActiveVersion(event.getTargetSchemaName());
+        Optional<String> activeVersion = databaseVersionPersistService.getActiveVersion(event.getTargetSchemaName());
         if (activeVersion.isPresent() && targetActiveVersion == Integer.parseInt(activeVersion.get())) {
             databaseVersionPersistService.persistActiveVersion(event.getTargetSchemaName(), event.getTargetNewVersion() + "");
             databaseVersionPersistService.deleteVersion(event.getTargetSchemaName(), targetActiveVersion + "");
