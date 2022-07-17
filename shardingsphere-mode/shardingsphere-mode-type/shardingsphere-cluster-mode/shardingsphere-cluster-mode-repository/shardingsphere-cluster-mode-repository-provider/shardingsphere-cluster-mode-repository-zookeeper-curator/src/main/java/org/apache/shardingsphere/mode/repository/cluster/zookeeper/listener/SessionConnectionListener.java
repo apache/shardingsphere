@@ -58,7 +58,7 @@ public final class SessionConnectionListener implements ConnectionStateListener 
         try {
             if (client.getZookeeperClient().blockUntilConnectedOrTimedOut()) {
                 repository.persistEphemeral(ComputeNode.getOnlineInstanceNodePath(instanceContext.getInstance().getCurrentInstanceId(),
-                        instanceContext.getInstance().getInstanceMetaData().getType()), instanceContext.getInstance().getInstanceMetaData().getAttributes());
+                        instanceContext.getInstance().getMetaData().getType()), instanceContext.getInstance().getMetaData().getAttributes());
                 return true;
             }
             sleepInterval();

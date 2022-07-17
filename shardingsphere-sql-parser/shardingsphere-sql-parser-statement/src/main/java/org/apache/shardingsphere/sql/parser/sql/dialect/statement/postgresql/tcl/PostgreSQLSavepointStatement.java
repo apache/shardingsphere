@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL savepoint statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLSavepointStatement extends SavepointStatement implements PostgreSQLStatement {
 }

@@ -58,7 +58,7 @@ public final class ComposedContainerRegistry implements AutoCloseable {
     
     private boolean isClusterMode(final ParameterizedArray parameterizedArray) {
         // TODO cluster mode often throw exception sometimes, issue is #15517
-        return "Cluster".equalsIgnoreCase(parameterizedArray.getMode());
+        return "Cluster".equalsIgnoreCase(parameterizedArray.getMode()) && "proxy".equalsIgnoreCase(parameterizedArray.getAdapter());
     }
     
     @Override

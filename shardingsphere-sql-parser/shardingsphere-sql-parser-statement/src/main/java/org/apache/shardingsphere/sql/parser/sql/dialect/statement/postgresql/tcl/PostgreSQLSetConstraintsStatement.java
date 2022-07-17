@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL set constraints statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLSetConstraintsStatement extends SetConstraintsStatement implements PostgreSQLStatement {
 }

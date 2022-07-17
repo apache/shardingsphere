@@ -33,42 +33,33 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class ShardingSphereDataSourceFactoryTest {
     
-    private final ModeConfiguration modeConfig = new ModeConfiguration("Standalone", null, false);
-    
     @Test
     public void assertCreateDataSourceWithDatabaseName() throws SQLException {
-        DataSource testDataSource = ShardingSphereDataSourceFactory.createDataSource("test_db", null);
-        assertTrue(testDataSource instanceof ShardingSphereDataSource);
-        assertThat(getDatabaseName(testDataSource), is("test_db"));
-        DataSource testDataSource1 = ShardingSphereDataSourceFactory.createDataSource(modeConfig);
-        assertTrue(testDataSource1 instanceof ShardingSphereDataSource);
-        assertThat(getDatabaseName(testDataSource1), is(DefaultDatabase.LOGIC_NAME));
+        DataSource testDataSource0 = ShardingSphereDataSourceFactory.createDataSource("test_db", null);
+        assertDataSource(testDataSource0, "test_db");
+        DataSource testDataSource1 = ShardingSphereDataSourceFactory.createDataSource(new ModeConfiguration("Standalone", null, false));
+        assertDataSource(testDataSource1, DefaultDatabase.LOGIC_NAME);
         DataSource testDataSource2 = ShardingSphereDataSourceFactory.createDataSource("", null);
-        assertTrue(testDataSource2 instanceof ShardingSphereDataSource);
-        assertThat(getDatabaseName(testDataSource2), is(DefaultDatabase.LOGIC_NAME));
+        assertDataSource(testDataSource2, DefaultDatabase.LOGIC_NAME);
         DataSource testDataSource3 = ShardingSphereDataSourceFactory.createDataSource(new HashMap<>(), new LinkedList<>(), new Properties());
-        assertThat(getDatabaseName(testDataSource3), is(DefaultDatabase.LOGIC_NAME));
+        assertDataSource(testDataSource3, DefaultDatabase.LOGIC_NAME);
         DataSource testDataSource4 = ShardingSphereDataSourceFactory.createDataSource(new MockedDataSource(), new LinkedList<>(), new Properties());
-        assertThat(getDatabaseName(testDataSource4), is(DefaultDatabase.LOGIC_NAME));
+        assertDataSource(testDataSource4, DefaultDatabase.LOGIC_NAME);
         DataSource testDataSource5 = ShardingSphereDataSourceFactory.createDataSource("test_db5", new MockedDataSource(), new LinkedList<>(), new Properties());
-        assertTrue(testDataSource5 instanceof ShardingSphereDataSource);
-        assertThat(getDatabaseName(testDataSource5), is("test_db5"));
+        assertDataSource(testDataSource5, "test_db5");
         DataSource testDataSource6 = ShardingSphereDataSourceFactory.createDataSource("test_db6", new HashMap<>(), new LinkedList<>(), new Properties());
-        assertTrue(testDataSource6 instanceof ShardingSphereDataSource);
-        assertThat(getDatabaseName(testDataSource6), is("test_db6"));
-        DataSource testDataSource7 = ShardingSphereDataSourceFactory.createDataSource("test_db6", modeConfig, new HashMap<>(), null, null);
-        assertTrue(testDataSource7 instanceof ShardingSphereDataSource);
-        assertThat(getDatabaseName(testDataSource7), is("test_db6"));
+        assertDataSource(testDataSource6, "test_db6");
+        DataSource testDataSource7 = ShardingSphereDataSourceFactory.createDataSource("test_db7", new ModeConfiguration("Standalone", null, false), new HashMap<>(), null, null);
+        assertDataSource(testDataSource7, "test_db7");
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
-    private static String getDatabaseName(final DataSource dataSource) {
+    private void assertDataSource(final DataSource actualDataSource, final String expectedDataSourceName) {
         Field field = ShardingSphereDataSource.class.getDeclaredField("databaseName");
         field.setAccessible(true);
-        return (String) field.get(dataSource);
+        assertThat((String) field.get(actualDataSource), is(expectedDataSourceName));
     }
 }

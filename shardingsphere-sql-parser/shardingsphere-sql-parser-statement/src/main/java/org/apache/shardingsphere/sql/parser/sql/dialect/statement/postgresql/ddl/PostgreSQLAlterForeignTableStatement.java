@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL alter foreign table statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLAlterForeignTableStatement extends AlterForeignTableStatement implements PostgreSQLStatement {
 }

@@ -96,7 +96,7 @@ public final class TrafficEngineTest {
         when(loadBalancer.getInstanceId("traffic", instanceIds)).thenReturn(new ProxyInstanceMetaData("foo_id", 3307));
         when(strategyRule.getLoadBalancer()).thenReturn(loadBalancer);
         when(strategyRule.getName()).thenReturn("traffic");
-        when(instanceContext.getComputeNodeInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(instanceIds);
+        when(instanceContext.getAllClusterInstances(InstanceType.PROXY, Arrays.asList("OLTP", "OLAP"))).thenReturn(instanceIds);
         TrafficContext actual = trafficEngine.dispatch(logicSQL, false);
         assertThat(actual.getInstanceId(), is("foo_id"));
     }
