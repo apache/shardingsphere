@@ -33,24 +33,24 @@ public final class DatabaseVersionPersistService {
     private final PersistRepository repository;
     
     /**
-     * Get database active version.
+     * Get active version.
      * 
      * @param databaseName database name
-     * @return active version
+     * @return active database version
      */
-    public Optional<String> getDatabaseActiveVersion(final String databaseName) {
+    public Optional<String> getActiveVersion(final String databaseName) {
         return Optional.ofNullable(repository.get(DatabaseMetaDataNode.getActiveVersionPath(databaseName)));
     }
     
     /**
-     * Verify the version is the active version.
+     * Judge whether active version.
      * 
      * @param databaseName database name
      * @param version version
-     * @return true if the version is active version, false if not
+     * @return is active version or not
      */
     public boolean isActiveVersion(final String databaseName, final String version) {
-        Optional<String> actualVersion = getDatabaseActiveVersion(databaseName);
+        Optional<String> actualVersion = getActiveVersion(databaseName);
         return actualVersion.isPresent() && actualVersion.get().equals(version);
     }
     
@@ -61,15 +61,15 @@ public final class DatabaseVersionPersistService {
      * @return new version
      */
     public Optional<String> createNewVersion(final String databaseName) {
-        Optional<String> activeVersion = getDatabaseActiveVersion(databaseName);
-        if (activeVersion.isPresent()) {
-            String newVersion = String.valueOf(new AtomicLong(Long.parseLong(activeVersion.get())).incrementAndGet());
-            repository.persist(DatabaseMetaDataNode.getRulePath(databaseName, newVersion), repository.get(DatabaseMetaDataNode.getRulePath(databaseName, activeVersion.get())));
-            repository.persist(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, newVersion),
-                    repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, activeVersion.get())));
-            return Optional.of(newVersion);
+        Optional<String> activeVersion = getActiveVersion(databaseName);
+        if (!activeVersion.isPresent()) {
+            return Optional.empty();
         }
-        return Optional.empty();
+        String newVersion = String.valueOf(new AtomicLong(Long.parseLong(activeVersion.get())).incrementAndGet());
+        repository.persist(DatabaseMetaDataNode.getRulePath(databaseName, newVersion), repository.get(DatabaseMetaDataNode.getRulePath(databaseName, activeVersion.get())));
+        repository.persist(
+                DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, newVersion), repository.get(DatabaseMetaDataNode.getMetaDataDataSourcePath(databaseName, activeVersion.get())));
+        return Optional.of(newVersion);
     }
     
     /**
@@ -79,7 +79,7 @@ public final class DatabaseVersionPersistService {
      * @param version version
      */
     public void persistActiveVersion(final String databaseName, final String version) {
-        Optional<String> activeVersion = getDatabaseActiveVersion(databaseName);
+        Optional<String> activeVersion = getActiveVersion(databaseName);
         if (activeVersion.isPresent() && !activeVersion.get().equals(version)) {
             repository.persist(DatabaseMetaDataNode.getActiveVersionPath(databaseName), version);
         }
