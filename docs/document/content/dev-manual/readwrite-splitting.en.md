@@ -7,6 +7,7 @@ chapter = true
 
 ## SPI Interface
 
+### ReadQueryLoadBalanceAlgorithm
 
 | *SPI Name*                                 | *Description*              |
 | ----------------------------------------- | ----------------------- |

@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.config;
+package org.apache.shardingsphere.infra.config.props;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertNotNull;
 
-import java.util.Properties;
+import java.util.Collection;
 
-/**
- * Plugin configuration.
- */
-@RequiredArgsConstructor
-@Getter
-public final class PluginConfiguration {
+import org.junit.Test;
+
+public final class ConfigurationPropertyKeyTest {
     
-    private final String host;
-    
-    private final int port;
-    
-    private final String password;
-    
-    private final Properties props;
+    @Test
+    public void assertKeyNames() {
+        Collection<String> configurationPropertyKeyNames = ConfigurationPropertyKey.getKeyNames();
+        assertThat(configurationPropertyKeyNames.size(), is(ConfigurationPropertyKey.values().length));
+        configurationPropertyKeyNames.forEach(keyName -> assertNotNull(ConfigurationPropertyKey.valueOf(keyName)));
+    }
 }

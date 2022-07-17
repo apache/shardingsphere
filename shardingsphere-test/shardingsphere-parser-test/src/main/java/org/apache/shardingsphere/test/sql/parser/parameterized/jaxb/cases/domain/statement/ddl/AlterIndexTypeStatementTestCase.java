@@ -15,25 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.config;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.Properties;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Plugin configuration.
+ * Alter index type statement test case.
  */
-@RequiredArgsConstructor
-@Getter
-public final class PluginConfiguration {
-    
-    private final String host;
-    
-    private final int port;
-    
-    private final String password;
-    
-    private final Properties props;
+public final class AlterIndexTypeStatementTestCase extends SQLParserTestCase {
 }

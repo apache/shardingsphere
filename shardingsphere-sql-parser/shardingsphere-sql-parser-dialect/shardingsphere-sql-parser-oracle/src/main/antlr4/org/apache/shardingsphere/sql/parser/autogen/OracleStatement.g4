@@ -115,5 +115,6 @@ execute
     | alterCluster
     | alterOperator
     | alterDiskgroup
+    | alterIndexType
     ) SEMI_?
     ;

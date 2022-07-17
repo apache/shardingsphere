@@ -15,25 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.agent.config;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-
-import java.util.Properties;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Plugin configuration.
+ * Oracle alter index type statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class PluginConfiguration {
-    
-    private final String host;
-    
-    private final int port;
-    
-    private final String password;
-    
-    private final Properties props;
+@ToString
+public final class OracleAlterIndexTypeStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
 }

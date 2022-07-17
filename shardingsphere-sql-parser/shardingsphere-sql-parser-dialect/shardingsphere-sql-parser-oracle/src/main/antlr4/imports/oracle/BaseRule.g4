@@ -1434,3 +1434,8 @@ usageName
 usergroupName
     : STRING_
     ;
+
+varrayType
+    : (owner DOT_)? name
+    ;
+
