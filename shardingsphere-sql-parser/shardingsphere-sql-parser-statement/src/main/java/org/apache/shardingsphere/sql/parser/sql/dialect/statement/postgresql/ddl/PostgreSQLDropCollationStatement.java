@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL drop collation statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLDropCollationStatement extends DropCollationStatement implements PostgreSQLStatement {
 }

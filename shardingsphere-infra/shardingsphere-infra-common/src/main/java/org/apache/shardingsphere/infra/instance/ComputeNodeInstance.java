@@ -34,7 +34,7 @@ import java.util.Collection;
 @Setter
 public final class ComputeNodeInstance {
     
-    private final InstanceMetaData instanceMetaData;
+    private final InstanceMetaData metaData;
     
     private final StateContext state = new StateContext();
     
@@ -67,6 +67,6 @@ public final class ComputeNodeInstance {
      * @return current instance id
      */
     public String getCurrentInstanceId() {
-        return instanceMetaData.getId();
+        return metaData.getId();
     }
 }
