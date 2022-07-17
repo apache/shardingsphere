@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.service;
+package org.apache.shardingsphere.mode.metadata.persist.service.config.global;
 
 /**
  * Global persist service.

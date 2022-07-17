@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.service.impl;
+package org.apache.shardingsphere.mode.metadata.persist.service.config.global;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,6 @@ import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.node.GlobalNode;
-import org.apache.shardingsphere.mode.metadata.persist.service.GlobalPersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 
 import java.util.Collection;
