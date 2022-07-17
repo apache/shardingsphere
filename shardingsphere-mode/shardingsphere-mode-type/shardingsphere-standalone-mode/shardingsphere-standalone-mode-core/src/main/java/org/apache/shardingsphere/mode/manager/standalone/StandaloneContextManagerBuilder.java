@@ -46,7 +46,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
         persistConfigurations(persistService, parameter);
         InstanceContext instanceContext = buildInstanceContext(parameter);
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, parameter.getDatabaseConfigs(), parameter.getInstanceMetaData(), instanceContext);
+        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, parameter.getDatabaseConfigs(), instanceContext);
         return new ContextManager(metaDataContexts, instanceContext);
     }
     
