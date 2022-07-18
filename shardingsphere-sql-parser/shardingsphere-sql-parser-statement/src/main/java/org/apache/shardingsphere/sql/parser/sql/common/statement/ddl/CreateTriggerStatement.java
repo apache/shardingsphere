@@ -15,15 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dal;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * OpenGauss explain statement.
+ * Create trigger statement.
  */
 @ToString(callSuper = true)
-public final class OpenGaussExplainStatement extends ExplainStatement implements OpenGaussStatement {
+public abstract class CreateTriggerStatement extends AbstractSQLStatement implements DDLStatement {
 }

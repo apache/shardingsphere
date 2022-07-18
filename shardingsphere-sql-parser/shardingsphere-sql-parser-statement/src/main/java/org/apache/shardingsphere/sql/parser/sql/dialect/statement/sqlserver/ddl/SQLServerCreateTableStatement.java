@@ -34,7 +34,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class SQLServerCreateTableStatement extends CreateTableStatement implements SQLServerStatement {
     
     private final List<ColumnSegment> columns = new LinkedList<>();
