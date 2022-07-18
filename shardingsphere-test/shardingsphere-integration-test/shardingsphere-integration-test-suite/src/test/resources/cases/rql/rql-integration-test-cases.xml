@@ -113,4 +113,12 @@
     <test-case sql="SHOW DB_DISCOVERY RULES" scenario-types="sharding_governance">
         <assertion expected-data-file="show_discovery_rules.xml" />
     </test-case>
+    
+    <test-case sql="SHOW DB_DISCOVERY TYPES" scenario-types="sharding_governance">
+        <assertion expected-data-file="show_discovery_types.xml" />
+    </test-case>
+    
+    <test-case sql="SHOW DB_DISCOVERY HEARTBEATS" scenario-types="sharding_governance">
+        <assertion expected-data-file="show_discovery_heartbeats.xml" />
+    </test-case>
 </integration-test-cases>
