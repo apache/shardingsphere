@@ -19,6 +19,8 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
+import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
+import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrl;
 import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
@@ -109,11 +111,16 @@ public final class AlterResourceBackendHandler extends DatabaseRequiredBackendHa
     }
     
     private boolean isIdenticalDatabase(final DataSourceSegment segment, final DataSource dataSource) {
-        String hostName = segment.getHostname();
-        String port = segment.getPort();
-        String database = segment.getDatabase();
-        if (null != segment.getUrl() && (null == hostName || null == port || null == database)) {
-            JdbcUrl segmentJdbcUrl = new StandardJdbcUrlParser().parse(segment.getUrl());
+        String hostName = null;
+        String port = null;
+        String database = null;
+        if (segment instanceof HostnameAndPortBasedDataSourceSegment) {
+            hostName = ((HostnameAndPortBasedDataSourceSegment) segment).getHostname();
+            port = ((HostnameAndPortBasedDataSourceSegment) segment).getPort();
+            database = ((HostnameAndPortBasedDataSourceSegment) segment).getDatabase();
+        }
+        if (segment instanceof URLBasedDataSourceSegment) {
+            JdbcUrl segmentJdbcUrl = new StandardJdbcUrlParser().parse(((URLBasedDataSourceSegment) segment).getUrl());
             hostName = segmentJdbcUrl.getHostname();
             port = String.valueOf(segmentJdbcUrl.getPort());
             database = segmentJdbcUrl.getDatabase();
