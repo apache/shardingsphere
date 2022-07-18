@@ -17,7 +17,7 @@ chapter = true
 
 ### 已知实现
 
-| *事实现类*                           | *详细说明*                 | *全限定类名* |
+| *实现类*                           | *详细说明*                 | *全限定类名* |
 | ---------------------------------------- | ------------------------- | ---------- |
 | XAShardingSphereTransactionManager       | 基于 XA 的分布式事务管理器    |[`org.apache.shardingsphere.transaction.xa.XAShardingSphereTransactionManager`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-kernel/shardingsphere-transaction/shardingsphere-transaction-type/shardingsphere-transaction-xa/shardingsphere-transaction-xa-core/src/main/java/org/apache/shardingsphere/transaction/xa/XAShardingSphereTransactionManager.java) |
 | SeataATShardingSphereTransactionManager  | 基于 Seata 的分布式事务管理器 |[`org.apache.shardingsphere.transaction.base.seata.at.SeataATShardingSphereTransactionManager`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-kernel/shardingsphere-transaction/shardingsphere-transaction-type/shardingsphere-transaction-base/shardingsphere-transaction-base-seata-at/src/main/java/org/apache/shardingsphere/transaction/base/seata/at/SeataATShardingSphereTransactionManager.java) |
