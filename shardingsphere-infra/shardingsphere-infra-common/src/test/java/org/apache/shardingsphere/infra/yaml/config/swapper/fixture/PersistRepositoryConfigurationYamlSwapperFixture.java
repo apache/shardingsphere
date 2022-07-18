@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.yaml.config.swapper.fixture;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.PersistRepositoryConfigurationYamlSwapper;
 
-public class PersistRepositoryConfigurationYamlSwapperFixture implements PersistRepositoryConfigurationYamlSwapper<PersistRepositoryConfigurationFixture> {
+public final class PersistRepositoryConfigurationYamlSwapperFixture implements PersistRepositoryConfigurationYamlSwapper<PersistRepositoryConfigurationFixture> {
     
     @Override
     public YamlPersistRepositoryConfiguration swapToYamlConfiguration(final PersistRepositoryConfigurationFixture data) {
@@ -39,5 +39,4 @@ public class PersistRepositoryConfigurationYamlSwapperFixture implements Persist
     public String getType() {
         return "Fixture";
     }
-    
 }

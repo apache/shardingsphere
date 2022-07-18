@@ -26,20 +26,18 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class PersistRepositoryConfigurationYamlSwapperFactoryTest {
+public final class PersistRepositoryConfigurationYamlSwapperFactoryTest {
     
-    @SuppressWarnings("rawtypes")
     @Test
     public void assertGetInstance() {
-        PersistRepositoryConfigurationYamlSwapper swapper = PersistRepositoryConfigurationYamlSwapperFactory.getInstance("Fixture");
-        assertThat(swapper, instanceOf(PersistRepositoryConfigurationYamlSwapperFixture.class));
+        assertThat(PersistRepositoryConfigurationYamlSwapperFactory.getInstance("Fixture"), instanceOf(PersistRepositoryConfigurationYamlSwapperFixture.class));
     }
     
     @SuppressWarnings("rawtypes")
     @Test
     public void assertFindInstance() {
-        Optional<PersistRepositoryConfigurationYamlSwapper> optional = PersistRepositoryConfigurationYamlSwapperFactory.findInstance("Fixture");
-        assertTrue(optional.isPresent());
-        
+        Optional<PersistRepositoryConfigurationYamlSwapper> actual = PersistRepositoryConfigurationYamlSwapperFactory.findInstance("Fixture");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), instanceOf(PersistRepositoryConfigurationYamlSwapperFixture.class));
     }
 }
