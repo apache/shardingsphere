@@ -140,7 +140,8 @@ public final class ClusterContextManagerCoordinatorTest {
         contextManager.renewMetaDataContexts(new MetaDataContexts(contextManager.getMetaDataContexts().getPersistService(),
                 new ShardingSphereMetaData(createDatabases(), contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(new Properties())),
                 createOptimizerContext()));
-        coordinator = new ClusterContextManagerCoordinator(persistService, new RegistryCenter(mock(ClusterPersistRepository.class), new EventBusContext()), contextManager);
+        coordinator = new ClusterContextManagerCoordinator(persistService, new RegistryCenter(mock(ClusterPersistRepository.class),
+                new EventBusContext(), mock(ProxyInstanceMetaData.class), null), contextManager);
     }
     
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {
@@ -215,7 +216,7 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertRenewForRuleConfigurationsChanged() {
-        when(persistService.getDatabaseVersionPersistService().isActiveVersion("db", "0")).thenReturn(true);
+        when(persistService.getMetaDataVersionPersistService().isActiveVersion("db", "0")).thenReturn(true);
         assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("db"), is(database));
         coordinator.renew(new RuleConfigurationsChangedEvent("db", "0", Collections.emptyList()));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("db"), not(database));
@@ -234,7 +235,7 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertRenewForDataSourceChanged() {
-        when(persistService.getDatabaseVersionPersistService().isActiveVersion("db", "0")).thenReturn(true);
+        when(persistService.getMetaDataVersionPersistService().isActiveVersion("db", "0")).thenReturn(true);
         coordinator.renew(new DataSourceChangedEvent("db", "0", createChangedDataSourcePropertiesMap()));
         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("db").getResource().getDataSources().containsKey("ds_2"));
     }

@@ -27,9 +27,9 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
 /**
  * SQLServer alter user statement.
  */
-@ToString
 @Getter
 @Setter
+@ToString(callSuper = true)
 public final class SQLServerAlterUserStatement extends AlterUserStatement implements SQLServerStatement {
     
     private UserSegment user;

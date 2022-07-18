@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Security label statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class SecurityLabelStmtStatement extends AbstractSQLStatement implements DDLStatement {
 }
