@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.datasource;
 
-import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.junit.Test;
 
@@ -28,15 +28,14 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class PipelineDataSourceFactoryTest {
-
+    
     @Test
     public void assertNewInstance() {
         Map<String, Object> yamlDataSourceConfig = new HashMap<>(3, 1);
         yamlDataSourceConfig.put("url", "jdbc:mysql://localhost:3306/database");
         yamlDataSourceConfig.put("username", "username");
         yamlDataSourceConfig.put("password", "password");
-        StandardPipelineDataSourceConfiguration standardPipelineDataSourceConfiguration = new StandardPipelineDataSourceConfiguration(yamlDataSourceConfig);
-        PipelineDataSourceWrapper pipelineDataSourceWrapper = PipelineDataSourceFactory.newInstance(standardPipelineDataSourceConfiguration);
-        assertThat(pipelineDataSourceWrapper.getDatabaseType(), is(standardPipelineDataSourceConfiguration.getDatabaseType()));
+        PipelineDataSourceConfiguration pipelineDataSourceConfig = new StandardPipelineDataSourceConfiguration(yamlDataSourceConfig);
+        assertThat(PipelineDataSourceFactory.newInstance(pipelineDataSourceConfig).getDatabaseType(), is(pipelineDataSourceConfig.getDatabaseType()));
     }
 }
