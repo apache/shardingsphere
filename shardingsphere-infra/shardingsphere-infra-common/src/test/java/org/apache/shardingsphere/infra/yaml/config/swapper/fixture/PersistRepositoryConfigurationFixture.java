@@ -15,26 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.lock;
+package org.apache.shardingsphere.infra.yaml.config.swapper.fixture;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.spi.type.required.RequiredSPI;
+import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 
-/**
- * Lock judge engine.
- */
-@SingletonSPI
-public interface LockJudgeEngine extends RequiredSPI {
+import java.util.Properties;
+
+public final class PersistRepositoryConfigurationFixture implements PersistRepositoryConfiguration {
     
-    /**
-     * Is locked.
-     *
-     * @param lockContext lock context
-     * @param databaseName database name
-     * @param sqlStatementContext sql statement context
-     * @return is locked or not
-     */
-    boolean isLocked(LockContext lockContext, String databaseName, SQLStatementContext<?> sqlStatementContext);
+    @Override
+    public Properties getProps() {
+        return new Properties();
+    }
+    
+    @Override
+    public String getType() {
+        return "FIXTURE";
+    }
 }

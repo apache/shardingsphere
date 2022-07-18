@@ -20,6 +20,8 @@ package org.apache.shardingsphere.proxy.backend.text.admin.opengauss;
 import lombok.Getter;
 import org.apache.calcite.adapter.java.ReflectiveSchema;
 import org.apache.calcite.jdbc.CalciteConnection;
+import org.apache.calcite.schema.impl.ScalarFunctionImpl;
+import org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.metadata.JDBCQueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.memory.JDBCMemoryQueryResult;
@@ -42,7 +44,7 @@ import java.util.Collections;
 /**
  * Select database executor for openGauss.
  */
-public final class OpenGaussSelectDatabaseExecutor implements DatabaseAdminQueryExecutor {
+public final class OpenGaussSystemCatalogAdminQueryExecutor implements DatabaseAdminQueryExecutor {
     
     private static final String PG_CATALOG = "pg_catalog";
     
@@ -56,7 +58,7 @@ public final class OpenGaussSelectDatabaseExecutor implements DatabaseAdminQuery
     @Getter
     private MergedResult mergedResult;
     
-    public OpenGaussSelectDatabaseExecutor(final String sql) {
+    public OpenGaussSystemCatalogAdminQueryExecutor(final String sql) {
         this.sql = SQLUtil.trimSemicolon(sql);
     }
     
@@ -64,6 +66,7 @@ public final class OpenGaussSelectDatabaseExecutor implements DatabaseAdminQuery
     public void execute(final ConnectionSession connectionSession) throws SQLException {
         try (CalciteConnection connection = DriverManager.getConnection("jdbc:calcite:caseSensitive=false").unwrap(CalciteConnection.class)) {
             connection.getRootSchema().add(PG_CATALOG, new ReflectiveSchema(constructOgCatalog()));
+            connection.getRootSchema().add("version", ScalarFunctionImpl.create(getClass(), "version"));
             connection.setSchema(PG_CATALOG);
             try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(sql)) {
                 queryResultMetaData = new JDBCQueryResultMetaData(resultSet.getMetaData());
@@ -80,5 +83,15 @@ public final class OpenGaussSelectDatabaseExecutor implements DatabaseAdminQuery
             ogDatabases[i++] = new OgDatabase(each, DAT_COMPATIBILITY);
         }
         return new OgCatalog(ogDatabases);
+    }
+    
+    /**
+     * Get version of ShardingSphere-Proxy.
+     *
+     * @return version message
+     */
+    @SuppressWarnings("unused")
+    public static String version() {
+        return "ShardingSphere-Proxy " + ShardingSphereVersion.VERSION + ("-" + ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV) + (ShardingSphereVersion.BUILD_GIT_DIRTY ? "-dirty" : "");
     }
 }
