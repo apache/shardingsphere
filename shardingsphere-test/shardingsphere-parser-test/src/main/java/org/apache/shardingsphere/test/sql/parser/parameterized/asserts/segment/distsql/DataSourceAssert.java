@@ -48,24 +48,20 @@ public final class DataSourceAssert {
             assertNull(assertContext.getText("Actual dataSource should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual dataSource should exist."), actual);
-            assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
-                    actual.getClass().getSimpleName())), actual.getName(), is(expected.getName()));
-            assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
-                    actual.getClass().getSimpleName())), actual.getUser(), is(expected.getUser()));
-            assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
-                    actual.getClass().getSimpleName())), actual.getPassword(), is(expected.getPassword()));
+            assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())), actual.getName(), is(expected.getName()));
+            assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())), actual.getUser(), is(expected.getUser()));
+            assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())), actual.getPassword(), is(expected.getPassword()));
             PropertiesAssert.assertIs(assertContext, actual.getProps(), expected.getProps());
             if (actual instanceof URLBasedDataSourceSegment) {
                 assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
                         actual.getClass().getSimpleName())), ((URLBasedDataSourceSegment) actual).getUrl(), is(expected.getUrl()));
             }
             if (actual instanceof HostnameAndPortBasedDataSourceSegment) {
+                HostnameAndPortBasedDataSourceSegment actualSegment = (HostnameAndPortBasedDataSourceSegment) actual;
                 assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
-                        actual.getClass().getSimpleName())), ((HostnameAndPortBasedDataSourceSegment) actual).getHostname(), is(expected.getHostname()));
-                assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
-                        actual.getClass().getSimpleName())), ((HostnameAndPortBasedDataSourceSegment) actual).getPort(), is(expected.getPort()));
-                assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ",
-                        actual.getClass().getSimpleName())), ((HostnameAndPortBasedDataSourceSegment) actual).getDatabase(), is(expected.getDb()));
+                        actual.getClass().getSimpleName())), actualSegment.getHostname(), is(expected.getHostname()));
+                assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())), actualSegment.getPort(), is(expected.getPort()));
+                assertThat(assertContext.getText(String.format("`%s`'s datasource segment assertion error: ", actual.getClass().getSimpleName())), actualSegment.getDatabase(), is(expected.getDb()));
             }
         }
     }

@@ -69,8 +69,8 @@ public final class ResourceSegmentsConverter {
             result = ((URLBasedDataSourceSegment) segment).getUrl();
         }
         if (segment instanceof HostnameAndPortBasedDataSourceSegment) {
-            result = String.format("%s//%s:%s/%s", databaseType.getJdbcUrlPrefixes().iterator().next(), ((HostnameAndPortBasedDataSourceSegment) segment).getHostname(),
-                    ((HostnameAndPortBasedDataSourceSegment) segment).getPort(), ((HostnameAndPortBasedDataSourceSegment) segment).getDatabase());
+            HostnameAndPortBasedDataSourceSegment actualSegment = (HostnameAndPortBasedDataSourceSegment) segment;
+            result = String.format("%s//%s:%s/%s", databaseType.getJdbcUrlPrefixes().iterator().next(), actualSegment.getHostname(), actualSegment.getPort(), actualSegment.getDatabase());
         }
         return result;
     }
