@@ -27,7 +27,7 @@ import org.apache.shardingsphere.test.integration.container.atomic.governance.Go
 import org.apache.shardingsphere.test.integration.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.container.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
-import org.apache.shardingsphere.test.integration.util.NetworkAliasUtil;
+import org.apache.shardingsphere.test.integration.container.util.NetworkAliasUtil;
 
 import javax.sql.DataSource;
 import java.util.Map;
