@@ -17,18 +17,14 @@
 
 package org.apache.shardingsphere.test.integration.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+/**
+ * Network alias util.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NetworkAliasUtil {
-    
-    /**
-     * Get network alias with scenario.
-     *
-     * @param containerType container type, such as "zk", "db"
-     * @param scenario scenario
-     * @return network alias
-     */
-    public static String getNetworkAliasWithScenario(final String containerType, final String scenario) {
-        return String.join(".", containerType.toLowerCase(), scenario, "host");
-    }
     
     /**
      * Get network alias.
@@ -38,5 +34,16 @@ public final class NetworkAliasUtil {
      */
     public static String getNetworkAlias(final String containerType) {
         return String.join(".", containerType.toLowerCase(), "host");
+    }
+    
+    /**
+     * Get network alias.
+     *
+     * @param containerType container type
+     * @param scenario scenario
+     * @return network alias
+     */
+    public static String getNetworkAlias(final String containerType, final String scenario) {
+        return String.join(".", containerType.toLowerCase(), scenario, "host");
     }
 }
