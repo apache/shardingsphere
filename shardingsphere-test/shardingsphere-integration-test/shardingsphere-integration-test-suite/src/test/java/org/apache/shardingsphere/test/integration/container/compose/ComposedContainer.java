@@ -15,24 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.framework.container.cluster;
+package org.apache.shardingsphere.test.integration.container.compose;
 
-import org.apache.shardingsphere.test.integration.container.atomic.governance.GovernanceContainer;
-import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
+import org.testcontainers.lifecycle.Startable;
+
+import javax.sql.DataSource;
+import java.util.Map;
 
 /**
- * Zookeeper container.
+ * Composed container.
  */
-public final class ZookeeperContainer extends GovernanceContainer {
+public interface ComposedContainer extends Startable {
     
-    public ZookeeperContainer() {
-        super("zookeeper", "zookeeper:3.6.2");
-        setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*PrepRequestProcessor \\(sid:[0-9]+\\) started.*"));
-        withExposedPorts(2181);
-    }
+    /**
+     * Get target data source.
+     *
+     * @return target data source
+     */
+    DataSource getTargetDataSource();
     
-    @Override
-    public String getServerLists() {
-        return getHost() + ":" + getMappedPort(2181);
-    }
+    /**
+     * Get actual data source map.
+     *
+     * @return actual data source map
+     */
+    Map<String, DataSource> getActualDataSourceMap();
+    
+    /**
+     * Get expected data source map.
+     * 
+     * @return expected data source map
+     */
+    Map<String, DataSource> getExpectedDataSourceMap();
 }

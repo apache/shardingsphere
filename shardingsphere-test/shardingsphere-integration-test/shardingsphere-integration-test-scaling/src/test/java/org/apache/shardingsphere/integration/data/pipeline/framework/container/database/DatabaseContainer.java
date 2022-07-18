@@ -19,7 +19,7 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.container.
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
+import org.apache.shardingsphere.test.integration.container.atomic.DockerITContainer;
 
 /**
  * Docker storage container.
