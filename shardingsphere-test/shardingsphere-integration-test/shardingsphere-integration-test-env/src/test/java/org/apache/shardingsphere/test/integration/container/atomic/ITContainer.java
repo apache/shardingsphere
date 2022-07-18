@@ -15,24 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.framework.container.cluster;
+package org.apache.shardingsphere.test.integration.container.atomic;
 
-import org.apache.shardingsphere.test.integration.container.atomic.governance.GovernanceContainer;
-import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
+import org.testcontainers.lifecycle.Startable;
 
 /**
- * Zookeeper container.
+ * IT container.
  */
-public final class ZookeeperContainer extends GovernanceContainer {
-    
-    public ZookeeperContainer() {
-        super("zookeeper", "zookeeper:3.6.2");
-        setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*PrepRequestProcessor \\(sid:[0-9]+\\) started.*"));
-        withExposedPorts(2181);
-    }
+public interface ITContainer extends Startable {
     
     @Override
-    public String getServerLists() {
-        return getHost() + ":" + getMappedPort(2181);
+    default void stop() {
     }
 }

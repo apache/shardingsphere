@@ -15,24 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.framework.container.cluster;
+package org.apache.shardingsphere.test.integration.container.atomic.storage;
 
-import org.apache.shardingsphere.test.integration.container.atomic.governance.GovernanceContainer;
-import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
+import org.apache.shardingsphere.test.integration.container.atomic.ITContainer;
+
+import javax.sql.DataSource;
+import java.util.Map;
 
 /**
- * Zookeeper container.
+ * Storage container.
  */
-public final class ZookeeperContainer extends GovernanceContainer {
+public interface StorageContainer extends ITContainer {
     
-    public ZookeeperContainer() {
-        super("zookeeper", "zookeeper:3.6.2");
-        setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*PrepRequestProcessor \\(sid:[0-9]+\\) started.*"));
-        withExposedPorts(2181);
-    }
+    /**
+     * Get actual data source map.
+     *
+     * @return actual data source map
+     */
+    Map<String, DataSource> getActualDataSourceMap();
     
-    @Override
-    public String getServerLists() {
-        return getHost() + ":" + getMappedPort(2181);
-    }
+    /**
+     * Get expected data source map.
+     * 
+     * @return expected data source map
+     */
+    Map<String, DataSource> getExpectedDataSourceMap();
 }

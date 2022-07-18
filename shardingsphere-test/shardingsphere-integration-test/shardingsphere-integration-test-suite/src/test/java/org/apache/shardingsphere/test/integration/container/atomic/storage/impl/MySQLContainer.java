@@ -15,24 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.framework.container.cluster;
+package org.apache.shardingsphere.test.integration.container.atomic.storage.impl;
 
-import org.apache.shardingsphere.test.integration.container.atomic.governance.GovernanceContainer;
-import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
+import org.apache.shardingsphere.test.integration.container.atomic.storage.DockerStorageContainer;
+
+import java.util.Collections;
 
 /**
- * Zookeeper container.
+ * MySQL container.
  */
-public final class ZookeeperContainer extends GovernanceContainer {
+public final class MySQLContainer extends DockerStorageContainer {
     
-    public ZookeeperContainer() {
-        super("zookeeper", "zookeeper:3.6.2");
-        setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*PrepRequestProcessor \\(sid:[0-9]+\\) started.*"));
-        withExposedPorts(2181);
+    public MySQLContainer(final String scenario) {
+        super(DatabaseTypeFactory.getInstance("MySQL"), "mysql/mysql-server:5.7", scenario);
     }
     
     @Override
-    public String getServerLists() {
-        return getHost() + ":" + getMappedPort(2181);
+    protected void configure() {
+        withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password");
+        setEnv(Collections.singletonList("LANG=C.UTF-8"));
+        super.configure();
+    }
+    
+    @Override
+    protected int getPort() {
+        return 3306;
     }
 }
