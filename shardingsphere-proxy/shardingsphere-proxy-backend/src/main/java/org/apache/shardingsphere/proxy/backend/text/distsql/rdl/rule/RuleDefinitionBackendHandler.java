@@ -151,7 +151,7 @@ public final class RuleDefinitionBackendHandler<T extends RuleDefinitionStatemen
     private void prepareScaling(final ShardingSphereDatabase database, final T sqlStatement, final RuleDefinitionAlterUpdater<?, ?> updater, final RuleConfiguration currentRuleConfig,
                                 final RuleDefinitionAlterPreprocessor<?> preprocessor) {
         MetaDataPersistService persistService = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getPersistService();
-        Optional<String> newVersion = persistService.getDatabaseVersionPersistService().createNewVersion(database.getName());
+        Optional<String> newVersion = persistService.getMetaDataVersionPersistService().createNewVersion(database.getName());
         if (!newVersion.isPresent()) {
             throw new RuntimeException(String.format("Unable to get a new version for database: %s", database.getName()));
         }

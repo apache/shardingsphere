@@ -15,27 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.service;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
+
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Global persist service.
- * 
- * @param <T> type of configuration
+ * Create trigger statement.
  */
-public interface GlobalPersistService<T> {
-    
-    /**
-     * Persist configurations.
-     *
-     * @param globalRuleConfigs configurations
-     * @param isOverwrite is overwrite
-     */
-    void persist(T globalRuleConfigs, boolean isOverwrite);
-    
-    /**
-     * Load configurations.
-     *
-     * @return configurations
-     */
-    T load();
+@ToString(callSuper = true)
+public abstract class CreateTriggerStatement extends AbstractSQLStatement implements DDLStatement {
 }

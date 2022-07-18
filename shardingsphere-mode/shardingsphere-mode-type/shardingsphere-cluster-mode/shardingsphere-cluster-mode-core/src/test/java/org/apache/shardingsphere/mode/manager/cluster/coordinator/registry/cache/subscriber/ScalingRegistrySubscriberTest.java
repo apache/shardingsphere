@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.subscriber;
 
 import org.apache.shardingsphere.infra.eventbus.EventBusContext;
-import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseVersionPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Before;
 import org.junit.Test;
@@ -35,16 +35,14 @@ public final class ScalingRegistrySubscriberTest {
     private ClusterPersistRepository repository;
     
     @Mock
-    private DatabaseVersionPersistService databaseVersionPersistService;
-    
-    private ScalingRegistrySubscriber scalingRegistrySubscriber;
+    private MetaDataVersionPersistService metaDataVersionPersistService;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        scalingRegistrySubscriber = new ScalingRegistrySubscriber(repository, new EventBusContext());
-        Field persistServiceField = ScalingRegistrySubscriber.class.getDeclaredField("databaseVersionPersistService");
+        ScalingRegistrySubscriber scalingRegistrySubscriber = new ScalingRegistrySubscriber(repository, new EventBusContext());
+        Field persistServiceField = ScalingRegistrySubscriber.class.getDeclaredField("metaDataVersionPersistService");
         persistServiceField.setAccessible(true);
-        persistServiceField.set(scalingRegistrySubscriber, databaseVersionPersistService);
+        persistServiceField.set(scalingRegistrySubscriber, metaDataVersionPersistService);
     }
     
     @Test
