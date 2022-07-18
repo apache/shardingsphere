@@ -36,7 +36,7 @@ import org.junit.Test;
 public final class IndexTokenTest {
 
     @Test
-    public void assertTestToString() {
+    public void assertToString() {
         IndexToken indexToken = new IndexToken(0, 0,
                 new IdentifierValue("t_order_index"), mock(SQLStatementContext.class, RETURNS_DEEP_STUBS), mock(ShardingRule.class), mock(ShardingSphereSchema.class));
         RouteUnit routeUnit = mock(RouteUnit.class);
