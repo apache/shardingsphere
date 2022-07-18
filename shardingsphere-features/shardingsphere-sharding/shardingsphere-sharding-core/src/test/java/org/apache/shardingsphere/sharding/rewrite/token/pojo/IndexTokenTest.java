@@ -26,23 +26,22 @@ import static org.mockito.Mockito.when;
 import java.util.Collections;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.junit.Test;
 
-public final class TableTokenTest {
+public final class IndexTokenTest {
 
     @Test
-    public void assertToString() {
-        SimpleTableSegment simpleTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
-        TableToken tableToken = new TableToken(0, 0, simpleTableSegment, mock(SQLStatementContext.class, RETURNS_DEEP_STUBS), mock(ShardingRule.class));
+    public void assertTestToString() {
+        IndexToken indexToken = new IndexToken(0, 0,
+                new IdentifierValue("t_order_index"), mock(SQLStatementContext.class, RETURNS_DEEP_STUBS), mock(ShardingRule.class), mock(ShardingSphereSchema.class));
         RouteUnit routeUnit = mock(RouteUnit.class);
         when(routeUnit.getTableMappers()).thenReturn(Collections.singletonList(new RouteMapper("t_order", "t_order_0")));
         when(routeUnit.getDataSourceMapper()).thenReturn(new RouteMapper(DefaultDatabase.LOGIC_NAME, "ds_0"));
-        assertThat(tableToken.toString(routeUnit), is("t_order_0"));
+        assertThat(indexToken.toString(routeUnit), is("t_order_index_t_order_0"));
     }
 }
