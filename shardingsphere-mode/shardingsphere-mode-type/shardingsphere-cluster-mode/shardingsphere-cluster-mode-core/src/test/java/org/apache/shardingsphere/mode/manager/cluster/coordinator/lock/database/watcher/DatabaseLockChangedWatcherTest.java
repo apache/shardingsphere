@@ -41,7 +41,7 @@ public final class DatabaseLockChangedWatcherTest {
     
     @Test
     public void assertGetWatchingKeys() {
-        Collection<String> keys = watcher.getWatchingKeys();
+        Collection<String> keys = watcher.getWatchingKeys(null);
         assertThat(keys.size(), is(1));
         assertThat("/lock/database/locks", is(keys.iterator().next()));
     }

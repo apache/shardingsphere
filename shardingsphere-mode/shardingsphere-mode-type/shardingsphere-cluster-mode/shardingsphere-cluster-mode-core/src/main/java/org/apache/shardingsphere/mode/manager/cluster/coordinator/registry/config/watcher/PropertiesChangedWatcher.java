@@ -36,7 +36,7 @@ import java.util.Properties;
 public final class PropertiesChangedWatcher implements GovernanceWatcher<PropertiesChangedEvent> {
     
     @Override
-    public Collection<String> getWatchingKeys() {
+    public Collection<String> getWatchingKeys(final String databaseName) {
         return Collections.singleton(GlobalNode.getPropsPath());
     }
     
@@ -47,6 +47,6 @@ public final class PropertiesChangedWatcher implements GovernanceWatcher<Propert
     
     @Override
     public Optional<PropertiesChangedEvent> createGovernanceEvent(final DataChangedEvent event) {
-        return getWatchingKeys().contains(event.getKey()) ? Optional.of(new PropertiesChangedEvent(YamlEngine.unmarshal(event.getValue(), Properties.class))) : Optional.empty();
+        return GlobalNode.getPropsPath().equals(event.getKey()) ? Optional.of(new PropertiesChangedEvent(YamlEngine.unmarshal(event.getValue(), Properties.class))) : Optional.empty();
     }
 }

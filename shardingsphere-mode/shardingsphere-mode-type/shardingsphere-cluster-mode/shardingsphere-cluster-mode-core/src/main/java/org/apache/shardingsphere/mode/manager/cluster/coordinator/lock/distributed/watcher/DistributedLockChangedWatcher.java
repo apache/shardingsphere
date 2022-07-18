@@ -42,7 +42,7 @@ public final class DistributedLockChangedWatcher implements GovernanceWatcher<Go
     private final LockNodeService lockNode = LockNodeServiceFactory.getInstance().getLockNodeService(LockNodeType.DISTRIBUTED);
     
     @Override
-    public Collection<String> getWatchingKeys() {
+    public Collection<String> getWatchingKeys(final String databaseName) {
         return Collections.singleton(lockNode.getLocksNodePath());
     }
     

@@ -39,7 +39,7 @@ public final class DatabaseLockChangedWatcher implements GovernanceWatcher<Gover
     private final LockNodeService lockNode = LockNodeServiceFactory.getInstance().getLockNodeService(LockNodeType.DATABASE);
     
     @Override
-    public Collection<String> getWatchingKeys() {
+    public Collection<String> getWatchingKeys(final String databaseName) {
         return Collections.singleton(lockNode.getLocksNodePath());
     }
     
