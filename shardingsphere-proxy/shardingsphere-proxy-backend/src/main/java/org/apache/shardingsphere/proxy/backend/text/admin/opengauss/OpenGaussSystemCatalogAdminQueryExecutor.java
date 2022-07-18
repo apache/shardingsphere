@@ -44,7 +44,7 @@ import java.util.Collections;
 /**
  * Select database executor for openGauss.
  */
-public final class OpenGaussSelectSystemCatalogExecutor implements DatabaseAdminQueryExecutor {
+public final class OpenGaussSystemCatalogAdminQueryExecutor implements DatabaseAdminQueryExecutor {
     
     private static final String PG_CATALOG = "pg_catalog";
     
@@ -58,7 +58,7 @@ public final class OpenGaussSelectSystemCatalogExecutor implements DatabaseAdmin
     @Getter
     private MergedResult mergedResult;
     
-    public OpenGaussSelectSystemCatalogExecutor(final String sql) {
+    public OpenGaussSystemCatalogAdminQueryExecutor(final String sql) {
         this.sql = SQLUtil.trimSemicolon(sql);
     }
     

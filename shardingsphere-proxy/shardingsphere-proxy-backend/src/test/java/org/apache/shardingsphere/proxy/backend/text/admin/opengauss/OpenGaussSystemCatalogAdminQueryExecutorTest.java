@@ -38,14 +38,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
-public final class OpenGaussSelectSystemCatalogExecutorTest {
+public final class OpenGaussSystemCatalogAdminQueryExecutorTest {
     
     @Test
     public void assertExecuteSelectFromPgDatabase() throws SQLException {
         try (MockedStatic<ProxyContext> mockedStatic = mockStatic(ProxyContext.class)) {
             mockedStatic.when(ProxyContext::getInstance).thenReturn(mock(ProxyContext.class, RETURNS_DEEP_STUBS));
             when(ProxyContext.getInstance().getAllDatabaseNames()).thenReturn(Arrays.asList("foo", "bar", "sharding_db", "other_db"));
-            OpenGaussSelectSystemCatalogExecutor executor = new OpenGaussSelectSystemCatalogExecutor("select datname, datcompatibility from pg_database where datname = 'sharding_db'");
+            OpenGaussSystemCatalogAdminQueryExecutor executor = new OpenGaussSystemCatalogAdminQueryExecutor("select datname, datcompatibility from pg_database where datname = 'sharding_db'");
             ConnectionSession connectionSession = mock(ConnectionSession.class);
             when(connectionSession.getDatabaseType()).thenReturn(new OpenGaussDatabaseType());
             executor.execute(connectionSession);
@@ -64,7 +64,7 @@ public final class OpenGaussSelectSystemCatalogExecutorTest {
     public void assertExecuteSelectVersion() throws SQLException {
         try (MockedStatic<ProxyContext> mockedStatic = mockStatic(ProxyContext.class)) {
             mockedStatic.when(ProxyContext::getInstance).thenReturn(mock(ProxyContext.class, RETURNS_DEEP_STUBS));
-            OpenGaussSelectSystemCatalogExecutor executor = new OpenGaussSelectSystemCatalogExecutor("select VERSION()");
+            OpenGaussSystemCatalogAdminQueryExecutor executor = new OpenGaussSystemCatalogAdminQueryExecutor("select VERSION()");
             ConnectionSession connectionSession = mock(ConnectionSession.class);
             when(connectionSession.getDatabaseType()).thenReturn(new OpenGaussDatabaseType());
             executor.execute(connectionSession);

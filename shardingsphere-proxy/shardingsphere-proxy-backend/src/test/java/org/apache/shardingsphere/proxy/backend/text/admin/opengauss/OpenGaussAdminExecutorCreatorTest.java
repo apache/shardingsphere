@@ -43,7 +43,7 @@ public final class OpenGaussAdminExecutorCreatorTest {
         Optional<DatabaseAdminExecutor> actual = new OpenGaussAdminExecutorCreator()
                 .create(selectStatementContext, "select datname, datcompatibility from pg_database where datname = 'sharding_db'", "postgres");
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(OpenGaussSelectSystemCatalogExecutor.class));
+        assertThat(actual.get(), instanceOf(OpenGaussSystemCatalogAdminQueryExecutor.class));
     }
     
     @Test
@@ -52,7 +52,7 @@ public final class OpenGaussAdminExecutorCreatorTest {
         when(selectStatementContext.getSqlStatement().getProjections().getProjections()).thenReturn(Collections.singletonList(new ExpressionProjectionSegment(-1, -1, "VERSION()")));
         Optional<DatabaseAdminExecutor> actual = new OpenGaussAdminExecutorCreator().create(selectStatementContext, "select VERSION()", "postgres");
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(OpenGaussSelectSystemCatalogExecutor.class));
+        assertThat(actual.get(), instanceOf(OpenGaussSystemCatalogAdminQueryExecutor.class));
     }
     
     @Test
