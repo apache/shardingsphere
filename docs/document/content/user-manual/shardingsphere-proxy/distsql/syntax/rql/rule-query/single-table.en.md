@@ -8,7 +8,9 @@ weight = 2
 ```sql
 SHOW SINGLE TABLE (table | RULES) [FROM databaseName]
 
-SHOW SINGLE TABLES 
+SHOW SINGLE TABLES
+
+COUNT SINGLE_TABLE RULE [FROM databaseName]
 
 table:
     TABLE tableName
@@ -29,6 +31,14 @@ table:
 | ------------- | ------------------------------------------------------|
 | table_name    | Single table name                                     |
 | resource_name | The resource name where the single table is located   |
+
+### Single Table Rule Count
+
+| 列        | 说明                                                  |
+|-----------|-----------------------------------------------------|
+| rule_name | Single table rule name                              |
+| database  | The database name where the single table is located |
+| count     | The count of single table rules                     |
 
 ## Example
 
@@ -67,4 +77,16 @@ mysql> SHOW SINGLE TABLES;
 | t_single_1   | ds_1          |
 +--------------+---------------+
 2 rows in set (0.02 sec)
+```
+
+*COUNT SINGLE_TABLE RULE*
+
+```sql
+mysql> COUNT SINGLE_TABLE RULE;
++--------------+----------+-------+
+| rule_name    | database | count |
++--------------+----------+-------+
+| t_single_0   | ds       | 2     |
++--------------+----------+-------+
+1 row in set (0.02 sec)
 ```
