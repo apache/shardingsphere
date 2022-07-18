@@ -60,10 +60,8 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     
     @Override
     public Collection<String> getWatchingKeys(final String databaseName) {
-        if (null == databaseName) {
-            return Collections.singleton(DatabaseMetaDataNode.getMetaDataNodePath());
-        }
-        return Collections.singleton(DatabaseMetaDataNode.getDatabaseNamePath(databaseName));
+        return null == databaseName ? Collections.singleton(DatabaseMetaDataNode.getMetaDataNodePath())
+                : Collections.singleton(DatabaseMetaDataNode.getDatabaseNamePath(databaseName));
     }
     
     @Override
