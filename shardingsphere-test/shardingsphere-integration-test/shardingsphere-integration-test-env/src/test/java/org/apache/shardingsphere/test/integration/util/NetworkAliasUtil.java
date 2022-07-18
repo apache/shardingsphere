@@ -30,20 +30,20 @@ public final class NetworkAliasUtil {
      * Get network alias.
      *
      * @param containerType container type
-     * @param scenario scenario
      * @return network alias
      */
-    public static String getNetworkAlias(final String containerType, final String scenario) {
-        return String.join(".", containerType.toLowerCase(), scenario, "host");
+    public static String getNetworkAlias(final String containerType) {
+        return String.join(".", containerType.toLowerCase(), "host");
     }
     
     /**
      * Get network alias.
      *
      * @param containerType container type
+     * @param scenario scenario
      * @return network alias
      */
-    public static String getNetworkAlias(final String containerType) {
-        return String.join(".", containerType.toLowerCase(), "host");
+    public static String getNetworkAlias(final String containerType, final String scenario) {
+        return String.join(".", containerType.toLowerCase(), scenario, "host");
     }
 }
