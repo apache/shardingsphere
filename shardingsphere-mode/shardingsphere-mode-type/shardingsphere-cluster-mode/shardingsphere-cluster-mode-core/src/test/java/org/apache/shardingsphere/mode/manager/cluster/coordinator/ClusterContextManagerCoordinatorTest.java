@@ -120,20 +120,20 @@ import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.Silent.class)
 public final class ClusterContextManagerCoordinatorTest {
-
+    
     private ClusterContextManagerCoordinator coordinator;
-
+    
     private ContextManager contextManager;
-
+    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private MetaDataPersistService persistService;
-
+    
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private ShardingSphereDatabase database;
-
+    
     @Mock
     private ShardingSphereRuleMetaData globalRuleMetaData;
-
+    
     @Before
     public void setUp() throws SQLException {
         contextManager = new ClusterContextManagerBuilder().build(createContextManagerBuilderParameter());
@@ -143,13 +143,13 @@ public final class ClusterContextManagerCoordinatorTest {
         coordinator = new ClusterContextManagerCoordinator(persistService, new RegistryCenter(mock(ClusterPersistRepository.class),
                 new EventBusContext(), mock(ProxyInstanceMetaData.class), null), contextManager);
     }
-
+    
     private ContextManagerBuilderParameter createContextManagerBuilderParameter() {
         ModeConfiguration modeConfig = new ModeConfiguration("Cluster", new ClusterPersistRepositoryConfiguration("FIXTURE", "", "", new Properties()), false);
         InstanceMetaData instanceMetaData = new ProxyInstanceMetaData("foo_instance_id", 3307);
         return new ContextManagerBuilderParameter(modeConfig, Collections.emptyMap(), Collections.emptyList(), new Properties(), Collections.emptyList(), instanceMetaData);
     }
-
+    
     private Map<String, ShardingSphereDatabase> createDatabases() {
         when(database.getName()).thenReturn("db");
         when(database.getResource().getDataSources()).thenReturn(Collections.emptyMap());
@@ -161,13 +161,13 @@ public final class ClusterContextManagerCoordinatorTest {
         when(database.getRuleMetaData().findRules(ResourceHeldRule.class)).thenReturn(Collections.emptyList());
         return new HashMap<>(Collections.singletonMap("db", database));
     }
-
+    
     private OptimizerContext createOptimizerContext() {
         OptimizerContext result = mock(OptimizerContext.class, RETURNS_DEEP_STUBS);
         when(result.getFederationMetaData().getDatabases()).thenReturn(new HashMap<>(Collections.singletonMap("db", new FederationDatabaseMetaData("db", Collections.emptyMap()))));
         return result;
     }
-
+    
     @Test
     public void assertRenewForDatabaseAdded() throws SQLException {
         when(persistService.getDataSourceService().load("db_added")).thenReturn(createDataSourcePropertiesMap());
@@ -175,7 +175,7 @@ public final class ClusterContextManagerCoordinatorTest {
         coordinator.renew(new DatabaseAddedEvent("db_added"));
         assertNotNull(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("db_added").getResource().getDataSources());
     }
-
+    
     private Map<String, DataSourceProperties> createDataSourcePropertiesMap() {
         MockedDataSource dataSource = new MockedDataSource();
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(3, 1);
@@ -184,27 +184,27 @@ public final class ClusterContextManagerCoordinatorTest {
         result.put("replica_ds_1", DataSourcePropertiesCreator.create(dataSource));
         return result;
     }
-
+    
     @Test
     public void assertRenewForDatabaseDeleted() {
         coordinator.renew(new DatabaseDeletedEvent("db"));
         assertNull(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("db"));
     }
-
+    
     @Test
     public void assertRenewForSchemaAdded() {
         when(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("db").getSchemas().get("foo_schema")).thenReturn(null);
         coordinator.renew(new SchemaAddedEvent("db", "foo_schema"));
         verify(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("db").getSchemas()).put(argThat(argument -> argument.equals("foo_schema")), any(ShardingSphereSchema.class));
     }
-
+    
     @Test
     public void assertRenewForSchemaDeleted() {
         when(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("db").getSchemas().containsKey("foo_schema")).thenReturn(true);
         coordinator.renew(new SchemaDeletedEvent("db", "foo_schema"));
         verify(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("db").getSchemas()).remove("foo_schema");
     }
-
+    
     @Test
     public void assertRenewForSchemaChanged() {
         ShardingSphereTable changedTableMetaData = new ShardingSphereTable("t_order", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
@@ -213,7 +213,7 @@ public final class ClusterContextManagerCoordinatorTest {
         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabases().containsKey("db"));
         verify(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("db").getSchemas().get("db")).put("t_order", event.getChangedTableMetaData());
     }
-
+    
     @Test
     public void assertRenewForRuleConfigurationsChanged() {
         when(persistService.getMetaDataVersionPersistService().isActiveVersion("db", "0")).thenReturn(true);
@@ -221,7 +221,7 @@ public final class ClusterContextManagerCoordinatorTest {
         coordinator.renew(new RuleConfigurationsChangedEvent("db", "0", Collections.emptyList()));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("db"), not(database));
     }
-
+    
     @Test
     public void assertRenewForDisableStateChanged() {
         StaticDataSourceContainedRule staticDataSourceRule = mock(StaticDataSourceContainedRule.class);
@@ -232,14 +232,14 @@ public final class ClusterContextManagerCoordinatorTest {
                 (ArgumentMatcher<StorageNodeDataSourceChangedEvent>) argumentEvent -> Objects.equals(event.getQualifiedDatabase(), argumentEvent.getQualifiedDatabase())
                         && Objects.equals(event.getDataSource(), argumentEvent.getDataSource())));
     }
-
+    
     @Test
     public void assertRenewForDataSourceChanged() {
         when(persistService.getMetaDataVersionPersistService().isActiveVersion("db", "0")).thenReturn(true);
         coordinator.renew(new DataSourceChangedEvent("db", "0", createChangedDataSourcePropertiesMap()));
         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("db").getResource().getDataSources().containsKey("ds_2"));
     }
-
+    
     private Map<String, DataSourceProperties> createChangedDataSourcePropertiesMap() {
         MockedDataSource dataSource = new MockedDataSource();
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(3, 1);
@@ -248,7 +248,7 @@ public final class ClusterContextManagerCoordinatorTest {
         result.put("ds_2", DataSourcePropertiesCreator.create(dataSource));
         return result;
     }
-
+    
     @Test
     public void assertRenewForGlobalRuleConfigurationsChanged() {
         GlobalRuleConfigurationsChangedEvent event = new GlobalRuleConfigurationsChangedEvent(getChangedGlobalRuleConfigurations());
@@ -260,19 +260,19 @@ public final class ClusterContextManagerCoordinatorTest {
         assertThat(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof SQLParserRule).count(), is(1L));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules().stream().filter(each -> each instanceof SQLTranslatorRule).count(), is(1L));
     }
-
+    
     private Collection<RuleConfiguration> getChangedGlobalRuleConfigurations() {
         RuleConfiguration authorityRuleConfig = new AuthorityRuleConfiguration(getShardingSphereUsers(), new ShardingSphereAlgorithmConfiguration("ALL_PERMITTED", new Properties()));
         return Collections.singleton(authorityRuleConfig);
     }
-
+    
     private Collection<ShardingSphereUser> getShardingSphereUsers() {
         Collection<ShardingSphereUser> result = new LinkedList<>();
         result.add(new ShardingSphereUser("root", "root", "%"));
         result.add(new ShardingSphereUser("sharding", "sharding", "localhost"));
         return result;
     }
-
+    
     @Test
     public void assertRenewPrimaryDataSourceName() {
         Collection<ShardingSphereRule> rules = new LinkedList<>();
@@ -286,7 +286,7 @@ public final class ClusterContextManagerCoordinatorTest {
         coordinator.renew(mockPrimaryStateChangedEvent);
         verify(dynamicDataSourceRule).restartHeartBeatJob(any(), any());
     }
-
+    
     @Test
     public void assertRenewInstanceStatus() {
         Collection<String> testStates = new LinkedList<>();
@@ -298,20 +298,20 @@ public final class ClusterContextManagerCoordinatorTest {
         coordinator.renew(mockStateEvent);
         assertThat(contextManager.getInstanceContext().getInstance().getState().getCurrentState(), is(StateType.CIRCUIT_BREAK));
     }
-
+    
     @Test
     public void assertRenewInstanceLabels() {
         Collection<String> labels = Collections.singleton("test");
         coordinator.renew(new LabelsEvent(contextManager.getInstanceContext().getInstance().getMetaData().getId(), labels));
         assertThat(contextManager.getInstanceContext().getInstance().getLabels(), is(labels));
     }
-
+    
     @Test
     public void assertRenewInstanceOfflineEvent() {
         coordinator.renew(new InstanceOfflineEvent(contextManager.getInstanceContext().getInstance().getMetaData()));
         assertThat(((ProxyInstanceMetaData) contextManager.getInstanceContext().getInstance().getMetaData()).getPort(), is(3307));
     }
-
+    
     @Test
     public void assertRenewDatabaseVersionChangedEvent() {
         when(persistService.getDataSourceService().load("db", "1")).thenReturn(getVersionChangedDataSourcePropertiesMap());
@@ -324,7 +324,7 @@ public final class ClusterContextManagerCoordinatorTest {
         assertNotNull(contextManager.getDataSourceMap("db").get("primary_ds"));
         assertThat(DataSourcePropertiesCreator.create(new MockedDataSource()), is(DataSourcePropertiesCreator.create(contextManager.getDataSourceMap("db").get("primary_ds"))));
     }
-
+    
     @Test
     public void assertRenewInstanceOnlineEvent() {
         InstanceMetaData instanceMetaData1 = new ProxyInstanceMetaData("foo_instance_3307", 3307);
@@ -341,7 +341,7 @@ public final class ClusterContextManagerCoordinatorTest {
         assertThat(contextManager.getInstanceContext().getAllClusterInstances().size(), is(2));
         assertThat(((LinkedList<ComputeNodeInstance>) contextManager.getInstanceContext().getAllClusterInstances()).get(1).getMetaData(), is(instanceMetaData1));
     }
-
+    
     @Test
     public void assertRenewProperties() {
         Properties props = new Properties();
@@ -349,7 +349,7 @@ public final class ClusterContextManagerCoordinatorTest {
         coordinator.renew(new PropertiesChangedEvent(props));
         assertThat(contextManager.getMetaDataContexts().getMetaData().getProps().getProps().getProperty(ConfigurationPropertyKey.SQL_SHOW.getKey()), is(Boolean.TRUE.toString()));
     }
-
+    
     @Test
     public void assertCompleteUnitShowProcessList() {
         String showProcessListId = "foo_process_id";
@@ -370,7 +370,7 @@ public final class ClusterContextManagerCoordinatorTest {
         assertTrue(currentTime <= startTime + 5000L);
         ShowProcessListManager.getInstance().getLocks().remove(showProcessListId);
     }
-
+    
     @Test
     public void assertTriggerShowProcessList() throws NoSuchFieldException, IllegalAccessException {
         String instanceId = contextManager.getInstanceContext().getInstance().getMetaData().getId();
@@ -382,7 +382,7 @@ public final class ClusterContextManagerCoordinatorTest {
                 "contexts:" + System.lineSeparator() + "- startTimeMillis: 0" + System.lineSeparator());
         verify(repository).delete("/nodes/compute_nodes/process_trigger/" + instanceId + ":foo_process_id");
     }
-
+    
     private void lockAndAwaitDefaultTime(final ShowProcessListSimpleLock lock) {
         lock.lock();
         try {
@@ -391,7 +391,7 @@ public final class ClusterContextManagerCoordinatorTest {
             lock.unlock();
         }
     }
-
+    
     private Map<String, DataSource> initContextManager() {
         Map<String, DataSource> result = getDataSourceMap();
         ShardingSphereResource resource = new ShardingSphereResource(result);
@@ -399,7 +399,7 @@ public final class ClusterContextManagerCoordinatorTest {
         contextManager.getMetaDataContexts().getMetaData().getDatabases().put("db", database);
         return result;
     }
-
+    
     private Map<String, DataSource> getDataSourceMap() {
         Map<String, DataSource> result = new LinkedHashMap<>(3, 1);
         result.put("ds_0", new MockedDataSource());
@@ -407,7 +407,7 @@ public final class ClusterContextManagerCoordinatorTest {
         result.put("db", new MockedDataSource());
         return result;
     }
-
+    
     private Map<String, DataSourceProperties> getVersionChangedDataSourcePropertiesMap() {
         Map<String, DataSourceProperties> result = new LinkedHashMap<>(3, 1);
         result.put("primary_ds", DataSourcePropertiesCreator.create(new MockedDataSource()));
@@ -415,7 +415,7 @@ public final class ClusterContextManagerCoordinatorTest {
         result.put("ds_1", DataSourcePropertiesCreator.create(getChangedDataSource()));
         return result;
     }
-
+    
     private MockedDataSource getChangedDataSource() {
         MockedDataSource result = new MockedDataSource();
         result.setMaxPoolSize(5);
