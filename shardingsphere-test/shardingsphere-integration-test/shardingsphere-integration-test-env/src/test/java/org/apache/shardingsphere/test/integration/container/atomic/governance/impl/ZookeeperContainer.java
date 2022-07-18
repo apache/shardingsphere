@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.framework.container.cluster;
+package org.apache.shardingsphere.test.integration.container.atomic.governance.impl;
 
 import org.apache.shardingsphere.test.integration.container.atomic.governance.GovernanceContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;

@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.state.StateType;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -38,7 +39,7 @@ public final class ComputeNodeInstance {
     
     private final StateContext state = new StateContext();
     
-    private Collection<String> labels;
+    private Collection<String> labels = new ArrayList<>();
     
     /**
      * Set labels.

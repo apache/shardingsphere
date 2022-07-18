@@ -15,24 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.framework.container.cluster;
+package org.apache.shardingsphere.test.integration.container.atomic.governance;
 
-import org.apache.shardingsphere.test.integration.container.atomic.governance.GovernanceContainer;
-import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
+import org.apache.shardingsphere.test.integration.container.atomic.DockerITContainer;
 
 /**
- * Zookeeper container.
+ * Governance container.
  */
-public final class ZookeeperContainer extends GovernanceContainer {
+public abstract class GovernanceContainer extends DockerITContainer {
     
-    public ZookeeperContainer() {
-        super("zookeeper", "zookeeper:3.6.2");
-        setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*PrepRequestProcessor \\(sid:[0-9]+\\) started.*"));
-        withExposedPorts(2181);
+    public GovernanceContainer(final String name, final String dockerImageName) {
+        super(name, dockerImageName);
     }
     
-    @Override
-    public String getServerLists() {
-        return getHost() + ":" + getMappedPort(2181);
-    }
+    /**
+     * Get server list.
+     *
+     * @return server list
+     */
+    public abstract String getServerLists();
 }

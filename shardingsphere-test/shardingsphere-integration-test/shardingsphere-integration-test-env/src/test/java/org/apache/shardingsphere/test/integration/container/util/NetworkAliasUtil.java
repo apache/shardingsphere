@@ -15,24 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.framework.container.cluster;
+package org.apache.shardingsphere.test.integration.container.util;
 
-import org.apache.shardingsphere.test.integration.container.atomic.governance.GovernanceContainer;
-import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 /**
- * Zookeeper container.
+ * Network alias util.
  */
-public final class ZookeeperContainer extends GovernanceContainer {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class NetworkAliasUtil {
     
-    public ZookeeperContainer() {
-        super("zookeeper", "zookeeper:3.6.2");
-        setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*PrepRequestProcessor \\(sid:[0-9]+\\) started.*"));
-        withExposedPorts(2181);
+    /**
+     * Get network alias.
+     *
+     * @param containerType container type
+     * @return network alias
+     */
+    public static String getNetworkAlias(final String containerType) {
+        return String.join(".", containerType.toLowerCase(), "host");
     }
     
-    @Override
-    public String getServerLists() {
-        return getHost() + ":" + getMappedPort(2181);
+    /**
+     * Get network alias.
+     *
+     * @param containerType container type
+     * @param scenario scenario
+     * @return network alias
+     */
+    public static String getNetworkAlias(final String containerType, final String scenario) {
+        return String.join(".", containerType.toLowerCase(), scenario, "host");
     }
 }
