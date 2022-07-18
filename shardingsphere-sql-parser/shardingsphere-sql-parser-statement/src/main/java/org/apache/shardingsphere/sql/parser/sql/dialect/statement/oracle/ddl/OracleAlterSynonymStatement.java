@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterSynonymStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
@@ -26,5 +26,5 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
  * Oracle alter synonym statement.
  */
 @ToString
-public final class OracleAlterSynonymStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
+public final class OracleAlterSynonymStatement extends AlterSynonymStatement implements DDLStatement, OracleStatement {
 }

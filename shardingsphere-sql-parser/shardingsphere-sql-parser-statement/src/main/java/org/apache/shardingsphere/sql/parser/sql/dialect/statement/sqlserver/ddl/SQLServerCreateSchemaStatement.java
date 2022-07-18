@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
 /**
  * SQLServer create schema statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class SQLServerCreateSchemaStatement extends CreateSchemaStatement implements SQLServerStatement {
 }

@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.instance;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.eventbus.EventBusContext;
@@ -40,6 +41,7 @@ public final class InstanceContext {
     
     private final ComputeNodeInstance instance;
     
+    @Getter(AccessLevel.NONE)
     private final WorkerIdGenerator workerIdGenerator;
     
     private final ModeConfiguration modeConfiguration;
@@ -48,7 +50,7 @@ public final class InstanceContext {
     
     private final EventBusContext eventBusContext;
     
-    private final Collection<ComputeNodeInstance> computeNodeInstances = new LinkedList<>();
+    private final Collection<ComputeNodeInstance> allClusterInstances = new LinkedList<>();
     
     public InstanceContext(final ComputeNodeInstance instance, final WorkerIdGenerator workerIdGenerator,
                            final ModeConfiguration modeConfiguration, final LockContext lockContext, final EventBusContext eventBusContext) {
@@ -67,15 +69,15 @@ public final class InstanceContext {
      * @param status status
      */
     public void updateInstanceStatus(final String instanceId, final Collection<String> status) {
-        if (instance.getInstanceMetaData().getId().equals(instanceId)) {
+        if (instance.getMetaData().getId().equals(instanceId)) {
             instance.switchState(status);
         }
         updateRelatedComputeNodeInstancesStatus(instanceId, status);
     }
     
     private void updateRelatedComputeNodeInstancesStatus(final String instanceId, final Collection<String> status) {
-        for (ComputeNodeInstance each : computeNodeInstances) {
-            if (each.getInstanceMetaData().getId().equals(instanceId)) {
+        for (ComputeNodeInstance each : allClusterInstances) {
+            if (each.getMetaData().getId().equals(instanceId)) {
                 each.switchState(status);
             }
         }
@@ -88,16 +90,16 @@ public final class InstanceContext {
      * @param labels collection of label
      */
     public void updateLabel(final String instanceId, final Collection<String> labels) {
-        if (instance.getInstanceMetaData().getId().equals(instanceId)) {
+        if (instance.getMetaData().getId().equals(instanceId)) {
             instance.setLabels(labels);
         }
-        computeNodeInstances.stream().filter(each -> each.getInstanceMetaData().getId().equals(instanceId)).forEach(each -> each.setLabels(labels));
+        allClusterInstances.stream().filter(each -> each.getMetaData().getId().equals(instanceId)).forEach(each -> each.setLabels(labels));
     }
     
     /**
      * Generate worker id.
      *
-     * @param props props
+     * @param props properties
      * @return worker id
      */
     public long generateWorkerId(final Properties props) {
@@ -110,8 +112,8 @@ public final class InstanceContext {
      * @param instance compute node instance
      */
     public void addComputeNodeInstance(final ComputeNodeInstance instance) {
-        computeNodeInstances.removeIf(each -> each.getInstanceMetaData().getId().equalsIgnoreCase(instance.getInstanceMetaData().getId()));
-        computeNodeInstances.add(instance);
+        allClusterInstances.removeIf(each -> each.getMetaData().getId().equalsIgnoreCase(instance.getMetaData().getId()));
+        allClusterInstances.add(instance);
     }
     
     /**
@@ -120,7 +122,7 @@ public final class InstanceContext {
      * @param instance compute node instance
      */
     public void deleteComputeNodeInstance(final ComputeNodeInstance instance) {
-        computeNodeInstances.removeIf(each -> each.getInstanceMetaData().getId().equalsIgnoreCase(instance.getInstanceMetaData().getId()));
+        allClusterInstances.removeIf(each -> each.getMetaData().getId().equalsIgnoreCase(instance.getMetaData().getId()));
     }
     
     /**
@@ -130,11 +132,11 @@ public final class InstanceContext {
      * @param labels collection of contained label
      * @return compute node instances
      */
-    public List<InstanceMetaData> getComputeNodeInstances(final InstanceType instanceType, final Collection<String> labels) {
-        List<InstanceMetaData> result = new ArrayList<>(computeNodeInstances.size());
-        for (ComputeNodeInstance each : computeNodeInstances) {
-            if (each.getInstanceMetaData().getType() == instanceType && labels.stream().anyMatch(((Collection<String>) each.getLabels())::contains)) {
-                result.add(each.getInstanceMetaData());
+    public List<InstanceMetaData> getAllClusterInstances(final InstanceType instanceType, final Collection<String> labels) {
+        List<InstanceMetaData> result = new ArrayList<>(allClusterInstances.size());
+        for (ComputeNodeInstance each : allClusterInstances) {
+            if (each.getMetaData().getType() == instanceType && labels.stream().anyMatch(((Collection<String>) each.getLabels())::contains)) {
+                result.add(each.getMetaData());
             }
         }
         return result;
@@ -147,7 +149,7 @@ public final class InstanceContext {
      * @return compute node instance
      */
     public Optional<ComputeNodeInstance> getComputeNodeInstanceById(final String instanceId) {
-        return computeNodeInstances.stream().filter(each -> instanceId.equals(each.getCurrentInstanceId())).findFirst();
+        return allClusterInstances.stream().filter(each -> instanceId.equals(each.getCurrentInstanceId())).findFirst();
     }
     
     /**

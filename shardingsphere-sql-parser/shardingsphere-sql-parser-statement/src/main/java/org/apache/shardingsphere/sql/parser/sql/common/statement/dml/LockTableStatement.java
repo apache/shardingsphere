@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.dml;
 
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
  * Lock table statement.
  */
+@ToString(callSuper = true)
 public abstract class LockTableStatement extends AbstractSQLStatement implements DMLStatement {
 }

@@ -164,6 +164,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateEventTriggerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateExtensionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateFlashbackArchiveStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateForeignDataWrapperStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateFunctionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateIndexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateInmemoryJoinGroupStatementTestCase;
@@ -1594,6 +1595,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "create-event-trigger")
     private final List<CreateEventTriggerStatementTestCase> createEventTriggerStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-foreign-data-wrapper")
+    private final List<CreateForeignDataWrapperStatementTestCase> createForeignDataWrapperStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.

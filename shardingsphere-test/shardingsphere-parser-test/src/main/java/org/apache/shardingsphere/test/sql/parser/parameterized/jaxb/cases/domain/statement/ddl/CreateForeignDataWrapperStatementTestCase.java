@@ -15,27 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.metadata.persist.service;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
+
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Global persist service.
- * 
- * @param <T> type of configuration
+ * Create foreign data wrapper statement test case.
  */
-public interface GlobalPersistService<T> {
-    
-    /**
-     * Persist configurations.
-     *
-     * @param globalRuleConfigs configurations
-     * @param isOverwrite is overwrite
-     */
-    void persist(T globalRuleConfigs, boolean isOverwrite);
-    
-    /**
-     * Load configurations.
-     *
-     * @return configurations
-     */
-    T load();
+public final class CreateForeignDataWrapperStatementTestCase extends SQLParserTestCase {
 }

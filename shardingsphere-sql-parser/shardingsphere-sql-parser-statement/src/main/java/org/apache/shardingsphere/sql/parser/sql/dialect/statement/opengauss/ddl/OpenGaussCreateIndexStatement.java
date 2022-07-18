@@ -28,7 +28,7 @@ import java.util.Optional;
  * OpenGauss create index statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class OpenGaussCreateIndexStatement extends CreateIndexStatement implements OpenGaussStatement {
     
     private Integer generatedIndexStartIndex;
