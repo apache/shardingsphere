@@ -90,7 +90,7 @@ public abstract class DatabaseCommunicationEngine<T> {
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getPlannerContexts(),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps());
-        lockJudgeEngine = LockJudgeEngineBuilder.build(ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext());
+        lockJudgeEngine = LockJudgeEngineBuilder.build();
     }
     
     /**
@@ -197,7 +197,8 @@ public abstract class DatabaseCommunicationEngine<T> {
     }
     
     protected void checkLockedDatabase(final ExecutionContext executionContext) {
-        if (lockJudgeEngine.isLocked(backendConnection.getConnectionSession().getDatabaseName(), executionContext.getSqlStatementContext())) {
+        if (lockJudgeEngine.isLocked(ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext(),
+                backendConnection.getConnectionSession().getDatabaseName(), executionContext.getSqlStatementContext())) {
             throw new UnsupportedUpdateOperationException(backendConnection.getConnectionSession().getDatabaseName());
         }
     }

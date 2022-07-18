@@ -27,22 +27,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatementTyp
  */
 public final class ShardingSphereLockJudgeEngine implements LockJudgeEngine {
     
-    private LockContext lockContext;
-    
     @Override
-    public void init(final LockContext lockContext) {
-        this.lockContext = lockContext;
-    }
-    
-    /**
-     * Is locked.
-     *
-     * @param databaseName database name
-     * @param sqlStatementContext sql statement context
-     * @return is locked or not
-     */
-    @Override
-    public boolean isLocked(final String databaseName, final SQLStatementContext<?> sqlStatementContext) {
+    public boolean isLocked(final LockContext lockContext, final String databaseName, final SQLStatementContext<?> sqlStatementContext) {
         return SQLStatementType.involvesDataChanges(sqlStatementContext.getSqlStatement()) && lockContext.isLocked(LockDefinitionFactory.newDatabaseLockDefinition(databaseName));
     }
 }
