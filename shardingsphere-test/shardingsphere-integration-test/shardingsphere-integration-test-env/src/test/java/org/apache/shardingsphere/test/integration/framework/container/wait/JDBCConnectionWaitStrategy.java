@@ -29,8 +29,8 @@ import java.util.concurrent.TimeUnit;
 /**
  * Wait strategy implemented via JDBC connection checking.
  */
-@Slf4j
 @RequiredArgsConstructor
+@Slf4j
 public final class JDBCConnectionWaitStrategy extends AbstractWaitStrategy {
     
     private final Callable<Connection> connectionSupplier;
@@ -39,7 +39,7 @@ public final class JDBCConnectionWaitStrategy extends AbstractWaitStrategy {
     protected void waitUntilReady() {
         Unreliables.retryUntilSuccess((int) startupTimeout.getSeconds(), TimeUnit.SECONDS, () -> {
             getRateLimiter().doWhenReady(() -> {
-                try (Connection unused = connectionSupplier.call()) {
+                try (Connection ignored = connectionSupplier.call()) {
                     log.info("Container ready");
                     // CHECKSTYLE:OFF
                 } catch (final Exception ex) {
