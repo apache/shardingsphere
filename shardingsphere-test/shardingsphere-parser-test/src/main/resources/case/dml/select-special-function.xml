@@ -211,4 +211,92 @@
             <simple-table name="t_order" start-index="29" stop-index="35" />
         </from>
     </select>
+    
+    <select sql-case-id="select_ifnull">
+        <from>
+            <simple-table name="t_order" start-index="30" stop-index="36"/>
+        </from>
+        <projections start-index="7" stop-index="23">
+            <expression-projection text="IFNULL(status, 0)" start-index="7" stop-index="23">
+                <expr>
+                    <function function-name="IFNULL" start-index="7" stop-index="23" text="IFNULL(status, 0)">
+                        <parameter>
+                            <column name="status" start-index="14" stop-index="19"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="0" start-index="22" stop-index="22"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_ifnull_max">
+        <from>
+            <simple-table name="t_order" start-index="35" stop-index="41"/>
+        </from>
+        <projections start-index="7" stop-index="28">
+            <expression-projection text="IFNULL(MAX(status), 0)" start-index="7" stop-index="28">
+                <expr>
+                    <function function-name="IFNULL" start-index="7" stop-index="28" text="IFNULL(MAX(status), 0)">
+                        <parameter>
+                            <aggregation-projection type="MAX" inner-expression="(status)" start-index="14" stop-index="24"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="0" start-index="27" stop-index="27"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_ifnull_max_add">
+        <from>
+            <simple-table name="t_order" start-index="37" stop-index="43"/>
+        </from>
+        <projections start-index="7" stop-index="30">
+            <expression-projection text="IFNULL(MAX(status)+1, 0)" start-index="7" stop-index="30">
+                <expr>
+                    <function function-name="IFNULL" start-index="7" stop-index="30" text="IFNULL(MAX(status)+1, 0)">
+                        <parameter>
+                            <binary-operation-expression start-index="14" stop-index="26" text="MAX(status)+1">
+                                <left>
+                                    <aggregation-projection type="MAX" inner-expression="(status)" start-index="14" stop-index="24"/>
+                                </left>
+                                <operator>+</operator>
+                                <right>
+                                    <literal-expression value="1" start-index="26" stop-index="26" />
+                                </right>
+                            </binary-operation-expression>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="0" start-index="29" stop-index="29"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
+    
+    <select sql-case-id="select_ifnull_max_distinct">
+        <from>
+            <simple-table name="t_order" start-index="44" stop-index="50"/>
+        </from>
+        <projections start-index="7" stop-index="37">
+            <expression-projection text="IFNULL(MAX(DISTINCT status), 0)" start-index="7" stop-index="37">
+                <expr>
+                    <function function-name="IFNULL" start-index="7" stop-index="37" text="IFNULL(MAX(DISTINCT status), 0)">
+                        <parameter>
+                            <aggregation-distinct-projection type="MAX" inner-expression="(DISTINCT status)" distinct-expression="status" start-index="14" stop-index="33"/>
+                        </parameter>
+                        <parameter>
+                            <literal-expression value="0" start-index="36" stop-index="36"/>
+                        </parameter>
+                    </function>
+                </expr>
+            </expression-projection>
+        </projections>
+    </select>
 </sql-parser-test-cases>

@@ -58,6 +58,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.simple.ExpectedParameterMarkerExpression;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.expr.simple.ExpectedSubquery;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.function.ExpectedFunction;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.segment.impl.projection.impl.aggregation.ExpectedAggregationProjection;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.sql.SQLCaseType;
 
 import java.util.Iterator;
@@ -378,8 +379,12 @@ public final class ExpressionAssert {
             ProjectionAssert.assertProjection(assertContext,
                     (ExpressionProjectionSegment) actual, expected.getExpressionProjection());
         } else if (actual instanceof AggregationProjectionSegment) {
+            ExpectedAggregationProjection expectedAggregationProjection = expected.getAggregationProjection();
+            if (null == expectedAggregationProjection) {
+                expectedAggregationProjection = expected.getAggregationDistinctProjection();
+            }
             ProjectionAssert.assertProjection(assertContext,
-                    (AggregationProjectionSegment) actual, expected.getAggregationProjection());
+                    (AggregationProjectionSegment) actual, expectedAggregationProjection);
         } else if (actual instanceof FunctionSegment) {
             assertFunction(assertContext, (FunctionSegment) actual, expected.getFunction());
         } else if (actual instanceof CollateExpression) {
