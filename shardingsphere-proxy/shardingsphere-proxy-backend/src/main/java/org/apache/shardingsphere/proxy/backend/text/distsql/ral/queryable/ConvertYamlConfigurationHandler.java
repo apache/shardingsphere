@@ -110,7 +110,7 @@ public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<
             connectProperties = connectProperties.concat(String.format("    %s=%s," + System.lineSeparator(), entry.getKey(), entry.getValue()));
         }
         for (Map.Entry<String, Object> entry : properties.getPoolPropertySynonyms().getStandardProperties().entrySet()) {
-            if (entry.getValue() != null) {
+            if (null != entry.getValue()) {
                 poolProperties = poolProperties.concat(String.format("\"%s\"=%s, ", entry.getKey(), entry.getValue()));
             }
         }
