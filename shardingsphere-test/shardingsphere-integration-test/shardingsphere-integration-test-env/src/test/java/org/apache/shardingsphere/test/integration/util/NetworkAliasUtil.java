@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.test.integration.util;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * Network alias util.
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class NetworkAliasUtil {
     
     /**
