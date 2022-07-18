@@ -21,15 +21,15 @@ import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguratio
 
 import java.util.Properties;
 
-public class PersistRepositoryConfigurationFixture implements PersistRepositoryConfiguration {
-    
-    @Override
-    public String getType() {
-        return "FIXTURE";
-    }
+public final class PersistRepositoryConfigurationFixture implements PersistRepositoryConfiguration {
     
     @Override
     public Properties getProps() {
         return new Properties();
+    }
+    
+    @Override
+    public String getType() {
+        return "FIXTURE";
     }
 }
