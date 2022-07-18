@@ -17,16 +17,19 @@
 
 package org.apache.shardingsphere.test.integration.util;
 
+/**
+ * Network alias util.
+ */
 public final class NetworkAliasUtil {
     
     /**
-     * Get network alias with scenario.
+     * Get network alias.
      *
-     * @param containerType container type, such as "zk", "db"
+     * @param containerType container type
      * @param scenario scenario
      * @return network alias
      */
-    public static String getNetworkAliasWithScenario(final String containerType, final String scenario) {
+    public static String getNetworkAlias(final String containerType, final String scenario) {
         return String.join(".", containerType.toLowerCase(), scenario, "host");
     }
     
