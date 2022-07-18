@@ -3046,12 +3046,12 @@ withLocalClause
     ;
 
 arrayDMLClause
-   : (WITH | WITHOUT)? ARRAY DML arryDMLSubClause (COMMA_ arryDMLSubClause)*
-   ;
+    : (WITH | WITHOUT)? ARRAY DML arryDMLSubClause (COMMA_ arryDMLSubClause)*
+    ;
 
 arryDMLSubClause
-   : LP_ typeName (COMMA_ varrayType)? RP_
-   ;
+    : LP_ typeName (COMMA_ varrayType)? RP_
+    ;
 
 alterMaterializedView
     : ALTER MATERIALIZED VIEW materializedViewName materializedViewAttribute? alterIotClauses? (USING INDEX physicalAttributesClause)?
@@ -3120,7 +3120,7 @@ addOverflowClause
     ;
 
 scopedTableRefConstraint
-    : SCOPE FOR LP_ (columnName | attributeName) RP_ IS (schemaName DOT_)? (scopeTableName | alias)
+    : SCOPE FOR LP_ (columnName | attributeName) RP_ IS (schemaName DOT_)? (tableName | alias)
     ;
 
 alterMvRefresh
@@ -3157,3 +3157,5 @@ unusableBefore
 unusableBeginning
     : UNUSABLE BEGINNING WITH (CURRENT EDITION | EDITION editionName | NULL EDITION)
     ;
+
+
