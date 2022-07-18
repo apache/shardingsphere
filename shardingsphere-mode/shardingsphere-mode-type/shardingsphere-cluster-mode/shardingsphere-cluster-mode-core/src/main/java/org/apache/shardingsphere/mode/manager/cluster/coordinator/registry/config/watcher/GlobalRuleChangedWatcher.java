@@ -38,7 +38,7 @@ import java.util.Optional;
 public final class GlobalRuleChangedWatcher implements GovernanceWatcher<GlobalRuleConfigurationsChangedEvent> {
     
     @Override
-    public Collection<String> getWatchingKeys() {
+    public Collection<String> getWatchingKeys(final String databaseName) {
         return Collections.singleton(GlobalNode.getGlobalRuleNode());
     }
     
@@ -49,7 +49,7 @@ public final class GlobalRuleChangedWatcher implements GovernanceWatcher<GlobalR
     
     @Override
     public Optional<GlobalRuleConfigurationsChangedEvent> createGovernanceEvent(final DataChangedEvent event) {
-        return getWatchingKeys().contains(event.getKey()) ? Optional.of(new GlobalRuleConfigurationsChangedEvent(getGlobalRuleConfigurations(event))) : Optional.empty();
+        return GlobalNode.getGlobalRuleNode().equals(event.getKey()) ? Optional.of(new GlobalRuleConfigurationsChangedEvent(getGlobalRuleConfigurations(event))) : Optional.empty();
     }
     
     @SuppressWarnings("unchecked")

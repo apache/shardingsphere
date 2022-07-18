@@ -19,29 +19,25 @@ package org.apache.shardingsphere.mode.manager.lock;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 
 /**
- * Lock judge engine builder.
+ * Lock judge engine factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class LockJudgeEngineBuilder {
+public final class LockJudgeEngineFactory {
     
     static {
         ShardingSphereServiceLoader.register(LockJudgeEngine.class);
     }
     
     /**
-     * Build.
+     * Get instance of lock judge engine.
      *
-     * @param lockContext lock context
-     * @return lock judge engine
+     * @return got instance
      */
-    public static LockJudgeEngine build(final LockContext lockContext) {
-        LockJudgeEngine result = RequiredSPIRegistry.getRegisteredService(LockJudgeEngine.class);
-        result.init(lockContext);
-        return result;
+    public static LockJudgeEngine getInstance() {
+        return RequiredSPIRegistry.getRegisteredService(LockJudgeEngine.class);
     }
 }
