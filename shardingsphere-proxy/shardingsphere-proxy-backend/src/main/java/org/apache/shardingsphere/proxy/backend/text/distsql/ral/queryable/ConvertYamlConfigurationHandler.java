@@ -17,45 +17,45 @@
 
 package org.apache.shardingsphere.proxy.backend.text.distsql.ral.queryable;
 
+import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDataSourceConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
+import org.apache.shardingsphere.proxy.backend.config.yaml.swapper.YamlProxyDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
  * Convert database configuration handler.
  */
 public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<ConvertYamlConfigurationStatement> {
-    
+
     private static final String CREATE_DATABASE = "CREATE DATABASE %s;";
     
     private static final String ADD_RESOURCE = "ADD RESOURCE";
     
-    private static final String RESOURCES = " %s ("
-                                            + System.lineSeparator()
-                                            + "\tURL=\"%s\","
-                                            + System.lineSeparator()
-                                            + "\tUSER=%s,"
-                                            + System.lineSeparator()
-                                            + "\tPASSWORD=%s,"
-                                            + System.lineSeparator()
-                                            + "\tPROPERTIES(%s%s%s%s%s)"
-                                            + System.lineSeparator()
+    private static final String RESOURCES = " %s (" + System.lineSeparator()
+                                            + "%s"
+                                            + "    PROPERTIES(%s)" + System.lineSeparator()
                                             + "),";
-    
+
+    private final YamlProxyDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlProxyDataSourceConfigurationSwapper();
+
     @Override
     protected Collection<String> getColumnNames() {
-        return Collections.singleton("converted DistSQL");
+        return Collections.singleton("converted_distsql");
     }
     
     @Override
@@ -85,34 +85,43 @@ public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<
         stringBuilder.append(String.format(CREATE_DATABASE, databaseName));
     }
     
-    private void appendAddResourceDistSQL(final Map<String, YamlProxyDataSourceConfiguration> databaseResource, final StringBuilder stringBuilder) {
-        if (databaseResource.isEmpty()) {
+    private void appendAddResourceDistSQL(final Map<String, YamlProxyDataSourceConfiguration> yamlDataSourceMap, final StringBuilder stringBuilder) {
+        if (yamlDataSourceMap.isEmpty()) {
             return;
         }
         if (null == stringBuilder) {
             stringBuilder.append(ADD_RESOURCE);
         } else {
-            stringBuilder.append(String.format(System.lineSeparator()
-                                               + System.lineSeparator()
-                                               + ADD_RESOURCE));
+            stringBuilder.append(String.format(System.lineSeparator() + System.lineSeparator() + ADD_RESOURCE));
+        }
+        Map<String, DataSourceProperties> dataSourcePropsMap = new LinkedHashMap<>(yamlDataSourceMap.size(), 1);
+        for (Map.Entry<String, YamlProxyDataSourceConfiguration> entry : yamlDataSourceMap.entrySet()) {
+            dataSourcePropsMap.put(entry.getKey(), DataSourcePropertiesCreator.create(HikariDataSource.class.getName(), dataSourceConfigSwapper.swap(entry.getValue())));
         }
         stringBuilder.append(ADD_RESOURCE);
-        for (Map.Entry<String, YamlProxyDataSourceConfiguration> entry : databaseResource.entrySet()) {
-            String resourceName = entry.getKey();
-            String url = entry.getValue().getUrl();
-            String username = entry.getValue().getUsername();
-            String password = entry.getValue().getPassword();
-            String connectionTimeoutMilliseconds = null == entry.getValue().getConnectionTimeoutMilliseconds() ? String.format("")
-                    : String.format("\"connectionTimeoutMilliseconds\"=%s,", entry.getValue().getConnectionTimeoutMilliseconds().toString());
-            String idleTimeoutMilliseconds = null == entry.getValue().getIdleTimeoutMilliseconds() ? String.format("")
-                    : String.format("\"idleTimeoutMilliseconds\"=%s,", entry.getValue().getIdleTimeoutMilliseconds().toString());
-            String maxLifetimeMilliseconds = null == entry.getValue().getMaxLifetimeMilliseconds() ? String.format("")
-                    : String.format("\"getMaxLifetimeMilliseconds\"=%s,", entry.getValue().getMaxLifetimeMilliseconds().toString());
-            String maxPoolSize = null == entry.getValue().getMaxPoolSize() ? String.format("") : String.format("\"maxPoolSize\"=%s,", entry.getValue().getMaxPoolSize().toString());
-            String minPoolSize = null == entry.getValue().getMinPoolSize() ? String.format("") : String.format("\"minPoolSize\"=%s", entry.getValue().getMinPoolSize().toString());
-            stringBuilder.append(String.format(RESOURCES, resourceName, url, username, password, connectionTimeoutMilliseconds,
-                    idleTimeoutMilliseconds, maxLifetimeMilliseconds, maxPoolSize, minPoolSize));
-        }
+        dataSourcePropsMap.forEach((key, value) -> addResources(key, value, stringBuilder));
         stringBuilder.deleteCharAt(stringBuilder.length() - 1).append(";");
+    }
+
+    private void addResources(final String resourceName, final DataSourceProperties properties, final StringBuilder stringBuilder) {
+        String connectProperties = new String();
+        String poolProperties = new String();
+        for (Map.Entry<String, Object> entry : properties.getConnectionPropertySynonyms().getStandardProperties().entrySet()) {
+            connectProperties = connectProperties.concat(String.format("    %s=%s," + System.lineSeparator(), entry.getKey(), entry.getValue()));
+        }
+        for (Map.Entry<String, Object> entry : properties.getPoolPropertySynonyms().getStandardProperties().entrySet()) {
+            if (entry.getValue() != null) {
+                poolProperties = poolProperties.concat(String.format("\"%s\"=%s, ", entry.getKey(), entry.getValue()));
+            }
+        }
+        for (Map.Entry<String, Object> entry : properties.getCustomDataSourceProperties().getProperties().entrySet()) {
+            if (entry.getValue().equals(false) || entry.getValue().equals(true)) {
+                poolProperties = poolProperties.concat(String.format("\"%s\"=%s, ", entry.getKey(), entry.getValue()));
+            } else {
+                poolProperties = poolProperties.concat(String.format("\"%s\"=\"%s\", ", entry.getKey(), entry.getValue()));
+            }
+        }
+        poolProperties = poolProperties.substring(0, poolProperties.length() - 2);
+        stringBuilder.append(String.format(RESOURCES, resourceName, connectProperties, poolProperties));
     }
 }
