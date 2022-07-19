@@ -65,4 +65,14 @@ public final class ColumnSegmentTest {
         actual.setOwner(new OwnerSegment(0, 0, new IdentifierValue("`tbl`")));
         assertThat(actual.getQualifiedName(), is("`tbl`.`col`"));
     }
+
+    @Test
+    public void assertGetExpression() {
+        ColumnSegment actual = new ColumnSegment(0, 0, new IdentifierValue("`col`"));
+        String expression0 = actual.getExpression();
+        assertThat(expression0, is("col"));
+        actual.setOwner(new OwnerSegment(0, 0, new IdentifierValue("`tbl`")));
+        String expression1 = actual.getExpression();
+        assertThat(expression1, is("tbl.col"));
+    }
 }
