@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-grammar CommonDistSQLStatement;
+grammar KernelDistSQLStatement;
 
 import Symbol, RALStatement, RDLStatement, RQLStatement;
 

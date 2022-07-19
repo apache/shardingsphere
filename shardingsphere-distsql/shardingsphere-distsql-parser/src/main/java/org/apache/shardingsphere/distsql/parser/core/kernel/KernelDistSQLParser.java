@@ -15,26 +15,26 @@
  * limitations under the License.
  */
 
-lexer grammar AdvancedKeyword;
+package org.apache.shardingsphere.distsql.parser.core.kernel;
 
-import Alphabet;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.TokenStream;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
-WS
-    : [ \t\r\n] +
-    ;
-
-PREVIEW
-    : P R E V I E W
-    ;
-
-PARSE
-    : P A R S E
-    ;
-
-FORMAT
-    : F O R M A T
-    ;
-
-SQLString
-    : WS.*
-    ;
+/**
+ * SQL parser for kernel dist SQL.
+ */
+public final class KernelDistSQLParser extends KernelDistSQLStatementParser implements SQLParser {
+    
+    public KernelDistSQLParser(final TokenStream input) {
+        super(input);
+    }
+    
+    @Override
+    public ASTNode parse() {
+        return new ParseASTNode(execute(), (CommonTokenStream) getTokenStream());
+    }
+}
