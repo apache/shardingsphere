@@ -225,6 +225,10 @@ public final class PipelineDDLGenerator {
         if (logicSQL.toLowerCase().startsWith(SET_SEARCH_PATH_PREFIX)) {
             return Optional.empty();
         }
-        return Optional.of(replaceTableNameWithPrefix(logicSQL, schemaName + ".", databaseType, databaseName));
+        String result = replaceTableNameWithPrefix(logicSQL, schemaName + ".", databaseType, databaseName);
+        if (result.toUpperCase().startsWith("CREATE TABLE")) {
+            result = result.replaceFirst("CREATE TABLE", "CREATE TABLE IF NOT EXISTS");
+        }
+        return Optional.of(result);
     }
 }

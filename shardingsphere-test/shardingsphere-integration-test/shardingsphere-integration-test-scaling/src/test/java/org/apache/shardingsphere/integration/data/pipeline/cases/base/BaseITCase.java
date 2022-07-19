@@ -43,6 +43,7 @@ import org.apache.shardingsphere.integration.data.pipeline.util.DatabaseTypeUtil
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.junit.Rule;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -269,7 +270,15 @@ public abstract class BaseITCase {
     }
     
     protected void createSchema(final String schemaName) {
-        executeWithLog(String.format("CREATE SCHEMA %s", schemaName));
+        try {
+            executeWithLog(String.format("CREATE SCHEMA %s", schemaName));
+        } catch (final BadSqlGrammarException ex) {
+            if (ex.getMessage().contains("schema \"test\" already exists")) {
+                log.info("schema {} already exists.", schemaName);
+            } else {
+                throw ex;
+            }
+        }
     }
     
     protected void executeWithLog(final Connection connection, final String sql) throws SQLException {
