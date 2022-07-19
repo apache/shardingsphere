@@ -17,12 +17,17 @@
 
 package org.apache.shardingsphere.integration.transaction.engine.postgresql;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
-import org.apache.shardingsphere.integration.transaction.engine.mysql.MySQLJdbcTransactionIT;
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
+import org.junit.After;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 
@@ -30,7 +35,7 @@ import java.util.Collection;
  * PostgreSQL general transaction test case with proxy container, includes multiple cases.
  */
 @Slf4j
-// @RunWith(Parameterized.class)
+@RunWith(Parameterized.class)
 public final class PostgreSQLProxyTransactionIT extends BaseTransactionITCase {
     
     private final TransactionParameterized parameterized;
@@ -43,7 +48,32 @@ public final class PostgreSQLProxyTransactionIT extends BaseTransactionITCase {
     
     @Parameters(name = "{0}")
     public static Collection<TransactionParameterized> getParameters() {
-        return getTransactionParameterizedList(MySQLJdbcTransactionIT.class);
+        return getTransactionParameterizedList(PostgreSQLProxyTransactionIT.class);
     }
     
+    @After
+    @SneakyThrows(SQLException.class)
+    public void after() {
+        getDataSource().close();
+        getComposedContainer().close();
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertLocalTransaction() {
+        alterLocalTransactionRule();
+        callTestCases();
+    }
+    
+    @Test
+    @SneakyThrows
+    public void assertDistributedTransaction() {
+        alterXaAtomikosTransactionRule();
+        callTestCases();
+    }
+    
+    @SneakyThrows
+    private void callTestCases() {
+        parameterized.getTransactionTestCaseClass().getConstructor(DataSource.class).newInstance(getDataSource()).assertTest();
+    }
 }

@@ -52,7 +52,7 @@ public abstract class DatabaseContainer extends DockerITContainer {
     /**
      * Get database password.
      *
-     * @return database username
+     * @return database password
      */
     public abstract String getPassword();
     

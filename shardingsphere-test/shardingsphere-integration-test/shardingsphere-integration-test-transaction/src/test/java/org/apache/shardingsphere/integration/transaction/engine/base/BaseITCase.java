@@ -17,10 +17,8 @@
 
 package org.apache.shardingsphere.integration.transaction.engine.base;
 
-import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +28,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.command.CommonSQLCommand;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.integration.transaction.engine.entity.JdbcInfoEntity;
@@ -41,11 +40,9 @@ import org.apache.shardingsphere.integration.transaction.framework.container.com
 import org.apache.shardingsphere.integration.transaction.framework.container.compose.NativeComposedContainer;
 import org.apache.shardingsphere.integration.transaction.framework.container.database.DatabaseContainer;
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
+import org.apache.shardingsphere.integration.transaction.util.TransactionTestCaseClassScanner;
 import org.apache.shardingsphere.integration.transaction.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
-import org.springframework.dao.DataAccessException;
-
-import javax.sql.DataSource;
 import javax.xml.bind.JAXB;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -55,7 +52,9 @@ import java.sql.Statement;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
@@ -80,16 +79,22 @@ public abstract class BaseITCase {
     
     protected static final String SHARDING_DB = "sharding_db";
     
+    private static final List<Class<? extends BaseTransactionTestCase>> TEST_CASES;
+    
     private final BaseComposedContainer composedContainer;
     
     private final CommonSQLCommand commonSQLCommand;
     
     private final DatabaseType databaseType;
     
-    private DataSource dataSource;
+    @Getter
+    private AutoDataSource dataSource;
     
-    @Setter
-    private Thread increaseTaskThread;
+    static {
+        long startTime = System.currentTimeMillis();
+        TEST_CASES = TransactionTestCaseClassScanner.scan();
+        log.info("Load transaction test case classes time consume: {}.", System.currentTimeMillis() - startTime);
+    }
     
     public BaseITCase(final TransactionParameterized parameterized) {
         databaseType = parameterized.getDatabaseType();
@@ -106,28 +111,78 @@ public abstract class BaseITCase {
             return result;
         }
         if (ENV.getItEnvType() == TransactionITEnvTypeEnum.DOCKER) {
-            if (TransactionTestConstants.MYSQL.equalsIgnoreCase(currentTestCaseInfo.getDbType())) {
-                for (String version : ENV.getMysqlVersions()) {
-                    result.add(new TransactionParameterized(new MySQLDatabaseType(), getMysqlDockerImageName(version)));
-                }
-            } else if (TransactionTestConstants.POSTGRESQL.equalsIgnoreCase(currentTestCaseInfo.getDbType())) {
-                for (String version : ENV.getPostgresVersions()) {
-                    result.add(new TransactionParameterized(new PostgreSQLDatabaseType(), version));
-                }
-            } else if (TransactionTestConstants.OPENGAUSS.equalsIgnoreCase(currentTestCaseInfo.getDbType())) {
-                for (String version : ENV.getOpenGaussVersions()) {
-                    result.add(new TransactionParameterized(new OpenGaussDatabaseType(), version));
-                }
-            }
+            addParameters(currentTestCaseInfo, result);
         }
         if (ENV.getItEnvType() == TransactionITEnvTypeEnum.NATIVE && StringUtils.equalsIgnoreCase(ENV.getNativeDatabaseType(), "MySQL")) {
-            result.add(new TransactionParameterized(new MySQLDatabaseType(), ""));
+            addParametersByVersions(ENV.getMysqlVersions(), result, currentTestCaseInfo);
         }
         return result;
     }
     
-    protected static String getMysqlDockerImageName(final String version) {
-        return "mysql/mysql-server:" + version;
+    private static void addParameters(final TransactionTestCaseRegistry currentTestCaseInfo, final Collection<TransactionParameterized> result) {
+        if (TransactionTestConstants.MYSQL.equalsIgnoreCase(currentTestCaseInfo.getDbType())) {
+            addParametersByVersions(ENV.getMysqlVersions(), result, currentTestCaseInfo);
+        } else if (TransactionTestConstants.POSTGRESQL.equalsIgnoreCase(currentTestCaseInfo.getDbType())) {
+            addParametersByVersions(ENV.getPostgresVersions(), result, currentTestCaseInfo);
+        } else if (TransactionTestConstants.OPENGAUSS.equalsIgnoreCase(currentTestCaseInfo.getDbType())) {
+            addParametersByVersions(ENV.getOpenGaussVersions(), result, currentTestCaseInfo);
+        }
+    }
+    
+    private static void addParametersByVersions(final List<String> databaseVersion, final Collection<TransactionParameterized> result, final TransactionTestCaseRegistry currentTestCaseInfo) {
+        for (String version : databaseVersion) {
+            addParametersByTestCaseClasses(result, version, currentTestCaseInfo);
+        }
+    }
+    
+    private static void addParametersByTestCaseClasses(final Collection<TransactionParameterized> result, final String version, final TransactionTestCaseRegistry currentTestCaseInfo) {
+        for (Class<? extends BaseTransactionTestCase> caseClass : TEST_CASES) {
+            if (!ENV.getNeedToRunTestCases().isEmpty() && !ENV.getNeedToRunTestCases().contains(caseClass.getSimpleName())) {
+                log.info("Collect transaction test case, need to run cases don't contain this, skip: {}.", caseClass.getName());
+                continue;
+            }
+            TransactionTestCase annotation = caseClass.getAnnotation(TransactionTestCase.class);
+            if (null == annotation) {
+                log.info("Collect transaction test case, annotation is null, skip: {}.", caseClass.getName());
+                continue;
+            }
+            Optional<String> dbType = Arrays.stream(annotation.dbTypes()).filter(each -> currentTestCaseInfo.getDbType().equalsIgnoreCase(each)).findAny();
+            if (!dbType.isPresent()) {
+                log.info("Collect transaction test case, dbType is not matched, skip: {}.", caseClass.getName());
+                continue;
+            }
+            Optional<String> runMode = Arrays.stream(annotation.runModes()).filter(each -> currentTestCaseInfo.getRunningAdaptor().equalsIgnoreCase(each)).findAny();
+            if (!runMode.isPresent()) {
+                log.info("Collect transaction test case, runMode is not matched, skip: {}.", caseClass.getName());
+                continue;
+            }
+            result.add(new TransactionParameterized(getSqlDatabaseType(currentTestCaseInfo.getDbType()), getDockerImageName(currentTestCaseInfo.getDbType(), version), caseClass));
+        }
+    }
+    
+    private static DatabaseType getSqlDatabaseType(final String databaseType) {
+        switch (databaseType) {
+            case TransactionTestConstants.MYSQL:
+                return new MySQLDatabaseType();
+            case TransactionTestConstants.POSTGRESQL:
+                return new PostgreSQLDatabaseType();
+            case TransactionTestConstants.OPENGAUSS:
+                return new OpenGaussDatabaseType();
+            default:
+                throw new UnsupportedOperationException("Unsupported database type.");
+        }
+    }
+    
+    private static String getDockerImageName(final String databaseType, final String version) {
+        switch (databaseType) {
+            case TransactionTestConstants.MYSQL:
+                return "mysql/mysql-server:" + version;
+            case TransactionTestConstants.POSTGRESQL:
+            case TransactionTestConstants.OPENGAUSS:
+                return version;
+            default:
+                throw new UnsupportedOperationException("Unsupported database type.");
+        }
     }
     
     private CommonSQLCommand getSqlCommand() {
@@ -200,12 +255,12 @@ public abstract class BaseITCase {
     @SneakyThrows(SQLException.class)
     protected Connection getProxyConnection() {
         String jdbcUrl = composedContainer.getProxyJdbcUrl(SHARDING_DB);
-        return DriverManager.getConnection(jdbcUrl, "root", "root");
+        return DriverManager.getConnection(jdbcUrl, ENV.getProxyUserName(), ENV.getProxyPassword());
     }
     
     protected void createProxyDatabase(final DatabaseType databaseType) {
         String jdbcUrl = getProxyJdbcUrl(databaseType);
-        try (Connection connection = DriverManager.getConnection(jdbcUrl, "root", "root")) {
+        try (Connection connection = DriverManager.getConnection(jdbcUrl, ENV.getProxyUserName(), ENV.getProxyPassword())) {
             if (ENV.getItEnvType() == TransactionITEnvTypeEnum.NATIVE) {
                 executeWithLog(connection, "DROP DATABASE IF EXISTS " + SHARDING_DB);
             }
@@ -228,14 +283,8 @@ public abstract class BaseITCase {
         return jdbcUrl;
     }
     
-    protected DataSource getProxyDataSource(final String databaseName) {
-        HikariDataSource result = new HikariDataSource();
-        result.setDriverClassName(DataSourceEnvironment.getDriverClassName(getDatabaseType()));
-        result.setJdbcUrl(composedContainer.getProxyJdbcUrl(databaseName));
-        result.setUsername("root");
-        result.setPassword("root");
-        result.setMaximumPoolSize(2);
-        result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
+    protected AutoDataSource getProxyDataSource(final String databaseName) {
+        AutoDataSource result = new ProxyDataSource(composedContainer, databaseName, ENV.getProxyUserName(), ENV.getProxyPassword());
         return result;
     }
     
@@ -257,13 +306,15 @@ public abstract class BaseITCase {
     @SneakyThrows
     protected void addResources() {
         if (databaseType instanceof MySQLDatabaseType) {
-            try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl(""), "root", "root")) {
+            try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl(""), ENV.getProxyUserName(), ENV.getProxyPassword())) {
                 executeWithLog(connection, "USE sharding_db");
                 addResources(connection);
             }
         } else {
             Properties queryProps = getPostgreSQLQueryProperties();
-            try (Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl("sharding_db"), queryProps), "root", "root")) {
+            try (
+                    Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl("sharding_db"), queryProps),
+                            ENV.getProxyUserName(), ENV.getProxyPassword())) {
                 addResources(connection);
             }
         }
@@ -303,7 +354,6 @@ public abstract class BaseITCase {
         executeWithLog(connection, String.format("CREATE SCHEMA %s", schemaName));
     }
     
-    @SneakyThrows(SQLException.class)
     protected int countWithLog(final String sql) {
         Connection connection = getProxyConnection();
         int retryNumber = 0;
@@ -316,13 +366,13 @@ public abstract class BaseITCase {
                     result++;
                 }
                 return result;
-            } catch (final DataAccessException ex) {
+            } catch (final SQLException ex) {
                 log.error("Data access error.", ex);
             }
             ThreadUtil.sleep(2, TimeUnit.SECONDS);
             retryNumber++;
         }
-        throw new RuntimeException("can't get result from proxy");
+        throw new RuntimeException("Can't get result from proxy.");
     }
     
     protected void executeSqlListWithLog(final Connection conn, final String... sqlList) throws SQLException {

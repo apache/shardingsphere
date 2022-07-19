@@ -15,23 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.transaction.framework.param;
+package org.apache.shardingsphere.integration.transaction.cases.savepoint;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
+import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
 
-@Getter
-@RequiredArgsConstructor
-@ToString
-public final class TransactionParameterized {
+import javax.sql.DataSource;
+
+/**
+ * MySQL auto commit transaction integration test.
+ */
+@Slf4j
+@TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL})
+public class MySQLSavePointTestCase extends BaseSavePointTestCase {
     
-    private final DatabaseType databaseType;
+    public MySQLSavePointTestCase(final DataSource dataSource) {
+        super(dataSource);
+    }
     
-    private final String dockerImageName;
-    
-    private final Class<? extends BaseTransactionTestCase> transactionTestCaseClass;
-    
+    @Override
+    @SneakyThrows
+    public void assertTest() {
+        assertRollback2Savepoint();
+        assertReleaseSavepoint();
+    }
 }

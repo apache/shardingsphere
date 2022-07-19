@@ -27,6 +27,9 @@ import org.testcontainers.containers.BindMode;
 
 import java.sql.DriverManager;
 
+/**
+ * MySQL container for Transaction IT.
+ */
 public final class MySQLContainer extends DatabaseContainer {
     
     private static final DatabaseType DATABASE_TYPE = new MySQLDatabaseType();

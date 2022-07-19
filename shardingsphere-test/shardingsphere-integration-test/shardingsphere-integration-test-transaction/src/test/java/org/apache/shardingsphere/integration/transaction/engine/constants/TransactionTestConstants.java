@@ -21,13 +21,13 @@ public class TransactionTestConstants {
     
     public static final String MYSQL = "mysql";
     
-    public static final String JDBC = "jdbc";
-    
-    public static final String PROXY = "proxy";
-    
     public static final String OPENGAUSS = "OpenGauss";
     
     public static final String POSTGRESQL = "PostgreSQL";
+    
+    public static final String JDBC = "jdbc";
+    
+    public static final String PROXY = "proxy";
     
     public static final String ACCOUNT = "account";
     

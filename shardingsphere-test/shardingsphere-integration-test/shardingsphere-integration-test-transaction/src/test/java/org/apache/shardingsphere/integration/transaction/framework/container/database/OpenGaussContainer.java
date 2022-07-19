@@ -29,7 +29,7 @@ import org.testcontainers.containers.BindMode;
 import java.sql.DriverManager;
 
 /**
- * OpenGauss container for Scaling IT.
+ * OpenGauss container for Transaction IT.
  */
 public final class OpenGaussContainer extends DatabaseContainer {
     

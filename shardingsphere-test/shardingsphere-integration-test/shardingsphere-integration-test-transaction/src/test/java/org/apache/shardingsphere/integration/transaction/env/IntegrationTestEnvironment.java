@@ -51,6 +51,8 @@ public final class IntegrationTestEnvironment {
     
     private final List<String> openGaussVersions;
     
+    private final List<String> needToRunTestCases;
+    
     private final Map<String, TransactionTestCaseRegistry> transactionTestCaseRegistryMap;
     
     private IntegrationTestEnvironment() {
@@ -59,6 +61,7 @@ public final class IntegrationTestEnvironment {
         mysqlVersions = splitProperty("transaction.it.docker.mysql.version");
         postgresVersions = splitProperty("transaction.it.docker.postgresql.version");
         openGaussVersions = splitProperty("transaction.it.docker.opengauss.version");
+        needToRunTestCases = splitProperty("transaction.it.env.cases");
         transactionTestCaseRegistryMap = initTransactionTestCaseRegistryMap();
     }
     
@@ -72,7 +75,7 @@ public final class IntegrationTestEnvironment {
     }
     
     private List<String> splitProperty(final String key) {
-        return Arrays.stream(props.getOrDefault(key, "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
+        return Arrays.stream(props.getOrDefault(key, "").toString().split(",")).filter(StringUtils::isNotBlank).map(String::trim).collect(Collectors.toList());
     }
     
     private Properties loadProperties() {
@@ -184,6 +187,24 @@ public final class IntegrationTestEnvironment {
             password = props.getOrDefault(String.format("transaction.it.native.%s.password", databaseType.getType().toLowerCase()), password).toString();
         }
         return password;
+    }
+    
+    /**
+     * Get proxy password.
+     * 
+     * @return proxy password
+     */
+    public String getProxyPassword() {
+        return props.getOrDefault("transaction.it.proxy.password", "root").toString();
+    }
+    
+    /**
+     * Get proxy userName.
+     * 
+     * @return proxy userName
+     */
+    public String getProxyUserName() {
+        return props.getOrDefault("transaction.it.proxy.username", "root").toString();
     }
     
     /**

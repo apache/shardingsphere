@@ -42,7 +42,7 @@
 
     <create-account-sharding-algorithm>
         CREATE SHARDING ALGORITHM account_inline (
-        TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="account${id % 2}"))
+        TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="account_${id % 2}"))
         )
     </create-account-sharding-algorithm>
 
@@ -66,10 +66,10 @@
 
     <create-account-table-rule>
         CREATE SHARDING TABLE RULE account (
-        DATANODES("ds_${0..1}.account${0..1}"),
+        DATANODES("ds_${0..1}.account_${0..1}"),
         DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=id,SHARDING_ALGORITHM=database_id_inline),
         TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=id,SHARDING_ALGORITHM=account_inline),
-        KEY_GENERATE_STRATEGY(COLUMN=order_id,TYPE(NAME=snowflake))
+        KEY_GENERATE_STRATEGY(COLUMN=id,TYPE(NAME=snowflake))
         )
     </create-account-table-rule>
 

@@ -27,6 +27,9 @@ import org.testcontainers.containers.BindMode;
 
 import java.sql.DriverManager;
 
+/**
+ * PostgreSQL container for Transaction IT.
+ */
 public final class PostgreSQLContainer extends DatabaseContainer {
     
     private static final DatabaseType DATABASE_TYPE = new PostgreSQLDatabaseType();
