@@ -21,6 +21,7 @@ import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.junit.Before;
 import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -51,7 +52,7 @@ public class MetaDataVersionPersistServiceTest {
 
     @Test
     public void assertIsActiveVersion() {
-        assertTrue(metaDataVersionPersistService.isActiveVersion("foo_db","1"));
+        assertTrue(metaDataVersionPersistService.isActiveVersion("foo_db", "1"));
     }
 
     @Test
@@ -69,7 +70,7 @@ public class MetaDataVersionPersistServiceTest {
 
     @Test
     public void assertDeleteVersion() {
-        metaDataVersionPersistService.deleteVersion("foo_db","1");
+        metaDataVersionPersistService.deleteVersion("foo_db", "1");
         verify(repository).delete(DatabaseMetaDataNode.getDatabaseVersionPath("foo_db", "1"));
     }
 }
