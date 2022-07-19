@@ -15,22 +15,18 @@
  * limitations under the License.
  */
 
-grammar AdvancedStatement;
+package org.apache.shardingsphere.distsql.parser.core.kernel;
 
-import AdvancedKeyword;
+import org.antlr.v4.runtime.CharStream;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementLexer;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
-previewSQL
-    : PREVIEW sql
-    ;
-
-parseSQL
-    : PARSE sql
-    ;
-
-formatSQL
-    : FORMAT sql
-    ;
-
-sql
-    : SQLString
-    ;
+/**
+ * SQL lexer for kernel dist SQL.
+ */
+public final class KernelDistSQLLexer extends KernelDistSQLStatementLexer implements SQLLexer {
+    
+    public KernelDistSQLLexer(final CharStream input) {
+        super(input);
+    }
+}
