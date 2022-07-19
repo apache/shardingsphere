@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Create rollback segment statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OracleCreateRollbackSegmentStatement extends AbstractSQLStatement implements OracleStatement {
 }

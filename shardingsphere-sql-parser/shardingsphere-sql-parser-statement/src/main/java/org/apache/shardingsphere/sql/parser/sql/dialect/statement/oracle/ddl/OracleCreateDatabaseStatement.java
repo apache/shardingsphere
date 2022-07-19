@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle create database statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OracleCreateDatabaseStatement extends CreateDatabaseStatement implements OracleStatement {
 }

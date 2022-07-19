@@ -26,6 +26,6 @@ public final class CreateTableSQLGeneratorFactoryTest {
     
     @Test
     public void assertFindInstance() {
-        assertTrue(CreateTableSQLGeneratorFactory.findInstance(DatabaseTypeFactory.getInstance("DDL.GENERATOR.FIXTURE")).isPresent());
+        assertTrue(CreateTableSQLGeneratorFactory.findInstance(DatabaseTypeFactory.getInstance("FIXTURE")).isPresent());
     }
 }

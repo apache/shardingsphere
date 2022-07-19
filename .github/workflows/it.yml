@@ -184,6 +184,9 @@ jobs:
           - adapter: proxy
             database: PostgreSQL
             scenario: readwrite_splitting
+          - adapter: proxy
+            database: MySQL
+            scenario: readwrite_splitting
     steps:
       - uses: actions/checkout@v2
       - name: Cache Maven Repos

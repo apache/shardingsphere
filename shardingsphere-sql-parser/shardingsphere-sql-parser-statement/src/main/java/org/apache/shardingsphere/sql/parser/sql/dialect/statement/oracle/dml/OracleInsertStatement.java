@@ -30,7 +30,7 @@ import java.util.Optional;
  * Oracle insert statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class OracleInsertStatement extends InsertStatement implements OracleStatement {
     
     private SubquerySegment selectSubquery;

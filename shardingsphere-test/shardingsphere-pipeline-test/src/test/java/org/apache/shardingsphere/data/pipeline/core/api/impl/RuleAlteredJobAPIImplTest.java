@@ -233,7 +233,7 @@ public final class RuleAlteredJobAPIImplTest {
         ruleAlteredJobAPI.stop(jobId.get());
         ruleAlteredJobAPI.reset(jobId.get());
         Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobConfig);
-        assertThat(checkResultMap.get("t_order").getCountCheckResult().getTargetRecordsCount(), is(0L));
+        assertThat(checkResultMap.get("t_order").getCountCheckResult().getTargetRecordsCount(), is(2L));
     }
     
     @SneakyThrows(SQLException.class)
