@@ -139,6 +139,10 @@ importDatabaseConfiguration
     : IMPORT DATABASE (CONFIGURATION | CONFIG) FILE EQ filePath
     ;
 
+convertYamlConfiguration
+    : CONVERT YAML (CONFIGURATION | CONFIG) FILE EQ filePath
+    ;
+
 filePath
     : STRING
     ;

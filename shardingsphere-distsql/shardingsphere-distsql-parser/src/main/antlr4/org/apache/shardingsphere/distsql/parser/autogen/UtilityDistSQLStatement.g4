@@ -15,22 +15,13 @@
  * limitations under the License.
  */
 
-grammar AdvancedStatement;
+grammar UtilityDistSQLStatement;
 
-import AdvancedKeyword;
+import Symbol, RULStatement;
 
-previewSQL
-    : PREVIEW sql
-    ;
-
-parseSQL
-    : PARSE sql
-    ;
-
-formatSQL
-    : FORMAT sql
-    ;
-
-sql
-    : SQLString
+execute
+    : (previewSQL 
+    | parseSQL
+    | formatSQL
+    ) SEMI?
     ;

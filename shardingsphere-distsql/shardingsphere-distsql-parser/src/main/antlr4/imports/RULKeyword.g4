@@ -15,13 +15,26 @@
  * limitations under the License.
  */
 
-grammar AdvancedDistSQLStatement;
+lexer grammar RULKeyword;
 
-import Symbol, AdvancedStatement;
+import Alphabet;
 
-execute
-    : (previewSQL 
-    | parseSQL
-    | formatSQL
-    ) SEMI?
+WS
+    : [ \t\r\n] +
+    ;
+
+PREVIEW
+    : P R E V I E W
+    ;
+
+PARSE
+    : P A R S E
+    ;
+
+FORMAT
+    : F O R M A T
+    ;
+
+SQLString
+    : WS.*
     ;
