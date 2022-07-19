@@ -48,7 +48,8 @@ public final class ShardingSphereMetaData {
     }
     
     public ShardingSphereMetaData(final Map<String, ShardingSphereDatabase> databases, final ShardingSphereRuleMetaData globalRuleMetaData, final ConfigurationProperties props) {
-        this.databases = new ConcurrentHashMap<>(databases);
+        this.databases = new ConcurrentHashMap<>(databases.size(), 1);
+        databases.forEach((key, value) -> this.databases.put(key.toLowerCase(), value));
         this.globalRuleMetaData = globalRuleMetaData;
         this.props = props;
     }
@@ -62,8 +63,45 @@ public final class ShardingSphereMetaData {
      */
     public void addDatabase(final String databaseName, final DatabaseType protocolType) throws SQLException {
         ShardingSphereDatabase database = ShardingSphereDatabase.create(databaseName, protocolType);
-        databases.put(databaseName, database);
+        put(databaseName, database);
         globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.addResource(database));
+    }
+    
+    /**
+     * Put database.
+     *
+     * @param databaseName database name
+     */
+    public void put(final String databaseName, final ShardingSphereDatabase database) {
+        databases.put(databaseName.toLowerCase(), database);
+    }
+    
+    /**
+     * Judge contains database from meta data or not.
+     *
+     * @param databaseName database name
+     * @return contains database from meta data or not
+     */
+    public boolean containsDatabase(final String databaseName) {
+        return databases.containsKey(databaseName.toLowerCase());
+    }
+    
+    /**
+     * Remove database.
+     *
+     * @param databaseName database name
+     */
+    public void remove(final String databaseName) {
+        databases.remove(databaseName.toLowerCase());
+    }
+    
+    /**
+     * Get database.
+     *
+     * @param databaseName database name
+     */
+    public ShardingSphereDatabase get(final String databaseName) {
+        return databases.get(databaseName.toLowerCase());
     }
     
     /**
@@ -72,7 +110,8 @@ public final class ShardingSphereMetaData {
      * @param databaseName database name
      */
     public void dropDatabase(final String databaseName) {
-        closeResources(databases.remove(databaseName));
+        closeResources(get(databaseName));
+        remove(databaseName);
     }
     
     private void closeResources(final ShardingSphereDatabase database) {

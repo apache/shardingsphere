@@ -82,7 +82,7 @@ public final class UseDatabaseExecutorTest extends ProxyContextRestorer {
         MySQLUseStatement useStatement = mock(MySQLUseStatement.class);
         when(useStatement.getSchema()).thenReturn(String.format(DATABASE_PATTERN, 0));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabases().containsKey(anyString())).thenReturn(true);
+        when(contextManager.getMetaDataContexts().getMetaData().containsDatabase(anyString())).thenReturn(true);
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         Map<String, ShardingSphereDatabase> databases = getDatabases();
         when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(databases);
