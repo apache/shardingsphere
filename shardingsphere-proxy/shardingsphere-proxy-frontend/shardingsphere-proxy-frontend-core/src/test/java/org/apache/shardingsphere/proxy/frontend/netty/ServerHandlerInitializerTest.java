@@ -21,7 +21,7 @@ import io.netty.channel.ChannelPipeline;
 import io.netty.channel.socket.SocketChannel;
 import org.apache.shardingsphere.db.protocol.codec.PacketCodec;
 import org.apache.shardingsphere.db.protocol.netty.ChannelAttrInitializer;
-import org.apache.shardingsphere.proxy.frontend.fixture.FixtureDatabaseType;
+import org.apache.shardingsphere.test.fixture.database.type.MockedDatabaseType;
 import org.junit.Test;
 import org.mockito.MockedConstruction;
 
@@ -38,7 +38,7 @@ public final class ServerHandlerInitializerTest {
         SocketChannel channel = mock(SocketChannel.class);
         ChannelPipeline pipeline = mock(ChannelPipeline.class);
         when(channel.pipeline()).thenReturn(pipeline);
-        ServerHandlerInitializer initializer = new ServerHandlerInitializer(new FixtureDatabaseType());
+        ServerHandlerInitializer initializer = new ServerHandlerInitializer(new MockedDatabaseType());
         try (MockedConstruction<FrontendChannelInboundHandler> ignored = mockConstruction(FrontendChannelInboundHandler.class)) {
             initializer.initChannel(channel);
         }

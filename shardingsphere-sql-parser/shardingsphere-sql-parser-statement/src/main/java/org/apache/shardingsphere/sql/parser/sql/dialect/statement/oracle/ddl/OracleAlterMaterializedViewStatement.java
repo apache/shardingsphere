@@ -15,26 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.core.common;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementParser;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
-import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * SQL parser for common dist SQL.
+ * Oracle alter materialized view statement.
  */
-public final class CommonDistSQLParser extends CommonDistSQLStatementParser implements SQLParser {
-    
-    public CommonDistSQLParser(final TokenStream input) {
-        super(input);
-    }
-    
-    @Override
-    public ASTNode parse() {
-        return new ParseASTNode(execute(), (CommonTokenStream) getTokenStream());
-    }
+@ToString(callSuper = true)
+public final class OracleAlterMaterializedViewStatement extends AlterMaterializedViewStatement implements OracleStatement {
 }

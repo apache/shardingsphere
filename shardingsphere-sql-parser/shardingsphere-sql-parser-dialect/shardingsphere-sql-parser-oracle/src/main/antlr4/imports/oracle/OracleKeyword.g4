@@ -2906,3 +2906,27 @@ DISMOUNT
 REBALANCE
     : R E B A L A N C E
     ;
+
+COMPUTATION
+    : C O M P U T A T I O N
+    ;
+
+CONSIDER
+    : C O N S I D E R
+    ;
+
+FRESH
+    : F R E S H
+    ;
+
+MASTER
+    : M A S T E R
+    ;
+
+ENFORCED
+    : E N F O R C E D
+    ;
+
+TRUSTED
+    : T R U S T E D
+    ;

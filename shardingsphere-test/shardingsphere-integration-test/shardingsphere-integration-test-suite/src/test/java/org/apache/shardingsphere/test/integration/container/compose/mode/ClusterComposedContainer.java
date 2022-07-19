@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.container.compose.mode;
 
-import org.apache.shardingsphere.test.integration.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.integration.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.container.atomic.ITContainers;
 import org.apache.shardingsphere.test.integration.container.atomic.adapter.AdapterContainer;
@@ -25,9 +24,9 @@ import org.apache.shardingsphere.test.integration.container.atomic.adapter.Adapt
 import org.apache.shardingsphere.test.integration.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.integration.container.atomic.governance.GovernanceContainerFactory;
 import org.apache.shardingsphere.test.integration.container.atomic.storage.StorageContainer;
+import org.apache.shardingsphere.test.integration.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.integration.container.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
-import org.apache.shardingsphere.test.integration.container.util.NetworkAliasUtil;
 
 import javax.sql.DataSource;
 import java.util.Map;
@@ -49,15 +48,14 @@ public final class ClusterComposedContainer implements ComposedContainer {
         String scenario = parameterizedArray.getScenario();
         containers = new ITContainers(scenario);
         // TODO support other types of governance
-        governanceContainer = containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper"), NetworkAliasUtil.getNetworkAlias("zk"));
-        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), scenario),
-                NetworkAliasUtil.getNetworkAlias(parameterizedArray.getDatabaseType().getType(), scenario));
+        governanceContainer = containers.registerContainer(GovernanceContainerFactory.newInstance("ZooKeeper"), "zk");
+        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), scenario), parameterizedArray.getDatabaseType().getType());
         AdapterContainer adapterContainer = AdapterContainerFactory.newInstance(parameterizedArray.getMode(), parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), storageContainer,
                 scenario);
         if (adapterContainer instanceof DockerITContainer) {
             ((DockerITContainer) adapterContainer).dependsOn(governanceContainer, storageContainer);
         }
-        this.adapterContainer = containers.registerContainer(adapterContainer, NetworkAliasUtil.getNetworkAlias(parameterizedArray.getAdapter(), scenario));
+        this.adapterContainer = containers.registerContainer(adapterContainer, parameterizedArray.getAdapter());
     }
     
     @Override

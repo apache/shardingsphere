@@ -15,22 +15,28 @@
  * limitations under the License.
  */
 
-grammar AdvancedStatement;
+package org.apache.shardingsphere.distsql.parser.segment;
 
-import AdvancedKeyword;
+import lombok.Getter;
 
-previewSQL
-    : PREVIEW sql
-    ;
+import java.util.Properties;
 
-parseSQL
-    : PARSE sql
-    ;
-
-formatSQL
-    : FORMAT sql
-    ;
-
-sql
-    : SQLString
-    ;
+/**
+ * Hostname and port based data source segment.
+ */
+@Getter
+public final class HostnameAndPortBasedDataSourceSegment extends DataSourceSegment {
+    
+    private final String hostname;
+    
+    private final String port;
+    
+    private final String database;
+    
+    public HostnameAndPortBasedDataSourceSegment(final String name, final String hostname, final String port, final String database, final String user, final String password, final Properties props) {
+        super(name, user, password, props);
+        this.hostname = hostname;
+        this.port = port;
+        this.database = database;
+    }
+}

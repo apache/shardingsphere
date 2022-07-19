@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.core.common;
+package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
 
-import org.antlr.v4.runtime.CharStream;
-import org.apache.shardingsphere.distsql.parser.autogen.CommonDistSQLStatementLexer;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
- * SQL lexer for common dist SQL.
+ * Convert yaml configuration statement.
  */
-public final class CommonDistSQLLexer extends CommonDistSQLStatementLexer implements SQLLexer {
+@RequiredArgsConstructor
+@Getter
+public class ConvertYamlConfigurationStatement extends QueryableRALStatement {
     
-    public CommonDistSQLLexer(final CharStream input) {
-        super(input);
-    }
+    private final String filePath;
 }

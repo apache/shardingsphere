@@ -15,35 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.container.util;
+package org.apache.shardingsphere.distsql.parser.core.utility;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.TokenStream;
+import org.apache.shardingsphere.distsql.parser.autogen.UtilityDistSQLStatementParser;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
+import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
+import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
 
 /**
- * Network alias util.
+ * SQL parser for utility dist SQL.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class NetworkAliasUtil {
+public final class UtilityDistSQLParser extends UtilityDistSQLStatementParser implements SQLParser {
     
-    /**
-     * Get network alias.
-     *
-     * @param containerType container type
-     * @return network alias
-     */
-    public static String getNetworkAlias(final String containerType) {
-        return String.join(".", containerType.toLowerCase(), "host");
+    public UtilityDistSQLParser(final TokenStream input) {
+        super(input);
     }
     
-    /**
-     * Get network alias.
-     *
-     * @param containerType container type
-     * @param scenario scenario
-     * @return network alias
-     */
-    public static String getNetworkAlias(final String containerType, final String scenario) {
-        return String.join(".", containerType.toLowerCase(), scenario, "host");
+    @Override
+    public ASTNode parse() {
+        return new ParseASTNode(execute(), (CommonTokenStream) getTokenStream());
     }
 }

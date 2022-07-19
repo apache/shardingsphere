@@ -75,6 +75,10 @@
     {
       "name": "spring.shardingsphere.schema.name",
       "type": "org.apache.shardingsphere.spring.boot.ShardingSphereAutoConfiguration"
+    },
+    {
+      "name": "spring.shardingsphere.rules.sql-translator",
+      "type": "org.apache.shardingsphere.sqltranslator.api.config.SQLTranslatorRuleConfiguration"
     }
   ],
   "hints": [

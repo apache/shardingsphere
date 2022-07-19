@@ -15,19 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.protocol;
+package org.apache.shardingsphere.distsql.parser.segment;
 
-import org.apache.shardingsphere.proxy.frontend.fixture.DatabaseProtocolFrontendEngineFixture;
-import org.apache.shardingsphere.test.fixture.database.type.MockedDatabaseType;
-import org.junit.Test;
+import lombok.Getter;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import java.util.Properties;
 
-public final class DatabaseProtocolFrontendEngineFactoryTest {
+/**
+ * URL based data source segment.
+ */
+@Getter
+public final class URLBasedDataSourceSegment extends DataSourceSegment {
     
-    @Test
-    public void assertNewInstance() {
-        assertThat(DatabaseProtocolFrontendEngineFactory.newInstance(new MockedDatabaseType()), instanceOf(DatabaseProtocolFrontendEngineFixture.class));
+    private final String url;
+    
+    public URLBasedDataSourceSegment(final String name, final String url, final String user, final String password, final Properties props) {
+        super(name, user, password, props);
+        this.url = url;
     }
 }
