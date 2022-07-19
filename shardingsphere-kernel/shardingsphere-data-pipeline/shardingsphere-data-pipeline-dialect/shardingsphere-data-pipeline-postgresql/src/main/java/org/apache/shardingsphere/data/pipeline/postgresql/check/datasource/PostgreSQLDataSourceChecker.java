@@ -17,18 +17,55 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql.check.datasource;
 
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.core.check.datasource.AbstractDataSourceChecker;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.Collection;
 
 /**
  * PostgreSQL Data source checker.
  */
+@Slf4j
 public class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker {
+    
+    private static final String SHOW_GRANTS_SQL = "SELECT * FROM pg_roles WHERE rolname = ?";
+    
+    private static final String SUPER_ROLE_NAME = "rolsuper";
+    
+    private static final String REPLICATION_ROLE_NAME = "rolreplication";
     
     @Override
     public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
+        for (DataSource each : dataSources) {
+            checkPrivilege(each);
+        }
+    }
+    
+    private void checkPrivilege(final DataSource dataSource) {
+        try (Connection connection = dataSource.getConnection()) {
+            DatabaseMetaData metaData = connection.getMetaData();
+            PreparedStatement preparedStatement = connection.prepareStatement(SHOW_GRANTS_SQL);
+            preparedStatement.setString(1, metaData.getUserName());
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                resultSet.next();
+                String isSuperRole = resultSet.getString(SUPER_ROLE_NAME);
+                String isReplicationRole = resultSet.getString(REPLICATION_ROLE_NAME);
+                log.info("checkPrivilege: isSuperRole: {}, isReplicationRole: {}", isSuperRole, isReplicationRole);
+                if (StringUtils.equalsIgnoreCase(isSuperRole, "f") && StringUtils.equalsIgnoreCase(isReplicationRole, "f")) {
+                    throw new PipelineJobPrepareFailedException("Source data source is lack of REPLICATION privileges.");
+                }
+            }
+        } catch (final SQLException ex) {
+            throw new PipelineJobPrepareFailedException("Source data source check privileges failed.", ex);
+        }
     }
     
     @Override
