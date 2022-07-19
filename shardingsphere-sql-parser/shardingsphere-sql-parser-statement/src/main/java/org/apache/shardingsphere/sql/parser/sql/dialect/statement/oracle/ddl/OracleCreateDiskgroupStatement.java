@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Create diskgroup statement.
  */
-@ToString
+@ToString(callSuper = true)
 public class OracleCreateDiskgroupStatement extends CreateDiskgroupStatement implements OracleStatement {
 }
