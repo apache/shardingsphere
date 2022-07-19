@@ -21,7 +21,11 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorCreator;
 import org.apache.shardingsphere.proxy.backend.text.admin.postgresql.PostgreSQLAdminExecutorCreator;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -40,10 +44,23 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
     
     @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext<?> sqlStatementContext, final String sql, final String databaseName) {
-        if (sqlStatementContext.getTablesContext().getTableNames().contains(OG_DATABASE)) {
-            return Optional.of(new OpenGaussSelectDatabaseExecutor(sql));
+        if (isSystemCatalogQuery(sqlStatementContext)) {
+            return Optional.of(new OpenGaussSystemCatalogAdminQueryExecutor(sql));
         }
         return delegated.create(sqlStatementContext, sql, databaseName);
+    }
+    
+    private boolean isSystemCatalogQuery(final SQLStatementContext<?> sqlStatementContext) {
+        if (sqlStatementContext.getTablesContext().getTableNames().contains(OG_DATABASE)) {
+            return true;
+        }
+        if (!(sqlStatementContext.getSqlStatement() instanceof SelectStatement)) {
+            return false;
+        }
+        SelectStatement selectStatement = (SelectStatement) sqlStatementContext.getSqlStatement();
+        Collection<ProjectionSegment> projections = selectStatement.getProjections().getProjections();
+        return 1 == projections.size() && projections.iterator().next() instanceof ExpressionProjectionSegment
+                && "VERSION()".equalsIgnoreCase(((ExpressionProjectionSegment) projections.iterator().next()).getText());
     }
     
     @Override

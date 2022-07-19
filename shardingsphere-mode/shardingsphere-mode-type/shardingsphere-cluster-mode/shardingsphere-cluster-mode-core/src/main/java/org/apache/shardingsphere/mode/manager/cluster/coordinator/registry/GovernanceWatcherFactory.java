@@ -36,6 +36,8 @@ public final class GovernanceWatcherFactory {
     
     private final EventBusContext eventBusContext;
     
+    private final String databaseName;
+    
     /**
      * Watch listeners.
      */
@@ -46,7 +48,7 @@ public final class GovernanceWatcherFactory {
     }
     
     private void watch(final GovernanceWatcher<?> listener) {
-        for (String each : listener.getWatchingKeys()) {
+        for (String each : listener.getWatchingKeys(databaseName)) {
             watch(each, listener);
         }
     }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.integration.data.pipeline.framework.container.compose;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.ITContainers;
+import org.apache.shardingsphere.test.integration.container.atomic.ITContainers;
 import org.testcontainers.lifecycle.Startable;
 
 public abstract class BaseComposedContainer implements Startable {

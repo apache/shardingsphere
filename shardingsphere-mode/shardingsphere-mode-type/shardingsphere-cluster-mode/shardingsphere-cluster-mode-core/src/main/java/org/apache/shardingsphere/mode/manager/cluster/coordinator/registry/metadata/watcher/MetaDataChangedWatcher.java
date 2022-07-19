@@ -59,8 +59,9 @@ import java.util.stream.Collectors;
 public final class MetaDataChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
     
     @Override
-    public Collection<String> getWatchingKeys() {
-        return Collections.singleton(DatabaseMetaDataNode.getMetaDataNodePath());
+    public Collection<String> getWatchingKeys(final String databaseName) {
+        return null == databaseName ? Collections.singleton(DatabaseMetaDataNode.getMetaDataNodePath())
+                : Collections.singleton(DatabaseMetaDataNode.getDatabaseNamePath(databaseName));
     }
     
     @Override
