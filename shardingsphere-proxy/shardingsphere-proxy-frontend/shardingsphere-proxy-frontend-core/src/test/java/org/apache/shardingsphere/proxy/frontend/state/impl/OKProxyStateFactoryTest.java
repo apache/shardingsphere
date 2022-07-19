@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.frontend.state.impl;
 
-import org.apache.shardingsphere.proxy.frontend.fixture.FixtureDatabaseType;
 import org.apache.shardingsphere.proxy.frontend.fixture.FixtureOKProxyState;
+import org.apache.shardingsphere.test.fixture.database.type.FixtureDatabaseType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;

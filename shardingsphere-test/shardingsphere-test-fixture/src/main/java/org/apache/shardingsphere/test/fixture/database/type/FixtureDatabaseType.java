@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.fixture;
+package org.apache.shardingsphere.test.fixture.database.type;
 
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -28,11 +28,6 @@ import java.util.Map;
 import static org.mockito.Mockito.mock;
 
 public final class FixtureDatabaseType implements DatabaseType {
-    
-    @Override
-    public String getType() {
-        return "FixtureDB";
-    }
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
@@ -57,5 +52,10 @@ public final class FixtureDatabaseType implements DatabaseType {
     @Override
     public Collection<String> getSystemSchemas() {
         return Collections.emptyList();
+    }
+    
+    @Override
+    public String getType() {
+        return "FIXTURE";
     }
 }

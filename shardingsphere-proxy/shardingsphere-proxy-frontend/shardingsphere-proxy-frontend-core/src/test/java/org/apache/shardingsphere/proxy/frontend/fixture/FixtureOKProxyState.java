@@ -21,6 +21,7 @@ import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
 import org.apache.shardingsphere.proxy.frontend.state.impl.OKProxyState;
+import org.apache.shardingsphere.test.fixture.database.type.FixtureDatabaseType;
 
 public final class FixtureOKProxyState implements OKProxyState {
     

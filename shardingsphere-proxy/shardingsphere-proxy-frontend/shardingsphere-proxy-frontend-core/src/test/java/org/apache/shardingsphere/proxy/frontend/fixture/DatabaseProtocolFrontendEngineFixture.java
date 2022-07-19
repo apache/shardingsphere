@@ -19,10 +19,11 @@ package org.apache.shardingsphere.proxy.frontend.fixture;
 
 import org.apache.shardingsphere.db.protocol.codec.DatabasePacketCodecEngine;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEngine;
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
+import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
+import org.apache.shardingsphere.test.fixture.database.type.FixtureDatabaseType;
 
 public final class DatabaseProtocolFrontendEngineFixture implements DatabaseProtocolFrontendEngine {
     
