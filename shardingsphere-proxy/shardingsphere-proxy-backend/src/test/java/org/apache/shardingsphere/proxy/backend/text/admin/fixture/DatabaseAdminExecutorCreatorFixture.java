@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin.fixture;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorCreator;
+import org.apache.shardingsphere.test.fixture.database.type.FixtureDatabaseType;
 
 import java.util.Collection;
 import java.util.Optional;

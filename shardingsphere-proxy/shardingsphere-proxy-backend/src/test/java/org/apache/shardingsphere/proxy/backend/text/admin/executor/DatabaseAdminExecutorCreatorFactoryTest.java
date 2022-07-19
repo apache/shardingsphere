@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.text.admin.executor;
 
 import org.apache.shardingsphere.proxy.backend.text.admin.fixture.DatabaseAdminExecutorCreatorFixture;
-import org.apache.shardingsphere.proxy.backend.text.admin.fixture.FixtureDatabaseType;
+import org.apache.shardingsphere.test.fixture.database.type.FixtureDatabaseType;
 import org.junit.Test;
 
 import java.util.Optional;
