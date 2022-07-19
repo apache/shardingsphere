@@ -25,6 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle alter synonym statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OracleAlterSynonymStatement extends AlterSynonymStatement implements DDLStatement, OracleStatement {
 }

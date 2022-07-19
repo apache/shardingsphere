@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle rollback statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OracleRollbackStatement extends RollbackStatement implements OracleStatement {
 }

@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle alter diskgroup statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OracleAlterDiskgroupStatement extends AlterDiskgroupStatement implements OracleStatement {
 }
