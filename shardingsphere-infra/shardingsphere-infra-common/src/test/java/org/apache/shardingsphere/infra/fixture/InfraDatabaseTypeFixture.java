@@ -35,7 +35,7 @@ public final class InfraDatabaseTypeFixture implements DatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singleton("jdbc:fixture:");
+        return Collections.singleton("jdbc:infra.fixture:");
     }
     
     @Override
@@ -55,6 +55,6 @@ public final class InfraDatabaseTypeFixture implements DatabaseType {
     
     @Override
     public String getType() {
-        return "FIXTURE";
+        return "INFRA.FIXTURE";
     }
 }

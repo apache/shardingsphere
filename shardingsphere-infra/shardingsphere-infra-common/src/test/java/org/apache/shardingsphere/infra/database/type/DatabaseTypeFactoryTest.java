@@ -39,7 +39,7 @@ public final class DatabaseTypeFactoryTest {
     
     @Test
     public void assertGetInstance() {
-        assertThat(DatabaseTypeFactory.getInstance("FIXTURE"), instanceOf(InfraDatabaseTypeFixture.class));
+        assertThat(DatabaseTypeFactory.getInstance("INFRA.FIXTURE"), instanceOf(InfraDatabaseTypeFixture.class));
         assertThat(DatabaseTypeFactory.getInstance("SQL92"), instanceOf(SQL92DatabaseType.class));
         assertThat(DatabaseTypeFactory.getInstance("MySQL"), instanceOf(MySQLDatabaseType.class));
         assertThat(DatabaseTypeFactory.getInstance("MariaDB"), instanceOf(MariaDBDatabaseType.class));
