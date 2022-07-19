@@ -63,17 +63,8 @@ public final class ShardingSphereMetaData {
      */
     public void addDatabase(final String databaseName, final DatabaseType protocolType) throws SQLException {
         ShardingSphereDatabase database = ShardingSphereDatabase.create(databaseName, protocolType);
-        put(databaseName, database);
-        globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.addResource(database));
-    }
-    
-    /**
-     * Put database.
-     *
-     * @param databaseName database name
-     */
-    public void put(final String databaseName, final ShardingSphereDatabase database) {
         databases.put(databaseName.toLowerCase(), database);
+        globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.addResource(database));
     }
     
     /**
@@ -87,20 +78,11 @@ public final class ShardingSphereMetaData {
     }
     
     /**
-     * Remove database.
-     *
-     * @param databaseName database name
-     */
-    public void remove(final String databaseName) {
-        databases.remove(databaseName.toLowerCase());
-    }
-    
-    /**
      * Get database.
      *
      * @param databaseName database name
      */
-    public ShardingSphereDatabase get(final String databaseName) {
+    public ShardingSphereDatabase getDatabase(final String databaseName) {
         return databases.get(databaseName.toLowerCase());
     }
     
@@ -110,8 +92,8 @@ public final class ShardingSphereMetaData {
      * @param databaseName database name
      */
     public void dropDatabase(final String databaseName) {
-        closeResources(get(databaseName));
-        remove(databaseName);
+        closeResources(getDatabase(databaseName));
+        databases.remove(databaseName.toLowerCase());
     }
     
     private void closeResources(final ShardingSphereDatabase database) {

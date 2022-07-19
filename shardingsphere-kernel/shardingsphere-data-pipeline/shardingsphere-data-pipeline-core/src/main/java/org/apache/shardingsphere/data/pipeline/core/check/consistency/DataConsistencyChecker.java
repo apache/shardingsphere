@@ -213,7 +213,7 @@ public final class DataConsistencyChecker {
     private ShardingSphereTable getTableMetaData(final String databaseName, final String logicTableName) {
         ContextManager contextManager = PipelineContext.getContextManager();
         Preconditions.checkNotNull(contextManager, "ContextManager null");
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().get(databaseName);
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName);
         if (null == database) {
             throw new RuntimeException("Can not get meta data by database name " + databaseName);
         }
