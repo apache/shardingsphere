@@ -3158,4 +3158,3 @@ unusableBeginning
     : UNUSABLE BEGINNING WITH (CURRENT EDITION | EDITION editionName | NULL EDITION)
     ;
 
-
