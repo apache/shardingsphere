@@ -17,7 +17,7 @@ SQL checker class definition
 
 ### Implementation classes
 
-| *Configuration Type* | *Description*                             | *Fully-qualified class name* |
-| -------------------- | ----------------------------------------- | ---------------------------- |
-| AuthorityRule.class       | Authority checker      | [`org.apache.shardingsphere.authority.checker.AuthorityChecker`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-kernel/shardingsphere-authority/shardingsphere-authority-core/src/main/java/org/apache/shardingsphere/authority/checker/AuthorityChecker.java) |
-| ShardingAuditChecker   | Sharding audit checker | [`org.apache.shardingsphere.sharding.checker.audit.ShardingAuditChecker`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-sharding/shardingsphere-sharding-core/src/main/java/org/apache/shardingsphere/sharding/checker/audit/ShardingAuditChecker.java) |
+| *Configuration Type* | *Description*          | *Fully-qualified class name* |
+| -------------------- | ---------------------- | ---------------------------- |
+| AuthorityRule.class  | Authority checker      | [`org.apache.shardingsphere.authority.checker.AuthorityChecker`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-kernel/shardingsphere-authority/shardingsphere-authority-core/src/main/java/org/apache/shardingsphere/authority/checker/AuthorityChecker.java) |
+| ShardingAuditChecker | Sharding audit checker | [`org.apache.shardingsphere.sharding.checker.audit.ShardingAuditChecker`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-sharding/shardingsphere-sharding-core/src/main/java/org/apache/shardingsphere/sharding/checker/audit/ShardingAuditChecker.java) |

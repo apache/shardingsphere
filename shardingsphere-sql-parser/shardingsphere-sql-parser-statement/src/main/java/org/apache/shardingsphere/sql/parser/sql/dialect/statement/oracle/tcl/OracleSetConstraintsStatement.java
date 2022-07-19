@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle set constraints statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OracleSetConstraintsStatement extends SetConstraintsStatement implements OracleStatement {
 }

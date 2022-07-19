@@ -29,7 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
  */
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class OracleCommentStatement extends CommentStatement implements OracleStatement {
     
     private IndexTypeSegment indexType;
