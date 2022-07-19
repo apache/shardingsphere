@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle create synonym statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OracleCreateSynonymStatement extends CreateSynonymStatement implements OracleStatement {
 }

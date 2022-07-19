@@ -41,7 +41,7 @@ import java.util.Optional;
 public final class StorageNodeStateChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
     
     @Override
-    public Collection<String> getWatchingKeys() {
+    public Collection<String> getWatchingKeys(final String databaseName) {
         return Collections.singletonList(StorageNode.getRootPath());
     }
     

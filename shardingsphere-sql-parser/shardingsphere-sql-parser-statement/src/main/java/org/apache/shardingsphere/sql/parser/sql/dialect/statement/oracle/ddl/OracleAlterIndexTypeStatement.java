@@ -25,6 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle alter index type statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OracleAlterIndexTypeStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
 }

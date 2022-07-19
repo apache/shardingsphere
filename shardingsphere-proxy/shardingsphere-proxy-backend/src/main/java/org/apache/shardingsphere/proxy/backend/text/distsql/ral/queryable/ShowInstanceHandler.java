@@ -66,7 +66,7 @@ public final class ShowInstanceHandler extends QueryableRALBackendHandler<ShowIn
     }
     
     private LocalDataQueryResultRow buildRow(final ComputeNodeInstance instance, final String modeType) {
-        String labels = null == instance.getLabels() ? "" : String.join(",", instance.getLabels());
+        String labels = String.join(",", instance.getLabels());
         InstanceMetaData instanceMetaData = instance.getMetaData();
         return new LocalDataQueryResultRow(instanceMetaData.getId(), instanceMetaData.getIp(),
                 instanceMetaData instanceof ProxyInstanceMetaData ? ((ProxyInstanceMetaData) instanceMetaData).getPort() : -1,
