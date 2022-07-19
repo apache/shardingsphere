@@ -34,7 +34,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 import org.junit.Test;
 
 public final class IndexTokenTest {
-
+    
     @Test
     public void assertToString() {
         IndexToken indexToken = new IndexToken(0, 0,

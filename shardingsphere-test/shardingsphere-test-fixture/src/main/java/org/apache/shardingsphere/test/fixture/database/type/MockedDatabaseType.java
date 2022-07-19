@@ -15,40 +15,46 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.executor.sql.fixture;
+package org.apache.shardingsphere.test.fixture.database.type;
 
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 
-public final class FixtureDatabaseType implements DatabaseType {
+import static org.mockito.Mockito.mock;
+
+/**
+ * Mocked database type.
+ */
+public final class MockedDatabaseType implements DatabaseType {
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
-        return null;
+        return QuoteCharacter.NONE;
     }
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return null;
+        return Collections.singleton("jdbc:fixture");
     }
     
     @Override
     public DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return null;
+        return mock(DataSourceMetaData.class);
     }
     
     @Override
     public Map<String, Collection<String>> getSystemDatabaseSchemaMap() {
-        return null;
+        return Collections.emptyMap();
     }
     
     @Override
     public Collection<String> getSystemSchemas() {
-        return null;
+        return Collections.emptyList();
     }
     
     @Override
