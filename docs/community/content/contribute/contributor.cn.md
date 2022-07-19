@@ -20,6 +20,10 @@ chapter = true
 
 **1. 准备仓库**
 
+> 您也可以通过单击以下按钮跳过以下步骤并直接从浏览器中贡献
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/apache/shardingsphere)
+
 到 [ShardingSphere GitHub Repo]( https://github.com/apache/shardingsphere ) fork 仓库到你的 GitHub 账号。
 
 克隆到本地。

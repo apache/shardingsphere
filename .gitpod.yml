@@ -1,0 +1,10 @@
+image: gitpod/workspace-java-17
+
+# List the start up tasks. Learn more https://www.gitpod.io/docs/config-start-tasks/
+tasks:
+  - init: mvn clean install -Dmaven.javadoc.skip=true -Dcheckstyle.skip=true -Drat.skip=true -Djacoco.skip=true -DskipITs -DskipTests -Prelease
+
+# Learn More https://www.gitpod.io/docs/ides-and-editors/vscode-extensions#vs-code-extensions
+vscode:
+  extensions:
+    - vscjava.vscode-java-pack

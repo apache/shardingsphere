@@ -11,6 +11,7 @@
 [![CII Best Practices](https://bestpractices.coreinfrastructure.org/projects/5394/badge)](https://bestpractices.coreinfrastructure.org/projects/5394)
 [![OpenTracing-1.0 Badge](https://img.shields.io/badge/OpenTracing--1.0-enabled-blue.svg)](http://opentracing.io)
 [![Skywalking Tracing](https://img.shields.io/badge/Skywalking%20Tracing-enable-brightgreen.svg)](https://github.com/apache/skywalking)
+[![Contribute with Gitpod](https://img.shields.io/badge/Contribute%20with-Gitpod-908a85?logo=gitpod)](https://gitpod.io/#https://github.com/apache/shardingsphere)
 
 [![Twitter](https://img.shields.io/twitter/url/https/twitter.com/ShardingSphere.svg?style=social&label=Follow%20%40ShardingSphere)](https://twitter.com/ShardingSphere)
 [![Slack](https://img.shields.io/badge/%20Slack-ShardingSphere%20Channel-blueviolet)](https://join.slack.com/t/apacheshardingsphere/shared_invite/zt-sbdde7ie-SjDqo9~I4rYcR18bq0SYTg)
@@ -40,7 +41,7 @@ The concepts at the core of the project are `Connect`, `Enhance` and `Pluggable`
 Virtually all databases are [supported](https://shardingsphere.apache.org/document/current/en/dev-manual/data-source/) including [MySQL](https://www.mysql.com), [PostgreSQL](https://www.postgresql.org), [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads), [Oracle Database](https://www.oracle.com/database/), [MariaDB](https://mariadb.org) or any other SQL-92 database.
 
 ShardingSphere became an [Apache](https://apache.org/index.html#projects-list) Top-Level Project on April 16, 2020.
- 
+
 ### DOCUMENTATION📜
 
 <hr>
@@ -96,13 +97,13 @@ Keep an eye on the [milestones page](https://github.com/apache/shardingsphere/mi
 [comment]: <> (##)
 
 [comment]: <> (### NIGHTLY BUILDS:)
- 
+
 [comment]: <> (<hr>)
 
 [comment]: <> (A nightly build of ShardingSphere from the latest master branch is available. )
 
 [comment]: <> (The package is updated daily and is available [here]&#40;http://117.48.121.24:8080&#41;.)
- 
+
 [comment]: <> (##)
 
 [comment]: <> (**‼️ Notice:**)
@@ -114,7 +115,7 @@ Keep an eye on the [milestones page](https://github.com/apache/shardingsphere/mi
 [comment]: <> (The branch is not always fully tested. )
 
 [comment]: <> (The nightly build may contain bugs, and there may be new features added which may cause problems with your environment. )
- 
+
 ##
 
 ### How it Works

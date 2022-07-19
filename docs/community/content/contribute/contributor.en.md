@@ -18,6 +18,10 @@ You can report a bug, submit a new function enhancement suggestion, or submit a 
 
 ## Developer Flow
 
+> You Can also Skip the following steps & directly contribute from your browser by clicking on the following button 
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/apache/shardingsphere)
+
 **1. Prepare repository**
 
 Go to [ShardingSphere GitHub Repo]( https://github.com/apache/shardingsphere ) and fork repository to your account.

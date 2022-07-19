@@ -4,6 +4,11 @@ weight = 2
 chapter = true
 +++
 
+> You Can also Skip the following steps & directly contribute from your browser by clicking on the following button 
+
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/apache/shardingsphere)
+
+
 ## Git Installation
 
 Use the latest version.
