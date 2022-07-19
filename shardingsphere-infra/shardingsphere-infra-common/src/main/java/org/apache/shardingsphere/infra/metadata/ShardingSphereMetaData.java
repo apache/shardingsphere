@@ -100,7 +100,7 @@ public final class ShardingSphereMetaData {
         if (null != database.getResource()) {
             database.getResource().getDataSources().values().forEach(each -> database.getResource().close(each));
         }
-        String databaseName = database.getName();
+        String databaseName = database.getName().toLowerCase();
         globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.closeStaleResource(databaseName));
         database.getRuleMetaData().findRules(ResourceHeldRule.class).forEach(each -> each.closeStaleResource(databaseName));
     }
