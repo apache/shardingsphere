@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Create lockdown profile statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OracleCreateLockdownProfileStatement extends AbstractSQLStatement implements OracleStatement {
 }

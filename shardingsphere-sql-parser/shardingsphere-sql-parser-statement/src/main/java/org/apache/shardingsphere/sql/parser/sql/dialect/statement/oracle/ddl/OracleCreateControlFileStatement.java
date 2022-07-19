@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle create control file statement.
  */
-@ToString
+@ToString(callSuper = true)
 public class OracleCreateControlFileStatement extends CreateControlFileStatement implements OracleStatement {
 }

@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle create parameter file statement.
  */
-@ToString
+@ToString(callSuper = true)
 public class OracleCreatePFileStatement extends CreatePFileStatement implements OracleStatement {
 }
