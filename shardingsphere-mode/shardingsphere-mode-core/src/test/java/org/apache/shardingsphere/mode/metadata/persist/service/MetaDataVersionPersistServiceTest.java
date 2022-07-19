@@ -22,7 +22,9 @@ import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.contains;
@@ -31,7 +33,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-public class MetaDataVersionPersistServiceTest {
+public final class MetaDataVersionPersistServiceTest {
 
     private PersistRepository repository;
 
@@ -47,7 +49,7 @@ public class MetaDataVersionPersistServiceTest {
     @Test
     public void assertGetActiveVersion() {
         assertTrue(metaDataVersionPersistService.getActiveVersion("foo_db").isPresent());
-        verify(repository, times(1)).get(DatabaseMetaDataNode.getActiveVersionPath("foo_db"));
+        verify(repository).get(DatabaseMetaDataNode.getActiveVersionPath("foo_db"));
     }
 
     @Test
@@ -57,8 +59,8 @@ public class MetaDataVersionPersistServiceTest {
 
     @Test
     public void assertCreateNewVersion() {
-        assertTrue(!metaDataVersionPersistService.createNewVersion("new_db").isPresent());
-        assertEquals(metaDataVersionPersistService.createNewVersion("foo_db").get(), "2");
+        assertFalse(metaDataVersionPersistService.createNewVersion("new_db").isPresent());
+        assertThat(metaDataVersionPersistService.createNewVersion("foo_db").get(), equalTo("2"));
         verify(repository, times(2)).persist(contains("foo_db"), anyString());
     }
 
