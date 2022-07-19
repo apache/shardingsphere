@@ -18,23 +18,25 @@
 package org.apache.shardingsphere.distsql.parser.segment;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 
 import java.util.Properties;
 
 /**
- * Data source segment.
+ * Hostname and port based data source segment.
  */
-@RequiredArgsConstructor
 @Getter
-public class DataSourceSegment implements ASTNode {
+public final class HostnameAndPortBasedDataSourceSegment extends DataSourceSegment {
     
-    private final String name;
+    private final String hostname;
     
-    private final String user;
+    private final String port;
     
-    private final String password;
+    private final String database;
     
-    private final Properties props;
+    public HostnameAndPortBasedDataSourceSegment(final String name, final String hostname, final String port, final String database, final String user, final String password, final Properties props) {
+        super(name, user, password, props);
+        this.hostname = hostname;
+        this.port = port;
+        this.database = database;
+    }
 }
