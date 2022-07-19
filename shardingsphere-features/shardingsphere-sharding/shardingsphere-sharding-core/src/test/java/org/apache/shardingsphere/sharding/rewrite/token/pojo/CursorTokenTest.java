@@ -29,6 +29,7 @@ import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -37,8 +38,10 @@ public final class CursorTokenTest {
     
     @Test
     public void assertToString() {
+        ShardingRule shardingRule = mock(ShardingRule.class);
+        when(shardingRule.getLogicAndActualTablesFromRouteUnit(any(), any())).thenReturn(Collections.singletonMap("t_order", "t_order_0"));
         CursorToken cursorToken = new CursorToken(0, 0,
-                new IdentifierValue("t_order_cursor"), mock(CursorStatementContext.class, RETURNS_DEEP_STUBS), mock(ShardingRule.class));
+                new IdentifierValue("t_order_cursor"), mock(CursorStatementContext.class, RETURNS_DEEP_STUBS), shardingRule);
         RouteUnit routeUnit = mock(RouteUnit.class);
         when(routeUnit.getTableMappers()).thenReturn(Collections.singletonList(new RouteMapper("t_order", "t_order_0")));
         when(routeUnit.getDataSourceMapper()).thenReturn(new RouteMapper(DefaultDatabase.LOGIC_NAME, "ds_0"));
