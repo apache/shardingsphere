@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin.fixture;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorCreator;
-import org.apache.shardingsphere.test.fixture.database.type.FixtureDatabaseType;
+import org.apache.shardingsphere.test.fixture.database.type.MockedDatabaseType;
 
 import java.util.Collection;
 import java.util.Optional;
@@ -39,7 +39,7 @@ public final class DatabaseAdminExecutorCreatorFixture implements DatabaseAdminE
     
     @Override
     public String getType() {
-        return new FixtureDatabaseType().getType();
+        return new MockedDatabaseType().getType();
     }
     
     @Override

@@ -23,7 +23,7 @@ import org.apache.shardingsphere.proxy.frontend.authentication.AuthenticationEng
 import org.apache.shardingsphere.proxy.frontend.command.CommandExecuteEngine;
 import org.apache.shardingsphere.proxy.frontend.context.FrontendContext;
 import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngine;
-import org.apache.shardingsphere.test.fixture.database.type.FixtureDatabaseType;
+import org.apache.shardingsphere.test.fixture.database.type.MockedDatabaseType;
 
 public final class DatabaseProtocolFrontendEngineFixture implements DatabaseProtocolFrontendEngine {
     
@@ -57,6 +57,6 @@ public final class DatabaseProtocolFrontendEngineFixture implements DatabaseProt
     
     @Override
     public String getType() {
-        return new FixtureDatabaseType().getType();
+        return new MockedDatabaseType().getType();
     }
 }

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.reactive.protocol.fixture;
+package org.apache.shardingsphere.test.fixture.database.type;
 
 import org.apache.shardingsphere.infra.database.metadata.DataSourceMetaData;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -25,26 +25,26 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-public final class DummyDatabaseType implements DatabaseType {
-    
-    @Override
-    public String getType() {
-        return "Dummy";
-    }
+import static org.mockito.Mockito.mock;
+
+/**
+ * Mocked database type.
+ */
+public final class MockedDatabaseType implements DatabaseType {
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
-        return null;
+        return QuoteCharacter.NONE;
     }
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return null;
+        return Collections.singleton("jdbc:fixture");
     }
     
     @Override
     public DataSourceMetaData getDataSourceMetaData(final String url, final String username) {
-        return null;
+        return mock(DataSourceMetaData.class);
     }
     
     @Override
@@ -55,5 +55,10 @@ public final class DummyDatabaseType implements DatabaseType {
     @Override
     public Collection<String> getSystemSchemas() {
         return Collections.emptyList();
+    }
+    
+    @Override
+    public String getType() {
+        return "FIXTURE";
     }
 }

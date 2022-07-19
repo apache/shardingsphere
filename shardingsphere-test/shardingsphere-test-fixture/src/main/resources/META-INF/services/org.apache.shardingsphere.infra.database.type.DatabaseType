@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.test.fixture.database.type.FixtureDatabaseType
+org.apache.shardingsphere.test.fixture.database.type.MockedDatabaseType
