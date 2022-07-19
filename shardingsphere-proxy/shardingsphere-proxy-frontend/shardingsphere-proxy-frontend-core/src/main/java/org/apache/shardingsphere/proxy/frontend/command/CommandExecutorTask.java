@@ -80,6 +80,8 @@ public final class CommandExecutorTask implements Runnable {
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
             processException(ex);
+        } catch (final Error error) {
+            processException(new RuntimeException(error));
         } finally {
             // TODO optimize SQLStatementDatabaseHolder
             SQLStatementDatabaseHolder.remove();
