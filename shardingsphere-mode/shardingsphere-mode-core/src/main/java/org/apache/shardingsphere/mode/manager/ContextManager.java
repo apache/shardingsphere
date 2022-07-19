@@ -150,7 +150,7 @@ public final class ContextManager implements AutoCloseable {
      * @param toBeDeletedTableName to be deleted table name
      */
     public synchronized void alterSchema(final String databaseName, final String schemaName, final ShardingSphereTable toBeChangedTable, final String toBeDeletedTableName) {
-        if (metaDataContexts.getMetaData().getDatabases().containsKey(databaseName)) {
+        if (metaDataContexts.getMetaData().containsDatabase(databaseName)) {
             Optional.ofNullable(toBeChangedTable).ifPresent(optional -> alterTable(databaseName, schemaName, optional));
             Optional.ofNullable(toBeDeletedTableName).ifPresent(optional -> dropTable(databaseName, schemaName, optional));
         }
