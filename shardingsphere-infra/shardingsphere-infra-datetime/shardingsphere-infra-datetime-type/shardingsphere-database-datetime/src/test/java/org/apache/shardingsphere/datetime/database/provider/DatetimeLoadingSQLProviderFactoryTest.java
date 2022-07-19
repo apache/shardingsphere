@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.datetime.database.provider;
 
-import org.apache.shardingsphere.datetime.database.fixture.FixtureDatabaseType;
 import org.apache.shardingsphere.datetime.database.fixture.FixtureDatetimeLoadingSQLProvider;
+import org.apache.shardingsphere.test.fixture.database.type.FixtureDatabaseType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
