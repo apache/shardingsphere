@@ -15,19 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.protocol;
+grammar UtilityDistSQLStatement;
 
-import org.apache.shardingsphere.proxy.frontend.fixture.DatabaseProtocolFrontendEngineFixture;
-import org.apache.shardingsphere.test.fixture.database.type.MockedDatabaseType;
-import org.junit.Test;
+import Symbol, RULStatement;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
-public final class DatabaseProtocolFrontendEngineFactoryTest {
-    
-    @Test
-    public void assertNewInstance() {
-        assertThat(DatabaseProtocolFrontendEngineFactory.newInstance(new MockedDatabaseType()), instanceOf(DatabaseProtocolFrontendEngineFixture.class));
-    }
-}
+execute
+    : (previewSQL 
+    | parseSQL
+    | formatSQL
+    ) SEMI?
+    ;

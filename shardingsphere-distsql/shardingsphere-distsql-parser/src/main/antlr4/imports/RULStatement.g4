@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-grammar AdvancedStatement;
+grammar RULStatement;
 
-import AdvancedKeyword;
+import RULKeyword;
 
 previewSQL
     : PREVIEW sql

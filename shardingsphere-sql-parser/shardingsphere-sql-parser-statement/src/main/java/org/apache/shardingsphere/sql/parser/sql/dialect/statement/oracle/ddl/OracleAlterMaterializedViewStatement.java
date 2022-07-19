@@ -15,13 +15,15 @@
  * limitations under the License.
  */
 
-grammar AdvancedDistSQLStatement;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
 
-import Symbol, AdvancedStatement;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterMaterializedViewStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
-execute
-    : (previewSQL 
-    | parseSQL
-    | formatSQL
-    ) SEMI?
-    ;
+/**
+ * Oracle alter materialized view statement.
+ */
+@ToString(callSuper = true)
+public final class OracleAlterMaterializedViewStatement extends AlterMaterializedViewStatement implements OracleStatement {
+}

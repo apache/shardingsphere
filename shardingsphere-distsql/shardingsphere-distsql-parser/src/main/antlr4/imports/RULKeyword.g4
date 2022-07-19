@@ -15,18 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.core.advanced;
+lexer grammar RULKeyword;
 
-import org.antlr.v4.runtime.CharStream;
-import org.apache.shardingsphere.distsql.parser.autogen.AdvancedDistSQLStatementLexer;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
+import Alphabet;
 
-/**
- * SQL lexer for advanced dist SQL.
- */
-public final class AdvancedDistSQLLexer extends AdvancedDistSQLStatementLexer implements SQLLexer {
-    
-    public AdvancedDistSQLLexer(final CharStream input) {
-        super(input);
-    }
-}
+WS
+    : [ \t\r\n] +
+    ;
+
+PREVIEW
+    : P R E V I E W
+    ;
+
+PARSE
+    : P A R S E
+    ;
+
+FORMAT
+    : F O R M A T
+    ;
+
+SQLString
+    : WS.*
+    ;
