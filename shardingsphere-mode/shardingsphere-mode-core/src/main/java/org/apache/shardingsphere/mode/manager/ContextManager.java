@@ -104,7 +104,7 @@ public final class ContextManager implements AutoCloseable {
      * @throws SQLException SQL exception
      */
     public synchronized void addDatabase(final String databaseName) throws SQLException {
-        if (metaDataContexts.getMetaData().getDatabases().containsKey(databaseName)) {
+        if (metaDataContexts.getMetaData().containsDatabase(databaseName)) {
             return;
         }
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), metaDataContexts.getMetaData().getProps());
@@ -119,7 +119,7 @@ public final class ContextManager implements AutoCloseable {
      * @param databaseName database name
      */
     public synchronized void dropDatabase(final String databaseName) {
-        if (!metaDataContexts.getMetaData().getDatabases().containsKey(databaseName)) {
+        if (!metaDataContexts.getMetaData().containsDatabase(databaseName)) {
             return;
         }
         metaDataContexts.getMetaData().dropDatabase(databaseName);
