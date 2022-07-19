@@ -26,7 +26,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-public final class FixtureDatabaseType implements DatabaseType {
+public final class InfraDatabaseTypeFixture implements DatabaseType {
     
     @Override
     public QuoteCharacter getQuoteCharacter() {
@@ -35,7 +35,7 @@ public final class FixtureDatabaseType implements DatabaseType {
     
     @Override
     public Collection<String> getJdbcUrlPrefixes() {
-        return Collections.singleton(String.format("jdbc:%s:", getType().toLowerCase()));
+        return Collections.singleton("jdbc:fixture:");
     }
     
     @Override
