@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle truncate table statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OracleTruncateStatement extends TruncateStatement implements OracleStatement {
 }

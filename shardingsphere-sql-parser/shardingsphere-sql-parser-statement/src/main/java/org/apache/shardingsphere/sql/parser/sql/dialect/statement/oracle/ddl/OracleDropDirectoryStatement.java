@@ -25,6 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle drop directory statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OracleDropDirectoryStatement extends DropDirectoryStatement implements DDLStatement, OracleStatement {
 }
