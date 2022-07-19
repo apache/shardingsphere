@@ -46,13 +46,30 @@ public final class ITContainers implements Startable {
     
     /**
      * Register container.
-     * 
+     *
      * @param container container to be registered
-     * @param networkAlias network alias
-     * @param <T> type of ShardingSphere container
+     * @param type container type
+     * @param <T> type of container
      * @return registered container
      */
-    public <T extends ITContainer> T registerContainer(final T container, final String networkAlias) {
+    public <T extends ITContainer> T registerContainer(final T container, final String type) {
+        return registerContainer0(container, String.join(".", type.toLowerCase(), "host"));
+    }
+    
+    /**
+     * Register container.
+     *
+     * @param container container to be registered
+     * @param type container type
+     * @param scenario scenario
+     * @param <T> type of container
+     * @return registered container
+     */
+    public <T extends ITContainer> T registerContainer(final T container, final String type, final String scenario) {
+        return registerContainer0(container, String.join(".", type.toLowerCase(), scenario, "host"));
+    }
+    
+    private  <T extends ITContainer> T registerContainer0(final T container, final String networkAlias) {
         if (container instanceof EmbeddedITContainer) {
             embeddedContainers.add((EmbeddedITContainer) container);
         } else {

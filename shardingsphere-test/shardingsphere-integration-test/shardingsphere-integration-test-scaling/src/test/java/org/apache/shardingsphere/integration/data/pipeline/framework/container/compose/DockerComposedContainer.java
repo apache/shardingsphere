@@ -23,9 +23,8 @@ import org.apache.shardingsphere.integration.data.pipeline.factory.DatabaseConta
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.cluster.ZookeeperContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.DatabaseContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.proxy.ShardingSphereProxyDockerContainer;
-import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.container.atomic.governance.GovernanceContainer;
-import org.apache.shardingsphere.test.integration.container.util.NetworkAliasUtil;
+import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
 
 /**
  * Composed container, include governance container and database container.
@@ -44,10 +43,10 @@ public final class DockerComposedContainer extends BaseComposedContainer {
     public DockerComposedContainer(final DatabaseType databaseType, final String dockerImageName) {
         this.databaseType = databaseType;
         ShardingSphereProxyDockerContainer proxyContainer = new ShardingSphereProxyDockerContainer(databaseType);
-        governanceContainer = getContainers().registerContainer(new ZookeeperContainer(), NetworkAliasUtil.getNetworkAlias("zk"));
-        databaseContainer = getContainers().registerContainer(DatabaseContainerFactory.newInstance(databaseType, dockerImageName), NetworkAliasUtil.getNetworkAlias("db"));
+        governanceContainer = getContainers().registerContainer(new ZookeeperContainer(), "zk");
+        databaseContainer = getContainers().registerContainer(DatabaseContainerFactory.newInstance(databaseType, dockerImageName), "db");
         proxyContainer.dependsOn(governanceContainer, databaseContainer);
-        this.proxyContainer = getContainers().registerContainer(proxyContainer, NetworkAliasUtil.getNetworkAlias("sharding-proxy"));
+        this.proxyContainer = getContainers().registerContainer(proxyContainer, "sharding-proxy");
     }
     
     @Override
