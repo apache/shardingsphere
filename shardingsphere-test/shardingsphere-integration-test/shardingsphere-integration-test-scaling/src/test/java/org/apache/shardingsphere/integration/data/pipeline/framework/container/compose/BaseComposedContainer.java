@@ -21,13 +21,13 @@ import lombok.Getter;
 import org.apache.shardingsphere.test.integration.container.atomic.ITContainers;
 import org.testcontainers.lifecycle.Startable;
 
+@Getter
 public abstract class BaseComposedContainer implements Startable {
     
-    @Getter
     private final ITContainers containers;
     
     public BaseComposedContainer() {
-        this.containers = new ITContainers("");
+        containers = new ITContainers("");
     }
     
     /**
