@@ -38,14 +38,14 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class OptimizerContextTest {
-    
+
     @Test
     public void assertDropDatabase() {
         OptimizerContext optimizerContext = createOptimizerContext();
         optimizerContext.dropDatabase("FOO_DB");
         assertFalse(optimizerContext.getFederationMetaData().getDatabases().containsKey("foo_db"));
     }
-    
+
     @Test
     public void assertAlterTable() {
         OptimizerContext optimizerContext = createOptimizerContext();
@@ -55,7 +55,7 @@ public final class OptimizerContextTest {
         assertFalse(schemaMetaData.get().getTables().get("foo_tbl").getColumnNames().contains("foo_col"));
         assertTrue(schemaMetaData.get().getTables().get("foo_tbl").getColumnNames().contains("bar_col"));
     }
-    
+
     @Test
     public void assertDropTable() {
         OptimizerContext optimizerContext = createOptimizerContext();
@@ -66,7 +66,7 @@ public final class OptimizerContextTest {
         assertTrue(schemaMetadata.isPresent());
         assertFalse(schemaMetadata.get().getTables().containsKey("foo_tbl"));
     }
-    
+
     @Test
     public void assertAddDatabase() {
         OptimizerContext optimizerContext = createOptimizerContext();
@@ -75,7 +75,7 @@ public final class OptimizerContextTest {
         assertTrue(optimizerContext.getParserContexts().containsKey("bar_db"));
         assertTrue(optimizerContext.getPlannerContexts().containsKey("bar_db"));
     }
-    
+
     @Test
     public void assertAlterDatabase() {
         OptimizerContext optimizerContext = createOptimizerContext();
@@ -99,12 +99,12 @@ public final class OptimizerContextTest {
     private OptimizerContext createOptimizerContext() {
         return OptimizerContextFactory.create(Collections.singletonMap("foo_db", createDatabase()), mock(ShardingSphereRuleMetaData.class));
     }
-    
+
     private ShardingSphereDatabase createDatabase() {
         ShardingSphereSchema schema = new ShardingSphereSchema(Collections.singletonMap("foo_tbl", createTable("foo_col")));
         return new ShardingSphereDatabase("foo_db", new H2DatabaseType(), mock(ShardingSphereResource.class), null, Collections.singletonMap("foo_schema", schema));
     }
-    
+
     private ShardingSphereTable createTable(final String columnName) {
         ShardingSphereColumn toBeAlteredColumn = new ShardingSphereColumn(columnName, 0, false, false, true);
         return new ShardingSphereTable("foo_tbl", Collections.singleton(toBeAlteredColumn), Collections.emptyList(), Collections.emptyList());
