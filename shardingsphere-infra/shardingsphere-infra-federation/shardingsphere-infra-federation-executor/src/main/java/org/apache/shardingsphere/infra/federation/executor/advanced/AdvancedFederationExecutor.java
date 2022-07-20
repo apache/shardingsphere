@@ -71,7 +71,7 @@ public final class AdvancedFederationExecutor implements FederationExecutor {
                                   final JDBCExecutorCallback<? extends ExecuteResult> callback, final FederationContext federationContext) throws SQLException {
         String sql = federationContext.getLogicSQL().getSql();
         ShardingSphereSQLParserEngine parserEngine = new ShardingSphereSQLParserEngine(
-                federationContext.getDatabases().get(databaseName).getProtocolType().getType(), new CacheOption(1, 1), new CacheOption(1, 1), false);
+                federationContext.getDatabases().get(databaseName.toLowerCase()).getProtocolType().getType(), new CacheOption(1, 1), new CacheOption(1, 1), false);
         SQLStatement sqlStatement = parserEngine.parse(sql, false);
         Enumerable<Object[]> enumerableResult = execute(sqlStatement);
         MergedResult mergedResult = new EnumerableMergedResult(enumerableResult);
