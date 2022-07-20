@@ -63,7 +63,9 @@ public final class ColumnSegment implements ExpressionSegment, OwnerAvailable {
      * @return expression
      */
     public String getExpression() {
-        return null == owner ? identifier.getValue() : owner.getIdentifier().getValue() + "." + identifier.getValue();
+        return null == owner
+                ? identifier.getValue()
+                : String.join(".", owner.getIdentifier().getValue(), identifier.getValue());
     }
     
     @Override
