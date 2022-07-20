@@ -121,7 +121,8 @@ public final class ReactiveProxySQLExecutor {
     
     private List<ExecuteResult> getSaneExecuteResults(final ExecutionContext executionContext, final SQLException originalException) throws SQLException {
         DatabaseType databaseType = ProxyContext.getInstance().getDatabase(backendConnection.getConnectionSession().getDatabaseName()).getResource().getDatabaseType();
-        Optional<ExecuteResult> executeResult = SaneQueryResultEngineFactory.getInstance(databaseType).getSaneQueryResult(executionContext.getSqlStatementContext().getSqlStatement());
+        Optional<ExecuteResult> executeResult = SaneQueryResultEngineFactory.getInstance(databaseType)
+                .getSaneQueryResult(executionContext.getSqlStatementContext().getSqlStatement(), originalException);
         if (executeResult.isPresent()) {
             return Collections.singletonList(executeResult.get());
         }
