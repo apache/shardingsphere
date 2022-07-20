@@ -121,7 +121,7 @@ public final class ContextManagerTest {
     
     @Test
     public void assertAddExistedDatabase() throws SQLException {
-        when(metaDataContexts.getMetaData().getDatabases().containsKey("foo_db")).thenReturn(true);
+        when(metaDataContexts.getMetaData().containsDatabase("foo_db")).thenReturn(true);
         contextManager.addDatabase("foo_db");
         verify(metaDataContexts.getMetaData(), times(0)).addDatabase(eq("foo_db"), any(DatabaseType.class));
         verify(metaDataContexts.getOptimizerContext(), times(0)).addDatabase(eq("foo_db"), any(DatabaseType.class));
@@ -129,7 +129,7 @@ public final class ContextManagerTest {
     
     @Test
     public void assertDropDatabase() {
-        when(metaDataContexts.getMetaData().getDatabases().containsKey("foo_db")).thenReturn(true);
+        when(metaDataContexts.getMetaData().containsDatabase("foo_db")).thenReturn(true);
         contextManager.dropDatabase("foo_db");
         verify(metaDataContexts.getMetaData()).dropDatabase("foo_db");
         verify(metaDataContexts.getOptimizerContext()).dropDatabase("foo_db");
