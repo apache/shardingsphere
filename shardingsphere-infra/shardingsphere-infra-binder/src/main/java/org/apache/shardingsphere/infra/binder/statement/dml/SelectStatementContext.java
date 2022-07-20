@@ -109,7 +109,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         ColumnExtractor.extractColumnSegments(columnSegments, whereSegments);
         subqueryContexts = createSubqueryContexts(databases, parameters, defaultDatabaseName);
         tablesContext = new TablesContext(getAllTableSegments(), subqueryContexts, getDatabaseType());
-        String databaseName = tablesContext.getDatabaseName().orElse(defaultDatabaseName).toLowerCase();
+        String databaseName = tablesContext.getDatabaseName().orElse(defaultDatabaseName);
         groupByContext = new GroupByContextEngine().createGroupByContext(sqlStatement);
         orderByContext = new OrderByContextEngine().createOrderBy(sqlStatement, groupByContext);
         projectionsContext = new ProjectionsContextEngine(databaseName, getSchemas(databases, databaseName), getDatabaseType())
@@ -139,7 +139,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         if (null == databases.get(databaseName)) {
             throw new DatabaseNotExistedException(databaseName);
         }
-        return databases.get(databaseName).getSchemas();
+        return databases.get(databaseName.toLowerCase()).getSchemas();
     }
     
     /**

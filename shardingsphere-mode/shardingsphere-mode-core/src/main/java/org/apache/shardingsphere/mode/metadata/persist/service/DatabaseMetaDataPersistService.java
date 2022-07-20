@@ -111,7 +111,7 @@ public final class DatabaseMetaDataPersistService {
      * @param databaseName database name to be deleted
      */
     public void deleteDatabase(final String databaseName) {
-        repository.delete(DatabaseMetaDataNode.getDatabaseNamePath(databaseName));
+        repository.delete(DatabaseMetaDataNode.getDatabaseNamePath(databaseName.toLowerCase()));
     }
     
     /**
@@ -120,7 +120,7 @@ public final class DatabaseMetaDataPersistService {
      * @param databaseName database name
      */
     public void persistDatabase(final String databaseName) {
-        repository.persist(DatabaseMetaDataNode.getDatabaseNamePath(databaseName), "");
+        repository.persist(DatabaseMetaDataNode.getDatabaseNamePath(databaseName.toLowerCase()), "");
     }
     
     /**

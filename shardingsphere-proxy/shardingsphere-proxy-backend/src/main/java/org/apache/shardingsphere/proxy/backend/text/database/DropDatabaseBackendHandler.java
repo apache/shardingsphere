@@ -56,7 +56,7 @@ public final class DropDatabaseBackendHandler implements TextProtocolBackendHand
     }
     
     private void check(final DropDatabaseStatement sqlStatement, final Grantee grantee) {
-        String databaseName = sqlStatement.getDatabaseName();
+        String databaseName = sqlStatement.getDatabaseName().toLowerCase();
         if (!SQLCheckEngine.check(databaseName, getRules(databaseName), grantee)) {
             throw new UnknownDatabaseException(databaseName);
         }
