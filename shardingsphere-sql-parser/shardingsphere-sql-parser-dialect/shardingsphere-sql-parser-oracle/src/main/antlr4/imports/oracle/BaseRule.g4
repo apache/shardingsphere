@@ -112,6 +112,14 @@ viewName
     : (owner DOT_)? name
     ;
 
+procedureName
+    : (owner DOT_)? name
+    ;
+
+exceptionName
+    : (owner DOT_)? name
+    ;
+
 triggerName
     : (owner DOT_)? name
     ;
@@ -181,10 +189,6 @@ savepointName
     ;
 
 synonymName
-    : identifier
-    ;
-
-procedureName
     : identifier
     ;
 
@@ -795,10 +799,6 @@ unitName
     : (owner DOT_)? name
     ;
 
-procedureName
-    : identifier
-    ;
-
 cpuCost
     : INTEGER_
     ;
@@ -1312,4 +1312,22 @@ joinGroupName
 
 restorePointName
     : identifier
+    ;
+
+numeric
+    : UNSIGNED_INTEGER
+    | APPROXIMATE_NUM_LIT
+    ;
+
+numericNegative
+    : MINUS_SIGN numeric
+    ;
+
+typeSpec
+    : dataType
+    | REF? typeName (PERCENT_ROWTYPE | PERCENT_TYPE)?
+    ;
+
+defaultValuePart
+    : (ASSIGN_OP | DEFAULT) expr
     ;

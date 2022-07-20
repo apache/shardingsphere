@@ -32,7 +32,9 @@ createIndex
     ;
 
 createProcedure
-    : CREATE PROCEDURE procedureName LP_ columnName dataType RP_ AS procedureParameter BEGIN exprs END
+    : CREATE (OR REPLACE)? PROCEDURE procedureName ('(' parameterName (',' parameterName)* ')')?
+            invokerRightsClause? (IS | AS)
+            (DECLARE? seq_of_declare_specs? body | call_spec | EXTERNAL) ';'
     ;
 
 alterTable
@@ -2200,6 +2202,56 @@ plsqlFunctionSource
 
 parameterDeclaration
     : parameterName (IN? dataType ((COLON_ EQ_ | DEFAULT) expr)? | IN? OUT NOCOPY? dataType)?
+    ;
+
+exceptionDeclaration
+    : identifier EXCEPTION ';'
+    ;
+
+pragmaDeclaration
+    : PRAGMA (SERIALLY_REUSABLE
+    | AUTONOMOUS_TRANSACTION
+    | EXCEPTION_INIT '(' exceptionName ',' numericNegative ')'
+    | INLINE '(' id1=identifier ',' expr ')'
+    | RESTRICT_REFERENCES '(' (identifier | DEFAULT) (',' identifier)+ ')') ';'
+    ;
+
+variableDeclaration
+    : identifier CONSTANT? typeSpec (NOT NULL_)? defaultValuePart? ';'
+    ;
+
+subtypeDeclaration
+    : SUBTYPE identifier IS typeSpec (RANGE expr '..' expr)? (NOT NULL_)? ';'
+    ;
+
+cursorDeclaration
+    : CURSOR identifier ('(' parameterSpec (',' parameterSpec)* ')' )? (RETURN typeSpec)? (IS selectStatement)? ';'
+    ;
+
+selectStatement
+    : selectOnlyStatement (forUpdateClause | orderByClause | offsetClause | fetchClause)*
+    ;
+
+selectOnlyStatement
+    : subqueryFactoringClause? subquery
+    ;
+
+subqueryFactoringClause
+    : WITH factoringElement (',' factoringElement)*
+    ;
+
+factoringElement
+    : queryName parenColumnList? AS '(' subquery orderByClause? ')'
+      searchClause? cycleClause?
+    ;
+
+searchClause
+    : SEARCH (DEPTH | BREADTH) FIRST BY columnName ASC? DESC? (NULLS FIRST)? (NULLS LAST)?
+            (',' columnName ASC? DESC? (NULLS FIRST)? (NULLS LAST)?)* SET columnName
+          ;
+
+parameterSpec
+    : parameterName (IN? typeSpec)? defaultValuePart?
     ;
 
 procedureParameter

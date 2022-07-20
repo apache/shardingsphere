@@ -2834,3 +2834,59 @@ CLEAN
 GUARANTEE
     : G U A R A N T E E
     ;
+
+EXCEPTION
+    : E X C E P T I O N
+    ;
+
+PRAGMA
+    : P R A G M A
+    ;
+
+SERIALLY_REUSABLE
+    : S E R I A L L Y UL_ R E U S A B L E
+    ;
+
+AUTONOMOUS_TRANSACTION
+    : A U T O N O M O U S UL_ T R A N S A C T I O N
+    ;
+
+EXCEPTION_INIT
+    : E X C E P T I O N UL_ I N I T
+    ;
+
+INLINE
+    : I N L I N E
+    ;
+
+RESTRICT_REFERENCES
+    : R E S T R I C T UL_ R E F E R E N C E S
+    ;
+
+DEFAULT
+    : D E F A U L T
+    ;
+
+MINUS_SIGN
+    : M I N U S UL_ S I G N
+    ;
+
+UNSIGNED_INTEGER
+    : U N S I G N E D UL_ I N T E G E R
+    ;
+
+APPROXIMATE_NUM_LIT
+    : A P P R O X I M A T E UL_ N U M UL_ L I T
+    ;
+
+PERCENT_ROWTYPE
+    : P E R C E N T UL_ R O W T Y P E
+    ;
+
+PERCENT_TYPE
+    : P E R C E N T UL_ T Y P E
+    ;
+
+ASSIGN_OP
+    : A S S I G N UL_ O P
+    ;
