@@ -50,17 +50,19 @@ public class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker {
     }
     
     private void checkPrivilege(final DataSource dataSource) {
-        try (Connection connection = dataSource.getConnection()) {
+        try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(SHOW_GRANTS_SQL)) {
             DatabaseMetaData metaData = connection.getMetaData();
-            PreparedStatement preparedStatement = connection.prepareStatement(SHOW_GRANTS_SQL);
             preparedStatement.setString(1, metaData.getUserName());
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                resultSet.next();
+                if (!resultSet.next()) {
+                    throw new PipelineJobPrepareFailedException(String.format("No role exists, rolname: %s.", metaData.getUserName()));
+                }
                 String isSuperRole = resultSet.getString(SUPER_ROLE_NAME);
                 String isReplicationRole = resultSet.getString(REPLICATION_ROLE_NAME);
                 log.info("checkPrivilege: isSuperRole: {}, isReplicationRole: {}", isSuperRole, isReplicationRole);
                 if (StringUtils.equalsIgnoreCase(isSuperRole, "f") && StringUtils.equalsIgnoreCase(isReplicationRole, "f")) {
-                    throw new PipelineJobPrepareFailedException("Source data source is lack of REPLICATION privileges.");
+                    throw new PipelineJobPrepareFailedException(String.format("Source data source is lack of REPLICATION privileges. You can execute `ALTER ROLE \"%s\" REPLICATION;`.",
+                            metaData.getUserName()));
                 }
             }
         } catch (final SQLException ex) {
