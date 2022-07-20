@@ -69,10 +69,8 @@ public final class ColumnSegmentTest {
     @Test
     public void assertGetExpression() {
         ColumnSegment actual = new ColumnSegment(0, 0, new IdentifierValue("`col`"));
-        String expression0 = actual.getExpression();
-        assertThat(expression0, is("col"));
+        assertThat(actual.getExpression(), is("col"));
         actual.setOwner(new OwnerSegment(0, 0, new IdentifierValue("`tbl`")));
-        String expression1 = actual.getExpression();
-        assertThat(expression1, is("tbl.col"));
+        assertThat(actual.getExpression(), is("tbl.col"));
     }
 }
