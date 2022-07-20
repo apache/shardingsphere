@@ -49,7 +49,7 @@ public class GlobalRulePersistServiceTest {
         Collection<RuleConfiguration> actual = new GlobalRulePersistService(repository).load();
         assertThat(actual.size(), is(1));
     }
-
+    
     @Test
     public void assertLoadUsers() {
         when(repository.get("/rules")).thenReturn(readYAML());
