@@ -61,7 +61,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     @Override
     protected void configure() {
         if (Strings.isNullOrEmpty(scenario)) {
-            withClasspathResourceMapping("/env/mysql/my.cnf", "/etc/mysql/my.cnf", BindMode.READ_ONLY);
+            withClasspathResourceMapping("/env/" + getAbbreviation() + "/initdb.sql", "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
         } else {
             withClasspathResourceMapping(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
             withClasspathResourceMapping(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
@@ -86,5 +86,39 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
         return result;
     }
     
-    protected abstract int getPort();
+    /**
+     * Get JDBC URL.
+     *
+     * @param databaseName database name
+     * @return JDBC URL
+     */
+    public String getJdbcUrl(final String databaseName) {
+        return DataSourceEnvironment.getURL(databaseType, getHost(), getFirstMappedPort(), databaseName);
+    }
+    
+    /**
+     * Get database username.
+     *
+     * @return database username
+     */
+    public abstract String getUsername();
+    
+    /**
+     * Get database password.
+     *
+     * @return database username
+     */
+    public abstract String getPassword();
+    
+    /**
+     * Get database port.
+     *
+     * @return database port
+     */
+    public abstract int getPort();
+    
+    @Override
+    public String getAbbreviation() {
+        return databaseType.getType().toLowerCase();
+    }
 }

@@ -17,60 +17,43 @@
 
 package org.apache.shardingsphere.test.integration.container.atomic.storage.impl;
 
-import lombok.SneakyThrows;
+import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.container.atomic.storage.DockerStorageContainer;
-import org.postgresql.util.PSQLException;
-import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
+import org.apache.shardingsphere.test.integration.env.container.wait.JDBCConnectionWaitStrategy;
+import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
+import org.testcontainers.containers.BindMode;
 
-import java.sql.Connection;
 import java.sql.DriverManager;
-import java.sql.SQLException;
 
 /**
  * PostgreSQL container.
  */
+@Getter
 public final class PostgreSQLContainer extends DockerStorageContainer {
+    
+    private final String username = "root";
+    
+    private final String password = "root";
+    
+    private final int port = 5432;
     
     public PostgreSQLContainer(final String scenario) {
         super(DatabaseTypeFactory.getInstance("PostgreSQL"), "postgres:12.6", scenario);
-        setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*database system is ready to accept connections.*"));
     }
     
     @Override
     protected void configure() {
-        withCommand("--max_connections=200");
-        addEnv("POSTGRES_USER", "root");
-        addEnv("POSTGRES_PASSWORD", "root");
+        withCommand("--max_connections=600");
+        withCommand("--wal_level=logical");
+        addEnv("POSTGRES_USER", username);
+        addEnv("POSTGRES_PASSWORD", password);
+        addEnv("POSTGRES_USER", username);
+        addEnv("POSTGRES_PASSWORD", password);
+        withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/etc/postgresql/postgresql.conf", BindMode.READ_ONLY);
+        withExposedPorts(port);
+        setWaitStrategy(new JDBCConnectionWaitStrategy(
+                () -> DriverManager.getConnection(DataSourceEnvironment.getURL(getDatabaseType(), "localhost", getFirstMappedPort(), "postgres"), username, password)));
         super.configure();
-    }
-    
-    @Override
-    @SneakyThrows({ClassNotFoundException.class, SQLException.class, InterruptedException.class})
-    protected void postStart() {
-        super.postStart();
-        // TODO if remove the method, DML and BatchDML run together may throw exception. Need to investigate the reason, it is better to use LogMessageWaitStrategy only
-        Class.forName(DataSourceEnvironment.getDriverClassName(getDatabaseType()));
-        String url = DataSourceEnvironment.getURL(getDatabaseType(), getHost(), getMappedPort(getPort()));
-        boolean connected = false;
-        while (!connected) {
-            try (Connection ignored = DriverManager.getConnection(url, "root", "root")) {
-                connected = true;
-                break;
-            } catch (final PSQLException ex) {
-                Thread.sleep(500L);
-            }
-        }
-    }
-    
-    @Override
-    protected int getPort() {
-        return 5432;
-    }
-    
-    @Override
-    public String getAbbreviation() {
-        return "postgresql";
     }
 }

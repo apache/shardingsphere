@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.container.atomic.storage.impl;
 
+import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.test.integration.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.wait.JDBCConnectionWaitStrategy;
@@ -27,6 +28,7 @@ import java.sql.DriverManager;
 /**
  * MySQL container.
  */
+@Getter
 public final class MySQLContainer extends DockerStorageContainer {
     
     private final String username = "root";
@@ -46,18 +48,7 @@ public final class MySQLContainer extends DockerStorageContainer {
         addEnv("MYSQL_ROOT_PASSWORD", "root");
         addEnv("MYSQL_ROOT_HOST", "%");
         withExposedPorts(port);
-        setWaitStrategy(new JDBCConnectionWaitStrategy(
-                () -> DriverManager.getConnection(DataSourceEnvironment.getURL(DatabaseTypeFactory.getInstance("MySQL"), "localhost", getFirstMappedPort()), username, password)));
+        setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(getDatabaseType(), "localhost", getFirstMappedPort()), username, password)));
         super.configure();
-    }
-    
-    @Override
-    protected int getPort() {
-        return port;
-    }
-    
-    @Override
-    public String getAbbreviation() {
-        return "mysql";
     }
 }
