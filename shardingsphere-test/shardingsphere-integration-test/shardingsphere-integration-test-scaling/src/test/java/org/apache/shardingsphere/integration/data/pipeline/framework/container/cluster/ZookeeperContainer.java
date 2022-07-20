@@ -35,4 +35,9 @@ public final class ZookeeperContainer extends GovernanceContainer {
     public String getServerLists() {
         return getHost() + ":" + getMappedPort(2181);
     }
+    
+    @Override
+    public String getAbbreviation() {
+        return "zk";
+    }
 }

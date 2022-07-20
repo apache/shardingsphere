@@ -42,4 +42,9 @@ public final class MySQLContainer extends DockerStorageContainer {
     protected int getPort() {
         return 3306;
     }
+    
+    @Override
+    public String getAbbreviation() {
+        return "mysql";
+    }
 }

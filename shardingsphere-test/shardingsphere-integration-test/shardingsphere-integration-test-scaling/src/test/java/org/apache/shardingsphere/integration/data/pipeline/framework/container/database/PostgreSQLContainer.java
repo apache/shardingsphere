@@ -73,4 +73,9 @@ public final class PostgreSQLContainer extends DatabaseContainer {
     public int getPort() {
         return port;
     }
+    
+    @Override
+    public String getAbbreviation() {
+        return "postgresql";
+    }
 }

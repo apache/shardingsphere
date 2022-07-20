@@ -68,4 +68,9 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
     protected int getPort() {
         return 5432;
     }
+    
+    @Override
+    public String getAbbreviation() {
+        return "postgresql";
+    }
 }
