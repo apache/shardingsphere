@@ -81,7 +81,7 @@ public final class PipelineDDLGenerator {
      */
     @SneakyThrows
     public String generateLogicDDLSQL(final DatabaseType databaseType, final String databaseName, final String schemaName, final String tableName) {
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(databaseName);
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName);
         log.info("generateLogicDDLSQL, databaseType={}, databaseName={}, schemaName={}, tableName={}, dataSourceNames={}",
                 databaseType.getType(), databaseName, schemaName, tableName, database.getResource().getDataSources().keySet());
         Collection<String> multiSQL = generateActualDDLSQL(databaseType, schemaName, tableName, database);

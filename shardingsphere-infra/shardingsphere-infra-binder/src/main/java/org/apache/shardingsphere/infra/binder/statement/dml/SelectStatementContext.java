@@ -139,7 +139,7 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         if (null == databases.get(databaseName)) {
             throw new DatabaseNotExistedException(databaseName);
         }
-        return databases.get(databaseName).getSchemas();
+        return databases.get(databaseName.toLowerCase()).getSchemas();
     }
     
     /**

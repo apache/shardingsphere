@@ -65,7 +65,7 @@ public final class ProxyJDBCExecutor {
         try {
             MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
             EventBusContext eventBusContext = ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext();
-            DatabaseType databaseType = metaDataContexts.getMetaData().getDatabases().get(connectionSession.getDatabaseName()).getResource().getDatabaseType();
+            DatabaseType databaseType = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getResource().getDatabaseType();
             ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, metaDataContexts.getMetaData().getProps(), eventBusContext);
             SQLStatementContext<?> context = logicSQL.getSqlStatementContext();
             List<ExecuteResult> result = jdbcExecutor.execute(executionGroupContext,
