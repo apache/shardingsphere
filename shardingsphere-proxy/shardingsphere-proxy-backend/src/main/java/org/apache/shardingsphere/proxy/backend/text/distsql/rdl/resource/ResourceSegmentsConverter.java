@@ -21,8 +21,10 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
-import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
+import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
+import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -55,16 +57,21 @@ public final class ResourceSegmentsConverter {
         result.put("jdbcUrl", getURL(databaseType, segment));
         result.put("username", segment.getUser());
         result.put("password", segment.getPassword());
-        if (null != segment.getProperties()) {
-            result.putAll((Map) segment.getProperties());
+        if (null != segment.getProps()) {
+            result.putAll((Map) segment.getProps());
         }
         return result;
     }
     
     private static String getURL(final DatabaseType databaseType, final DataSourceSegment segment) {
-        if (null != segment.getUrl()) {
-            return segment.getUrl();
+        String result = null;
+        if (segment instanceof URLBasedDataSourceSegment) {
+            result = ((URLBasedDataSourceSegment) segment).getUrl();
         }
-        return String.format("%s//%s:%s/%s", databaseType.getJdbcUrlPrefixes().iterator().next(), segment.getHostname(), segment.getPort(), segment.getDatabase());
+        if (segment instanceof HostnameAndPortBasedDataSourceSegment) {
+            HostnameAndPortBasedDataSourceSegment actualSegment = (HostnameAndPortBasedDataSourceSegment) segment;
+            result = String.format("%s//%s:%s/%s", databaseType.getJdbcUrlPrefixes().iterator().next(), actualSegment.getHostname(), actualSegment.getPort(), actualSegment.getDatabase());
+        }
+        return result;
     }
 }

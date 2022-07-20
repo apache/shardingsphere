@@ -45,10 +45,10 @@ public final class ScalingRegistrySubscriberTest {
     
     @Mock
     private MetaDataVersionPersistService metaDataVersionPersistService;
-
+    
     @Mock
     private EventBusContext eventBusContext;
-
+    
     private ScalingRegistrySubscriber scalingRegistrySubscriber;
     
     @Before
@@ -58,7 +58,7 @@ public final class ScalingRegistrySubscriberTest {
         persistServiceField.setAccessible(true);
         persistServiceField.set(scalingRegistrySubscriber, metaDataVersionPersistService);
     }
-
+    
     @Test
     public void assertStartScaling() {
         verify(eventBusContext).register(scalingRegistrySubscriber);
@@ -68,7 +68,7 @@ public final class ScalingRegistrySubscriberTest {
         StartScalingEvent startScalingEvent = new StartScalingEvent("ds_0", "", "", "", "", 1, 2);
         verify(eventBusContext).post(ArgumentMatchers.refEq(startScalingEvent));
     }
-
+    
     @Test
     public void assertScalingTaskFinished() {
         when(metaDataVersionPersistService.getActiveVersion("ds_0")).thenReturn(Optional.of("1"));

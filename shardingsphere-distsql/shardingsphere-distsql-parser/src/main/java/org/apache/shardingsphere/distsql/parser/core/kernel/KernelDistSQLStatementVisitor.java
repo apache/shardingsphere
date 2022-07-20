@@ -80,8 +80,10 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.parser.segment.CacheOptionSegment;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
+import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TrafficRuleSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TransactionProviderSegment;
+import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.hint.ClearHintStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
@@ -156,21 +158,17 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitDataSource(final DataSourceContext ctx) {
-        String url = null;
-        String hostname = null;
-        String port = null;
-        String dbName = null;
-        if (null != ctx.urlSource()) {
-            url = new IdentifierValue(ctx.urlSource().url().getText()).getValue();
-        }
-        if (null != ctx.simpleSource()) {
-            hostname = ctx.simpleSource().hostname().getText();
-            port = ctx.simpleSource().port().getText();
-            dbName = ctx.simpleSource().dbName().getText();
-        }
         String password = null == ctx.password() ? "" : getPassword(ctx.password());
         Properties props = getProperties(ctx.propertiesDefinition());
-        return new DataSourceSegment(getIdentifierValue(ctx.dataSourceName()), url, hostname, port, dbName, ctx.user().getText(), password, props);
+        DataSourceSegment result = null;
+        if (null != ctx.urlSource()) {
+            result = new URLBasedDataSourceSegment(getIdentifierValue(ctx.dataSourceName()), getIdentifierValue(ctx.urlSource().url()), ctx.user().getText(), password, props);
+        }
+        if (null != ctx.simpleSource()) {
+            result = new HostnameAndPortBasedDataSourceSegment(getIdentifierValue(ctx.dataSourceName()), ctx.simpleSource().hostname().getText(), ctx.simpleSource().port().getText(),
+                    ctx.simpleSource().dbName().getText(), ctx.user().getText(), password, props);
+        }
+        return result;
     }
     
     private String getPassword(final List<PasswordContext> passwordContexts) {
