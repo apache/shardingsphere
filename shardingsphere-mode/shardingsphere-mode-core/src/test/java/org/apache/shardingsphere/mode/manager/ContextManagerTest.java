@@ -161,16 +161,16 @@ public final class ContextManagerTest {
         ShardingSphereColumn toBeChangedColumn = new ShardingSphereColumn("foo_col", Types.VARCHAR, false, false, false);
         ShardingSphereTable toBeChangedTable = new ShardingSphereTable("foo_tbl", Collections.singleton(toBeChangedColumn), Collections.emptyList(), Collections.emptyList());
         contextManager.alterSchema("foo_db", "foo_schema", toBeChangedTable);
-        ShardingSphereTable table = contextManager.getMetaDataContexts().getMetaData().getDatabases().get("foo_db").getSchemas().get("foo_schema").getTables().get("foo_tbl");
+        ShardingSphereTable table = contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getSchemas().get("foo_schema").getTables().get("foo_tbl");
         assertThat(table.getColumns().size(), is(1));
         assertTrue(table.getColumns().containsKey("foo_col"));
     }
     
     @Test
     public void assertAlterSchemaForTableDropped() {
-        when(metaDataContexts.getMetaData().getDatabases().get("foo_db").getSchemas()).thenReturn(createToBeAlteredSchemas());
+        when(metaDataContexts.getMetaData().getDatabase("foo_db").getSchemas()).thenReturn(createToBeAlteredSchemas());
         contextManager.alterSchema("foo_db", "foo_schema", "foo_tbl");
-        assertFalse(contextManager.getMetaDataContexts().getMetaData().getDatabases().get("foo_db").getSchemas().get("foo_schema").getTables().containsKey("foo_tbl"));
+        assertFalse(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getSchemas().get("foo_schema").getTables().containsKey("foo_tbl"));
     }
     
     private Map<String, ShardingSphereSchema> createToBeAlteredSchemas() {
