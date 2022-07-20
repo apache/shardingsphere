@@ -15,26 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.core.advanced;
+package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
 
-import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.TokenStream;
-import org.apache.shardingsphere.distsql.parser.autogen.AdvancedDistSQLStatementParser;
-import org.apache.shardingsphere.sql.parser.api.parser.SQLParser;
-import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
-import org.apache.shardingsphere.sql.parser.core.ParseASTNode;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
- * SQL parser for advanced dist SQL.
+ * Convert yaml configuration statement.
  */
-public final class AdvancedDistSQLParser extends AdvancedDistSQLStatementParser implements SQLParser {
+@RequiredArgsConstructor
+@Getter
+public class ConvertYamlConfigurationStatement extends QueryableRALStatement {
     
-    public AdvancedDistSQLParser(final TokenStream input) {
-        super(input);
-    }
-    
-    @Override
-    public ASTNode parse() {
-        return new ParseASTNode(execute(), (CommonTokenStream) getTokenStream());
-    }
+    private final String filePath;
 }

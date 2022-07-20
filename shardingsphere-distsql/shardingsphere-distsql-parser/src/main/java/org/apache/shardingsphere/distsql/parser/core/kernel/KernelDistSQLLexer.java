@@ -15,19 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.frontend.protocol;
+package org.apache.shardingsphere.distsql.parser.core.kernel;
 
-import org.apache.shardingsphere.proxy.frontend.fixture.DatabaseProtocolFrontendEngineFixture;
-import org.apache.shardingsphere.test.fixture.database.type.MockedDatabaseType;
-import org.junit.Test;
+import org.antlr.v4.runtime.CharStream;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementLexer;
+import org.apache.shardingsphere.sql.parser.api.parser.SQLLexer;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.junit.Assert.assertThat;
-
-public final class DatabaseProtocolFrontendEngineFactoryTest {
+/**
+ * SQL lexer for kernel dist SQL.
+ */
+public final class KernelDistSQLLexer extends KernelDistSQLStatementLexer implements SQLLexer {
     
-    @Test
-    public void assertNewInstance() {
-        assertThat(DatabaseProtocolFrontendEngineFactory.newInstance(new MockedDatabaseType()), instanceOf(DatabaseProtocolFrontendEngineFixture.class));
+    public KernelDistSQLLexer(final CharStream input) {
+        super(input);
     }
 }
