@@ -98,4 +98,9 @@ public final class ShardingSphereJDBCContainer implements EmbeddedITContainer, A
         result.setOverwrite(false);
         return result;
     }
+    
+    @Override
+    public String getAbbreviation() {
+        return "jdbc";
+    }
 }

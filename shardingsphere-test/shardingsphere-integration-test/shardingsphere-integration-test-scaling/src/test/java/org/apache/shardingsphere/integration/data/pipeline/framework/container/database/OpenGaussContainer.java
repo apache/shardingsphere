@@ -74,4 +74,9 @@ public final class OpenGaussContainer extends DatabaseContainer {
     public int getPort() {
         return port;
     }
+    
+    @Override
+    public String getAbbreviation() {
+        return "openguass";
+    }
 }

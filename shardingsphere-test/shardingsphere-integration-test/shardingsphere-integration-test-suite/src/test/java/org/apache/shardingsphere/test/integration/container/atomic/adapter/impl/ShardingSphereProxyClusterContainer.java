@@ -94,4 +94,9 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
     }
+    
+    @Override
+    public String getAbbreviation() {
+        return "proxy";
+    }
 }

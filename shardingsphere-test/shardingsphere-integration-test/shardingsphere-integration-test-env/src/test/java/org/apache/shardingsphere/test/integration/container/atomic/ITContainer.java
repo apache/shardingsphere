@@ -27,4 +27,11 @@ public interface ITContainer extends Startable {
     @Override
     default void stop() {
     }
+    
+    /**
+     * Get abbreviation.
+     * 
+     * @return abbreviation
+     */
+    String getAbbreviation();
 }
