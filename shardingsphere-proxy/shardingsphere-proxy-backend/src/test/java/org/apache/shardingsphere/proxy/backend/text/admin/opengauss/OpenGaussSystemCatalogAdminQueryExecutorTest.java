@@ -76,4 +76,38 @@ public final class OpenGaussSystemCatalogAdminQueryExecutorTest {
             assertThat((String) actualResult.getValue(1, String.class), containsString("ShardingSphere-Proxy"));
         }
     }
+    
+    @Test
+    public void assertExecuteSelectGsPasswordDeadlineAndIntervalToNum() throws SQLException {
+        try (MockedStatic<ProxyContext> mockedStatic = mockStatic(ProxyContext.class)) {
+            mockedStatic.when(ProxyContext::getInstance).thenReturn(mock(ProxyContext.class, RETURNS_DEEP_STUBS));
+            OpenGaussSystemCatalogAdminQueryExecutor executor = new OpenGaussSystemCatalogAdminQueryExecutor("select intervaltonum(gs_password_deadline())");
+            ConnectionSession connectionSession = mock(ConnectionSession.class);
+            when(connectionSession.getDatabaseType()).thenReturn(new OpenGaussDatabaseType());
+            executor.execute(connectionSession);
+            QueryResultMetaData actualMetaData = executor.getQueryResultMetaData();
+            assertThat(actualMetaData.getColumnCount(), is(1));
+            assertThat(actualMetaData.getColumnType(1), is(Types.INTEGER));
+            MergedResult actualResult = executor.getMergedResult();
+            assertTrue(actualResult.next());
+            assertThat(actualResult.getValue(1, Integer.class), is(90));
+        }
+    }
+    
+    @Test
+    public void assertExecuteSelectGsPasswordNotifyTime() throws SQLException {
+        try (MockedStatic<ProxyContext> mockedStatic = mockStatic(ProxyContext.class)) {
+            mockedStatic.when(ProxyContext::getInstance).thenReturn(mock(ProxyContext.class, RETURNS_DEEP_STUBS));
+            OpenGaussSystemCatalogAdminQueryExecutor executor = new OpenGaussSystemCatalogAdminQueryExecutor("select gs_password_notifytime()");
+            ConnectionSession connectionSession = mock(ConnectionSession.class);
+            when(connectionSession.getDatabaseType()).thenReturn(new OpenGaussDatabaseType());
+            executor.execute(connectionSession);
+            QueryResultMetaData actualMetaData = executor.getQueryResultMetaData();
+            assertThat(actualMetaData.getColumnCount(), is(1));
+            assertThat(actualMetaData.getColumnType(1), is(Types.INTEGER));
+            MergedResult actualResult = executor.getMergedResult();
+            assertTrue(actualResult.next());
+            assertThat(actualResult.getValue(1, Integer.class), is(7));
+        }
+    }
 }
