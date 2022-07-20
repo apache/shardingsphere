@@ -20,9 +20,12 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.container.
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.util.DatabaseTypeUtil;
-import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
+import org.apache.shardingsphere.test.integration.env.container.wait.JDBCConnectionWaitStrategy;
+import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.testcontainers.containers.BindMode;
+
+import java.sql.DriverManager;
 
 /**
  * ShardingSphere proxy container.
@@ -41,6 +44,12 @@ public final class ShardingSphereProxyDockerContainer extends DockerITContainer 
     protected void configure() {
         withExposedPorts(3307);
         mapConfigurationFiles();
+        // TODO openGauss can't use this wait strategy now.
+        if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
+            setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), "postgres"), "root", "root")));
+        } else {
+            setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), ""), "root", "root")));
+        }
     }
     
     private void mapConfigurationFiles() {
