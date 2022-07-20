@@ -38,10 +38,6 @@ public class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker {
     
     private static final String SHOW_GRANTS_SQL = "SELECT * FROM pg_roles WHERE rolname = ?";
     
-    private static final String SUPER_ROLE_NAME = "rolsuper";
-    
-    private static final String REPLICATION_ROLE_NAME = "rolreplication";
-    
     @Override
     public void checkPrivilege(final Collection<? extends DataSource> dataSources) {
         for (DataSource each : dataSources) {
@@ -57,11 +53,11 @@ public class PostgreSQLDataSourceChecker extends AbstractDataSourceChecker {
                 if (!resultSet.next()) {
                     throw new PipelineJobPrepareFailedException(String.format("No role exists, rolname: %s.", metaData.getUserName()));
                 }
-                String isSuperRole = resultSet.getString(SUPER_ROLE_NAME);
-                String isReplicationRole = resultSet.getString(REPLICATION_ROLE_NAME);
+                String isSuperRole = resultSet.getString("rolsuper");
+                String isReplicationRole = resultSet.getString("rolreplication");
                 log.info("checkPrivilege: isSuperRole: {}, isReplicationRole: {}", isSuperRole, isReplicationRole);
                 if (StringUtils.equalsIgnoreCase(isSuperRole, "f") && StringUtils.equalsIgnoreCase(isReplicationRole, "f")) {
-                    throw new PipelineJobPrepareFailedException(String.format("Source data source is lack of REPLICATION privileges, sql example is `ALTER ROLE \"%s\" REPLICATION;`.",
+                    throw new PipelineJobPrepareFailedException(String.format("Source data source is lack of REPLICATION privileges, you could try `ALTER ROLE \"%s\" REPLICATION;`.",
                             metaData.getUserName()));
                 }
             }
