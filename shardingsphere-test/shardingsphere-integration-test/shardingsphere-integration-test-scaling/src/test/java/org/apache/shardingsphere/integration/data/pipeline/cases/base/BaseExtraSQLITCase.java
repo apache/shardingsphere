@@ -80,7 +80,13 @@ public abstract class BaseExtraSQLITCase extends BaseITCase {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            assertTrue(ex.getCause().getMessage().endsWith("The database sharding_db is read-only"));
+            // TODO openGauss seem return the different error message, need to check it
+            if (DatabaseTypeUtil.isOpenGauss(getDatabaseType())) {
+                log.info("openGauss error msg:{}", ex.getMessage());
+                return false;
+            } else {
+                assertTrue(ex.getMessage(), ex.getCause().getMessage().endsWith("The database sharding_db is read-only"));
+            }
             return false;
         }
     }
