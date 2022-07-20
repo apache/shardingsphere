@@ -31,6 +31,7 @@ import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedExcep
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Proxy context.
@@ -92,7 +93,7 @@ public final class ProxyContext {
      * @return all database names
      */
     public Collection<String> getAllDatabaseNames() {
-        return contextManager.getMetaDataContexts().getMetaData().getDatabases().keySet();
+        return contextManager.getMetaDataContexts().getMetaData().getDatabases().values().stream().map(ShardingSphereDatabase::getName).collect(Collectors.toList());
     }
     
     /**

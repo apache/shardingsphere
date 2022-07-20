@@ -61,7 +61,7 @@ public final class YamlProxyConfigurationSwapper {
             Map<String, DataSourceConfiguration> databaseDataSourceConfigs =
                     swapDataSourceConfigurations(entry.getValue().getDataSources(), entry.getValue().getDatabaseName());
             Collection<RuleConfiguration> databaseRuleConfigs = ruleConfigSwapperEngine.swapToRuleConfigurations(entry.getValue().getRules());
-            result.put(entry.getKey().toLowerCase(), new DataSourceGeneratedDatabaseConfiguration(databaseDataSourceConfigs, databaseRuleConfigs));
+            result.put(entry.getKey(), new DataSourceGeneratedDatabaseConfiguration(databaseDataSourceConfigs, databaseRuleConfigs));
         }
         return result;
     }

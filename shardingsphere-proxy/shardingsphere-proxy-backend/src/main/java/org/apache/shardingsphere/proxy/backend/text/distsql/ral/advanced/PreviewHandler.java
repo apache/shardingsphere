@@ -172,7 +172,7 @@ public final class PreviewHandler extends QueryableRALBackendHandler<PreviewStat
         if (Strings.isNullOrEmpty(result)) {
             throw new NoDatabaseSelectedException();
         }
-        if (!ProxyContext.getInstance().getAllDatabaseNames().contains(result)) {
+        if (!ProxyContext.getInstance().databaseExists(result)) {
             throw new DatabaseNotExistedException(result);
         }
         return result;
