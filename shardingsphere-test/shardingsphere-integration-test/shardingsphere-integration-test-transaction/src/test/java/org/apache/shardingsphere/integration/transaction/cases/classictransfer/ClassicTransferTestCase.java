@@ -44,7 +44,7 @@ public final class ClassicTransferTestCase extends BaseTransactionTestCase {
     
     @Override
     @SneakyThrows
-    public void assertTest() {
+    public void executeTest() {
         Connection connection = getDataSource().getConnection();
         executeUpdateWithLog(connection, "insert into account(transaction_id, balance) values (1,0), (2,100);");
         innerRun();

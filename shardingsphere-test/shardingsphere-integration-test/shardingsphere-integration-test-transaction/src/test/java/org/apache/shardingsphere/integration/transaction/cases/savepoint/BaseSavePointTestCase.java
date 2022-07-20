@@ -27,7 +27,7 @@ import java.sql.SQLException;
 import java.sql.Savepoint;
 
 /**
- * Auto commit transaction integration test.
+ * Base savepoint transaction integration test.
  */
 @Slf4j
 public abstract class BaseSavePointTestCase extends BaseTransactionTestCase {

@@ -27,18 +27,18 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- * Commit and rollback transaction integration test.
+ * Single table transaction commit and rollback integration test.
  */
 @TransactionTestCase
-public final class CommitAndRollbackTestCase extends BaseTransactionTestCase {
+public final class SingleTableCommitAndRollbackTestCase extends BaseTransactionTestCase {
     
-    public CommitAndRollbackTestCase(final DataSource dataSource) {
+    public SingleTableCommitAndRollbackTestCase(final DataSource dataSource) {
         super(dataSource);
     }
     
     @Override
     @SneakyThrows
-    public void assertTest() {
+    public void executeTest() {
         assertRollback();
         assertCommit();
     }

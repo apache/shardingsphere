@@ -29,11 +29,11 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * OpenGauss auto commit transaction integration test.
+ * OpenGauss savepoint transaction integration test.
  */
 @Slf4j
 @TransactionTestCase(dbTypes = {TransactionTestConstants.OPENGAUSS})
-public class OpenGaussSavePointTestCase extends BaseSavePointTestCase {
+public final class OpenGaussSavePointTestCase extends BaseSavePointTestCase {
     
     public OpenGaussSavePointTestCase(final DataSource dataSource) {
         super(dataSource);
@@ -41,7 +41,7 @@ public class OpenGaussSavePointTestCase extends BaseSavePointTestCase {
     
     @Override
     @SneakyThrows
-    public void assertTest() {
+    public void executeTest() {
         assertRollback2Savepoint();
         assertReleaseSavepoint();
         assertErrors();

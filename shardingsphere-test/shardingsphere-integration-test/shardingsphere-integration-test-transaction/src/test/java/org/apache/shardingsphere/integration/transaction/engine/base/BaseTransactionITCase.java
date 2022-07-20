@@ -49,10 +49,10 @@ public abstract class BaseTransactionITCase extends BaseITCase {
         initShardingAlgorithm();
         assertTrue(waitShardingAlgorithmEffect(15));
         initTableRules();
-        createTable();
+        createTables();
     }
     
-    private void createTable() throws SQLException {
+    private void createTables() throws SQLException {
         Connection conn = getProxyConnection();
         createOrderTable(conn);
         createOrderItemTable(conn);
@@ -84,7 +84,7 @@ public abstract class BaseTransactionITCase extends BaseITCase {
     }
     
     protected void createAccountTable(final Connection connection) throws SQLException {
-        executeWithLog(connection, "CREATE TABLE ACCOUNT(ID BIGINT, BALANCE FLOAT, TRANSACTION_ID INT);");
+        executeWithLog(connection, getCommonSQLCommand().getCreateAccountTable());
     }
     
     protected void dropAccountTable(final Connection connection) throws SQLException {
@@ -92,7 +92,7 @@ public abstract class BaseTransactionITCase extends BaseITCase {
     }
     
     protected void createOrderItemTable(final Connection connection) throws SQLException {
-        executeWithLog(connection, "CREATE TABLE t_order_item (item_id bigint NOT NULL, order_id int NOT NULL, user_id int NOT NULL, status varchar(50) DEFAULT NULL, PRIMARY KEY (item_id));");
+        executeWithLog(connection, getCommonSQLCommand().getCreateOrderItemTable());
     }
     
     protected void dropOrderItemTable(final Connection connection) throws SQLException {
@@ -100,7 +100,7 @@ public abstract class BaseTransactionITCase extends BaseITCase {
     }
     
     protected void createOrderTable(final Connection connection) throws SQLException {
-        executeWithLog(connection, "CREATE TABLE t_order (order_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (order_id));");
+        executeWithLog(connection, getCommonSQLCommand().getCreateOrderTable());
     }
     
     protected void dropOrderTable(final Connection connection) throws SQLException {
@@ -176,4 +176,5 @@ public abstract class BaseTransactionITCase extends BaseITCase {
         statement.close();
         return result;
     }
+    
 }

@@ -47,7 +47,7 @@ public final class OpenGaussContainer extends DatabaseContainer {
     
     @Override
     protected void configure() {
-        withCommand("--max_connections=600");
+        withCommand("--max_connections=600", "--max_prepared_transactions=600");
         addEnv("GS_PASSWORD", password);
         withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/usr/local/opengauss/share/postgresql/postgresql.conf.sample", BindMode.READ_ONLY);
         withPrivilegedMode(true);

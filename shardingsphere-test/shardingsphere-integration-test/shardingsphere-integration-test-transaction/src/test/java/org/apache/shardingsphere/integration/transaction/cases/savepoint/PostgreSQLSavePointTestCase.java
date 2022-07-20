@@ -22,18 +22,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
 import org.junit.Assert;
-import org.opengauss.jdbc.PSQLSavepoint;
+import org.postgresql.jdbc.PSQLSavepoint;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * PostgreSQL auto commit transaction integration test.
+ * PostgreSQL savepoint transaction integration test.
  */
 @Slf4j
 @TransactionTestCase(dbTypes = {TransactionTestConstants.POSTGRESQL})
-public class PostgreSQLSavePointTestCase extends BaseSavePointTestCase {
+public final class PostgreSQLSavePointTestCase extends BaseSavePointTestCase {
     
     public PostgreSQLSavePointTestCase(final DataSource dataSource) {
         super(dataSource);
@@ -41,7 +41,7 @@ public class PostgreSQLSavePointTestCase extends BaseSavePointTestCase {
     
     @Override
     @SneakyThrows
-    public void assertTest() {
+    public void executeTest() {
         assertRollback2Savepoint();
         assertReleaseSavepoint();
         assertErrors();
@@ -54,7 +54,7 @@ public class PostgreSQLSavePointTestCase extends BaseSavePointTestCase {
             conn.setSavepoint("point");
             Assert.fail("Expect exception, but no exception report.");
         } catch (SQLException ex) {
-            Assert.assertEquals("Cannot establish a savepoint in auto-commit mode.", ex.getMessage());
+            Assert.assertEquals("25P01", ex.getSQLState());
         }
         try {
             conn.rollback(new PSQLSavepoint("point1"));

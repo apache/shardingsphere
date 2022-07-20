@@ -46,8 +46,7 @@ public final class PostgreSQLContainer extends DatabaseContainer {
     
     @Override
     protected void configure() {
-        withCommand("--max_connections=600");
-        withCommand("--wal_level=logical");
+        withCommand("--max_connections=600 --max_prepared_transactions=600 --wal_level=logical");
         addEnv("POSTGRES_USER", username);
         addEnv("POSTGRES_PASSWORD", password);
         withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/etc/postgresql/postgresql.conf", BindMode.READ_ONLY);

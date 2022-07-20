@@ -41,9 +41,9 @@ public abstract class AutoDataSource implements DataSource {
      * @throws SQLException SQL exception
      */
     public synchronized void close() throws SQLException {
-        for (Connection connection : connectionCache) {
-            if (!connection.isClosed()) {
-                connection.close();
+        for (Connection each : connectionCache) {
+            if (!each.isClosed()) {
+                each.close();
             }
         }
         connectionCache.clear();

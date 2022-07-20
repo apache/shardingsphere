@@ -25,9 +25,6 @@
     <logger name="org.apache.shardingsphere.mode" level="INFO" additivity="false">
         <appender-ref ref="console" />
     </logger>
-    <logger name="org.apache.shardingsphere.data.pipeline" level="INFO" additivity="false">
-        <appender-ref ref="console" />
-    </logger>
     <logger name="org.apache.shardingsphere.driver" level="INFO" additivity="false">
         <appender-ref ref="console" />
     </logger>

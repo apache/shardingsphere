@@ -130,8 +130,8 @@ public abstract class BaseITCase {
     }
     
     private static void addParametersByVersions(final List<String> databaseVersion, final Collection<TransactionParameterized> result, final TransactionTestCaseRegistry currentTestCaseInfo) {
-        for (String version : databaseVersion) {
-            addParametersByTestCaseClasses(result, version, currentTestCaseInfo);
+        for (String each : databaseVersion) {
+            addParametersByTestCaseClasses(result, each, currentTestCaseInfo);
         }
     }
     
@@ -373,13 +373,6 @@ public abstract class BaseITCase {
             retryNumber++;
         }
         throw new RuntimeException("Can't get result from proxy.");
-    }
-    
-    protected void executeSqlListWithLog(final Connection conn, final String... sqlList) throws SQLException {
-        for (String sql : sqlList) {
-            conn.createStatement().execute(sql);
-            ThreadUtil.sleep(1, TimeUnit.SECONDS);
-        }
     }
     
     protected void executeWithLog(final Connection connection, final String sql) throws SQLException {

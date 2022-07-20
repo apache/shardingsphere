@@ -17,7 +17,10 @@
 
 package org.apache.shardingsphere.integration.transaction.engine.constants;
 
-public class TransactionTestConstants {
+/**
+ * Constants for transaction test.
+ */
+public final class TransactionTestConstants {
     
     public static final String MYSQL = "mysql";
     

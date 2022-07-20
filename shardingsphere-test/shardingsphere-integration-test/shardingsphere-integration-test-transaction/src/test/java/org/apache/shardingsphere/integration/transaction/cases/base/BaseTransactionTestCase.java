@@ -46,7 +46,7 @@ public abstract class BaseTransactionTestCase {
     /**
      * Integration testing method with assertions.
      */
-    public abstract void assertTest();
+    public abstract void executeTest();
     
     @SneakyThrows(SQLException.class)
     protected static void executeWithLog(final Connection connection, final String sql) {

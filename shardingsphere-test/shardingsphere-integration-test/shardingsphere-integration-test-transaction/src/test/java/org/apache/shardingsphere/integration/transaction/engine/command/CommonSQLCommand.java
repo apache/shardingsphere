@@ -53,27 +53,22 @@ public final class CommonSQLCommand {
     @XmlElement(name = "create-account-table-rule")
     private String createAccountTableRule;
     
-    @XmlElement(name = "alter-sharding-algorithm")
-    private String alterShardingAlgorithm;
-    
-    @XmlElement(name = "alter-sharding-table-rule")
-    private String alterShardingTableRule;
-    
     @XmlElement(name = "alter-local-transaction-rule")
     private String alterLocalTransactionRule;
     
     @XmlElement(name = "alter-xa-atomikos-transaction-rule")
     private String alterXaAtomikosTransactionRule;
     
-    @XmlElement(name = "auto-alter-order-with-item-sharding-table-rule")
-    private String autoAlterOrderWithItemShardingTableRule;
-    
-    @XmlElement(name = "auto-alter-order-sharding-table-rule")
-    private String autoAlterOrderShardingTableRule;
-    
     @XmlElement(name = "source-add-resource-template")
     private String sourceAddResourceTemplate;
     
-    @XmlElement(name = "target-add-resource-template")
-    private String targetAddResourceTemplate;
+    @XmlElement(name = "create-account-table")
+    private String createAccountTable;
+    
+    @XmlElement(name = "create-order-table")
+    private String createOrderTable;
+    
+    @XmlElement(name = "create-order-item-table")
+    private String createOrderItemTable;
+    
 }

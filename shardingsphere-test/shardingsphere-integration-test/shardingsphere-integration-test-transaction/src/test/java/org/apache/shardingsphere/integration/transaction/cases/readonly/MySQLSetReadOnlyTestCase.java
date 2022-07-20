@@ -15,30 +15,52 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.transaction.cases.savepoint;
+package org.apache.shardingsphere.integration.transaction.cases.readonly;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
+import org.junit.Assert;
 
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
- * MySQL savepoint transaction integration test.
+ * MySQL set read only transaction integration test.
  */
 @Slf4j
 @TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL})
-public final class MySQLSavePointTestCase extends BaseSavePointTestCase {
+public final class MySQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
     
-    public MySQLSavePointTestCase(final DataSource dataSource) {
+    public MySQLSetReadOnlyTestCase(final DataSource dataSource) {
         super(dataSource);
     }
     
     @Override
     @SneakyThrows
     public void executeTest() {
-        assertRollback2Savepoint();
-        assertReleaseSavepoint();
+        assertSetReadOnly();
+        assertNotSetReadOnly();
     }
+    
+    private void assertSetReadOnly() throws SQLException {
+        Connection connection = getDataSource().getConnection();
+        executeUpdateWithLog(connection, "insert into account(id,balance) values (1,0),(2,100);");
+        Connection conn = getDataSource().getConnection();
+        conn.setReadOnly(true);
+        assertQueryBalance(conn);
+        Statement updateStatement = conn.createStatement();
+        try {
+            String updateSql = "update account set balance=100 where id=2;";
+            log.info("Connection execute update: {}.", updateSql);
+            updateStatement.execute(updateSql);
+            Assert.fail("Update ran successfully, should failed.");
+        } catch (SQLException e) {
+            log.info("Update failed for expect.");
+        }
+    }
+    
 }

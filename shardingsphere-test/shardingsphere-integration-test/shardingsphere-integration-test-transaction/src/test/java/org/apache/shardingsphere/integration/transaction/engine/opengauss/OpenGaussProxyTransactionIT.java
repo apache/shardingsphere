@@ -22,14 +22,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Collection;
 
@@ -51,14 +49,6 @@ public final class OpenGaussProxyTransactionIT extends BaseTransactionITCase {
     @Parameters(name = "{0}")
     public static Collection<TransactionParameterized> getParameters() {
         return getTransactionParameterizedList(OpenGaussProxyTransactionIT.class);
-    }
-    
-    @Before
-    @SneakyThrows
-    public void before() {
-        Connection conn = getProxyConnection();
-        dropAccountTable(conn);
-        createAccountTable(conn);
     }
     
     @After
@@ -84,6 +74,6 @@ public final class OpenGaussProxyTransactionIT extends BaseTransactionITCase {
     
     @SneakyThrows
     private void callTestCases() {
-        parameterized.getTransactionTestCaseClass().getConstructor(DataSource.class).newInstance(getDataSource()).assertTest();
+        parameterized.getTransactionTestCaseClass().getConstructor(DataSource.class).newInstance(getDataSource()).executeTest();
     }
 }

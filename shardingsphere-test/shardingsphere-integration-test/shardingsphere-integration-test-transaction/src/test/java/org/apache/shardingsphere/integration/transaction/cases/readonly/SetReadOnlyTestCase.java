@@ -20,7 +20,6 @@ package org.apache.shardingsphere.integration.transaction.cases.readonly;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
-import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
 import org.junit.Assert;
 
 import javax.sql.DataSource;
@@ -33,39 +32,14 @@ import java.sql.Statement;
  * Set read only transaction integration test.
  */
 @Slf4j
-@TransactionTestCase
-public final class SetReadOnlyTestCase extends BaseTransactionTestCase {
+public abstract class SetReadOnlyTestCase extends BaseTransactionTestCase {
     
     public SetReadOnlyTestCase(final DataSource dataSource) {
         super(dataSource);
     }
     
-    @Override
     @SneakyThrows
-    public void assertTest() {
-        assertSetReadOnly();
-        assertNotSetReadOnly();
-    }
-    
-    private void assertSetReadOnly() throws SQLException {
-        Connection connection = getDataSource().getConnection();
-        executeUpdateWithLog(connection, "insert into account(id,balance) values (1,0),(2,100);");
-        Connection conn = getDataSource().getConnection();
-        conn.setReadOnly(true);
-        assertQueryBalance(conn);
-        Statement updateStatement = conn.createStatement();
-        try {
-            String updateSql = "update account set balance=100 where id=2;";
-            log.info("Connection execute update: {}.", updateSql);
-            updateStatement.execute(updateSql);
-            Assert.fail("Update ran successfully, should failed.");
-        } catch (SQLException e) {
-            log.info("Update failed for expect.");
-        }
-    }
-    
-    @SneakyThrows
-    private void assertNotSetReadOnly() {
+    protected void assertNotSetReadOnly() {
         Connection conn = getDataSource().getConnection();
         assertQueryBalance(conn);
         Statement queryStatement = conn.createStatement();
@@ -80,7 +54,7 @@ public final class SetReadOnlyTestCase extends BaseTransactionTestCase {
         Assert.assertEquals(String.format("Balance is %s, should be 101.", balanceEnd), 101, balanceEnd);
     }
     
-    private void assertQueryBalance(final Connection conn) throws SQLException {
+    protected void assertQueryBalance(final Connection conn) throws SQLException {
         Statement queryStatement = conn.createStatement();
         ResultSet rs = queryStatement.executeQuery("select * from account;");
         while (rs.next()) {

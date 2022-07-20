@@ -22,6 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
+import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
 import org.junit.Assert;
 
 import javax.sql.DataSource;
@@ -31,19 +32,19 @@ import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Auto commit transaction integration test.
+ * MySQL auto commit transaction integration test.
  */
 @Slf4j
-@TransactionTestCase
-public final class AutoCommitTestCase extends BaseTransactionTestCase {
+@TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL})
+public final class MySQLAutoCommitTestCase extends BaseTransactionTestCase {
     
-    public AutoCommitTestCase(final DataSource dataSource) {
+    public MySQLAutoCommitTestCase(final DataSource dataSource) {
         super(dataSource);
     }
     
     @Override
     @SneakyThrows(SQLException.class)
-    public void assertTest() {
+    public void executeTest() {
         assertAutoCommit();
     }
     

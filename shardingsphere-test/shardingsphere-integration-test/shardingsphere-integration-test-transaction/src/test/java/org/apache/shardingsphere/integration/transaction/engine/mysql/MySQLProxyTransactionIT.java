@@ -74,7 +74,7 @@ public final class MySQLProxyTransactionIT extends BaseTransactionITCase {
     
     @SneakyThrows
     private void callTestCases() {
-        parameterized.getTransactionTestCaseClass().getConstructor(DataSource.class).newInstance(getDataSource()).assertTest();
+        parameterized.getTransactionTestCaseClass().getConstructor(DataSource.class).newInstance(getDataSource()).executeTest();
     }
     
 }

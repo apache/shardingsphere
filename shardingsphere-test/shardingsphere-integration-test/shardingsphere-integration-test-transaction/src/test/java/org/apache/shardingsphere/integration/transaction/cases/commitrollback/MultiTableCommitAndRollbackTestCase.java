@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.transaction.cases.binding;
+package org.apache.shardingsphere.integration.transaction.cases.commitrollback;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -27,23 +27,23 @@ import java.sql.Connection;
 import java.sql.SQLException;
 
 /**
- * Binding tables transaction integration test.
+ * Multi-table transaction commit and rollback integration test.
  */
 @Slf4j
 @TransactionTestCase
-public final class BindingTestCase extends BaseTransactionTestCase {
+public final class MultiTableCommitAndRollbackTestCase extends BaseTransactionTestCase {
     
     private static final String T_ORDER = "t_order";
     
     private static final String T_ORDER_ITEM = "t_order_item";
     
-    public BindingTestCase(final DataSource dataSource) {
+    public MultiTableCommitAndRollbackTestCase(final DataSource dataSource) {
         super(dataSource);
     }
     
     @Override
     @SneakyThrows
-    public void assertTest() {
+    public void executeTest() {
         assertRollback();
         assertCommit();
     }
@@ -54,10 +54,10 @@ public final class BindingTestCase extends BaseTransactionTestCase {
         assertTableRowCount(conn, T_ORDER, 0);
         assertTableRowCount(conn, T_ORDER_ITEM, 0);
         executeSqlListWithLog(conn,
-                "INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (1, 1, '1');",
-                "INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (2, 2, '2');",
-                "INSERT INTO `t_order_item` (`item_id`, `order_id`, `user_id`, `status`) VALUES (1, 1, 1, '1');",
-                "INSERT INTO `t_order_item` (`item_id`, `order_id`, `user_id`, `status`) VALUES (2, 2, 2, '2');");
+                "INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, '1');",
+                "INSERT INTO t_order (order_id, user_id, status) VALUES (2, 2, '2');",
+                "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (1, 1, 1, '1');",
+                "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (2, 2, 2, '2');");
         assertTableRowCount(conn, T_ORDER, 2);
         assertTableRowCount(conn, T_ORDER_ITEM, 2);
         conn.rollback();
@@ -71,10 +71,10 @@ public final class BindingTestCase extends BaseTransactionTestCase {
         assertTableRowCount(conn, T_ORDER, 0);
         assertTableRowCount(conn, T_ORDER_ITEM, 0);
         executeSqlListWithLog(conn,
-                "INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (1, 1, '1');",
-                "INSERT INTO `t_order` (`order_id`, `user_id`, `status`) VALUES (2, 2, '2');",
-                "INSERT INTO `t_order_item` (`item_id`, `order_id`, `user_id`, `status`) VALUES (1, 1, 1, '1');",
-                "INSERT INTO `t_order_item` (`item_id`, `order_id`, `user_id`, `status`) VALUES (2, 2, 2, '2');");
+                "INSERT INTO t_order (order_id, user_id, status) VALUES (1, 1, '1');",
+                "INSERT INTO t_order (order_id, user_id, status) VALUES (2, 2, '2');",
+                "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (1, 1, 1, '1');",
+                "INSERT INTO t_order_item (item_id, order_id, user_id, status) VALUES (2, 2, 2, '2');");
         assertTableRowCount(conn, T_ORDER, 2);
         assertTableRowCount(conn, T_ORDER_ITEM, 2);
         conn.commit();

@@ -19,13 +19,11 @@ package org.apache.shardingsphere.integration.transaction.framework.param;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.ToString;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
 
 @Getter
 @RequiredArgsConstructor
-@ToString
 public final class TransactionParameterized {
     
     private final DatabaseType databaseType;
@@ -34,4 +32,8 @@ public final class TransactionParameterized {
     
     private final Class<? extends BaseTransactionTestCase> transactionTestCaseClass;
     
+    @Override
+    public String toString() {
+        return String.format("%s -> %s -> %s", databaseType.getType(), dockerImageName, transactionTestCaseClass.getSimpleName());
+    }
 }

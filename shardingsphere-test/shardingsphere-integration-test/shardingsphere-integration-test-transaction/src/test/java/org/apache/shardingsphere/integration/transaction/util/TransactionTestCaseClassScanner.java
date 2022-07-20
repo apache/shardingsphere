@@ -63,7 +63,7 @@ public class TransactionTestCaseClassScanner {
             String protocol = url.getProtocol();
             switch (protocol) {
                 case "file":
-                    addTestCaseClassesInClassPath(url, caseClasses);
+                    addTestCaseClassesFromClassFiles(url, caseClasses);
                     break;
                 case "jar":
                     addTestCaseClassesInJars(url, caseClasses);
@@ -75,7 +75,7 @@ public class TransactionTestCaseClassScanner {
         return caseClasses;
     }
     
-    private static void addTestCaseClassesInClassPath(final URL url, final List<Class<? extends BaseTransactionTestCase>> caseClasses) throws UnsupportedEncodingException, ClassNotFoundException {
+    private static void addTestCaseClassesFromClassFiles(final URL url, final List<Class<? extends BaseTransactionTestCase>> caseClasses) throws UnsupportedEncodingException, ClassNotFoundException {
         String filepath = URLDecoder.decode(url.getFile(), "UTF-8");
         File file = new File(filepath);
         scanClassFiles(file);

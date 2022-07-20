@@ -45,21 +45,25 @@ public final class ProxyDataSource extends AutoDataSource {
     
     @Override
     public Connection getConnection() throws SQLException {
-        Connection connection = createConnection();
-        getConnectionCache().add(connection);
-        return connection;
+        Connection result = createConnection();
+        synchronized (this) {
+            getConnectionCache().add(result);
+        }
+        return result;
     }
     
     @Override
     public Connection getConnection(final String username, final String password) throws SQLException {
         String jdbcUrl = composedContainer.getProxyJdbcUrl(databaseName);
-        return DriverManager.getConnection(jdbcUrl, username, password);
+        Connection result = DriverManager.getConnection(jdbcUrl, username, password);
+        synchronized (this) {
+            getConnectionCache().add(result);
+        }
+        return result;
     }
     
     private Connection createConnection() throws SQLException {
         String jdbcUrl = composedContainer.getProxyJdbcUrl(databaseName);
-        Connection connection = DriverManager.getConnection(jdbcUrl, userName, password);
-        getConnectionCache().add(connection);
-        return connection;
+        return DriverManager.getConnection(jdbcUrl, userName, password);
     }
 }
