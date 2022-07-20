@@ -18,6 +18,7 @@
 grammar DDLStatement;
 
 import BaseRule;
+import StoreProcedure;
 
 createTable
     : CREATE createTableSpecification TABLE tableName createSharingClause createDefinitionClause createMemOptimizeClause createParentClause
@@ -34,7 +35,52 @@ createIndex
 createProcedure
     : CREATE (OR REPLACE)? PROCEDURE procedureName ('(' parameterName (',' parameterName)* ')')?
             invokerRightsClause? (IS | AS)
-            (DECLARE? seq_of_declare_specs? body | call_spec | EXTERNAL) ';'
+            (DECLARE? seqOfDeclareSpecs? body | callSpec | EXTERNAL) ';'
+    ;
+
+body
+    : BEGIN seqOfStatements (EXCEPTION exceptionHandler+)? END labelName?
+    ;
+
+seqOfStatements
+    : (statement (';' | EOF) | labelDeclaration)+
+    ;
+
+statement
+    : body
+    | block
+    | assignment_statement
+    | continue_statement
+    | exit_statement
+    | goto_statement
+    | if_statement
+    | loop_statement
+    | forall_statement
+    | null_statement
+    | raise_statement
+    | return_statement
+    | case_statement
+    | sql_statement
+    | function_call
+    | pipe_row_statement
+    | procedure_call
+    ;
+
+seqOfDeclareSpecs
+    : declareSpec+
+    ;
+
+declareSpec
+    : pragmaDeclaration
+    | exceptionDeclaration
+    | variableDeclaration
+    | subtypeDeclaration
+    | cursorDeclaration
+    | typeDeclaration
+    | procedureSpec
+    | functionSpec
+    | procedureBody
+    | functionBody
     ;
 
 alterTable
@@ -413,6 +459,9 @@ dropColumnSpecification
 
 columnOrColumnList
     : (COLUMN columnName) | columnNames
+    ;
+parenColumnList
+    : LP_ columnOrColumnList RP_
     ;
 
 cascadeOrInvalidate
@@ -2240,15 +2289,34 @@ subqueryFactoringClause
     : WITH factoringElement (',' factoringElement)*
     ;
 
+forUpdateClause
+    : FOR UPDATE forUpdateOfPart? forUpdateOptions?
+    ;
+
+forUpdateOptions
+    : SKIP_ LOCKED
+    | NOWAIT
+    | WAIT expr
+    ;
+
+forUpdateOfPart
+    : OF columnOrColumnList
+    ;
+
 factoringElement
     : queryName parenColumnList? AS '(' subquery orderByClause? ')'
       searchClause? cycleClause?
     ;
 
+
 searchClause
     : SEARCH (DEPTH | BREADTH) FIRST BY columnName ASC? DESC? (NULLS FIRST)? (NULLS LAST)?
             (',' columnName ASC? DESC? (NULLS FIRST)? (NULLS LAST)?)* SET columnName
-          ;
+    ;
+
+offsetClause
+    : OFFSET expr (ROW | ROWS)
+    ;
 
 parameterSpec
     : parameterName (IN? typeSpec)? defaultValuePart?

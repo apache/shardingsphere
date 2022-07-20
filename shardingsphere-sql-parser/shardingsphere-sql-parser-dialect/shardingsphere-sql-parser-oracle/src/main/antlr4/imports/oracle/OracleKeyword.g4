@@ -1979,6 +1979,10 @@ MINUS
     : M I N U S
     ;
 
+SKIP_
+    : S K I P
+    ;
+
 LOCKED
     : L O C K E D
     ;
