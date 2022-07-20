@@ -40,6 +40,9 @@ public final class DatabasePermittedPrivileges implements ShardingSpherePrivileg
     
     @Override
     public boolean hasPrivileges(final String database) {
+        if ("*".equalsIgnoreCase(database)) {
+            return true;
+        }
         return databases.contains(database);
     }
     
