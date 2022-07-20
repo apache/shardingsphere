@@ -1,15 +1,13 @@
 +++
-title = "SysBench ShardingSphere Proxy Null Rule Performance Test"
+title = "SysBench ShardingSphere-Proxy Empty Rule Performance Test"
 weight = 1
 +++
-
-# SysBench ShardingSphere Proxy Null Rule Performance Test
 
 ## Objectives
 
 Compare the performance of ShardingSphere-Proxy and MySQL
 1. Sysbench directly carries out stress testing on the performance of MySQL.
-2. Sysbench directly carries out stress testing on ShardingSphere-Proxy (directly connect MySQL). 
+1. Sysbench directly carries out stress testing on ShardingSphere-Proxy (directly connect MySQL). 
 
 Based on the above two groups of experiments, we can figure out the loss of MySQL when using ShardingSphere-Proxy.
 
@@ -18,8 +16,8 @@ Based on the above two groups of experiments, we can figure out the loss of MySQ
 ### Server information
 
 1. Db-related configuration: it is recommended that the memory is larger than the amount of data to be tested, so that the data is stored in the memory hot block, and the rest can be adjusted.
-2. ShardingSphere-Proxy-related configuration: it is recommended to use a high-performance, multi-core CPU, and other configurations can be customized.
-3. Disable swap partitions on all servers involved in the stress testing.
+1. ShardingSphere-Proxy-related configuration: it is recommended to use a high-performance, multi-core CPU, and other configurations can be customized.
+1. Disable swap partitions on all servers involved in the stress testing.
 
 ### Database
 
@@ -76,7 +74,6 @@ dataSources:
     minPoolSize: 200 # The minimum ConnPool is set to ${the number of concurrencies in stress testing}, which is consistent with the number of concurrencies in stress testing to shield the impact of connections initialization in the process of stress testing.
 
 rules: []
-
 ```
 
 ## Test phase
@@ -133,11 +130,10 @@ Latency (ms):
 Threads fairness:
     events (avg/stddev):           6985.9250/34.74                      # On average, 6985.9250 events were completed per thread, and the standard deviation is 34.74
     execution time (avg/stddev):   119.9977/0.01                        # The average time of each thread is 119.9977 seconds, and the standard deviation is 0.01
-
 ```
 
 ### Noticeable features
 
 1. CPU utilization ratio of the server where ShardingSphere-Proxy resides. It is better to make full use of CPU.
-2. I/O of the server disk where the DB resides. The lower the physical read value is, the better.
-3. Network IO of the server involved in the stress testing. 
+1. I/O of the server disk where the DB resides. The lower the physical read value is, the better.
+1. Network IO of the server involved in the stress testing. 
