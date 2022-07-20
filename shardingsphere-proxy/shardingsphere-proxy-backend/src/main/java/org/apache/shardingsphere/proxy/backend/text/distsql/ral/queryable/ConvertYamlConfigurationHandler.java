@@ -41,18 +41,18 @@ import java.util.Map;
  * Convert database configuration handler.
  */
 public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<ConvertYamlConfigurationStatement> {
-
+    
     private static final String CREATE_DATABASE = "CREATE DATABASE %s;";
     
     private static final String ADD_RESOURCE = "ADD RESOURCE";
     
     private static final String RESOURCES = " %s (" + System.lineSeparator()
-                                            + "%s"
-                                            + "    PROPERTIES(%s)" + System.lineSeparator()
-                                            + "),";
-
+            + "%s"
+            + "    PROPERTIES(%s)" + System.lineSeparator()
+            + "),";
+    
     private final YamlProxyDataSourceConfigurationSwapper dataSourceConfigSwapper = new YamlProxyDataSourceConfigurationSwapper();
-
+    
     @Override
     protected Collection<String> getColumnNames() {
         return Collections.singleton("converted_distsql");
@@ -102,7 +102,7 @@ public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<
         dataSourcePropsMap.forEach((key, value) -> addResources(key, value, stringBuilder));
         stringBuilder.deleteCharAt(stringBuilder.length() - 1).append(";");
     }
-
+    
     private void addResources(final String resourceName, final DataSourceProperties properties, final StringBuilder stringBuilder) {
         String connectProperties = new String();
         String poolProperties = new String();
