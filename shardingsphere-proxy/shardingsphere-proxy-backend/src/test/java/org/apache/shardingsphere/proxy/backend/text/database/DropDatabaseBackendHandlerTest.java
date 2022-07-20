@@ -77,6 +77,8 @@ public final class DropDatabaseBackendHandlerTest extends ProxyContextRestorer {
         when(metaDataContexts.getMetaData().getDatabase("test_not_exist_db")).thenReturn(database);
         when(metaDataContexts.getMetaData().getDatabase("test_not_exist_db")).thenReturn(database);
         when(metaDataContexts.getMetaData().getGlobalRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        when(ProxyContext.getInstance().databaseExists("test_db")).thenReturn(true);
+        when(ProxyContext.getInstance().databaseExists("other_db")).thenReturn(true);
     }
     
     @Test(expected = DBDropNotExistsException.class)
