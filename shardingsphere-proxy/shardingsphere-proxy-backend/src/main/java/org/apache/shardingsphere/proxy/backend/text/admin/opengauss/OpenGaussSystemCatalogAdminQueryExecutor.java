@@ -115,7 +115,7 @@ public final class OpenGaussSystemCatalogAdminQueryExecutor implements DatabaseA
      * @param result result
      * @return result
      */
-    public static int intervalToNum(int result) {
+    public static int intervalToNum(final int result) {
         return result;
     }
     
