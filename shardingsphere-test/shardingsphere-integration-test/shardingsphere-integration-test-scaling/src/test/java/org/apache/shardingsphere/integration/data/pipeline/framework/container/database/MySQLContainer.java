@@ -19,8 +19,8 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.container.
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
-import org.apache.shardingsphere.test.integration.framework.container.wait.JDBCConnectionWaitStrategy;
+import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
+import org.apache.shardingsphere.test.integration.env.container.wait.JDBCConnectionWaitStrategy;
 import org.testcontainers.containers.BindMode;
 
 import java.sql.DriverManager;
@@ -69,5 +69,10 @@ public final class MySQLContainer extends DatabaseContainer {
     @Override
     public int getPort() {
         return port;
+    }
+    
+    @Override
+    public String getAbbreviation() {
+        return "mysql";
     }
 }

@@ -59,7 +59,7 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     private static final long TIMESTAMP_LEFT_SHIFT_BITS = WORKER_ID_LEFT_SHIFT_BITS + WORKER_ID_BITS;
     
-    private static final long WORKER_ID_MAX_VALUE = 1L << WORKER_ID_BITS;
+    private static final long WORKER_ID_MAX_VALUE = (1L << WORKER_ID_BITS) - 1;
     
     private static final int DEFAULT_VIBRATION_VALUE = 1;
     
@@ -118,7 +118,7 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     }
     
     private void rangeValidate(final long workerId) {
-        Preconditions.checkArgument(workerId >= 0L && workerId < WORKER_ID_MAX_VALUE, "Illegal worker id.");
+        Preconditions.checkArgument(workerId >= 0L && workerId <= WORKER_ID_MAX_VALUE, "Illegal worker id.");
     }
     
     private int getMaxVibrationOffset(final Properties props) {

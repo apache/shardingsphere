@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.framework.container.cluster;
 
-import org.apache.shardingsphere.test.integration.framework.container.atomic.governance.GovernanceContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.governance.GovernanceContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 
 /**
@@ -34,5 +34,10 @@ public final class ZookeeperContainer extends GovernanceContainer {
     @Override
     public String getServerLists() {
         return getHost() + ":" + getMappedPort(2181);
+    }
+    
+    @Override
+    public String getAbbreviation() {
+        return "zk";
     }
 }

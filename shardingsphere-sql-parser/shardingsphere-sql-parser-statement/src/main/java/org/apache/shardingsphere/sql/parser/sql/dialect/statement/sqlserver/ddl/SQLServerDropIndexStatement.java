@@ -33,7 +33,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class SQLServerDropIndexStatement extends DropIndexStatement implements SQLServerStatement {
     
     private final boolean ifExists;

@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
 /**
  * SQLServer drop user statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class SQLServerDropUserStatement extends DropUserStatement implements SQLServerStatement {
 }

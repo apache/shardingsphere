@@ -31,7 +31,7 @@ import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEn
 import org.apache.shardingsphere.integration.data.pipeline.factory.DatabaseContainerFactory;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.DatabaseContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
-import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
+import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;

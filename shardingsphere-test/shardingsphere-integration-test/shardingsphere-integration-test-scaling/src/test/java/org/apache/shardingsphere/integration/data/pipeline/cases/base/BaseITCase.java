@@ -40,7 +40,7 @@ import org.apache.shardingsphere.integration.data.pipeline.framework.helper.Scal
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.integration.data.pipeline.framework.watcher.ScalingWatcher;
 import org.apache.shardingsphere.integration.data.pipeline.util.DatabaseTypeUtil;
-import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
+import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.junit.Rule;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -229,7 +229,7 @@ public abstract class BaseITCase {
     private String getActualJdbcUrlTemplate(final String databaseName) {
         if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
             final DatabaseContainer databaseContainer = ((DockerComposedContainer) composedContainer).getDatabaseContainer();
-            return DataSourceEnvironment.getURL(getDatabaseType(), "db.host", databaseContainer.getPort(), databaseName);
+            return DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", databaseContainer.getPort(), databaseName);
         } else {
             return DataSourceEnvironment.getURL(getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), databaseName);
         }

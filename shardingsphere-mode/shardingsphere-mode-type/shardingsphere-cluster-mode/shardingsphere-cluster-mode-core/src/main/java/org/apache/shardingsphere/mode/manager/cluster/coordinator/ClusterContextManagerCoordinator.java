@@ -132,7 +132,8 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final SchemaChangedEvent event) {
-        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getChangedTableMetaData(), event.getDeletedTable());
+        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getChangedTableMetaData());
+        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getDeletedTable());
     }
     
     /**
@@ -142,7 +143,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final RuleConfigurationsChangedEvent event) {
-        if (persistService.getDatabaseVersionPersistService().isActiveVersion(event.getDatabaseName(), event.getDatabaseVersion())) {
+        if (persistService.getMetaDataVersionPersistService().isActiveVersion(event.getDatabaseName(), event.getDatabaseVersion())) {
             contextManager.alterRuleConfiguration(event.getDatabaseName(), event.getRuleConfigurations());
             disableDataSources();
         }
@@ -155,7 +156,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final DataSourceChangedEvent event) {
-        if (persistService.getDatabaseVersionPersistService().isActiveVersion(event.getDatabaseName(), event.getDatabaseVersion())) {
+        if (persistService.getMetaDataVersionPersistService().isActiveVersion(event.getDatabaseName(), event.getDatabaseVersion())) {
             contextManager.alterDataSourceConfiguration(event.getDatabaseName(), event.getDataSourcePropertiesMap());
             disableDataSources();
         }

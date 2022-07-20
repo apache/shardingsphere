@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.junit.Test;
@@ -83,5 +84,11 @@ public final class ShardingSphereSchemaTest {
         ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singletonList(
                 new ShardingSphereColumn("col", 0, false, false, false)), Collections.emptyList(), Collections.emptyList());
         assertThat(new ShardingSphereSchema(Collections.singletonMap("tbl1", table)).getAllColumnNames("tbl2"), is(Collections.<String>emptyList()));
+    }
+    
+    @Test
+    public void assertContainsIndex() {
+        ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.emptyList(), Collections.singletonList(new ShardingSphereIndex("col_idx")), Collections.emptyList());
+        assertTrue(new ShardingSphereSchema(Collections.singletonMap("tbl", table)).containsIndex("tbl", "col_idx"));
     }
 }

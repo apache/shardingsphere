@@ -616,7 +616,7 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
-        PostgreSQLCreateIndexStatement result = new PostgreSQLCreateIndexStatement();
+        PostgreSQLCreateIndexStatement result = new PostgreSQLCreateIndexStatement(null != ctx.ifNotExists());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.indexParams())).getValue());
         if (null != ctx.indexName()) {

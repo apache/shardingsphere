@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle rename statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OracleRenameStatement extends RenameStatement implements OracleStatement {
 }

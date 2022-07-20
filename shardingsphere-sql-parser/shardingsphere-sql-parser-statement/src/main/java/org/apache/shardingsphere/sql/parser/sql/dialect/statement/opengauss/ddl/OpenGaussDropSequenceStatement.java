@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 /**
  * OpenGauss drop sequence statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OpenGaussDropSequenceStatement extends DropSequenceStatement implements OpenGaussStatement {
 }

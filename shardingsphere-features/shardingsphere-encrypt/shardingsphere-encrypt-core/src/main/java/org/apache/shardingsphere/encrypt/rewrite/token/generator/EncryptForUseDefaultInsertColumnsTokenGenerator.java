@@ -62,6 +62,9 @@ public final class EncryptForUseDefaultInsertColumnsTokenGenerator implements Op
     }
     
     private Optional<UseDefaultInsertColumnsToken> findInsertColumnsToken() {
+        if (null == previousSQLTokens) {
+            return Optional.empty();
+        }
         for (SQLToken each : previousSQLTokens) {
             if (each instanceof UseDefaultInsertColumnsToken) {
                 return Optional.of((UseDefaultInsertColumnsToken) each);

@@ -51,6 +51,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
@@ -153,7 +154,7 @@ public final class CommandExecutorTaskTest extends ProxyContextRestorer {
     
     @SuppressWarnings("unchecked")
     @Test
-    public void assertRunWithError() throws BackendConnectionException, SQLException {
+    public void assertRunWithException() throws BackendConnectionException, SQLException {
         RuntimeException mockException = new RuntimeException("mock");
         doThrow(mockException).when(commandExecutor).execute();
         when(engine.getCodecEngine().createPacketPayload(message, StandardCharsets.UTF_8)).thenReturn(payload);
@@ -161,6 +162,22 @@ public final class CommandExecutorTaskTest extends ProxyContextRestorer {
         when(engine.getCommandExecuteEngine().getCommandPacketType(payload)).thenReturn(commandPacketType);
         when(engine.getCommandExecuteEngine().getCommandExecutor(commandPacketType, commandPacket, connectionSession)).thenReturn(commandExecutor);
         when(engine.getCommandExecuteEngine().getErrorPacket(mockException)).thenReturn(databasePacket);
+        when(engine.getCommandExecuteEngine().getOtherPacket(connectionSession)).thenReturn(Optional.of(databasePacket));
+        CommandExecutorTask actual = new CommandExecutorTask(engine, connectionSession, handlerContext, message);
+        actual.run();
+        verify(handlerContext, times(2)).write(databasePacket);
+        verify(handlerContext).flush();
+        verify(backendConnection).closeExecutionResources();
+    }
+    
+    @Test
+    public void assertRunWithOOMError() throws BackendConnectionException, SQLException {
+        doThrow(OutOfMemoryError.class).when(commandExecutor).execute();
+        when(engine.getCodecEngine().createPacketPayload(message, StandardCharsets.UTF_8)).thenReturn(payload);
+        when(engine.getCommandExecuteEngine().getCommandPacket(payload, commandPacketType, connectionSession)).thenReturn(commandPacket);
+        when(engine.getCommandExecuteEngine().getCommandPacketType(payload)).thenReturn(commandPacketType);
+        when(engine.getCommandExecuteEngine().getCommandExecutor(commandPacketType, commandPacket, connectionSession)).thenReturn(commandExecutor);
+        when(engine.getCommandExecuteEngine().getErrorPacket(any(RuntimeException.class))).thenReturn(databasePacket);
         when(engine.getCommandExecuteEngine().getOtherPacket(connectionSession)).thenReturn(Optional.of(databasePacket));
         CommandExecutorTask actual = new CommandExecutorTask(engine, connectionSession, handlerContext, message);
         actual.run();

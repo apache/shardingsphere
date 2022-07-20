@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
+import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
+import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesValidator;
@@ -107,13 +109,13 @@ public final class AddResourceBackendHandlerTest extends ProxyContextRestorer {
     }
     
     private AddResourceStatement createAddResourceStatement() {
-        return new AddResourceStatement(Collections.singleton(new DataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/test0", null, null, null, "root", "", new Properties())));
+        return new AddResourceStatement(Collections.singleton(new URLBasedDataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/test0", "root", "", new Properties())));
     }
     
     private AddResourceStatement createAlterResourceStatementWithDuplicateResourceNames() {
         Collection<DataSourceSegment> result = new LinkedList<>();
-        result.add(new DataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/ds_0", null, null, null, "root", "", new Properties()));
-        result.add(new DataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/ds_1", null, null, null, "root", "", new Properties()));
+        result.add(new HostnameAndPortBasedDataSourceSegment("ds_0", "127.0.0.1", "3306", "ds_0", "root", "", new Properties()));
+        result.add(new URLBasedDataSourceSegment("ds_0", "jdbc:mysql://127.0.0.1:3306/ds_1", "root", "", new Properties()));
         return new AddResourceStatement(result);
     }
 }

@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
 /**
  * SQLServer drop role statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class SQLServerDropRoleStatement extends DropRoleStatement implements SQLServerStatement {
 }

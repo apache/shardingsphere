@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
 /**
  * SQLServer create role statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class SQLServerCreateRoleStatement extends CreateRoleStatement implements SQLServerStatement {
 }
