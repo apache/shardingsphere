@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.generator;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGeneratorFactory;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
@@ -226,8 +227,8 @@ public final class PipelineDDLGenerator {
             return Optional.empty();
         }
         String result = replaceTableNameWithPrefix(logicSQL, schemaName + ".", databaseType, databaseName);
-        if (result.toUpperCase().startsWith("CREATE TABLE")) {
-            result = result.replaceFirst("CREATE TABLE", "CREATE TABLE IF NOT EXISTS");
+        if (StringUtils.startsWithIgnoreCase(result, "CREATE TABLE")) {
+            result = StringUtils.replaceIgnoreCase(result, "CREATE TABLE", "CREATE TABLE IF NOT EXISTS");
         }
         return Optional.of(result);
     }
