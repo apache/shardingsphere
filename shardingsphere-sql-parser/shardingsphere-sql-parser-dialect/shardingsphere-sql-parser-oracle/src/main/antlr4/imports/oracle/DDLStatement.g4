@@ -3158,3 +3158,59 @@ unusableBeginning
     : UNUSABLE BEGINNING WITH (CURRENT EDITION | EDITION editionName | NULL EDITION)
     ;
 
+alterMaterializedViewLog
+    : ALTER MATERIALIZED VIEW LOG FORCE? ON tableName
+    ( physicalAttributesClause
+    | addMvLogColumnClause
+    | alterTablePartitioning
+    | parallelClause
+    | loggingClause
+    | allocateExtentClause
+    | shrinkClause
+    | moveMvLogClause
+    | CACHE
+    | NOCACHE)? mvLogAugmentation? mvLogPurgeClause? forRefreshClause?
+    ;
+
+addMvLogColumnClause
+    : ADD LP_ columnName RP_
+    ;
+
+moveMvLogClause
+    : MOVE segmentAttributesClause parallelClause?
+    ;
+
+mvLogAugmentation
+    : ADD addClause (COMMA_ addClause)* newValuesClause?
+    ;
+
+addClause
+    : OBJECT ID columns?
+    | PRIMARY KEY columns?
+    | ROWID columns?
+    | SEQUENCE columns?
+    | columns
+    ;
+
+columns
+    : LP_ columnName (COMMA_ columnName)* RP_
+    ;
+
+newValuesClause
+    : (INCLUDING | EXCLUDING) NEW VALUES
+    ;
+
+mvLogPurgeClause
+    : PURGE IMMEDIATE (SYNCHRONOUS | ASYNCHRONOUS)?
+    | START WITH dateValue nextOrRepeatClause?
+    | (START WITH dateValue)? nextOrRepeatClause
+    ;
+
+nextOrRepeatClause
+    : NEXT dateValue | REPEAT INTERVAL intervalExpression
+    ;
+
+forRefreshClause
+    : FOR ((SYNCHRONOUS REFRESH USING stagingLogName) | (FAST REFRESH))
+    ;
+
