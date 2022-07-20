@@ -78,11 +78,6 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     SHOW_PROCESS_LIST_ENABLED("show-process-list-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**
-     * The length of time in milliseconds an SQL waits for a global lock before giving up.
-     */
-    LOCK_WAIT_TIMEOUT_MILLISECONDS("lock-wait-timeout-milliseconds", String.valueOf(50000L), long.class, false),
-    
-    /**
      * Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
      * The default value is -1, which means set the minimum value for different JDBC drivers.
      */
