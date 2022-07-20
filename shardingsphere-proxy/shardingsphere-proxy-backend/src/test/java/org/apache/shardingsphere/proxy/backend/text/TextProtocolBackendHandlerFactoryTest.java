@@ -86,7 +86,6 @@ public final class TextProtocolBackendHandlerFactoryTest extends ProxyContextRes
         MetaDataContexts metaDataContexts = mock(MetaDataContexts.class, RETURNS_DEEP_STUBS);
         mockGlobalRuleMetaData(metaDataContexts);
         ShardingSphereDatabase database = mockDatabase();
-        when(metaDataContexts.getMetaData().containsDatabase("db")).thenReturn(true);
         when(metaDataContexts.getMetaData().getDatabase("db")).thenReturn(database);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
@@ -206,7 +205,7 @@ public final class TextProtocolBackendHandlerFactoryTest extends ProxyContextRes
         assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
     }
     
-    //TODO Fix me
+    // TODO Fix me
     @Ignore
     @Test
     public void assertNewInstanceWithQuery() throws SQLException {
