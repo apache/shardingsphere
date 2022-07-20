@@ -132,7 +132,8 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final SchemaChangedEvent event) {
-        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getChangedTableMetaData(), event.getDeletedTable());
+        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getChangedTableMetaData());
+        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getDeletedTable());
     }
     
     /**

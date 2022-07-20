@@ -111,5 +111,6 @@ public abstract class AbstractBaseExecutorTest {
     @After
     public void tearDown() {
         executorEngine.close();
+        TransactionTypeHolder.clear();
     }
 }

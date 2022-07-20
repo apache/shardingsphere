@@ -42,7 +42,7 @@ public final class PropertiesChangedWatcher implements GovernanceWatcher<Propert
     
     @Override
     public Collection<Type> getWatchingTypes() {
-        return Arrays.asList(Type.UPDATED, Type.ADDED);
+        return Arrays.asList(Type.ADDED, Type.UPDATED);
     }
     
     @Override

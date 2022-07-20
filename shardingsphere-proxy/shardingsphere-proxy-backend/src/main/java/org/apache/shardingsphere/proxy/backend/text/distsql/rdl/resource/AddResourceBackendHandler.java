@@ -26,12 +26,14 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesVali
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.DatabaseRequiredBackendHandler;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -61,9 +63,7 @@ public final class AddResourceBackendHandler extends DatabaseRequiredBackendHand
         validator.validate(dataSourcePropsMap);
         try {
             ProxyContext.getInstance().getContextManager().updateResources(databaseName, dataSourcePropsMap);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final SQLException | ShardingSphereException ex) {
             log.error("Add resource failed", ex);
             throw new InvalidResourcesException(Collections.singleton(ex.getMessage()));
         }

@@ -32,6 +32,6 @@ public final class CreateTableSQLGeneratorFixture implements CreateTableSQLGener
     
     @Override
     public String getType() {
-        return "DDL.GENERATOR.FIXTURE";
+        return "FIXTURE";
     }
 }
