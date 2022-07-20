@@ -22,8 +22,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 
-@Getter
+/**
+ * Scaling parameterized.
+ */
 @RequiredArgsConstructor
+@Getter
 @ToString
 public final class ScalingParameterized {
     

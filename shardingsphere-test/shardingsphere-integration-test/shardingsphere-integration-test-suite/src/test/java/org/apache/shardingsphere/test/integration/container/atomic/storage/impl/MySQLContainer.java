@@ -19,13 +19,21 @@ package org.apache.shardingsphere.test.integration.container.atomic.storage.impl
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.test.integration.container.atomic.storage.DockerStorageContainer;
+import org.apache.shardingsphere.test.integration.env.container.wait.JDBCConnectionWaitStrategy;
+import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 
-import java.util.Collections;
+import java.sql.DriverManager;
 
 /**
  * MySQL container.
  */
 public final class MySQLContainer extends DockerStorageContainer {
+    
+    private final String username = "root";
+    
+    private final String password = "root";
+    
+    private final int port = 3306;
     
     public MySQLContainer(final String scenario) {
         super(DatabaseTypeFactory.getInstance("MySQL"), "mysql/mysql-server:5.7", scenario);
@@ -33,14 +41,19 @@ public final class MySQLContainer extends DockerStorageContainer {
     
     @Override
     protected void configure() {
-        withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password");
-        setEnv(Collections.singletonList("LANG=C.UTF-8"));
+        withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password", "--lower_case_table_names=1");
+        addEnv("LANG", "C.UTF-8");
+        addEnv("MYSQL_ROOT_PASSWORD", "root");
+        addEnv("MYSQL_ROOT_HOST", "%");
+        withExposedPorts(port);
+        setWaitStrategy(new JDBCConnectionWaitStrategy(
+                () -> DriverManager.getConnection(DataSourceEnvironment.getURL(DatabaseTypeFactory.getInstance("MySQL"), "localhost", getFirstMappedPort()), username, password)));
         super.configure();
     }
     
     @Override
     protected int getPort() {
-        return 3306;
+        return port;
     }
     
     @Override

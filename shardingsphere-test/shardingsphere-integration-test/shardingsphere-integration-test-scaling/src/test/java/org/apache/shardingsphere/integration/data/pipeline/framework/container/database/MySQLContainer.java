@@ -29,7 +29,7 @@ public final class MySQLContainer extends DatabaseContainer {
     
     private static final DatabaseType DATABASE_TYPE = new MySQLDatabaseType();
     
-    private final String username = "scaling";
+    private final String username = "root";
     
     private final String password = "root";
     
