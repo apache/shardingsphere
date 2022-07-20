@@ -24,9 +24,9 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.test.integration.container.atomic.EmbeddedITContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.EmbeddedITContainer;
 import org.apache.shardingsphere.test.integration.container.atomic.adapter.AdapterContainer;
-import org.apache.shardingsphere.test.integration.container.atomic.storage.StorageContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioCommonPath;
 
 import javax.sql.DataSource;

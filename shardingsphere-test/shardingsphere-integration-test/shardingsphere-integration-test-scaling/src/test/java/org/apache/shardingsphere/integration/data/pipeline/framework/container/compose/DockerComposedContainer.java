@@ -23,8 +23,8 @@ import org.apache.shardingsphere.integration.data.pipeline.factory.DatabaseConta
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.cluster.ZookeeperContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.DatabaseContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.proxy.ShardingSphereProxyDockerContainer;
-import org.apache.shardingsphere.test.integration.container.atomic.governance.GovernanceContainer;
-import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
+import org.apache.shardingsphere.test.integration.env.container.atomic.governance.GovernanceContainer;
+import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 
 /**
  * Composed container, include governance container and database container.

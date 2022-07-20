@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.cluster;
+package org.apache.shardingsphere.test.integration.env.runtime.cluster;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;

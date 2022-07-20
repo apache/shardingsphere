@@ -15,23 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.container.atomic;
+package org.apache.shardingsphere.test.integration.env.container.atomic.governance;
 
-import org.testcontainers.lifecycle.Startable;
+import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
 
 /**
- * IT container.
+ * Governance container.
  */
-public interface ITContainer extends Startable {
+public abstract class GovernanceContainer extends DockerITContainer {
     
-    @Override
-    default void stop() {
+    public GovernanceContainer(final String name, final String dockerImageName) {
+        super(name, dockerImageName);
     }
     
     /**
-     * Get abbreviation.
-     * 
-     * @return abbreviation
+     * Get server list.
+     *
+     * @return server list
      */
-    String getAbbreviation();
+    public abstract String getServerLists();
 }
