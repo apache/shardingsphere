@@ -29,7 +29,11 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.AggregationType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.complex.CommonExpressionSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationDistinctProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.AggregationProjectionSegment;
@@ -48,9 +52,11 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -114,11 +120,33 @@ public final class ProjectionEngineTest {
     
     @Test
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfExpressionProjectionSegment() {
-        ExpressionProjectionSegment expressionProjectionSegment = new ExpressionProjectionSegment(0, 10, "text");
-        Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME,
-                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(mock(TableSegment.class), expressionProjectionSegment);
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(ExpressionProjection.class));
+        List<ExpressionSegment> list = getExpressionSegments();
+        list.forEach(expressionSegment -> {
+            ExpressionProjectionSegment expressionProjectionSegment = new ExpressionProjectionSegment(0, 10, "text", expressionSegment);
+            Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME,
+                    Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(mock(TableSegment.class), expressionProjectionSegment);
+            assertTrue(actual.isPresent());
+            assertThat(actual.get(), instanceOf(ExpressionProjection.class));
+            if (null != expressionSegment) {
+                ExpressionProjection actualExpressionProjection = (ExpressionProjection) actual.get();
+                assertTrue(actualExpressionProjection.getParameters().size() > 0);
+            }
+        });
+    }
+    
+    private List<ExpressionSegment> getExpressionSegments() {
+        List<ExpressionSegment> list = new ArrayList<>();
+        FunctionSegment functionSegment = new FunctionSegment(7, 28, "IFNULL", "IFNULL(MAX(status), 0)");
+        AggregationProjectionSegment parameter = new AggregationProjectionSegment(14, 24, AggregationType.MAX, "(status)");
+        functionSegment.getParameters().add(parameter);
+        list.add(functionSegment);
+        
+        ExpressionSegment right = new LiteralExpressionSegment(25, 25, 1);
+        ExpressionSegment binaryOperationExpression = new BinaryOperationExpression(7, 25, parameter, right, "+", "IFNULL(status, 0)+1");
+        list.add(binaryOperationExpression);
+        
+        list.add(null);
+        return list;
     }
     
     @Test
