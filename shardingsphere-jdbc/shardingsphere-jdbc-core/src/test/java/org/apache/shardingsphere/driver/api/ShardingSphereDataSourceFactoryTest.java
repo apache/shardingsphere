@@ -35,81 +35,61 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class ShardingSphereDataSourceFactoryTest {
-
+    
     @Test
     public void assertCreateDataSourceWithModeConfiguration() throws SQLException {
-        DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(new ModeConfiguration("Standalone", null, false));
-        assertDataSource(dataSource, DefaultDatabase.LOGIC_NAME);
+        assertDataSource(ShardingSphereDataSourceFactory.createDataSource(new ModeConfiguration("Standalone", null, false)), DefaultDatabase.LOGIC_NAME);
     }
-
+    
     @Test
     public void assertCreateDataSourceWithDatabaseNameAndModeConfiguration() throws SQLException {
-        DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource("test_db", new ModeConfiguration("Standalone", null, false), new HashMap<>(), null, null);
-        assertDataSource(dataSource, "test_db");
+        assertDataSource(ShardingSphereDataSourceFactory.createDataSource("test_db", new ModeConfiguration("Standalone", null, false), new HashMap<>(), null, null), "test_db");
     }
-
+    
     @Test
-    public void assertCreateDataSourceWithAllParametersForMultipleDataSourcesWithDefaultDatabaseName()
-            throws SQLException {
-        DataSource dataSource =
-                ShardingSphereDataSourceFactory.createDataSource(new ModeConfiguration("Standalone", null, false),
-                        new HashMap<>(), new LinkedList<>(), new Properties());
-        assertDataSource(dataSource, DefaultDatabase.LOGIC_NAME);
+    public void assertCreateDataSourceWithAllParametersForMultipleDataSourcesWithDefaultDatabaseName() throws SQLException {
+        assertDataSource(ShardingSphereDataSourceFactory.createDataSource(
+                new ModeConfiguration("Standalone", null, false), new HashMap<>(), new LinkedList<>(), new Properties()), DefaultDatabase.LOGIC_NAME);
     }
-
+    
     @Test
     public void assertCreateDataSourceWithAllParametersForMultipleDataSources() throws SQLException {
-        DataSource dataSource =
-                ShardingSphereDataSourceFactory.createDataSource("test_db", new ModeConfiguration("Standalone", null, false),
-                        new HashMap<>(), new LinkedList<>(), new Properties());
-        assertDataSource(dataSource, "test_db");
+        assertDataSource(ShardingSphereDataSourceFactory.createDataSource(
+                "test_db", new ModeConfiguration("Standalone", null, false), new HashMap<>(), new LinkedList<>(), new Properties()), "test_db");
     }
-
+    
     @Test
-    public void assertCreateDataSourceWithAllParametersForSingleDataSourceWithDefaultDatabaseName()
-            throws SQLException {
-        DataSource dataSource =
-                ShardingSphereDataSourceFactory.createDataSource(new ModeConfiguration("Standalone", null, false),
-                        new MockedDataSource(), new LinkedList<>(), new Properties());
-        assertDataSource(dataSource, DefaultDatabase.LOGIC_NAME);
+    public void assertCreateDataSourceWithAllParametersForSingleDataSourceWithDefaultDatabaseName() throws SQLException {
+        assertDataSource(ShardingSphereDataSourceFactory.createDataSource(
+                new ModeConfiguration("Standalone", null, false), new MockedDataSource(), new LinkedList<>(), new Properties()), DefaultDatabase.LOGIC_NAME);
     }
-
+    
     @Test
     public void assertCreateDataSourceWithAllParametersForSingleDataSource() throws SQLException {
-        DataSource dataSource =
-                ShardingSphereDataSourceFactory.createDataSource("test_db", new ModeConfiguration("Standalone", null, false),
-                        new MockedDataSource(), new LinkedList<>(), new Properties());
-        assertDataSource(dataSource, "test_db");
+        assertDataSource(ShardingSphereDataSourceFactory.createDataSource("test_db",
+                new ModeConfiguration("Standalone", null, false), new MockedDataSource(), new LinkedList<>(), new Properties()), "test_db");
     }
-
+    
     @Test
     public void assertCreateDataSourceWithDefaultModeConfigurationForMultipleDataSources() throws SQLException {
-        DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource(null);
-        assertDataSource(dataSource, DefaultDatabase.LOGIC_NAME);
+        assertDataSource(ShardingSphereDataSourceFactory.createDataSource(null), DefaultDatabase.LOGIC_NAME);
     }
-
+    
     @Test
-    public void assertCreateDataSourceWithDatabaseNameAndDefaultModeConfigurationForMultipleDataSources()
-            throws SQLException {
-        DataSource dataSource = ShardingSphereDataSourceFactory.createDataSource("test_db", null);
-        assertDataSource(dataSource, "test_db");
+    public void assertCreateDataSourceWithDatabaseNameAndDefaultModeConfigurationForMultipleDataSources() throws SQLException {
+        assertDataSource(ShardingSphereDataSourceFactory.createDataSource("test_db", null), "test_db");
     }
-
+    
     @Test
     public void assertCreateDataSourceWithDefaultModeConfigurationForSingleDataSource() throws SQLException {
-        DataSource dataSource =
-                ShardingSphereDataSourceFactory.createDataSource((ModeConfiguration) null, new MockedDataSource(), new LinkedList<>(), new Properties());
-        assertDataSource(dataSource, DefaultDatabase.LOGIC_NAME);
+        assertDataSource(ShardingSphereDataSourceFactory.createDataSource((ModeConfiguration) null, new MockedDataSource(), new LinkedList<>(), new Properties()), DefaultDatabase.LOGIC_NAME);
     }
-
+    
     @Test
-    public void assertCreateDataSourceWithDatabaseNameAndDefaultModeConfigurationForSingleDataSource()
-            throws SQLException {
-        DataSource dataSource =
-                ShardingSphereDataSourceFactory.createDataSource("test_db", null, new MockedDataSource(), new LinkedList<>(), new Properties());
-        assertDataSource(dataSource, "test_db");
+    public void assertCreateDataSourceWithDatabaseNameAndDefaultModeConfigurationForSingleDataSource() throws SQLException {
+        assertDataSource(ShardingSphereDataSourceFactory.createDataSource("test_db", null, new MockedDataSource(), new LinkedList<>(), new Properties()), "test_db");
     }
-
+    
     @SneakyThrows(ReflectiveOperationException.class)
     private void assertDataSource(final DataSource actualDataSource, final String expectedDataSourceName) {
         Field field = ShardingSphereDataSource.class.getDeclaredField("databaseName");
