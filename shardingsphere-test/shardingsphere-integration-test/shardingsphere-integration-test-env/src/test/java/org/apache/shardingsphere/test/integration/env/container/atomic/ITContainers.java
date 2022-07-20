@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.container.atomic;
+package org.apache.shardingsphere.test.integration.env.container.atomic;
 
 import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.test.integration.container.atomic.governance.GovernanceContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.governance.GovernanceContainer;
 import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
@@ -50,17 +50,16 @@ public final class ITContainers implements Startable {
      * Register container.
      *
      * @param container container to be registered
-     * @param type container type
      * @param <T> type of container
      * @return registered container
      */
-    public <T extends ITContainer> T registerContainer(final T container, final String type) {
+    public <T extends ITContainer> T registerContainer(final T container) {
         if (container instanceof EmbeddedITContainer) {
             embeddedContainers.add((EmbeddedITContainer) container);
         } else {
             DockerITContainer dockerContainer = (DockerITContainer) container;
             dockerContainer.setNetwork(network);
-            dockerContainer.setNetworkAliases(Collections.singletonList(getNetworkAlias(container, type)));
+            dockerContainer.setNetworkAliases(Collections.singletonList(getNetworkAlias(container)));
             String loggerName = String.join(":", scenario, dockerContainer.getName());
             dockerContainer.withLogConsumer(new Slf4jLogConsumer(LoggerFactory.getLogger(loggerName), false));
             dockerContainers.add(dockerContainer);
@@ -68,8 +67,10 @@ public final class ITContainers implements Startable {
         return container;
     }
     
-    private <T extends ITContainer> String getNetworkAlias(final T container, final String type) {
-        return container instanceof GovernanceContainer || Strings.isNullOrEmpty(scenario) ? String.join(".", type.toLowerCase(), "host") : String.join(".", type.toLowerCase(), scenario, "host");
+    private <T extends ITContainer> String getNetworkAlias(final T container) {
+        return container instanceof GovernanceContainer || Strings.isNullOrEmpty(scenario)
+                ? String.join(".", container.getAbbreviation(), "host")
+                : String.join(".", container.getAbbreviation(), scenario, "host");
     }
     
     @Override

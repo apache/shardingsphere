@@ -15,10 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.container.atomic;
+package org.apache.shardingsphere.test.integration.env.container.atomic.storage;
+
+import org.apache.shardingsphere.test.integration.env.container.atomic.ITContainer;
+
+import javax.sql.DataSource;
+import java.util.Map;
 
 /**
- * Embedded IT container.
+ * Storage container.
  */
-public interface EmbeddedITContainer extends ITContainer {
+public interface StorageContainer extends ITContainer {
+    
+    /**
+     * Get actual data source map.
+     *
+     * @return actual data source map
+     */
+    Map<String, DataSource> getActualDataSourceMap();
+    
+    /**
+     * Get expected data source map.
+     * 
+     * @return expected data source map
+     */
+    Map<String, DataSource> getExpectedDataSourceMap();
 }

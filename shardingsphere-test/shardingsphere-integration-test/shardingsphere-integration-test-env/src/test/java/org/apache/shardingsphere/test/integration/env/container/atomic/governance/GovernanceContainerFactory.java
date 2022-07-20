@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.container.atomic.governance;
+package org.apache.shardingsphere.test.integration.env.container.atomic.governance;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.test.integration.container.atomic.governance.impl.ZookeeperContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.governance.impl.ZookeeperContainer;
 
 /**
  * Governance container factory.
