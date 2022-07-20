@@ -226,7 +226,7 @@ public final class ContextManagerTest {
         RuleConfiguration ruleConfig = new TransactionRuleConfiguration("LOCAL", null, new Properties());
         contextManager.alterRuleConfiguration("foo_db", Collections.singleton(ruleConfig));
         // TODO create DistributedRuleFixture to assert alter rule
-//         assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getRuleMetaData().getConfigurations().contains(ruleConfig));
+        // assertTrue(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").getRuleMetaData().getConfigurations().contains(ruleConfig));
     }
     
     @Test
