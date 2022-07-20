@@ -22,9 +22,9 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.transaction.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.transaction.env.enums.TransactionITEnvTypeEnum;
 import org.apache.shardingsphere.integration.transaction.util.DatabaseTypeUtil;
-import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
-import org.apache.shardingsphere.test.integration.framework.container.wait.JDBCConnectionWaitStrategy;
+import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
+import org.apache.shardingsphere.test.integration.env.container.wait.JDBCConnectionWaitStrategy;
+import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.testcontainers.containers.BindMode;
 
 import java.sql.DriverManager;
@@ -60,5 +60,10 @@ public final class ShardingSphereProxyDockerContainer extends DockerITContainer 
             addFixedExposedPort(3307, 3307);
             addFixedExposedPort(5005, 3308);
         }
+    }
+    
+    @Override
+    public String getAbbreviation() {
+        return "proxy";
     }
 }

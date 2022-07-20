@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.integration.transaction.framework.container.compose;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
+import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 
 /**
  * Native composed container, you need start ShardingSphere-Proxy at firstly.

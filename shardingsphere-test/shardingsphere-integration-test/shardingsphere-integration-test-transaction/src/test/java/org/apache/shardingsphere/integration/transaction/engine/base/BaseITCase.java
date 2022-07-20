@@ -40,9 +40,10 @@ import org.apache.shardingsphere.integration.transaction.framework.container.com
 import org.apache.shardingsphere.integration.transaction.framework.container.compose.NativeComposedContainer;
 import org.apache.shardingsphere.integration.transaction.framework.container.database.DatabaseContainer;
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
-import org.apache.shardingsphere.integration.transaction.util.TransactionTestCaseClassScanner;
 import org.apache.shardingsphere.integration.transaction.util.DatabaseTypeUtil;
-import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
+import org.apache.shardingsphere.integration.transaction.util.TransactionTestCaseClassScanner;
+import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
+
 import javax.xml.bind.JAXB;
 import java.sql.Connection;
 import java.sql.DriverManager;
