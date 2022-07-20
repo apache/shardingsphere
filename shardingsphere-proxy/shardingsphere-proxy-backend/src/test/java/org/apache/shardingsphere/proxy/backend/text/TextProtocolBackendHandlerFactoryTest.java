@@ -87,6 +87,7 @@ public final class TextProtocolBackendHandlerFactoryTest extends ProxyContextRes
         ShardingSphereDatabase database = mockDatabase();
         when(metaDataContexts.getMetaData().containsDatabase("db")).thenReturn(true);
         when(metaDataContexts.getMetaData().getDatabase("db")).thenReturn(database);
+        when(metaDataContexts.getMetaData().getDatabase("db").containsDataSource()).thenReturn(true);
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         when(metaDataContexts.getMetaData().getProps()).thenReturn(new ConfigurationProperties(new Properties()));
@@ -209,8 +210,6 @@ public final class TextProtocolBackendHandlerFactoryTest extends ProxyContextRes
     public void assertNewInstanceWithQuery() throws SQLException {
         String sql = "select * from t_order limit 1";
         ProxyContext proxyContext = ProxyContext.getInstance();
-        when(proxyContext.getAllDatabaseNames()).thenReturn(new HashSet<>(Collections.singletonList("db")));
-        when(proxyContext.getDatabase("db").containsDataSource()).thenReturn(true);
         TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, Optional::empty, connectionSession);
         assertThat(actual, instanceOf(SchemaAssignedDatabaseBackendHandler.class));
         sql = "select * from information_schema.schemata limit 1";

@@ -70,7 +70,7 @@ public final class ProxyContext {
      * @return database exists or not
      */
     public boolean databaseExists(final String name) {
-        return contextManager.getMetaDataContexts().getMetaData().getDatabases().containsKey(name);
+        return contextManager.getMetaDataContexts().getMetaData().containsDatabase(name);
     }
     
     /**
