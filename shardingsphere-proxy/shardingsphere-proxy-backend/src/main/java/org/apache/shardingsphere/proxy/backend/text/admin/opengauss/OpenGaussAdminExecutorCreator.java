@@ -27,11 +27,21 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * Database admin executor creator for openGauss.
  */
 public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecutorCreator {
+    
+    private static final Set<String> SYSTEM_CATALOG_QUERY_EXPRESSIONS = new TreeSet<>(String.CASE_INSENSITIVE_ORDER);
+    
+    static {
+        SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("VERSION()");
+        SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("intervaltonum(gs_password_deadline())");
+        SYSTEM_CATALOG_QUERY_EXPRESSIONS.add("gs_password_notifytime()");
+    }
     
     private static final String OG_DATABASE = "pg_database";
     
@@ -60,7 +70,7 @@ public final class OpenGaussAdminExecutorCreator implements DatabaseAdminExecuto
         SelectStatement selectStatement = (SelectStatement) sqlStatementContext.getSqlStatement();
         Collection<ProjectionSegment> projections = selectStatement.getProjections().getProjections();
         return 1 == projections.size() && projections.iterator().next() instanceof ExpressionProjectionSegment
-                && "VERSION()".equalsIgnoreCase(((ExpressionProjectionSegment) projections.iterator().next()).getText());
+                && SYSTEM_CATALOG_QUERY_EXPRESSIONS.contains(((ExpressionProjectionSegment) projections.iterator().next()).getText());
     }
     
     @Override
