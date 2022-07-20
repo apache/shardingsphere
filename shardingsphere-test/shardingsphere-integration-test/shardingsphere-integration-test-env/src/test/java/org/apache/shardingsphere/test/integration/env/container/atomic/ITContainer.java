@@ -15,29 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.container.atomic.storage;
+package org.apache.shardingsphere.test.integration.env.container.atomic;
 
-import org.apache.shardingsphere.test.integration.container.atomic.ITContainer;
-
-import javax.sql.DataSource;
-import java.util.Map;
+import org.testcontainers.lifecycle.Startable;
 
 /**
- * Storage container.
+ * IT container.
  */
-public interface StorageContainer extends ITContainer {
+public interface ITContainer extends Startable {
+    
+    @Override
+    default void stop() {
+    }
     
     /**
-     * Get actual data source map.
-     *
-     * @return actual data source map
-     */
-    Map<String, DataSource> getActualDataSourceMap();
-    
-    /**
-     * Get expected data source map.
+     * Get abbreviation.
      * 
-     * @return expected data source map
+     * @return abbreviation
      */
-    Map<String, DataSource> getExpectedDataSourceMap();
+    String getAbbreviation();
 }

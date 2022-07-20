@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.container.wait;
+package org.apache.shardingsphere.test.integration.env.container.wait;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.framework.container.cluster;
 
-import org.apache.shardingsphere.test.integration.container.atomic.governance.GovernanceContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.governance.GovernanceContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
 
 /**

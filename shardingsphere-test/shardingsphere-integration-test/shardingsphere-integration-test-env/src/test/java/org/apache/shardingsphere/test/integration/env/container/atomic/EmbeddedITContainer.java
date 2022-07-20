@@ -15,23 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.container.atomic.governance;
-
-import org.apache.shardingsphere.test.integration.container.atomic.DockerITContainer;
+package org.apache.shardingsphere.test.integration.env.container.atomic;
 
 /**
- * Governance container.
+ * Embedded IT container.
  */
-public abstract class GovernanceContainer extends DockerITContainer {
-    
-    public GovernanceContainer(final String name, final String dockerImageName) {
-        super(name, dockerImageName);
-    }
-    
-    /**
-     * Get server list.
-     *
-     * @return server list
-     */
-    public abstract String getServerLists();
+public interface EmbeddedITContainer extends ITContainer {
 }

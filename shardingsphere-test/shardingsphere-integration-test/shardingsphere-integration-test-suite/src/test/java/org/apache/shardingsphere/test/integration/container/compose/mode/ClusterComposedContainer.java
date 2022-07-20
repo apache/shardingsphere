@@ -17,13 +17,13 @@
 
 package org.apache.shardingsphere.test.integration.container.compose.mode;
 
-import org.apache.shardingsphere.test.integration.container.atomic.DockerITContainer;
-import org.apache.shardingsphere.test.integration.container.atomic.ITContainers;
+import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.ITContainers;
 import org.apache.shardingsphere.test.integration.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.container.atomic.adapter.AdapterContainerFactory;
-import org.apache.shardingsphere.test.integration.container.atomic.governance.GovernanceContainer;
-import org.apache.shardingsphere.test.integration.container.atomic.governance.GovernanceContainerFactory;
-import org.apache.shardingsphere.test.integration.container.atomic.storage.StorageContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.governance.GovernanceContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.governance.GovernanceContainerFactory;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.integration.container.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;

@@ -20,8 +20,8 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.container.
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
-import org.apache.shardingsphere.test.integration.container.wait.JDBCConnectionWaitStrategy;
+import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
+import org.apache.shardingsphere.test.integration.env.container.wait.JDBCConnectionWaitStrategy;
 import org.testcontainers.containers.BindMode;
 
 import java.sql.DriverManager;

@@ -20,10 +20,10 @@ package org.apache.shardingsphere.test.integration.container.atomic.adapter.impl
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.container.atomic.DockerITContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.container.atomic.adapter.AdapterContainer;
-import org.apache.shardingsphere.test.integration.container.wait.JDBCConnectionWaitStrategy;
-import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
+import org.apache.shardingsphere.test.integration.env.container.wait.JDBCConnectionWaitStrategy;
+import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.testcontainers.containers.BindMode;
 
 import javax.sql.DataSource;

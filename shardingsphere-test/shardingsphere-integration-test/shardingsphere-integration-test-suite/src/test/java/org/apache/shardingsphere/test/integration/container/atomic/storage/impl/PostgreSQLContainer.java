@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.container.atomic.storage.impl
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
+import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.container.atomic.storage.DockerStorageContainer;
 import org.postgresql.util.PSQLException;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
