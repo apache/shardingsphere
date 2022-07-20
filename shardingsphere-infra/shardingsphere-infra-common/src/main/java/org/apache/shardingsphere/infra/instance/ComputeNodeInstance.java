@@ -18,39 +18,43 @@
 package org.apache.shardingsphere.infra.instance;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.state.StateType;
 
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Instance of compute node.
  */
-@RequiredArgsConstructor
 @Getter
-@Setter
 public final class ComputeNodeInstance {
     
     private final InstanceMetaData metaData;
     
     private final StateContext state = new StateContext();
     
-    private Collection<String> labels = new ArrayList<>();
+    private final Collection<String> labels;
+    
+    public ComputeNodeInstance(final InstanceMetaData metaData) {
+        this.metaData = metaData;
+        labels = new LinkedList<>();
+    }
+    
+    public ComputeNodeInstance(final InstanceMetaData metaData, final Collection<String> labels) {
+        this.metaData = metaData;
+        this.labels = labels;
+    }
     
     /**
-     * Set labels.
+     * Update labels.
      *
      * @param labels labels
      */
-    public void setLabels(final Collection<String> labels) {
-        if (null == labels) {
-            return;
-        }
-        this.labels = labels;
+    public synchronized void updateLabels(final Collection<String> labels) {
+        this.labels.clear();
+        this.labels.addAll(labels);
     }
     
     /**

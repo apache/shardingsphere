@@ -30,6 +30,7 @@ import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConf
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -51,7 +52,7 @@ public final class YamlProxyConfigurationSwapper {
     public ProxyConfiguration swap(final YamlProxyConfiguration yamlConfig) {
         Map<String, DatabaseConfiguration> databaseConfigs = swapDatabaseConfigurations(yamlConfig);
         ProxyGlobalConfiguration globalConfig = new ProxyGlobalConfiguration(ruleConfigSwapperEngine.swapToRuleConfigurations(yamlConfig.getServerConfiguration().getRules()),
-                yamlConfig.getServerConfiguration().getProps(), yamlConfig.getServerConfiguration().getLabels());
+                yamlConfig.getServerConfiguration().getProps(), null == yamlConfig.getServerConfiguration().getLabels() ? new LinkedList<>() : yamlConfig.getServerConfiguration().getLabels());
         return new ProxyConfiguration(databaseConfigs, globalConfig);
     }
     

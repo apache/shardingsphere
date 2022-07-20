@@ -54,7 +54,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, parameter.getDatabaseConfigs(), instanceContext);
         persistMetaData(metaDataContexts);
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);
-        registerOnline(persistService, registryCenter, parameter, result);
+        registerOnline(persistService, registryCenter, result);
         return result;
     }
     
@@ -65,7 +65,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private InstanceContext buildInstanceContext(final RegistryCenter registryCenter, final ContextManagerBuilderParameter parameter) {
-        return new InstanceContext(new ComputeNodeInstance(parameter.getInstanceMetaData()), new ClusterWorkerIdGenerator(registryCenter, parameter.getInstanceMetaData()),
+        return new InstanceContext(new ComputeNodeInstance(parameter.getInstanceMetaData(), parameter.getLabels()), new ClusterWorkerIdGenerator(registryCenter, parameter.getInstanceMetaData()),
                 parameter.getModeConfiguration(), new DistributedLockContext(registryCenter.getRepository()), registryCenter.getEventBusContext());
     }
     
@@ -74,9 +74,7 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
                 .forEach((schemaName, tables) -> metaDataContexts.getPersistService().getDatabaseMetaDataService().persistMetaData(databaseName, schemaName, tables)));
     }
     
-    private void registerOnline(final MetaDataPersistService persistService, final RegistryCenter registryCenter,
-                                final ContextManagerBuilderParameter parameter, final ContextManager contextManager) {
-        contextManager.getInstanceContext().getInstance().setLabels(parameter.getLabels());
+    private void registerOnline(final MetaDataPersistService persistService, final RegistryCenter registryCenter, final ContextManager contextManager) {
         contextManager.getInstanceContext().getAllClusterInstances().addAll(registryCenter.getComputeNodeStatusService().loadAllComputeNodeInstances());
         new ClusterContextManagerCoordinator(persistService, registryCenter, contextManager);
         registryCenter.onlineInstance(contextManager.getInstanceContext().getInstance());

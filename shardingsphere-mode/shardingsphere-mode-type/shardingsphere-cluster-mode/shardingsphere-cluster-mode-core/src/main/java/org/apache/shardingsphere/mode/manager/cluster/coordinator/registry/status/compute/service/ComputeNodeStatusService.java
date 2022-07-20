@@ -86,7 +86,7 @@ public final class ComputeNodeStatusService {
     @SuppressWarnings("unchecked")
     public Collection<String> loadInstanceLabels(final String instanceId) {
         String yamlContent = repository.get(ComputeNode.getInstanceLabelsNodePath(instanceId));
-        return Strings.isNullOrEmpty(yamlContent) ? new ArrayList<>() : YamlEngine.unmarshal(yamlContent, Collection.class);
+        return Strings.isNullOrEmpty(yamlContent) ? new LinkedList<>() : YamlEngine.unmarshal(yamlContent, Collection.class);
     }
     
     /**
@@ -136,15 +136,14 @@ public final class ComputeNodeStatusService {
                 InstanceMetaDataBuilderFactory.create(each, instanceType, repository.get(ComputeNode.getOnlineInstanceNodePath(each, instanceType))))).collect(Collectors.toList());
     }
     
-    /**
+    /**x
      * Load compute node instance by instance definition.
      *
      * @param instanceMetaData instance definition
      * @return compute node instance
      */
     public ComputeNodeInstance loadComputeNodeInstance(final InstanceMetaData instanceMetaData) {
-        ComputeNodeInstance result = new ComputeNodeInstance(instanceMetaData);
-        result.setLabels(loadInstanceLabels(instanceMetaData.getId()));
+        ComputeNodeInstance result = new ComputeNodeInstance(instanceMetaData, loadInstanceLabels(instanceMetaData.getId()));
         result.switchState(loadInstanceStatus(instanceMetaData.getId()));
         return result;
     }

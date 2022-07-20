@@ -91,9 +91,9 @@ public final class InstanceContext {
      */
     public void updateLabel(final String instanceId, final Collection<String> labels) {
         if (instance.getMetaData().getId().equals(instanceId)) {
-            instance.setLabels(labels);
+            instance.updateLabels(labels);
         }
-        allClusterInstances.stream().filter(each -> each.getMetaData().getId().equals(instanceId)).forEach(each -> each.setLabels(labels));
+        allClusterInstances.stream().filter(each -> each.getMetaData().getId().equals(instanceId)).forEach(each -> each.updateLabels(labels));
     }
     
     /**
