@@ -73,6 +73,7 @@ public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<
         StringBuilder result = new StringBuilder();
         appendDatabase(yamlConfig.getDatabaseName(), result);
         appendResources(yamlConfig.getDataSources(), result);
+        // TODO append rules by feature SPI
         return result.toString();
     }
     
