@@ -64,8 +64,8 @@ public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<
         } catch (final IOException ex) {
             throw new ShardingSphereException(ex);
         }
-        Preconditions.checkNotNull(yamlConfig, String.format("Invalid yaml file `%s`", file.getName()));
-        Preconditions.checkNotNull(yamlConfig.getDatabaseName(), String.format("`databaseName` in file `%s` is required.", file.getName()));
+        Preconditions.checkNotNull(yamlConfig, "Invalid yaml file `%s`", file.getName());
+        Preconditions.checkNotNull(yamlConfig.getDatabaseName(), "`databaseName` in file `%s` is required.", file.getName());
         return Collections.singleton(new LocalDataQueryResultRow(generateDistSQL(yamlConfig)));
     }
     
