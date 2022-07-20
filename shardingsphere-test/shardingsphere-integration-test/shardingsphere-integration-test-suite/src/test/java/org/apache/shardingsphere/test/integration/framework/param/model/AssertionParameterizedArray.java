@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.framework.param.model;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -47,6 +48,7 @@ public final class AssertionParameterizedArray implements ParameterizedArray {
     
     @Override
     public String toString() {
-        return String.format("%s: %s -> %s -> %s -> %s", adapter, scenario, databaseType.getType(), sqlExecuteType, testCaseContext.getTestCase().getSql());
+        final String printSql = Strings.isNullOrEmpty(testCaseContext.getTestCase().getPrintSql()) ? testCaseContext.getTestCase().getSql() : testCaseContext.getTestCase().getPrintSql();
+        return String.format("%s: %s -> %s -> %s -> %s", adapter, scenario, databaseType.getType(), sqlExecuteType, printSql);
     }
 }
