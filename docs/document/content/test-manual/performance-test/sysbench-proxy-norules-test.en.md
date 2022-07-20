@@ -1,5 +1,5 @@
 +++
-title = "SysBench ShardingSphere-Proxy Null Rule Performance Test"
+title = "SysBench ShardingSphere-Proxy Empty Rule Performance Test"
 weight = 1
 +++
 
