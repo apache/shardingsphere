@@ -32,7 +32,7 @@ import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Auto commit transaction integration test.
+ * PostgresSQL auto commit transaction integration test.
  */
 @Slf4j
 @TransactionTestCase(dbTypes = {TransactionTestConstants.POSTGRESQL})
