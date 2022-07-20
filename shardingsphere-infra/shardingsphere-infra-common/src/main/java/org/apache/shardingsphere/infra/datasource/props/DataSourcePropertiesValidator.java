@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.infra.datasource.props;
 
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
@@ -31,7 +33,10 @@ import java.util.Map.Entry;
 /**
  * Data source properties validator.
  */
+@RequiredArgsConstructor
 public final class DataSourcePropertiesValidator {
+    
+    private final DatabaseType databaseType;
     
     /**
      * Validate data source properties map.
@@ -70,6 +75,8 @@ public final class DataSourcePropertiesValidator {
     }
     
     private void checkFailFast(final DataSource dataSource) throws SQLException {
-        dataSource.getConnection();
+        if (!dataSource.getConnection().getMetaData().getDatabaseProductName().equals(databaseType.getType().toLowerCase())) {
+            throw new SQLException("Protocol mismatch for datasource.");
+        }
     }
 }

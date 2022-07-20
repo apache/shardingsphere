@@ -71,7 +71,7 @@ import java.util.Map.Entry;
  */
 public final class ImportDatabaseConfigurationHandler extends UpdatableRALBackendHandler<ImportDatabaseConfigurationStatement> {
     
-    private final DataSourcePropertiesValidator validator = new DataSourcePropertiesValidator();
+    private final DataSourcePropertiesValidator validator = new DataSourcePropertiesValidator(getConnectionSession().getDatabaseType());
     
     private final ShardingRuleConfigurationImportChecker shardingRuleConfigurationImportChecker = new ShardingRuleConfigurationImportChecker();
     
