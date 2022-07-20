@@ -17,6 +17,9 @@
 <#if mode?exists>
     <#include "../mode/spring-boot-starter/${mode}.ftl" />
 </#if>
+<#if transaction!="local" && transaction!="base-seata">
+    <#include "./transaction/${transaction}.ftl" />
+</#if>
 <#if framework?contains("mybatis")>
 
 mybatis.mapper-locations=classpath*:mappers/*Mapper.xml
