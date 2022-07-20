@@ -105,6 +105,22 @@ public final class ProjectionsContextTest {
     }
     
     @Test
+    public void assertGetExpressionProjectionInsideAggregationProjections() {
+        ExpressionProjection expressionProjection = getContainsParametersExpressionProjection();
+        Collection<AggregationProjection> items = getProjectionsContext(expressionProjection).getAggregationProjections();
+        expressionProjection.getParameters().forEach(parameter -> {
+            if (parameter instanceof AggregationProjection) {
+                assertTrue(items.contains(parameter));
+            }
+        });
+        assertThat(items.size(), is(2));
+    }
+    
+    private ProjectionsContext getProjectionsContext(final ExpressionProjection expressionProjection) {
+        return new ProjectionsContext(0, 0, true, Arrays.asList(expressionProjection, getColumnProjection(), getAggregationProjection()));
+    }
+    
+    @Test
     public void assertGetAggregationDistinctProjections() {
         Projection projection = getAggregationDistinctProjection();
         Collection<AggregationDistinctProjection> items = new ProjectionsContext(0, 0, true, Arrays.asList(projection, getColumnProjection())).getAggregationDistinctProjections();
@@ -126,6 +142,13 @@ public final class ProjectionsContextTest {
     
     private AggregationProjection getAggregationProjection() {
         return new AggregationProjection(AggregationType.COUNT, "(column)", "c", mock(DatabaseType.class));
+    }
+    
+    private ExpressionProjection getContainsParametersExpressionProjection() {
+        AggregationProjection aggregationProjection = new AggregationProjection(AggregationType.MAX, "(status)", "IFNULL(MAX(status), 0)", mock(DatabaseType.class));
+        ExpressionProjection expressionProjection = new ExpressionProjection("IFNULL(MAX(status), 0)", null);
+        expressionProjection.getParameters().add(aggregationProjection);
+        return expressionProjection;
     }
     
     private AggregationDistinctProjection getAggregationDistinctProjection() {
