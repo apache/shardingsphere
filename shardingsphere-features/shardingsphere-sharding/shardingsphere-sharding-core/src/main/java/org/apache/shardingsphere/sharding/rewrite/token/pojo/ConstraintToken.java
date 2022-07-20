@@ -57,7 +57,7 @@ public final class ConstraintToken extends SQLToken implements Substitutable, Ro
     
     private String getConstraintValue(final RouteUnit routeUnit) {
         StringBuilder result = new StringBuilder(identifier.getValue());
-        Map<String, String> logicAndActualTables = shardingRule.getLogicAndActualTablesFromRouteUnit(routeUnit, sqlStatementContext.getTablesContext().getTableNames());
+        Map<String, String> logicAndActualTables = TokenUtil.getLogicAndActualTables(routeUnit, sqlStatementContext, shardingRule);
         sqlStatementContext.getTablesContext().getTableNames().stream().findFirst().map(logicAndActualTables::get).ifPresent(optional -> result.append("_").append(optional));
         return result.toString();
     }

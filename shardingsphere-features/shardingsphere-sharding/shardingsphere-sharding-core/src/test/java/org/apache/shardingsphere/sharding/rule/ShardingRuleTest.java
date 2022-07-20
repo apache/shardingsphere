@@ -30,8 +30,6 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.route.context.RouteMapper;
-import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.algorithm.audit.DMLShardingConditionsShardingAuditAlgorithm;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
 import org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm;
@@ -741,15 +739,6 @@ public final class ShardingRuleTest {
         ShardingRule actual = createMaximumShardingRule();
         Map<String, String> logicAndActualTablesFromBindingTable = actual.getLogicAndActualTablesFromBindingTable("ds_0", "LOGIC_TABLE", "table_0", Arrays.asList("logic_table", "sub_logic_table"));
         assertThat(logicAndActualTablesFromBindingTable.get("sub_logic_table"), is("sub_table_0"));
-    }
-    
-    @Test
-    public void assertGetLogicAndActualTablesFromRouteUnit() {
-        ShardingRule actual = createMaximumShardingRule();
-        RouteUnit routeUnit = new RouteUnit(new RouteMapper(DefaultDatabase.LOGIC_NAME, "ds_0"),
-                Arrays.asList(new RouteMapper("LOGIC_TABLE", "table_0"), new RouteMapper("LOGIC_TABLE", "table_1")));
-        Map<String, String> logicAndActualTablesFromBindingTable = actual.getLogicAndActualTablesFromRouteUnit(routeUnit, Arrays.asList("table_0", "table_1"));
-        assertThat(logicAndActualTablesFromBindingTable.get("logic_table"), is("table_1"));
     }
     
     @Test

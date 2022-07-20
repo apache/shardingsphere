@@ -33,8 +33,6 @@ import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.route.context.RouteMapper;
-import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.TableContainedRule;
@@ -670,22 +668,6 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
                                                                        final String logicTable, final String actualTable, final Collection<String> availableLogicBindingTables) {
         return findBindingTableRule(logicTable).map(optional -> optional.getLogicAndActualTables(dataSourceName, logicTable, actualTable, availableLogicBindingTables))
                 .orElseGet(Collections::emptyMap);
-    }
-    
-    /**
-     * Get logic table and actual table.
-     *
-     * @param routeUnit Route unit
-     * @param availableLogicBindingTables available logic binding table names
-     * @return key is logicTable name, values is actualTable belong to this data source
-     */
-    public Map<String, String> getLogicAndActualTablesFromRouteUnit(final RouteUnit routeUnit, final Collection<String> availableLogicBindingTables) {
-        Map<String, String> result = new HashMap<>(availableLogicBindingTables.size(), 1);
-        for (RouteMapper each : routeUnit.getTableMappers()) {
-            result.put(each.getLogicName().toLowerCase(), each.getActualName());
-            result.putAll(this.getLogicAndActualTablesFromBindingTable(routeUnit.getDataSourceMapper().getLogicName(), each.getLogicName(), each.getActualName(), availableLogicBindingTables));
-        }
-        return result;
     }
     
     /**
