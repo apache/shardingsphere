@@ -628,4 +628,20 @@
         <assertion parameters="1:int" expected-data-source-name="prod_dataset" />
         <assertion parameters="0:int" expected-data-source-name="shadow_dataset" />
     </test-case>
+    
+    <test-case sql="SELECT IFNULL(status, 0) FROM t_order" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting" db-types="MySQL">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT IFNULL(MAX(status), 0) FROM t_order" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting" db-types="MySQL">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT IFNULL(MAX(status)+1, 0) FROM t_order" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting" db-types="MySQL">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
+    
+    <test-case sql="SELECT IFNULL(MAX(DISTINCT status), 0) FROM t_order" scenario-types="db,tbl,dbtbl_with_readwrite_splitting,readwrite_splitting" db-types="MySQL">
+        <assertion expected-data-source-name="read_dataset" />
+    </test-case>
 </integration-test-cases>
