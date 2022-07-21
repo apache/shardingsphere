@@ -40,10 +40,12 @@ public final class MySQLJsonBinlogProtocolValue implements MySQLBinlogProtocolVa
     
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
-        ByteBuf newByteBuf = payload.getByteBuf().readBytes(readLengthFromMeta(columnDef.getColumnMeta(), payload));
-        Serializable result = MySQLJsonValueDecoder.decode(newByteBuf);
-        newByteBuf.release();
-        return result;
+        ByteBuf newlyByteBuf = payload.getByteBuf().readBytes(readLengthFromMeta(columnDef.getColumnMeta(), payload));
+        try {
+            return MySQLJsonValueDecoder.decode(newlyByteBuf);
+        } finally {
+            newlyByteBuf.release();
+        }
     }
     
     private int readLengthFromMeta(final int columnMeta, final MySQLPacketPayload payload) {
