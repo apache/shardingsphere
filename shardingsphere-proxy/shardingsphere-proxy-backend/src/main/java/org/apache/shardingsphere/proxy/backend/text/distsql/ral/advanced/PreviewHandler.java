@@ -154,7 +154,7 @@ public final class PreviewHandler extends QueryableRALBackendHandler<PreviewStat
             }
             
             @Override
-            protected Optional<ExecuteResult> getSaneResult(final SQLStatement sqlStatement) {
+            protected Optional<ExecuteResult> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
                 return Optional.empty();
             }
         };
