@@ -88,6 +88,16 @@ public final class ShardingSphereMetaData {
     }
     
     /**
+     * Get actual database name.
+     *
+     * @param databaseName database name
+     * @return actual database name
+     */
+    public String getActualDatabaseName(final String databaseName) {
+        return getDatabase(databaseName).getName();
+    }
+    
+    /**
      * Drop database.
      *
      * @param databaseName database name
