@@ -48,7 +48,6 @@ import java.util.stream.Collectors;
  * Show tables executor.
  */
 @RequiredArgsConstructor
-@Getter
 public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
     
     private static final String TABLE_TYPE = "BASE TABLE";
@@ -57,8 +56,10 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
     
     private final DatabaseType databaseType;
     
+    @Getter
     private QueryResultMetaData queryResultMetaData;
     
+    @Getter
     private MergedResult mergedResult;
     
     @Override
