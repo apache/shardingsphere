@@ -28,9 +28,12 @@ import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -44,7 +47,11 @@ public abstract class BaseDALIT extends SingleITCase {
     
     protected final void assertResultSet(final ResultSet resultSet) throws SQLException {
         assertMetaData(resultSet.getMetaData(), getExpectedColumns());
-        assertRows(resultSet, getDataSet().getRows());
+        try {
+            assertRows(resultSet, getDataSet().getRows());
+        } catch (final AssertionError error) {
+            assertRows(resultSet, getExpectRowsWithHashOrder());
+        }
     }
     
     private Collection<DataSetColumn> getExpectedColumns() {
@@ -103,5 +110,9 @@ public abstract class BaseDALIT extends SingleITCase {
     private void assertObjectValue(final ResultSet actual, final int columnIndex, final String columnLabel, final String expected) throws SQLException {
         assertThat(String.valueOf(actual.getObject(columnIndex)), is(expected));
         assertThat(String.valueOf(actual.getObject(columnLabel)), is(expected));
+    }
+    
+    private List<DataSetRow> getExpectRowsWithHashOrder() {
+        return new ArrayList<>(getDataSet().getRows().stream().collect(Collectors.toMap(each -> each, each -> each, (a, b) -> b, ConcurrentHashMap::new)).keySet());
     }
 }
