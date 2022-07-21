@@ -93,7 +93,7 @@ public final class PreviewHandler extends QueryableRALBackendHandler<PreviewStat
     protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) throws SQLException {
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         String databaseName = getDatabaseName();
-        String databaseType = DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getMetaData().getDatabases().get(databaseName).getProtocolType());
+        String databaseType = DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType());
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         SQLStatement previewedStatement = sqlParserRule.getSQLParserEngine(databaseType).parse(getSqlStatement().getSql(), false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), previewedStatement, databaseName);
@@ -136,7 +136,7 @@ public final class PreviewHandler extends QueryableRALBackendHandler<PreviewStat
         boolean isReturnGeneratedKeys = sqlStatement instanceof MySQLInsertStatement;
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = createDriverExecutionPrepareEngine(isReturnGeneratedKeys, metaDataContexts);
         FederationContext context = new FederationContext(true, logicSQL, metaDataContexts.getMetaData().getDatabases());
-        DatabaseType databaseType = metaDataContexts.getMetaData().getDatabases().get(getDatabaseName()).getResource().getDatabaseType();
+        DatabaseType databaseType = metaDataContexts.getMetaData().getDatabase(getDatabaseName()).getResource().getDatabaseType();
         String schemaName = logicSQL.getSqlStatementContext().getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(databaseType, databaseName));
         EventBusContext eventBusContext = ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext();
         FederationExecutor executor = FederationExecutorFactory.newInstance(databaseName, schemaName, metaDataContexts.getOptimizerContext(), metaDataContexts.getMetaData().getGlobalRuleMetaData(),
@@ -164,7 +164,7 @@ public final class PreviewHandler extends QueryableRALBackendHandler<PreviewStat
         int maxConnectionsSizePerQuery = metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY);
         return new DriverExecutionPrepareEngine<>(JDBCDriverType.STATEMENT, maxConnectionsSizePerQuery, (JDBCBackendConnection) getConnectionSession().getBackendConnection(),
                 (JDBCBackendStatement) getConnectionSession().getStatementManager(), new StatementOption(isReturnGeneratedKeys),
-                metaDataContexts.getMetaData().getDatabases().get(getDatabaseName()).getRuleMetaData().getRules());
+                metaDataContexts.getMetaData().getDatabase(getDatabaseName()).getRuleMetaData().getRules());
     }
     
     private String getDatabaseName() {
@@ -172,7 +172,7 @@ public final class PreviewHandler extends QueryableRALBackendHandler<PreviewStat
         if (Strings.isNullOrEmpty(result)) {
             throw new NoDatabaseSelectedException();
         }
-        if (!ProxyContext.getInstance().getAllDatabaseNames().contains(result)) {
+        if (!ProxyContext.getInstance().databaseExists(result)) {
             throw new DatabaseNotExistedException(result);
         }
         return result;

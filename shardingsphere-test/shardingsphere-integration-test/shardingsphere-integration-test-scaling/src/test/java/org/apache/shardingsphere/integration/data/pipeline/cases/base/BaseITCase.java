@@ -40,9 +40,11 @@ import org.apache.shardingsphere.integration.data.pipeline.framework.helper.Scal
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.integration.data.pipeline.framework.watcher.ScalingWatcher;
 import org.apache.shardingsphere.integration.data.pipeline.util.DatabaseTypeUtil;
-import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
+import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.junit.Rule;
+import org.opengauss.util.PSQLException;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -229,7 +231,7 @@ public abstract class BaseITCase {
     private String getActualJdbcUrlTemplate(final String databaseName) {
         if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
             final DatabaseContainer databaseContainer = ((DockerComposedContainer) composedContainer).getDatabaseContainer();
-            return DataSourceEnvironment.getURL(getDatabaseType(), "db.host", databaseContainer.getPort(), databaseName);
+            return DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", databaseContainer.getPort(), databaseName);
         } else {
             return DataSourceEnvironment.getURL(getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), databaseName);
         }
@@ -269,7 +271,22 @@ public abstract class BaseITCase {
     }
     
     protected void createSchema(final String schemaName) {
-        executeWithLog(String.format("CREATE SCHEMA %s", schemaName));
+        if (DatabaseTypeUtil.isPostgreSQL(databaseType)) {
+            executeWithLog(String.format("CREATE SCHEMA IF NOT EXISTS %s", schemaName));
+            return;
+        }
+        if (DatabaseTypeUtil.isOpenGauss(databaseType)) {
+            try {
+                executeWithLog(String.format("CREATE SCHEMA %s", schemaName));
+            } catch (final BadSqlGrammarException ex) {
+                // only used for native mode.
+                if (ex.getCause() instanceof PSQLException && "42P06".equals(((PSQLException) ex.getCause()).getSQLState())) {
+                    log.info("Schema {} already exists.", schemaName);
+                } else {
+                    throw ex;
+                }
+            }
+        }
     }
     
     protected void executeWithLog(final Connection connection, final String sql) throws SQLException {

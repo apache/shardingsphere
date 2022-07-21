@@ -66,6 +66,6 @@ public final class ParseDistSQLHandler extends QueryableRALBackendHandler<ParseS
         String databaseName = getConnectionSession().getDatabaseName();
         return Strings.isNullOrEmpty(databaseName) || !ProxyContext.getInstance().databaseExists(databaseName)
                 ? getConnectionSession().getDatabaseType()
-                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getResource().getDatabaseType();
+                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResource().getDatabaseType();
     }
 }

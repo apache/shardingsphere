@@ -134,7 +134,7 @@ public final class TextProtocolBackendHandlerFactory {
         String databaseName = connectionSession.getDatabaseName();
         return Strings.isNullOrEmpty(databaseName) || !ProxyContext.getInstance().databaseExists(databaseName)
                 ? defaultDatabaseType
-                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getProtocolType();
+                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getProtocolType();
     }
     
     private static void handleAutoCommit(final SQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
@@ -165,7 +165,7 @@ public final class TextProtocolBackendHandlerFactory {
             return contexts.getMetaData().getGlobalRuleMetaData().getRules();
         }
         Collection<ShardingSphereRule> result;
-        result = new LinkedList<>(contexts.getMetaData().getDatabases().get(databaseName).getRuleMetaData().getRules());
+        result = new LinkedList<>(contexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules());
         result.addAll(contexts.getMetaData().getGlobalRuleMetaData().getRules());
         return result;
     }

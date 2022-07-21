@@ -44,6 +44,7 @@ import java.util.Collections;
 /**
  * Select database executor for openGauss.
  */
+@SuppressWarnings("unused")
 public final class OpenGaussSystemCatalogAdminQueryExecutor implements DatabaseAdminQueryExecutor {
     
     private static final String PG_CATALOG = "pg_catalog";
@@ -67,6 +68,9 @@ public final class OpenGaussSystemCatalogAdminQueryExecutor implements DatabaseA
         try (CalciteConnection connection = DriverManager.getConnection("jdbc:calcite:caseSensitive=false").unwrap(CalciteConnection.class)) {
             connection.getRootSchema().add(PG_CATALOG, new ReflectiveSchema(constructOgCatalog()));
             connection.getRootSchema().add("version", ScalarFunctionImpl.create(getClass(), "version"));
+            connection.getRootSchema().add("gs_password_deadline", ScalarFunctionImpl.create(getClass(), "gsPasswordDeadline"));
+            connection.getRootSchema().add("intervaltonum", ScalarFunctionImpl.create(getClass(), "intervalToNum"));
+            connection.getRootSchema().add("gs_password_notifyTime", ScalarFunctionImpl.create(getClass(), "gsPasswordNotifyTime"));
             connection.setSchema(PG_CATALOG);
             try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery(sql)) {
                 queryResultMetaData = new JDBCQueryResultMetaData(resultSet.getMetaData());
@@ -90,8 +94,37 @@ public final class OpenGaussSystemCatalogAdminQueryExecutor implements DatabaseA
      *
      * @return version message
      */
-    @SuppressWarnings("unused")
     public static String version() {
         return "ShardingSphere-Proxy " + ShardingSphereVersion.VERSION + ("-" + ShardingSphereVersion.BUILD_GIT_COMMIT_ID_ABBREV) + (ShardingSphereVersion.BUILD_GIT_DIRTY ? "-dirty" : "");
+    }
+    
+    /**
+     * The type interval is not supported in standard JDBC.
+     * Indicates the number of remaining days before the password of the current user expires.
+     *
+     * @return 90 days
+     */
+    public static int gsPasswordDeadline() {
+        return 90;
+    }
+    
+    /**
+     * The type interval is not supported in standard JDBC.
+     * Convert interval to num.
+     *
+     * @param result result
+     * @return result
+     */
+    public static int intervalToNum(final int result) {
+        return result;
+    }
+    
+    /**
+     * Specifies the number of days prior to password expiration that a user will receive a reminder.
+     *
+     * @return 7 days
+     */
+    public static int gsPasswordNotifyTime() {
+        return 7;
     }
 }

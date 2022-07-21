@@ -69,7 +69,7 @@ public abstract class AbstractResultSetAdapter extends AbstractUnsupportedOperat
         ShardingSphereConnection connection = statement instanceof ShardingSpherePreparedStatement
                 ? ((ShardingSpherePreparedStatement) statement).getConnection()
                 : ((ShardingSphereStatement) statement).getConnection();
-        return connection.getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(connection.getDatabaseName());
+        return connection.getContextManager().getMetaDataContexts().getMetaData().getDatabase(connection.getDatabaseName());
     }
     
     @Override

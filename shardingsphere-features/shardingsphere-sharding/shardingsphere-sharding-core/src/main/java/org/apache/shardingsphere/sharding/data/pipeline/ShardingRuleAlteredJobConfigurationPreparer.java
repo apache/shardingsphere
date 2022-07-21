@@ -137,7 +137,7 @@ public final class ShardingRuleAlteredJobConfigurationPreparer implements RuleAl
     
     private static Map<String, List<String>> getSchemaTablesMap(final String databaseName, final Set<String> logicTables) {
         // TODO get by search_path
-        ShardingSphereDatabase database = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(databaseName);
+        ShardingSphereDatabase database = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName);
         Map<String, List<String>> result = new LinkedHashMap<>();
         database.getSchemas().forEach((schemaName, schema) -> {
             for (String each : schema.getAllTableNames()) {

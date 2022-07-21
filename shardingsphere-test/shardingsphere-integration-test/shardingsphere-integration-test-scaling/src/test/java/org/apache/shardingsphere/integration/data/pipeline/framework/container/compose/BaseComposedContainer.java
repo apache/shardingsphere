@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.integration.data.pipeline.framework.container.compose;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.integration.container.atomic.ITContainers;
+import org.apache.shardingsphere.test.integration.env.container.atomic.ITContainers;
 import org.testcontainers.lifecycle.Startable;
 
 @Getter

@@ -49,4 +49,20 @@ public final class CreateIndexStatementHandler implements SQLStatementHandler {
         }
         return Optional.empty();
     }
+    
+    /**
+     * Judge whether contains if not exists or not.
+     *
+     * @param createIndexStatement create index statement
+     * @return whether contains if not exists or not
+     */
+    public static boolean ifNotExists(final CreateIndexStatement createIndexStatement) {
+        if (createIndexStatement instanceof PostgreSQLStatement) {
+            return ((PostgreSQLCreateIndexStatement) createIndexStatement).isIfNotExists();
+        }
+        if (createIndexStatement instanceof OpenGaussStatement) {
+            return ((OpenGaussCreateIndexStatement) createIndexStatement).isIfNotExists();
+        }
+        return false;
+    }
 }
