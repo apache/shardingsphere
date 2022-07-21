@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.string;
 
+import io.netty.buffer.ByteBuf;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.MySQLBinlogColumnDef;
 import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.column.value.MySQLBinlogProtocolValue;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
@@ -39,7 +40,10 @@ public final class MySQLJsonBinlogProtocolValue implements MySQLBinlogProtocolVa
     
     @Override
     public Serializable read(final MySQLBinlogColumnDef columnDef, final MySQLPacketPayload payload) {
-        return MySQLJsonValueDecoder.decode(payload.getByteBuf().readBytes(readLengthFromMeta(columnDef.getColumnMeta(), payload)));
+        ByteBuf newByteBuf = payload.getByteBuf().readBytes(readLengthFromMeta(columnDef.getColumnMeta(), payload));
+        Serializable result = MySQLJsonValueDecoder.decode(newByteBuf);
+        newByteBuf.release();
+        return result;
     }
     
     private int readLengthFromMeta(final int columnMeta, final MySQLPacketPayload payload) {
