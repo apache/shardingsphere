@@ -15,20 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.check;
+package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
-import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+
+import java.util.Optional;
 
 /**
- * Environment checker.
+ * Data source preparer factory.
  */
-// TODO separate all methods to SPI
-public interface EnvironmentChecker {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DataSourcePreparerFactory {
+    
+    static {
+        ShardingSphereServiceLoader.register(DataSourcePreparer.class);
+    }
     
     /**
-     * Get data source preparer type.
+     * Get Data source preparer instance.
      *
-     * @return data source preparer type.
+     * @param databaseType database type
+     * @return data source preparer instance
      */
-    Class<? extends DataSourcePreparer> getDataSourcePreparerClass();
+    public static Optional<DataSourcePreparer> getInstance(final String databaseType) {
+        return TypedSPIRegistry.findRegisteredService(DataSourcePreparer.class, databaseType);
+    }
 }

@@ -47,7 +47,7 @@ public abstract class ExecuteQueryCallback extends JDBCExecutorCallback<QueryRes
     }
     
     @Override
-    protected final Optional<QueryResult> getSaneResult(final SQLStatement sqlStatement) {
+    protected final Optional<QueryResult> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
         return Optional.empty();
     }
     

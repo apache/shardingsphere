@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.merge.dal.impl;
+package org.apache.shardingsphere.encrypt.merge.dal.show;
 
-import org.apache.shardingsphere.encrypt.merge.dal.impl.fixture.TestStatementContext;
+import org.apache.shardingsphere.encrypt.merge.dal.show.fixture.TestStatementContext;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class DecoratedEncryptColumnsMergedResultTest {
+public final class DecoratedEncryptShowColumnsMergedResultTest {
     
     @Test
     public void assertNewValidResult() throws SQLException {
@@ -50,7 +50,7 @@ public final class DecoratedEncryptColumnsMergedResultTest {
         when(mergedResult.next()).thenReturn(true);
         when(mergedResult.wasNull()).thenReturn(false);
         when(mergedResult.getValue(1, getClass())).thenReturn("test");
-        DecoratedEncryptColumnsMergedResult actual = new DecoratedEncryptColumnsMergedResult(mergedResult, testStatementContext, mock(EncryptRule.class));
+        DecoratedEncryptShowColumnsMergedResult actual = new DecoratedEncryptShowColumnsMergedResult(mergedResult, testStatementContext, mock(EncryptRule.class));
         assertTrue(actual.nextValue());
         assertFalse(actual.wasNull());
         assertThat(actual.getOriginalValue(1, getClass()), is("test"));

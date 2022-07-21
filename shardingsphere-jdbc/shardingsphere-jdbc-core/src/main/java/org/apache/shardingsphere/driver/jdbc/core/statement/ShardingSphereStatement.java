@@ -336,7 +336,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             }
             
             @Override
-            protected Optional<Integer> getSaneResult(final SQLStatement sqlStatement) {
+            protected Optional<Integer> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
                 return Optional.empty();
             }
         };
@@ -408,7 +408,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
             }
             
             @Override
-            protected Optional<Boolean> getSaneResult(final SQLStatement sqlStatement) {
+            protected Optional<Boolean> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
                 return Optional.empty();
             }
         };

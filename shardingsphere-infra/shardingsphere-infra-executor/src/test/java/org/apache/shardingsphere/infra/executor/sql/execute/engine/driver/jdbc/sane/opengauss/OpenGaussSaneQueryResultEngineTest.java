@@ -15,19 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.postgresql;
+package org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.sane.opengauss;
 
-import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
-import org.apache.shardingsphere.data.pipeline.postgresql.prepare.datasource.PostgreSQLDataSourcePreparer;
-import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
+import org.junit.Test;
 
-/**
- * Environment checker for PostgreSQL.
- */
-public final class PostgreSQLEnvironmentChecker implements EnvironmentChecker {
+import java.util.Optional;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class OpenGaussSaneQueryResultEngineTest {
     
-    @Override
-    public Class<? extends DataSourcePreparer> getDataSourcePreparerClass() {
-        return PostgreSQLDataSourcePreparer.class;
+    @Test
+    public void assertGetSaneQueryResult() {
+        assertThat(new OpenGaussSaneQueryResultEngine().getSaneQueryResult(null, null), is(Optional.empty()));
+    }
+    
+    @Test
+    public void assertGetType() {
+        assertThat(new OpenGaussSaneQueryResultEngine().getType(), is("openGauss"));
     }
 }
