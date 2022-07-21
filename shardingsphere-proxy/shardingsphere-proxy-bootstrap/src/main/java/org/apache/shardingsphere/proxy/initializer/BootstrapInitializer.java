@@ -61,12 +61,16 @@ public final class BootstrapInitializer {
     
     private ContextManager createContextManager(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig, final int port) throws SQLException {
         ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
+        ContextManagerBuilderParameter parameter = new ContextManagerBuilderParameter(modeConfig, proxyConfig.getDatabaseConfigurations(),
+                proxyConfig.getGlobalConfiguration().getRules(), proxyConfig.getGlobalConfiguration().getProperties(), proxyConfig.getGlobalConfiguration().getLabels(),
+                createInstanceMetaData(proxyConfig, port));
+        return ContextManagerBuilderFactory.getInstance(modeConfig).build(parameter);
+    }
+    
+    private InstanceMetaData createInstanceMetaData(final ProxyConfiguration proxyConfig, final int port) {
         String instanceType = proxyConfig.getGlobalConfiguration().getProperties().getProperty(ConfigurationPropertyKey.PROXY_INSTANCE_TYPE.getKey(),
                 ConfigurationPropertyKey.PROXY_INSTANCE_TYPE.getDefaultValue());
-        InstanceMetaData instanceMetaData = InstanceMetaDataBuilderFactory.create(instanceType, port);
-        ContextManagerBuilderParameter parameter = new ContextManagerBuilderParameter(modeConfig, proxyConfig.getDatabaseConfigurations(),
-                proxyConfig.getGlobalConfiguration().getRules(), proxyConfig.getGlobalConfiguration().getProperties(), proxyConfig.getGlobalConfiguration().getLabels(), instanceMetaData);
-        return ContextManagerBuilderFactory.getInstance(modeConfig).build(parameter);
+        return InstanceMetaDataBuilderFactory.create(instanceType, port);
     }
     
     private void contextManagerInitializedCallback(final ModeConfiguration modeConfig, final ContextManager contextManager) {
