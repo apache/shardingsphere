@@ -108,7 +108,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
             textProtocolBackendHandler =
                     TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("MySQL"), preparedStatement.getSql(), () -> Optional.of(sqlStatement), connectionSession);
         } else {
-            databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, preparedStatement.getSql(), parameters,
+            databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(sqlStatementContext, preparedStatement.getSql(), parameters,
                     connectionSession.getBackendConnection());
         }
         ResponseHeader responseHeader = null != databaseCommunicationEngine ? databaseCommunicationEngine.execute() : textProtocolBackendHandler.execute();

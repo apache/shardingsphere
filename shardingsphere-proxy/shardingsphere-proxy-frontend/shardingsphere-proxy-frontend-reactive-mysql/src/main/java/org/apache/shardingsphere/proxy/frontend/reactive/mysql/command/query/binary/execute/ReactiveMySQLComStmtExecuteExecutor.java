@@ -109,7 +109,7 @@ public final class ReactiveMySQLComStmtExecuteExecutor implements ReactiveComman
                     TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("MySQL"), preparedStatement.getSql(), () -> Optional.of(sqlStatement), connectionSession);
         } else {
             databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance()
-                    .newBinaryProtocolInstance(sqlStatementContext, preparedStatement.getSql(), parameters, connectionSession.getBackendConnection());
+                    .newDatabaseCommunicationEngine(sqlStatementContext, preparedStatement.getSql(), parameters, connectionSession.getBackendConnection());
         }
         return (null != databaseCommunicationEngine ? databaseCommunicationEngine.execute() : textProtocolBackendHandler.executeFuture()).compose(responseHeader -> {
             Collection<DatabasePacket<?>> headerPackets = responseHeader instanceof QueryResponseHeader ? processQuery((QueryResponseHeader) responseHeader, characterSet)
