@@ -59,8 +59,8 @@ public final class MySQLSaneQueryResultEngineTest {
     public void assertGetSaneQueryResultForSelectStatementWithoutFrom() {
         MySQLSelectStatement selectStatement = new MySQLSelectStatement();
         selectStatement.setProjections(new ProjectionsSegment(0, 0));
-        selectStatement.getProjections().getProjections().add(new ExpressionProjectionSegment(0, 0 , "@@session.transaction_read_only"));
-        selectStatement.getProjections().getProjections().add(new ExpressionProjectionSegment(0, 0 , "unknown_variable"));
+        selectStatement.getProjections().getProjections().add(new ExpressionProjectionSegment(0, 0, "@@session.transaction_read_only"));
+        selectStatement.getProjections().getProjections().add(new ExpressionProjectionSegment(0, 0, "unknown_variable"));
         Optional<ExecuteResult> actual = new MySQLSaneQueryResultEngine().getSaneQueryResult(selectStatement, new SQLException());
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(RawMemoryQueryResult.class));
