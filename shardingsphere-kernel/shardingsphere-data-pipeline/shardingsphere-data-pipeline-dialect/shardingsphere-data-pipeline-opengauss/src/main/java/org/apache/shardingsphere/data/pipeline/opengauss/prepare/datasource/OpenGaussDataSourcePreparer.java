@@ -63,4 +63,9 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
         }
         return result;
     }
+    
+    @Override
+    public String getType() {
+        return "openGauss";
+    }
 }

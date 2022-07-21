@@ -17,26 +17,30 @@
 
 package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
-import org.apache.shardingsphere.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.spi.type.typed.TypedSPI;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+
+import java.util.Optional;
 
 /**
- * Data source preparer.
+ * Data source preparer factory.
  */
-@SingletonSPI
-public interface DataSourcePreparer extends TypedSPI {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class DataSourcePreparerFactory {
+    
+    static {
+        ShardingSphereServiceLoader.register(DataSourcePreparer.class);
+    }
     
     /**
-     * Prepare target schemas.
+     * Get Data source preparer instance.
      *
-     * @param parameter prepare target schemas parameter
+     * @param databaseType database type
+     * @return data source preparer instance
      */
-    void prepareTargetSchemas(PrepareTargetSchemasParameter parameter);
-    
-    /**
-     * Prepare target tables.
-     *
-     * @param parameter prepare target tables parameter
-     */
-    void prepareTargetTables(PrepareTargetTablesParameter parameter);
+    public static Optional<DataSourcePreparer> getInstance(final String databaseType) {
+        return TypedSPIRegistry.findRegisteredService(DataSourcePreparer.class, databaseType);
+    }
 }
