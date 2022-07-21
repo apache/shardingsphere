@@ -17,16 +17,17 @@
 
 package org.apache.shardingsphere.test.integration.container.atomic.storage;
 
+import com.google.common.base.Strings;
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
+import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainer;
+import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.env.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath.Type;
-import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
 import org.testcontainers.containers.BindMode;
 
 import javax.sql.DataSource;
@@ -59,8 +60,12 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     @Override
     protected void configure() {
-        withClasspathResourceMapping(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
-        withClasspathResourceMapping(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
+        if (Strings.isNullOrEmpty(scenario)) {
+            withClasspathResourceMapping("/env/" + databaseType.getType().toLowerCase() + "/initdb.sql", "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
+        } else {
+            withClasspathResourceMapping(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
+            withClasspathResourceMapping(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
+        }
     }
     
     @Override
@@ -82,4 +87,9 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     }
     
     protected abstract int getPort();
+    
+    @Override
+    public final String getAbbreviation() {
+        return getDatabaseType().getType().toLowerCase();
+    }
 }
