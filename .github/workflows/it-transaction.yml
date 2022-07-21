@@ -36,9 +36,9 @@ jobs:
     name: transaction-it-test
     runs-on: ubuntu-latest
     env:
-      postgresql_version: 12-alpine
+      postgresql_version: postgres:12-alpine
       mysql_version: 8.0
-      opengauss_version: 3.0.0
+      opengauss_version: enmotech/opengauss:3.0.0
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v3
