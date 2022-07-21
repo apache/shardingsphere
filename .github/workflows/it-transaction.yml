@@ -59,7 +59,7 @@ jobs:
       - name: Run Transaction PostgreSQL Integration Test
         run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.docker.postgresql.version=${{ env.postgresql_version }}
       - name: Run Transaction OpenGauss Integration Test
-          run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.docker.opengauss.version=${{ env.opengauss_version }}
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.docker.opengauss.version=${{ env.opengauss_version }}
 
   scaling-daily-it-test:
     if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
@@ -89,4 +89,4 @@ jobs:
       - name: Run Transaction PostgreSQL Integration Test
         run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.docker.postgresql.version=${{ env.postgresql_version }}
       - name: Run Transaction OpenGauss Integration Test
-          run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.docker.opengauss.version=${{ env.opengauss_version }}
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.docker.opengauss.version=${{ env.opengauss_version }}
