@@ -326,8 +326,9 @@ public final class ContextManager implements AutoCloseable {
         DatabaseConfiguration toBeCreatedDatabaseConfig = new DataSourceProvidedDatabaseConfiguration(toBeCreatedDataSources, toBeCreatedRuleConfigs);
         ShardingSphereDatabase changedDatabase = ShardingSphereDatabasesFactory.create(metaDataContexts.getMetaData().getActualDatabaseName(databaseName),
                 toBeCreatedDatabaseConfig, metaDataContexts.getMetaData().getProps(), instanceContext);
-        metaDataContexts.getMetaData().putDatabase(changedDatabase);
-        return new LinkedHashMap<>(metaDataContexts.getMetaData().getDatabases());
+        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(metaDataContexts.getMetaData().getDatabases());
+        result.put(databaseName.toLowerCase(), changedDatabase);
+        return result;
     }
     
     private MetaDataContexts newMetaDataContexts(final ShardingSphereMetaData metaData, final OptimizerContext optimizerContext) {
