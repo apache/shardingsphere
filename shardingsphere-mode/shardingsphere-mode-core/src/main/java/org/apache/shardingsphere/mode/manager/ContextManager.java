@@ -220,7 +220,7 @@ public final class ContextManager implements AutoCloseable {
         metaDataContexts.getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class).forEach(each -> each.addResource(metaDataContexts.getMetaData().getDatabase(databaseName)));
         metaDataContexts.getOptimizerContext().alterDatabase(metaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getGlobalRuleMetaData());
         persistMetaData(metaDataContexts);
-        metaDataContexts.getPersistService().getDataSourceService().append(databaseName, toBeUpdatedDataSourcePropsMap);
+        metaDataContexts.getPersistService().getDataSourceService().append(metaDataContexts.getMetaData().getActualDatabaseName(databaseName), toBeUpdatedDataSourcePropsMap);
         switchingResource.closeStaleDataSources();
     }
     
