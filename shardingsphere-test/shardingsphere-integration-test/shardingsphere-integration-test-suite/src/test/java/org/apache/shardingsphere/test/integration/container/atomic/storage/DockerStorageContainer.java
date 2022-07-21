@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.test.integration.container.atomic.storage;
 
+import com.google.common.base.Strings;
 import com.zaxxer.hikari.HikariDataSource;
-import jdk.internal.joptsimple.internal.Strings;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
+import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainer;
+import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.env.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath.Type;
-import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
 import org.testcontainers.containers.BindMode;
 
 import javax.sql.DataSource;
