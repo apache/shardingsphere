@@ -202,7 +202,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
         
         @SuppressWarnings("OptionalContainsCollection")
         @Override
-        protected Optional<int[]> getSaneResult(final SQLStatement sqlStatement) {
+        protected Optional<int[]> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
             return Optional.empty();
         }
     }
