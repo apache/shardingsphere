@@ -36,9 +36,9 @@ jobs:
     name: transaction-it-test
     runs-on: ubuntu-latest
     env:
-      postgresql_version: postgres:12-alpine
-      mysql_version: mysql:8.0
-      opengauss_version: enmotech/opengauss:3.0.0
+      postgresql_version: 12-alpine
+      mysql_version: 8.0
+      opengauss_version: 3.0.0
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v3
@@ -63,7 +63,7 @@ jobs:
 
   transaction-daily-it-test:
     if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
-    name: scaling-daily-it-test
+    name: transaction-daily-it-test
     runs-on: ubuntu-latest
     env:
       postgresql_version: postgres:10-alpine,postgres:11-alpine,postgres:12-alpine,postgres:13-alpine,postgres:14-alpine
