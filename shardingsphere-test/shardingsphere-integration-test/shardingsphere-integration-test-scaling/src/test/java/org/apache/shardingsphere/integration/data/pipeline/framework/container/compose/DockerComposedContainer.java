@@ -29,30 +29,25 @@ import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironm
 /**
  * Composed container, include governance container and database container.
  */
-@Getter
 public final class DockerComposedContainer extends BaseComposedContainer {
     
     private final DatabaseType databaseType;
     
-    private final GovernanceContainer governanceContainer;
-    
     private final ShardingSphereProxyDockerContainer proxyContainer;
     
+    @Getter
     private final DatabaseContainer databaseContainer;
     
     public DockerComposedContainer(final DatabaseType databaseType, final String dockerImageName) {
         this.databaseType = databaseType;
-        ShardingSphereProxyDockerContainer proxyContainer = new ShardingSphereProxyDockerContainer(databaseType);
-        governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
+        GovernanceContainer governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
         databaseContainer = getContainers().registerContainer(DatabaseContainerFactory.newInstance(databaseType, dockerImageName));
+        ShardingSphereProxyDockerContainer proxyContainer = new ShardingSphereProxyDockerContainer(databaseType);
         proxyContainer.dependsOn(governanceContainer, databaseContainer);
+        ShardingSphereProxyDockerContainer anotherProxyContainer = new ShardingSphereProxyDockerContainer(databaseType);
+        anotherProxyContainer.dependsOn(governanceContainer, databaseContainer);
         this.proxyContainer = getContainers().registerContainer(proxyContainer);
-    }
-    
-    @Override
-    public void stop() {
-        super.stop();
-        proxyContainer.stop();
+        getContainers().registerContainer(anotherProxyContainer);
     }
     
     @Override
