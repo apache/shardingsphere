@@ -61,7 +61,7 @@ jobs:
       - name: Run Transaction OpenGauss Integration Test
         run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.docker.opengauss.version=${{ env.opengauss_version }}
 
-  scaling-daily-it-test:
+  transaction-daily-it-test:
     if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
     name: scaling-daily-it-test
     runs-on: ubuntu-latest
