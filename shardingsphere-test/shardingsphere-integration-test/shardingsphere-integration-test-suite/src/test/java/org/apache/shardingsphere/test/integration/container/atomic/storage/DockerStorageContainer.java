@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.integration.container.atomic.storage;
 
 import com.zaxxer.hikari.HikariDataSource;
+import jdk.internal.joptsimple.internal.Strings;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -59,8 +60,12 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     @Override
     protected void configure() {
-        withClasspathResourceMapping(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
-        withClasspathResourceMapping(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
+        if (Strings.isNullOrEmpty(scenario)) {
+            withClasspathResourceMapping("/env/" + databaseType.getType().toLowerCase() + "/initdb.sql", "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
+        } else {
+            withClasspathResourceMapping(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
+            withClasspathResourceMapping(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
+        }
     }
     
     @Override
@@ -82,4 +87,9 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     }
     
     protected abstract int getPort();
+    
+    @Override
+    public final String getAbbreviation() {
+        return getDatabaseType().getType().toLowerCase();
+    }
 }
