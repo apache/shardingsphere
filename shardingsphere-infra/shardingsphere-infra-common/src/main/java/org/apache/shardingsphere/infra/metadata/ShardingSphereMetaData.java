@@ -63,7 +63,7 @@ public final class ShardingSphereMetaData {
      */
     public void addDatabase(final String databaseName, final DatabaseType protocolType) throws SQLException {
         ShardingSphereDatabase database = ShardingSphereDatabase.create(databaseName, protocolType);
-        databases.put(databaseName.toLowerCase(), database);
+        putDatabase(database);
         globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.addResource(database));
     }
     
