@@ -38,5 +38,5 @@ public interface SaneQueryResultEngine extends TypedSPI {
      * @param ex SQL exception
      * @return sane execute result
      */
-    Optional<ExecuteResult> getSaneQueryResult(SQLStatement sqlStatement, final SQLException ex);
+    Optional<ExecuteResult> getSaneQueryResult(SQLStatement sqlStatement, SQLException ex);
 }

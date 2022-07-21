@@ -122,5 +122,5 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     
     protected abstract T executeSQL(String sql, Statement statement, ConnectionMode connectionMode) throws SQLException;
     
-    protected abstract Optional<T> getSaneResult(SQLStatement sqlStatement, final SQLException ex);
+    protected abstract Optional<T> getSaneResult(SQLStatement sqlStatement, SQLException ex);
 }
