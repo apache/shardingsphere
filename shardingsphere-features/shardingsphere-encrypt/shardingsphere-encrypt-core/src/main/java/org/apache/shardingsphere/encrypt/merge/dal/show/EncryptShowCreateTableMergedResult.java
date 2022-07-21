@@ -92,11 +92,7 @@ public abstract class EncryptShowCreateTableMergedResult implements MergedResult
             return Optional.of(columnDefinition.replace(plainColumn.get(), logicColumn));
         }
         if (columnDefinition.contains(encryptColumn.get().getCipherColumn())) {
-            if (plainColumn.isPresent()) {
-                return Optional.empty();
-            } else {
-                return Optional.of(columnDefinition.replace(encryptColumn.get().getCipherColumn(), logicColumn));
-            }
+            return plainColumn.isPresent() ? Optional.empty() : Optional.of(columnDefinition.replace(encryptColumn.get().getCipherColumn(), logicColumn));
         }
         return Optional.of(columnDefinition);
     }
