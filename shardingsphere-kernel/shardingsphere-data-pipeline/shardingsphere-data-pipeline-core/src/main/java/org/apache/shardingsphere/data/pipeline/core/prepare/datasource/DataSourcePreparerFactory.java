@@ -25,17 +25,17 @@ import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 import java.util.Optional;
 
 /**
- * Date source preparer factory.
+ * Data source preparer factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DateSourcePreparerFactory {
+public final class DataSourcePreparerFactory {
     
     static {
         ShardingSphereServiceLoader.register(DataSourcePreparer.class);
     }
     
     /**
-     * Get authority provide algorithm instance.
+     * Get Data source preparer instance.
      *
      * @param databaseType database type
      * @return data source preparer instance
