@@ -37,7 +37,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       postgresql_version: postgres:12-alpine
-      mysql_version: 8.0
+      mysql_version: 5.7
       opengauss_version: enmotech/opengauss:3.0.0
     timeout-minutes: 60
     steps:
