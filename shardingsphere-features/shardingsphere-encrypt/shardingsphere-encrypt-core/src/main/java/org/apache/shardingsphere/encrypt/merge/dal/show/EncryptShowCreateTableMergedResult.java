@@ -15,9 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.merge.dal.impl;
+package org.apache.shardingsphere.encrypt.merge.dal.show;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
+import org.apache.shardingsphere.encrypt.rule.EncryptColumn;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -28,18 +30,23 @@ import java.io.InputStream;
 import java.sql.SQLException;
 import java.sql.SQLFeatureNotSupportedException;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Optional;
 
 /**
- * Encrypt column merged result.
+ * Encrypt show create table merged result.
  */
-public abstract class EncryptColumnsMergedResult implements MergedResult {
+public abstract class EncryptShowCreateTableMergedResult implements MergedResult {
+    
+    private static final String COMMA = ",";
+    
+    private static final int CREATE_TABLE_DEFINITION_INDEX = 2;
     
     private final String tableName;
     
     private final EncryptRule encryptRule;
     
-    protected EncryptColumnsMergedResult(final SQLStatementContext<?> sqlStatementContext, final EncryptRule encryptRule) {
+    protected EncryptShowCreateTableMergedResult(final SQLStatementContext<?> sqlStatementContext, final EncryptRule encryptRule) {
         Preconditions.checkState(sqlStatementContext instanceof TableAvailable && 1 == ((TableAvailable) sqlStatementContext).getAllTables().size());
         tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
         this.encryptRule = encryptRule;
@@ -47,37 +54,47 @@ public abstract class EncryptColumnsMergedResult implements MergedResult {
     
     @Override
     public final boolean next() throws SQLException {
-        boolean hasNext = nextValue();
-        Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
-        if (hasNext && !encryptTable.isPresent()) {
-            return true;
-        }
-        if (!hasNext) {
-            return false;
-        }
-        String columnName = getOriginalValue(1, String.class).toString();
-        while (encryptTable.get().getAssistedQueryColumns().contains(columnName) || encryptTable.get().getPlainColumns().contains(columnName)) {
-            hasNext = nextValue();
-            if (!hasNext) {
-                return false;
-            }
-            columnName = getOriginalValue(1, String.class).toString();
-        }
-        return true;
+        return nextValue();
     }
     
     @Override
     public final Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        if (1 == columnIndex) {
-            String columnName = getOriginalValue(1, type).toString();
+        if (CREATE_TABLE_DEFINITION_INDEX == columnIndex) {
+            String result = getOriginalValue(CREATE_TABLE_DEFINITION_INDEX, type).toString();
             Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
             if (!encryptTable.isPresent()) {
-                return columnName;
+                return result;
             }
-            Optional<String> logicColumn = encryptTable.get().isCipherColumn(columnName) ? Optional.of(encryptTable.get().getLogicColumn(columnName)) : Optional.empty();
-            return logicColumn.orElse(columnName);
+            StringBuilder builder = new StringBuilder(result.substring(0, result.indexOf("(") + 1));
+            List<String> columnDefinitions = Splitter.on(COMMA).splitToList(result.substring(result.indexOf("(") + 1, result.lastIndexOf(")")));
+            for (String each : columnDefinitions) {
+                for (String logicColumn : encryptTable.get().getLogicColumns()) {
+                    findLogicColumnDefinition(each, logicColumn, encryptTable.get()).ifPresent(optional -> builder.append(optional).append(COMMA));
+                }
+            }
+            builder.deleteCharAt(builder.length() - 1).append(result.substring(result.lastIndexOf(")")));
+            return builder.toString();
         }
         return getOriginalValue(columnIndex, type);
+    }
+    
+    private Optional<String> findLogicColumnDefinition(final String columnDefinition, final String logicColumn, final EncryptTable encryptTable) {
+        Optional<EncryptColumn> encryptColumn = encryptTable.findEncryptColumn(logicColumn);
+        if (!encryptColumn.isPresent()) {
+            return Optional.of(columnDefinition);
+        }
+        Optional<String> assistedQueryColumn = encryptColumn.get().getAssistedQueryColumn();
+        if (assistedQueryColumn.isPresent() && columnDefinition.contains(assistedQueryColumn.get())) {
+            return Optional.empty();
+        }
+        Optional<String> plainColumn = encryptColumn.get().getPlainColumn();
+        if (plainColumn.isPresent() && columnDefinition.contains(plainColumn.get())) {
+            return Optional.of(columnDefinition.replace(plainColumn.get(), logicColumn));
+        }
+        if (columnDefinition.contains(encryptColumn.get().getCipherColumn())) {
+            return plainColumn.isPresent() ? Optional.empty() : Optional.of(columnDefinition.replace(encryptColumn.get().getCipherColumn(), logicColumn));
+        }
+        return Optional.of(columnDefinition);
     }
     
     @Override
