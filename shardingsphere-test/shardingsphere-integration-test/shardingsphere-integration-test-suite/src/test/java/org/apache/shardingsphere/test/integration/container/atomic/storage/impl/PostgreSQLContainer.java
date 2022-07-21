@@ -34,7 +34,7 @@ import java.sql.SQLException;
 public final class PostgreSQLContainer extends DockerStorageContainer {
     
     public PostgreSQLContainer(final String scenario) {
-        super(DatabaseTypeFactory.getInstance("PostgreSQL"), "postgres:12.6", scenario);
+        super(DatabaseTypeFactory.getInstance("PostgreSQL"), "postgres:12-alpine", scenario);
         setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*database system is ready to accept connections.*"));
     }
     
