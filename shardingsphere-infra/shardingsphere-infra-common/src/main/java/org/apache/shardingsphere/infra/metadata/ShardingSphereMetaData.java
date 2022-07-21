@@ -48,7 +48,8 @@ public final class ShardingSphereMetaData {
     }
     
     public ShardingSphereMetaData(final Map<String, ShardingSphereDatabase> databases, final ShardingSphereRuleMetaData globalRuleMetaData, final ConfigurationProperties props) {
-        this.databases = new ConcurrentHashMap<>(databases);
+        this.databases = new ConcurrentHashMap<>(databases.size(), 1);
+        databases.forEach((key, value) -> this.databases.put(key.toLowerCase(), value));
         this.globalRuleMetaData = globalRuleMetaData;
         this.props = props;
     }
@@ -62,8 +63,28 @@ public final class ShardingSphereMetaData {
      */
     public void addDatabase(final String databaseName, final DatabaseType protocolType) throws SQLException {
         ShardingSphereDatabase database = ShardingSphereDatabase.create(databaseName, protocolType);
-        databases.put(databaseName, database);
+        databases.put(databaseName.toLowerCase(), database);
         globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.addResource(database));
+    }
+    
+    /**
+     * Judge contains database from meta data or not.
+     *
+     * @param databaseName database name
+     * @return contains database from meta data or not
+     */
+    public boolean containsDatabase(final String databaseName) {
+        return databases.containsKey(databaseName.toLowerCase());
+    }
+    
+    /**
+     * Get database.
+     *
+     * @param databaseName database name
+     * @return meta data database
+     */
+    public ShardingSphereDatabase getDatabase(final String databaseName) {
+        return databases.get(databaseName.toLowerCase());
     }
     
     /**
@@ -72,14 +93,14 @@ public final class ShardingSphereMetaData {
      * @param databaseName database name
      */
     public void dropDatabase(final String databaseName) {
-        closeResources(databases.remove(databaseName));
+        closeResources(databases.remove(databaseName.toLowerCase()));
     }
     
     private void closeResources(final ShardingSphereDatabase database) {
         if (null != database.getResource()) {
             database.getResource().getDataSources().values().forEach(each -> database.getResource().close(each));
         }
-        String databaseName = database.getName();
+        String databaseName = database.getName().toLowerCase();
         globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.closeStaleResource(databaseName));
         database.getRuleMetaData().findRules(ResourceHeldRule.class).forEach(each -> each.closeStaleResource(databaseName));
     }

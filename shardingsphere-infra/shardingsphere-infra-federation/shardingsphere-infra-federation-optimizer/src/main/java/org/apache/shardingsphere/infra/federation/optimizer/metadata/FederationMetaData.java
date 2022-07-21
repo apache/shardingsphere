@@ -38,4 +38,14 @@ public final class FederationMetaData {
             this.databases.put(entry.getKey().toLowerCase(), new FederationDatabaseMetaData(entry.getKey(), entry.getValue().getSchemas()));
         }
     }
+    
+    /**
+     * Get database.
+     *
+     * @param databaseName database name
+     * @return database
+     */
+    public FederationDatabaseMetaData getDatabase(final String databaseName) {
+        return databases.get(databaseName.toLowerCase());
+    }
 }

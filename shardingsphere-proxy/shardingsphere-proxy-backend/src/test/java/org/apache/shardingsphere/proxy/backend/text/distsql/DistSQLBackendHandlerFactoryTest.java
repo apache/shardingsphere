@@ -278,7 +278,8 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
         when(database.getResource().getDataSources()).thenReturn(Collections.emptyMap());
         when(database.getResource().getNotExistedResources(any())).thenReturn(Collections.emptyList());
         when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
-        when(result.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("db", database));
+        when(result.getMetaData().containsDatabase("db")).thenReturn(true);
+        when(result.getMetaData().getDatabase("db")).thenReturn(database);
         return result;
     }
     
@@ -290,7 +291,7 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(mock(ShadowRuleConfiguration.class)));
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
-        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("db", database));
+        when(metaDataContexts.getMetaData().getDatabase("db")).thenReturn(database);
     }
     
     private void mockScalingContext() {

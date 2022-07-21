@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.metadata.generator;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGeneratorFactory;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
@@ -81,7 +82,7 @@ public final class PipelineDDLGenerator {
      */
     @SneakyThrows
     public String generateLogicDDLSQL(final DatabaseType databaseType, final String databaseName, final String schemaName, final String tableName) {
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(databaseName);
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName);
         log.info("generateLogicDDLSQL, databaseType={}, databaseName={}, schemaName={}, tableName={}, dataSourceNames={}",
                 databaseType.getType(), databaseName, schemaName, tableName, database.getResource().getDataSources().keySet());
         Collection<String> multiSQL = generateActualDDLSQL(databaseType, schemaName, tableName, database);
@@ -225,6 +226,10 @@ public final class PipelineDDLGenerator {
         if (logicSQL.toLowerCase().startsWith(SET_SEARCH_PATH_PREFIX)) {
             return Optional.empty();
         }
-        return Optional.of(replaceTableNameWithPrefix(logicSQL, schemaName + ".", databaseType, databaseName));
+        String result = replaceTableNameWithPrefix(logicSQL, schemaName + ".", databaseType, databaseName);
+        if (StringUtils.startsWithIgnoreCase(result, "CREATE TABLE")) {
+            result = StringUtils.replaceIgnoreCase(result, "CREATE TABLE", "CREATE TABLE IF NOT EXISTS");
+        }
+        return Optional.of(result);
     }
 }

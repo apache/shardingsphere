@@ -105,7 +105,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
     
     private void checkDatabase(final String databaseName, final File file) {
         Preconditions.checkNotNull(databaseName, String.format("Property `databaseName` in file `%s` is required.", file.getName()));
-        if (ProxyContext.getInstance().getAllDatabaseNames().contains(databaseName)) {
+        if (ProxyContext.getInstance().databaseExists(databaseName)) {
             Preconditions.checkState(ProxyContext.getInstance().getDatabase(databaseName).getResource().getDataSources().isEmpty(), "Database `%s` exists and is not empty.", databaseName);
         }
     }
@@ -145,7 +145,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         }
         Collection<RuleConfiguration> ruleConfigs = new LinkedList<>();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(databaseName);
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         for (YamlRuleConfiguration each : yamlRuleConfigs) {
             if (each instanceof YamlShardingRuleConfiguration) {
                 ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfigurationYamlSwapper().swapToObject((YamlShardingRuleConfiguration) each);

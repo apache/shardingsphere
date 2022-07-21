@@ -117,5 +117,6 @@ execute
     | alterDiskgroup
     | alterIndexType
     | alterMaterializedView
+    | alterMaterializedViewLog
     ) SEMI_?
     ;

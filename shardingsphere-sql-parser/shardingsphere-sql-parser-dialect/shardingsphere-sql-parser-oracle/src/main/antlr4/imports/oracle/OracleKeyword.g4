@@ -2930,3 +2930,19 @@ ENFORCED
 TRUSTED
     : T R U S T E D
     ;
+
+ID
+    : I D
+    ;
+
+SYNCHRONOUS
+    : S Y N C H R O N O U S
+    ;
+
+ASYNCHRONOUS
+    : A S Y N C H R O N O U S
+    ;
+
+REPEAT
+    : R E P E A T
+    ;

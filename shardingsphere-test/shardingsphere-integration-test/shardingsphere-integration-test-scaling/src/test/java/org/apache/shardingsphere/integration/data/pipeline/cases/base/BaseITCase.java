@@ -42,7 +42,9 @@ import org.apache.shardingsphere.integration.data.pipeline.framework.watcher.Sca
 import org.apache.shardingsphere.integration.data.pipeline.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.junit.Rule;
+import org.opengauss.util.PSQLException;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -269,7 +271,22 @@ public abstract class BaseITCase {
     }
     
     protected void createSchema(final String schemaName) {
-        executeWithLog(String.format("CREATE SCHEMA %s", schemaName));
+        if (DatabaseTypeUtil.isPostgreSQL(databaseType)) {
+            executeWithLog(String.format("CREATE SCHEMA IF NOT EXISTS %s", schemaName));
+            return;
+        }
+        if (DatabaseTypeUtil.isOpenGauss(databaseType)) {
+            try {
+                executeWithLog(String.format("CREATE SCHEMA %s", schemaName));
+            } catch (final BadSqlGrammarException ex) {
+                // only used for native mode.
+                if (ex.getCause() instanceof PSQLException && "42P06".equals(((PSQLException) ex.getCause()).getSQLState())) {
+                    log.info("Schema {} already exists.", schemaName);
+                } else {
+                    throw ex;
+                }
+            }
+        }
     }
     
     protected void executeWithLog(final Connection connection, final String sql) throws SQLException {
