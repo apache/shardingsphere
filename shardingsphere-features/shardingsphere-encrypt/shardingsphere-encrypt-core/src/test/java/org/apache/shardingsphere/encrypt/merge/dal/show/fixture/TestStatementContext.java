@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.merge.dal.impl.fixture;
+package org.apache.shardingsphere.encrypt.merge.dal.show.fixture;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;

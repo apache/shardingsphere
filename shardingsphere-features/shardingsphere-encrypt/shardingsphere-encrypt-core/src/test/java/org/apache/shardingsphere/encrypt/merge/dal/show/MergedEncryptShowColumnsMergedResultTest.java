@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.merge.dal;
+package org.apache.shardingsphere.encrypt.merge.dal.show;
 
-import org.apache.shardingsphere.encrypt.merge.dal.impl.MergedEncryptColumnsMergedResult;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.encrypt.rule.EncryptTable;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -42,7 +41,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MergedEncryptColumnsMergedResultTest {
+public final class MergedEncryptShowColumnsMergedResultTest {
     
     @Mock
     private QueryResult queryResult;
@@ -98,12 +97,12 @@ public final class MergedEncryptColumnsMergedResultTest {
         assertFalse(createMergedEncryptColumnsMergedResult(queryResult, mock(EncryptRule.class)).wasNull());
     }
     
-    private MergedEncryptColumnsMergedResult createMergedEncryptColumnsMergedResult(final QueryResult queryResult, final EncryptRule encryptRule) {
+    private MergedEncryptShowColumnsMergedResult createMergedEncryptColumnsMergedResult(final QueryResult queryResult, final EncryptRule encryptRule) {
         SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class);
         IdentifierValue identifierValue = new IdentifierValue("test");
         TableNameSegment tableNameSegment = new TableNameSegment(1, 4, identifierValue);
         SimpleTableSegment simpleTableSegment = new SimpleTableSegment(tableNameSegment);
         when(sqlStatementContext.getAllTables()).thenReturn(Collections.singletonList(simpleTableSegment));
-        return new MergedEncryptColumnsMergedResult(queryResult, sqlStatementContext, encryptRule);
+        return new MergedEncryptShowColumnsMergedResult(queryResult, sqlStatementContext, encryptRule);
     }
 }
