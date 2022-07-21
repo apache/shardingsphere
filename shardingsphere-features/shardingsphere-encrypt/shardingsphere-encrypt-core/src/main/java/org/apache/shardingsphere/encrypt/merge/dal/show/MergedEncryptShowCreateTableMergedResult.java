@@ -15,30 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.merge.dql.fixture;
+package org.apache.shardingsphere.encrypt.merge.dal.show;
 
-import org.apache.shardingsphere.encrypt.merge.dal.show.EncryptShowColumnsMergedResult;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 
-public final class EncryptColumnsMergedResultFixture extends EncryptShowColumnsMergedResult {
+import java.sql.SQLException;
+
+/**
+ * Merged encrypt show create table merged result.
+ */
+public final class MergedEncryptShowCreateTableMergedResult extends EncryptShowCreateTableMergedResult {
     
-    public EncryptColumnsMergedResultFixture(final SQLStatementContext sqlStatementContext, final EncryptRule encryptRule) {
+    private final QueryResult queryResult;
+    
+    public MergedEncryptShowCreateTableMergedResult(final QueryResult queryResult, final SQLStatementContext<?> sqlStatementContext, final EncryptRule encryptRule) {
         super(sqlStatementContext, encryptRule);
+        this.queryResult = queryResult;
     }
     
     @Override
-    public boolean nextValue() {
-        return false;
+    protected boolean nextValue() throws SQLException {
+        return queryResult.next();
     }
     
     @Override
-    public Object getOriginalValue(final int columnIndex, final Class<?> type) {
-        return null;
+    protected Object getOriginalValue(final int columnIndex, final Class<?> type) throws SQLException {
+        return queryResult.getValue(columnIndex, type);
     }
     
     @Override
-    public boolean wasNull() {
-        return false;
+    public boolean wasNull() throws SQLException {
+        return queryResult.wasNull();
     }
 }

@@ -153,7 +153,7 @@ public final class ContextManager implements AutoCloseable {
             Optional.ofNullable(toBeDeletedTableName).ifPresent(optional -> dropTable(databaseName, schemaName, optional));
         }
     }
-
+    
     /**
      * Alter schema.
      *
