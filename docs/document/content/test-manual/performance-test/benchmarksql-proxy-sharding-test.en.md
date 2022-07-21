@@ -1,16 +1,15 @@
 +++
-title = "BenmarkSQL ShardingSphere Proxy Sharding Performance Test"
+title = "BenchmarkSQL ShardingSphere-Proxy Sharding Performance Test"
 weight = 2
 +++
 
-# BenmarkSQL ShardingSphere Proxy Sharding Performance Test
 ## Objective
 
-BenchmarkSQL tool is used to test the sharding performance of ShardingSphere Proxy.
+BenchmarkSQL tool is used to test the sharding performance of ShardingSphere-Proxy.
 
 ## Method
 
-ShardingSphere Proxy supports the TPC-C test through [BenchmarkSQL 5.0](https://sourceforge.net/projects/benchmarksql/).
+ShardingSphere-Proxy supports the TPC-C test through [BenchmarkSQL 5.0](https://sourceforge.net/projects/benchmarksql/).
 In addition to the content described in this document, BenchmarkSQL is operated according to the original document `HOW-TO-RUN.txt`.
 
 ## Fine tuning to test tools
@@ -97,7 +96,7 @@ user=benchmarksql
 password=PWbmsql
 ```
 
-### ShardingSphere Proxy server.yaml parameter recommendations
+### ShardingSphere-Proxy server.yaml parameter recommendations
 
 The default value of `proxy-backend-query-fetch-size` is -1. Changing it to about `50` can minimize the number of fetch for multi-row result sets.
 

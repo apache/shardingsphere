@@ -507,7 +507,7 @@ public final class OpenGaussDDLStatementSQLVisitor extends OpenGaussStatementSQL
     @SuppressWarnings("unchecked")
     @Override
     public ASTNode visitCreateIndex(final CreateIndexContext ctx) {
-        OpenGaussCreateIndexStatement result = new OpenGaussCreateIndexStatement();
+        OpenGaussCreateIndexStatement result = new OpenGaussCreateIndexStatement(null != ctx.ifNotExists());
         result.setTable((SimpleTableSegment) visit(ctx.tableName()));
         result.getColumns().addAll(((CollectionValue<ColumnSegment>) visit(ctx.indexParams())).getValue());
         if (null != ctx.indexName()) {

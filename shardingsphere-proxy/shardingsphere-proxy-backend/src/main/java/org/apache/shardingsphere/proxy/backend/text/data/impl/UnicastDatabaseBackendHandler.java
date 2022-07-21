@@ -59,7 +59,7 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
             throw new RuleNotExistedException();
         }
         connectionSession.setCurrentDatabase(databaseName);
-        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection());
+        databaseCommunicationEngine = databaseCommunicationEngineFactory.newDatabaseCommunicationEngine(sqlStatementContext, sql, connectionSession.getBackendConnection(), false);
         return ((Future<ResponseHeader>) databaseCommunicationEngine.execute()).eventually(unused -> {
             connectionSession.setCurrentDatabase(databaseName);
             return Future.succeededFuture();
@@ -75,7 +75,7 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
         }
         try {
             connectionSession.setCurrentDatabase(databaseName);
-            databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection());
+            databaseCommunicationEngine = databaseCommunicationEngineFactory.newDatabaseCommunicationEngine(sqlStatementContext, sql, connectionSession.getBackendConnection(), false);
             return (ResponseHeader) databaseCommunicationEngine.execute();
         } finally {
             connectionSession.setCurrentDatabase(databaseName);

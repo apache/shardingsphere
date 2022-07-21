@@ -146,6 +146,11 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/20503072?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/strongduanmu" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/10829171?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
         <td>
@@ -156,6 +161,9 @@ chapter = true
         </td>
         <td>
             <b>吴伟杰</b>
+        </td>
+        <td>
+            <b>端正强</b>
         </td>
     </tr>
 </table>
@@ -250,13 +258,13 @@ chapter = true
             </a>
         </td>
         <td>
-            <a href="https://github.com/strongduanmu" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/10829171?v=4" style="border-radius:50%; overflow:hidden">
+            <a href="https://github.com/Technoboy-" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/6297296?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
         <td>
-            <a href="https://github.com/Technoboy-" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/6297296?v=4" style="border-radius:50%; overflow:hidden">
+            <a href="https://github.com/Lucas-307" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/5524798?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
     </tr>
@@ -277,18 +285,13 @@ chapter = true
             <b>陆敬尚</b>
         </td>
         <td>
-            <b>端正强</b>
+            <b>郭吉伟</b>
         </td>
         <td>
-            <b>郭吉伟</b>
+            <b>邱鹿</b>
         </td>
     </tr>
     <tr>
-        <td>
-            <a href="https://github.com/Lucas-307" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/5524798?v=4" style="border-radius:50%; overflow:hidden">
-            </a>
-        </td>
         <td>
             <a href="https://github.com/sandynz" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/42492540?v=4" style="border-radius:50%; overflow:hidden">
@@ -319,11 +322,13 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/29777558?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/LeeGuoPing" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/35389145?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
-        <td>
-            <b>邱鹿</b>
-        </td>
         <td>
             <b>钟红胜</b>
         </td>
@@ -342,13 +347,11 @@ chapter = true
         <td>
             <b>唐国城</b>
         </td>
+        <td>
+            <b>李国平</b>
+        </td>
     </tr>
     <tr>
-        <td>
-            <a href="https://github.com/LeeGuoPing" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/35389145?v=4" style="border-radius:50%; overflow:hidden">
-            </a>
-        </td>
         <td>
             <a href="https://github.com/zjcnb" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/33742097?v=4" style="border-radius:50%; overflow:hidden">
@@ -379,11 +382,13 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/9473278?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/mabaiwan" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/77398366?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
-        <td>
-            <b>李国平</b>
-        </td>
         <td>
             <b>赵锦超</b>
         </td>
@@ -402,15 +407,6 @@ chapter = true
         <td>
             <b>雷群星</b>
         </td>
-    </tr>
-    <tr>
-        <td>
-            <a href="https://github.com/mabaiwan" target="_blank">
-                <img src="https://avatars.githubusercontent.com/u/77398366?v=4" style="border-radius:50%; overflow:hidden">
-            </a>
-        </td>
-    </tr>
-    <tr align="center">
         <td>
             <b>马称</b>
         </td>

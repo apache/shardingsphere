@@ -20,39 +20,34 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.container.
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.factory.DatabaseContainerFactory;
-import org.apache.shardingsphere.integration.data.pipeline.framework.container.cluster.ZookeeperContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.DatabaseContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.proxy.ShardingSphereProxyDockerContainer;
-import org.apache.shardingsphere.test.integration.container.atomic.governance.GovernanceContainer;
-import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
+import org.apache.shardingsphere.test.integration.env.container.atomic.governance.GovernanceContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.governance.impl.ZookeeperContainer;
+import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 
 /**
  * Composed container, include governance container and database container.
  */
-@Getter
 public final class DockerComposedContainer extends BaseComposedContainer {
     
     private final DatabaseType databaseType;
     
-    private final GovernanceContainer governanceContainer;
-    
     private final ShardingSphereProxyDockerContainer proxyContainer;
     
+    @Getter
     private final DatabaseContainer databaseContainer;
     
     public DockerComposedContainer(final DatabaseType databaseType, final String dockerImageName) {
         this.databaseType = databaseType;
+        GovernanceContainer governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
+        databaseContainer = getContainers().registerContainer(DatabaseContainerFactory.newInstance(databaseType, dockerImageName));
         ShardingSphereProxyDockerContainer proxyContainer = new ShardingSphereProxyDockerContainer(databaseType);
-        governanceContainer = getContainers().registerContainer(new ZookeeperContainer(), "zk");
-        databaseContainer = getContainers().registerContainer(DatabaseContainerFactory.newInstance(databaseType, dockerImageName), "db");
         proxyContainer.dependsOn(governanceContainer, databaseContainer);
-        this.proxyContainer = getContainers().registerContainer(proxyContainer, "shardingsphere-proxy");
-    }
-    
-    @Override
-    public void stop() {
-        super.stop();
-        proxyContainer.stop();
+        ShardingSphereProxyDockerContainer anotherProxyContainer = new ShardingSphereProxyDockerContainer(databaseType);
+        anotherProxyContainer.dependsOn(governanceContainer, databaseContainer);
+        this.proxyContainer = getContainers().registerContainer(proxyContainer);
+        getContainers().registerContainer(anotherProxyContainer);
     }
     
     @Override

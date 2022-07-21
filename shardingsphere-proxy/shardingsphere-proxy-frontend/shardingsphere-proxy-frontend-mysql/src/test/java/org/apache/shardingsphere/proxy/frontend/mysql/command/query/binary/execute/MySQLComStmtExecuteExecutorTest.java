@@ -169,7 +169,7 @@ public final class MySQLComStmtExecuteExecutorTest extends ProxyContextRestorer 
         when(databaseCommunicationEngine.getQueryResponseRow()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1))));
         Iterator<DatabasePacket<?>> actual;
         try (MockedStatic<DatabaseCommunicationEngineFactory> mockedStatic = mockStatic(DatabaseCommunicationEngineFactory.class, RETURNS_DEEP_STUBS)) {
-            mockedStatic.when(() -> DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(any(SQLStatementContext.class), anyString(), anyList(), eq(backendConnection)))
+            mockedStatic.when(() -> DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(any(SQLStatementContext.class), anyString(), anyList(), eq(backendConnection)))
                     .thenReturn(databaseCommunicationEngine);
             actual = mysqlComStmtExecuteExecutor.execute().iterator();
         }
@@ -195,7 +195,7 @@ public final class MySQLComStmtExecuteExecutorTest extends ProxyContextRestorer 
         when(databaseCommunicationEngine.execute()).thenReturn(new UpdateResponseHeader(new MySQLUpdateStatement()));
         Iterator<DatabasePacket<?>> actual;
         try (MockedStatic<DatabaseCommunicationEngineFactory> mockedStatic = mockStatic(DatabaseCommunicationEngineFactory.class, RETURNS_DEEP_STUBS)) {
-            mockedStatic.when(() -> DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(any(SQLStatementContext.class), anyString(), anyList(), eq(backendConnection)))
+            mockedStatic.when(() -> DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(any(SQLStatementContext.class), anyString(), anyList(), eq(backendConnection)))
                     .thenReturn(databaseCommunicationEngine);
             actual = mysqlComStmtExecuteExecutor.execute().iterator();
         }

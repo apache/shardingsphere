@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.container.atomic.storage.impl
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
+import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.container.atomic.storage.DockerStorageContainer;
 import org.postgresql.util.PSQLException;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
@@ -34,7 +34,7 @@ import java.sql.SQLException;
 public final class PostgreSQLContainer extends DockerStorageContainer {
     
     public PostgreSQLContainer(final String scenario) {
-        super(DatabaseTypeFactory.getInstance("PostgreSQL"), "postgres:12.6", scenario);
+        super(DatabaseTypeFactory.getInstance("PostgreSQL"), "postgres:12-alpine", scenario);
         setWaitStrategy(new LogMessageWaitStrategy().withRegEx(".*database system is ready to accept connections.*"));
     }
     
@@ -67,5 +67,10 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
     @Override
     protected int getPort() {
         return 5432;
+    }
+    
+    @Override
+    public String getAbbreviation() {
+        return "postgresql";
     }
 }

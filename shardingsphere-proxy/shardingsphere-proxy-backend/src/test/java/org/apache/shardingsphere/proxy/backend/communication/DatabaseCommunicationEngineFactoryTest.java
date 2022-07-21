@@ -62,22 +62,22 @@ public final class DatabaseCommunicationEngineFactoryTest extends ProxyContextRe
     }
     
     @Test
-    public void assertNewTextProtocolInstance() {
+    public void assertNewDatabaseCommunicationEngineWithoutParameter() {
         JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class, RETURNS_DEEP_STUBS);
         when(backendConnection.getConnectionSession().getDatabaseName()).thenReturn("db");
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
-        DatabaseCommunicationEngine<?> engine = DatabaseCommunicationEngineFactory.getInstance().newTextProtocolInstance(sqlStatementContext, "schemaName", backendConnection);
+        DatabaseCommunicationEngine<?> engine = DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(sqlStatementContext, "schemaName", backendConnection, false);
         assertThat(engine, instanceOf(DatabaseCommunicationEngine.class));
     }
     
     @Test
-    public void assertNewBinaryProtocolInstance() {
+    public void assertNewDatabaseCommunicationEngineWithParameters() {
         JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class, RETURNS_DEEP_STUBS);
         when(backendConnection.getConnectionSession().getDatabaseName()).thenReturn("db");
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
-        assertThat(DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, "schemaName", Collections.emptyList(), backendConnection),
+        assertThat(DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(sqlStatementContext, "schemaName", Collections.emptyList(), backendConnection),
                 instanceOf(DatabaseCommunicationEngine.class));
     }
 }
