@@ -76,7 +76,7 @@ public abstract class EncryptShowColumnsMergedResult implements MergedResult {
             if (!encryptTable.isPresent()) {
                 return columnName;
             }
-            Optional<String> logicColumn = encryptTable.get().isCipherColumn(columnName) ? Optional.of(encryptTable.get().getLogicColumn(columnName)) : Optional.empty();
+            Optional<String> logicColumn = encryptTable.get().isCipherColumn(columnName) ? Optional.of(encryptTable.get().getLogicColumnByCipherColumn(columnName)) : Optional.empty();
             return logicColumn.orElse(columnName);
         }
         return getOriginalValue(columnIndex, type);
