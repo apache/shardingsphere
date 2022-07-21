@@ -3318,22 +3318,6 @@
     <sql-case id="alter_by_postgresql_source_test_case214" value="ALTER OPERATOR FAMILY alt_opf7 USING btree DROP OPERATOR 1 (int4, int2, int8);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case215" value="ALTER OPERATOR FAMILY alt_opf8 USING btree ADD OPERATOR 1 &lt; (int4, int4);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case216" value="ALTER OPERATOR FAMILY alt_opf9 USING gist ADD OPERATOR 1 &lt; (int4, int4) FOR ORDER BY float_ops;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case296" value="ALTER SERVER alt_fserv1 RENAME TO alt_fserv2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case297" value="ALTER SERVER alt_fserv1 RENAME TO alt_fserv3;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case298" value="ALTER SERVER s0;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case299" value="ALTER SERVER s1 OWNER TO regress_test_indirect;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case300" value="ALTER SERVER s1 OWNER TO regress_test_indirect;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case301" value="ALTER SERVER s1 OWNER TO regress_test_indirect;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case302" value="ALTER SERVER s1 OWNER TO regress_test_role2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case303" value="ALTER SERVER s1 OWNER TO regress_test_role;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case304" value="ALTER SERVER s1 OWNER TO regress_test_role;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case305" value="ALTER SERVER s2 OWNER TO regress_test_role;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case306" value="ALTER SERVER s4 OWNER TO regress_unprivileged_role;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case307" value="ALTER SERVER s5 OWNER TO regress_test_role;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case308" value="ALTER SERVER s6 OWNER TO regress_test_indirect;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case309" value="ALTER SERVER s8 RENAME to s8new;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case310" value="ALTER SERVER s8new RENAME to s8;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case311" value="ALTER SERVER t1 OWNER TO regress_test_indirect;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case312" value="ALTER STATISTICS IF EXISTS ab1_a_b_stats SET STATISTICS 0;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case313" value="ALTER STATISTICS ab1_a_b_stats RENAME TO ab1_a_b_stats_new;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case314" value="ALTER STATISTICS ab1_a_b_stats SET STATISTICS -1;" db-types="PostgreSQL" />
