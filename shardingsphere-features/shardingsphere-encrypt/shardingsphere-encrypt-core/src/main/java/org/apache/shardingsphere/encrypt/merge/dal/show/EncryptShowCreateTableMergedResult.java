@@ -88,11 +88,11 @@ public abstract class EncryptShowCreateTableMergedResult implements MergedResult
             return Optional.empty();
         }
         Optional<String> plainColumn = encryptColumn.get().getPlainColumn();
-        if (plainColumn.isPresent() && columnDefinition.contains(plainColumn.get())) {
-            return Optional.of(columnDefinition.replace(plainColumn.get(), logicColumn));
-        }
         if (columnDefinition.contains(encryptColumn.get().getCipherColumn())) {
             return plainColumn.isPresent() ? Optional.empty() : Optional.of(columnDefinition.replace(encryptColumn.get().getCipherColumn(), logicColumn));
+        }
+        if (plainColumn.isPresent() && columnDefinition.contains(plainColumn.get())) {
+            return Optional.of(columnDefinition.replace(plainColumn.get(), logicColumn));
         }
         return Optional.of(columnDefinition);
     }
