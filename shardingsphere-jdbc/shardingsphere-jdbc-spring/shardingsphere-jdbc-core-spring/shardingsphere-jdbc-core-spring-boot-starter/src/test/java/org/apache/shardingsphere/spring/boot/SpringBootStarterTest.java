@@ -157,7 +157,7 @@ public class SpringBootStarterTest {
     }
     
     private void assertEncryptTable(final EncryptTable actual) {
-        assertThat(actual.getLogicColumn("pwd_cipher"), is("pwd"));
+        assertThat(actual.getLogicColumnByCipherColumn("pwd_cipher"), is("pwd"));
         assertThat(actual.getPlainColumns(), is(Collections.singletonList("pwd_plain")));
         assertThat(actual.getAssistedQueryColumns(), is(Collections.singletonList("pwd_assisted_query_cipher")));
     }

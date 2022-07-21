@@ -76,7 +76,7 @@ public final class MergedEncryptShowColumnsMergedResultTest {
         when(result.findEncryptTable("test")).thenReturn(Optional.of(encryptTable));
         when(encryptTable.getAssistedQueryColumns()).thenReturn(Collections.singleton("assistedQuery"));
         when(encryptTable.isCipherColumn("cipher")).thenReturn(true);
-        when(encryptTable.getLogicColumn("cipher")).thenReturn("id");
+        when(encryptTable.getLogicColumnByCipherColumn("cipher")).thenReturn("id");
         return result;
     }
     
