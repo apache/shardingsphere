@@ -62,7 +62,7 @@ public final class DatabaseCommunicationEngineFactoryTest extends ProxyContextRe
     }
     
     @Test
-    public void assertNewTextProtocolInstance() {
+    public void assertNewDatabaseCommunicationEngineWithoutParameter() {
         JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class, RETURNS_DEEP_STUBS);
         when(backendConnection.getConnectionSession().getDatabaseName()).thenReturn("db");
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
@@ -72,7 +72,7 @@ public final class DatabaseCommunicationEngineFactoryTest extends ProxyContextRe
     }
     
     @Test
-    public void assertNewBinaryProtocolInstance() {
+    public void assertNewDatabaseCommunicationEngineWithParameters() {
         JDBCBackendConnection backendConnection = mock(JDBCBackendConnection.class, RETURNS_DEEP_STUBS);
         when(backendConnection.getConnectionSession().getDatabaseName()).thenReturn("db");
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
