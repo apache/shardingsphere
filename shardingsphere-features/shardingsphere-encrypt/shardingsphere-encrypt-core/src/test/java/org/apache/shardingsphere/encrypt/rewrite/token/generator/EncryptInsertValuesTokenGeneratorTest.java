@@ -39,6 +39,7 @@ public final class EncryptInsertValuesTokenGeneratorTest extends EncryptGenerato
     public void assertGenerateSQLTokenFromGenerateNewSQLToken() {
         EncryptInsertValuesTokenGenerator encryptInsertValuesTokenGenerator = new EncryptInsertValuesTokenGenerator();
         encryptInsertValuesTokenGenerator.setEncryptRule(new EncryptRule(createEncryptRuleConfiguration()));
+        encryptInsertValuesTokenGenerator.setPreviousSQLTokens(Collections.emptyList());
         assertThat(encryptInsertValuesTokenGenerator.generateSQLToken(createInsertStatementContext(Arrays.asList(1, "Tom", 0, "123456"))).toString(), is("(?, ?, ?, ?, ?, ?)"));
     }
 

@@ -77,9 +77,6 @@ public final class EncryptInsertValuesTokenGenerator implements OptionalSQLToken
     }
     
     private Optional<SQLToken> findPreviousSQLToken(final Class<?> sqlToken) {
-        if (null == previousSQLTokens) {
-            return Optional.empty();
-        }
         for (SQLToken each : previousSQLTokens) {
             if (sqlToken.isAssignableFrom(each.getClass())) {
                 return Optional.of(each);
