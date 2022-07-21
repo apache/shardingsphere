@@ -43,11 +43,6 @@ public final class MySQLScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<MySQLEnvironmentChecker> getEnvironmentCheckerClass() {
-        return MySQLEnvironmentChecker.class;
-    }
-    
-    @Override
     public String getType() {
         return "MySQL";
     }
