@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.initializer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
+import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilderFactory;
 import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
@@ -60,10 +61,16 @@ public final class BootstrapInitializer {
     
     private ContextManager createContextManager(final YamlProxyConfiguration yamlConfig, final ModeConfiguration modeConfig, final int port) throws SQLException {
         ProxyConfiguration proxyConfig = new YamlProxyConfigurationSwapper().swap(yamlConfig);
-        InstanceMetaData instanceMetaData = InstanceMetaDataBuilderFactory.create("Proxy", port);
         ContextManagerBuilderParameter parameter = new ContextManagerBuilderParameter(modeConfig, proxyConfig.getDatabaseConfigurations(),
-                proxyConfig.getGlobalConfiguration().getRules(), proxyConfig.getGlobalConfiguration().getProperties(), proxyConfig.getGlobalConfiguration().getLabels(), instanceMetaData);
+                proxyConfig.getGlobalConfiguration().getRules(), proxyConfig.getGlobalConfiguration().getProperties(), proxyConfig.getGlobalConfiguration().getLabels(),
+                createInstanceMetaData(proxyConfig, port));
         return ContextManagerBuilderFactory.getInstance(modeConfig).build(parameter);
+    }
+    
+    private InstanceMetaData createInstanceMetaData(final ProxyConfiguration proxyConfig, final int port) {
+        String instanceType = proxyConfig.getGlobalConfiguration().getProperties().getProperty(ConfigurationPropertyKey.PROXY_INSTANCE_TYPE.getKey(),
+                ConfigurationPropertyKey.PROXY_INSTANCE_TYPE.getDefaultValue());
+        return InstanceMetaDataBuilderFactory.create(instanceType, port);
     }
     
     private void contextManagerInitializedCallback(final ModeConfiguration modeConfig, final ContextManager contextManager) {
