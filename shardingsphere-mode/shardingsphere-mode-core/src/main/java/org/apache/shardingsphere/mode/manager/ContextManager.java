@@ -390,8 +390,8 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private void persistMetaData(final MetaDataContexts metaDataContexts) {
-        metaDataContexts.getMetaData().getDatabases().values().forEach(each -> each.getSchemas().forEach((schemaName, tables) ->
-                metaDataContexts.getPersistService().getDatabaseMetaDataService().persistMetaData(each.getName(), schemaName, tables)));
+        metaDataContexts.getMetaData().getDatabases().values().forEach(
+                each -> each.getSchemas().forEach((schemaName, tables) -> metaDataContexts.getPersistService().getDatabaseMetaDataService().persistMetaData(each.getName(), schemaName, tables)));
     }
     
     /**
