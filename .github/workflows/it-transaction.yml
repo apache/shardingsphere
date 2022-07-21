@@ -19,7 +19,7 @@ name: Transaction Integration Test
 
 on:
   push:
-    branches: [ master, dev ]
+    branches: [ master, dev, test-transaction-it ]
 
   pull_request:
     branches: [ master ]
