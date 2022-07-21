@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.encrypt.merge.dal.impl;
+package org.apache.shardingsphere.encrypt.merge.dal.show;
 
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
@@ -31,15 +31,17 @@ import java.util.Calendar;
 import java.util.Optional;
 
 /**
- * Encrypt column merged result.
+ * Encrypt show columns merged result.
  */
-public abstract class EncryptColumnsMergedResult implements MergedResult {
+public abstract class EncryptShowColumnsMergedResult implements MergedResult {
+    
+    private static final int COLUMN_FIELD_INDEX = 1;
     
     private final String tableName;
     
     private final EncryptRule encryptRule;
     
-    protected EncryptColumnsMergedResult(final SQLStatementContext<?> sqlStatementContext, final EncryptRule encryptRule) {
+    protected EncryptShowColumnsMergedResult(final SQLStatementContext<?> sqlStatementContext, final EncryptRule encryptRule) {
         Preconditions.checkState(sqlStatementContext instanceof TableAvailable && 1 == ((TableAvailable) sqlStatementContext).getAllTables().size());
         tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
         this.encryptRule = encryptRule;
@@ -55,21 +57,21 @@ public abstract class EncryptColumnsMergedResult implements MergedResult {
         if (!hasNext) {
             return false;
         }
-        String columnName = getOriginalValue(1, String.class).toString();
+        String columnName = getOriginalValue(COLUMN_FIELD_INDEX, String.class).toString();
         while (encryptTable.get().getAssistedQueryColumns().contains(columnName) || encryptTable.get().getPlainColumns().contains(columnName)) {
             hasNext = nextValue();
             if (!hasNext) {
                 return false;
             }
-            columnName = getOriginalValue(1, String.class).toString();
+            columnName = getOriginalValue(COLUMN_FIELD_INDEX, String.class).toString();
         }
         return true;
     }
     
     @Override
     public final Object getValue(final int columnIndex, final Class<?> type) throws SQLException {
-        if (1 == columnIndex) {
-            String columnName = getOriginalValue(1, type).toString();
+        if (COLUMN_FIELD_INDEX == columnIndex) {
+            String columnName = getOriginalValue(COLUMN_FIELD_INDEX, type).toString();
             Optional<EncryptTable> encryptTable = encryptRule.findEncryptTable(tableName);
             if (!encryptTable.isPresent()) {
                 return columnName;
