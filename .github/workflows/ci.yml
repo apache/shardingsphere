@@ -22,7 +22,7 @@ name: Continuous Integration
 
 on:
   push:
-    branches: [ master, dev]
+    branches: [ master, dev ]
     paths:
       - '.github/workflows/ci.yml'
       - '**/pom.xml'
