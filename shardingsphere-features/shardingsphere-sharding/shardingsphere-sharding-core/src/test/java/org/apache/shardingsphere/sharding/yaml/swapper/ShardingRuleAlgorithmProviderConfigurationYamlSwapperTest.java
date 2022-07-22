@@ -63,11 +63,11 @@ public final class ShardingRuleAlgorithmProviderConfigurationYamlSwapperTest {
         assertThat(getSwapper().getRuleTagName(), equalTo("SHARDING"));
     }
 
-    public ShardingRuleAlgorithmProviderConfigurationYamlSwapper getSwapper() {
+    private ShardingRuleAlgorithmProviderConfigurationYamlSwapper getSwapper() {
         return (ShardingRuleAlgorithmProviderConfigurationYamlSwapper) YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurations(Collections.singletonList(ruleConfig)).get(ruleConfig);
     }
 
-    public AlgorithmProvidedShardingRuleConfiguration createAlgorithmProvidedShardingRuleConfiguration() {
+    private AlgorithmProvidedShardingRuleConfiguration createAlgorithmProvidedShardingRuleConfiguration() {
         AlgorithmProvidedShardingRuleConfiguration algorithmProvidedShardingRuleConfiguration = new AlgorithmProvidedShardingRuleConfiguration();
         ShardingTableRuleConfiguration shardingTableRuleConfiguration = new ShardingTableRuleConfiguration("foo_db");
         algorithmProvidedShardingRuleConfiguration.setTables(Collections.singletonList(shardingTableRuleConfiguration));
@@ -79,7 +79,7 @@ public final class ShardingRuleAlgorithmProviderConfigurationYamlSwapperTest {
         return algorithmProvidedShardingRuleConfiguration;
     }
 
-    public YamlShardingRuleConfiguration createYamlShardingRuleConfiguration() {
+    private YamlShardingRuleConfiguration createYamlShardingRuleConfiguration() {
         YamlShardingRuleConfiguration yamlShardingRuleConfiguration = new YamlShardingRuleConfiguration();
         Map<String, YamlTableRuleConfiguration> yamlTableRuleConfigurationMap = new HashMap<>();
         YamlTableRuleConfiguration yamlTableRuleConfiguration = new YamlTableRuleConfiguration();
