@@ -51,6 +51,7 @@ public final class MySQLPreparedStatement implements PreparedStatement {
     
     private final Map<Integer, byte[]> longData = new ConcurrentHashMap<>();
     
+    @Override
     public Optional<SQLStatementContext<?>> getSqlStatementContext() {
         return Optional.of(sqlStatementContext);
     }
