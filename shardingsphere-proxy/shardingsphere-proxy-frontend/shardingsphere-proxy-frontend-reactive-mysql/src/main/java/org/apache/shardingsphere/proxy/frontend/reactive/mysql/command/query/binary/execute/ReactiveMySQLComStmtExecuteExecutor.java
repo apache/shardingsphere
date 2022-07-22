@@ -90,7 +90,7 @@ public final class ReactiveMySQLComStmtExecuteExecutor implements ReactiveComman
         MySQLPreparedStatement preparedStatement = updateAndGetPreparedStatement();
         List<Object> parameters = packet.readParameters(preparedStatement.getParameterTypes(), preparedStatement.getLongData().keySet());
         preparedStatement.getLongData().forEach(parameters::set);
-        SQLStatementContext<?> sqlStatementContext = preparedStatement.getSqlStatementContext();
+        SQLStatementContext<?> sqlStatementContext = preparedStatement.getSqlStatementContext().get();
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).setUpParameters(parameters);
         }

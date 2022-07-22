@@ -80,8 +80,7 @@ public final class TextProtocolBackendHandlerFactory {
      * @throws SQLException SQL exception
      */
     public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final String sql, final ConnectionSession connectionSession) throws SQLException {
-        String trimSQL = SQLUtil.trimComment(sql);
-        if (Strings.isNullOrEmpty(trimSQL)) {
+        if (Strings.isNullOrEmpty(SQLUtil.trimComment(sql))) {
             return new SkipBackendHandler(new EmptyStatement());
         }
         SQLParserRule sqlParserRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
@@ -99,11 +98,9 @@ public final class TextProtocolBackendHandlerFactory {
      * @return created instance
      * @throws SQLException SQL exception
      */
-    @SuppressWarnings("unchecked")
     public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final String sql, final SQLStatement sqlStatement,
                                                          final ConnectionSession connectionSession) throws SQLException {
-        String trimSQL = SQLUtil.trimComment(sql);
-        if (Strings.isNullOrEmpty(trimSQL)) {
+        if (sqlStatement instanceof EmptyStatement) {
             return new SkipBackendHandler(new EmptyStatement());
         }
         databaseType.handleRollbackOnly(connectionSession.getTransactionStatus().isRollbackOnly(), sqlStatement);
@@ -114,9 +111,28 @@ public final class TextProtocolBackendHandlerFactory {
             }
             return DistSQLBackendHandlerFactory.newInstance((DistSQLStatement) sqlStatement, connectionSession);
         }
-        handleAutoCommit(sqlStatement, connectionSession);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(),
                 sqlStatement, connectionSession.getDefaultDatabaseName());
+        return newInstance(databaseType, new LogicSQL(sqlStatementContext, sql, Collections.emptyList()), connectionSession, false);
+    }
+    
+    /**
+     * Create new instance of backend handler.
+     *
+     * @param databaseType database type
+     * @param logicSQL logic SQL
+     * @param connectionSession connection session
+     * @param preferPreparedStatement use prepared statement as possible
+     * @return created instance
+     * @throws SQLException SQL exception
+     */
+    @SuppressWarnings("unchecked")
+    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final LogicSQL logicSQL, final ConnectionSession connectionSession,
+                                                         final boolean preferPreparedStatement) throws SQLException {
+        SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
+        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
+        String sql = logicSQL.getSql();
+        handleAutoCommit(sqlStatement, connectionSession);
         Optional<TextProtocolBackendHandler> backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession, sql);
         if (backendHandler.isPresent()) {
             return backendHandler.get();
@@ -142,7 +158,7 @@ public final class TextProtocolBackendHandlerFactory {
             return TransactionBackendHandlerFactory.newInstance((SQLStatementContext<TCLStatement>) sqlStatementContext, sql, connectionSession);
         }
         backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession);
-        return backendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(new LogicSQL(sqlStatementContext, sql, Collections.emptyList()), connectionSession, false));
+        return backendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(new LogicSQL(sqlStatementContext, sql, Collections.emptyList()), connectionSession, preferPreparedStatement));
     }
     
     private static DatabaseType getProtocolType(final DatabaseType defaultDatabaseType, final ConnectionSession connectionSession) {
