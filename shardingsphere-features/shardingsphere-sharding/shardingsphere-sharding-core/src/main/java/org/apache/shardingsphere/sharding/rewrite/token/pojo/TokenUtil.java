@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Token utility.
@@ -34,11 +35,12 @@ import org.apache.shardingsphere.sharding.rule.ShardingRule;
 public final class TokenUtil {
     
     /**
-     * get logicTable and actualTable.
-     * @param routeUnit Route unit
+     * Get logic table and actual table.
+     * 
+     * @param routeUnit route unit
      * @param sqlStatementContext SQL statement context
-     * @param shardingRule Sharding rule
-     * @return key is logicTable name, values is actualTable belong to this data source
+     * @param shardingRule sharding rule
+     * @return key is logic table name, values is actual table belong to this data source
      */
     public static Map<String, String> getLogicAndActualTables(final RouteUnit routeUnit, final SQLStatementContext<?> sqlStatementContext, final ShardingRule shardingRule) {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();

@@ -17,14 +17,6 @@
 
 package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Map;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -37,23 +29,30 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
 
-public class TokenUtilTest {
+import java.util.Arrays;
+import java.util.Collections;
 
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+
+public final class TokenUtilTest {
+    
     @Test
     public void assertGetLogicAndActualTablesFromRouteUnit() {
-        Map<String, String> logicAndActualTables = TokenUtil.getLogicAndActualTables(getRouteUnit(), mock(SQLStatementContext.class, RETURNS_DEEP_STUBS), mock(ShardingRule.class));
-        assertThat(logicAndActualTables.get("logic_order_table"), is("table_order_0"));
+        assertThat(TokenUtil.getLogicAndActualTables(getRouteUnit(), mock(SQLStatementContext.class, RETURNS_DEEP_STUBS), mock(ShardingRule.class)).get("logic_order_table"), is("table_order_0"));
     }
-
+    
     @Test
     public void assertGetLogicAndActualTablesFromShardingRule() {
         // TODO add more test case
     }
-
+    
     private RouteUnit getRouteUnit() {
-        return new RouteUnit(new RouteMapper(DefaultDatabase.LOGIC_NAME, "ds_0"), Collections.singletonList(new RouteMapper("LOGIC_ORDER_TABLE", "table_order_0")));
+        return new RouteUnit(new RouteMapper(DefaultDatabase.LOGIC_NAME, "ds_0"), Collections.singleton(new RouteMapper("LOGIC_ORDER_TABLE", "table_order_0")));
     }
-
+    
     private ShardingRule createShardingRule() {
         ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfiguration();
         ShardingTableRuleConfiguration shardingTableRuleConfig = createTableRuleConfiguration("LOGIC_TABLE", "ds_${0..1}.table_${0..1}");
@@ -61,7 +60,7 @@ public class TokenUtilTest {
         shardingRuleConfig.getTables().add(shardingTableRuleConfig);
         return new ShardingRule(shardingRuleConfig, Arrays.asList("ds_0", "ds_1"), mock(InstanceContext.class));
     }
-
+    
     private ShardingTableRuleConfiguration createTableRuleConfiguration(final String logicTableName, final String actualDataNodes) {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration(logicTableName, actualDataNodes);
         result.setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "database_inline"));
