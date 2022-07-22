@@ -38,29 +38,18 @@ public abstract class AbstractShardingRuleConfigurationChecker<T extends RuleCon
     
     @Override
     public final void check(final String databaseName, final T config) {
-        checkShardingRuleConfiguration(databaseName, config);
+        Collection<String> keyGenerators = getKeyGenerators(config);
+        Collection<String> auditors = getAuditors(config);
+        Collection<String> shardingAlgorithms = getShardingAlgorithms(config);
+        checkTableConfiguration(getTables(config), getAutoTables(config), keyGenerators, auditors, shardingAlgorithms, databaseName);
+        checkKeyGenerateStrategy(getDefaultKeyGenerateStrategy(config), keyGenerators, databaseName);
+        checkAuditStrategy(getDefaultAuditStrategy(config), auditors, databaseName);
+        checkShardingStrategy(getDefaultDatabaseShardingStrategy(config), shardingAlgorithms, databaseName);
+        checkShardingStrategy(getDefaultTableShardingStrategy(config), shardingAlgorithms, databaseName);
     }
     
-    /**
-     * Check sharding rule configuration.
-     * 
-     * @param databaseName database name
-     * @param config config
-     */
-    protected abstract void checkShardingRuleConfiguration(String databaseName, T config);
-    
-    /**
-     * Check table configuration.
-     * 
-     * @param tables table configurations
-     * @param autoTables autoTable configurations
-     * @param keyGenerators keyGenerators
-     * @param auditors auditors
-     * @param shardingAlgorithms shardingAlgorithms
-     * @param databaseName database name
-     */
-    protected void checkTableConfiguration(final Collection<ShardingTableRuleConfiguration> tables, final Collection<ShardingAutoTableRuleConfiguration> autoTables,
-                                           final Collection<String> keyGenerators, final Collection<String> auditors, final Collection<String> shardingAlgorithms, final String databaseName) {
+    private void checkTableConfiguration(final Collection<ShardingTableRuleConfiguration> tables, final Collection<ShardingAutoTableRuleConfiguration> autoTables,
+                                         final Collection<String> keyGenerators, final Collection<String> auditors, final Collection<String> shardingAlgorithms, final String databaseName) {
         Preconditions.checkState(!tables.isEmpty() || !autoTables.isEmpty(),
                 "No available sharding table or autoTable configurations in database `%s`.", databaseName);
         for (ShardingTableRuleConfiguration each : tables) {
@@ -76,14 +65,7 @@ public abstract class AbstractShardingRuleConfigurationChecker<T extends RuleCon
         }
     }
     
-    /**
-     * Check key generate strategy.
-     * 
-     * @param keyGenerateStrategy key generate strategy
-     * @param keyGenerators keyGenerators
-     * @param databaseName database name
-     */
-    protected void checkKeyGenerateStrategy(final KeyGenerateStrategyConfiguration keyGenerateStrategy, final Collection<String> keyGenerators, final String databaseName) {
+    private void checkKeyGenerateStrategy(final KeyGenerateStrategyConfiguration keyGenerateStrategy, final Collection<String> keyGenerators, final String databaseName) {
         if (null == keyGenerateStrategy) {
             return;
         }
@@ -91,14 +73,7 @@ public abstract class AbstractShardingRuleConfigurationChecker<T extends RuleCon
                 "Can not find keyGenerator `%s` in database `%s`.", keyGenerateStrategy.getKeyGeneratorName(), databaseName);
     }
     
-    /**
-     * Check audit strategy.
-     * 
-     * @param auditStrategy audit strategy
-     * @param auditors auditors
-     * @param databaseName database name
-     */
-    protected void checkAuditStrategy(final ShardingAuditStrategyConfiguration auditStrategy, final Collection<String> auditors, final String databaseName) {
+    private void checkAuditStrategy(final ShardingAuditStrategyConfiguration auditStrategy, final Collection<String> auditors, final String databaseName) {
         if (null == auditStrategy) {
             return;
         }
@@ -106,18 +81,29 @@ public abstract class AbstractShardingRuleConfigurationChecker<T extends RuleCon
                 "Can not find all auditors `%s` in database `%s`.", auditStrategy.getAuditorNames(), databaseName);
     }
     
-    /**
-     * Check sharding strategy.
-     * 
-     * @param shardingStrategy sharding strategy
-     * @param shardingAlgorithms shardingAlgorithms
-     * @param databaseName database name
-     */
-    protected void checkShardingStrategy(final ShardingStrategyConfiguration shardingStrategy, final Collection<String> shardingAlgorithms, final String databaseName) {
+    private void checkShardingStrategy(final ShardingStrategyConfiguration shardingStrategy, final Collection<String> shardingAlgorithms, final String databaseName) {
         if (null == shardingStrategy || shardingStrategy instanceof NoneShardingStrategyConfiguration) {
             return;
         }
         Preconditions.checkState(shardingAlgorithms.contains(shardingStrategy.getShardingAlgorithmName()),
                 "Can not find shardingAlgorithm `%s` in database `%s`.", shardingStrategy.getShardingAlgorithmName(), databaseName);
     }
+    
+    protected abstract Collection<String> getKeyGenerators(T config);
+    
+    protected abstract Collection<String> getAuditors(T config);
+    
+    protected abstract Collection<String> getShardingAlgorithms(T config);
+    
+    protected abstract Collection<ShardingTableRuleConfiguration> getTables(T config);
+    
+    protected abstract Collection<ShardingAutoTableRuleConfiguration> getAutoTables(T config);
+    
+    protected abstract KeyGenerateStrategyConfiguration getDefaultKeyGenerateStrategy(T config);
+    
+    protected abstract ShardingAuditStrategyConfiguration getDefaultAuditStrategy(T config);
+    
+    protected abstract ShardingStrategyConfiguration getDefaultDatabaseShardingStrategy(T config);
+    
+    protected abstract ShardingStrategyConfiguration getDefaultTableShardingStrategy(T config);
 }
