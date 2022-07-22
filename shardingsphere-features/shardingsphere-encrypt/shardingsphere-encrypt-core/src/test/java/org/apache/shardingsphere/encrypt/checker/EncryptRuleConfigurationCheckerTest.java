@@ -79,7 +79,7 @@ public final class EncryptRuleConfigurationCheckerTest {
         EncryptRuleConfiguration config = createInvalidAssistColumnConfig();
         Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
         assertTrue(checker.isPresent());
-        assertThat(checker.get(), instanceOf(AlgorithmProvidedEncryptRuleConfigurationChecker.class));
+        assertThat(checker.get(), instanceOf(EncryptRuleConfigurationChecker.class));
         checker.get().check("test", config);
     }
     
