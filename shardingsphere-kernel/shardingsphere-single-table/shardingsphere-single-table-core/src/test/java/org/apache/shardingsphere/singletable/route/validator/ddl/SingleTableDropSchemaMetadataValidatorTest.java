@@ -44,7 +44,9 @@ public final class SingleTableDropSchemaMetadataValidatorTest {
     
     @Test(expected = ShardingSphereException.class)
     public void assertValidateWithNotExistedSchema() {
-        new SingleTableDropSchemaMetadataValidator().validate(mock(SingleTableRule.class, RETURNS_DEEP_STUBS), createSQLStatementContext("not_existed_schema", true), mockDatabase());
+        ShardingSphereDatabase database = mockDatabase();
+        when(database.getSchema("not_existed_schema")).thenReturn(null);
+        new SingleTableDropSchemaMetadataValidator().validate(mock(SingleTableRule.class, RETURNS_DEEP_STUBS), createSQLStatementContext("not_existed_schema", true), database);
     }
     
     @Test

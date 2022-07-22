@@ -56,6 +56,16 @@ public final class FederationDatabaseMetaData {
     }
     
     /**
+     * Judge contains schema from database or not.
+     *
+     * @param schemaName schema name
+     * @return contains schema from database or not
+     */
+    public boolean containsSchemaMetadata(final String schemaName) {
+        return schemas.containsKey(schemaName.toLowerCase());
+    }
+    
+    /**
      * Put table.
      *
      * @param schemaName schema name

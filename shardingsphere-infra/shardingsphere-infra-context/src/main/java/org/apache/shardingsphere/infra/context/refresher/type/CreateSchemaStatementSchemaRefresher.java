@@ -52,7 +52,7 @@ public final class CreateSchemaStatementSchemaRefresher implements MetaDataRefre
             return Optional.empty();
         }
         String actualSchemaName = schema.get().getValue();
-        database.getSchemas().put(actualSchemaName, new ShardingSphereSchema());
+        database.putSchema(actualSchemaName, new ShardingSphereSchema());
         federationDatabaseMetaData.putSchemaMetadata(actualSchemaName, new FederationSchemaMetaData(actualSchemaName, new LinkedHashMap<>()));
         optimizerPlanners.put(federationDatabaseMetaData.getName(), OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
         AddSchemaEvent event = new AddSchemaEvent(database.getName(), actualSchemaName);

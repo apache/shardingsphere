@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.federation.optimizer.context.planner.Opti
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.DropSchemaEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
 import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
@@ -50,7 +51,9 @@ public final class DropSchemaStatementSchemaRefresher implements MetaDataRefresh
         Collection<String> tobeRemovedSchemas = new LinkedHashSet<>();
         Collection<String> schemaNames = getSchemaNames(sqlStatement);
         for (String each : schemaNames) {
-            Optional.ofNullable(database.getSchemas().remove(each)).ifPresent(optional -> tobeRemovedTables.addAll(optional.getAllTableNames()));
+            ShardingSphereSchema schema = new ShardingSphereSchema(database.getSchema(schemaName).getTables());
+            database.removeSchema(schemaName);
+            Optional.of(schema).ifPresent(optional -> tobeRemovedTables.addAll(optional.getAllTableNames()));
             tobeRemovedSchemas.add(each.toLowerCase());
             federationDatabaseMetaData.removeSchemaMetadata(each);
             optimizerPlanners.put(federationDatabaseMetaData.getName(), OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
