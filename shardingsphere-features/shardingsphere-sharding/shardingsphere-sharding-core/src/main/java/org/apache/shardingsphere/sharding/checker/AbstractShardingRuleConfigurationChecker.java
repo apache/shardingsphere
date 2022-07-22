@@ -103,7 +103,7 @@ public abstract class AbstractShardingRuleConfigurationChecker<T extends RuleCon
             return;
         }
         Preconditions.checkState(auditors.containsAll(auditStrategy.getAuditorNames()),
-                "Can not find auditor `%s` in database `%s`.", auditStrategy.getAuditorNames(), databaseName);
+                "Can not find all auditors `%s` in database `%s`.", auditStrategy.getAuditorNames(), databaseName);
     }
     
     /**
