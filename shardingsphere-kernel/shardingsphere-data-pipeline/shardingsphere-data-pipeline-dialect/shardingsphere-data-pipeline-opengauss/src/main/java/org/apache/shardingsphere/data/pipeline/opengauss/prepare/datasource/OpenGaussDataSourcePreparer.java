@@ -46,7 +46,7 @@ public final class OpenGaussDataSourcePreparer extends AbstractDataSourcePrepare
         try (Connection targetConnection = getTargetCachedDataSource(parameter.getTaskConfig(), parameter.getDataSourceManager()).getConnection()) {
             for (String createLogicalTableSQL : createLogicalTableSQLs) {
                 for (String each : Splitter.on(";").splitToList(createLogicalTableSQL).stream().filter(StringUtils::isNotBlank).collect(Collectors.toList())) {
-                    executeTargetTableSQL(targetConnection, each);
+                    executeTargetTableSQL(targetConnection, addIfNotExistsForCreateTableSQL(each));
                 }
             }
         } catch (final SQLException ex) {
