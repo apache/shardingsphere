@@ -173,12 +173,6 @@ jobs:
         scenario: [ db, encrypt, tbl, shadow, readwrite_splitting ]
         exclude:
           - adapter: proxy
-            database: MySQL
-            scenario: tbl
-          - adapter: proxy
-            database: PostgreSQL
-            scenario: tbl
-          - adapter: proxy
             database: PostgreSQL
             scenario: shadow
     steps:
