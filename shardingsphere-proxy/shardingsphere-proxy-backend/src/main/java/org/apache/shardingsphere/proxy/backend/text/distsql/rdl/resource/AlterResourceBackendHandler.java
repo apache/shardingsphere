@@ -60,14 +60,14 @@ public final class AlterResourceBackendHandler extends DatabaseRequiredBackendHa
     public AlterResourceBackendHandler(final AlterResourceStatement sqlStatement, final ConnectionSession connectionSession) {
         super(sqlStatement, connectionSession);
         databaseType = connectionSession.getDatabaseType();
-        validator = new DataSourcePropertiesValidator(connectionSession.getDatabaseType());
+        validator = new DataSourcePropertiesValidator();
     }
     
     @Override
     public ResponseHeader execute(final String databaseName, final AlterResourceStatement sqlStatement) throws DistSQLException {
         checkSQLStatement(databaseName, sqlStatement);
         Map<String, DataSourceProperties> dataSourcePropsMap = ResourceSegmentsConverter.convert(databaseType, sqlStatement.getDataSources());
-        validator.validate(dataSourcePropsMap);
+        validator.validate(dataSourcePropsMap, databaseType);
         try {
             ProxyContext.getInstance().getContextManager().updateResources(databaseName, dataSourcePropsMap);
         } catch (final SQLException | ShardingSphereException ex) {

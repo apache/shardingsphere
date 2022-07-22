@@ -31,12 +31,12 @@ public final class DataSourcePropertiesValidatorTest {
     
     @Test
     public void assertValidateSuccess() throws InvalidResourcesException {
-        new DataSourcePropertiesValidator(new H2DatabaseType()).validate(Collections.singletonMap("name", new DataSourceProperties(HikariDataSource.class.getName(), createValidProperties())));
+        new DataSourcePropertiesValidator().validate(Collections.singletonMap("name", new DataSourceProperties(HikariDataSource.class.getName(), createValidProperties())), new H2DatabaseType());
     }
     
     @Test(expected = InvalidResourcesException.class)
     public void assertDatabaseTypeInValidateFail() throws InvalidResourcesException {
-        new DataSourcePropertiesValidator(new MySQLDatabaseType()).validate(Collections.singletonMap("name", new DataSourceProperties(HikariDataSource.class.getName(), createValidProperties())));
+        new DataSourcePropertiesValidator().validate(Collections.singletonMap("name", new DataSourceProperties(HikariDataSource.class.getName(), createValidProperties())), new MySQLDatabaseType());
     }
     
     private Map<String, Object> createValidProperties() {
@@ -50,7 +50,7 @@ public final class DataSourcePropertiesValidatorTest {
     
     @Test(expected = InvalidResourcesException.class)
     public void assertValidateFailed() throws InvalidResourcesException {
-        new DataSourcePropertiesValidator(new H2DatabaseType()).validate(Collections.singletonMap("name", new DataSourceProperties(HikariDataSource.class.getName(), createInvalidProperties())));
+        new DataSourcePropertiesValidator().validate(Collections.singletonMap("name", new DataSourceProperties(HikariDataSource.class.getName(), createInvalidProperties())), new H2DatabaseType());
     }
     
     private Map<String, Object> createInvalidProperties() {
