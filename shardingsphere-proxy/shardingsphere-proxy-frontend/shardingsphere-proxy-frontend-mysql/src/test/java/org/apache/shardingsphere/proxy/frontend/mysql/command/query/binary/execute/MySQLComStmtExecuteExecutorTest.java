@@ -28,6 +28,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.e
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLOKPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -78,9 +79,9 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.Optional;
-import java.util.Map;
 import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -89,8 +90,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyList;
-import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -171,7 +171,7 @@ public final class MySQLComStmtExecuteExecutorTest extends ProxyContextRestorer 
         when(databaseCommunicationEngine.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1))));
         Iterator<DatabasePacket<?>> actual;
         try (MockedStatic<DatabaseCommunicationEngineFactory> mockedStatic = mockStatic(DatabaseCommunicationEngineFactory.class, RETURNS_DEEP_STUBS)) {
-            mockedStatic.when(() -> DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(any(SQLStatementContext.class), anyString(), anyList(), eq(backendConnection)))
+            mockedStatic.when(() -> DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(any(LogicSQL.class), eq(backendConnection), anyBoolean()))
                     .thenReturn(databaseCommunicationEngine);
             actual = mysqlComStmtExecuteExecutor.execute().iterator();
         }
@@ -197,7 +197,7 @@ public final class MySQLComStmtExecuteExecutorTest extends ProxyContextRestorer 
         when(databaseCommunicationEngine.execute()).thenReturn(new UpdateResponseHeader(new MySQLUpdateStatement()));
         Iterator<DatabasePacket<?>> actual;
         try (MockedStatic<DatabaseCommunicationEngineFactory> mockedStatic = mockStatic(DatabaseCommunicationEngineFactory.class, RETURNS_DEEP_STUBS)) {
-            mockedStatic.when(() -> DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(any(SQLStatementContext.class), anyString(), anyList(), eq(backendConnection)))
+            mockedStatic.when(() -> DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(any(LogicSQL.class), eq(backendConnection), anyBoolean()))
                     .thenReturn(databaseCommunicationEngine);
             actual = mysqlComStmtExecuteExecutor.execute().iterator();
         }

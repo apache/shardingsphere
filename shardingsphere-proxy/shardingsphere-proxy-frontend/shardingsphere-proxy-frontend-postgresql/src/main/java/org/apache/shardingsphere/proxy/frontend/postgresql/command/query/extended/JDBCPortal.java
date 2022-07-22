@@ -33,6 +33,7 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQ
 import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.identifier.PostgreSQLIdentifierPacket;
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
@@ -107,7 +108,8 @@ public final class JDBCPortal implements Portal<Void> {
             textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(databaseType, preparedStatement.getSql(), sqlStatement, backendConnection.getConnectionSession());
             return;
         }
-        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(sqlStatementContext, preparedStatement.getSql(), parameters, backendConnection);
+        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new LogicSQL(sqlStatementContext, preparedStatement.getSql(), parameters),
+                backendConnection, true);
         textProtocolBackendHandler = null;
     }
     

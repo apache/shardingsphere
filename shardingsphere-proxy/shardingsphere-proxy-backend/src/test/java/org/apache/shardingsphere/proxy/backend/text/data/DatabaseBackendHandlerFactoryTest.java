@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.text.data;
 
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -35,6 +36,8 @@ import org.mockito.MockedConstruction;
 
 import java.util.Collections;
 
+import java.util.Collections;
+
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -49,7 +52,7 @@ public final class DatabaseBackendHandlerFactoryTest extends ProxyContextRestore
         String sql = "DESC tbl";
         SQLStatementContext<DALStatement> context = mock(SQLStatementContext.class);
         when(context.getSqlStatement()).thenReturn(mock(DALStatement.class));
-        DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(context, sql, mock(ConnectionSession.class));
+        DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(new LogicSQL(context, sql, Collections.emptyList()), mock(ConnectionSession.class), false);
         assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
     }
     
@@ -58,7 +61,7 @@ public final class DatabaseBackendHandlerFactoryTest extends ProxyContextRestore
         String sql = "SELECT 1";
         SQLStatementContext<SelectStatement> context = mock(SQLStatementContext.class);
         when(context.getSqlStatement()).thenReturn(mock(SelectStatement.class));
-        DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(context, sql, mock(ConnectionSession.class));
+        DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(new LogicSQL(context, sql, Collections.emptyList()), mock(ConnectionSession.class), false);
         assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
     }
     

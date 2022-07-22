@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.data.impl;
 
 import io.vertx.core.Future;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -42,9 +42,7 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
     
     private final DatabaseCommunicationEngineFactory databaseCommunicationEngineFactory = DatabaseCommunicationEngineFactory.getInstance();
     
-    private final SQLStatementContext<?> sqlStatementContext;
-    
-    private final String sql;
+    private final LogicSQL logicSQL;
     
     private final ConnectionSession connectionSession;
     
@@ -58,7 +56,7 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
             throw new RuleNotExistedException();
         }
         connectionSession.setCurrentDatabase(databaseName);
-        databaseCommunicationEngine = databaseCommunicationEngineFactory.newDatabaseCommunicationEngine(sqlStatementContext, sql, connectionSession.getBackendConnection(), false);
+        databaseCommunicationEngine = databaseCommunicationEngineFactory.newDatabaseCommunicationEngine(logicSQL, connectionSession.getBackendConnection(), false);
         return databaseCommunicationEngine.executeFuture().eventually(unused -> {
             connectionSession.setCurrentDatabase(databaseName);
             return Future.succeededFuture();
@@ -74,7 +72,7 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
         }
         try {
             connectionSession.setCurrentDatabase(databaseName);
-            databaseCommunicationEngine = databaseCommunicationEngineFactory.newDatabaseCommunicationEngine(sqlStatementContext, sql, connectionSession.getBackendConnection(), false);
+            databaseCommunicationEngine = databaseCommunicationEngineFactory.newDatabaseCommunicationEngine(logicSQL, connectionSession.getBackendConnection(), false);
             return databaseCommunicationEngine.execute();
         } finally {
             connectionSession.setCurrentDatabase(databaseName);
