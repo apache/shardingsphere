@@ -229,7 +229,7 @@ public abstract class BaseITCase {
     }
     
     private String getActualJdbcUrlTemplate(final String databaseName) {
-        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
+        if (ScalingITEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
             final DatabaseContainer databaseContainer = ((DockerComposedContainer) composedContainer).getDatabaseContainer();
             return DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", databaseContainer.getPort(), databaseName);
         } else {
