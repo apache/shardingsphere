@@ -41,12 +41,28 @@ public abstract class AbstractShardingRuleConfigurationChecker<T extends RuleCon
         checkShardingRuleConfiguration(databaseName, config);
     }
     
+    /**
+     * Check sharding rule configuration.
+     * 
+     * @param databaseName database name
+     * @param config config
+     */
     protected abstract void checkShardingRuleConfiguration(String databaseName, T config);
     
+    /**
+     * Check table configuration.
+     * 
+     * @param tables table configurations
+     * @param autoTables autoTable configurations
+     * @param keyGenerators keyGenerators
+     * @param auditors auditors
+     * @param shardingAlgorithms shardingAlgorithms
+     * @param databaseName database name
+     */
     protected void checkTableConfiguration(final Collection<ShardingTableRuleConfiguration> tables, final Collection<ShardingAutoTableRuleConfiguration> autoTables,
-                                           final Collection<String> keyGenerators,
-                                           final Collection<String> auditors, final Collection<String> shardingAlgorithms, final String databaseName) {
-        Preconditions.checkState(!tables.isEmpty() || !autoTables.isEmpty(), "No available sharding tables or autoTables configurations in database `%s`.", databaseName);
+                                           final Collection<String> keyGenerators, final Collection<String> auditors, final Collection<String> shardingAlgorithms, final String databaseName) {
+        Preconditions.checkState(!tables.isEmpty() || !autoTables.isEmpty(),
+                "No available sharding tables or autoTables configurations in database `%s`.", databaseName);
         for (ShardingTableRuleConfiguration each : tables) {
             checkKeyGenerateStrategy(each.getKeyGenerateStrategy(), keyGenerators, databaseName);
             checkAuditStrategy(each.getAuditStrategy(), auditors, databaseName);
@@ -60,26 +76,48 @@ public abstract class AbstractShardingRuleConfigurationChecker<T extends RuleCon
         }
     }
     
+    /**
+     * Check key generate strategy.
+     * 
+     * @param keyGenerateStrategy key generate strategy
+     * @param keyGenerators keyGenerators
+     * @param databaseName database name
+     */
     protected void checkKeyGenerateStrategy(final KeyGenerateStrategyConfiguration keyGenerateStrategy, final Collection<String> keyGenerators, final String databaseName) {
         if (null == keyGenerateStrategy) {
             return;
         }
-        Preconditions.checkState(keyGenerators.contains(keyGenerateStrategy.getKeyGeneratorName()), "Can not find keyGenerator `%s` in database `%s`.", keyGenerateStrategy.getKeyGeneratorName(),
-                databaseName);
+        Preconditions.checkState(keyGenerators.contains(keyGenerateStrategy.getKeyGeneratorName()),
+                "Can not find keyGenerator `%s` in database `%s`.", keyGenerateStrategy.getKeyGeneratorName(), databaseName);
     }
     
+    /**
+     * Check audit strategy.
+     * 
+     * @param auditStrategy audit strategy
+     * @param auditors auditors
+     * @param databaseName database name
+     */
     protected void checkAuditStrategy(final ShardingAuditStrategyConfiguration auditStrategy, final Collection<String> auditors, final String databaseName) {
         if (null == auditStrategy) {
             return;
         }
-        Preconditions.checkState(auditors.containsAll(auditStrategy.getAuditorNames()), "Can not find auditor `%s` in database `%s`.", auditStrategy.getAuditorNames(), databaseName);
+        Preconditions.checkState(auditors.containsAll(auditStrategy.getAuditorNames()),
+                "Can not find auditor `%s` in database `%s`.", auditStrategy.getAuditorNames(), databaseName);
     }
     
+    /**
+     * Check sharding strategy.
+     * 
+     * @param shardingStrategy sharding strategy
+     * @param shardingAlgorithms shardingAlgorithms
+     * @param databaseName database name
+     */
     protected void checkShardingStrategy(final ShardingStrategyConfiguration shardingStrategy, final Collection<String> shardingAlgorithms, final String databaseName) {
         if (null == shardingStrategy || shardingStrategy instanceof NoneShardingStrategyConfiguration) {
             return;
         }
-        Preconditions.checkState(shardingAlgorithms.contains(shardingStrategy.getShardingAlgorithmName()), "Can not find shardingAlgorithm `%s` in database `%s`.",
-                shardingStrategy.getShardingAlgorithmName(), databaseName);
+        Preconditions.checkState(shardingAlgorithms.contains(shardingStrategy.getShardingAlgorithmName()),
+                "Can not find shardingAlgorithm `%s` in database `%s`.", shardingStrategy.getShardingAlgorithmName(), databaseName);
     }
 }
