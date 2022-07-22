@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.container.atomic.adapter;
 
-import org.apache.shardingsphere.test.integration.container.atomic.ITContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.ITContainer;
 
 import javax.sql.DataSource;
 

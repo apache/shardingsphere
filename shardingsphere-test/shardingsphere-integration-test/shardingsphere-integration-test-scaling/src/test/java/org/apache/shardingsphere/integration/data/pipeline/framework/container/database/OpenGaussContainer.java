@@ -20,8 +20,8 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.container.
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
-import org.apache.shardingsphere.test.integration.container.wait.JDBCConnectionWaitStrategy;
+import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
+import org.apache.shardingsphere.test.integration.env.container.wait.JDBCConnectionWaitStrategy;
 import org.testcontainers.containers.BindMode;
 
 import java.sql.DriverManager;
@@ -33,7 +33,7 @@ public final class OpenGaussContainer extends DatabaseContainer {
     
     private static final DatabaseType DATABASE_TYPE = new OpenGaussDatabaseType();
     
-    private final String username = "gaussdb";
+    private final String username = "scaling";
     
     private final String password = "Root@123";
     
@@ -48,7 +48,8 @@ public final class OpenGaussContainer extends DatabaseContainer {
         withCommand("--max_connections=600");
         addEnv("GS_PASSWORD", password);
         withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/usr/local/opengauss/share/postgresql/postgresql.conf.sample", BindMode.READ_ONLY);
-        withClasspathResourceMapping("/env/postgresql/initdb.sql", "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
+        withClasspathResourceMapping("/env/opengauss/pg_hba.conf", "/usr/local/opengauss/share/postgresql/pg_hba.conf.sample", BindMode.READ_ONLY);
+        withClasspathResourceMapping("/env/opengauss/initdb.sql", "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
         withPrivilegedMode(true);
         withExposedPorts(port);
         setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(DATABASE_TYPE, "localhost", getFirstMappedPort(), "postgres"),
@@ -73,5 +74,10 @@ public final class OpenGaussContainer extends DatabaseContainer {
     @Override
     public int getPort() {
         return port;
+    }
+    
+    @Override
+    public String getAbbreviation() {
+        return "opengauss";
     }
 }

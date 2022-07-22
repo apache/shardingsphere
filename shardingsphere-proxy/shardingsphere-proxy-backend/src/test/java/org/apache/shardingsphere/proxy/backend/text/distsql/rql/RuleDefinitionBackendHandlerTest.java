@@ -52,9 +52,12 @@ public final class RuleDefinitionBackendHandlerTest extends ProxyContextRestorer
     
     private ContextManager mockContextManager() {
         ContextManager result = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
-        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
-        when(result.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test", database));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class, RETURNS_DEEP_STUBS);
+        when(ruleMetaData.getConfigurations()).thenReturn(Collections.emptyList());
+        when(database.getRuleMetaData()).thenReturn(ruleMetaData);
+        when(result.getMetaDataContexts().getMetaData().containsDatabase("test")).thenReturn(true);
+        when(result.getMetaDataContexts().getMetaData().getDatabase("test")).thenReturn(database);
         return result;
     }
     

@@ -50,7 +50,7 @@ public final class OptimizerContextTest {
     public void assertAlterTable() {
         OptimizerContext optimizerContext = createOptimizerContext();
         optimizerContext.alterTable("FOO_DB", "foo_schema", createTable("bar_col"));
-        Optional<FederationSchemaMetaData> schemaMetaData = optimizerContext.getFederationMetaData().getDatabases().get("foo_db").getSchemaMetadata("foo_schema");
+        Optional<FederationSchemaMetaData> schemaMetaData = optimizerContext.getFederationMetaData().getDatabase("foo_db").getSchemaMetadata("foo_schema");
         assertTrue(schemaMetaData.isPresent());
         assertFalse(schemaMetaData.get().getTables().get("foo_tbl").getColumnNames().contains("foo_col"));
         assertTrue(schemaMetaData.get().getTables().get("foo_tbl").getColumnNames().contains("bar_col"));
@@ -62,7 +62,7 @@ public final class OptimizerContextTest {
         OptimizerPlannerContext beforeDroppedPlannerContext = optimizerContext.getPlannerContexts().get("foo_db");
         optimizerContext.dropTable("FOO_DB", "foo_schema", "foo_tbl");
         assertThat(beforeDroppedPlannerContext, not(optimizerContext.getPlannerContexts().get("foo_db")));
-        Optional<FederationSchemaMetaData> schemaMetadata = optimizerContext.getFederationMetaData().getDatabases().get("foo_db").getSchemaMetadata("foo_schema");
+        Optional<FederationSchemaMetaData> schemaMetadata = optimizerContext.getFederationMetaData().getDatabase("foo_db").getSchemaMetadata("foo_schema");
         assertTrue(schemaMetadata.isPresent());
         assertFalse(schemaMetadata.get().getTables().containsKey("foo_tbl"));
     }
@@ -82,7 +82,7 @@ public final class OptimizerContextTest {
         ShardingSphereDatabase database = createDatabase();
         database.getSchemas().get("foo_schema").getTables().put("bar_tbl", mock(ShardingSphereTable.class));
         optimizerContext.alterDatabase(database, mock(ShardingSphereRuleMetaData.class));
-        Optional<FederationSchemaMetaData> schemaMetadata = optimizerContext.getFederationMetaData().getDatabases().get("foo_db").getSchemaMetadata("foo_schema");
+        Optional<FederationSchemaMetaData> schemaMetadata = optimizerContext.getFederationMetaData().getDatabase("foo_db").getSchemaMetadata("foo_schema");
         assertTrue(schemaMetadata.isPresent());
         assertTrue(schemaMetadata.get().getTables().containsKey("bar_tbl"));
     }
@@ -91,7 +91,7 @@ public final class OptimizerContextTest {
     public void assertAddSchema() {
         OptimizerContext optimizerContext = createOptimizerContext();
         optimizerContext.addSchema("FOO_DB", "foo_schema");
-        assertTrue(optimizerContext.getFederationMetaData().getDatabases().get("foo_db").getSchemas().containsKey("foo_schema"));
+        assertTrue(optimizerContext.getFederationMetaData().getDatabase("foo_db").getSchemas().containsKey("foo_schema"));
         assertTrue(optimizerContext.getPlannerContexts().get("foo_db").getConverters().containsKey("foo_schema"));
         assertTrue(optimizerContext.getPlannerContexts().get("foo_db").getValidators().containsKey("foo_schema"));
     }

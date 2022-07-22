@@ -69,7 +69,7 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
     protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
         String databaseName = getDatabaseName();
         MetaDataContexts metaDataContexts = contextManager.getMetaDataContexts();
-        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(databaseName);
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         Collection<String> allReadResources = getAllReadResources(database);
         Map<String, StorageNodeDataSource> persistentReadResources = getPersistentReadResources(databaseName, metaDataContexts.getPersistService());
         return buildRows(allReadResources, persistentReadResources);
@@ -80,7 +80,7 @@ public final class ShowReadwriteSplittingReadResourcesHandler extends QueryableR
         if (Strings.isNullOrEmpty(result)) {
             throw new NoDatabaseSelectedException();
         }
-        if (!ProxyContext.getInstance().getAllDatabaseNames().contains(result)) {
+        if (!ProxyContext.getInstance().databaseExists(result)) {
             throw new DatabaseNotExistedException(result);
         }
         return result;

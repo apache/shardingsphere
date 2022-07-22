@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.handler.ddl;
 
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.ddl.MySQLCreateTableStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl.OracleCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLCreateTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sql92.ddl.SQL92CreateTableStatement;
@@ -30,37 +31,15 @@ import static org.junit.Assert.assertTrue;
 public final class CreateTableStatementHandlerTest {
     
     @Test
-    public void assertContainsIfNotExistsForMySQL() {
+    public void assertIfNotExists() {
         assertTrue(CreateTableStatementHandler.ifNotExists(new MySQLCreateTableStatement(true)));
-    }
-    
-    @Test
-    public void assertContainsIfNotExistsForPostgreSQL() {
-        assertTrue(CreateTableStatementHandler.ifNotExists(new PostgreSQLCreateTableStatement(true)));
-    }
-    
-    @Test
-    public void assertNotContainsIfNotExistsForMySQL() {
         assertFalse(CreateTableStatementHandler.ifNotExists(new MySQLCreateTableStatement(false)));
-    }
-    
-    @Test
-    public void assertNotContainsIfNotExistsForOracle() {
-        assertFalse(CreateTableStatementHandler.ifNotExists(new OracleCreateTableStatement()));
-    }
-    
-    @Test
-    public void assertNotContainsIfNotExistsForPostgreSQL() {
+        assertTrue(CreateTableStatementHandler.ifNotExists(new PostgreSQLCreateTableStatement(true)));
         assertFalse(CreateTableStatementHandler.ifNotExists(new PostgreSQLCreateTableStatement(false)));
-    }
-    
-    @Test
-    public void assertNotContainsIfNotExistsForSQL92() {
-        assertFalse(CreateTableStatementHandler.ifNotExists(new SQL92CreateTableStatement()));
-    }
-    
-    @Test
-    public void assertNotContainsIfNotExistsForSQLServer() {
+        assertTrue(CreateTableStatementHandler.ifNotExists(new OpenGaussCreateTableStatement(true)));
+        assertFalse(CreateTableStatementHandler.ifNotExists(new OpenGaussCreateTableStatement(false)));
+        assertFalse(CreateTableStatementHandler.ifNotExists(new OracleCreateTableStatement()));
         assertFalse(CreateTableStatementHandler.ifNotExists(new SQLServerCreateTableStatement()));
+        assertFalse(CreateTableStatementHandler.ifNotExists(new SQL92CreateTableStatement()));
     }
 }

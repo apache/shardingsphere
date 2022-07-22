@@ -77,7 +77,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     }
     
     private void checkReadwriteSplittingRule(final ContextManager contextManager, final String databaseName) {
-        Optional<ReadwriteSplittingRule> rule = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
+        Optional<ReadwriteSplittingRule> rule = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class);
         if (!rule.isPresent()) {
             throw new UnsupportedOperationException("The current schema has no read_write splitting rules");
         }
@@ -93,7 +93,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
         if (Strings.isNullOrEmpty(databaseName)) {
             throw new NoDatabaseSelectedException();
         }
-        if (!ProxyContext.getInstance().getAllDatabaseNames().contains(databaseName)) {
+        if (!ProxyContext.getInstance().databaseExists(databaseName)) {
             throw new DatabaseNotExistedException(databaseName);
         }
     }
@@ -126,7 +126,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     
     private void checkResourceExists(final ContextManager contextManager, final String databaseName, final String toBeDisabledResource) throws DistSQLException {
         Collection<String> notExistedResources = contextManager
-                .getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getResource().getNotExistedResources(Collections.singleton(toBeDisabledResource));
+                .getMetaDataContexts().getMetaData().getDatabase(databaseName).getResource().getNotExistedResources(Collections.singleton(toBeDisabledResource));
         DistSQLException.predictionThrow(notExistedResources.isEmpty(), () -> new RequiredResourceMissedException(databaseName, Collections.singleton(toBeDisabledResource)));
     }
     
@@ -188,7 +188,7 @@ public final class SetReadwriteSplittingStatusHandler extends UpdatableRALBacken
     
     private Map<String, Map<String, String>> getExportedReadwriteSplittingRules(final ContextManager contextManager, final String databaseName) {
         Map<String, Map<String, String>> result = new HashMap<>();
-        contextManager.getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class)
+        contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName).getRuleMetaData().findSingleRule(ReadwriteSplittingRule.class)
                 .filter(each -> new RuleExportEngine(each)
                         .containExportableKey(Arrays.asList(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE)))
                 .map(each -> new RuleExportEngine(each).export(Arrays.asList(ExportableConstants.EXPORT_DYNAMIC_READWRITE_SPLITTING_RULE, ExportableConstants.EXPORT_STATIC_READWRITE_SPLITTING_RULE)))

@@ -56,6 +56,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -108,7 +109,7 @@ public final class SchemaAssignedDatabaseBackendHandlerTest extends ProxyContext
     
     private void mockDatabaseCommunicationEngine(final ResponseHeader responseHeader) {
         when(databaseCommunicationEngine.execute()).thenReturn(responseHeader);
-        when(databaseCommunicationEngineFactory.newTextProtocolInstance(any(), anyString(), any())).thenReturn(databaseCommunicationEngine);
+        when(databaseCommunicationEngineFactory.newDatabaseCommunicationEngine(any(), anyString(), any(), eq(false))).thenReturn(databaseCommunicationEngine);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

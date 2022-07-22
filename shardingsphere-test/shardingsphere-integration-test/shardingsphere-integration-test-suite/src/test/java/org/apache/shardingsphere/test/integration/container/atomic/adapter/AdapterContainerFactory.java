@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.container.atomic.adapter.impl.ShardingSphereJDBCContainer;
 import org.apache.shardingsphere.test.integration.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
 import org.apache.shardingsphere.test.integration.container.atomic.adapter.impl.ShardingSphereProxyStandaloneContainer;
-import org.apache.shardingsphere.test.integration.container.atomic.storage.StorageContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainer;
 
 /**
  * Adapter container factory.

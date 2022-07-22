@@ -74,4 +74,9 @@ public final class H2Container extends EmbeddedStorageContainer {
             RunScript.execute(connection, reader);
         }
     }
+    
+    @Override
+    public String getAbbreviation() {
+        return "h2";
+    }
 }

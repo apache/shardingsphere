@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShar
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -42,7 +43,10 @@ public final class AlgorithmProvidedShardingRuleConfigurationCheckerTest {
         AlgorithmProvidedShardingRuleConfiguration config = mock(AlgorithmProvidedShardingRuleConfiguration.class);
         when(config.getTables()).thenReturn(Collections.singleton(mock(ShardingTableRuleConfiguration.class)));
         when(config.getAutoTables()).thenReturn(Collections.singleton(mock(ShardingAutoTableRuleConfiguration.class)));
-        when(config.getDefaultTableShardingStrategy()).thenReturn(mock(ShardingStrategyConfiguration.class));
+        ShardingStrategyConfiguration shardingStrategyConfig = mock(ShardingStrategyConfiguration.class);
+        when(shardingStrategyConfig.getShardingAlgorithmName()).thenReturn("t_order_inline");
+        when(config.getDefaultTableShardingStrategy()).thenReturn(shardingStrategyConfig);
+        when(config.getShardingAlgorithms()).thenReturn(Collections.singletonMap("t_order_inline", mock(ShardingAlgorithm.class)));
         Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
         assertTrue(checker.isPresent());
         assertThat(checker.get(), instanceOf(AlgorithmProvidedShardingRuleConfigurationChecker.class));

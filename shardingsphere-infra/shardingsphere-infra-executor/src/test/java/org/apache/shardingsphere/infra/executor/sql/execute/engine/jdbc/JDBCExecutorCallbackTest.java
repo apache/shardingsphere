@@ -85,7 +85,7 @@ public final class JDBCExecutorCallbackTest {
             }
             
             @Override
-            protected Optional<Integer> getSaneResult(final SQLStatement sqlStatement) {
+            protected Optional<Integer> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
                 return Optional.empty();
             }
         };

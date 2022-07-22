@@ -20,14 +20,23 @@ package org.apache.shardingsphere.sharding.checker;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 
+import java.util.Collection;
+
 /**
  * Sharding rule configuration checker.
  */
 public final class ShardingRuleConfigurationChecker extends AbstractShardingRuleConfigurationChecker<ShardingRuleConfiguration> {
     
     @Override
-    protected boolean hasAvailableTableConfigurations(final ShardingRuleConfiguration config) {
-        return !config.getTables().isEmpty() || null != config.getDefaultTableShardingStrategy() || !config.getAutoTables().isEmpty();
+    protected void checkShardingRuleConfiguration(final String databaseName, final ShardingRuleConfiguration config) {
+        Collection<String> keyGenerators = config.getKeyGenerators().keySet();
+        Collection<String> auditors = config.getAuditors().keySet();
+        Collection<String> shardingAlgorithms = config.getShardingAlgorithms().keySet();
+        checkTableConfiguration(config.getTables(), config.getAutoTables(), keyGenerators, auditors, shardingAlgorithms, databaseName);
+        checkKeyGenerateStrategy(config.getDefaultKeyGenerateStrategy(), keyGenerators, databaseName);
+        checkAuditStrategy(config.getDefaultAuditStrategy(), auditors, databaseName);
+        checkShardingStrategy(config.getDefaultDatabaseShardingStrategy(), shardingAlgorithms, databaseName);
+        checkShardingStrategy(config.getDefaultTableShardingStrategy(), shardingAlgorithms, databaseName);
     }
     
     @Override
