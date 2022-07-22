@@ -18,6 +18,11 @@
 package org.apache.shardingsphere.sharding.checker;
 
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
 
 import java.util.Collection;
@@ -28,18 +33,6 @@ import java.util.Collection;
 public final class AlgorithmProvidedShardingRuleConfigurationChecker extends AbstractShardingRuleConfigurationChecker<AlgorithmProvidedShardingRuleConfiguration> {
     
     @Override
-    protected void checkShardingRuleConfiguration(final String databaseName, final AlgorithmProvidedShardingRuleConfiguration config) {
-        Collection<String> keyGenerators = config.getKeyGenerators().keySet();
-        Collection<String> auditors = config.getAuditors().keySet();
-        Collection<String> shardingAlgorithms = config.getShardingAlgorithms().keySet();
-        checkTableConfiguration(config.getTables(), config.getAutoTables(), keyGenerators, auditors, shardingAlgorithms, databaseName);
-        checkKeyGenerateStrategy(config.getDefaultKeyGenerateStrategy(), keyGenerators, databaseName);
-        checkAuditStrategy(config.getDefaultAuditStrategy(), auditors, databaseName);
-        checkShardingStrategy(config.getDefaultDatabaseShardingStrategy(), shardingAlgorithms, databaseName);
-        checkShardingStrategy(config.getDefaultTableShardingStrategy(), shardingAlgorithms, databaseName);
-    }
-    
-    @Override
     public int getOrder() {
         return ShardingOrder.ALGORITHM_PROVIDER_ORDER;
     }
@@ -47,5 +40,50 @@ public final class AlgorithmProvidedShardingRuleConfigurationChecker extends Abs
     @Override
     public Class<AlgorithmProvidedShardingRuleConfiguration> getTypeClass() {
         return AlgorithmProvidedShardingRuleConfiguration.class;
+    }
+    
+    @Override
+    protected Collection<String> getKeyGenerators(final AlgorithmProvidedShardingRuleConfiguration config) {
+        return config.getKeyGenerators().keySet();
+    }
+    
+    @Override
+    protected Collection<String> getAuditors(final AlgorithmProvidedShardingRuleConfiguration config) {
+        return config.getAuditors().keySet();
+    }
+    
+    @Override
+    protected Collection<String> getShardingAlgorithms(final AlgorithmProvidedShardingRuleConfiguration config) {
+        return config.getShardingAlgorithms().keySet();
+    }
+    
+    @Override
+    protected Collection<ShardingTableRuleConfiguration> getTables(final AlgorithmProvidedShardingRuleConfiguration config) {
+        return config.getTables();
+    }
+    
+    @Override
+    protected Collection<ShardingAutoTableRuleConfiguration> getAutoTables(final AlgorithmProvidedShardingRuleConfiguration config) {
+        return config.getAutoTables();
+    }
+    
+    @Override
+    protected KeyGenerateStrategyConfiguration getDefaultKeyGenerateStrategy(final AlgorithmProvidedShardingRuleConfiguration config) {
+        return config.getDefaultKeyGenerateStrategy();
+    }
+    
+    @Override
+    protected ShardingAuditStrategyConfiguration getDefaultAuditStrategy(final AlgorithmProvidedShardingRuleConfiguration config) {
+        return config.getDefaultAuditStrategy();
+    }
+    
+    @Override
+    protected ShardingStrategyConfiguration getDefaultDatabaseShardingStrategy(final AlgorithmProvidedShardingRuleConfiguration config) {
+        return config.getDefaultDatabaseShardingStrategy();
+    }
+    
+    @Override
+    protected ShardingStrategyConfiguration getDefaultTableShardingStrategy(final AlgorithmProvidedShardingRuleConfiguration config) {
+        return config.getDefaultTableShardingStrategy();
     }
 }
