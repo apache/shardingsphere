@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.sharding.checker;
 
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.config.checker.RuleConfigurationCheckerFactory;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -50,7 +51,10 @@ public final class ShardingRuleConfigurationCheckerTest {
         ShardingRuleConfiguration result = mock(ShardingRuleConfiguration.class);
         when(result.getTables()).thenReturn(Collections.singleton(mock(ShardingTableRuleConfiguration.class)));
         when(result.getAutoTables()).thenReturn(Collections.singleton(mock(ShardingAutoTableRuleConfiguration.class)));
-        when(result.getDefaultTableShardingStrategy()).thenReturn(mock(ShardingStrategyConfiguration.class));
+        ShardingStrategyConfiguration shardingStrategyConfig = mock(ShardingStrategyConfiguration.class);
+        when(shardingStrategyConfig.getShardingAlgorithmName()).thenReturn("t_order_inline");
+        when(result.getDefaultTableShardingStrategy()).thenReturn(shardingStrategyConfig);
+        when(result.getShardingAlgorithms()).thenReturn(Collections.singletonMap("t_order_inline", mock(ShardingSphereAlgorithmConfiguration.class)));
         return result;
     }
     
