@@ -29,18 +29,19 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourc
  */
 @Getter
 public final class PrepareTargetTablesParameter {
-
+    
     private final String databaseName;
-
+    
     private final JobDataNodeLine tablesFirstDataNodes;
-
+    
     private final PipelineDataSourceConfiguration pipelineDataSourceConfiguration;
-
+    
     private final PipelineDataSourceManager dataSourceManager;
     
     private final TableNameSchemaNameMapping tableNameSchemaNameMapping;
     
-    public PrepareTargetTablesParameter(@NonNull String databaseName, @NonNull final PipelineDataSourceConfiguration pipelineDataSourceConfiguration, @NonNull final PipelineDataSourceManager dataSourceManager,
+    public PrepareTargetTablesParameter(@NonNull final String databaseName, @NonNull final PipelineDataSourceConfiguration pipelineDataSourceConfiguration,
+                                        @NonNull final PipelineDataSourceManager dataSourceManager,
                                         @NonNull final String tablesFirstDataNodes, final TableNameSchemaNameMapping tableNameSchemaNameMapping) {
         this.databaseName = databaseName;
         this.pipelineDataSourceConfiguration = pipelineDataSourceConfiguration;

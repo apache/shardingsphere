@@ -85,7 +85,7 @@ public final class MySQLDataSourcePreparerTest {
         when(jobConfig.getTarget()).thenReturn(targetPipelineDataSourceConfig);
         when(jobConfig.getTarget().getType()).thenReturn("ShardingSphereJDBC");
         when(jobConfig.getTarget().getParameter()).thenReturn("target");
-        when(prepareTargetTablesParameter.getJobConfig()).thenReturn(jobConfig);
+        when(prepareTargetTablesParameter.getDatabaseName()).thenReturn("test_db");
         when(prepareTargetTablesParameter.getTablesFirstDataNodes()).thenReturn(new JobDataNodeLine(Collections.emptyList()));
     }
     

@@ -33,11 +33,11 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 public final class PrepareTargetSchemasParameter {
     
     private final List<String> logicTableNames;
-
+    
     private final DatabaseType targetDatabaseType;
-
+    
     private final String databaseName;
-
+    
     private final PipelineDataSourceConfiguration pipelineDataSourceConfiguration;
     
     private final PipelineDataSourceManager dataSourceManager;

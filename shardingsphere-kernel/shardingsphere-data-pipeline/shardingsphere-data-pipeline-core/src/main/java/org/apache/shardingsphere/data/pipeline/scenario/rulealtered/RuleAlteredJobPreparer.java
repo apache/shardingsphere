@@ -67,9 +67,9 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigu
  */
 @Slf4j
 public final class RuleAlteredJobPreparer {
-
+    
     private final InventoryTaskSplitter inventoryTaskSplitter = new InventoryTaskSplitter();
-
+    
     /**
      * Do prepare work for scaling job.
      *
@@ -98,7 +98,7 @@ public final class RuleAlteredJobPreparer {
             throw new PipelineJobPrepareFailedException("Scaling job preparing failed, jobId=" + jobContext.getJobId(), ex);
         }
     }
-
+    
     private void prepareAndCheckTargetWithLock(final RuleAlteredJobContext jobContext) {
         RuleAlteredJobConfiguration jobConfig = jobContext.getJobConfig();
         // TODO the lock will be replaced
@@ -114,7 +114,7 @@ public final class RuleAlteredJobPreparer {
             waitUntilLockReleased(lock, lockName);
         }
     }
-
+    
     private void waitUntilLockReleased(final ShardingSphereLock lock, final String lockName) {
         for (int loopCount = 0; loopCount < 30; loopCount++) {
             ThreadUtil.sleep(TimeUnit.SECONDS.toMillis(5));
@@ -124,17 +124,16 @@ public final class RuleAlteredJobPreparer {
             }
         }
     }
-
+    
     private void prepareAndCheckTarget(final RuleAlteredJobContext jobContext) {
         prepareTarget(jobContext);
         JobProgress initProgress = jobContext.getInitProgress();
         if (null == initProgress || initProgress.getStatus() == JobStatus.PREPARING_FAILURE) {
-            PipelineDataSourceWrapper
-                    targetDataSource = jobContext.getDataSourceManager().getDataSource(jobContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
+            PipelineDataSourceWrapper targetDataSource = jobContext.getDataSourceManager().getDataSource(jobContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
             checkTargetDataSource(jobContext, targetDataSource);
         }
     }
-
+    
     private void prepareTarget(final RuleAlteredJobContext jobContext) {
         RuleAlteredJobConfiguration jobConfig = jobContext.getJobConfig();
         Optional<DataSourcePreparer> dataSourcePreparer = DataSourcePreparerFactory.getInstance(jobConfig.getTargetDatabaseType());
@@ -157,7 +156,7 @@ public final class RuleAlteredJobPreparer {
                 jobContext.getDataSourceManager(), jobConfig.getTablesFirstDataNodes(), tableNameSchemaNameMapping);
         dataSourcePreparer.get().prepareTargetTables(prepareTargetTablesParameter);
     }
-
+    
     private void checkSourceDataSource(final RuleAlteredJobContext jobContext) {
         DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.getInstance(jobContext.getJobConfig().getSourceDatabaseType());
         Collection<PipelineDataSourceWrapper> sourceDataSources = Collections.singleton(jobContext.getSourceDataSource());
@@ -165,7 +164,7 @@ public final class RuleAlteredJobPreparer {
         dataSourceChecker.checkPrivilege(sourceDataSources);
         dataSourceChecker.checkVariable(sourceDataSources);
     }
-
+    
     private void checkTargetDataSource(final RuleAlteredJobContext jobContext, final PipelineDataSourceWrapper targetDataSource) {
         DataSourceChecker dataSourceChecker = DataSourceCheckerFactory.getInstance(jobContext.getJobConfig().getTargetDatabaseType());
         Collection<PipelineDataSourceWrapper> targetDataSources = Collections.singletonList(targetDataSource);
@@ -173,12 +172,12 @@ public final class RuleAlteredJobPreparer {
         ImporterConfiguration importerConfig = jobContext.getTaskConfig().getImporterConfig();
         dataSourceChecker.checkTargetTable(targetDataSources, importerConfig.getTableNameSchemaNameMapping(), importerConfig.getLogicTableNames());
     }
-
+    
     private void initInventoryTasks(final RuleAlteredJobContext jobContext) {
         List<InventoryTask> allInventoryTasks = inventoryTaskSplitter.splitInventoryData(jobContext);
         jobContext.getInventoryTasks().addAll(allInventoryTasks);
     }
-
+    
     private void initIncrementalTasks(final RuleAlteredJobContext jobContext) throws SQLException {
         PipelineChannelCreator pipelineChannelCreator = jobContext.getRuleAlteredContext().getPipelineChannelCreator();
         ExecuteEngine incrementalDumperExecuteEngine = jobContext.getRuleAlteredContext().getIncrementalDumperExecuteEngine();
@@ -190,7 +189,7 @@ public final class RuleAlteredJobPreparer {
                 taskConfig.getDumperConfig(), taskConfig.getImporterConfig(), pipelineChannelCreator, dataSourceManager, sourceMetaDataLoader, incrementalDumperExecuteEngine);
         jobContext.getIncrementalTasks().add(incrementalTask);
     }
-
+    
     private IngestPosition<?> getIncrementalPosition(final RuleAlteredJobContext jobContext, final TaskConfiguration taskConfig,
                                                      final PipelineDataSourceManager dataSourceManager) throws SQLException {
         if (null != jobContext.getInitProgress()) {
@@ -203,7 +202,7 @@ public final class RuleAlteredJobPreparer {
         DataSource dataSource = dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig());
         return PositionInitializerFactory.getInstance(databaseType).init(dataSource);
     }
-
+    
     /**
      * Do cleanup work for scaling job.
      *
@@ -216,7 +215,7 @@ public final class RuleAlteredJobPreparer {
             log.warn("Scaling job destroying failed", ex);
         }
     }
-
+    
     private void cleanup0(final RuleAlteredJobConfiguration jobConfig) throws SQLException {
         DatabaseType databaseType = DatabaseTypeFactory.getInstance(jobConfig.getSourceDatabaseType());
         PositionInitializer positionInitializer = PositionInitializerFactory.getInstance(databaseType.getType());
