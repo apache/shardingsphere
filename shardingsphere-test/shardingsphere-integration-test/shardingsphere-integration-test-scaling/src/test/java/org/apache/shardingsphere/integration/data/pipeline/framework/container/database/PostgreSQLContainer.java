@@ -19,8 +19,8 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.container.
 
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.env.container.wait.JDBCConnectionWaitStrategy;
+import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.testcontainers.containers.BindMode;
 
 import java.sql.DriverManager;
@@ -41,8 +41,7 @@ public final class PostgreSQLContainer extends DatabaseContainer {
     
     @Override
     protected void configure() {
-        withCommand("--max_connections=600");
-        withCommand("--wal_level=logical");
+        withCommand("--max_connections=200", "--wal_level=logical");
         String rootUsername = "root";
         String rootPassword = "root";
         addEnv("POSTGRES_USER", rootUsername);
