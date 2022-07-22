@@ -36,7 +36,7 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
     @Override
     protected void configure() {
         withCommand("--max_connections=600");
-        withCommand("--wal_level=logical");
+//        withCommand("--wal_level=logical");
         addEnv("POSTGRES_USER", "root");
         addEnv("POSTGRES_PASSWORD", "root");
         withExposedPorts(getPort());
