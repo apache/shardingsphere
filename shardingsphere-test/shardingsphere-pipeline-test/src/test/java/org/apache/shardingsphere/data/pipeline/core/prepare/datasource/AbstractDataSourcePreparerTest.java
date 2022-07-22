@@ -49,7 +49,7 @@ public final class AbstractDataSourcePreparerTest {
         Collection<String> mismatchedSQLs = Arrays.asList("SET search_path = public", "UPDATE t_order SET id = 1");
         for (String each : mismatchedSQLs) {
             String actual = preparer.addIfNotExistsForCreateTableSQL(each);
-            assertThat(actual, is(actual));
+            assertThat(actual, is(each));
         }
     }
 }
