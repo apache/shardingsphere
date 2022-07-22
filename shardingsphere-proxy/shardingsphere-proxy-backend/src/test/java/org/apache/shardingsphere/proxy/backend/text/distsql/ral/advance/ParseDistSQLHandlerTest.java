@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.advance;
 import com.google.gson.Gson;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.ParseStatement;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
@@ -61,13 +62,13 @@ public final class ParseDistSQLHandlerTest extends ProxyContextRestorer {
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(globalRuleMetaData.getSingleRule(SQLParserRule.class)).thenReturn(sqlParserRule);
-        when(connectionSession.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         ProxyContext.init(contextManager);
     }
     
     @Test
-    public void assertGetRowData() throws SQLException {
+    public void assertGetRowDataForMySQL() throws SQLException {
         String sql = "select * from t_order";
+        when(connectionSession.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         ParseStatement parseStatement = new ParseStatement(sql);
         ParseDistSQLHandler parseDistSQLHandler = new ParseDistSQLHandler();
         parseDistSQLHandler.init(parseStatement, connectionSession);
@@ -78,9 +79,24 @@ public final class ParseDistSQLHandlerTest extends ProxyContextRestorer {
         assertThat(new LinkedList<>(parseDistSQLHandler.getRowData().getData()).getLast(), is(new Gson().toJson(statement)));
     }
     
+    @Test
+    public void assertGetRowDataForPostgreSQL() throws SQLException {
+        String sql = "select * from t_order";
+        when(connectionSession.getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
+        ParseStatement parseStatement = new ParseStatement(sql);
+        ParseDistSQLHandler parseDistSQLHandler = new ParseDistSQLHandler();
+        parseDistSQLHandler.init(parseStatement, connectionSession);
+        parseDistSQLHandler.execute();
+        parseDistSQLHandler.next();
+        SQLStatement statement = sqlParserRule.getSQLParserEngine("PostgreSQL").parse(sql, false);
+        assertThat(new LinkedList<>(parseDistSQLHandler.getRowData().getData()).getFirst(), is("PostgreSQLSelectStatement"));
+        assertThat(new LinkedList<>(parseDistSQLHandler.getRowData().getData()).getLast(), is(new Gson().toJson(statement)));
+    }
+    
     @Test(expected = SQLParsingException.class)
     public void assertExecute() throws SQLException {
         String sql = "wrong sql";
+        when(connectionSession.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         ParseStatement parseStatement = new ParseStatement(sql);
         ParseDistSQLHandler parseDistSQLHandler = new ParseDistSQLHandler();
         parseDistSQLHandler.init(parseStatement, connectionSession);
