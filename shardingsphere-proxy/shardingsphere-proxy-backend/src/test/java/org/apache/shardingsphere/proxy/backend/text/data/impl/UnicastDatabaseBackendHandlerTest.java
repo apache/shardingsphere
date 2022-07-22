@@ -87,6 +87,7 @@ public final class UnicastDatabaseBackendHandlerTest extends ProxyContextRestore
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
         when(connectionSession.getDefaultDatabaseName()).thenReturn(String.format(DATABASE_PATTERN, 0));
+        when(connectionSession.getBackendConnection()).thenReturn(mock(BackendConnection.class));
         mockDatabaseCommunicationEngine(new UpdateResponseHeader(mock(SQLStatement.class)));
         unicastDatabaseBackendHandler = new UnicastDatabaseBackendHandler(new LogicSQL(mock(SQLStatementContext.class), EXECUTE_SQL, Collections.emptyList()), connectionSession);
         setBackendHandlerFactory(unicastDatabaseBackendHandler);
