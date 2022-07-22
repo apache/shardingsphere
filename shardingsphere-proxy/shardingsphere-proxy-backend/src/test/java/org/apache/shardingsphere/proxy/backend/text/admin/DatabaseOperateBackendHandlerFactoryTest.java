@@ -50,6 +50,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -134,10 +135,12 @@ public final class DatabaseOperateBackendHandlerFactoryTest extends ProxyContext
     }
     
     private Map<String, ShardingSphereDatabase> getDatabases() {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        return Collections.singletonMap("db", result);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
+        result.put("db", database);
+        return result;
     }
     
     private void setGovernanceMetaDataContexts(final boolean isGovernance) {

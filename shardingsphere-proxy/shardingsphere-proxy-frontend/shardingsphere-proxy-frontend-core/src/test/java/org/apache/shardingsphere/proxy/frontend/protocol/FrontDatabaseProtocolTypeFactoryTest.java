@@ -36,6 +36,7 @@ import org.junit.Test;
 
 import java.util.Collections;
 import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -94,8 +95,10 @@ public final class FrontDatabaseProtocolTypeFactoryTest extends ProxyContextRest
     }
     
     private Map<String, ShardingSphereDatabase> mockDatabases() {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        return Collections.singletonMap(DefaultDatabase.LOGIC_NAME, result);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
+        result.put(DefaultDatabase.LOGIC_NAME, database);
+        return result;
     }
 }
