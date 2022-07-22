@@ -98,7 +98,7 @@
     </source-add-resource-template>
 
     <create-account-table>
-        CREATE TABLE ACCOUNT
+        CREATE TABLE account
         (
         ID BIGINT, BALANCE FLOAT,
         TRANSACTION_ID INT

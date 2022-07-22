@@ -20,8 +20,6 @@ package org.apache.shardingsphere.integration.transaction.framework.container.da
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.integration.transaction.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.integration.transaction.env.enums.TransactionITEnvTypeEnum;
 import org.apache.shardingsphere.test.integration.env.container.wait.JDBCConnectionWaitStrategy;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.testcontainers.containers.BindMode;
@@ -52,9 +50,6 @@ public final class OpenGaussContainer extends DatabaseContainer {
         withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/usr/local/opengauss/share/postgresql/postgresql.conf.sample", BindMode.READ_ONLY);
         withPrivilegedMode(true);
         withExposedPorts(port);
-        if (TransactionITEnvTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItEnvType()) {
-            addFixedExposedPort(port, port);
-        }
         setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(DATABASE_TYPE, "localhost", getFirstMappedPort(), "postgres"),
                 username, password)));
     }
@@ -81,6 +76,6 @@ public final class OpenGaussContainer extends DatabaseContainer {
     
     @Override
     public String getAbbreviation() {
-        return "openguass";
+        return "opengauss";
     }
 }
