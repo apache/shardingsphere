@@ -45,15 +45,16 @@ public abstract class AbstractReadwriteSplittingRuleConfigurationChecker<T exten
         for (ReadwriteSplittingDataSourceRuleConfiguration each : dataSources) {
             Preconditions.checkState(null != each.getStaticStrategy() || null != each.getDynamicStrategy(),
                     "No available readwrite-splitting rule configuration in database `%s`.", databaseName);
-            Optional.ofNullable(each.getStaticStrategy()).ifPresent(optional -> checkStaticStrategy(writeDataSourceNames, readDataSourceNames, optional));
+            Optional.ofNullable(each.getStaticStrategy()).ifPresent(optional -> checkStaticStrategy(databaseName, writeDataSourceNames, readDataSourceNames, optional));
         }
     }
     
-    private void checkStaticStrategy(final Collection<String> writeDataSourceNames, final Collection<String> readDataSourceNames, final StaticReadwriteSplittingStrategyConfiguration strategyConfig) {
+    private void checkStaticStrategy(final String databaseName, final Collection<String> writeDataSourceNames,
+                                     final Collection<String> readDataSourceNames, final StaticReadwriteSplittingStrategyConfiguration strategyConfig) {
         Preconditions.checkState(writeDataSourceNames.add(strategyConfig.getWriteDataSourceName()),
-                "Can not config duplicate write dataSource `%s` in multi readwrite-splitting rule configurations.", strategyConfig.getWriteDataSourceName());
+                "Can not config duplicate write dataSource `%s` in database `%s`.", strategyConfig.getWriteDataSourceName(), databaseName);
         Preconditions.checkState(readDataSourceNames.addAll(strategyConfig.getReadDataSourceNames()),
-                "Can not config duplicate read dataSources `%s` in multi readwrite-splitting rule configurations.", strategyConfig.getReadDataSourceNames());
+                "Can not config duplicate read dataSources `%s` in database `%s`.", strategyConfig.getReadDataSourceNames(), databaseName);
     }
     
     protected abstract Collection<ReadwriteSplittingDataSourceRuleConfiguration> getDataSources(T config);
