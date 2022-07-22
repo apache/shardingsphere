@@ -86,7 +86,7 @@ public abstract class EncryptGeneratorBaseTest {
     }
     
     protected static List<SQLToken> getPreviousSQLTokens() {
-        List<SQLToken> result = new ArrayList<>(2);
+        List<SQLToken> result = new ArrayList<>(1);
         EncryptInsertValuesToken encryptInsertValuesToken = new EncryptInsertValuesToken(0, 0);
         encryptInsertValuesToken.getInsertValues().add(new InsertValue(createValueExpressions()));
         result.add(encryptInsertValuesToken);
