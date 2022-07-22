@@ -38,16 +38,32 @@ public final class MySQLContainer extends DockerStorageContainer {
     protected void configure() {
         withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password", "--lower_case_table_names=1");
         addEnv("LANG", "C.UTF-8");
-        addEnv("MYSQL_ROOT_PASSWORD", "root");
+        addEnv("MYSQL_ROOT_PASSWORD", getPassword());
         addEnv("MYSQL_ROOT_HOST", "%");
         withClasspathResourceMapping("/env/mysql/my.cnf", "/etc/mysql/my.cnf", BindMode.READ_ONLY);
         withExposedPorts(getPort());
-        setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(getDatabaseType(), "localhost", getFirstMappedPort()), "root", "root")));
         super.configure();
+        setWaitStrategy(new JDBCConnectionWaitStrategy(
+                () -> DriverManager.getConnection(DataSourceEnvironment.getURL(getDatabaseType(), "localhost", getFirstMappedPort()), getUsername(), getPassword())));
     }
     
     @Override
-    protected int getPort() {
+    public String getJdbcUrl(final String databaseName) {
+        return DataSourceEnvironment.getURL(getDatabaseType(), getHost(), getFirstMappedPort(), databaseName);
+    }
+    
+    @Override
+    public String getUsername() {
+        return "root";
+    }
+    
+    @Override
+    public String getPassword() {
+        return "root";
+    }
+    
+    @Override
+    public int getPort() {
         return 3306;
     }
 }
