@@ -17,40 +17,16 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
-import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
-import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rule.EncryptRule;
-import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.database.DefaultDatabase;
-import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.assignment.InsertValuesSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.InsertColumnsSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.TableNameSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.InsertStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 import org.junit.Test;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
-public final class EncryptForUseDefaultInsertColumnsTokenGeneratorTest {
+public final class EncryptForUseDefaultInsertColumnsTokenGeneratorTest extends EncryptGeneratorBaseTest {
     
     @Test
     public void assertIsGenerateSQLToken() {
@@ -60,38 +36,18 @@ public final class EncryptForUseDefaultInsertColumnsTokenGeneratorTest {
     }
     
     @Test
-    public void assertGenerateSQLToken() {
+    public void assertGenerateSQLTokenFromGenerateNewSQLToken() {
         EncryptForUseDefaultInsertColumnsTokenGenerator tokenGenerator = new EncryptForUseDefaultInsertColumnsTokenGenerator();
         tokenGenerator.setEncryptRule(new EncryptRule(createEncryptRuleConfiguration()));
+        tokenGenerator.setPreviousSQLTokens(Collections.emptyList());
         assertThat(tokenGenerator.generateSQLToken(createInsertStatementContext(Collections.emptyList())).toString(), is("(id, name, status, pwd_cipher, pwd_assist, pwd_plain)"));
     }
-    
-    private EncryptRuleConfiguration createEncryptRuleConfiguration() {
-        EncryptColumnRuleConfiguration pwdColumnConfig = new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "pwd_assist", "pwd_plain", "test_encryptor", "test_encryptor", false);
-        return new EncryptRuleConfiguration(Collections.singleton(new EncryptTableRuleConfiguration("tbl", Collections.singletonList(pwdColumnConfig), null)),
-                Collections.singletonMap("test_encryptor", new ShardingSphereAlgorithmConfiguration("CORE.QUERY_ASSISTED.FIXTURE", new Properties())));
-    }
-    
-    private InsertStatementContext createInsertStatementContext(final List<Object> parameters) {
-        InsertStatement insertStatement = createInsertStatement();
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(database.getSchemas().get(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
-        when(schema.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status", "pwd"));
-        return new InsertStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), parameters, insertStatement, DefaultDatabase.LOGIC_NAME);
-    }
-    
-    private InsertStatement createInsertStatement() {
-        InsertStatement result = new MySQLInsertStatement();
-        result.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("tbl"))));
-        InsertColumnsSegment insertColumnsSegment = new InsertColumnsSegment(0, 0, Arrays.asList(
-                new ColumnSegment(0, 0, new IdentifierValue("id")), new ColumnSegment(0, 0, new IdentifierValue("name")),
-                new ColumnSegment(0, 0, new IdentifierValue("status")), new ColumnSegment(0, 0, new IdentifierValue("pwd"))));
-        result.setInsertColumns(insertColumnsSegment);
-        result.getValues().add(new InsertValuesSegment(0, 0, Arrays.asList(
-                new ParameterMarkerExpressionSegment(0, 0, 1), new ParameterMarkerExpressionSegment(0, 0, 2), new LiteralExpressionSegment(0, 0, "init"))));
-        result.getValues().add(new InsertValuesSegment(0, 0, Arrays.asList(
-                new ParameterMarkerExpressionSegment(0, 0, 3), new ParameterMarkerExpressionSegment(0, 0, 4), new LiteralExpressionSegment(0, 0, "init"))));
-        return result;
+
+    @Test
+    public void assertGenerateSQLTokenFromPreviousSQLTokens() {
+        EncryptForUseDefaultInsertColumnsTokenGenerator tokenGenerator = new EncryptForUseDefaultInsertColumnsTokenGenerator();
+        tokenGenerator.setEncryptRule(new EncryptRule(createEncryptRuleConfiguration()));
+        tokenGenerator.setPreviousSQLTokens(getPreviousSQLTokens());
+        assertThat(tokenGenerator.generateSQLToken(createInsertStatementContext(Collections.emptyList())).toString(), is("(id, name, status, pwd_cipher, pwd_assist, pwd_plain)"));
     }
 }
