@@ -43,7 +43,7 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
     @Override
     public void prepareTargetTables(final PrepareTargetTablesParameter parameter) {
         List<String> createLogicalTableSQLs = listCreateLogicalTableSQL(parameter);
-        try (Connection targetConnection = getTargetCachedDataSource(parameter.getTaskConfig(), parameter.getDataSourceManager()).getConnection()) {
+        try (Connection targetConnection = getTargetCachedDataSource(parameter.getJobConfig(), parameter.getDataSourceManager()).getConnection()) {
             for (String createLogicalTableSQL : createLogicalTableSQLs) {
                 for (String each : Splitter.on(";").splitToList(createLogicalTableSQL).stream().filter(StringUtils::isNotBlank).collect(Collectors.toList())) {
                     executeTargetTableSQL(targetConnection, each);

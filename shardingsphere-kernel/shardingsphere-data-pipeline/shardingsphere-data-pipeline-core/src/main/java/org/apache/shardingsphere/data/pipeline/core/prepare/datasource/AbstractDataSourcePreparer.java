@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
@@ -51,17 +50,17 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     
     @Override
     public void prepareTargetSchemas(final PrepareTargetSchemasParameter parameter) {
-        DatabaseType sourceDatabaseType = DatabaseTypeFactory.getInstance(parameter.getTaskConfig().getJobConfig().getSourceDatabaseType());
-        DatabaseType targetDatabaseType = DatabaseTypeFactory.getInstance(parameter.getTaskConfig().getJobConfig().getTargetDatabaseType());
+        DatabaseType sourceDatabaseType = DatabaseTypeFactory.getInstance(parameter.getJobConfig().getSourceDatabaseType());
+        DatabaseType targetDatabaseType = DatabaseTypeFactory.getInstance(parameter.getJobConfig().getTargetDatabaseType());
         if (!sourceDatabaseType.isSchemaAvailable() || !targetDatabaseType.isSchemaAvailable()) {
             log.info("prepareTargetSchemas, one of source or target database type schema is not available, ignore");
             return;
         }
         Set<String> schemaNames = getSchemaNames(parameter);
-        String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(targetDatabaseType, parameter.getTaskConfig().getJobConfig().getDatabaseName());
+        String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(targetDatabaseType, parameter.getJobConfig().getDatabaseName());
         log.info("prepareTargetSchemas, schemaNames={}, defaultSchema={}", schemaNames, defaultSchema);
         PipelineSQLBuilder pipelineSQLBuilder = PipelineSQLBuilderFactory.getInstance(targetDatabaseType.getType());
-        try (Connection targetConnection = getTargetCachedDataSource(parameter.getTaskConfig(), parameter.getDataSourceManager()).getConnection()) {
+        try (Connection targetConnection = getTargetCachedDataSource(parameter.getJobConfig(), parameter.getDataSourceManager()).getConnection()) {
             for (String each : schemaNames) {
                 if (each.equalsIgnoreCase(defaultSchema)) {
                     continue;
@@ -80,7 +79,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     
     private Set<String> getSchemaNames(final PrepareTargetSchemasParameter parameter) {
         Set<String> result = new HashSet<>();
-        for (String each : parameter.getTaskConfig().getJobConfig().splitLogicTableNames()) {
+        for (String each : parameter.getJobConfig().splitLogicTableNames()) {
             String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(each);
             if (null == schemaName) {
                 throw new PipelineJobPrepareFailedException("Can not get schemaName by logic table name " + each);
@@ -95,8 +94,8 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         return dataSourceManager.getDataSource(PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getSource().getType(), jobConfig.getSource().getParameter()));
     }
     
-    protected final PipelineDataSourceWrapper getTargetCachedDataSource(final TaskConfiguration taskConfig, final PipelineDataSourceManager dataSourceManager) {
-        return dataSourceManager.getDataSource(taskConfig.getImporterConfig().getDataSourceConfig());
+    protected final PipelineDataSourceWrapper getTargetCachedDataSource(final RuleAlteredJobConfiguration jobConfig, final PipelineDataSourceManager dataSourceManager) {
+        return dataSourceManager.getDataSource(jobConfig.getSource());
     }
     
     protected final void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {

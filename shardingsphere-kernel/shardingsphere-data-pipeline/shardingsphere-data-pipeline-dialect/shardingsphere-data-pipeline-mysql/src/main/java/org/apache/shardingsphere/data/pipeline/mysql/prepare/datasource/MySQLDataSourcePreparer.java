@@ -41,7 +41,7 @@ public final class MySQLDataSourcePreparer extends AbstractDataSourcePreparer {
     @Override
     public void prepareTargetTables(final PrepareTargetTablesParameter parameter) {
         PipelineDataSourceManager dataSourceManager = parameter.getDataSourceManager();
-        try (Connection targetConnection = getTargetCachedDataSource(parameter.getTaskConfig(), dataSourceManager).getConnection()) {
+        try (Connection targetConnection = getTargetCachedDataSource(parameter.getJobConfig(), dataSourceManager).getConnection()) {
             for (String each : getCreateTableSQL(parameter)) {
                 executeTargetTableSQL(targetConnection, addIfNotExistsForCreateTableSQL(each));
                 log.info("create target table '{}' success", each);

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 
 /**
@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourc
 @Getter
 public final class PrepareTargetSchemasParameter {
     
-    private final TaskConfiguration taskConfig;
+    private final RuleAlteredJobConfiguration jobConfig;
     
     private final PipelineDataSourceManager dataSourceManager;
     

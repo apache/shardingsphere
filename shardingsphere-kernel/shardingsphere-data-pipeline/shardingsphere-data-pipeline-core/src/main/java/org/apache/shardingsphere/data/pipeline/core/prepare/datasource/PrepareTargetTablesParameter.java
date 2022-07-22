@@ -21,7 +21,6 @@ import lombok.Getter;
 import lombok.NonNull;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 
@@ -31,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourc
 @Getter
 public final class PrepareTargetTablesParameter {
     
-    private final TaskConfiguration taskConfig;
+    private final RuleAlteredJobConfiguration jobConfig;
     
     private final JobDataNodeLine tablesFirstDataNodes;
     
@@ -39,20 +38,11 @@ public final class PrepareTargetTablesParameter {
     
     private final TableNameSchemaNameMapping tableNameSchemaNameMapping;
     
-    public PrepareTargetTablesParameter(@NonNull final TaskConfiguration taskConfig, @NonNull final PipelineDataSourceManager dataSourceManager,
+    public PrepareTargetTablesParameter(@NonNull final RuleAlteredJobConfiguration jobConfig, @NonNull final PipelineDataSourceManager dataSourceManager,
                                         final TableNameSchemaNameMapping tableNameSchemaNameMapping) {
-        this.taskConfig = taskConfig;
-        tablesFirstDataNodes = JobDataNodeLine.unmarshal(taskConfig.getJobConfig().getTablesFirstDataNodes());
+        this.jobConfig = jobConfig;
+        tablesFirstDataNodes = JobDataNodeLine.unmarshal(jobConfig.getTablesFirstDataNodes());
         this.dataSourceManager = dataSourceManager;
         this.tableNameSchemaNameMapping = tableNameSchemaNameMapping;
-    }
-    
-    /**
-     * Get job configuration.
-     *
-     * @return job configuration
-     */
-    public RuleAlteredJobConfiguration getJobConfig() {
-        return taskConfig.getJobConfig();
     }
 }

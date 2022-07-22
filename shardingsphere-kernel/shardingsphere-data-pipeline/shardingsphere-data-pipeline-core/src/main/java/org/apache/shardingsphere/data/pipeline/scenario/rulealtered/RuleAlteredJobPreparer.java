@@ -143,9 +143,9 @@ public final class RuleAlteredJobPreparer {
             return;
         }
         TableNameSchemaNameMapping tableNameSchemaNameMapping = jobContext.getTaskConfig().getDumperConfig().getTableNameSchemaNameMapping();
-        PrepareTargetSchemasParameter prepareTargetSchemasParameter = new PrepareTargetSchemasParameter(jobContext.getTaskConfig(), jobContext.getDataSourceManager(), tableNameSchemaNameMapping);
+        PrepareTargetSchemasParameter prepareTargetSchemasParameter = new PrepareTargetSchemasParameter(jobConfig, jobContext.getDataSourceManager(), tableNameSchemaNameMapping);
         dataSourcePreparer.get().prepareTargetSchemas(prepareTargetSchemasParameter);
-        PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(jobContext.getTaskConfig(), jobContext.getDataSourceManager(), tableNameSchemaNameMapping);
+        PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(jobConfig, jobContext.getDataSourceManager(), tableNameSchemaNameMapping);
         dataSourcePreparer.get().prepareTargetTables(prepareTargetTablesParameter);
     }
     
