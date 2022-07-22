@@ -20,8 +20,8 @@ package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 import lombok.Getter;
 import lombok.NonNull;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datanode.JobDataNodeLine;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 
 /**
@@ -29,19 +29,22 @@ import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourc
  */
 @Getter
 public final class PrepareTargetTablesParameter {
-    
-    private final RuleAlteredJobConfiguration jobConfig;
-    
+
+    private final String databaseName;
+
     private final JobDataNodeLine tablesFirstDataNodes;
-    
+
+    private final PipelineDataSourceConfiguration pipelineDataSourceConfiguration;
+
     private final PipelineDataSourceManager dataSourceManager;
     
     private final TableNameSchemaNameMapping tableNameSchemaNameMapping;
     
-    public PrepareTargetTablesParameter(@NonNull final RuleAlteredJobConfiguration jobConfig, @NonNull final PipelineDataSourceManager dataSourceManager,
-                                        final TableNameSchemaNameMapping tableNameSchemaNameMapping) {
-        this.jobConfig = jobConfig;
-        tablesFirstDataNodes = JobDataNodeLine.unmarshal(jobConfig.getTablesFirstDataNodes());
+    public PrepareTargetTablesParameter(@NonNull String databaseName, @NonNull final PipelineDataSourceConfiguration pipelineDataSourceConfiguration, @NonNull final PipelineDataSourceManager dataSourceManager,
+                                        @NonNull final String tablesFirstDataNodes, final TableNameSchemaNameMapping tableNameSchemaNameMapping) {
+        this.databaseName = databaseName;
+        this.pipelineDataSourceConfiguration = pipelineDataSourceConfiguration;
+        this.tablesFirstDataNodes = JobDataNodeLine.unmarshal(tablesFirstDataNodes);
         this.dataSourceManager = dataSourceManager;
         this.tableNameSchemaNameMapping = tableNameSchemaNameMapping;
     }

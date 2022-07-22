@@ -17,24 +17,22 @@
 
 package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
-import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
-import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
+import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
+import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
+import org.apache.shardingsphere.data.pipeline.spi.sqlbuilder.PipelineSQLBuilder;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 
 /**
  * Abstract data source preparer.
@@ -45,22 +43,16 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     private static final Pattern PATTERN_CREATE_TABLE_IF_NOT_EXISTS = Pattern.compile("CREATE\\s+TABLE\\s+IF\\s+NOT\\s+EXISTS\\s+", Pattern.CASE_INSENSITIVE);
     
     private static final Pattern PATTERN_CREATE_TABLE = Pattern.compile("CREATE\\s+TABLE\\s+", Pattern.CASE_INSENSITIVE);
-    
+
     private static final String[] IGNORE_EXCEPTION_MESSAGE = {"multiple primary keys for table", "already exists"};
     
     @Override
     public void prepareTargetSchemas(final PrepareTargetSchemasParameter parameter) {
-        DatabaseType sourceDatabaseType = DatabaseTypeFactory.getInstance(parameter.getJobConfig().getSourceDatabaseType());
-        DatabaseType targetDatabaseType = DatabaseTypeFactory.getInstance(parameter.getJobConfig().getTargetDatabaseType());
-        if (!sourceDatabaseType.isSchemaAvailable() || !targetDatabaseType.isSchemaAvailable()) {
-            log.info("prepareTargetSchemas, one of source or target database type schema is not available, ignore");
-            return;
-        }
         Set<String> schemaNames = getSchemaNames(parameter);
-        String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(targetDatabaseType, parameter.getJobConfig().getDatabaseName());
+        String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(parameter.getTargetDatabaseType(), parameter.getDatabaseName());
         log.info("prepareTargetSchemas, schemaNames={}, defaultSchema={}", schemaNames, defaultSchema);
-        PipelineSQLBuilder pipelineSQLBuilder = PipelineSQLBuilderFactory.getInstance(targetDatabaseType.getType());
-        try (Connection targetConnection = getTargetCachedDataSource(parameter.getJobConfig(), parameter.getDataSourceManager()).getConnection()) {
+        PipelineSQLBuilder pipelineSQLBuilder = PipelineSQLBuilderFactory.getInstance(parameter.getTargetDatabaseType().getType());
+        try (Connection targetConnection = getTargetCachedDataSource(parameter.getPipelineDataSourceConfiguration(), parameter.getDataSourceManager()).getConnection()) {
             for (String each : schemaNames) {
                 if (each.equalsIgnoreCase(defaultSchema)) {
                     continue;
@@ -79,7 +71,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     
     private Set<String> getSchemaNames(final PrepareTargetSchemasParameter parameter) {
         Set<String> result = new HashSet<>();
-        for (String each : parameter.getJobConfig().splitLogicTableNames()) {
+        for (String each : parameter.getLogicTableNames()) {
             String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(each);
             if (null == schemaName) {
                 throw new PipelineJobPrepareFailedException("Can not get schemaName by logic table name " + each);
@@ -94,8 +86,8 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         return dataSourceManager.getDataSource(PipelineDataSourceConfigurationFactory.newInstance(jobConfig.getSource().getType(), jobConfig.getSource().getParameter()));
     }
     
-    protected final PipelineDataSourceWrapper getTargetCachedDataSource(final RuleAlteredJobConfiguration jobConfig, final PipelineDataSourceManager dataSourceManager) {
-        return dataSourceManager.getDataSource(jobConfig.getSource());
+    protected final PipelineDataSourceWrapper getTargetCachedDataSource(final PipelineDataSourceConfiguration dataSourceConfig, final PipelineDataSourceManager dataSourceManager) {
+        return dataSourceManager.getDataSource(dataSourceConfig);
     }
     
     protected final void executeTargetTableSQL(final Connection targetConnection, final String sql) throws SQLException {
@@ -111,7 +103,7 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
             throw ex;
         }
     }
-    
+
     protected final String addIfNotExistsForCreateTableSQL(final String createTableSQL) {
         if (PATTERN_CREATE_TABLE_IF_NOT_EXISTS.matcher(createTableSQL).find()) {
             return createTableSQL;
