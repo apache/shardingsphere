@@ -24,13 +24,14 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.FormatStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.ParseStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.PreviewStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAllVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAuthorityRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceModeStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowSQLParserRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetadataStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTrafficRulesStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTransactionRuleStatement;
@@ -57,14 +58,15 @@ import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.FormatS
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.ParseDistSQLHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced.PreviewHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint.HintRALBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.queryable.ExportDatabaseConfigurationHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.queryable.ConvertYamlConfigurationHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.queryable.ExportDatabaseConfigurationHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.queryable.ShowAllVariableHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.queryable.ShowAuthorityRuleHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.queryable.ShowInstanceHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.queryable.ShowInstanceModeHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.queryable.ShowReadwriteSplittingReadResourcesHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.queryable.ShowSQLParserRuleHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.ral.queryable.ShowSQLTranslatorRuleHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.queryable.ShowTableMetadataHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.queryable.ShowTrafficRulesHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.queryable.ShowTransactionRuleHandler;
@@ -133,6 +135,7 @@ public final class RALBackendHandlerFactory {
         HANDLERS.put(ParseStatement.class, ParseDistSQLHandler.class);
         HANDLERS.put(PreviewStatement.class, PreviewHandler.class);
         HANDLERS.put(FormatStatement.class, FormatSQLHandler.class);
+        HANDLERS.put(ShowSQLTranslatorRuleStatement.class, ShowSQLTranslatorRuleHandler.class);
     }
     
     /**
