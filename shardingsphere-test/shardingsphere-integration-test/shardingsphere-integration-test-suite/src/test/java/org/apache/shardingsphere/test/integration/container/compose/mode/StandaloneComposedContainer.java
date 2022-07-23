@@ -22,7 +22,7 @@ import org.apache.shardingsphere.test.integration.env.container.atomic.ITContain
 import org.apache.shardingsphere.test.integration.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.container.atomic.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainer;
-import org.apache.shardingsphere.test.integration.container.atomic.storage.StorageContainerFactory;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.integration.container.compose.ComposedContainer;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 

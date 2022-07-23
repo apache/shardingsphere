@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.container.atomic.storage;
+package org.apache.shardingsphere.test.integration.env.container.atomic.storage;
 
 import com.zaxxer.hikari.HikariDataSource;
 import lombok.Getter;
@@ -23,7 +23,6 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.EmbeddedITContainer;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.env.runtime.scenario.database.DatabaseEnvironmentManager;
 
 import javax.sql.DataSource;

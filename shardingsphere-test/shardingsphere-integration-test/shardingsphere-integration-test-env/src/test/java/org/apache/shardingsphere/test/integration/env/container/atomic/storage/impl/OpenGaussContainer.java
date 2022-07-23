@@ -15,34 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.container.atomic.storage.impl;
+package org.apache.shardingsphere.test.integration.env.container.atomic.storage.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.test.integration.container.atomic.storage.DockerStorageContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.testcontainers.containers.BindMode;
 
 import java.util.Optional;
 
 /**
- * MySQL container.
+ * OpenGauss container for Scaling IT.
  */
-public final class MySQLContainer extends DockerStorageContainer {
+public final class OpenGaussContainer extends DockerStorageContainer {
     
-    public MySQLContainer(final String scenario) {
-        super(DatabaseTypeFactory.getInstance("MySQL"), "mysql/mysql-server:5.7", scenario);
+    public OpenGaussContainer(final String scenario) {
+        super(DatabaseTypeFactory.getInstance("openGauss"), "enmotech/opengauss:3.0.0", scenario);
     }
     
-    public MySQLContainer(final String scenario, final String dockerImageName) {
-        super(DatabaseTypeFactory.getInstance("MySQL"), dockerImageName, scenario);
+    public OpenGaussContainer(final String scenario, final String dockerImageName) {
+        super(DatabaseTypeFactory.getInstance("openGauss"), dockerImageName, scenario);
     }
     
     @Override
     protected void configure() {
-        withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password", "--lower_case_table_names=1");
-        addEnv("LANG", "C.UTF-8");
-        addEnv("MYSQL_ROOT_PASSWORD", getRootPassword());
-        addEnv("MYSQL_ROOT_HOST", "%");
-        withClasspathResourceMapping("/env/mysql/my.cnf", "/etc/mysql/my.cnf", BindMode.READ_ONLY);
+        withCommand("--max_connections=600");
+        addEnv("GS_PASSWORD", getRootPassword());
+        withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/usr/local/opengauss/share/postgresql/postgresql.conf.sample", BindMode.READ_ONLY);
+        withClasspathResourceMapping("/env/opengauss/pg_hba.conf", "/usr/local/opengauss/share/postgresql/pg_hba.conf.sample", BindMode.READ_ONLY);
+        withPrivilegedMode(true);
         super.configure();
     }
     
@@ -53,7 +53,7 @@ public final class MySQLContainer extends DockerStorageContainer {
     
     @Override
     public String getRootPassword() {
-        return "root";
+        return "Root@123";
     }
     
     @Override
@@ -63,16 +63,16 @@ public final class MySQLContainer extends DockerStorageContainer {
     
     @Override
     public String getTestCasePassword() {
-        return "root";
+        return "Root@123";
     }
     
     @Override
     public int getPort() {
-        return 3306;
+        return 5432;
     }
     
     @Override
     protected Optional<String> getDefaultDatabaseName() {
-        return Optional.empty();
+        return Optional.of("postgres");
     }
 }

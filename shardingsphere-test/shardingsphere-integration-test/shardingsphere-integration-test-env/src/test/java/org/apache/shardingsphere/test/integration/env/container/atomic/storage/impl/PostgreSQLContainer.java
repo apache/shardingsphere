@@ -15,34 +15,33 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.container.atomic.storage.impl;
+package org.apache.shardingsphere.test.integration.env.container.atomic.storage.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.test.integration.container.atomic.storage.DockerStorageContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.testcontainers.containers.BindMode;
 
 import java.util.Optional;
 
 /**
- * OpenGauss container for Scaling IT.
+ * PostgreSQL container.
  */
-public final class OpenGaussContainer extends DockerStorageContainer {
+public final class PostgreSQLContainer extends DockerStorageContainer {
     
-    public OpenGaussContainer(final String scenario) {
-        super(DatabaseTypeFactory.getInstance("openGauss"), "enmotech/opengauss:3.0.0", scenario);
+    public PostgreSQLContainer(final String scenario) {
+        super(DatabaseTypeFactory.getInstance("PostgreSQL"), "postgres:12-alpine", scenario);
     }
     
-    public OpenGaussContainer(final String scenario, final String dockerImageName) {
-        super(DatabaseTypeFactory.getInstance("openGauss"), dockerImageName, scenario);
+    public PostgreSQLContainer(final String scenario, final String dockerImageName) {
+        super(DatabaseTypeFactory.getInstance("PostgreSQL"), dockerImageName, scenario);
     }
     
     @Override
     protected void configure() {
-        withCommand("--max_connections=600");
-        addEnv("GS_PASSWORD", getRootPassword());
-        withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/usr/local/opengauss/share/postgresql/postgresql.conf.sample", BindMode.READ_ONLY);
-        withClasspathResourceMapping("/env/opengauss/pg_hba.conf", "/usr/local/opengauss/share/postgresql/pg_hba.conf.sample", BindMode.READ_ONLY);
-        withPrivilegedMode(true);
+        withCommand("--max_connections=600", "--wal_level=logical");
+        addEnv("POSTGRES_USER", getRootUsername());
+        addEnv("POSTGRES_PASSWORD", getRootPassword());
+        withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/etc/postgresql/postgresql.conf", BindMode.READ_ONLY);
         super.configure();
     }
     
@@ -53,7 +52,7 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     
     @Override
     public String getRootPassword() {
-        return "Root@123";
+        return "root";
     }
     
     @Override
@@ -63,7 +62,7 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     
     @Override
     public String getTestCasePassword() {
-        return "Root@123";
+        return "root";
     }
     
     @Override
