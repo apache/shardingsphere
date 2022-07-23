@@ -32,6 +32,10 @@ public final class MySQLContainer extends DockerStorageContainer {
         super(DatabaseTypeFactory.getInstance("MySQL"), "mysql/mysql-server:5.7", scenario);
     }
     
+    public MySQLContainer(final String scenario, final String dockerImageName) {
+        super(DatabaseTypeFactory.getInstance("MySQL"), dockerImageName, scenario);
+    }
+    
     @Override
     protected void configure() {
         withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password", "--lower_case_table_names=1");
