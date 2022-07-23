@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.container.atomic.adapter;
+package org.apache.shardingsphere.test.integration.env.container.atomic.adapter;
 
 import org.apache.shardingsphere.test.integration.env.container.atomic.ITContainer;
 

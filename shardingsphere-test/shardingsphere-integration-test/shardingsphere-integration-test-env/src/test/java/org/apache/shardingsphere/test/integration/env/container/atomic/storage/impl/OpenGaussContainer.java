@@ -24,7 +24,7 @@ import org.testcontainers.containers.BindMode;
 import java.util.Optional;
 
 /**
- * OpenGauss container for Scaling IT.
+ * OpenGauss container.
  */
 public final class OpenGaussContainer extends DockerStorageContainer {
     

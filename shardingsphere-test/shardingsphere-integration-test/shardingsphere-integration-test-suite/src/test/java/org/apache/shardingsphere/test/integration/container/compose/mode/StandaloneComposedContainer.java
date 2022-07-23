@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.integration.container.compose.mode;
 
 import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.ITContainers;
-import org.apache.shardingsphere.test.integration.container.atomic.adapter.AdapterContainer;
-import org.apache.shardingsphere.test.integration.container.atomic.adapter.AdapterContainerFactory;
+import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainerFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainerFactory;
 import org.apache.shardingsphere.test.integration.container.compose.ComposedContainer;
