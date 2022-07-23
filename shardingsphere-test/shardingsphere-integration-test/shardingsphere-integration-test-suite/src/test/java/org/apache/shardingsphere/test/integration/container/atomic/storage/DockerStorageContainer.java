@@ -24,6 +24,7 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainer;
+import org.apache.shardingsphere.test.integration.env.container.wait.JDBCConnectionWaitStrategy;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.env.scenario.database.DatabaseEnvironmentManager;
 import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath;
@@ -33,21 +34,24 @@ import org.testcontainers.containers.BindMode;
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
+import java.sql.DriverManager;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Docker storage container.
  */
-@Getter
 public abstract class DockerStorageContainer extends DockerITContainer implements StorageContainer {
     
     private final DatabaseType databaseType;
     
     private final String scenario;
     
+    @Getter
     private final Map<String, DataSource> actualDataSourceMap;
     
+    @Getter
     private final Map<String, DataSource> expectedDataSourceMap;
     
     public DockerStorageContainer(final DatabaseType databaseType, final String dockerImageName, final String scenario) {
@@ -66,6 +70,12 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
             withClasspathResourceMapping(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
             withClasspathResourceMapping(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
         }
+        withExposedPorts(getPort());
+        setWaitStrategy(new JDBCConnectionWaitStrategy(
+                () -> DriverManager.getConnection(getDefaultDatabaseName().isPresent() 
+                        ? DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort(), getDefaultDatabaseName().get())
+                        : DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort()),
+                        getUsername(), getPassword())));
     }
     
     @Override
@@ -79,20 +89,22 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
         result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(getPort()), dataSourceName));
-        result.setUsername("root");
-        result.setPassword("root");
+        result.setUsername(getUsername());
+        result.setPassword(getPassword());
         result.setMaximumPoolSize(4);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
     }
     
     /**
-     * Get jdbc url.
+     * Get JDBC URL.
      *
      * @param databaseName database name
-     * @return jdbc url
+     * @return JDBC URL
      */
-    public abstract String getJdbcUrl(String databaseName);
+    public final String getJdbcUrl(final String databaseName) {
+        return DataSourceEnvironment.getURL(databaseType, getHost(), getFirstMappedPort(), databaseName);
+    }
     
     /**
      * Get database username.
@@ -104,7 +116,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     /**
      * Get database password.
      *
-     * @return database username
+     * @return database password
      */
     public abstract String getPassword();
     
@@ -115,8 +127,15 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
      */
     public abstract int getPort();
     
+    /**
+     * Get default database name.
+     * 
+     * @return default database name
+     */
+    protected abstract Optional<String> getDefaultDatabaseName();
+    
     @Override
     public final String getAbbreviation() {
-        return getDatabaseType().getType().toLowerCase();
+        return databaseType.getType().toLowerCase();
     }
 }
