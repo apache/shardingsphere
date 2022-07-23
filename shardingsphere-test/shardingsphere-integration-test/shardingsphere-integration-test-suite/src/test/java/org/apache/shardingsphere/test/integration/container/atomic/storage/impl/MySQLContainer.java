@@ -19,11 +19,9 @@ package org.apache.shardingsphere.test.integration.container.atomic.storage.impl
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.test.integration.container.atomic.storage.DockerStorageContainer;
-import org.apache.shardingsphere.test.integration.env.container.wait.JDBCConnectionWaitStrategy;
-import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.testcontainers.containers.BindMode;
 
-import java.sql.DriverManager;
+import java.util.Optional;
 
 /**
  * MySQL container.
@@ -41,15 +39,7 @@ public final class MySQLContainer extends DockerStorageContainer {
         addEnv("MYSQL_ROOT_PASSWORD", getPassword());
         addEnv("MYSQL_ROOT_HOST", "%");
         withClasspathResourceMapping("/env/mysql/my.cnf", "/etc/mysql/my.cnf", BindMode.READ_ONLY);
-        withExposedPorts(getPort());
         super.configure();
-        setWaitStrategy(new JDBCConnectionWaitStrategy(
-                () -> DriverManager.getConnection(DataSourceEnvironment.getURL(getDatabaseType(), "localhost", getFirstMappedPort()), getUsername(), getPassword())));
-    }
-    
-    @Override
-    public String getJdbcUrl(final String databaseName) {
-        return DataSourceEnvironment.getURL(getDatabaseType(), getHost(), getFirstMappedPort(), databaseName);
     }
     
     @Override
@@ -65,5 +55,10 @@ public final class MySQLContainer extends DockerStorageContainer {
     @Override
     public int getPort() {
         return 3306;
+    }
+    
+    @Override
+    protected Optional<String> getDefaultDatabaseName() {
+        return Optional.empty();
     }
 }

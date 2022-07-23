@@ -19,10 +19,9 @@ package org.apache.shardingsphere.test.integration.container.atomic.storage.impl
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.test.integration.container.atomic.storage.DockerStorageContainer;
-import org.apache.shardingsphere.test.integration.env.container.wait.JDBCConnectionWaitStrategy;
-import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
+import org.testcontainers.containers.BindMode;
 
-import java.sql.DriverManager;
+import java.util.Optional;
 
 /**
  * PostgreSQL container.
@@ -38,15 +37,8 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
         withCommand("--max_connections=600", "--wal_level=logical");
         addEnv("POSTGRES_USER", getUsername());
         addEnv("POSTGRES_PASSWORD", getPassword());
-        withExposedPorts(getPort());
+        withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/etc/postgresql/postgresql.conf", BindMode.READ_ONLY);
         super.configure();
-        setWaitStrategy(new JDBCConnectionWaitStrategy(
-                () -> DriverManager.getConnection(DataSourceEnvironment.getURL(getDatabaseType(), "localhost", getFirstMappedPort(), "postgres"), getUsername(), getPassword())));
-    }
-    
-    @Override
-    public String getJdbcUrl(final String databaseName) {
-        return DataSourceEnvironment.getURL(getDatabaseType(), getHost(), getFirstMappedPort(), databaseName);
     }
     
     @Override
@@ -62,5 +54,10 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
     @Override
     public int getPort() {
         return 5432;
+    }
+    
+    @Override
+    protected Optional<String> getDefaultDatabaseName() {
+        return Optional.of("postgres");
     }
 }
