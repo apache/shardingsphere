@@ -35,11 +35,11 @@ import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEn
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.BaseComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.DockerComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.NativeComposedContainer;
-import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.DatabaseContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.integration.data.pipeline.framework.watcher.ScalingWatcher;
 import org.apache.shardingsphere.integration.data.pipeline.util.DatabaseTypeUtil;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.junit.Rule;
 import org.opengauss.util.PSQLException;
@@ -118,9 +118,9 @@ public abstract class BaseITCase {
         }
         composedContainer.start();
         if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
-            DatabaseContainer databaseContainer = ((DockerComposedContainer) composedContainer).getDatabaseContainer();
-            username = databaseContainer.getUsername();
-            password = databaseContainer.getPassword();
+            DockerStorageContainer storageContainer = ((DockerComposedContainer) composedContainer).getStorageContainer();
+            username = storageContainer.getTestCaseUsername();
+            password = storageContainer.getTestCasePassword();
         } else {
             username = ENV.getActualDataSourceUsername(databaseType);
             password = ENV.getActualDataSourcePassword(databaseType);
@@ -230,11 +230,10 @@ public abstract class BaseITCase {
     
     private String getActualJdbcUrlTemplate(final String databaseName) {
         if (ScalingITEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
-            final DatabaseContainer databaseContainer = ((DockerComposedContainer) composedContainer).getDatabaseContainer();
-            return DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", databaseContainer.getPort(), databaseName);
-        } else {
-            return DataSourceEnvironment.getURL(getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), databaseName);
+            DockerStorageContainer storageContainer = ((DockerComposedContainer) composedContainer).getStorageContainer();
+            return DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getPort(), databaseName);
         }
+        return DataSourceEnvironment.getURL(getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), databaseName);
     }
     
     protected void initShardingAlgorithm() {
