@@ -86,7 +86,34 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
         return result;
     }
     
-    protected abstract int getPort();
+    /**
+     * Get jdbc url.
+     *
+     * @param databaseName database name
+     * @return jdbc url
+     */
+    public abstract String getJdbcUrl(String databaseName);
+    
+    /**
+     * Get database username.
+     *
+     * @return database username
+     */
+    public abstract String getUsername();
+    
+    /**
+     * Get database password.
+     *
+     * @return database username
+     */
+    public abstract String getPassword();
+    
+    /**
+     * Get database port.
+     *
+     * @return database port
+     */
+    public abstract int getPort();
     
     @Override
     public final String getAbbreviation() {

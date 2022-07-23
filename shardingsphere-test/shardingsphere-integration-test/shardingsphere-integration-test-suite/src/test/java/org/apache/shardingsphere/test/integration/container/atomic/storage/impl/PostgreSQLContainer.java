@@ -36,16 +36,31 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
     @Override
     protected void configure() {
         withCommand("--max_connections=600", "--wal_level=logical");
-        addEnv("POSTGRES_USER", "root");
-        addEnv("POSTGRES_PASSWORD", "root");
+        addEnv("POSTGRES_USER", getUsername());
+        addEnv("POSTGRES_PASSWORD", getPassword());
         withExposedPorts(getPort());
-        setWaitStrategy(
-                new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(getDatabaseType(), "localhost", getFirstMappedPort(), "postgres"), "root", "root")));
         super.configure();
+        setWaitStrategy(new JDBCConnectionWaitStrategy(
+                () -> DriverManager.getConnection(DataSourceEnvironment.getURL(getDatabaseType(), "localhost", getFirstMappedPort(), "postgres"), getUsername(), getPassword())));
     }
     
     @Override
-    protected int getPort() {
+    public String getJdbcUrl(final String databaseName) {
+        return DataSourceEnvironment.getURL(getDatabaseType(), getHost(), getFirstMappedPort(), databaseName);
+    }
+    
+    @Override
+    public String getUsername() {
+        return "root";
+    }
+    
+    @Override
+    public String getPassword() {
+        return "root";
+    }
+    
+    @Override
+    public int getPort() {
         return 5432;
     }
 }
