@@ -35,17 +35,17 @@ public final class DatabaseContainerFactory {
      * Create new instance of storage container.
      *
      * @param databaseType database type
-     * @param dockerImageName database ver
+     * @param dockerImageName database image name
      * @return created instance
      */
     public static DockerStorageContainer newInstance(final DatabaseType databaseType, final String dockerImageName) {
         switch (databaseType.getType()) {
             case "MySQL":
-                return new MySQLContainer(dockerImageName);
+                return new MySQLContainer("", dockerImageName);
             case "PostgreSQL":
-                return new PostgreSQLContainer(dockerImageName);
+                return new PostgreSQLContainer("", dockerImageName);
             case "openGauss":
-                return new OpenGaussContainer(dockerImageName);
+                return new OpenGaussContainer("", dockerImageName);
             default:
                 throw new RuntimeException(String.format("Database [%s] is unknown.", databaseType.getType()));
         }
