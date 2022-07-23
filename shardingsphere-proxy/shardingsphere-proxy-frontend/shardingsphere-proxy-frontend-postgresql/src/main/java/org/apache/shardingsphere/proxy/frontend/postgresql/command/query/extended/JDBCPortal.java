@@ -64,7 +64,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * PostgreSQL portal using JDBC backend.
@@ -96,7 +95,7 @@ public final class JDBCPortal implements Portal<Void> {
         if (sqlStatement instanceof TCLStatement || sqlStatement instanceof EmptyStatement || sqlStatement instanceof DistSQLStatement || sqlStatement instanceof SetStatement) {
             databaseCommunicationEngine = null;
             textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("PostgreSQL"),
-                    preparedStatement.getSql(), () -> Optional.of(sqlStatement), backendConnection.getConnectionSession());
+                    preparedStatement.getSql(), sqlStatement, backendConnection.getConnectionSession());
             return;
         }
         String databaseName = backendConnection.getConnectionSession().getDefaultDatabaseName();
@@ -105,8 +104,7 @@ public final class JDBCPortal implements Portal<Void> {
         if (containsSystemTable(sqlStatementContext.getTablesContext().getTableNames()) || sqlStatementContext instanceof CursorAvailable) {
             databaseCommunicationEngine = null;
             DatabaseType databaseType = ProxyContext.getInstance().getDatabase(databaseName).getResource().getDatabaseType();
-            textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(databaseType,
-                    preparedStatement.getSql(), () -> Optional.of(sqlStatement), backendConnection.getConnectionSession());
+            textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(databaseType, preparedStatement.getSql(), sqlStatement, backendConnection.getConnectionSession());
             return;
         }
         databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(sqlStatementContext, preparedStatement.getSql(), parameters, backendConnection);

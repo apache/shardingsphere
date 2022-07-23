@@ -19,11 +19,9 @@ package org.apache.shardingsphere.test.integration.container.atomic.storage.impl
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.test.integration.container.atomic.storage.DockerStorageContainer;
-import org.apache.shardingsphere.test.integration.env.container.wait.JDBCConnectionWaitStrategy;
-import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.testcontainers.containers.BindMode;
 
-import java.sql.DriverManager;
+import java.util.Optional;
 
 /**
  * MySQL container.
@@ -38,16 +36,29 @@ public final class MySQLContainer extends DockerStorageContainer {
     protected void configure() {
         withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password", "--lower_case_table_names=1");
         addEnv("LANG", "C.UTF-8");
-        addEnv("MYSQL_ROOT_PASSWORD", "root");
+        addEnv("MYSQL_ROOT_PASSWORD", getPassword());
         addEnv("MYSQL_ROOT_HOST", "%");
         withClasspathResourceMapping("/env/mysql/my.cnf", "/etc/mysql/my.cnf", BindMode.READ_ONLY);
-        withExposedPorts(getPort());
-        setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(getDatabaseType(), "localhost", getFirstMappedPort()), "root", "root")));
         super.configure();
     }
     
     @Override
-    protected int getPort() {
+    public String getUsername() {
+        return "root";
+    }
+    
+    @Override
+    public String getPassword() {
+        return "root";
+    }
+    
+    @Override
+    public int getPort() {
         return 3306;
+    }
+    
+    @Override
+    protected Optional<String> getDefaultDatabaseName() {
+        return Optional.empty();
     }
 }

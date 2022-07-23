@@ -58,7 +58,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 /**
  * Text protocol backend handler factory.
@@ -71,26 +70,41 @@ public final class TextProtocolBackendHandlerFactory {
     }
     
     /**
-     * Create new instance of text protocol backend handler.
+     * Create new instance of backend handler.
      *
      * @param databaseType database type
      * @param sql SQL to be executed
-     * @param sqlStatementSupplier optional SQL statement supplier
+     * @param connectionSession connection session
+     * @return created instance
+     * @throws SQLException SQL exception
+     */
+    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final String sql, final ConnectionSession connectionSession) throws SQLException {
+        String trimSQL = SQLUtil.trimComment(sql);
+        if (Strings.isNullOrEmpty(trimSQL)) {
+            return new SkipBackendHandler(new EmptyStatement());
+        }
+        SQLParserRule sqlParserRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(getProtocolType(databaseType, connectionSession).getType()).parse(sql, false);
+        return newInstance(databaseType, sql, sqlStatement, connectionSession);
+    }
+    
+    /**
+     * Create new instance of backend handler.
+     *
+     * @param databaseType database type
+     * @param sql SQL to be executed
+     * @param sqlStatement SQL statement
      * @param connectionSession connection session
      * @return created instance
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("unchecked")
-    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final String sql, final Supplier<Optional<SQLStatement>> sqlStatementSupplier,
+    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final String sql, final SQLStatement sqlStatement,
                                                          final ConnectionSession connectionSession) throws SQLException {
         String trimSQL = SQLUtil.trimComment(sql);
         if (Strings.isNullOrEmpty(trimSQL)) {
             return new SkipBackendHandler(new EmptyStatement());
         }
-        SQLStatement sqlStatement = sqlStatementSupplier.get().orElseGet(() -> {
-            SQLParserRule sqlParserRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-            return sqlParserRule.getSQLParserEngine(getProtocolType(databaseType, connectionSession).getType()).parse(sql, false);
-        });
         databaseType.handleRollbackOnly(connectionSession.getTransactionStatus().isRollbackOnly(), sqlStatement);
         checkUnsupportedSQLStatement(sqlStatement);
         if (sqlStatement instanceof DistSQLStatement) {
