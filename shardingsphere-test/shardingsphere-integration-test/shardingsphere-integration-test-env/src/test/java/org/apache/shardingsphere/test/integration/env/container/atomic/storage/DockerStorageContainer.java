@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.storage;
 
 import com.google.common.base.Strings;
 import com.zaxxer.hikari.HikariDataSource;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -42,12 +41,12 @@ import java.util.Optional;
 /**
  * Docker storage container.
  */
-@Getter
+
 public abstract class DockerStorageContainer extends DockerITContainer implements StorageContainer {
     
+    @Getter
     private final DatabaseType databaseType;
     
-    @Getter(AccessLevel.NONE)
     private final String scenario;
     
     private final Map<String, DataSource> actualDataSourceMap;
@@ -81,8 +80,10 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     @Override
     @SneakyThrows({IOException.class, JAXBException.class})
     protected void postStart() {
-        DatabaseEnvironmentManager.getDatabaseNames(scenario).forEach(each -> actualDataSourceMap.put(each, createDataSource(each)));
-        DatabaseEnvironmentManager.getExpectedDatabaseNames(scenario).forEach(each -> expectedDataSourceMap.put(each, createDataSource(each)));
+        if (!Strings.isNullOrEmpty(scenario)) {
+            DatabaseEnvironmentManager.getDatabaseNames(scenario).forEach(each -> actualDataSourceMap.put(each, createDataSource(each)));
+            DatabaseEnvironmentManager.getExpectedDatabaseNames(scenario).forEach(each -> expectedDataSourceMap.put(each, createDataSource(each)));
+        }
     }
     
     private DataSource createDataSource(final String dataSourceName) {
