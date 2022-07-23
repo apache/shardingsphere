@@ -36,19 +36,29 @@ public final class MySQLContainer extends DockerStorageContainer {
     protected void configure() {
         withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password", "--lower_case_table_names=1");
         addEnv("LANG", "C.UTF-8");
-        addEnv("MYSQL_ROOT_PASSWORD", getPassword());
+        addEnv("MYSQL_ROOT_PASSWORD", getRootPassword());
         addEnv("MYSQL_ROOT_HOST", "%");
         withClasspathResourceMapping("/env/mysql/my.cnf", "/etc/mysql/my.cnf", BindMode.READ_ONLY);
         super.configure();
     }
     
     @Override
-    public String getUsername() {
+    public String getRootUsername() {
         return "root";
     }
     
     @Override
-    public String getPassword() {
+    public String getRootPassword() {
+        return "root";
+    }
+    
+    @Override
+    public String getTestCaseUsername() {
+        return "scaling";
+    }
+    
+    @Override
+    public String getTestCasePassword() {
         return "root";
     }
     

@@ -35,19 +35,29 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
     @Override
     protected void configure() {
         withCommand("--max_connections=600", "--wal_level=logical");
-        addEnv("POSTGRES_USER", getUsername());
-        addEnv("POSTGRES_PASSWORD", getPassword());
+        addEnv("POSTGRES_USER", getRootUsername());
+        addEnv("POSTGRES_PASSWORD", getRootPassword());
         withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/etc/postgresql/postgresql.conf", BindMode.READ_ONLY);
         super.configure();
     }
     
     @Override
-    public String getUsername() {
+    public String getRootUsername() {
         return "root";
     }
     
     @Override
-    public String getPassword() {
+    public String getRootPassword() {
+        return "root";
+    }
+    
+    @Override
+    public String getTestCaseUsername() {
+        return "scaling";
+    }
+    
+    @Override
+    public String getTestCasePassword() {
         return "root";
     }
     
