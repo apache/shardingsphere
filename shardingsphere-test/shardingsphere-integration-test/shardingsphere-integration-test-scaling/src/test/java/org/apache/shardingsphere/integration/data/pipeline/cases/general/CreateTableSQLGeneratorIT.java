@@ -29,8 +29,8 @@ import org.apache.shardingsphere.integration.data.pipeline.cases.entity.CreateTa
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.factory.DatabaseContainerFactory;
-import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.DatabaseContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.junit.After;
 import org.junit.Test;
@@ -71,7 +71,7 @@ public final class CreateTableSQLGeneratorIT {
     
     private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     
-    private final DatabaseContainer databaseContainer;
+    private final DockerStorageContainer storageContainer;
     
     private final ScalingParameterized parameterized;
     
@@ -79,10 +79,10 @@ public final class CreateTableSQLGeneratorIT {
     
     public CreateTableSQLGeneratorIT(final ScalingParameterized parameterized) {
         this.parameterized = parameterized;
-        this.rootEntity = JAXB.unmarshal(Objects.requireNonNull(CreateTableSQLGeneratorIT.class.getClassLoader().getResource(parameterized.getScenario())),
-                CreateTableSQLGeneratorAssertionsRootEntity.class);
-        this.databaseContainer = DatabaseContainerFactory.newInstance(parameterized.getDatabaseType(), parameterized.getDockerImageName());
-        databaseContainer.start();
+        rootEntity = JAXB.unmarshal(
+                Objects.requireNonNull(CreateTableSQLGeneratorIT.class.getClassLoader().getResource(parameterized.getScenario())), CreateTableSQLGeneratorAssertionsRootEntity.class);
+        storageContainer = DatabaseContainerFactory.newInstance(parameterized.getDatabaseType(), parameterized.getDockerImageName());
+        storageContainer.start();
     }
     
     @Parameters(name = "{0}")
@@ -127,10 +127,10 @@ public final class CreateTableSQLGeneratorIT {
     
     private DataSource createDataSource(final String databaseName) {
         HikariDataSource result = new HikariDataSource();
-        result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseContainer.getDatabaseType()));
-        result.setJdbcUrl(databaseContainer.getJdbcUrl(databaseName));
-        result.setUsername(databaseContainer.getUsername());
-        result.setPassword(databaseContainer.getPassword());
+        result.setDriverClassName(DataSourceEnvironment.getDriverClassName(storageContainer.getDatabaseType()));
+        result.setJdbcUrl(storageContainer.getJdbcUrl(databaseName));
+        result.setUsername(storageContainer.getTestCaseUsername());
+        result.setPassword(storageContainer.getTestCasePassword());
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
@@ -158,6 +158,6 @@ public final class CreateTableSQLGeneratorIT {
     
     @After
     public void stopContainer() {
-        databaseContainer.stop();
+        storageContainer.stop();
     }
 }

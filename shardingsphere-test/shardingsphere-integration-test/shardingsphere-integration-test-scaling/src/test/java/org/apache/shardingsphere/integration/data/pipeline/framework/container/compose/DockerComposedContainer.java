@@ -20,10 +20,10 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.container.
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.factory.DatabaseContainerFactory;
-import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.DatabaseContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.proxy.ShardingSphereProxyDockerContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.governance.impl.ZookeeperContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 
 /**
@@ -36,16 +36,16 @@ public final class DockerComposedContainer extends BaseComposedContainer {
     private final ShardingSphereProxyDockerContainer proxyContainer;
     
     @Getter
-    private final DatabaseContainer databaseContainer;
+    private final DockerStorageContainer storageContainer;
     
     public DockerComposedContainer(final DatabaseType databaseType, final String dockerImageName) {
         this.databaseType = databaseType;
         GovernanceContainer governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
-        databaseContainer = getContainers().registerContainer(DatabaseContainerFactory.newInstance(databaseType, dockerImageName));
+        storageContainer = getContainers().registerContainer(DatabaseContainerFactory.newInstance(databaseType, dockerImageName));
         ShardingSphereProxyDockerContainer proxyContainer = new ShardingSphereProxyDockerContainer(databaseType);
-        proxyContainer.dependsOn(governanceContainer, databaseContainer);
+        proxyContainer.dependsOn(governanceContainer, storageContainer);
         ShardingSphereProxyDockerContainer anotherProxyContainer = new ShardingSphereProxyDockerContainer(databaseType);
-        anotherProxyContainer.dependsOn(governanceContainer, databaseContainer);
+        anotherProxyContainer.dependsOn(governanceContainer, storageContainer);
         this.proxyContainer = getContainers().registerContainer(proxyContainer);
         getContainers().registerContainer(anotherProxyContainer);
     }
