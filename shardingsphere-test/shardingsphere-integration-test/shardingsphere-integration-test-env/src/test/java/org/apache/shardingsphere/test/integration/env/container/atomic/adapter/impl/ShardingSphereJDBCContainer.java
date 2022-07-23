@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.container.atomic.adapter.impl;
+package org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl;
 
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
@@ -25,9 +25,9 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfigurati
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.test.integration.env.container.atomic.EmbeddedITContainer;
-import org.apache.shardingsphere.test.integration.container.atomic.adapter.AdapterContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainer;
-import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioCommonPath;
+import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioCommonPath;
 
 import javax.sql.DataSource;
 import java.io.File;

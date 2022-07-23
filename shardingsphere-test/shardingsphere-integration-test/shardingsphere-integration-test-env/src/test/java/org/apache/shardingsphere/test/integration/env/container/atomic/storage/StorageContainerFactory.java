@@ -15,15 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.container.atomic.storage;
+package org.apache.shardingsphere.test.integration.env.container.atomic.storage;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.container.atomic.storage.impl.H2Container;
-import org.apache.shardingsphere.test.integration.container.atomic.storage.impl.MySQLContainer;
-import org.apache.shardingsphere.test.integration.container.atomic.storage.impl.PostgreSQLContainer;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.impl.H2Container;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.impl.MySQLContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.impl.PostgreSQLContainer;
 
 /**
  * Storage container factory.

@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.container.atomic.adapter;
+package org.apache.shardingsphere.test.integration.env.container.atomic.adapter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.test.integration.container.atomic.adapter.impl.ShardingSphereJDBCContainer;
-import org.apache.shardingsphere.test.integration.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
-import org.apache.shardingsphere.test.integration.container.atomic.adapter.impl.ShardingSphereProxyStandaloneContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl.ShardingSphereJDBCContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl.ShardingSphereProxyClusterContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.impl.ShardingSphereProxyStandaloneContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainer;
 
 /**

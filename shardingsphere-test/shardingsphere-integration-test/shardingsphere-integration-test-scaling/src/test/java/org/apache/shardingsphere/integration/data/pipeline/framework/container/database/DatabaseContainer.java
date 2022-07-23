@@ -43,16 +43,16 @@ public abstract class DatabaseContainer extends DockerITContainer {
     public abstract String getJdbcUrl(String databaseName);
     
     /**
-     * Get database username.
+     * Get root username.
      *
-     * @return database username
+     * @return root username
      */
     public abstract String getUsername();
     
     /**
-     * Get database password.
+     * Get root password.
      *
-     * @return database username
+     * @return root username
      */
     public abstract String getPassword();
     

@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env;
+package org.apache.shardingsphere.test.integration.env.runtime;
 
 import com.google.common.base.Splitter;
 import lombok.Getter;
 import org.apache.shardingsphere.test.integration.env.runtime.cluster.ClusterEnvironment;
-import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioCommonPath;
+import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioCommonPath;
 
 import java.io.IOException;
 import java.io.InputStream;

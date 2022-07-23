@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.container.atomic.storage.impl;
+package org.apache.shardingsphere.test.integration.env.container.atomic.storage.impl;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.test.integration.container.atomic.storage.DockerStorageContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.testcontainers.containers.BindMode;
 
 import java.util.Optional;
@@ -32,22 +32,36 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
         super(DatabaseTypeFactory.getInstance("PostgreSQL"), "postgres:12-alpine", scenario);
     }
     
+    public PostgreSQLContainer(final String scenario, final String dockerImageName) {
+        super(DatabaseTypeFactory.getInstance("PostgreSQL"), dockerImageName, scenario);
+    }
+    
     @Override
     protected void configure() {
         withCommand("--max_connections=600", "--wal_level=logical");
-        addEnv("POSTGRES_USER", getUsername());
-        addEnv("POSTGRES_PASSWORD", getPassword());
+        addEnv("POSTGRES_USER", getRootUsername());
+        addEnv("POSTGRES_PASSWORD", getRootPassword());
         withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/etc/postgresql/postgresql.conf", BindMode.READ_ONLY);
         super.configure();
     }
     
     @Override
-    public String getUsername() {
+    public String getRootUsername() {
         return "root";
     }
     
     @Override
-    public String getPassword() {
+    public String getRootPassword() {
+        return "root";
+    }
+    
+    @Override
+    public String getTestCaseUsername() {
+        return "scaling";
+    }
+    
+    @Override
+    public String getTestCasePassword() {
         return "root";
     }
     

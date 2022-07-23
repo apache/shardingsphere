@@ -15,22 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.scenario.database;
+package org.apache.shardingsphere.test.integration.env.container.atomic.adapter;
 
-import lombok.Getter;
+import org.apache.shardingsphere.test.integration.env.container.atomic.ITContainer;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.Collection;
-import java.util.LinkedList;
+import javax.sql.DataSource;
 
 /**
- * XML definition of database name environment.
+ * Adapter container.
  */
-@Getter
-@XmlRootElement(name = "databases")
-public final class DatabaseNameEnvironment {
+public interface AdapterContainer extends ITContainer {
     
-    @XmlElement(name = "database")
-    private final Collection<String> databases = new LinkedList<>();
+    /**
+     * Get target data source.
+     *
+     * @param serverLists server lists
+     * @return target data source
+     */
+    DataSource getTargetDataSource(String serverLists);
 }

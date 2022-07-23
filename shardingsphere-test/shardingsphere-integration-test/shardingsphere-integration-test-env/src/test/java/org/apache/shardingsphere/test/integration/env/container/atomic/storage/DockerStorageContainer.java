@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.container.atomic.storage;
+package org.apache.shardingsphere.test.integration.env.container.atomic.storage;
 
 import com.google.common.base.Strings;
 import com.zaxxer.hikari.HikariDataSource;
@@ -23,12 +23,11 @@ import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
-import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.wait.JDBCConnectionWaitStrategy;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
-import org.apache.shardingsphere.test.integration.env.scenario.database.DatabaseEnvironmentManager;
-import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath;
-import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath.Type;
+import org.apache.shardingsphere.test.integration.env.runtime.scenario.database.DatabaseEnvironmentManager;
+import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioDataPath;
+import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioDataPath.Type;
 import org.testcontainers.containers.BindMode;
 
 import javax.sql.DataSource;
@@ -72,10 +71,10 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
         }
         withExposedPorts(getPort());
         setWaitStrategy(new JDBCConnectionWaitStrategy(
-                () -> DriverManager.getConnection(getDefaultDatabaseName().isPresent() 
+                () -> DriverManager.getConnection(getDefaultDatabaseName().isPresent()
                         ? DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort(), getDefaultDatabaseName().get())
                         : DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort()),
-                        getUsername(), getPassword())));
+                        getRootUsername(), getRootPassword())));
     }
     
     @Override
@@ -89,8 +88,8 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
         result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(getPort()), dataSourceName));
-        result.setUsername(getUsername());
-        result.setPassword(getPassword());
+        result.setUsername(getRootUsername());
+        result.setPassword(getRootPassword());
         result.setMaximumPoolSize(4);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
@@ -107,18 +106,32 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     }
     
     /**
-     * Get database username.
+     * Get root username.
      *
-     * @return database username
+     * @return root username
      */
-    public abstract String getUsername();
+    public abstract String getRootUsername();
     
     /**
-     * Get database password.
+     * Get root password.
      *
-     * @return database password
+     * @return root password
      */
-    public abstract String getPassword();
+    public abstract String getRootPassword();
+    
+    /**
+     * Get test case username.
+     *
+     * @return root username
+     */
+    public abstract String getTestCaseUsername();
+    
+    /**
+     * Get test case password.
+     *
+     * @return root username
+     */
+    public abstract String getTestCasePassword();
     
     /**
      * Get database port.
