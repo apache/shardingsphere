@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.impl.H2Container;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.impl.MySQLContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.impl.OpenGaussContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.impl.PostgreSQLContainer;
 
 /**
@@ -43,10 +44,12 @@ public final class StorageContainerFactory {
                 return new MySQLContainer(scenario);
             case "PostgreSQL":
                 return new PostgreSQLContainer(scenario);
+            case "openGauss":
+                return new OpenGaussContainer(scenario);
             case "H2":
                 return new H2Container(scenario);
             default:
-                throw new RuntimeException(String.format("Database [%s] is unknown.", databaseType.getType()));
+                throw new RuntimeException(String.format("Database `%s` is unknown.", databaseType.getType()));
         }
     }
 }
