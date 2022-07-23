@@ -47,7 +47,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Optional;
 
 /**
  * COM_QUERY command packet executor for MySQL.
@@ -70,7 +69,7 @@ public final class MySQLComQueryPacketExecutor implements QueryCommandExecutor {
         DatabaseType databaseType = DatabaseTypeFactory.getInstance("MySQL");
         SQLStatement sqlStatement = parseSql(packet.getSql(), databaseType);
         textProtocolBackendHandler = areMultiStatements(connectionSession, sqlStatement, packet.getSql()) ? new MySQLMultiStatementsHandler(connectionSession, sqlStatement, packet.getSql())
-                : TextProtocolBackendHandlerFactory.newInstance(databaseType, packet.getSql(), () -> Optional.of(sqlStatement), connectionSession);
+                : TextProtocolBackendHandlerFactory.newInstance(databaseType, packet.getSql(), sqlStatement, connectionSession);
         characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
     }
     

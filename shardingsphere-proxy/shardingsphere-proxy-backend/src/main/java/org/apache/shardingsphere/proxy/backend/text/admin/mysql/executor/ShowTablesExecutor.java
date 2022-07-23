@@ -48,7 +48,6 @@ import java.util.stream.Collectors;
  * Show tables executor.
  */
 @RequiredArgsConstructor
-@Getter
 public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
     
     private static final String TABLE_TYPE = "BASE TABLE";
@@ -57,14 +56,25 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
     
     private final DatabaseType databaseType;
     
+    @Getter
     private QueryResultMetaData queryResultMetaData;
     
+    @Getter
     private MergedResult mergedResult;
     
     @Override
     public void execute(final ConnectionSession connectionSession) {
-        queryResultMetaData = createQueryResultMetaData(connectionSession.getDatabaseName());
-        mergedResult = new TransparentMergedResult(getQueryResult(connectionSession.getDatabaseName()));
+        String databaseName = showTablesStatement.getFromSchema().map(schema -> schema.getSchema().getIdentifier().getValue()).orElseGet(connectionSession::getDatabaseName);
+        queryResultMetaData = createQueryResultMetaData(databaseName);
+        mergedResult = new TransparentMergedResult(getQueryResult(databaseName));
+    }
+    
+    private QueryResultMetaData createQueryResultMetaData(final String databaseName) {
+        List<RawQueryResultColumnMetaData> columnNames = new LinkedList<>();
+        String tableColumnName = String.format("Tables_in_%s", databaseName);
+        columnNames.add(new RawQueryResultColumnMetaData("", tableColumnName, tableColumnName, Types.VARCHAR, "VARCHAR", 255, 0));
+        columnNames.add(new RawQueryResultColumnMetaData("", "Table_type", "Table_type", Types.VARCHAR, "VARCHAR", 20, 0));
+        return new RawQueryResultMetaData(columnNames);
     }
     
     private QueryResult getQueryResult(final String databaseName) {
@@ -88,13 +98,5 @@ public final class ShowTablesExecutor implements DatabaseAdminQueryExecutor {
             return pattern.isPresent() ? result.stream().filter(each -> RegularUtil.matchesCaseInsensitive(pattern.get(), each)).collect(Collectors.toList()) : result;
         }
         return result;
-    }
-    
-    private QueryResultMetaData createQueryResultMetaData(final String databaseName) {
-        List<RawQueryResultColumnMetaData> columnNames = new LinkedList<>();
-        String tableColumnName = String.format("Tables_in_%s", databaseName);
-        columnNames.add(new RawQueryResultColumnMetaData("", tableColumnName, tableColumnName, Types.VARCHAR, "VARCHAR", 255, 0));
-        columnNames.add(new RawQueryResultColumnMetaData("", "Table_type", "Table_type", Types.VARCHAR, "VARCHAR", 20, 0));
-        return new RawQueryResultMetaData(columnNames);
     }
 }

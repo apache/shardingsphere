@@ -70,7 +70,7 @@ public final class ReactiveMySQLComFieldListPacketExecutor implements ReactiveCo
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(
                 DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType())).parse(sql, false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), sqlStatement, databaseName);
-        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection());
+        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(sqlStatementContext, sql, connectionSession.getBackendConnection(), false);
         characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
     }
     

@@ -29,7 +29,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Meta data contexts.
@@ -48,7 +47,7 @@ public final class ShardingSphereMetaData {
     }
     
     public ShardingSphereMetaData(final Map<String, ShardingSphereDatabase> databases, final ShardingSphereRuleMetaData globalRuleMetaData, final ConfigurationProperties props) {
-        this.databases = new ConcurrentHashMap<>(databases.size(), 1);
+        this.databases = databases;
         databases.forEach((key, value) -> this.databases.put(key.toLowerCase(), value));
         this.globalRuleMetaData = globalRuleMetaData;
         this.props = props;
@@ -63,7 +62,7 @@ public final class ShardingSphereMetaData {
      */
     public void addDatabase(final String databaseName, final DatabaseType protocolType) throws SQLException {
         ShardingSphereDatabase database = ShardingSphereDatabase.create(databaseName, protocolType);
-        databases.put(databaseName.toLowerCase(), database);
+        putDatabase(database);
         globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.addResource(database));
     }
     
@@ -88,6 +87,25 @@ public final class ShardingSphereMetaData {
     }
     
     /**
+     * Put database.
+     *
+     * @param database database
+     */
+    public void putDatabase(final ShardingSphereDatabase database) {
+        databases.put(database.getName().toLowerCase(), database);
+    }
+    
+    /**
+     * Get actual database name.
+     *
+     * @param databaseName database name
+     * @return actual database name
+     */
+    public String getActualDatabaseName(final String databaseName) {
+        return getDatabase(databaseName).getName();
+    }
+    
+    /**
      * Drop database.
      *
      * @param databaseName database name
@@ -100,7 +118,7 @@ public final class ShardingSphereMetaData {
         if (null != database.getResource()) {
             database.getResource().getDataSources().values().forEach(each -> database.getResource().close(each));
         }
-        String databaseName = database.getName().toLowerCase();
+        String databaseName = database.getName();
         globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.closeStaleResource(databaseName));
         database.getRuleMetaData().findRules(ResourceHeldRule.class).forEach(each -> each.closeStaleResource(databaseName));
     }

@@ -78,6 +78,6 @@ public final class OpenGaussContainer extends DatabaseContainer {
     
     @Override
     public String getAbbreviation() {
-        return "openguass";
+        return "opengauss";
     }
 }

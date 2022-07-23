@@ -83,18 +83,19 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
         connectionTransaction = createConnectionTransaction(databaseName, contextManager);
     }
     
-    private Map<String, DataSource> getTrafficDataSourceMap(final String schema, final ContextManager contextManager) {
+    private Map<String, DataSource> getTrafficDataSourceMap(final String databaseName, final ContextManager contextManager) {
         TrafficRule trafficRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
         MetaDataPersistService persistService = contextManager.getMetaDataContexts().getPersistService();
         if (trafficRule.getStrategyRules().isEmpty()) {
             return Collections.emptyMap();
         }
-        Map<String, DataSourceProperties> dataSourcePropsMap = persistService.getDataSourceService().load(schema);
+        String actualDatabaseName = contextManager.getMetaDataContexts().getMetaData().getActualDatabaseName(databaseName);
+        Map<String, DataSourceProperties> dataSourcePropsMap = persistService.getDataSourceService().load(actualDatabaseName);
         Preconditions.checkState(!dataSourcePropsMap.isEmpty(), "Can not get data source properties from meta data.");
         DataSourceProperties dataSourcePropsSample = dataSourcePropsMap.values().iterator().next();
         Collection<ShardingSphereUser> users = persistService.getGlobalRuleService().loadUsers();
         Collection<InstanceMetaData> instances = contextManager.getInstanceContext().getAllClusterInstances(InstanceType.PROXY, trafficRule.getLabels());
-        return DataSourcePoolCreator.create(createDataSourcePropertiesMap(instances, users, dataSourcePropsSample, schema));
+        return DataSourcePoolCreator.create(createDataSourcePropertiesMap(instances, users, dataSourcePropsSample, actualDatabaseName));
     }
     
     private Map<String, DataSourceProperties> createDataSourcePropertiesMap(final Collection<InstanceMetaData> instances, final Collection<ShardingSphereUser> users,

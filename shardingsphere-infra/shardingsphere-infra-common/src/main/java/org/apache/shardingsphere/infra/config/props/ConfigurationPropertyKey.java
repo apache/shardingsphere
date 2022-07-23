@@ -122,7 +122,12 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Proxy Netty backlog size.
      */
-    PROXY_NETTY_BACKLOG("proxy-netty-backlog", "1024", int.class, false);
+    PROXY_NETTY_BACKLOG("proxy-netty-backlog", "1024", int.class, false),
+    
+    /**
+     * Proxy instance type.
+     */
+    PROXY_INSTANCE_TYPE("proxy-instance-type", "Proxy", String.class, true);
     
     private final String key;
     

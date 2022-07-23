@@ -26,6 +26,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.me
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collections;
 import java.util.Optional;
@@ -36,7 +37,7 @@ import java.util.Optional;
 public final class DefaultSaneQueryResultEngine implements SaneQueryResultEngine {
     
     @Override
-    public Optional<ExecuteResult> getSaneQueryResult(final SQLStatement sqlStatement) {
+    public Optional<ExecuteResult> getSaneQueryResult(final SQLStatement sqlStatement, final SQLException ex) {
         return sqlStatement instanceof SelectStatement ? Optional.of(createDefaultQueryResult()) : Optional.empty();
     }
     

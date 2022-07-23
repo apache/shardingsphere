@@ -53,7 +53,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Command query executor for PostgreSQL.
@@ -70,8 +69,7 @@ public final class PostgreSQLComQueryExecutor implements QueryCommandExecutor {
     public PostgreSQLComQueryExecutor(final PostgreSQLConnectionContext connectionContext, final PostgreSQLComQueryPacket comQueryPacket,
                                       final ConnectionSession connectionSession) throws SQLException {
         this.connectionContext = connectionContext;
-        textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("PostgreSQL"),
-                comQueryPacket.getSql(), Optional::empty, connectionSession);
+        textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("PostgreSQL"), comQueryPacket.getSql(), connectionSession);
     }
     
     @Override

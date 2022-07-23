@@ -58,13 +58,23 @@ public final class EncryptTableTest {
     }
     
     @Test
-    public void assertGetLogicColumn() {
-        assertNotNull(encryptTable.getLogicColumn("cipherColumn"));
+    public void assertGetLogicColumnByCipherColumn() {
+        assertNotNull(encryptTable.getLogicColumnByCipherColumn("cipherColumn"));
     }
     
     @Test(expected = ShardingSphereException.class)
-    public void assertGetLogicColumnWhenNotFind() {
-        encryptTable.getLogicColumn("invalidColumn");
+    public void assertGetLogicColumnByCipherColumnWhenNotFind() {
+        encryptTable.getLogicColumnByCipherColumn("invalidColumn");
+    }
+    
+    @Test
+    public void assertGetLogicColumnByPlainColumn() {
+        assertNotNull(encryptTable.getLogicColumnByPlainColumn("plainColumn"));
+    }
+    
+    @Test(expected = ShardingSphereException.class)
+    public void assertGetLogicColumnByPlainColumnWhenNotFind() {
+        encryptTable.getLogicColumnByPlainColumn("invalidColumn");
     }
     
     @Test

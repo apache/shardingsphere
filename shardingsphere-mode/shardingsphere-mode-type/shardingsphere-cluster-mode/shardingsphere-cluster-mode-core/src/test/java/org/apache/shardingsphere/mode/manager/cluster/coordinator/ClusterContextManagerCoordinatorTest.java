@@ -210,7 +210,7 @@ public final class ClusterContextManagerCoordinatorTest {
         ShardingSphereTable changedTableMetaData = new ShardingSphereTable("t_order", Collections.emptyList(), Collections.emptyList(), Collections.emptyList());
         SchemaChangedEvent event = new SchemaChangedEvent("db", "db", changedTableMetaData, null);
         coordinator.renew(event);
-//        assertTrue(contextManager.getMetaDataContexts().getMetaData().containsKey("db"));
+        // assertTrue(contextManager.getMetaDataContexts().getMetaData().containsKey("db"));
         verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").getSchemas().get("db")).put("t_order", event.getChangedTableMetaData());
     }
     
