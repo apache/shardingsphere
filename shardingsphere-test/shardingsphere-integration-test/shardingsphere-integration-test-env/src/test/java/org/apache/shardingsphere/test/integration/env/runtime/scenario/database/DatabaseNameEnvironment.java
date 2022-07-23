@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.integration.env.scenario.database;
+package org.apache.shardingsphere.test.integration.env.runtime.scenario.database;
 
 import lombok.Getter;
 

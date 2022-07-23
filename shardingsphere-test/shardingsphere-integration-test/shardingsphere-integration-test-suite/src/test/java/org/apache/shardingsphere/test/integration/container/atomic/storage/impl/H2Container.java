@@ -19,8 +19,8 @@ package org.apache.shardingsphere.test.integration.container.atomic.storage.impl
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath;
-import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath.Type;
+import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioDataPath;
+import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioDataPath.Type;
 import org.apache.shardingsphere.test.integration.container.atomic.storage.EmbeddedStorageContainer;
 import org.h2.tools.RunScript;
 

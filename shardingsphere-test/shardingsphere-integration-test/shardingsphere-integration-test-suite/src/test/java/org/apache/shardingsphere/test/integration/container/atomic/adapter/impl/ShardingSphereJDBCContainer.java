@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.test.integration.env.container.atomic.EmbeddedITContainer;
 import org.apache.shardingsphere.test.integration.container.atomic.adapter.AdapterContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainer;
-import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioCommonPath;
+import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioCommonPath;
 
 import javax.sql.DataSource;
 import java.io.File;

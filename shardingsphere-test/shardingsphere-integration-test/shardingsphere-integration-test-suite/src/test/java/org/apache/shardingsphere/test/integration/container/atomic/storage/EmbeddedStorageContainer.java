@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.EmbeddedITContainer;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainer;
-import org.apache.shardingsphere.test.integration.env.scenario.database.DatabaseEnvironmentManager;
+import org.apache.shardingsphere.test.integration.env.runtime.scenario.database.DatabaseEnvironmentManager;
 
 import javax.sql.DataSource;
 import javax.xml.bind.JAXBException;

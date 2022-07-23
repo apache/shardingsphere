@@ -26,9 +26,9 @@ import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITC
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.wait.JDBCConnectionWaitStrategy;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
-import org.apache.shardingsphere.test.integration.env.scenario.database.DatabaseEnvironmentManager;
-import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath;
-import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath.Type;
+import org.apache.shardingsphere.test.integration.env.runtime.scenario.database.DatabaseEnvironmentManager;
+import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioDataPath;
+import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioDataPath.Type;
 import org.testcontainers.containers.BindMode;
 
 import javax.sql.DataSource;
