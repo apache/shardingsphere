@@ -42,7 +42,7 @@ public final class EncryptForUseDefaultInsertColumnsTokenGeneratorTest extends E
         tokenGenerator.setPreviousSQLTokens(Collections.emptyList());
         assertThat(tokenGenerator.generateSQLToken(createInsertStatementContext(Collections.emptyList())).toString(), is("(id, name, status, pwd_cipher, pwd_assist, pwd_plain)"));
     }
-
+    
     @Test
     public void assertGenerateSQLTokenFromPreviousSQLTokens() {
         EncryptForUseDefaultInsertColumnsTokenGenerator tokenGenerator = new EncryptForUseDefaultInsertColumnsTokenGenerator();

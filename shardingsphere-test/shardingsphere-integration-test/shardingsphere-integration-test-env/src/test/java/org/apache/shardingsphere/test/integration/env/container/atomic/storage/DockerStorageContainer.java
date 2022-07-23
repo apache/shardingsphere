@@ -71,7 +71,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
         }
         withExposedPorts(getPort());
         setWaitStrategy(new JDBCConnectionWaitStrategy(
-                () -> DriverManager.getConnection(getDefaultDatabaseName().isPresent() 
+                () -> DriverManager.getConnection(getDefaultDatabaseName().isPresent()
                         ? DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort(), getDefaultDatabaseName().get())
                         : DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort()),
                         getRootUsername(), getRootPassword())));

@@ -27,7 +27,7 @@ import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSet
 import org.apache.shardingsphere.test.integration.cases.dataset.row.DataSetRow;
 import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioDataPath;
 import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioDataPath.Type;
-import org.apache.shardingsphere.test.integration.env.runtime.scenario.dataset.DataSetEnvironmentManager;
+import org.apache.shardingsphere.test.integration.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.param.model.CaseParameterizedArray;
 import org.junit.After;
 import org.junit.Before;
