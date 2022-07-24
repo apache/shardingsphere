@@ -46,9 +46,9 @@ public final class ShardingSphereProxyDockerContainer extends DockerITContainer 
         mapConfigurationFiles();
         // TODO openGauss can't use this wait strategy now.
         if (DatabaseTypeUtil.isPostgreSQL(databaseType)) {
-            setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), "postgres"), "root", "root")));
+            setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), "postgres"), "root", "Root@123")));
         } else if (DatabaseTypeUtil.isMySQL(databaseType)) {
-            setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), ""), "root", "root")));
+            setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), ""), "root", "Root@123")));
         }
     }
     

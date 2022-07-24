@@ -31,7 +31,7 @@ mode:
 rules:
   - !AUTHORITY
     users:
-      - root@%:Root@123
+      - root@:Root@123
       - sharding@:sharding
     provider:
       type: ALL_PERMITTED
