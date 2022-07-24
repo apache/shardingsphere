@@ -19,5 +19,5 @@ package org.apache.shardingsphere.integration.transaction.env.enums;
 
 public enum TransactionITEnvTypeEnum {
     
-    NONE, DOCKER, NATIVE;
+    NONE, DOCKER, NATIVE
 }

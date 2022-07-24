@@ -58,4 +58,5 @@
     <distsql-case id="alter-instance-xa-recovery-nodes" value="ALTER INSTANCE instance_xa_recovery SET XA_RECOVERY_NODES=instance_1" />
     <distsql-case id="alter-instance-xa-recovery-nodes-with-multiple-values" value="ALTER INSTANCE instance_xa_recovery_multiple SET XA_RECOVERY_NODES=instance_1,instance_2 " />
     <distsql-case id="import-database-config" value="IMPORT DATABASE CONFIG FILE='/yaml/config-sharding.yaml'" />
+    <distsql-case id="show-sql-translator-rule" value="SHOW SQL_TRANSLATOR RULE" />
 </sql-cases>
