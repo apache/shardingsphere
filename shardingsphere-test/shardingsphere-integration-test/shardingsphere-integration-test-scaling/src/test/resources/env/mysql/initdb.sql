@@ -20,6 +20,6 @@ CREATE DATABASE scaling_it_1;
 CREATE DATABASE scaling_it_2;
 CREATE DATABASE scaling_it_3;
 CREATE DATABASE scaling_it_4;
-CREATE USER IF NOT EXISTS 'scaling'@'%' IDENTIFIED BY 'root';
+CREATE USER IF NOT EXISTS 'scaling'@'%' IDENTIFIED BY 'Root@123';
 GRANT Replication Client, Replication Slave, Select, Insert, Update, Delete, Index ON *.* TO `scaling`@`%`;
 GRANT Create, Drop ON TABLE *.* TO scaling;
