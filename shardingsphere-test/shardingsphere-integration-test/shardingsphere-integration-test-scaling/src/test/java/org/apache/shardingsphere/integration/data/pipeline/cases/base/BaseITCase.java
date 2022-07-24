@@ -119,8 +119,8 @@ public abstract class BaseITCase {
         composedContainer.start();
         if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
             DockerStorageContainer storageContainer = ((DockerComposedContainer) composedContainer).getStorageContainer();
-            username = storageContainer.getTestCaseUsername();
-            password = storageContainer.getTestCasePassword();
+            username = storageContainer.getUsername();
+            password = storageContainer.getUnifiedPassword();
         } else {
             username = ENV.getActualDataSourceUsername(databaseType);
             password = ENV.getActualDataSourcePassword(databaseType);
@@ -148,7 +148,7 @@ public abstract class BaseITCase {
         if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
             jdbcUrl = JDBC_URL_APPENDER.appendQueryProperties(jdbcUrl, ScalingCaseHelper.getPostgreSQLQueryProperties());
         }
-        try (Connection connection = DriverManager.getConnection(jdbcUrl, "root", "root")) {
+        try (Connection connection = DriverManager.getConnection(jdbcUrl, "root", "Root@123")) {
             if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
                 try {
                     executeWithLog(connection, "DROP DATABASE sharding_db");
@@ -168,7 +168,7 @@ public abstract class BaseITCase {
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(getDatabaseType()));
         result.setJdbcUrl(composedContainer.getProxyJdbcUrl(databaseName));
         result.setUsername("root");
-        result.setPassword("root");
+        result.setPassword("Root@123");
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
@@ -193,13 +193,13 @@ public abstract class BaseITCase {
     protected void addSourceResource() {
         // TODO if mysql can append database firstly, they can be combined
         if (databaseType instanceof MySQLDatabaseType) {
-            try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl(""), "root", "root")) {
+            try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl(""), "root", "Root@123")) {
                 connection.createStatement().execute("USE sharding_db");
                 addSourceResource0(connection);
             }
         } else {
             Properties queryProps = ScalingCaseHelper.getPostgreSQLQueryProperties();
-            try (Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl("sharding_db"), queryProps), "root", "root")) {
+            try (Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl("sharding_db"), queryProps), "root", "Root@123")) {
                 addSourceResource0(connection);
             }
         }

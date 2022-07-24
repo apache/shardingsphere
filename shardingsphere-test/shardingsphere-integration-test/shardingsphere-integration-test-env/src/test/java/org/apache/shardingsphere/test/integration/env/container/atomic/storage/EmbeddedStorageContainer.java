@@ -74,7 +74,7 @@ public abstract class EmbeddedStorageContainer implements EmbeddedITContainer, S
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
         result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, null, 0, scenario + dataSourceName));
         result.setUsername("root");
-        result.setPassword("root");
+        result.setPassword("Root@123");
         result.setMaximumPoolSize(4);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
