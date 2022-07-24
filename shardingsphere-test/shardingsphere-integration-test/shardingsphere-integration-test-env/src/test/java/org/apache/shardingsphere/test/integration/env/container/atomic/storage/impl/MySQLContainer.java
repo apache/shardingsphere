@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.env.container.atomic.storage.impl;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.testcontainers.containers.BindMode;
@@ -28,12 +29,8 @@ import java.util.Optional;
  */
 public final class MySQLContainer extends DockerStorageContainer {
     
-    public MySQLContainer(final String scenario) {
-        super(DatabaseTypeFactory.getInstance("MySQL"), "mysql/mysql-server:5.7", scenario);
-    }
-    
-    public MySQLContainer(final String scenario, final String dockerImageName) {
-        super(DatabaseTypeFactory.getInstance("MySQL"), dockerImageName, scenario);
+    public MySQLContainer(final String dockerImageName, final String scenario) {
+        super(DatabaseTypeFactory.getInstance("MySQL"), Strings.isNullOrEmpty(dockerImageName) ? "mysql/mysql-server:5.7" : dockerImageName, scenario);
     }
     
     @Override

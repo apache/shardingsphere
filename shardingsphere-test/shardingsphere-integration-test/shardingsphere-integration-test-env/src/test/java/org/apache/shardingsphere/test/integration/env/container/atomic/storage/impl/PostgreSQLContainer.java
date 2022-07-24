@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.env.container.atomic.storage.impl;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.testcontainers.containers.BindMode;
@@ -28,12 +29,8 @@ import java.util.Optional;
  */
 public final class PostgreSQLContainer extends DockerStorageContainer {
     
-    public PostgreSQLContainer(final String scenario) {
-        super(DatabaseTypeFactory.getInstance("PostgreSQL"), "postgres:12-alpine", scenario);
-    }
-    
-    public PostgreSQLContainer(final String scenario, final String dockerImageName) {
-        super(DatabaseTypeFactory.getInstance("PostgreSQL"), dockerImageName, scenario);
+    public PostgreSQLContainer(final String dockerImageName, final String scenario) {
+        super(DatabaseTypeFactory.getInstance("PostgreSQL"), Strings.isNullOrEmpty(dockerImageName) ? "postgres:12-alpine" : dockerImageName, scenario);
     }
     
     @Override

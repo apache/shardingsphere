@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.test.integration.env.container.atomic.storage.impl;
 
+import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.testcontainers.containers.BindMode;
@@ -28,12 +29,8 @@ import java.util.Optional;
  */
 public final class OpenGaussContainer extends DockerStorageContainer {
     
-    public OpenGaussContainer(final String scenario) {
-        super(DatabaseTypeFactory.getInstance("openGauss"), "enmotech/opengauss:3.0.0", scenario);
-    }
-    
-    public OpenGaussContainer(final String scenario, final String dockerImageName) {
-        super(DatabaseTypeFactory.getInstance("openGauss"), dockerImageName, scenario);
+    public OpenGaussContainer(final String dockerImageName, final String scenario) {
+        super(DatabaseTypeFactory.getInstance("openGauss"), Strings.isNullOrEmpty(dockerImageName) ? "enmotech/opengauss:3.0.0" : dockerImageName, scenario);
     }
     
     @Override

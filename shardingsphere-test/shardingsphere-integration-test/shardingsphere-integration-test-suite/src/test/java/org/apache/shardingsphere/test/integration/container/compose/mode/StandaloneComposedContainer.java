@@ -43,7 +43,8 @@ public final class StandaloneComposedContainer implements ComposedContainer {
     public StandaloneComposedContainer(final ParameterizedArray parameterizedArray) {
         String scenario = parameterizedArray.getScenario();
         containers = new ITContainers(scenario);
-        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), scenario));
+        // TODO add more version of databases
+        storageContainer = containers.registerContainer(StorageContainerFactory.newInstance(parameterizedArray.getDatabaseType(), "", scenario));
         adapterContainer = containers.registerContainer(
                 AdapterContainerFactory.newInstance(parameterizedArray.getMode(), parameterizedArray.getAdapter(), parameterizedArray.getDatabaseType(), storageContainer, scenario));
         if (adapterContainer instanceof DockerITContainer) {
