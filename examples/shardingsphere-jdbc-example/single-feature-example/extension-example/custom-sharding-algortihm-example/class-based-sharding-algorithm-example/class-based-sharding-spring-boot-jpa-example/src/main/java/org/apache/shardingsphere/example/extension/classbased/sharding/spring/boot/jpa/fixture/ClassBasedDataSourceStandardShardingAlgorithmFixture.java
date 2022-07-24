@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.example.extension.classbased.sharding.spring.boot.jpa;
+package org.apache.shardingsphere.example.extension.classbased.sharding.spring.boot.jpa.fixture;
 
 import com.google.common.base.Preconditions;
 import com.google.common.primitives.Ints;
