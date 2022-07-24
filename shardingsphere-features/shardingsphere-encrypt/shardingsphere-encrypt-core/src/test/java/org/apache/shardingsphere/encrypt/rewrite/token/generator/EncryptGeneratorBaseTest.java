@@ -30,6 +30,7 @@ import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptColumnRuleConfiguration;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.rewrite.token.pojo.EncryptInsertValuesToken;
+import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
@@ -59,10 +60,10 @@ public abstract class EncryptGeneratorBaseTest {
     
     private static final String TABLE_NAME = "t_user";
     
-    protected static EncryptRuleConfiguration createEncryptRuleConfiguration() {
+    protected static EncryptRule createEncryptRule() {
         EncryptColumnRuleConfiguration pwdColumnConfig = new EncryptColumnRuleConfiguration("pwd", "pwd_cipher", "pwd_assist", "pwd_plain", "test_encryptor", "test_encryptor", false);
-        return new EncryptRuleConfiguration(Collections.singleton(new EncryptTableRuleConfiguration(TABLE_NAME, Collections.singletonList(pwdColumnConfig), null)),
-                Collections.singletonMap("test_encryptor", new ShardingSphereAlgorithmConfiguration("CORE.QUERY_ASSISTED.FIXTURE", new Properties())));
+        return new EncryptRule(new EncryptRuleConfiguration(Collections.singleton(new EncryptTableRuleConfiguration(TABLE_NAME, Collections.singletonList(pwdColumnConfig), null)),
+                Collections.singletonMap("test_encryptor", new ShardingSphereAlgorithmConfiguration("CORE.QUERY_ASSISTED.FIXTURE", new Properties()))));
     }
     
     /**

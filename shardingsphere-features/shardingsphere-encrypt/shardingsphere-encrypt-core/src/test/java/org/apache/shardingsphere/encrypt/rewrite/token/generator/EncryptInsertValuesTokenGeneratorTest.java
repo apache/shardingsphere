@@ -31,14 +31,14 @@ public final class EncryptInsertValuesTokenGeneratorTest extends EncryptGenerato
     @Test
     public void assertIsGenerateSQLToken() {
         EncryptInsertValuesTokenGenerator encryptInsertValuesTokenGenerator = new EncryptInsertValuesTokenGenerator();
-        encryptInsertValuesTokenGenerator.setEncryptRule(new EncryptRule(createEncryptRuleConfiguration()));
+        encryptInsertValuesTokenGenerator.setEncryptRule(createEncryptRule());
         assertTrue(encryptInsertValuesTokenGenerator.isGenerateSQLToken(createInsertStatementContext(Collections.emptyList())));
     }
     
     @Test
     public void assertGenerateSQLTokenFromGenerateNewSQLToken() {
         EncryptInsertValuesTokenGenerator encryptInsertValuesTokenGenerator = new EncryptInsertValuesTokenGenerator();
-        encryptInsertValuesTokenGenerator.setEncryptRule(new EncryptRule(createEncryptRuleConfiguration()));
+        encryptInsertValuesTokenGenerator.setEncryptRule(createEncryptRule());
         encryptInsertValuesTokenGenerator.setPreviousSQLTokens(Collections.emptyList());
         assertThat(encryptInsertValuesTokenGenerator.generateSQLToken(createInsertStatementContext(Arrays.asList(1, "Tom", 0, "123456"))).toString(), is("(?, ?, ?, ?, ?, ?)"));
     }
@@ -47,7 +47,7 @@ public final class EncryptInsertValuesTokenGeneratorTest extends EncryptGenerato
     public void assertGenerateSQLTokenFromPreviousSQLTokens() {
         EncryptInsertValuesTokenGenerator encryptInsertValuesTokenGenerator = new EncryptInsertValuesTokenGenerator();
         encryptInsertValuesTokenGenerator.setDatabaseName("db-001");
-        encryptInsertValuesTokenGenerator.setEncryptRule(new EncryptRule(createEncryptRuleConfiguration()));
+        encryptInsertValuesTokenGenerator.setEncryptRule(createEncryptRule());
         encryptInsertValuesTokenGenerator.setPreviousSQLTokens(getPreviousSQLTokens());
         assertThat(encryptInsertValuesTokenGenerator.generateSQLToken(createInsertStatementContext(Arrays.asList(1, "Tom", 0, "123456"))).toString(), is("(?, ?, ?, ?, ?, ?)"));
     }

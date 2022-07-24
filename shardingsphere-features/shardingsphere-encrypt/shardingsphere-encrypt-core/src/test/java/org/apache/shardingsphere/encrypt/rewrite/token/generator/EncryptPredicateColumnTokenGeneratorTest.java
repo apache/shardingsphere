@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.junit.Test;
 
@@ -33,8 +33,8 @@ public class EncryptPredicateColumnTokenGeneratorTest extends EncryptGeneratorBa
     @Test
     public void assertIsGenerateSQLToken() {
         EncryptPredicateColumnTokenGenerator tokenGenerator = new EncryptPredicateColumnTokenGenerator();
-        tokenGenerator.setDatabaseName("db-001");
-        tokenGenerator.setEncryptRule(new EncryptRule(createEncryptRuleConfiguration()));
+        tokenGenerator.setDatabaseName(DefaultDatabase.LOGIC_NAME);
+        tokenGenerator.setEncryptRule(createEncryptRule());
         tokenGenerator.setSchemas(Collections.emptyMap());
         assertTrue(tokenGenerator.isGenerateSQLToken(createUpdatesStatementContext()));
     }
@@ -42,8 +42,8 @@ public class EncryptPredicateColumnTokenGeneratorTest extends EncryptGeneratorBa
     @Test
     public void assertGenerateSQLTokenFromGenerateNewSQLToken() {
         EncryptPredicateColumnTokenGenerator tokenGenerator = new EncryptPredicateColumnTokenGenerator();
-        tokenGenerator.setDatabaseName("db-001");
-        tokenGenerator.setEncryptRule(new EncryptRule(createEncryptRuleConfiguration()));
+        tokenGenerator.setDatabaseName(DefaultDatabase.LOGIC_NAME);
+        tokenGenerator.setEncryptRule(createEncryptRule());
         tokenGenerator.setSchemas(Collections.emptyMap());
         Collection<SubstitutableColumnNameToken> substitutableColumnNameTokens = tokenGenerator.generateSQLTokens(createUpdatesStatementContext());
         assertTrue(substitutableColumnNameTokens.stream().findFirst().isPresent());

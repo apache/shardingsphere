@@ -40,26 +40,25 @@ public final class EncryptPredicateRightValueTokenGeneratorTest extends EncryptG
     @Test
     public void assertIsGenerateSQLToken() {
         EncryptPredicateRightValueTokenGenerator tokenGenerator = new EncryptPredicateRightValueTokenGenerator();
-        tokenGenerator.setDatabaseName("db-001");
-        tokenGenerator.setEncryptRule(new EncryptRule(createEncryptRuleConfiguration()));
+        tokenGenerator.setDatabaseName(DefaultDatabase.LOGIC_NAME);
+        tokenGenerator.setEncryptRule(createEncryptRule());
         assertTrue(tokenGenerator.isGenerateSQLToken(createUpdatesStatementContext()));
     }
     
     @Test
     public void assertGenerateSQLTokenFromGenerateNewSQLToken() {
         UpdateStatementContext updatesStatementContext = createUpdatesStatementContext();
-        SQLRewriteContext sqlRewriteContext = new SQLRewriteContext(DefaultDatabase.LOGIC_NAME,
-                Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereSchema.class)), updatesStatementContext,
-                "UPDATE t_user SET pwd = '654321' WHERE name = 'LiLei' AND pwd = '123456'",
-                Collections.emptyList());
-        Collection<EncryptCondition> encryptConditions = new EncryptConditionEngine(new EncryptRule(createEncryptRuleConfiguration()), sqlRewriteContext.getSchemas())
-                .createEncryptConditions(updatesStatementContext.getWhereSegments(), updatesStatementContext.getColumnSegments(), updatesStatementContext, sqlRewriteContext.getDatabaseName());
         EncryptPredicateRightValueTokenGenerator tokenGenerator = new EncryptPredicateRightValueTokenGenerator();
         tokenGenerator.setDatabaseName(DefaultDatabase.LOGIC_NAME);
-        tokenGenerator.setEncryptRule(new EncryptRule(createEncryptRuleConfiguration()));
-        tokenGenerator.setEncryptConditions(encryptConditions);
+        tokenGenerator.setEncryptRule(createEncryptRule());
+        tokenGenerator.setEncryptConditions(getEncryptConditions(updatesStatementContext));
         Collection<SQLToken> sqlTokens = tokenGenerator.generateSQLTokens(updatesStatementContext);
         assertTrue(sqlTokens.stream().findFirst().isPresent());
         assertThat(sqlTokens.stream().findFirst().get().toString(), is("'123456'"));
+    }
+
+    private Collection<EncryptCondition> getEncryptConditions(UpdateStatementContext updatesStatementContext)  {
+        return new EncryptConditionEngine(createEncryptRule(), Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereSchema.class)))
+                .createEncryptConditions(updatesStatementContext.getWhereSegments(), updatesStatementContext.getColumnSegments(), updatesStatementContext, DefaultDatabase.LOGIC_NAME);
     }
 }
