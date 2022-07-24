@@ -31,90 +31,76 @@ import org.junit.Test;
 import java.util.Collections;
 import java.util.Optional;
 
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class ShardingRuleConfigurationCheckerTest {
-
-    @SuppressWarnings({"rawtypes", "unchecked"})
+    
     @Test
-    public void assertCheckPass() {
-        ShardingRuleConfiguration configuration = createConfiguration();
-        ShardingAuditStrategyConfiguration shardingAuditStrategyConfiguration
-                = createShardingAuditStrategyConfiguration();
-        ShardingStrategyConfiguration shardingStrategyConfiguration = createShardingStrategyConfiguration();
-        configuration.setTables(Collections.singleton(
-                createShardingTableRuleConfiguration(configuration.getDefaultKeyGenerateStrategy(), shardingAuditStrategyConfiguration, shardingStrategyConfiguration)));
-        configuration.setAutoTables(Collections.singleton(
-                createShardingAutoTableRuleConfiguration(configuration.getDefaultKeyGenerateStrategy(), shardingAuditStrategyConfiguration, shardingStrategyConfiguration)));
-
-        RuleConfigurationChecker checker = getChecker(configuration);
-        checker.check("foo_db", configuration);
+    public void assertCheckSuccess() {
+        ShardingRuleConfiguration ruleConfig = createRuleConfiguration();
+        ShardingAuditStrategyConfiguration shardingAuditStrategyConfig = new ShardingAuditStrategyConfiguration(Collections.singletonList("foo_audit"), false);
+        ShardingStrategyConfiguration shardingStrategyConfig = createShardingStrategyConfiguration();
+        ruleConfig.setTables(Collections.singleton(createShardingTableRuleConfiguration(shardingStrategyConfig, shardingAuditStrategyConfig, ruleConfig.getDefaultKeyGenerateStrategy())));
+        ruleConfig.setAutoTables(Collections.singleton(createShardingAutoTableRuleConfiguration(shardingStrategyConfig, shardingAuditStrategyConfig, ruleConfig.getDefaultKeyGenerateStrategy())));
+        getChecker(ruleConfig).check("foo_db", ruleConfig);
     }
-
+    
     @Test(expected = IllegalStateException.class)
-    public void assertCheckTableConfigurationInitFail() {
-        ShardingRuleConfiguration configuration = createConfiguration();
-        getChecker(configuration).check("foo_db", configuration);
+    public void assertCheckTableConfigurationInitFailed() {
+        ShardingRuleConfiguration ruleConfig = createRuleConfiguration();
+        getChecker(ruleConfig).check("foo_db", ruleConfig);
     }
-
+    
     @Test(expected = IllegalStateException.class)
-    public void assertCheckTableConfigurationFail() {
-        ShardingRuleConfiguration configuration = createConfiguration();
+    public void assertCheckTableConfigurationFailed() {
+        ShardingRuleConfiguration configuration = createRuleConfiguration();
         configuration.setTables(Collections.singletonList(createShardingTableRuleConfiguration(null, null, null)));
         configuration.setAutoTables(Collections.singleton(createShardingAutoTableRuleConfiguration(null, null, null)));
         getChecker(configuration).check("foo_db", configuration);
     }
-
-    private ShardingRuleConfiguration createConfiguration() {
-        ShardingRuleConfiguration configuration = new ShardingRuleConfiguration();
-
-        KeyGenerateStrategyConfiguration keyGenerateStrategyConfiguration = new KeyGenerateStrategyConfiguration("foo_column",
-                "foo_key");
-        configuration.setDefaultKeyGenerateStrategy(keyGenerateStrategyConfiguration);
-        configuration.getKeyGenerators().put("foo_key", mock(ShardingSphereAlgorithmConfiguration.class));
-        configuration.getAuditors().put("foo_audit", mock(ShardingSphereAlgorithmConfiguration.class));
-        configuration.getShardingAlgorithms().put("foo_algorithm", mock(ShardingSphereAlgorithmConfiguration.class));
-        return configuration;
+    
+    private ShardingRuleConfiguration createRuleConfiguration() {
+        ShardingRuleConfiguration result = new ShardingRuleConfiguration();
+        result.getShardingAlgorithms().put("foo_algorithm", mock(ShardingSphereAlgorithmConfiguration.class));
+        result.getAuditors().put("foo_audit", mock(ShardingSphereAlgorithmConfiguration.class));
+        result.getKeyGenerators().put("foo_keygen", mock(ShardingSphereAlgorithmConfiguration.class));
+        result.setDefaultKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("foo_col", "foo_keygen"));
+        return result;
     }
-
-    private ShardingAuditStrategyConfiguration createShardingAuditStrategyConfiguration() {
-        ShardingAuditStrategyConfiguration shardingAuditStrategyConfiguration = new ShardingAuditStrategyConfiguration(Collections.singletonList("foo_audit"), false);
-        return shardingAuditStrategyConfiguration;
-    }
-
+    
     private ShardingStrategyConfiguration createShardingStrategyConfiguration() {
-        ShardingStrategyConfiguration shardingStrategyConfiguration = mock(ShardingStrategyConfiguration.class);
-        when(shardingStrategyConfiguration.getShardingAlgorithmName()).thenReturn("foo_algorithm");
-        return shardingStrategyConfiguration;
+        ShardingStrategyConfiguration result = mock(ShardingStrategyConfiguration.class);
+        when(result.getShardingAlgorithmName()).thenReturn("foo_algorithm");
+        return result;
     }
-
-    private ShardingTableRuleConfiguration createShardingTableRuleConfiguration(final KeyGenerateStrategyConfiguration keyGenerateStrategyConfiguration,
-                                                                                final ShardingAuditStrategyConfiguration shardingAuditStrategyConfiguration,
-                                                                                final ShardingStrategyConfiguration shardingStrategyConfiguration) {
-        ShardingTableRuleConfiguration shardingTableRuleConfiguration = new ShardingTableRuleConfiguration("foo_ltb");
-        shardingTableRuleConfiguration.setKeyGenerateStrategy(keyGenerateStrategyConfiguration == null ? mock(KeyGenerateStrategyConfiguration.class) : keyGenerateStrategyConfiguration);
-        shardingTableRuleConfiguration.setAuditStrategy(shardingAuditStrategyConfiguration == null ? mock(ShardingAuditStrategyConfiguration.class) : shardingAuditStrategyConfiguration);
-        shardingTableRuleConfiguration.setDatabaseShardingStrategy(shardingStrategyConfiguration == null ? mock(ShardingStrategyConfiguration.class) : shardingStrategyConfiguration);
-        shardingTableRuleConfiguration.setTableShardingStrategy(shardingStrategyConfiguration == null ? mock(ShardingStrategyConfiguration.class) : shardingStrategyConfiguration);
-        return shardingTableRuleConfiguration;
+    
+    private ShardingTableRuleConfiguration createShardingTableRuleConfiguration(final ShardingStrategyConfiguration shardingStrategyConfig,
+                                                                                final ShardingAuditStrategyConfiguration shardingAuditStrategyConfig,
+                                                                                final KeyGenerateStrategyConfiguration keyGenerateStrategyConfig) {
+        ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("foo_tbl");
+        result.setDatabaseShardingStrategy(null == shardingStrategyConfig ? mock(ShardingStrategyConfiguration.class) : shardingStrategyConfig);
+        result.setTableShardingStrategy(null == shardingStrategyConfig ? mock(ShardingStrategyConfiguration.class) : shardingStrategyConfig);
+        result.setAuditStrategy(null == shardingAuditStrategyConfig ? mock(ShardingAuditStrategyConfiguration.class) : shardingAuditStrategyConfig);
+        result.setKeyGenerateStrategy(null == keyGenerateStrategyConfig ? mock(KeyGenerateStrategyConfiguration.class) : keyGenerateStrategyConfig);
+        return result;
     }
-
-    private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration(final KeyGenerateStrategyConfiguration keyGenerateStrategyConfiguration,
-                                                                                        final ShardingAuditStrategyConfiguration shardingAuditStrategyConfiguration,
-                                                                                        final ShardingStrategyConfiguration shardingStrategyConfiguration) {
-        ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfiguration = mock(ShardingAutoTableRuleConfiguration.class);
-        when(shardingAutoTableRuleConfiguration.getKeyGenerateStrategy())
-                .thenReturn(keyGenerateStrategyConfiguration == null ? mock(KeyGenerateStrategyConfiguration.class) : keyGenerateStrategyConfiguration);
-        when(shardingAutoTableRuleConfiguration.getAuditStrategy())
-                .thenReturn(shardingAuditStrategyConfiguration == null ? mock(ShardingAuditStrategyConfiguration.class) : shardingAuditStrategyConfiguration);
-        when(shardingAutoTableRuleConfiguration.getShardingStrategy())
-                .thenReturn(shardingStrategyConfiguration == null ? mock(ShardingStrategyConfiguration.class) : shardingStrategyConfiguration);
-        return shardingAutoTableRuleConfiguration;
+    
+    private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration(final ShardingStrategyConfiguration shardingStrategyConfig,
+                                                                                        final ShardingAuditStrategyConfiguration shardingAuditStrategyConfig,
+                                                                                        final KeyGenerateStrategyConfiguration keyGenerateStrategyConfig) {
+        ShardingAutoTableRuleConfiguration result = mock(ShardingAutoTableRuleConfiguration.class);
+        when(result.getShardingStrategy()).thenReturn(null == shardingStrategyConfig ? mock(ShardingStrategyConfiguration.class) : shardingStrategyConfig);
+        when(result.getAuditStrategy()).thenReturn(null == shardingAuditStrategyConfig ? mock(ShardingAuditStrategyConfiguration.class) : shardingAuditStrategyConfig);
+        when(result.getKeyGenerateStrategy()).thenReturn(null == keyGenerateStrategyConfig ? mock(KeyGenerateStrategyConfiguration.class) : keyGenerateStrategyConfig);
+        return result;
     }
-
-    private RuleConfigurationChecker getChecker(final ShardingRuleConfiguration configuration) {
-        Optional<RuleConfigurationChecker> checkerOptional = RuleConfigurationCheckerFactory.findInstance(configuration);
-        return checkerOptional.get();
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    private RuleConfigurationChecker<ShardingRuleConfiguration> getChecker(final ShardingRuleConfiguration ruleConfig) {
+        Optional<RuleConfigurationChecker> result = RuleConfigurationCheckerFactory.findInstance(ruleConfig);
+        assertTrue(result.isPresent());
+        return result.get();
     }
 }
