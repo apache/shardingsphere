@@ -122,7 +122,7 @@ public final class IntegrationTestEnvironment {
      * @return actual data source username
      */
     public String getActualDataSourceUsername(final DatabaseType databaseType) {
-        return String.valueOf(props.getOrDefault(String.format("scaling.it.native.%s.username", databaseType.getType().toLowerCase()), "root"));
+        return String.valueOf(props.getOrDefault(String.format("scaling.it.native.%s.username", databaseType.getType().toLowerCase()), "Root@123"));
     }
     
     /**
@@ -132,7 +132,7 @@ public final class IntegrationTestEnvironment {
      * @return actual data source username
      */
     public String getActualDataSourcePassword(final DatabaseType databaseType) {
-        return String.valueOf(props.getOrDefault(String.format("scaling.it.native.%s.password", databaseType.getType().toLowerCase()), "root"));
+        return String.valueOf(props.getOrDefault(String.format("scaling.it.native.%s.password", databaseType.getType().toLowerCase()), "Root@123"));
     }
     
     /**
