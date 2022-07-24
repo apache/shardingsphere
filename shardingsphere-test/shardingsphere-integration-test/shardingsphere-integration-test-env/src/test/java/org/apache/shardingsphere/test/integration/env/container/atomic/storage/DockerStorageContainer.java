@@ -74,8 +74,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
         setWaitStrategy(new JDBCConnectionWaitStrategy(
                 () -> DriverManager.getConnection(getDefaultDatabaseName().isPresent()
                         ? DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort(), getDefaultDatabaseName().get())
-                        : DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort()),
-                        getRootUsername(), getRootPassword())));
+                        : DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort()), getTestCaseUsername(), getUnifiedPassword())));
     }
     
     @Override
@@ -97,8 +96,8 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
         result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(getPort()), dataSourceName));
-        result.setUsername(getRootUsername());
-        result.setPassword(getRootPassword());
+        result.setUsername(getTestCaseUsername());
+        result.setPassword(getUnifiedPassword());
         result.setMaximumPoolSize(4);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
@@ -112,25 +111,11 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     public abstract String getRootUsername();
     
     /**
-     * Get root password.
-     *
-     * @return root password
-     */
-    public abstract String getRootPassword();
-    
-    /**
      * Get test case username.
      *
      * @return root username
      */
     public abstract String getTestCaseUsername();
-    
-    /**
-     * Get test case password.
-     *
-     * @return root username
-     */
-    public abstract String getTestCasePassword();
     
     /**
      * Get database port.
@@ -140,10 +125,14 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     public abstract int getPort();
     
     /**
-     * Get default database name.
-     * 
-     * @return default database name
+     * Get unified database access password.
+     *
+     * @return unified database access password
      */
+    public final String getUnifiedPassword() {
+        return "Root@123";
+    }
+    
     protected abstract Optional<String> getDefaultDatabaseName();
     
     @Override

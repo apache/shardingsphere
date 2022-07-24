@@ -36,7 +36,7 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     @Override
     protected void configure() {
         withCommand("--max_connections=600");
-        addEnv("GS_PASSWORD", getRootPassword());
+        addEnv("GS_PASSWORD", getUnifiedPassword());
         withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/usr/local/opengauss/share/postgresql/postgresql.conf.sample", BindMode.READ_ONLY);
         withClasspathResourceMapping("/env/opengauss/pg_hba.conf", "/usr/local/opengauss/share/postgresql/pg_hba.conf.sample", BindMode.READ_ONLY);
         withPrivilegedMode(true);
@@ -49,18 +49,8 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     }
     
     @Override
-    public String getRootPassword() {
-        return "Root@123";
-    }
-    
-    @Override
     public String getTestCaseUsername() {
         return "scaling";
-    }
-    
-    @Override
-    public String getTestCasePassword() {
-        return "Root@123";
     }
     
     @Override
