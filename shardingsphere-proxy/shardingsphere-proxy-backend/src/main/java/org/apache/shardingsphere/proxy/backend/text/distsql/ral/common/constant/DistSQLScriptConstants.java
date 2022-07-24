@@ -70,7 +70,7 @@ public final class DistSQLScriptConstants {
             + System.lineSeparator()
             + "TYPE(NAME=%s, PROPERTIES(%s))"
             + System.lineSeparator()
-            +")";
+            + ")";
 
     public static final String CREATE_SHARDING_TABLE = "CREATE SHARDING TABLE RULE";
 

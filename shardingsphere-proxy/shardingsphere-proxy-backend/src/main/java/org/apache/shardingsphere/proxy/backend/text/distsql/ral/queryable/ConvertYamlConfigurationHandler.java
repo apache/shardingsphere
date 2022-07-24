@@ -151,18 +151,15 @@ public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<
         }
         for (YamlRuleConfiguration rule: rules) {
             ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfigurationYamlSwapper().swapToObject((YamlShardingRuleConfiguration) rule);
-            // TODO: add sharding algorithm
             appendShardingAlgorithm(shardingRuleConfig, stringBuilder);
-            // TODO: add sharding rules
             appendShardingTableRules(shardingRuleConfig, stringBuilder);
-            System.out.println("done!");
         }
 
     }
 
-    private void appendShardingAlgorithm(final ShardingRuleConfiguration shardingRuleConfig, StringBuilder stringBuilder) {
+    private void appendShardingAlgorithm(final ShardingRuleConfiguration shardingRuleConfig, final StringBuilder stringBuilder) {
         stringBuilder.append(DistSQLScriptConstants.CREATE_SHARDING_ALGORITHM);
-        Iterator<Entry<String, ShardingSphereAlgorithmConfiguration>> iterator  = shardingRuleConfig.getShardingAlgorithms().entrySet().iterator();
+        Iterator<Entry<String, ShardingSphereAlgorithmConfiguration>> iterator = shardingRuleConfig.getShardingAlgorithms().entrySet().iterator();
         while (iterator.hasNext()) {
             Entry<String, ShardingSphereAlgorithmConfiguration> entry = iterator.next();
             String shardingAlgorithmName = entry.getKey();
