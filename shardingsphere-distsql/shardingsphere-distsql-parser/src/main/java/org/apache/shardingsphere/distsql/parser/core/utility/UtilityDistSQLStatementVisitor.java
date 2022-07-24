@@ -21,14 +21,14 @@ import org.apache.shardingsphere.distsql.parser.autogen.UtilityDistSQLStatementB
 import org.apache.shardingsphere.distsql.parser.autogen.UtilityDistSQLStatementParser.FormatSQLContext;
 import org.apache.shardingsphere.distsql.parser.autogen.UtilityDistSQLStatementParser.ParseSQLContext;
 import org.apache.shardingsphere.distsql.parser.autogen.UtilityDistSQLStatementParser.PreviewSQLContext;
-import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.FormatStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.ParseStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.PreviewStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rul.sql.FormatStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rul.sql.ParseStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rul.sql.PreviewStatement;
 import org.apache.shardingsphere.sql.parser.api.visitor.ASTNode;
 import org.apache.shardingsphere.sql.parser.api.visitor.SQLVisitor;
 
 /**
- * SQL statement visitor for utility dist SQL.
+ * SQL statement visitor for utility Dist SQL.
  */
 public final class UtilityDistSQLStatementVisitor extends UtilityDistSQLStatementBaseVisitor<ASTNode> implements SQLVisitor {
     

@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced;
+package org.apache.shardingsphere.proxy.backend.text.distsql.rul.sql;
 
 import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.PreviewStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rul.sql.PreviewStatement;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.aware.CursorDefinitionAware;
@@ -60,7 +60,7 @@ import org.apache.shardingsphere.proxy.backend.context.BackendExecutorContext;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rul.SQLRULBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQLInsertStatement;
 
@@ -76,7 +76,7 @@ import java.util.stream.Collectors;
 /**
  * Preview handler.
  */
-public final class PreviewHandler extends QueryableRALBackendHandler<PreviewStatement> {
+public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement> {
     
     private static final String DATA_SOURCE_NAME = "data_source_name";
     

@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.advanced;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rul.impl.sql;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.ParseStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rul.sql.PreviewStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ParseStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rul.PreviewStatementTestCase;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -27,18 +27,18 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
 /**
- * Parse statement assert.
+ * Preview statement assert.
  */
-public final class ParseStatementAssert {
+public final class PreviewStatementAssert {
     
     /**
-     * Assert parse statement is correct with expected parser result.
+     * Assert preview statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual parse statement
-     * @param expected expected parse statement test case
+     * @param actual actual preview statement
+     * @param expected expected preview statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final ParseStatement actual, final ParseStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final PreviewStatement actual, final PreviewStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {

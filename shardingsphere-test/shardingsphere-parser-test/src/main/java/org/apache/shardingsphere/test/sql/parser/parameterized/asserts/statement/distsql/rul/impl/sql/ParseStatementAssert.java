@@ -15,32 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.advanced;
+package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rul.impl.sql;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.PreviewStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rul.sql.ParseStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.PreviewStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rul.ParseStatementTestCase;
 
+import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 /**
- * Preview statement assert.
+ * Parse statement assert.
  */
-public final class PreviewStatementAssert {
+public final class ParseStatementAssert {
     
     /**
-     * Assert preview statement is correct with expected parser result.
+     * Assert parse statement is correct with expected parser result.
      *
      * @param assertContext assert context
-     * @param actual actual preview statement
-     * @param expected expected preview statement test case
+     * @param actual actual parse statement
+     * @param expected expected parse statement test case
      */
-    public static void assertIs(final SQLCaseAssertContext assertContext, final PreviewStatement actual, final PreviewStatementTestCase expected) {
+    public static void assertIs(final SQLCaseAssertContext assertContext, final ParseStatement actual, final ParseStatementTestCase expected) {
         if (null == expected) {
             assertNull(assertContext.getText("Actual statement should not exist."), actual);
         } else {
             assertNotNull(assertContext.getText("Actual statement should exist."), actual);
+            assertThat(assertContext.getText("SQL assertion error"), actual.getSql(), is(expected.getSql()));
         }
     }
 }

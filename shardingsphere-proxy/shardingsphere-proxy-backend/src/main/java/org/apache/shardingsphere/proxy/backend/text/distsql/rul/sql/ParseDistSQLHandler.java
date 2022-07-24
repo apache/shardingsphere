@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced;
+package org.apache.shardingsphere.proxy.backend.text.distsql.rul.sql;
 
 import com.google.gson.Gson;
-import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.ParseStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rul.sql.ParseStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rul.SQLRULBackendHandler;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -33,7 +33,7 @@ import java.util.Collections;
 /**
  * Parse Dist SQL handler.
  */
-public final class ParseDistSQLHandler extends QueryableRALBackendHandler<ParseStatement> {
+public final class ParseDistSQLHandler extends SQLRULBackendHandler<ParseStatement> {
     
     private static final String PARSED_STATEMENT = "parsed_statement";
     
