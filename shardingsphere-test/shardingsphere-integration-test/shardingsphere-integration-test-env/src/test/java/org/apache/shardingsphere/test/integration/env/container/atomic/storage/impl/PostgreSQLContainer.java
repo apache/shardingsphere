@@ -48,7 +48,7 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
     }
     
     @Override
-    protected String getTestCaseUsername() {
+    protected String getNormalUsername() {
         return "scaling";
     }
     

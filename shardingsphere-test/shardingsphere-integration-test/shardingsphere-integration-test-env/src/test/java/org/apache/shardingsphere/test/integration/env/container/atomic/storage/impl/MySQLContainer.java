@@ -49,7 +49,7 @@ public final class MySQLContainer extends DockerStorageContainer {
     }
     
     @Override
-    protected String getTestCaseUsername() {
+    protected String getNormalUsername() {
         return "scaling";
     }
     

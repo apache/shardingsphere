@@ -113,7 +113,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
      * @return username
      */
     public final String getUsername() {
-        return useRootUsername ? getRootUsername() : getTestCaseUsername();
+        return useRootUsername ? getRootUsername() : getNormalUsername();
     }
     
     /**
@@ -123,7 +123,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
      */
     public abstract String getRootUsername();
     
-    protected abstract String getTestCaseUsername();
+    protected abstract String getNormalUsername();
     
     /**
      * Get database port.
