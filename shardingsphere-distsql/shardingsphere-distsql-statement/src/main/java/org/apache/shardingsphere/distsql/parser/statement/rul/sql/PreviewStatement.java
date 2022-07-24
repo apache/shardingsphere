@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.advanced;
+package org.apache.shardingsphere.distsql.parser.statement.rul.sql;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rul.SQLRULStatement;
 
 /**
  * Preview statement.
  */
-@RequiredArgsConstructor
 @Getter
-public final class PreviewStatement extends QueryableRALStatement {
+public final class PreviewStatement extends SQLRULStatement {
     
-    private final String sql;
+    public PreviewStatement(final String sql) {
+        super(sql);
+    }
 }

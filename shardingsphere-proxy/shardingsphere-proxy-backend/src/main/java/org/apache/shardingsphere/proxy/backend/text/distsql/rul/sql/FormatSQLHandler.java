@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.text.distsql.ral.advanced;
+package org.apache.shardingsphere.proxy.backend.text.distsql.rul.sql;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.advanced.FormatStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rul.sql.FormatStatement;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.QueryableRALBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.distsql.rul.SQLRULBackendHandler;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.api.SQLParserEngine;
 import org.apache.shardingsphere.sql.parser.api.SQLVisitorEngine;
@@ -35,7 +35,7 @@ import java.util.Properties;
 /**
  * Format SQL handler.
  */
-public final class FormatSQLHandler extends QueryableRALBackendHandler<FormatStatement> {
+public final class FormatSQLHandler extends SQLRULBackendHandler<FormatStatement> {
     
     private static final String FORMATTED_RESULT = "formatted_result";
     

@@ -17,6 +17,6 @@
   -->
 
 <sql-parser-test-cases>
-    <preview-sql sql-case-id="preview-sql" />
+    <preview-sql sql-case-id="preview-sql" sql="SELECT * FROM t_order;"/>
     <parse-sql sql-case-id="parse-sql" sql="SELECT * FROM t_order;" />
 </sql-parser-test-cases>

@@ -15,18 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.advanced;
+package org.apache.shardingsphere.distsql.parser.statement.rul;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
+import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
 
 /**
- * Format statement.
+ * RUL statement.
  */
-@RequiredArgsConstructor
-@Getter
-public final class FormatStatement extends QueryableRALStatement {
-    
-    private final String sql;
+public abstract class RULStatement extends DistSQLStatement {
 }

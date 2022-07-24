@@ -15,12 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rul;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
+import javax.xml.bind.annotation.XmlAttribute;
+
 /**
- * Preview statement test case.
+ * Parse statement test case.
  */
-public final class PreviewStatementTestCase extends SQLParserTestCase {
+@Getter
+@Setter
+public final class ParseStatementTestCase extends SQLParserTestCase {
+    
+    @XmlAttribute(name = "sql")
+    private String sql;
 }
