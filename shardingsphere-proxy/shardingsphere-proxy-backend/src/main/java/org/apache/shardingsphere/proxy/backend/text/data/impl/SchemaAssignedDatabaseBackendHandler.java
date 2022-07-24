@@ -87,7 +87,7 @@ public final class SchemaAssignedDatabaseBackendHandler implements DatabaseBacke
         if (sqlStatementContext instanceof CursorAvailable) {
             prepareCursorStatementContext((CursorAvailable) sqlStatementContext, connectionSession);
         }
-        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection());
+        databaseCommunicationEngine = databaseCommunicationEngineFactory.newDatabaseCommunicationEngine(sqlStatementContext, sql, connectionSession.getBackendConnection(), false);
     }
     
     private void prepareCursorStatementContext(final CursorAvailable statementContext, final ConnectionSession connectionSession) {

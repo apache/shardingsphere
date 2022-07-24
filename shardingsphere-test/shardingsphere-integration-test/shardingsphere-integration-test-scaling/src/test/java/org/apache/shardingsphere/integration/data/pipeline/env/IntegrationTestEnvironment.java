@@ -21,8 +21,6 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.cases.entity.JdbcInfoEntity;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
 
 import java.io.IOException;
@@ -76,30 +74,17 @@ public final class IntegrationTestEnvironment {
      * @param databaseType database type.
      * @return jdbc connection
      */
-    public JdbcInfoEntity getActualDatabaseJdbcInfo(final DatabaseType databaseType) {
-        String username;
-        String password;
-        int port;
+    public int getActualDatabasePort(final DatabaseType databaseType) {
         switch (databaseType.getType()) {
             case "MySQL":
-                username = props.getOrDefault("scaling.it.native.mysql.username", "root").toString();
-                password = props.getOrDefault("scaling.it.native.mysql.password", "root").toString();
-                port = Integer.parseInt(props.getOrDefault("scaling.it.native.mysql.port", 3307).toString());
-                break;
+                return Integer.parseInt(props.getOrDefault("scaling.it.native.mysql.port", 3307).toString());
             case "PostgreSQL":
-                username = props.getOrDefault("scaling.it.native.postgresql.username", "postgres").toString();
-                password = props.getOrDefault("scaling.it.native.postgresql.password", "postgres").toString();
-                port = Integer.parseInt(props.getOrDefault("scaling.it.native.postgresql.port", 5432).toString());
-                break;
+                return Integer.parseInt(props.getOrDefault("scaling.it.native.postgresql.port", 5432).toString());
             case "openGauss":
-                username = props.getOrDefault("scaling.it.native.opengauss.username", "gaussdb").toString();
-                password = props.getOrDefault("scaling.it.native.opengauss.password", "Root@123").toString();
-                port = Integer.parseInt(props.getOrDefault("scaling.it.native.opengauss.port", 5432).toString());
-                break;
+                return Integer.parseInt(props.getOrDefault("scaling.it.native.opengauss.port", 5432).toString());
             default:
                 throw new UnsupportedOperationException("Unsupported database type: " + databaseType.getType());
         }
-        return new JdbcInfoEntity(username, password, port);
     }
     
     /**
@@ -137,16 +122,7 @@ public final class IntegrationTestEnvironment {
      * @return actual data source username
      */
     public String getActualDataSourceUsername(final DatabaseType databaseType) {
-        String username;
-        if (databaseType instanceof OpenGaussDatabaseType) {
-            username = "gaussdb";
-        } else {
-            username = "root";
-        }
-        if (itEnvType == ScalingITEnvTypeEnum.NATIVE) {
-            username = String.valueOf(props.getOrDefault(String.format("scaling.it.native.%s.username", databaseType.getType().toLowerCase()), username));
-        }
-        return username;
+        return String.valueOf(props.getOrDefault(String.format("scaling.it.native.%s.username", databaseType.getType().toLowerCase()), "root"));
     }
     
     /**
@@ -156,16 +132,7 @@ public final class IntegrationTestEnvironment {
      * @return actual data source username
      */
     public String getActualDataSourcePassword(final DatabaseType databaseType) {
-        String password;
-        if (databaseType instanceof OpenGaussDatabaseType) {
-            password = "Root@123";
-        } else {
-            password = "root";
-        }
-        if (itEnvType == ScalingITEnvTypeEnum.NATIVE) {
-            password = props.getOrDefault(String.format("scaling.it.native.%s.password", databaseType.getType().toLowerCase()), password).toString();
-        }
-        return password;
+        return String.valueOf(props.getOrDefault(String.format("scaling.it.native.%s.password", databaseType.getType().toLowerCase()), "root"));
     }
     
     /**
@@ -186,7 +153,7 @@ public final class IntegrationTestEnvironment {
     public List<String> listDatabaseDockerImageNames(final DatabaseType databaseType) {
         // Native mode needn't use docker image, just return a list which contain one item
         if (getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
-            return Collections.singletonList("");
+            return databaseType.getType().equalsIgnoreCase(getNativeDatabaseType()) ? Collections.singletonList("") : Collections.emptyList();
         }
         switch (databaseType.getType()) {
             case "MySQL":

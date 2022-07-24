@@ -21,8 +21,12 @@ import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CreateTableStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
+import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.route.SQLRouterFactory;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.context.RouteMapper;
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
@@ -42,6 +46,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -143,6 +148,49 @@ public final class SingleTableSQLRouterTest {
         when(result.getResource().getDataSources()).thenReturn(dataSourceMap);
         when(result.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         return result;
+    }
+    
+    @Test
+    public void assertDecorateRouteContextWithSingleDataSource() {
+        SingleTableRule rule = new SingleTableRule(new SingleTableRuleConfiguration(),
+                DefaultDatabase.LOGIC_NAME, Collections.singletonMap("foo_ds", new MockedDataSource()), Collections.emptyList());
+        RouteContext routeContext = new RouteContext();
+        routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper("foo_ds", "foo_ds"), Collections.singletonList(new RouteMapper("t_order", "t_order"))));
+        SingleTableSQLRouter sqlRouter = (SingleTableSQLRouter) SQLRouterFactory.getInstances(Collections.singleton(rule)).get(rule);
+        sqlRouter.decorateRouteContext(routeContext, createLogicSQL(), mockReadwriteSplittingDatabase(), rule, new ConfigurationProperties(new Properties()));
+        Iterator<String> routedDataSourceNames = routeContext.getActualDataSourceNames().iterator();
+        assertThat(routedDataSourceNames.next(), is("foo_ds"));
+    }
+    
+    @Test
+    public void assertDecorateRouteContextWithReadwriteSplittingDataSource() {
+        SingleTableRule rule = new SingleTableRule(new SingleTableRuleConfiguration(),
+                DefaultDatabase.LOGIC_NAME, Collections.singletonMap("readwrite_ds", new MockedDataSource()), Collections.emptyList());
+        RouteContext routeContext = new RouteContext();
+        RouteUnit readWriteRouteUnit = new RouteUnit(new RouteMapper("readwrite_ds", "readwrite_ds"), Collections.emptyList());
+        RouteUnit writeRouteUnit = new RouteUnit(new RouteMapper("write_ds", "write_ds"), Collections.singletonList(new RouteMapper("t_order", "t_order")));
+        routeContext.getRouteUnits().add(readWriteRouteUnit);
+        routeContext.getRouteUnits().add(writeRouteUnit);
+        SingleTableSQLRouter sqlRouter = (SingleTableSQLRouter) SQLRouterFactory.getInstances(Collections.singleton(rule)).get(rule);
+        ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class), mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS),
+                new ShardingSphereRuleMetaData(Collections.singleton(rule)), Collections.emptyMap());
+        sqlRouter.decorateRouteContext(routeContext, createLogicSQL(), database, rule, new ConfigurationProperties(new Properties()));
+        Iterator<String> routedDataSourceNames = routeContext.getActualDataSourceNames().iterator();
+        assertThat(routedDataSourceNames.next(), is("write_ds"));
+        assertThat(routedDataSourceNames.next(), is("readwrite_ds"));
+    }
+    
+    @Test
+    public void assertDecorateRouteContextWithMultiDataSource() throws SQLException {
+        SingleTableRule rule = new SingleTableRule(new SingleTableRuleConfiguration(), DefaultDatabase.LOGIC_NAME, createMultiDataSourceMap(), Collections.emptyList());
+        RouteContext routeContext = new RouteContext();
+        routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper("ds_0", "ds_0"), Collections.emptyList()));
+        routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper("ds_1", "ds_1"), Collections.emptyList()));
+        SingleTableSQLRouter sqlRouter = (SingleTableSQLRouter) SQLRouterFactory.getInstances(Collections.singleton(rule)).get(rule);
+        sqlRouter.decorateRouteContext(routeContext, createLogicSQL(), mockDatabaseWithMultipleResources(), rule, new ConfigurationProperties(new Properties()));
+        Iterator<String> routedDataSourceNames = routeContext.getActualDataSourceNames().iterator();
+        assertThat(routedDataSourceNames.next(), is("ds_1"));
+        assertThat(routedDataSourceNames.next(), is("ds_0"));
     }
     
     private LogicSQL createLogicSQL() {

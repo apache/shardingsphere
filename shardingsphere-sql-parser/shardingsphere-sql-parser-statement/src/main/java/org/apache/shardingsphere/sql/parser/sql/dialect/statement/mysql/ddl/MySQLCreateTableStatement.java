@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
+@ToString(callSuper = true)
 public final class MySQLCreateTableStatement extends CreateTableStatement implements MySQLStatement {
     
     private final boolean ifNotExists;

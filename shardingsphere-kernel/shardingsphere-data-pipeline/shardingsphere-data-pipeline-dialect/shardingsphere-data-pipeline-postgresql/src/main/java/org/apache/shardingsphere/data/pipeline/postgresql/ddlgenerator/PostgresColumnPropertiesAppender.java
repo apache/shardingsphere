@@ -147,7 +147,7 @@ public final class PostgresColumnPropertiesAppender extends AbstractPostgresDDLA
     }
     
     private void handlePrimaryColumn(final Map<String, Object> column) {
-        if (column.containsKey("attnum") && column.containsKey("indkey")) {
+        if (null != column.get("attnum") && null != column.get("indkey")) {
             if (Arrays.stream(column.get("indkey").toString().split(" ")).collect(Collectors.toList()).contains(column.get("attnum").toString())) {
                 column.put("is_pk", true);
                 column.put("is_primary_key", true);

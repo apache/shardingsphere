@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 
 import java.util.LinkedList;
@@ -30,6 +31,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
+@ToString
 public final class DeleteMultiTableSegment implements TableSegment {
     
     private int startIndex;

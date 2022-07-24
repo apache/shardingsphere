@@ -23,7 +23,9 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
+import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
+import org.junit.After;
 import org.junit.Test;
 
 import java.sql.SQLException;
@@ -135,5 +137,10 @@ public final class UnsupportedOperationConnectionTest {
     @Test(expected = UnsupportedOperationException.class)
     public void assertSetClientInfoWithProperties() {
         shardingSphereConnection.setClientInfo(new Properties());
+    }
+    
+    @After
+    public void tearDown() {
+        TransactionTypeHolder.clear();
     }
 }

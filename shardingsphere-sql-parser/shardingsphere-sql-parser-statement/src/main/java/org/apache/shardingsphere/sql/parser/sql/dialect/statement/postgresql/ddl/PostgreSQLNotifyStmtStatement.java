@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL notify statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLNotifyStmtStatement extends NotifyStmtStatement implements PostgreSQLStatement {
 }

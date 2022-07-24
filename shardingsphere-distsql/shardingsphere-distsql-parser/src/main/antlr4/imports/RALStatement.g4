@@ -139,12 +139,20 @@ importDatabaseConfiguration
     : IMPORT DATABASE (CONFIGURATION | CONFIG) FILE EQ filePath
     ;
 
+convertYamlConfiguration
+    : CONVERT YAML (CONFIGURATION | CONFIG) FILE EQ filePath
+    ;
+
+showSQLTranslatorRule
+    : SHOW SQL_TRANSLATOR RULE
+    ;
+
 filePath
     : STRING
     ;
 
 transactionRuleDefinition
-    : LP DEFAULT EQ defaultType COMMA providerDefinition
+    : LP DEFAULT EQ defaultType (COMMA providerDefinition)?
     ;
 
 providerDefinition

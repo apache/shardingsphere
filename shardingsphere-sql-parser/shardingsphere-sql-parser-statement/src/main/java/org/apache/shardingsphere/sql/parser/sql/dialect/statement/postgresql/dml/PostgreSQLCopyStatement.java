@@ -32,9 +32,9 @@ import java.util.Optional;
 /**
  * PostgreSQL copy statement.
  */
-@ToString
 @Getter
 @Setter
+@ToString(callSuper = true)
 public final class PostgreSQLCopyStatement extends CopyStatement implements PostgreSQLStatement {
     
     private final Collection<ColumnSegment> columns = new LinkedList<>();

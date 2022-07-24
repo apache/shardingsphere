@@ -28,9 +28,9 @@ import java.util.Optional;
 /**
  * Close statement.
  */
-@ToString
 @Getter
 @Setter
+@ToString(callSuper = true)
 public abstract class CloseStatement extends AbstractSQLStatement implements DDLStatement {
     
     private CursorNameSegment cursorName;

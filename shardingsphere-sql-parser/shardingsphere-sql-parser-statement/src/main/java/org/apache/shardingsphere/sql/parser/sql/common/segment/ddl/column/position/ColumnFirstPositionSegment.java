@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.position;
 
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 
 /**
  * Column first position segment.
  */
+@ToString(callSuper = true)
 public final class ColumnFirstPositionSegment extends ColumnPositionSegment {
     
     public ColumnFirstPositionSegment(final int startIndex, final int stopIndex, final ColumnSegment columnName) {

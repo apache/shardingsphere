@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Refresh materialized view statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class RefreshMatViewStmtStatement extends AbstractSQLStatement implements DDLStatement {
 }

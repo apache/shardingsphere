@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
 /**
  * SQLServer create procedure statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class SQLServerCreateProcedureStatement extends CreateProcedureStatement implements SQLServerStatement {
 }

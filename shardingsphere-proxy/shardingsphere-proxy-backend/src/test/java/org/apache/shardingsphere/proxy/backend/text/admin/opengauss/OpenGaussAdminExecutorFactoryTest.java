@@ -70,7 +70,7 @@ public final class OpenGaussAdminExecutorFactoryTest {
         when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(Collections.singletonList("pg_database"));
         Optional<DatabaseAdminExecutor> actual = openGaussAdminExecutorFactory.create(sqlStatementContext, "select datcompatibility from pg_database where datname = 'sharding_db'", "");
         assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(OpenGaussSelectDatabaseExecutor.class));
+        assertThat(actual.get(), instanceOf(OpenGaussSystemCatalogAdminQueryExecutor.class));
     }
     
     @Test

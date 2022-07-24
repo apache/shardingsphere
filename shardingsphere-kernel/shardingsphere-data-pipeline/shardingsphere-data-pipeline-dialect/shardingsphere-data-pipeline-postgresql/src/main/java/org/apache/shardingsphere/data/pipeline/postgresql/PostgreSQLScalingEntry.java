@@ -43,11 +43,6 @@ public final class PostgreSQLScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<PostgreSQLEnvironmentChecker> getEnvironmentCheckerClass() {
-        return PostgreSQLEnvironmentChecker.class;
-    }
-    
-    @Override
     public String getType() {
         return "PostgreSQL";
     }

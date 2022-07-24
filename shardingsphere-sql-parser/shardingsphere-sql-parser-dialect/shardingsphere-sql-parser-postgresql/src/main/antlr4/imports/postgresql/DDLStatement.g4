@@ -1038,7 +1038,7 @@ alterSequence
     ;
 
 alterSequenceClauses
-    : alterTableCmds | seqOptList | RENAME TO name | SET SCHEMA name
+    : OWNER TO roleSpec | seqOptList | RENAME TO name | SET SCHEMA name
     ;
 
 alterServer

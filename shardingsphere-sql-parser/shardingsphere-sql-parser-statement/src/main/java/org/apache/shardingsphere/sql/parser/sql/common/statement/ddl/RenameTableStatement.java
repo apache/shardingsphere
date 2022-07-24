@@ -31,7 +31,7 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public abstract class RenameTableStatement extends AbstractSQLStatement implements DDLStatement {
     
     private final Collection<RenameTableDefinitionSegment> renameTables = new LinkedList<>();

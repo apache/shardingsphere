@@ -25,6 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL set default role statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLSetDefaultRoleStatement extends AbstractSQLStatement implements DCLStatement, MySQLStatement {
 }

@@ -17,10 +17,14 @@
 
 package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
+
 /**
  * Data source preparer.
  */
-public interface DataSourcePreparer {
+@SingletonSPI
+public interface DataSourcePreparer extends TypedSPI {
     
     /**
      * Prepare target schemas.

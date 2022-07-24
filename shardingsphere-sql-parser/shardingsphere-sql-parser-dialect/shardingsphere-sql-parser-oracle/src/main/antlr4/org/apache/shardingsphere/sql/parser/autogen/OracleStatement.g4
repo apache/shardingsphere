@@ -114,5 +114,9 @@ execute
     | alterAuditPolicy
     | alterCluster
     | alterOperator
+    | alterDiskgroup
+    | alterIndexType
+    | alterMaterializedView
+    | alterMaterializedViewLog
     ) SEMI_?
     ;

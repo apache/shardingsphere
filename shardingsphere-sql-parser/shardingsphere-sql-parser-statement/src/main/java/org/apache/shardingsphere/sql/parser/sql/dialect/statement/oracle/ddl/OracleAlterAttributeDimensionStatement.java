@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle alter attribute dimension view statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OracleAlterAttributeDimensionStatement extends AlterAttributeDimensionStatement implements OracleStatement {
 }

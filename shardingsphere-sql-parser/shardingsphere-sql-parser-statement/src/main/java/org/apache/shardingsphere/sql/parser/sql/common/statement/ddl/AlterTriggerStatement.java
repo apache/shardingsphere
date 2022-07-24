@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Alter trigger statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class AlterTriggerStatement extends AbstractSQLStatement implements DDLStatement {
 }

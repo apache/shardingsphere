@@ -30,7 +30,7 @@ import java.util.Optional;
  * MySQL show variables statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class MySQLShowVariablesStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     private ShowFilterSegment filter;

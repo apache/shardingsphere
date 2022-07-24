@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL reassign owned statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLReassignOwnedStatement extends ReassignOwnedStatement implements PostgreSQLStatement {
 }

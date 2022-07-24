@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral.updatable;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TrafficRuleSegment;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.AlterTrafficRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.CreateTrafficRuleStatement;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
@@ -66,6 +67,22 @@ public final class AlterTrafficRuleHandlerTest extends ProxyContextRestorer {
         AlterTrafficRuleHandler handler = new AlterTrafficRuleHandler();
         handler.init(new AlterTrafficRuleStatement(Collections.singleton(trafficRuleSegment)), null);
         handler.execute();
+    }
+    
+    @Test(expected = IllegalStateException.class)
+    public void assertExecuteWithLoadBalancerCannotBeNull() throws SQLException {
+        mockContextManager();
+        TrafficRuleSegment trafficRuleSegment = new TrafficRuleSegment("input_rule_name", Arrays.asList("olap", "order_by"),
+                new AlgorithmSegment("DISTSQL.FIXTURE", new Properties()), null);
+        CreateTrafficRuleHandler handler = new CreateTrafficRuleHandler();
+        handler.init(new CreateTrafficRuleStatement(Collections.singleton(trafficRuleSegment)), null);
+        try {
+            handler.execute();
+        } catch (final IllegalStateException ex) {
+            TrafficRule currentRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TrafficRule.class);
+            assertNotNull(currentRule);
+            throw ex;
+        }
     }
     
     @Test

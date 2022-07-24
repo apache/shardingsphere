@@ -112,7 +112,7 @@ public final class FilterableTableScanExecutor {
         // TODO replace sql parse with sql convert
         FederationContext federationContext = executorContext.getFederationContext();
         LogicSQL logicSQL = createLogicSQL(federationContext.getDatabases(), sqlString, databaseType);
-        ShardingSphereDatabase database = federationContext.getDatabases().get(databaseName);
+        ShardingSphereDatabase database = federationContext.getDatabases().get(databaseName.toLowerCase());
         ExecutionContext context = new KernelProcessor().generateExecutionContext(logicSQL, database, globalRuleMetaData, executorContext.getProps());
         if (federationContext.isPreview() || databaseType.getSystemSchemas().contains(schemaName)) {
             federationContext.getExecutionUnits().addAll(context.getExecutionUnits());

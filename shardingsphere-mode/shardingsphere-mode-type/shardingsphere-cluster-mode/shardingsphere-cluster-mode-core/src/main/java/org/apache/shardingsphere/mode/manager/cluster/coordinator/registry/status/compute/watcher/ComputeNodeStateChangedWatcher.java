@@ -48,7 +48,7 @@ import java.util.regex.Pattern;
 public final class ComputeNodeStateChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
     
     @Override
-    public Collection<String> getWatchingKeys() {
+    public Collection<String> getWatchingKeys(final String databaseName) {
         return Collections.singleton(ComputeNode.getComputeNodePath());
     }
     

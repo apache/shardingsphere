@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL alter default privileges statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLAlterDefaultPrivilegesStatement extends AlterDefaultPrivilegesStatement implements PostgreSQLStatement {
 }

@@ -72,6 +72,8 @@ public enum SQLVisitorRule {
     
     ALTER_MATERIALIZED_VIEW("AlterMaterializedView", SQLStatementType.DDL),
     
+    ALTER_MATERIALIZED_VIEW_LOG("AlterMaterializedViewLog", SQLStatementType.DDL),
+    
     ALTER_OPERATOR("AlterOperator", SQLStatementType.DDL),
     
     DROP_TABLE("DropTable", SQLStatementType.DDL),
@@ -588,6 +590,10 @@ public enum SQLVisitorRule {
     
     ALTER_CLUSTER("AlterCluster", SQLStatementType.DDL),
     
+    ALTER_DISKGROUP("AlterDiskgroup", SQLStatementType.DDL),
+    
+    ALTER_INDEX_TYPE("AlterIndexType", SQLStatementType.DDL),
+    
     CURSOR("Cursor", SQLStatementType.DDL),
     
     CLOSE("Close", SQLStatementType.DDL),
@@ -610,7 +616,9 @@ public enum SQLVisitorRule {
     
     CREATE_COLLATION("CreateCollation", SQLStatementType.DDL),
     
-    CREATE_EVENT_TRIGGER("CreateEventTrigger", SQLStatementType.DDL);
+    CREATE_EVENT_TRIGGER("CreateEventTrigger", SQLStatementType.DDL),
+    
+    CREATE_FOREIGN_DATA_WRAPPER("CreateForeignDataWrapper", SQLStatementType.DDL);
     
     private final String name;
     

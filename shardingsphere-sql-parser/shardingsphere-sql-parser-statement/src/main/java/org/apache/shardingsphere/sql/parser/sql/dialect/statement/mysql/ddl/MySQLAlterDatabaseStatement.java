@@ -25,6 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL alter database statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLAlterDatabaseStatement extends AbstractSQLStatement implements DDLStatement, MySQLStatement {
 }

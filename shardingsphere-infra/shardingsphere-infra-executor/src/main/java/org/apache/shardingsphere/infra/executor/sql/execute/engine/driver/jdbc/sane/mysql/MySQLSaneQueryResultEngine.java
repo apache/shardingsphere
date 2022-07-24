@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLSetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowOtherStatement;
 
+import java.sql.SQLException;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -43,8 +44,13 @@ import java.util.Optional;
  */
 public final class MySQLSaneQueryResultEngine implements SaneQueryResultEngine {
     
+    private static final int ER_PARSE_ERROR = 1064;
+    
     @Override
-    public Optional<ExecuteResult> getSaneQueryResult(final SQLStatement sqlStatement) {
+    public Optional<ExecuteResult> getSaneQueryResult(final SQLStatement sqlStatement, final SQLException ex) {
+        if (ER_PARSE_ERROR == ex.getErrorCode()) {
+            return Optional.empty();
+        }
         if (sqlStatement instanceof SelectStatement) {
             return createQueryResult((SelectStatement) sqlStatement);
         }

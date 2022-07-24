@@ -53,7 +53,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Command query executor for openGauss.
@@ -70,8 +69,7 @@ public final class OpenGaussComQueryExecutor implements QueryCommandExecutor {
     public OpenGaussComQueryExecutor(final PostgreSQLConnectionContext connectionContext, final PostgreSQLComQueryPacket comQueryPacket,
                                      final ConnectionSession connectionSession) throws SQLException {
         this.connectionContext = connectionContext;
-        textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("openGauss"),
-                comQueryPacket.getSql(), Optional::empty, connectionSession);
+        textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("openGauss"), comQueryPacket.getSql(), connectionSession);
     }
     
     @Override

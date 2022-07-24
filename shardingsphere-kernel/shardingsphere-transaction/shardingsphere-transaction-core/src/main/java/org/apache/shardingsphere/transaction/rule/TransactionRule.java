@@ -83,22 +83,19 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
         if (null == database) {
             return;
         }
-        databases.put(database.getName(), database);
         rebuildEngine();
     }
     
     @Override
     public synchronized void closeStaleResource(final String databaseName) {
-        if (!databases.containsKey(databaseName)) {
+        if (!databases.containsKey(databaseName.toLowerCase())) {
             return;
         }
-        databases.remove(databaseName);
         rebuildEngine();
     }
     
     @Override
     public synchronized void closeStaleResource() {
-        databases.clear();
         closeEngine();
     }
     

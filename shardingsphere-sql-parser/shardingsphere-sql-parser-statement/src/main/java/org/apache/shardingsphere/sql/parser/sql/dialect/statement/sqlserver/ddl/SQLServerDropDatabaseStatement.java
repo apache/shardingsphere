@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
 /**
  * SQLServer drop database statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class SQLServerDropDatabaseStatement extends DropDatabaseStatement implements SQLServerStatement {
 }

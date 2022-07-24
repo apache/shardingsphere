@@ -25,6 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL create server statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLCreateServerStatement extends AbstractSQLStatement implements DDLStatement, MySQLStatement {
 }

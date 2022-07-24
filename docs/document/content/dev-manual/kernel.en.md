@@ -5,84 +5,72 @@ weight = 3
 chapter = true
 +++
 
-## SPI Interface
-### SQLRouter
+## SQLRouter
 
-| *SPI Name*                           | *Description*             |
-| ----------------------------------- | --------------------- |
-| SQLRouter                           | Used to process routing results         |
+### Fully-qualified class name
 
-### SQLRewriteContextDecorator
+[`org.apache.shardingsphere.infra.route.SQLRouter`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-infra/shardingsphere-infra-route/src/main/java/org/apache/shardingsphere/infra/route/SQLRouter.java)
 
-| *SPI Name*                          | *Description*          |
-| ---------------------------------- | ------------------ |
-| SQLRewriteContextDecorator         | Used to handle SQL rewrite results |
+### Definition
 
-### SQLExecutionHook
+Used to process routing results
 
-| *SPI Name*                     | *Description*       |
-| ----------------------------- | --------------- |
-| SQLExecutionHook              | SQL execution process listener |
+### Implementation classes
 
-### ResultProcessEngine
+| *Configuration type*         | *Description*                                        | *Fully-qualified class name* |
+| ---------------------------- | ---------------------------------------------------- | ---------------------------- |
+| SingleTableRule.class        | Used to process single-table routing results         | [`org.apache.shardingsphere.singletable.route.SingleTableSQLRouter`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-kernel/shardingsphere-single-table/shardingsphere-single-table-core/src/main/java/org/apache/shardingsphere/singletable/route/SingleTableSQLRouter.java) |
+| ShardingRule.class           | Used to process sharding routing results             | [`org.apache.shardingsphere.sharding.route.engine.ShardingSQLRouter`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-sharding/shardingsphere-sharding-core/src/main/java/org/apache/shardingsphere/sharding/route/engine/ShardingSQLRouter.java) |
+| ReadwriteSplittingRule.class | Used to process read-write splitting routing results | [`org.apache.shardingsphere.readwritesplitting.route.ReadwriteSplittingSQLRouter`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-readwrite-splitting/shardingsphere-readwrite-splitting-core/src/main/java/org/apache/shardingsphere/readwritesplitting/route/ReadwriteSplittingSQLRouter.java) |
+| DatabaseDiscoveryRule.class  | Used to process database discovery routing results   | [`org.apache.shardingsphere.dbdiscovery.route.DatabaseDiscoverySQLRouter`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-db-discovery/shardingsphere-db-discovery-core/src/main/java/org/apache/shardingsphere/dbdiscovery/route/DatabaseDiscoverySQLRouter.java) |
+| ShadowRule.class             | Used to process shadow database routing results      | [`org.apache.shardingsphere.shadow.route.ShadowSQLRouter`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-shadow/shardingsphere-shadow-core/src/main/java/org/apache/shardingsphere/shadow/route/ShadowSQLRouter.java) |
 
-| *SPI Name*                    | *Description*           |
-| ---------------------------- | ------------------- |
-| ResultProcessEngine          | Used to process result sets        |
+## SQLRewriteContextDecorator
 
-### StoragePrivilegeHandler
+### Fully-qualified class name
 
-| *SPI Name*                  | *Description*                      |
-| -------------------------- | ------------------------------ |
-| StoragePrivilegeHandler    | Use SQL dialect to process privilege metadata          |
+[`org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-infra/shardingsphere-infra-rewrite/src/main/java/org/apache/shardingsphere/infra/rewrite/context/SQLRewriteContextDecorator.java)
 
-### DynamicDataSourceStrategy
+### Definition
 
-| *SPI Name*                                  | *Description*                      |
-| ------------------------------------------ | ------------------------------ |
-| DynamicDataSourceStrategy                  | Dynamic data source fetch strategy                 |
+Used to handle SQL rewrite results
 
-## Sample
+### Implementation classes
 
-### SQLRouter
+| *Configuration type* | *Description*                                  | *Fully-qualified class name* |
+| -------------------- | ---------------------------------------------- | ---------------------------- |
+| ShardingRule.class   | Used to process sharding SQL rewrite results   | [`org.apache.shardingsphere.sharding.rewrite.context.ShardingSQLRewriteContextDecorator`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-sharding/shardingsphere-sharding-core/src/main/java/org/apache/shardingsphere/sharding/rewrite/context/ShardingSQLRewriteContextDecorator.java) |
+| EncryptRule.class    | Used to process encryption SQL rewrite results | [`org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-encrypt/shardingsphere-encrypt-core/src/main/java/org/apache/shardingsphere/encrypt/rewrite/context/EncryptSQLRewriteContextDecorator.java) |
 
-| *Implementation Class*                          | *Description*             |
-| ----------------------------------- | --------------------- |
-| ReadwriteSplittingSQLRouter         | Used to process read-write splitting routing results  |
-| DatabaseDiscoverySQLRouter          | Used to process database discovery routing results |
-| SingleTableSQLRouter                | Used to process single-table routing results      |
-| ShardingSQLRouter                   | Used to process sharding routing results      |
-| ShadowSQLRouter                     | Used to process shadow database routing results    |
+## SQLExecutionHook
 
-### SQLRewriteContextDecorator
-| *Implementation Class*                         | *Description*              |
-| ---------------------------------- | --------------------- |
-| ShardingSQLRewriteContextDecorator | Used to process sharding SQL rewrite results |
-| EncryptSQLRewriteContextDecorator  | Used to process encryption SQL rewrite results |
+### Fully-qualified class name
 
-### SQLExecutionHook
-| *Implementation Class*                    | *Description*                 |
-| ----------------------------- | ------------------------- |
-| TransactionalSQLExecutionHook | Transaction hook of SQL execution |
+[`org.apache.shardingsphere.infra.executor.sql.hook.SQLExecutionHook`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-infra/shardingsphere-infra-executor/src/main/java/org/apache/shardingsphere/infra/executor/sql/hook/SQLExecutionHook.java)
 
-### ResultProcessEngine
+### Definition
 
-| *Implementation Class*                   | *Description*           |
-| ---------------------------- | ------------------- |
-| ShardingResultMergerEngine   | Used to handle sharding result set merge |
-| EncryptResultDecoratorEngine | Used to handle encrypted result set overrides |
+SQL execution process listener
 
-### StoragePrivilegeHandler
+### Implementation classes
 
-| *Implementation Class*                 | *Description*                      |
-| -------------------------- | ------------------------------ |
-| PostgreSQLPrivilegeHandler | Use PostgreSQL dialect to process privilege metadata   |
-| SQLServerPrivilegeHandler  | Use SQLServer dialect to process privilege metadata    |
-| OraclePrivilegeHandler     | Use Oracle dialect to process privilege metadata       |
-| MySQLPrivilegeHandler      | Use MySQL dialect to process privilege metadata        |
+| *Configuration type*          | *Description*                     | *Fully-qualified class name* |
+| ----------------------------- | --------------------------------- | ---------------------------- |
+| TransactionalSQLExecutionHook | Transaction hook of SQL execution | [`org.apache.shardingsphere.transaction.base.seata.at.TransactionalSQLExecutionHook`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-kernel/shardingsphere-transaction/shardingsphere-transaction-type/shardingsphere-transaction-base/shardingsphere-transaction-base-seata-at/src/main/java/org/apache/shardingsphere/transaction/base/seata/at/TransactionalSQLExecutionHook.java) |
 
-### DynamicDataSourceStrategy
+## ResultProcessEngine
 
-| *Implementation Class*                                 | *Description*                       |
-| ------------------------------------------ | ------------------------------- |
-| DatabaseDiscoveryDynamicDataSourceStrategy | Use database discovery to dynamic fetch data source |
+### Fully-qualified class name
+
+[`org.apache.shardingsphere.infra.merge.engine.ResultProcessEngine`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-infra/shardingsphere-infra-merge/src/main/java/org/apache/shardingsphere/infra/merge/engine/ResultProcessEngine.java)
+
+### Definition
+
+Used to process result sets
+
+### Implementation classes
+
+| *Configuration type* | *Description*                                 | *Fully-qualified class name* |
+| -------------------- | --------------------------------------------- | ---------------------------- |
+| ShardingRule.class   | Used to handle sharding result set merge      | [`org.apache.shardingsphere.sharding.merge.ShardingResultMergerEngine`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-sharding/shardingsphere-sharding-core/src/main/java/org/apache/shardingsphere/sharding/merge/ShardingResultMergerEngine.java) |
+| EncryptRule.class    | Used to handle encrypted result set overrides | [`org.apache.shardingsphere.encrypt.merge.EncryptResultDecoratorEngine`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-encrypt/shardingsphere-encrypt-core/src/main/java/org/apache/shardingsphere/encrypt/merge/EncryptResultDecoratorEngine.java) |

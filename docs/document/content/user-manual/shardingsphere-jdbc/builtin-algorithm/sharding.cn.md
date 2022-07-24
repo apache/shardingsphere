@@ -86,7 +86,9 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 
 #### 时间范围分片算法
 
-当传入的分片键为 `java.time.Instant` 时存在特例处理，其会携带上系统的时区信息后转化为 `datetime-pattern` 的字符串格式, 再进行下一步分片。
+此算法主动忽视了 `datetime-pattern` 的时区信息。
+这意味着当 `datetime-lower`, `datetime-upper` 和传入的分片键含有时区信息时，不会因为时区不一致而发生时区转换。
+当传入的分片键为 `java.time.Instant` 时存在特例处理，其会携带上系统的时区信息后转化为 `datetime-pattern` 的字符串格式，再进行下一步分片。
 
 类型：INTERVAL
 
@@ -131,6 +133,8 @@ Apache ShardingSphere 内置的标准分片算法实现类包括：
 ### 自定义类分片算法
 
 通过配置分片策略类型和算法类名，实现自定义扩展。
+`CLASS_BASED` 允许向算法类内传入额外的自定义属性，传入的属性可以通过属性名为 `props` 的 `java.util.Properties` 类实例取出。 
+参考 Git 的 `org.apache.shardingsphere.example.extension.sharding.algortihm.classbased.fixture.ClassBasedStandardShardingAlgorithmFixture` 。
 
 类型：CLASS_BASED
 

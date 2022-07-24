@@ -29,7 +29,7 @@ import java.util.Optional;
  * MySQL drop index statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class MySQLDropIndexStatement extends DropIndexStatement implements MySQLStatement {
     
     private SimpleTableSegment table;

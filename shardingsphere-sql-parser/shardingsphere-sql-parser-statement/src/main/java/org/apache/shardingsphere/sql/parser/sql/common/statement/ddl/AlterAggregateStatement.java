@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Alter aggregate statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class AlterAggregateStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -275,6 +275,14 @@ IMPORT
     : I M P O R T
     ;
 
+CONVERT
+    : C O N V E R T
+    ;
+
+YAML
+    : Y A M L
+    ;
+
 CONFIGURATION
     : C O N F I G U R A T I O N
     ;
@@ -317,4 +325,8 @@ DISCARD
 
 SINGLE_TABLE
     : S I N G L E UL_ T A B L E
+    ;
+
+SQL_TRANSLATOR
+    : S Q L UL_ T R A N S L A T O R
     ;

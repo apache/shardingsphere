@@ -94,7 +94,7 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
             if (!isTrunkThread) {
                 return null;
             }
-            Optional<T> saneResult = getSaneResult(sqlStatement);
+            Optional<T> saneResult = getSaneResult(sqlStatement, ex);
             if (saneResult.isPresent()) {
                 return saneResult.get();
             }
@@ -122,5 +122,5 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     
     protected abstract T executeSQL(String sql, Statement statement, ConnectionMode connectionMode) throws SQLException;
     
-    protected abstract Optional<T> getSaneResult(SQLStatement sqlStatement);
+    protected abstract Optional<T> getSaneResult(SQLStatement sqlStatement, SQLException ex);
 }

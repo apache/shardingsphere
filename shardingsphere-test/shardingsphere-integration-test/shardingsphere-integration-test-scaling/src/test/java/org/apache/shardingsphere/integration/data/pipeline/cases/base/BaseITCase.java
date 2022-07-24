@@ -30,20 +30,21 @@ import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.CommonSQLCommand;
-import org.apache.shardingsphere.integration.data.pipeline.cases.entity.JdbcInfoEntity;
 import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
 import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.BaseComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.DockerComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.NativeComposedContainer;
-import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.DatabaseContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.integration.data.pipeline.framework.watcher.ScalingWatcher;
 import org.apache.shardingsphere.integration.data.pipeline.util.DatabaseTypeUtil;
-import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
+import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.junit.Rule;
+import org.opengauss.util.PSQLException;
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.sql.DataSource;
@@ -99,6 +100,10 @@ public abstract class BaseITCase {
     
     private final DatabaseType databaseType;
     
+    private final String username;
+    
+    private final String password;
+    
     private JdbcTemplate jdbcTemplate;
     
     @Setter
@@ -112,42 +117,25 @@ public abstract class BaseITCase {
             composedContainer = new NativeComposedContainer(parameterized.getDatabaseType());
         }
         composedContainer.start();
-        initActualDataSources();
-        commonSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseITCase.class.getClassLoader().getResource("env/common/command.xml")), CommonSQLCommand.class);
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
+            DockerStorageContainer storageContainer = ((DockerComposedContainer) composedContainer).getStorageContainer();
+            username = storageContainer.getTestCaseUsername();
+            password = storageContainer.getTestCasePassword();
+        } else {
+            username = ENV.getActualDataSourceUsername(databaseType);
+            password = ENV.getActualDataSourcePassword(databaseType);
+        }
         createProxyDatabase(parameterized.getDatabaseType());
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
+            cleanUpDataSource();
+        }
+        commonSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseITCase.class.getClassLoader().getResource("env/common/command.xml")), CommonSQLCommand.class);
         scalingWatcher = new ScalingWatcher(composedContainer, jdbcTemplate);
     }
     
-    @SneakyThrows(SQLException.class)
-    private void initActualDataSources() {
-        String jdbcUrl;
-        JdbcInfoEntity jdbcInfo;
-        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
-            DockerComposedContainer dockerComposedContainer = (DockerComposedContainer) composedContainer;
-            DatabaseContainer databaseContainer = dockerComposedContainer.getDatabaseContainer();
-            jdbcUrl = databaseContainer.getJdbcUrl("");
-            jdbcInfo = new JdbcInfoEntity(databaseContainer.getUsername(), databaseContainer.getPassword(), databaseContainer.getPort());
-        } else {
-            jdbcInfo = ENV.getActualDatabaseJdbcInfo(getDatabaseType());
-            jdbcUrl = DataSourceEnvironment.getURL(databaseType, "localhost", jdbcInfo.getPort(), DatabaseTypeUtil.isOpenGauss(databaseType) ? "postgres" : "");
-            try (Connection connection = DriverManager.getConnection(jdbcUrl, jdbcInfo.getUsername(), jdbcInfo.getPassword())) {
-                for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {
-                    try {
-                        connection.createStatement().execute(String.format("DROP DATABASE %s", each));
-                    } catch (final SQLException ex) {
-                        log.error("Error occurred when drop database. error msg={}", ex.getMessage());
-                    }
-                }
-            }
-        }
-        try (Connection connection = DriverManager.getConnection(jdbcUrl, jdbcInfo.getUsername(), jdbcInfo.getPassword())) {
-            for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {
-                try {
-                    connection.createStatement().execute(String.format("CREATE DATABASE %s", each));
-                } catch (final SQLException ex) {
-                    log.error("Error occurred when create database. error msg={}", ex.getMessage());
-                }
-            }
+    private void cleanUpDataSource() {
+        for (String each : Arrays.asList(DS_0, DS_1, DS_2, DS_3, DS_4)) {
+            composedContainer.cleanUpDatabase(each);
         }
     }
     
@@ -220,8 +208,8 @@ public abstract class BaseITCase {
     }
     
     private void addSourceResource0(final Connection connection) throws SQLException {
-        String addSourceResource = commonSQLCommand.getSourceAddResourceTemplate().replace("${user}", ENV.getActualDataSourceUsername(databaseType))
-                .replace("${password}", ENV.getActualDataSourcePassword(databaseType))
+        String addSourceResource = commonSQLCommand.getSourceAddResourceTemplate().replace("${user}", username)
+                .replace("${password}", password)
                 .replace("${ds0}", getActualJdbcUrlTemplate(DS_0))
                 .replace("${ds1}", getActualJdbcUrlTemplate(DS_1));
         executeWithLog(connection, addSourceResource);
@@ -229,8 +217,8 @@ public abstract class BaseITCase {
     
     @SneakyThrows
     protected void addTargetResource() {
-        String addTargetResource = commonSQLCommand.getTargetAddResourceTemplate().replace("${user}", ENV.getActualDataSourceUsername(databaseType))
-                .replace("${password}", ENV.getActualDataSourcePassword(databaseType))
+        String addTargetResource = commonSQLCommand.getTargetAddResourceTemplate().replace("${user}", username)
+                .replace("${password}", password)
                 .replace("${ds2}", getActualJdbcUrlTemplate(DS_2))
                 .replace("${ds3}", getActualJdbcUrlTemplate(DS_3))
                 .replace("${ds4}", getActualJdbcUrlTemplate(DS_4));
@@ -241,12 +229,11 @@ public abstract class BaseITCase {
     }
     
     private String getActualJdbcUrlTemplate(final String databaseName) {
-        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
-            final DatabaseContainer databaseContainer = ((DockerComposedContainer) composedContainer).getDatabaseContainer();
-            return DataSourceEnvironment.getURL(getDatabaseType(), "db.host", databaseContainer.getPort(), databaseName);
-        } else {
-            return DataSourceEnvironment.getURL(getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), databaseName);
+        if (ScalingITEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
+            DockerStorageContainer storageContainer = ((DockerComposedContainer) composedContainer).getStorageContainer();
+            return DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getPort(), databaseName);
         }
+        return DataSourceEnvironment.getURL(getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), databaseName);
     }
     
     protected void initShardingAlgorithm() {
@@ -283,7 +270,22 @@ public abstract class BaseITCase {
     }
     
     protected void createSchema(final String schemaName) {
-        executeWithLog(String.format("CREATE SCHEMA %s", schemaName));
+        if (DatabaseTypeUtil.isPostgreSQL(databaseType)) {
+            executeWithLog(String.format("CREATE SCHEMA IF NOT EXISTS %s", schemaName));
+            return;
+        }
+        if (DatabaseTypeUtil.isOpenGauss(databaseType)) {
+            try {
+                executeWithLog(String.format("CREATE SCHEMA %s", schemaName));
+            } catch (final BadSqlGrammarException ex) {
+                // only used for native mode.
+                if (ex.getCause() instanceof PSQLException && "42P06".equals(((PSQLException) ex.getCause()).getSQLState())) {
+                    log.info("Schema {} already exists.", schemaName);
+                } else {
+                    throw ex;
+                }
+            }
+        }
     }
     
     protected void executeWithLog(final Connection connection, final String sql) throws SQLException {
@@ -292,7 +294,7 @@ public abstract class BaseITCase {
         ThreadUtil.sleep(1, TimeUnit.SECONDS);
     }
     
-    private void executeWithLog(final String sql, final Integer sleepSeconds) {
+    private void executeWithLog(final String sql, final int sleepSeconds) {
         log.info("jdbcTemplate execute:{}", sql);
         jdbcTemplate.execute(sql);
         ThreadUtil.sleep(Math.max(sleepSeconds, 0), TimeUnit.SECONDS);
@@ -330,7 +332,7 @@ public abstract class BaseITCase {
     }
     
     protected void startScaling(final String jobId) {
-        executeWithLog(String.format("START SCALING %s", jobId));
+        executeWithLog(String.format("START SCALING %s", jobId), 10);
     }
     
     protected void applyScaling(final String jobId) {
@@ -344,9 +346,7 @@ public abstract class BaseITCase {
     }
     
     protected String getScalingJobId() {
-        assertBeforeApplyScalingMetadataCorrectly();
         List<Map<String, Object>> scalingListMap = queryForListWithLog("SHOW SCALING LIST");
-        assertThat(scalingListMap.size(), is(1));
         String jobId = scalingListMap.get(0).get("id").toString();
         log.info("jobId: {}", jobId);
         return jobId;
@@ -358,14 +358,9 @@ public abstract class BaseITCase {
         }
         log.info("jobId: {}", jobId);
         Map<String, String> actualStatusMap = new HashMap<>(2, 1);
-        String showScalingStatus = String.format("SHOW SCALING STATUS %s", jobId);
-        SCALING_EXECUTOR.execute(() -> {
-            stopScaling(jobId);
-            startScaling(jobId);
-        });
         for (int i = 0; i < 15; i++) {
-            List<Map<String, Object>> showScalingStatusResMap = queryForListWithLog(showScalingStatus);
-            log.info("{}: {}", showScalingStatus, showScalingStatusResMap);
+            List<Map<String, Object>> showScalingStatusResMap = showScalingStatus(jobId);
+            log.info("show scaling status result: {}", showScalingStatusResMap);
             boolean finished = true;
             for (Map<String, Object> entry : showScalingStatusResMap) {
                 String status = entry.get("status").toString();
@@ -388,7 +383,19 @@ public abstract class BaseITCase {
         assertThat(actualStatusMap.values().stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet()), is(Collections.singleton(JobStatus.EXECUTE_INCREMENTAL_TASK.name())));
     }
     
+    protected List<Map<String, Object>> showScalingStatus(final String jobId) {
+        return queryForListWithLog(String.format("SHOW SCALING STATUS %s", jobId));
+    }
+    
     protected void assertCheckScalingSuccess(final String jobId) {
+        for (int i = 0; i < 3; i++) {
+            if (checkJobIncrementTaskFinished(jobId)) {
+                break;
+            }
+            ThreadUtil.sleep(10, TimeUnit.SECONDS);
+        }
+        boolean secondCheckJobResult = checkJobIncrementTaskFinished(jobId);
+        log.info("second check job result: {}", secondCheckJobResult);
         stopScalingSourceWriting(jobId);
         assertStopScalingSourceWriting();
         List<Map<String, Object>> checkScalingResults = queryForListWithLog(String.format("CHECK SCALING %s BY TYPE (NAME=DATA_MATCH)", jobId));
@@ -396,6 +403,21 @@ public abstract class BaseITCase {
         for (Map<String, Object> entry : checkScalingResults) {
             assertTrue(Boolean.parseBoolean(entry.get("records_content_matched").toString()));
         }
+    }
+    
+    private boolean checkJobIncrementTaskFinished(final String jobId) {
+        List<Map<String, Object>> listScalingStatus = showScalingStatus(jobId);
+        log.info("listScalingStatus result: {}", listScalingStatus);
+        for (Map<String, Object> entry : listScalingStatus) {
+            if (JobStatus.EXECUTE_INCREMENTAL_TASK.name().equalsIgnoreCase(entry.get("status").toString())) {
+                return false;
+            }
+            int incrementalIdleSeconds = Integer.parseInt(entry.get("incremental_idle_seconds").toString());
+            if (incrementalIdleSeconds <= 10) {
+                return false;
+            }
+        }
+        return true;
     }
     
     protected void assertPreviewTableSuccess(final String tableName, final List<String> expect) {

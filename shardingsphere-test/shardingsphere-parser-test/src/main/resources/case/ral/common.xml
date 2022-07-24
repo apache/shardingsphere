@@ -49,6 +49,8 @@
             <sql-statement-cache initial-capacity="11" maximum-size="11" />
         </sql-parser>
     </alter-sql-parser-rule>
+    <alter-local-transaction-rule sql-case-id="alter-local-transaction-rule" />
+    <alter-xa-transaction-rule sql-case-id="alter-xa-transaction-rule" />
     <show-traffic-rules sql-case-id="show-traffic-rules" rule-name="rule_name" />
     <drop-traffic-rule sql-case-id="drop-traffic-rule">
         <rule-name>rule_name</rule-name>
@@ -107,4 +109,5 @@
     <import-database-config sql-case-id="import-database-config">
         <filePath>/yaml/config-sharding.yaml</filePath>
     </import-database-config>
+    <show-sql-translator-rule sql-case-id="show-sql-translator-rule" />
 </sql-parser-test-cases>
