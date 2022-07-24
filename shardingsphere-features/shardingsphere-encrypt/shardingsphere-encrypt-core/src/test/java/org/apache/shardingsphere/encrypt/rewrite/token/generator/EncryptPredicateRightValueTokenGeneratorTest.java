@@ -19,11 +19,9 @@ package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptCondition;
 import org.apache.shardingsphere.encrypt.rewrite.condition.EncryptConditionEngine;
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
-import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.junit.Test;
 
@@ -56,8 +54,8 @@ public final class EncryptPredicateRightValueTokenGeneratorTest extends EncryptG
         assertTrue(sqlTokens.stream().findFirst().isPresent());
         assertThat(sqlTokens.stream().findFirst().get().toString(), is("'123456'"));
     }
-
-    private Collection<EncryptCondition> getEncryptConditions(UpdateStatementContext updatesStatementContext)  {
+    
+    private Collection<EncryptCondition> getEncryptConditions(final UpdateStatementContext updatesStatementContext) {
         return new EncryptConditionEngine(createEncryptRule(), Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(ShardingSphereSchema.class)))
                 .createEncryptConditions(updatesStatementContext.getWhereSegments(), updatesStatementContext.getColumnSegments(), updatesStatementContext, DefaultDatabase.LOGIC_NAME);
     }

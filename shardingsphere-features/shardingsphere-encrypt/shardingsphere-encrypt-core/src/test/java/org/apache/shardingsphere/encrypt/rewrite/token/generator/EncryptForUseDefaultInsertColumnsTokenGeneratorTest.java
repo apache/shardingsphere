@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.junit.Test;
 
 import java.util.Collections;
