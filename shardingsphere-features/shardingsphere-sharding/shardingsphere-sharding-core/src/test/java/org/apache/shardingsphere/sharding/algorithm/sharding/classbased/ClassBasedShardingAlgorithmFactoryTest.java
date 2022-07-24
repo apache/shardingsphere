@@ -30,11 +30,9 @@ import static org.junit.Assert.assertThat;
 
 public final class ClassBasedShardingAlgorithmFactoryTest {
     
-    @SuppressWarnings("rawtypes")
     @Test(expected = ShardingSphereException.class)
     public void assertNewInstanceWithUnAssignableFrom() {
-        StandardShardingAlgorithm algorithm =
-                ClassBasedShardingAlgorithmFactory.newInstance(ClassBasedHintShardingAlgorithmFixture.class.getName(), StandardShardingAlgorithm.class, new Properties());
+        ClassBasedShardingAlgorithmFactory.newInstance(ClassBasedHintShardingAlgorithmFixture.class.getName(), StandardShardingAlgorithm.class, new Properties());
     }
     
     @SuppressWarnings("rawtypes")
