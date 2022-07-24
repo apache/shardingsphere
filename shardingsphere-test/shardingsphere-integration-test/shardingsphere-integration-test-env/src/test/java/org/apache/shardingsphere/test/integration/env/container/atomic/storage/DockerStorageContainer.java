@@ -82,12 +82,18 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     @SneakyThrows({IOException.class, JAXBException.class})
     protected void postStart() {
         if (!Strings.isNullOrEmpty(scenario)) {
-            DatabaseEnvironmentManager.getDatabaseNames(scenario).forEach(each -> actualDataSourceMap.put(each, createDataSource(each)));
-            DatabaseEnvironmentManager.getExpectedDatabaseNames(scenario).forEach(each -> expectedDataSourceMap.put(each, createDataSource(each)));
+            DatabaseEnvironmentManager.getDatabaseNames(scenario).forEach(each -> actualDataSourceMap.put(each, createAccessDataSource(each)));
+            DatabaseEnvironmentManager.getExpectedDatabaseNames(scenario).forEach(each -> expectedDataSourceMap.put(each, createAccessDataSource(each)));
         }
     }
     
-    private DataSource createDataSource(final String dataSourceName) {
+    /**
+     * Create access data source.
+     * 
+     * @param dataSourceName data source name
+     * @return access data source
+     */
+    public DataSource createAccessDataSource(final String dataSourceName) {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
         result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(getPort()), dataSourceName));
