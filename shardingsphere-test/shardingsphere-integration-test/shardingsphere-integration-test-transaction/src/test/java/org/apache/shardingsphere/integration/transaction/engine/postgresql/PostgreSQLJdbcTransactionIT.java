@@ -20,7 +20,6 @@ package org.apache.shardingsphere.integration.transaction.engine.postgresql;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
-import org.apache.shardingsphere.integration.transaction.engine.mysql.MySQLJdbcTransactionIT;
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
 import org.junit.After;
 import org.junit.Test;
@@ -49,7 +48,7 @@ public final class PostgreSQLJdbcTransactionIT extends BaseTransactionITCase {
     
     @Parameters(name = "{0}")
     public static Collection<TransactionParameterized> getParameters() {
-        return getTransactionParameterizedList(MySQLJdbcTransactionIT.class);
+        return getTransactionParameterizedList(PostgreSQLJdbcTransactionIT.class);
     }
     
     @After
