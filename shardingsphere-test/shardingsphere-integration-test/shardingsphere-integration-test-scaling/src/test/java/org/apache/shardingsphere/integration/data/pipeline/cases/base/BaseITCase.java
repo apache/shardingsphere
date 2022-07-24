@@ -119,7 +119,7 @@ public abstract class BaseITCase {
         composedContainer.start();
         if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
             DockerStorageContainer storageContainer = ((DockerComposedContainer) composedContainer).getStorageContainer();
-            username = storageContainer.getTestCaseUsername();
+            username = storageContainer.getUsername();
             password = storageContainer.getUnifiedPassword();
         } else {
             username = ENV.getActualDataSourceUsername(databaseType);

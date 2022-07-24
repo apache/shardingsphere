@@ -29,8 +29,8 @@ import java.util.Optional;
  */
 public final class PostgreSQLContainer extends DockerStorageContainer {
     
-    public PostgreSQLContainer(final String dockerImageName, final String scenario) {
-        super(DatabaseTypeFactory.getInstance("PostgreSQL"), Strings.isNullOrEmpty(dockerImageName) ? "postgres:12-alpine" : dockerImageName, scenario);
+    public PostgreSQLContainer(final String dockerImageName, final String scenario, final boolean useRootUsername) {
+        super(DatabaseTypeFactory.getInstance("PostgreSQL"), Strings.isNullOrEmpty(dockerImageName) ? "postgres:12-alpine" : dockerImageName, scenario, useRootUsername);
     }
     
     @Override
@@ -48,7 +48,7 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
     }
     
     @Override
-    public String getTestCaseUsername() {
+    protected String getTestCaseUsername() {
         return "scaling";
     }
     

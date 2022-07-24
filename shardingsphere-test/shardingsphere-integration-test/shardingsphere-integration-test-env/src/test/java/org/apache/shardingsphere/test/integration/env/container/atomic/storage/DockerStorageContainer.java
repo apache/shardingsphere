@@ -50,14 +50,18 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     @Getter(AccessLevel.NONE)
     private final String scenario;
     
+    @Getter(AccessLevel.NONE)
+    private final boolean useRootUsername;
+    
     private final Map<String, DataSource> actualDataSourceMap;
     
     private final Map<String, DataSource> expectedDataSourceMap;
     
-    public DockerStorageContainer(final DatabaseType databaseType, final String dockerImageName, final String scenario) {
+    public DockerStorageContainer(final DatabaseType databaseType, final String dockerImageName, final String scenario, final boolean useRootUsername) {
         super(databaseType.getType().toLowerCase(), dockerImageName);
         this.databaseType = databaseType;
         this.scenario = scenario;
+        this.useRootUsername = useRootUsername;
         actualDataSourceMap = new LinkedHashMap<>();
         expectedDataSourceMap = new LinkedHashMap<>();
     }
@@ -74,7 +78,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
         setWaitStrategy(new JDBCConnectionWaitStrategy(
                 () -> DriverManager.getConnection(getDefaultDatabaseName().isPresent()
                         ? DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort(), getDefaultDatabaseName().get())
-                        : DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort()), getTestCaseUsername(), getUnifiedPassword())));
+                        : DataSourceEnvironment.getURL(databaseType, "localhost", getFirstMappedPort()), getUsername(), getUnifiedPassword())));
     }
     
     @Override
@@ -96,11 +100,20 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
         result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(getPort()), dataSourceName));
-        result.setUsername(getTestCaseUsername());
+        result.setUsername(getUsername());
         result.setPassword(getUnifiedPassword());
         result.setMaximumPoolSize(4);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
+    }
+    
+    /**
+     * Get username.
+     * 
+     * @return username
+     */
+    public final String getUsername() {
+        return useRootUsername ? getRootUsername() : getTestCaseUsername();
     }
     
     /**
@@ -110,12 +123,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
      */
     public abstract String getRootUsername();
     
-    /**
-     * Get test case username.
-     *
-     * @return root username
-     */
-    public abstract String getTestCaseUsername();
+    protected abstract String getTestCaseUsername();
     
     /**
      * Get database port.

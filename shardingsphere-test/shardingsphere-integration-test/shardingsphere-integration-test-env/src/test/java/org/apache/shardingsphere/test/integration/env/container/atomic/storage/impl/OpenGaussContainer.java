@@ -29,8 +29,8 @@ import java.util.Optional;
  */
 public final class OpenGaussContainer extends DockerStorageContainer {
     
-    public OpenGaussContainer(final String dockerImageName, final String scenario) {
-        super(DatabaseTypeFactory.getInstance("openGauss"), Strings.isNullOrEmpty(dockerImageName) ? "enmotech/opengauss:3.0.0" : dockerImageName, scenario);
+    public OpenGaussContainer(final String dockerImageName, final String scenario, final boolean useRootUsername) {
+        super(DatabaseTypeFactory.getInstance("openGauss"), Strings.isNullOrEmpty(dockerImageName) ? "enmotech/opengauss:3.0.0" : dockerImageName, scenario, useRootUsername);
     }
     
     @Override
@@ -49,7 +49,7 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     }
     
     @Override
-    public String getTestCaseUsername() {
+    protected String getTestCaseUsername() {
         return "scaling";
     }
     

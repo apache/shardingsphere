@@ -29,8 +29,8 @@ import java.util.Optional;
  */
 public final class MySQLContainer extends DockerStorageContainer {
     
-    public MySQLContainer(final String dockerImageName, final String scenario) {
-        super(DatabaseTypeFactory.getInstance("MySQL"), Strings.isNullOrEmpty(dockerImageName) ? "mysql/mysql-server:5.7" : dockerImageName, scenario);
+    public MySQLContainer(final String dockerImageName, final String scenario, final boolean useRootUsername) {
+        super(DatabaseTypeFactory.getInstance("MySQL"), Strings.isNullOrEmpty(dockerImageName) ? "mysql/mysql-server:5.7" : dockerImageName, scenario, useRootUsername);
     }
     
     @Override
@@ -49,7 +49,7 @@ public final class MySQLContainer extends DockerStorageContainer {
     }
     
     @Override
-    public String getTestCaseUsername() {
+    protected String getTestCaseUsername() {
         return "scaling";
     }
     
