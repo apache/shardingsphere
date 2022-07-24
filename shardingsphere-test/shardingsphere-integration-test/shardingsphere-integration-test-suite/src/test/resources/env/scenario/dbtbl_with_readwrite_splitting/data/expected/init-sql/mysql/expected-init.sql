@@ -21,7 +21,6 @@ GRANT All privileges ON *.* TO 'root'@'%';
 SET character_set_database='utf8';
 SET character_set_server='utf8';
 
-
 DROP DATABASE IF EXISTS write_dataset;
 CREATE DATABASE write_dataset;
 
