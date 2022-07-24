@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.integration.data.pipeline.cases.general;
 
-import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.data.pipeline.spi.ddlgenerator.CreateTableSQLGeneratorFactory;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
@@ -31,7 +30,6 @@ import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEn
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainerFactory;
-import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -106,7 +104,7 @@ public final class CreateTableSQLGeneratorIT {
     @Test
     public void assertGenerateCreateTableSQL() throws SQLException {
         initData();
-        DataSource dataSource = createDataSource(DEFAULT_DATABASE);
+        DataSource dataSource = storageContainer.createAccessDataSource(DEFAULT_DATABASE);
         try (
                 Connection connection = dataSource.getConnection();
                 Statement statement = connection.createStatement()) {
@@ -121,19 +119,7 @@ public final class CreateTableSQLGeneratorIT {
     }
     
     private void initData() throws SQLException {
-        DataSource dataSource = createDataSource("");
-        dataSource.getConnection().createStatement().execute("CREATE DATABASE " + DEFAULT_DATABASE);
-    }
-    
-    private DataSource createDataSource(final String databaseName) {
-        HikariDataSource result = new HikariDataSource();
-        result.setDriverClassName(DataSourceEnvironment.getDriverClassName(storageContainer.getDatabaseType()));
-        result.setJdbcUrl(storageContainer.getJdbcUrl(databaseName));
-        result.setUsername(storageContainer.getTestCaseUsername());
-        result.setPassword(storageContainer.getTestCasePassword());
-        result.setMaximumPoolSize(2);
-        result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
-        return result;
+        storageContainer.createAccessDataSource("").getConnection().createStatement().execute("CREATE DATABASE " + DEFAULT_DATABASE);
     }
     
     private void assertIsCorrect(final Collection<String> actualSQL, final Collection<String> expectedSQL) {
