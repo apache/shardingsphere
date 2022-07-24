@@ -73,7 +73,7 @@ public final class DataSourcePropertiesValidator {
     
     private void checkFailFast(final DataSource dataSource, final DatabaseType databaseType) throws SQLException {
         if (!dataSource.getConnection().getMetaData().getDatabaseProductName().equals(databaseType.getType())) {
-            throw new SQLException("Protocol mismatch for datasource.");
+            throw new SQLException("Protocol mismatch for data source.");
         }
     }
 }
