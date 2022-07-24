@@ -22,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
 import org.junit.Assert;
-import org.postgresql.jdbc.PSQLSavepoint;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -54,19 +53,7 @@ public final class PostgreSQLSavePointTestCase extends BaseSavePointTestCase {
             conn.setSavepoint("point");
             Assert.fail("Expect exception, but no exception report.");
         } catch (SQLException ex) {
-            Assert.assertEquals("25P01", ex.getSQLState());
-        }
-        try {
-            conn.rollback(new PSQLSavepoint("point1"));
-            Assert.fail("Expect exception, but no exception report.");
-        } catch (SQLException ex) {
-            Assert.assertTrue(ex.getMessage().endsWith("ERROR: ROLLBACK TO SAVEPOINT can only be used in transaction blocks"));
-        }
-        try {
-            conn.releaseSavepoint(new PSQLSavepoint("point1"));
-            Assert.fail("Expect exception, but no exception report.");
-        } catch (SQLException ex) {
-            Assert.assertTrue(ex.getMessage().endsWith("ERROR: RELEASE SAVEPOINT can only be used in transaction blocks"));
+            Assert.assertTrue("25P01".equals(ex.getSQLState()) || "Savepoint can only be used in transaction blocks.".equals(ex.getMessage()));
         }
     }
 }
