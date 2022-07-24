@@ -35,11 +35,9 @@ public final class ClassBasedShardingAlgorithmFactoryTest {
         ClassBasedShardingAlgorithmFactory.newInstance(ClassBasedHintShardingAlgorithmFixture.class.getName(), StandardShardingAlgorithm.class, new Properties());
     }
     
-    @SuppressWarnings("rawtypes")
     @Test
     public void assertNewInstance() {
-        StandardShardingAlgorithm algorithm =
-                ClassBasedShardingAlgorithmFactory.newInstance(ClassBasedStandardShardingAlgorithmFixture.class.getName(), StandardShardingAlgorithm.class, new Properties());
-        assertThat(algorithm, instanceOf(ClassBasedStandardShardingAlgorithmFixture.class));
+        assertThat(ClassBasedShardingAlgorithmFactory.newInstance(ClassBasedStandardShardingAlgorithmFixture.class.getName(), StandardShardingAlgorithm.class, new Properties()),
+                instanceOf(ClassBasedStandardShardingAlgorithmFixture.class));
     }
 }
