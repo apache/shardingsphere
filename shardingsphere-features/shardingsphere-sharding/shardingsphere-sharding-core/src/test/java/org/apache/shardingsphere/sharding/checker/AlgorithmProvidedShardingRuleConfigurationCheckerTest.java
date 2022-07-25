@@ -78,7 +78,7 @@ public final class AlgorithmProvidedShardingRuleConfigurationCheckerTest {
         return result;
     }
     
-    private ShardingTableRuleConfiguration createShardingTableRuleConfiguration(final ShardingStrategyConfiguration shardingStrategyConfig, 
+    private ShardingTableRuleConfiguration createShardingTableRuleConfiguration(final ShardingStrategyConfiguration shardingStrategyConfig,
                                                                                 final ShardingAuditStrategyConfiguration shardingAuditStrategyConfig,
                                                                                 final KeyGenerateStrategyConfiguration keyGenerateStrategyConfig) {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("foo_tbl");
