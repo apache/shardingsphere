@@ -105,7 +105,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
     
     private void checkDatabase(final String databaseName, final File file) {
         Preconditions.checkNotNull(databaseName, String.format("Property `databaseName` in file `%s` is required.", file.getName()));
-        if (ProxyContext.getInstance().getAllDatabaseNames().contains(databaseName)) {
+        if (ProxyContext.getInstance().databaseExists(databaseName)) {
             Preconditions.checkState(ProxyContext.getInstance().getDatabase(databaseName).getResource().getDataSources().isEmpty(), "Database `%s` exists and is not empty.", databaseName);
         }
     }
@@ -131,7 +131,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         for (Entry<String, YamlProxyDataSourceConfiguration> entry : yamlDataSourceMap.entrySet()) {
             dataSourcePropsMap.put(entry.getKey(), DataSourcePropertiesCreator.create(HikariDataSource.class.getName(), dataSourceConfigSwapper.swap(entry.getValue())));
         }
-        validator.validate(dataSourcePropsMap);
+        validator.validate(dataSourcePropsMap, getConnectionSession().getDatabaseType());
         try {
             ProxyContext.getInstance().getContextManager().updateResources(databaseName, dataSourcePropsMap);
         } catch (final SQLException ex) {
@@ -145,7 +145,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         }
         Collection<RuleConfiguration> ruleConfigs = new LinkedList<>();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabases().get(databaseName);
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         for (YamlRuleConfiguration each : yamlRuleConfigs) {
             if (each instanceof YamlShardingRuleConfiguration) {
                 ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfigurationYamlSwapper().swapToObject((YamlShardingRuleConfiguration) each);
@@ -171,6 +171,6 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         }
         database.getRuleMetaData().getConfigurations().addAll(ruleConfigs);
         ProxyContext.getInstance().getContextManager().renewMetaDataContexts(metaDataContexts);
-        metaDataContexts.getPersistService().getDatabaseRulePersistService().persist(databaseName, ruleConfigs);
+        metaDataContexts.getPersistService().getDatabaseRulePersistService().persist(metaDataContexts.getMetaData().getActualDatabaseName(databaseName), ruleConfigs);
     }
 }

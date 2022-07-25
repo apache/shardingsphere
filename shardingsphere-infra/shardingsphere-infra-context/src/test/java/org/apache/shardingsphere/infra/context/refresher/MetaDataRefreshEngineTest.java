@@ -40,6 +40,7 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 
 public final class MetaDataRefreshEngineTest {
     
@@ -63,7 +64,9 @@ public final class MetaDataRefreshEngineTest {
     private SQLStatementContext<?> mockStatementContext() {
         SQLStatementContext<MetaDataRefresherSQLStatementFixture> result = mock(SQLStatementContext.class);
         when(result.getSqlStatement()).thenReturn(mock(MetaDataRefresherSQLStatementFixture.class));
-        when(result.getTablesContext()).thenReturn(mock(TablesContext.class));
+        TablesContext tableContext = mock(TablesContext.class, RETURNS_DEEP_STUBS);
+        when(tableContext.getSchemaName()).thenReturn(Optional.of("db_schema"));
+        when(result.getTablesContext()).thenReturn(tableContext);
         when(result.getDatabaseType()).thenReturn(mock(DatabaseType.class));
         return result;
     }

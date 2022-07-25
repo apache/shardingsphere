@@ -85,6 +85,8 @@ public final class AlterResourceBackendHandlerTest extends ProxyContextRestorer 
     
     @Before
     public void setUp() throws Exception {
+        when(metaDataContexts.getMetaData().getDatabase("test_db")).thenReturn(database);
+        when(metaDataContexts.getMetaData().containsDatabase("test_db")).thenReturn(true);
         when(connectionSession.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         alterResourceBackendHandler = new AlterResourceBackendHandler(alterResourceStatement, connectionSession);
         Field field = alterResourceBackendHandler.getClass().getDeclaredField("validator");
@@ -97,7 +99,6 @@ public final class AlterResourceBackendHandlerTest extends ProxyContextRestorer 
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
-        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test_db", database));
         when(database.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.singletonMap("ds_0", mockHikariDataSource("ds_0")));
         assertThat(alterResourceBackendHandler.execute("test_db", createAlterResourceStatement("ds_0")), instanceOf(UpdateResponseHeader.class));
@@ -124,7 +125,6 @@ public final class AlterResourceBackendHandlerTest extends ProxyContextRestorer 
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
-        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("test_db", database));
         when(database.getResource()).thenReturn(resource);
         when(resource.getDataSources()).thenReturn(Collections.singletonMap("ds_0", mockHikariDataSource("ds_1")));
         ResponseHeader responseHeader = alterResourceBackendHandler.execute("test_db", createAlterResourceStatement("ds_0"));

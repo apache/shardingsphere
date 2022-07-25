@@ -56,9 +56,9 @@ public final class ShardingCreateIndexStatementValidatorTest {
         PostgreSQLCreateIndexStatement sqlStatement = new PostgreSQLCreateIndexStatement(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
-        when(database.getSchemas().get("public").containsTable("t_order")).thenReturn(true);
+        when(database.getSchema("public").containsTable("t_order")).thenReturn(true);
         ShardingSphereTable table = mock(ShardingSphereTable.class);
-        when(database.getSchemas().get("public").get("t_order")).thenReturn(table);
+        when(database.getSchema("public").get("t_order")).thenReturn(table);
         new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database);
     }
     
@@ -67,7 +67,7 @@ public final class ShardingCreateIndexStatementValidatorTest {
         PostgreSQLCreateIndexStatement sqlStatement = new PostgreSQLCreateIndexStatement(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
-        when(database.getSchemas().get("public").containsTable("t_order")).thenReturn(false);
+        when(database.getSchema("public").containsTable("t_order")).thenReturn(false);
         new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database);
     }
     
@@ -76,10 +76,10 @@ public final class ShardingCreateIndexStatementValidatorTest {
         PostgreSQLCreateIndexStatement sqlStatement = new PostgreSQLCreateIndexStatement(false);
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.setIndex(new IndexSegment(0, 0, new IndexNameSegment(0, 0, new IdentifierValue("t_order_index"))));
-        when(database.getSchemas().get("public").containsTable("t_order")).thenReturn(true);
+        when(database.getSchema("public").containsTable("t_order")).thenReturn(true);
         ShardingSphereTable table = mock(ShardingSphereTable.class);
-        when(database.getSchemas().get("public").get("t_order")).thenReturn(table);
-        when(database.getSchemas().get("public").containsIndex("t_order", "t_order_index")).thenReturn(true);
+        when(database.getSchema("public").get("t_order")).thenReturn(table);
+        when(database.getSchema("public").containsIndex("t_order", "t_order_index")).thenReturn(true);
         new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database);
     }
     
@@ -89,9 +89,9 @@ public final class ShardingCreateIndexStatementValidatorTest {
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("content")));
         sqlStatement.setGeneratedIndexStartIndex(10);
-        when(database.getSchemas().get("public").containsTable("t_order")).thenReturn(true);
+        when(database.getSchema("public").containsTable("t_order")).thenReturn(true);
         ShardingSphereTable table = mock(ShardingSphereTable.class);
-        when(database.getSchemas().get("public").get("t_order")).thenReturn(table);
+        when(database.getSchema("public").get("t_order")).thenReturn(table);
         new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database);
     }
     
@@ -101,7 +101,7 @@ public final class ShardingCreateIndexStatementValidatorTest {
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("content")));
         sqlStatement.setGeneratedIndexStartIndex(10);
-        when(database.getSchemas().get("public").containsTable("t_order")).thenReturn(false);
+        when(database.getSchema("public").containsTable("t_order")).thenReturn(false);
         new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database);
     }
     
@@ -111,10 +111,10 @@ public final class ShardingCreateIndexStatementValidatorTest {
         sqlStatement.setTable(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order"))));
         sqlStatement.getColumns().add(new ColumnSegment(0, 0, new IdentifierValue("content")));
         sqlStatement.setGeneratedIndexStartIndex(10);
-        when(database.getSchemas().get("public").containsTable("t_order")).thenReturn(true);
+        when(database.getSchema("public").containsTable("t_order")).thenReturn(true);
         ShardingSphereTable table = mock(ShardingSphereTable.class);
-        when(database.getSchemas().get("public").get("t_order")).thenReturn(table);
-        when(database.getSchemas().get("public").containsIndex("t_order", "content_idx")).thenReturn(true);
+        when(database.getSchema("public").get("t_order")).thenReturn(table);
+        when(database.getSchema("public").containsIndex("t_order", "content_idx")).thenReturn(true);
         new ShardingCreateIndexStatementValidator().preValidate(shardingRule, new CreateIndexStatementContext(sqlStatement), Collections.emptyList(), database);
     }
 }

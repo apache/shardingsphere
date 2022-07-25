@@ -17,13 +17,11 @@
 
 package org.apache.shardingsphere.data.pipeline.core.prepare.datasource;
 
-import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
-import org.apache.shardingsphere.data.pipeline.api.prepare.datasource.TableDefinitionSQLType;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.sqlbuilder.PipelineSQLBuilderFactory;
@@ -48,14 +46,6 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
     private static final Pattern PATTERN_CREATE_TABLE_IF_NOT_EXISTS = Pattern.compile("CREATE\\s+TABLE\\s+IF\\s+NOT\\s+EXISTS\\s+", Pattern.CASE_INSENSITIVE);
     
     private static final Pattern PATTERN_CREATE_TABLE = Pattern.compile("CREATE\\s+TABLE\\s+", Pattern.CASE_INSENSITIVE);
-    
-    private static final Pattern PATTERN_ALTER_TABLE = Pattern.compile("ALTER\\s+TABLE\\s+", Pattern.CASE_INSENSITIVE);
-    
-    private static final Pattern PATTERN_CREATE_INDEX = Pattern.compile("CREATE\\s+(UNIQUE\\s+)?INDEX+\\s", Pattern.CASE_INSENSITIVE);
-    
-    private static final Pattern PATTERN_DROP_INDEX = Pattern.compile("DROP\\s+INDEX+\\s", Pattern.CASE_INSENSITIVE);
-    
-    private static final Pattern PATTERN_COMMENT_ON = Pattern.compile("COMMENT\\s+ON\\s+(COLUMN\\s+|TABLE\\s+)", Pattern.CASE_INSENSITIVE);
     
     private static final String[] IGNORE_EXCEPTION_MESSAGE = {"multiple primary keys for table", "already exists"};
     
@@ -123,48 +113,10 @@ public abstract class AbstractDataSourcePreparer implements DataSourcePreparer {
         }
     }
     
-    // TODO simple lexer
-    protected final TableDefinitionSQLType getTableDefinitionSQLType(final String sql) {
-        if (PATTERN_CREATE_TABLE.matcher(sql).find()) {
-            return TableDefinitionSQLType.CREATE_TABLE;
-        }
-        if (PATTERN_ALTER_TABLE.matcher(sql).find()) {
-            return TableDefinitionSQLType.ALTER_TABLE;
-        }
-        if (PATTERN_CREATE_INDEX.matcher(sql).find()) {
-            return TableDefinitionSQLType.CREATE_INDEX;
-        }
-        if (PATTERN_DROP_INDEX.matcher(sql).find()) {
-            return TableDefinitionSQLType.DROP_INDEX;
-        }
-        if (PATTERN_COMMENT_ON.matcher(sql).find()) {
-            return TableDefinitionSQLType.COMMENT_ON;
-        }
-        return TableDefinitionSQLType.UNKNOWN;
-    }
-    
     protected final String addIfNotExistsForCreateTableSQL(final String createTableSQL) {
         if (PATTERN_CREATE_TABLE_IF_NOT_EXISTS.matcher(createTableSQL).find()) {
             return createTableSQL;
         }
         return PATTERN_CREATE_TABLE.matcher(createTableSQL).replaceFirst("CREATE TABLE IF NOT EXISTS ");
-    }
-    
-    protected String replaceActualTableNameToLogicTableName(final String createOrAlterTableSQL, final @NonNull String actualTableName, final @NonNull String logicTableName) {
-        if (actualTableName.equalsIgnoreCase(logicTableName)) {
-            return createOrAlterTableSQL;
-        }
-        StringBuilder logicalTableSQL = new StringBuilder(createOrAlterTableSQL);
-        for (int i = 0; i < 10_000; i++) {
-            int start = logicalTableSQL.indexOf(actualTableName);
-            if (start <= 0) {
-                return logicalTableSQL.toString();
-            }
-            int end = start + actualTableName.length();
-            logicalTableSQL.replace(start, end, logicTableName);
-        }
-        log.error("replaceActualTableNameToLogicTableName, too many times loop, createOrAlterTableSQL={}, actualTableName={}, logicTableName={}",
-                createOrAlterTableSQL, actualTableName, logicalTableSQL);
-        throw new RuntimeException("Too many times loop");
     }
 }

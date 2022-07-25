@@ -100,6 +100,7 @@ public final class SingleTableSQLRouterTest {
     
     private ShardingSphereDatabase mockReadwriteSplittingDatabase() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(result.getName()).thenReturn(" db_schema");
         when(result.getResource().getDataSources()).thenReturn(Collections.singletonMap("write_ds", new MockedDataSource()));
         return result;
     }

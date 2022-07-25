@@ -45,6 +45,8 @@ public abstract class BaseITCase {
     
     private static final AtomicInteger COMPLETED_SUITES_COUNT = new AtomicInteger(0);
     
+    private final String mode;
+    
     private final String scenario;
     
     private final DatabaseType databaseType;
@@ -63,6 +65,7 @@ public abstract class BaseITCase {
     private Map<String, DataSource> expectedDataSourceMap;
     
     public BaseITCase(final ParameterizedArray parameterizedArray) {
+        mode = parameterizedArray.getMode();
         scenario = parameterizedArray.getScenario();
         databaseType = parameterizedArray.getDatabaseType();
         itKey = parameterizedArray.getKey();

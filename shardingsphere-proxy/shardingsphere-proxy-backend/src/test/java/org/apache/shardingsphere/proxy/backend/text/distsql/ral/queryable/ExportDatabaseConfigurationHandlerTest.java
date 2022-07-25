@@ -72,6 +72,10 @@ public final class ExportDatabaseConfigurationHandlerTest extends ProxyContextRe
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         Map<String, ShardingSphereDatabase> databases = createDatabases();
         when(contextManager.getMetaDataContexts().getMetaData().getDatabases()).thenReturn(databases);
+        when(contextManager.getMetaDataContexts().getMetaData().containsDatabase("normal_db")).thenReturn(true);
+        when(contextManager.getMetaDataContexts().getMetaData().containsDatabase("empty_db")).thenReturn(true);
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("normal_db")).thenReturn(databases.get("normal_db"));
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("empty_db")).thenReturn(databases.get("empty_db"));
         ProxyContext.init(contextManager);
     }
     
@@ -86,7 +90,7 @@ public final class ExportDatabaseConfigurationHandlerTest extends ProxyContextRe
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(result.getResource().getDataSources()).thenReturn(createDataSourceMap());
         when(result.getRuleMetaData().getConfigurations()).thenReturn(Collections.singleton(createShardingRuleConfiguration()));
-        when(result.getSchemas().get("normal_db")).thenReturn(new ShardingSphereSchema(createTables()));
+        when(result.getSchema("normal_db")).thenReturn(new ShardingSphereSchema(createTables()));
         return result;
     }
     

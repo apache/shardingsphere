@@ -58,7 +58,7 @@ public final class ShardingDDLResultMerger implements ResultMerger {
     
     private ShardingSphereSchema getSchema(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereDatabase database) {
         String defaultSchemaName = DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), database.getName());
-        return sqlStatementContext.getTablesContext().getSchemaName().map(optional -> database.getSchemas().get(optional)).orElseGet(() -> database.getSchemas().get(defaultSchemaName));
+        return sqlStatementContext.getTablesContext().getSchemaName().map(database::getSchema).orElseGet(() -> database.getSchema(defaultSchemaName));
     }
     
     private Map<String, Integer> getColumnLabelIndexMap(final QueryResult queryResult) throws SQLException {
