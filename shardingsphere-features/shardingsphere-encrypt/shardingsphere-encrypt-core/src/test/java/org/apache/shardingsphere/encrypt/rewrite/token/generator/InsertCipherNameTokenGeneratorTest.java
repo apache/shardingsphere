@@ -31,27 +31,26 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
-
 public final class InsertCipherNameTokenGeneratorTest extends EncryptGeneratorBaseTest {
-
+    
     private InsertCipherNameTokenGenerator generator;
-
+    
     @Before
     public void setup() {
         generator = new InsertCipherNameTokenGenerator();
         generator.setEncryptRule(new EncryptRule(createEncryptRuleConfiguration()));
     }
-
+    
     @Test
     public void assertIsNotGenerateSQLTokenWithNotInsertStatement() {
         assertFalse(generator.isGenerateSQLToken(mock(SelectStatementContext.class)));
     }
-
+    
     @Test
     public void assertIsGenerateSQLTokenWithInsertStatementContext() {
         assertTrue(generator.isGenerateSQLToken(createInsertStatementContext(Collections.emptyList())));
     }
-
+    
     @Test
     public void assertGenerateSQLTokensWithInsertStatementContext() {
         Collection<?> tokens = generator.generateSQLTokens(createInsertStatementContext(Collections.emptyList()));
