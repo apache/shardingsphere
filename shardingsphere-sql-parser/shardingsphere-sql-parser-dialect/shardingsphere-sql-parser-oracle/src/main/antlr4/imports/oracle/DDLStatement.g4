@@ -3237,8 +3237,8 @@ lockDownOptionClauses
     ;
 
 lockdownStatements
-   : (DISABLE | ENABLE) STATEMENT lockdownStatementsClauses
-   ;
+    : (DISABLE | ENABLE) STATEMENT lockdownStatementsClauses
+    ;
 
 lockdownStatementsClauses
     : EQ_ LP_ sqlStatement (COMMA_ sqlStatement )* RP_

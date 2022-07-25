@@ -1441,6 +1441,7 @@ varrayType
 stagingLogName
     : identifier
     ;
+
 featureName
    : STRING_
    ;

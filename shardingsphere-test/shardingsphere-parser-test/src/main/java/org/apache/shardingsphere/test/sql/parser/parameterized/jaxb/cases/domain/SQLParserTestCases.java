@@ -1349,7 +1349,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "alter-materialized-view-log")
     private final List<AlterMaterializedViewLogStatementTestCase> alterMaterializedViewLogTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-java")
     private final List<AlterJavaStatementTestCase> alterJavaTestCases = new LinkedList<>();
     
@@ -1367,7 +1367,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "alter-lockdown-profile")
     private final List<AlterLockdownProfileStatementTestCase> alterLockdownProfileTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "alter-operator")
     private final List<AlterOperatorStatementTestCase> alterOperatorTestCases = new LinkedList<>();
     
@@ -1607,10 +1607,10 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "create-foreign-data-wrapper")
     private final List<CreateForeignDataWrapperStatementTestCase> createForeignDataWrapperStatementTestCases = new LinkedList<>();
-
+    
     @XmlElement(name = "show-sql-translator-rule")
     private final List<ShowSQLTranslatorRuleStatementTestCase> showSQLTranslatorRuleStatementTestCases = new LinkedList<>();
-
+    
     /**
      * Get all SQL parser test cases.
      *

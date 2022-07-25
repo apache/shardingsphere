@@ -940,17 +940,17 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     public ASTNode visitAlterIndexType(final AlterIndexTypeContext ctx) {
         return new OracleAlterIndexTypeStatement();
     }
-
+    
     @Override
     public ASTNode visitAlterMaterializedView(final AlterMaterializedViewContext ctx) {
         return new OracleAlterMaterializedViewStatement();
     }
-
+    
     @Override
     public ASTNode visitAlterMaterializedViewLog(final AlterMaterializedViewLogContext ctx) {
         return new OracleAlterMaterializedViewLogStatement();
     }
-
+    
     @Override
     public ASTNode visitAlterLockdownProfile(final AlterLockdownProfileContext ctx) {
         return new OracleAlterLockdownProfileStatement();
