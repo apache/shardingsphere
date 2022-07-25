@@ -74,6 +74,8 @@ public enum SQLVisitorRule {
     
     ALTER_MATERIALIZED_VIEW_LOG("AlterMaterializedViewLog", SQLStatementType.DDL),
     
+    ALTER_PLUGGABLE_DATABASE("AlterPluggableDatabase", SQLStatementType.DDL),
+    
     ALTER_OPERATOR("AlterOperator", SQLStatementType.DDL),
     
     DROP_TABLE("DropTable", SQLStatementType.DDL),

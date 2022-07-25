@@ -118,5 +118,6 @@ execute
     | alterIndexType
     | alterMaterializedView
     | alterMaterializedViewLog
+    | alterPluggableDatabase
     ) SEMI_?
     ;
