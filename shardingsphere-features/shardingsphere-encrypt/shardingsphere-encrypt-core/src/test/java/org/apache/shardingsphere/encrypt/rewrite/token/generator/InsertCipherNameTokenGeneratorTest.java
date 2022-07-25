@@ -22,22 +22,20 @@ import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementConte
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Collection;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 public final class InsertCipherNameTokenGeneratorTest extends EncryptGeneratorBaseTest {
     
-    private InsertCipherNameTokenGenerator generator;
+    private final InsertCipherNameTokenGenerator generator = new InsertCipherNameTokenGenerator();
     
     @Before
     public void setup() {
-        generator = new InsertCipherNameTokenGenerator();
         generator.setEncryptRule(new EncryptRule(createEncryptRuleConfiguration()));
     }
     
@@ -53,7 +51,6 @@ public final class InsertCipherNameTokenGeneratorTest extends EncryptGeneratorBa
     
     @Test
     public void assertGenerateSQLTokensWithInsertStatementContext() {
-        Collection<?> tokens = generator.generateSQLTokens(createInsertStatementContext(Collections.emptyList()));
-        assertThat(tokens.size(), is(1));
+        assertThat(generator.generateSQLTokens(createInsertStatementContext(Collections.emptyList())).size(), is(1));
     }
 }
