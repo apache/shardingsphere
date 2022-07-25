@@ -69,7 +69,7 @@ ADD RESOURCE ds_1 (
     PORT=3306,
     DB=db_1,
     USER=root,
-    PASSWORD=root
+    PASSWORD=root,
     PROPERTIES("maximumPoolSize"=10)
 );
 ```

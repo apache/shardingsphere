@@ -20,9 +20,9 @@ package org.apache.shardingsphere.test.integration.engine.dql;
 import lombok.AccessLevel;
 import lombok.Getter;
 import org.apache.shardingsphere.test.integration.engine.SingleITCase;
-import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath;
-import org.apache.shardingsphere.test.integration.env.scenario.path.ScenarioDataPath.Type;
-import org.apache.shardingsphere.test.integration.env.scenario.dataset.DataSetEnvironmentManager;
+import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioDataPath;
+import org.apache.shardingsphere.test.integration.env.runtime.scenario.path.ScenarioDataPath.Type;
+import org.apache.shardingsphere.test.integration.env.DataSetEnvironmentManager;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.junit.Before;
 

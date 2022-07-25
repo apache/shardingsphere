@@ -21,7 +21,7 @@ dataSources:
   tbl:
     url: jdbc:postgresql://postgresql.tbl.host:5432/tbl
     username: root
-    password: root
+    password: Root@123
     connectionTimeoutMilliseconds: 30000
     idleTimeoutMilliseconds: 60000
     maxLifetimeMilliseconds: 1800000

@@ -63,4 +63,9 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
         }
         return result;
     }
+    
+    @Override
+    public String getType() {
+        return "PostgreSQL";
+    }
 }

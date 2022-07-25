@@ -20,7 +20,9 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
+import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -33,8 +35,11 @@ import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.FromSchemaSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowFilterSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.ShowLikeSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.DatabaseSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 import org.junit.Before;
 import org.junit.Test;
@@ -78,7 +83,12 @@ public final class ShowTablesExecutorTest extends ProxyContextRestorer {
         when(database.getSchemas().get(String.format(DATABASE_PATTERN, 0))).thenReturn(schema);
         when(database.isComplete()).thenReturn(true);
         when(database.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        return Collections.singletonMap(String.format(DATABASE_PATTERN, 0), database);
+        Map<String, ShardingSphereDatabase> result = new HashMap<>(2, 1);
+        result.put(String.format(DATABASE_PATTERN, 0), database);
+        ShardingSphereDatabase uncompletedDatabase = mock(ShardingSphereDatabase.class);
+        when(uncompletedDatabase.isComplete()).thenReturn(false);
+        result.put("uncompleted", uncompletedDatabase);
+        return result;
     }
     
     @Test
@@ -155,6 +165,19 @@ public final class ShowTablesExecutorTest extends ProxyContextRestorer {
         showTablesExecutor.getMergedResult().next();
         assertThat(showTablesExecutor.getMergedResult().getValue(1, Object.class), is("T_TEST"));
         assertFalse(showTablesExecutor.getMergedResult().next());
+    }
+    
+    @Test
+    public void assertShowTableFromUncompletedDatabase() throws SQLException {
+        MySQLShowTablesStatement showTablesStatement = new MySQLShowTablesStatement();
+        showTablesStatement.setFromSchema(new FromSchemaSegment(0, 0, new DatabaseSegment(0, 0, new IdentifierValue("uncompleted"))));
+        ShowTablesExecutor showTablesExecutor = new ShowTablesExecutor(showTablesStatement, new MySQLDatabaseType());
+        showTablesExecutor.execute(mockConnectionSession());
+        QueryResultMetaData actualMetaData = showTablesExecutor.getQueryResultMetaData();
+        assertThat(actualMetaData.getColumnCount(), is(2));
+        assertThat(actualMetaData.getColumnName(1), is("Tables_in_uncompleted"));
+        MergedResult actualResult = showTablesExecutor.getMergedResult();
+        assertFalse(actualResult.next());
     }
     
     private ConnectionSession mockConnectionSession() {

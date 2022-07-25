@@ -30,6 +30,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -41,7 +42,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class AssistQueryAndPlainInsertColumnsTokenGeneratorTest {
+public final class AssistQueryAndPlainInsertColumnsTokenGeneratorTest {
     
     @Test
     public void assertIsNotGenerateSQLTokenWithNotInsertStatementContext() {
@@ -50,8 +51,7 @@ public class AssistQueryAndPlainInsertColumnsTokenGeneratorTest {
     
     @Test
     public void assertIsNotGenerateSQLTokenWithoutInsertColumns() {
-        InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
-        assertFalse(new AssistQueryAndPlainInsertColumnsTokenGenerator().isGenerateSQLToken(insertStatementContext));
+        assertFalse(new AssistQueryAndPlainInsertColumnsTokenGenerator().isGenerateSQLToken(mock(InsertStatementContext.class, RETURNS_DEEP_STUBS)));
     }
     
     @Test
@@ -62,12 +62,34 @@ public class AssistQueryAndPlainInsertColumnsTokenGeneratorTest {
     }
     
     @Test
-    public void assertGenerateSQLTokens() {
+    public void assertGenerateSQLTokensNotContainColumns() {
+        AssistQueryAndPlainInsertColumnsTokenGenerator tokenGenerator = new AssistQueryAndPlainInsertColumnsTokenGenerator();
+        tokenGenerator.setEncryptRule(mockEncryptRule());
+        InsertStatementContext insertStatementContext = mock(InsertStatementContext.class, RETURNS_DEEP_STUBS);
+        when(insertStatementContext.getSqlStatement().getTable().getTableName().getIdentifier().getValue()).thenReturn("foo_tbl");
+        assertTrue(tokenGenerator.generateSQLTokens(insertStatementContext).isEmpty());
+    }
+    
+    @Test
+    public void assertGenerateSQLTokensNotExistColumns() {
+        AssistQueryAndPlainInsertColumnsTokenGenerator tokenGenerator = new AssistQueryAndPlainInsertColumnsTokenGenerator();
+        tokenGenerator.setEncryptRule(mockEncryptRule());
+        ColumnSegment columnSegment = mock(ColumnSegment.class, RETURNS_DEEP_STUBS);
+        when(columnSegment.getIdentifier().getValue()).thenReturn("bar_col");
+        InsertStatementContext insertStatementContext = mockInsertStatementContext();
+        when(insertStatementContext.getSqlStatement().getColumns()).thenReturn(Collections.singleton(columnSegment));
+        assertTrue(tokenGenerator.generateSQLTokens(insertStatementContext).isEmpty());
+    }
+    
+    @Test
+    public void assertGenerateSQLTokensExistColumns() {
         AssistQueryAndPlainInsertColumnsTokenGenerator tokenGenerator = new AssistQueryAndPlainInsertColumnsTokenGenerator();
         tokenGenerator.setEncryptRule(mockEncryptRule());
         Collection<InsertColumnsToken> actual = tokenGenerator.generateSQLTokens(mockInsertStatementContext());
         assertThat(actual.size(), is(1));
-        // TODO add more assertions for actual value
+        Iterator<InsertColumnsToken> iterator = actual.iterator();
+        InsertColumnsToken insertColumnsToken = iterator.next();
+        assertThat(insertColumnsToken.getStartIndex(), is(1));
     }
     
     private EncryptRule mockEncryptRule() {

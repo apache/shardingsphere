@@ -20,8 +20,8 @@
         <column name="schema_name" />
     </metadata>
     <row values="encrypt" />
-    <row values="mysql" />
     <row values="information_schema" />
     <row values="performance_schema" />
+    <row values="mysql" />
     <row values="sys" />
 </dataset>

@@ -42,8 +42,8 @@ public final class DistSQLScriptConstants {
     
     public static final String KEY_PASSWORD = "password";
     
-    public static final String RESOURCE_DEFINITION = " %s (" 
-            + System.lineSeparator() 
+    public static final String RESOURCE_DEFINITION = " %s ("
+            + System.lineSeparator()
             + "URL=\"%s\","
             + System.lineSeparator()
             + "USER=%s,"

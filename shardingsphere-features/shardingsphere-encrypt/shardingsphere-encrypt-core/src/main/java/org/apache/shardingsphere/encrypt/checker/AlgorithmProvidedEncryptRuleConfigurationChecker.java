@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.encrypt.checker;
 
 import org.apache.shardingsphere.encrypt.algorithm.config.AlgorithmProvidedEncryptRuleConfiguration;
+import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
+
+import java.util.Collection;
 
 /**
  * Algorithm provided encrypt rule configuration checker.
@@ -26,8 +29,13 @@ import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 public final class AlgorithmProvidedEncryptRuleConfigurationChecker extends AbstractEncryptRuleConfigurationChecker<AlgorithmProvidedEncryptRuleConfiguration> {
     
     @Override
-    protected boolean isEmptyEncryptors(final AlgorithmProvidedEncryptRuleConfiguration config) {
-        return config.getEncryptors().isEmpty();
+    protected Collection<String> getEncryptors(final AlgorithmProvidedEncryptRuleConfiguration config) {
+        return config.getEncryptors().keySet();
+    }
+    
+    @Override
+    protected Collection<EncryptTableRuleConfiguration> getTables(final AlgorithmProvidedEncryptRuleConfiguration config) {
+        return config.getTables();
     }
     
     @Override

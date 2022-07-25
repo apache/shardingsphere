@@ -78,6 +78,8 @@ public final class AddResourceBackendHandlerTest extends ProxyContextRestorer {
     
     @Before
     public void setUp() throws Exception {
+        when(metaDataContexts.getMetaData().getDatabase("test_db")).thenReturn(database);
+        when(metaDataContexts.getMetaData().containsDatabase("test_db")).thenReturn(true);
         when(connectionSession.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         addResourceBackendHandler = new AddResourceBackendHandler(addResourceStatement, connectionSession);
         Field field = addResourceBackendHandler.getClass().getDeclaredField("validator");

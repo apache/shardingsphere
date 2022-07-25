@@ -19,7 +19,7 @@ package org.apache.shardingsphere.test.integration.engine;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.test.integration.env.runtime.IntegrationTestEnvironment;
 
 /**
  * Total test suites count calculator.

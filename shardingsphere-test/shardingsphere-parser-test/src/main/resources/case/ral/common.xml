@@ -109,4 +109,5 @@
     <import-database-config sql-case-id="import-database-config">
         <filePath>/yaml/config-sharding.yaml</filePath>
     </import-database-config>
+    <show-sql-translator-rule sql-case-id="show-sql-translator-rule" />
 </sql-parser-test-cases>

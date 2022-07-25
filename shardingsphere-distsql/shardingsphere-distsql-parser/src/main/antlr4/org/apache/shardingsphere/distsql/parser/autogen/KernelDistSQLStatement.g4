@@ -61,5 +61,6 @@ execute
     | showRulesUsedResource
     | importDatabaseConfiguration
     | convertYamlConfiguration
+    | showSQLTranslatorRule
     ) SEMI?
     ;
