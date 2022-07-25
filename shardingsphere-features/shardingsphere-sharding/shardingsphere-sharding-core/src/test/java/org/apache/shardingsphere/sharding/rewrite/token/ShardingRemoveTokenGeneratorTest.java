@@ -31,12 +31,23 @@ import static org.mockito.Mockito.when;
 public final class ShardingRemoveTokenGeneratorTest {
     
     @Test
-    public void assertIsGenerateSQLToken() {
+    public void assertIsGenerateSQLTokenWithNonSelectStatement() {
         ShardingRemoveTokenGenerator shardingRemoveTokenGenerator = new ShardingRemoveTokenGenerator();
         assertFalse(shardingRemoveTokenGenerator.isGenerateSQLToken(mock(InsertStatementContext.class)));
+    }
+    
+    @Test
+    public void assertIsGenerateSQLTokenWithEmptyAggregationDistinctProjections() {
+        ShardingRemoveTokenGenerator shardingRemoveTokenGenerator = new ShardingRemoveTokenGenerator();
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getProjectionsContext().getAggregationDistinctProjections().isEmpty()).thenReturn(Boolean.TRUE);
         assertFalse(shardingRemoveTokenGenerator.isGenerateSQLToken(selectStatementContext));
+    }
+    
+    @Test
+    public void assertIsGenerateSQLTokenWithNonEmptyAggregationDistinctProjections() {
+        ShardingRemoveTokenGenerator shardingRemoveTokenGenerator = new ShardingRemoveTokenGenerator();
+        SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
         when(selectStatementContext.getProjectionsContext().getAggregationDistinctProjections().isEmpty()).thenReturn(Boolean.FALSE);
         assertTrue(shardingRemoveTokenGenerator.isGenerateSQLToken(selectStatementContext));
     }
