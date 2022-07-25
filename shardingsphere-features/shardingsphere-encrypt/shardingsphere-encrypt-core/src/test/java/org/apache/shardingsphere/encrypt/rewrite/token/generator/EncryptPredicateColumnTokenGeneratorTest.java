@@ -28,7 +28,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public class EncryptPredicateColumnTokenGeneratorTest extends EncryptGeneratorBaseTest {
+public final class EncryptPredicateColumnTokenGeneratorTest extends EncryptGeneratorBaseTest {
     
     @Test
     public void assertIsGenerateSQLToken() {
@@ -46,7 +46,7 @@ public class EncryptPredicateColumnTokenGeneratorTest extends EncryptGeneratorBa
         tokenGenerator.setEncryptRule(createEncryptRule());
         tokenGenerator.setSchemas(Collections.emptyMap());
         Collection<SubstitutableColumnNameToken> substitutableColumnNameTokens = tokenGenerator.generateSQLTokens(createUpdatesStatementContext());
-        assertTrue(substitutableColumnNameTokens.stream().findFirst().isPresent());
-        assertThat(substitutableColumnNameTokens.stream().findFirst().get().toString(null), is("pwd_plain"));
+        assertThat(substitutableColumnNameTokens.size(), is(1));
+        assertThat(substitutableColumnNameTokens.iterator().next().toString(null), is("pwd_plain"));
     }
 }

@@ -51,8 +51,8 @@ public final class EncryptPredicateRightValueTokenGeneratorTest extends EncryptG
         tokenGenerator.setEncryptRule(createEncryptRule());
         tokenGenerator.setEncryptConditions(getEncryptConditions(updatesStatementContext));
         Collection<SQLToken> sqlTokens = tokenGenerator.generateSQLTokens(updatesStatementContext);
-        assertTrue(sqlTokens.stream().findFirst().isPresent());
-        assertThat(sqlTokens.stream().findFirst().get().toString(), is("'123456'"));
+        assertThat(sqlTokens.size(), is(1));
+        assertThat(sqlTokens.iterator().next().toString(), is("'123456'"));
     }
     
     private Collection<EncryptCondition> getEncryptConditions(final UpdateStatementContext updatesStatementContext) {

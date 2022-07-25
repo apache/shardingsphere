@@ -66,9 +66,6 @@ public abstract class EncryptGeneratorBaseTest {
                 Collections.singletonMap("test_encryptor", new ShardingSphereAlgorithmConfiguration("CORE.QUERY_ASSISTED.FIXTURE", new Properties()))));
     }
     
-    /**
-     * SQL: INSERT INTO t_user (id, name, status, pwd) VALUES (?, ?, ?, ?).
-     */
     protected static InsertStatementContext createInsertStatementContext(final List<Object> parameters) {
         InsertStatement insertStatement = createInsertStatement();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
@@ -89,9 +86,6 @@ public abstract class EncryptGeneratorBaseTest {
         return result;
     }
     
-    /**
-     * SQL: UPDATE t_user SET pwd = '654321' WHERE name = 'LiLei' AND pwd = '123456'.
-     */
     protected static UpdateStatementContext createUpdatesStatementContext() {
         MySQLUpdateStatement mySQLUpdateStatement = new MySQLUpdateStatement();
         mySQLUpdateStatement.setTableSegment(createTableSegment(TABLE_NAME));
@@ -100,9 +94,6 @@ public abstract class EncryptGeneratorBaseTest {
         return new UpdateStatementContext(mySQLUpdateStatement);
     }
     
-    /**
-     * SQL-template: WHERE name = 'LiLei' AND pwd = '123456'.
-     */
     private static WhereSegment createWhereSegment() {
         BinaryOperationExpression nameExpression = new BinaryOperationExpression(10, 24,
                 new ColumnSegment(10, 13, new IdentifierValue("name")), new LiteralExpressionSegment(18, 22, "LiLei"), "=", "name = 'LiLei'");
@@ -111,9 +102,6 @@ public abstract class EncryptGeneratorBaseTest {
         return new WhereSegment(0, 0, new BinaryOperationExpression(0, 0, nameExpression, pwdExpression, "AND", "name = 'LiLei' AND pwd = '123456'"));
     }
     
-    /**
-     * SQL-template: SET pwd = '654321'.
-     */
     private static SetAssignmentSegment createSetAssignmentSegment() {
         List<ColumnSegment> columnSegment = Collections.singletonList(new ColumnSegment(0, 0, new IdentifierValue("pwd")));
         return new SetAssignmentSegment(0, 0, Collections.singletonList(new ColumnAssignmentSegment(0, 0, columnSegment, new LiteralExpressionSegment(0, 0, "654321"))));
