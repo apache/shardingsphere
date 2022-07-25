@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
 /**
  * SQLServer set transaction statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class SQLServerSetTransactionStatement extends SetTransactionStatement implements SQLServerStatement {
 }

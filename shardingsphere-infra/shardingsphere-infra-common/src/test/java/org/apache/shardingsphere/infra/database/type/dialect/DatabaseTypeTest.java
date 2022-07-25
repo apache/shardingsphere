@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.type.dialect;
 
-import org.apache.shardingsphere.infra.fixture.FixtureDatabaseType;
+import org.apache.shardingsphere.infra.fixture.InfraDatabaseTypeFixture;
 import org.junit.Test;
 
 import java.sql.Connection;
@@ -34,11 +34,11 @@ public final class DatabaseTypeTest {
     public void assertGetSchema() throws SQLException {
         Connection connection = mock(Connection.class);
         when(connection.getSchema()).thenReturn("ds");
-        assertThat(new FixtureDatabaseType().getSchema(connection), is("ds"));
+        assertThat(new InfraDatabaseTypeFixture().getSchema(connection), is("ds"));
     }
     
     @Test
     public void assertFormatTableNamePattern() {
-        assertThat(new FixtureDatabaseType().formatTableNamePattern("tbl"), is("tbl"));
+        assertThat(new InfraDatabaseTypeFixture().formatTableNamePattern("tbl"), is("tbl"));
     }
 }

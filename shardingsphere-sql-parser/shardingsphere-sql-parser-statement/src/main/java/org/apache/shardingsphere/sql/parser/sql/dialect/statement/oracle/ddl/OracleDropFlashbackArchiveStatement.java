@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Drop flashback archive statement.
  */
-@ToString
+@ToString(callSuper = true)
 public class OracleDropFlashbackArchiveStatement extends DropFlashbackArchiveStatement implements OracleStatement {
 }

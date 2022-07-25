@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle drop user statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OracleDropUserStatement extends DropUserStatement implements OracleStatement {
 }

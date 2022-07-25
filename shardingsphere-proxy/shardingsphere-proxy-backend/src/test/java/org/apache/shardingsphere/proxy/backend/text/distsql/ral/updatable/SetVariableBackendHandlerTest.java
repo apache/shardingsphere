@@ -79,7 +79,7 @@ public final class SetVariableBackendHandlerTest extends ProxyContextRestorer {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
             when(database.getResource()).thenReturn(new ShardingSphereResource(Collections.emptyMap()));
             when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
-            when(database.getSchemas().get(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
+            when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
             result.put(String.format(DATABASE_PATTERN, i), database);
         }
         return result;

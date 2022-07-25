@@ -28,9 +28,9 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
 /**
  * SQLServer create login statement.
  */
-@ToString
 @Getter
 @Setter
+@ToString(callSuper = true)
 public final class SQLServerCreateLoginStatement extends AbstractSQLStatement implements DCLStatement, SQLServerStatement {
     
     private LoginSegment loginSegment;

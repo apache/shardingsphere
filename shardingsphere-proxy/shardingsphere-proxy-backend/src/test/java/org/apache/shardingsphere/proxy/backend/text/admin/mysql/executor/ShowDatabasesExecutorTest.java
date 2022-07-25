@@ -72,6 +72,7 @@ public final class ShowDatabasesExecutorTest extends ProxyContextRestorer {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
             when(database.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
             when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+            when(database.getName()).thenReturn(String.format(DATABASE_PATTERN, i));
             result.put(String.format(DATABASE_PATTERN, i), database);
         }
         return result;

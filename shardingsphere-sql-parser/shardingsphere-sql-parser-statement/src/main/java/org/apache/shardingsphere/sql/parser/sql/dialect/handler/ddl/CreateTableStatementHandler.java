@@ -43,10 +43,10 @@ import java.util.Optional;
 public final class CreateTableStatementHandler implements SQLStatementHandler {
     
     /**
-     * Judge whether if not exists.
+     * Judge whether contains if not exists or not.
      *
      * @param createTableStatement create table statement
-     * @return if not exists or not
+     * @return whether contains if not exists or not
      */
     public static boolean ifNotExists(final CreateTableStatement createTableStatement) {
         if (createTableStatement instanceof MySQLStatement) {

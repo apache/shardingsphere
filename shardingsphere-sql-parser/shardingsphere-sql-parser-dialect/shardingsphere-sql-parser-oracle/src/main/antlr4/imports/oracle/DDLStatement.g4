@@ -561,7 +561,7 @@ segmentAttributesClause
     ;
 
 physicalAttributesClause
-    : (PCTFREE NUMBER_ | PCTUSED NUMBER_ | INITRANS NUMBER_ | storageClause)+
+    : (PCTFREE INTEGER_ | PCTUSED INTEGER_ | INITRANS INTEGER_ | storageClause)+
     ;
 
 loggingClause
@@ -3046,12 +3046,173 @@ withLocalClause
     ;
 
 arrayDMLClause
-   : (WITH | WITHOUT)? ARRAY DML arryDMLSubClause (COMMA_ arryDMLSubClause)*
-   ;
+    : (WITH | WITHOUT)? ARRAY DML arryDMLSubClause (COMMA_ arryDMLSubClause)*
+    ;
 
 arryDMLSubClause
-   : LP_ typeName (COMMA_ varrayType)? RP_
-   ;
+    : LP_ typeName (COMMA_ varrayType)? RP_
+    ;
+
+alterMaterializedView
+    : ALTER MATERIALIZED VIEW materializedViewName materializedViewAttribute? alterIotClauses? (USING INDEX physicalAttributesClause)?
+    ((MODIFY scopedTableRefConstraint) | alterMvRefresh)? evaluationEditionClause?
+    ((ENABLE | DISABLE) ON QUERY COMPUTATION)? (alterQueryRewriteClause | COMPILE | CONSIDER FRESH)?
+    ;
+
+materializedViewAttribute
+    : physicalAttributesClause
+    | modifyMvColumnClause
+    | tableCompression
+    | inmemoryTableClause
+    | lobStorageClause (COMMA_ lobStorageClause)*
+    | modifylobStorageClause (COMMA_ modifylobStorageClause)*
+    | alterTablePartitioning
+    | parallelClause
+    | loggingClause
+    | allocateExtentClause
+    | deallocateUnusedClause
+    | shrinkClause
+    | CACHE
+    | NOCACHE
+    ;
+
+modifyMvColumnClause
+    : MODIFY LP_ columnName ((ENCRYPT encryptionSpecification) | DECRYPT)? RP_
+    ;
+
+modifylobStorageClause
+    : MODIFY LOB LP_ lobItem RP_ LP_ modifylobParameters+ RP_
+    ;
+
+modifylobParameters
+    : storageClause
+    | PCTVERSION INTEGER_
+    | FREEPOOLS INTEGER_
+    | REBUILD FREEPOOLS
+    | lobRetentionClause
+    | lobDeduplicateClause
+    | lobCompressionClause
+    | ENCRYPT encryptionSpecification
+    | DECRYPT
+    | CACHE
+    | (NOCACHE | (CACHE READS)) loggingClause?
+    | allocateExtentClause
+    | shrinkClause
+    | deallocateUnusedClause
+    ;
+
+ alterIotClauses
+    : indexOrgTableClause
+    | alterOverflowClause
+    | COALESCE
+    ;
+
+alterOverflowClause
+    : addOverflowClause | overflowClause
+    ;
+
+overflowClause
+    : OVERFLOW (segmentAttributesClause | allocateExtentClause | shrinkClause | deallocateUnusedClause)+
+    ;
+
+addOverflowClause
+    : ADD OVERFLOW segmentAttributesClause? LP_ PARTITION segmentAttributesClause? (COMMA_ PARTITION segmentAttributesClause?)* RP_
+    ;
+
+scopedTableRefConstraint
+    : SCOPE FOR LP_ (columnName | attributeName) RP_ IS (schemaName DOT_)? (tableName | alias)
+    ;
+
+alterMvRefresh
+    : REFRESH (FAST
+    | COMPLETE
+    | FORCE
+    | ON DEMAND
+    | ON COMMIT
+    | START WITH dateValue
+    | NEXT dateValue
+    | WITH PRIMARY KEY
+    | USING DEFAULT MASTER ROLLBACK SEGMENT
+    | USING MASTER ROLLBACK SEGMENT rollbackSegment
+    | USING ENFORCED CONSTRAINTS
+    | USING TRUSTED CONSTRAINTS)
+    ;
+
+evaluationEditionClause
+    : EVALUATE USING (CURRENT EDITION | EDITION editionName | NULL EDITION)
+    ;
+
+alterQueryRewriteClause
+    : (ENABLE | DISABLE)? QUERY REWRITE unusableEditionsClause
+    ;
+
+unusableEditionsClause
+    : unusableBefore? unusableBeginning?
+    ;
+
+unusableBefore
+    : UNUSABLE BEFORE (CURRENT EDITION | EDITION editionName)
+    ;
+
+unusableBeginning
+    : UNUSABLE BEGINNING WITH (CURRENT EDITION | EDITION editionName | NULL EDITION)
+    ;
+
+alterMaterializedViewLog
+    : ALTER MATERIALIZED VIEW LOG FORCE? ON tableName
+    ( physicalAttributesClause
+    | addMvLogColumnClause
+    | alterTablePartitioning
+    | parallelClause
+    | loggingClause
+    | allocateExtentClause
+    | shrinkClause
+    | moveMvLogClause
+    | CACHE
+    | NOCACHE)? mvLogAugmentation? mvLogPurgeClause? forRefreshClause?
+    ;
+
+addMvLogColumnClause
+    : ADD LP_ columnName RP_
+    ;
+
+moveMvLogClause
+    : MOVE segmentAttributesClause parallelClause?
+    ;
+
+mvLogAugmentation
+    : ADD addClause (COMMA_ addClause)* newValuesClause?
+    ;
+
+addClause
+    : OBJECT ID columns?
+    | PRIMARY KEY columns?
+    | ROWID columns?
+    | SEQUENCE columns?
+    | columns
+    ;
+
+columns
+    : LP_ columnName (COMMA_ columnName)* RP_
+    ;
+
+newValuesClause
+    : (INCLUDING | EXCLUDING) NEW VALUES
+    ;
+
+mvLogPurgeClause
+    : PURGE IMMEDIATE (SYNCHRONOUS | ASYNCHRONOUS)?
+    | START WITH dateValue nextOrRepeatClause?
+    | (START WITH dateValue)? nextOrRepeatClause
+    ;
+
+nextOrRepeatClause
+    : NEXT dateValue | REPEAT INTERVAL intervalExpression
+    ;
+
+forRefreshClause
+    : FOR ((SYNCHRONOUS REFRESH USING stagingLogName) | (FAST REFRESH))
+    ;
 
 alterLockdownProfile
     : ALTER LOCKDOWN PROFILE profileName (lockdownFeatures | lockdownOptions | lockdownStatements)

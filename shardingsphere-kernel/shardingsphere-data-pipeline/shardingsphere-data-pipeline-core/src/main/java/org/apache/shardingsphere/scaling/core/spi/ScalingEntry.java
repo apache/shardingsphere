@@ -20,7 +20,6 @@ package org.apache.shardingsphere.scaling.core.spi;
 import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumper;
-import org.apache.shardingsphere.scaling.core.job.check.EnvironmentChecker;
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
@@ -50,11 +49,4 @@ public interface ScalingEntry extends TypedSPI {
      * @return importer type
      */
     Class<? extends Importer> getImporterClass();
-    
-    /**
-     * Get environment checker type.
-     *
-     * @return environment checker type
-     */
-    Class<? extends EnvironmentChecker> getEnvironmentCheckerClass();
 }

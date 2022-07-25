@@ -27,6 +27,7 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * ShardingSphere databases factory.
@@ -63,7 +64,7 @@ public final class ShardingSphereDatabasesFactory {
                                                              final ConfigurationProperties props, final InstanceContext instanceContext) throws SQLException {
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(databaseConfigMap, props);
         DatabaseType storageType = DatabaseTypeEngine.getStorageType(databaseConfigMap);
-        Map<String, ShardingSphereDatabase> result = new HashMap<>(databaseConfigMap.size() + protocolType.getSystemDatabaseSchemaMap().size(), 1);
+        Map<String, ShardingSphereDatabase> result = new ConcurrentHashMap<>(databaseConfigMap.size() + protocolType.getSystemDatabaseSchemaMap().size(), 1);
         result.putAll(createGenericDatabases(databaseConfigMap, protocolType, storageType, props, instanceContext));
         result.putAll(createSystemDatabases(databaseConfigMap, protocolType));
         return result;

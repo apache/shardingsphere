@@ -36,7 +36,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRe
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.mode.manager.lock.LockJudgeEngine;
-import org.apache.shardingsphere.mode.manager.lock.LockJudgeEngineBuilder;
+import org.apache.shardingsphere.mode.manager.lock.LockJudgeEngineFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedUpdateOperationException;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
@@ -87,10 +87,10 @@ public abstract class DatabaseCommunicationEngine<T> {
         this.backendConnection = backendConnection;
         String databaseName = backendConnection.getConnectionSession().getDatabaseName();
         metadataRefreshEngine = new MetaDataRefreshEngine(database,
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabases().get(databaseName),
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabase(databaseName),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getPlannerContexts(),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps());
-        lockJudgeEngine = LockJudgeEngineBuilder.build(ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext());
+        lockJudgeEngine = LockJudgeEngineFactory.getInstance();
     }
     
     /**
@@ -197,7 +197,8 @@ public abstract class DatabaseCommunicationEngine<T> {
     }
     
     protected void checkLockedDatabase(final ExecutionContext executionContext) {
-        if (lockJudgeEngine.isLocked(backendConnection.getConnectionSession().getDatabaseName(), executionContext.getSqlStatementContext())) {
+        if (lockJudgeEngine.isLocked(ProxyContext.getInstance().getContextManager().getInstanceContext().getLockContext(),
+                backendConnection.getConnectionSession().getDatabaseName(), executionContext.getSqlStatementContext())) {
             throw new UnsupportedUpdateOperationException(backendConnection.getConnectionSession().getDatabaseName());
         }
     }

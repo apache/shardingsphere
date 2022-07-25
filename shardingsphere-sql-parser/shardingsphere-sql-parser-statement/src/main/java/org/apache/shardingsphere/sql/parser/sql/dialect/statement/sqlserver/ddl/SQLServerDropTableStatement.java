@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
+@ToString(callSuper = true)
 public final class SQLServerDropTableStatement extends DropTableStatement implements SQLServerStatement {
     
     private final boolean ifExists;

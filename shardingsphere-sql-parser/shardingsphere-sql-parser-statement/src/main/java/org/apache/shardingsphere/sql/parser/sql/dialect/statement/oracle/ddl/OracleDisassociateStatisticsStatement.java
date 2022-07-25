@@ -39,7 +39,7 @@ import java.util.List;
  */
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class OracleDisassociateStatisticsStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
     
     private List<IndexSegment> indexes = new LinkedList<>();

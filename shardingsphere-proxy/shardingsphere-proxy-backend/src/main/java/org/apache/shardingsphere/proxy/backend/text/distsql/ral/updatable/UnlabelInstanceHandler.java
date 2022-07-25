@@ -27,10 +27,10 @@ import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRep
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.UpdatableRALBackendHandler;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.Optional;
 
 /**
@@ -52,7 +52,7 @@ public final class UnlabelInstanceHandler extends UpdatableRALBackendHandler<Unl
                 contextManager.getInstanceContext().getEventBusContext().post(new LabelsChangedEvent(instanceId, Collections.emptyList()));
             } else {
                 labels.removeAll(getSqlStatement().getLabels());
-                contextManager.getInstanceContext().getEventBusContext().post(new LabelsChangedEvent(instanceId, new LinkedList<>(labels)));
+                contextManager.getInstanceContext().getEventBusContext().post(new LabelsChangedEvent(instanceId, new ArrayList<>(labels)));
             }
         }
     }

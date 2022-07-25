@@ -2907,6 +2907,46 @@ REBALANCE
     : R E B A L A N C E
     ;
 
+COMPUTATION
+    : C O M P U T A T I O N
+    ;
+
+CONSIDER
+    : C O N S I D E R
+    ;
+
+FRESH
+    : F R E S H
+    ;
+
+MASTER
+    : M A S T E R
+    ;
+
+ENFORCED
+    : E N F O R C E D
+    ;
+
+TRUSTED
+    : T R U S T E D
+    ;
+
+ID
+    : I D
+    ;
+
+SYNCHRONOUS
+    : S Y N C H R O N O U S
+    ;
+
+ASYNCHRONOUS
+    : A S Y N C H R O N O U S
+    ;
+
+REPEAT
+    : R E P E A T
+    ;
+
 FEATURE
     : F E A T U R E
     ;
@@ -2918,3 +2958,4 @@ STATEMENT
 CLAUSE
    : C L A U S E
    ;
+
