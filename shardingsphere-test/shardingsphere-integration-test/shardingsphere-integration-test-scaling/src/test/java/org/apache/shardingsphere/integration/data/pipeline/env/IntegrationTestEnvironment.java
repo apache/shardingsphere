@@ -56,7 +56,7 @@ public final class IntegrationTestEnvironment {
         mysqlVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.mysql.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         postgresVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.postgresql.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         openGaussVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.opengauss.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
-        String commands = props.getOrDefault("scaling.it.command", "").toString();
+        String commands = props.getOrDefault("scaling.it.database.command", "").toString();
         if (StringUtils.isNotBlank(commands)) {
             commandParts = commands.split(",");
         } else {

@@ -21,6 +21,7 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.CommandPartUtil;
+import org.testcontainers.containers.BindMode;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -31,8 +32,7 @@ import java.util.Optional;
  */
 public final class PostgreSQLContainer extends DockerStorageContainer {
     
-    private static final String[] DEFAULT_COMMANDS_PARTS = new String[]{"max_connections=400", "wal_level=logical", "max_replication_slots=10", "log_timezone=Asia/Shanghai", "wal_sender_timeout=0",
-            "TimeZone=Asia/Shanghai"};
+    private static final String[] DEFAULT_COMMANDS_PARTS = new String[]{"wal_level=logical"};
     
     private final String[] extraCommandParts;
     
@@ -51,6 +51,7 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
         setCommand(commandParts.toArray(new String[0]));
         addEnv("POSTGRES_USER", getRootUsername());
         addEnv("POSTGRES_PASSWORD", getUnifiedPassword());
+        withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/etc/postgresql/postgresql.conf", BindMode.READ_ONLY);
         super.configure();
     }
     

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.storage.
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
-import org.apache.shardingsphere.test.integration.env.container.atomic.util.CommandPartUtil;
+import org.testcontainers.containers.BindMode;
 
 import java.util.Optional;
 
@@ -28,9 +28,6 @@ import java.util.Optional;
  * MySQL container.
  */
 public final class MySQLContainer extends DockerStorageContainer {
-    
-    private static final String[] DEFAULT_COMMAND_PARTS = new String[]{"--sql_mode=", "--max_connections=200", "--default-authentication-plugin=mysql_native_password", "--lower_case_table_names=1",
-            "--server-id=1", "--binlog-format=row", "--max_connections=400", "--log-bin=binlog", "--secure-file-priv=/var/lib/mysql"};
     
     private final String[] extraCommandParts;
     
@@ -41,10 +38,11 @@ public final class MySQLContainer extends DockerStorageContainer {
     
     @Override
     protected void configure() {
-        setCommand(CommandPartUtil.mergeCommandParts(DEFAULT_COMMAND_PARTS, extraCommandParts));
+        setCommand(extraCommandParts);
         addEnv("LANG", "C.UTF-8");
         addEnv("MYSQL_ROOT_PASSWORD", getUnifiedPassword());
         addEnv("MYSQL_ROOT_HOST", "%");
+        withClasspathResourceMapping("/env/mysql/my.cnf", "/etc/mysql/my.cnf", BindMode.READ_ONLY);
         super.configure();
     }
     
