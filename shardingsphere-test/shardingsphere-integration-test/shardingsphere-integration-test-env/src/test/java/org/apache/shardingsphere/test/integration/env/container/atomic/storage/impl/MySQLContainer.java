@@ -38,6 +38,7 @@ public final class MySQLContainer extends DockerStorageContainer {
     
     @Override
     protected void configure() {
+        // extra command config will override config at my.cnf.
         setCommand(extraCommandParts);
         addEnv("LANG", "C.UTF-8");
         addEnv("MYSQL_ROOT_PASSWORD", getUnifiedPassword());
