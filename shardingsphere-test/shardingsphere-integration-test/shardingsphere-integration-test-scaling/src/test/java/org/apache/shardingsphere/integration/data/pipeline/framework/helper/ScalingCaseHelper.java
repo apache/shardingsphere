@@ -123,6 +123,6 @@ public final class ScalingCaseHelper {
         if (databaseType instanceof OpenGaussDatabaseType) {
             return "Root@123";
         }
-        return "root";
+        return "Root@123";
     }
 }
