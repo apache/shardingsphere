@@ -31,17 +31,17 @@ import java.util.Optional;
  */
 public final class OpenGaussContainer extends DockerStorageContainer {
     
-    private final String[] extraCommandParts;
+    private final String[] commandParts;
     
     public OpenGaussContainer(final String dockerImageName, final String scenario, final boolean useRootUsername, final String... commandParts) {
         super(DatabaseTypeFactory.getInstance("openGauss"), Strings.isNullOrEmpty(dockerImageName) ? "enmotech/opengauss:3.0.0" : dockerImageName, scenario, useRootUsername);
-        extraCommandParts = commandParts;
+        this.commandParts = commandParts;
     }
     
     @Override
     protected void configure() {
         List<String> commandParts = new LinkedList<>();
-        for (String each : extraCommandParts) {
+        for (String each : this.commandParts) {
             commandParts.add("-c");
             commandParts.add(each);
         }

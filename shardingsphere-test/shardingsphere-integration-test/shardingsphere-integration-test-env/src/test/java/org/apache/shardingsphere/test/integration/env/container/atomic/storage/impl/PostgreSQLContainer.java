@@ -34,18 +34,18 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
     
     private static final String[] DEFAULT_COMMAND_PARTS = new String[]{"wal_level=logical"};
     
-    private final String[] extraCommandParts;
+    private final String[] commandParts;
     
     public PostgreSQLContainer(final String dockerImageName, final String scenario, final boolean useRootUsername, final String... commandParts) {
         super(DatabaseTypeFactory.getInstance("PostgreSQL"), Strings.isNullOrEmpty(dockerImageName) ? "postgres:12-alpine" : dockerImageName, scenario, useRootUsername);
-        extraCommandParts = commandParts;
+        this.commandParts = commandParts;
     }
     
     @Override
     protected void configure() {
         List<String> commandParts = new LinkedList<>();
-        for (String each : CommandPartUtil.mergeCommandParts(DEFAULT_COMMAND_PARTS, extraCommandParts)) {
-            commandParts.add("-c");
+        for (String each : CommandPartUtil.mergeCommandParts(DEFAULT_COMMAND_PARTS, this.commandParts)) {
+            commandParts.add("--");
             commandParts.add(each);
         }
         setCommand(commandParts.toArray(new String[0]));
