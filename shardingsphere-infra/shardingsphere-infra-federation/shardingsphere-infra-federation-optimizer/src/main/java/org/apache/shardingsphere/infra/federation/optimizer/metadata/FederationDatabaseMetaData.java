@@ -92,7 +92,7 @@ public final class FederationDatabaseMetaData {
      * @param tableName table name
      */
     public void removeTableMetadata(final String schemaName, final String tableName) {
-        if (schemas.containsKey(schemaName.toLowerCase())) {
+        if (containsSchemaMetadata(schemaName)) {
             schemas.get(schemaName.toLowerCase()).remove(tableName.toLowerCase());
         }
     }

@@ -38,7 +38,7 @@ public final class FederationDatabaseMetaDataTest {
         FederationDatabaseMetaData databaseMetaData = new FederationDatabaseMetaData("foo_db", Collections.emptyMap());
         FederationSchemaMetaData schemaMetaData = mock(FederationSchemaMetaData.class);
         databaseMetaData.putSchemaMetadata("foo_schema", schemaMetaData);
-        assertThat(databaseMetaData.getSchemas().get("foo_schema"), is(schemaMetaData));
+        assertThat(databaseMetaData.getSchemaMetadata("foo_schema").get(), is(schemaMetaData));
     }
     
     @Test
