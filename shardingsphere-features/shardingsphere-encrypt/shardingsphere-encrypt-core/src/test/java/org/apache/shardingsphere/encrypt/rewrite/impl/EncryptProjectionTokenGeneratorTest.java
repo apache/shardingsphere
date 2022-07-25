@@ -57,6 +57,7 @@ public final class EncryptProjectionTokenGeneratorTest {
     public void setup() {
         generator = new EncryptProjectionTokenGenerator();
         generator.setEncryptRule(mockEncryptRule());
+        generator.setDatabaseName("db_schema");
         generator.setSchemas(Collections.singletonMap("test", mock(ShardingSphereSchema.class)));
     }
     
