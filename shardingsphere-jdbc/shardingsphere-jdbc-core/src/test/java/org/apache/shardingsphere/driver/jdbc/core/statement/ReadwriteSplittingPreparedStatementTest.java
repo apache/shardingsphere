@@ -27,11 +27,11 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.not;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertNotEquals;
 
 public final class ReadwriteSplittingPreparedStatementTest extends AbstractShardingSphereDataSourceForReadwriteSplittingTest {
     
@@ -111,7 +111,7 @@ public final class ReadwriteSplittingPreparedStatementTest extends AbstractShard
                 ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
                 assertTrue(generatedKeys.next());
                 generatedId = generatedKeys.getObject(1);
-                assertNotEquals(lastGeneratedId, generatedId);
+                assertThat(generatedId, not(lastGeneratedId));
                 lastGeneratedId = generatedId;
                 assertFalse(generatedKeys.next());
             }
