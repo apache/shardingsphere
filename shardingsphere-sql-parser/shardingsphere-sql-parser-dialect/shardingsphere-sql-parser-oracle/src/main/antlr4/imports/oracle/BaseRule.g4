@@ -224,7 +224,6 @@ parameterValue
     : literals | identifier
     ;
 
-
 dispatcherName
     : stringLiterals
     ;
@@ -1437,5 +1436,33 @@ usergroupName
 
 varrayType
     : (owner DOT_)? name
+    ;
+
+featureName
+   : STRING_
+   ;
+
+optionName
+    : STRING_
+    ;
+
+clauseOption
+    : STRING_
+    ;
+
+clauseOptionPattern
+    : STRING_
+    ;
+
+optionValue
+    : STRING_
+    ;
+
+clause
+    : STRING_
+    ;
+
+sqlStatement
+    : STRING_
     ;
 

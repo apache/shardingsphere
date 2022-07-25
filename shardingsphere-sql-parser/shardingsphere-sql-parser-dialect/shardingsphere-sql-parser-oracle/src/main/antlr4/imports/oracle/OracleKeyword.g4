@@ -2906,3 +2906,15 @@ DISMOUNT
 REBALANCE
     : R E B A L A N C E
     ;
+
+FEATURE
+    : F E A T U R E
+    ;
+
+STATEMENT
+    : S T A T E M E N T
+    ;
+
+CLAUSE
+   : C L A U S E
+   ;

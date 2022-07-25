@@ -116,5 +116,6 @@ execute
     | alterOperator
     | alterDiskgroup
     | alterIndexType
+    | alterLockdownProfile
     ) SEMI_?
     ;
