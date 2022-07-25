@@ -68,6 +68,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     @Override
     protected void configure() {
+        withClasspathResourceMapping("/container/init-sql/" + databaseType.getType().toLowerCase() + "/init-authority.sql", "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
         if (Strings.isNullOrEmpty(scenario)) {
             withClasspathResourceMapping("/env/" + databaseType.getType().toLowerCase() + "/initdb.sql", "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
         } else {
@@ -124,7 +125,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     public abstract String getRootUsername();
     
     protected final String getNormalUsername() {
-        return "normal_user";
+        return "test_user";
     }
     
     /**

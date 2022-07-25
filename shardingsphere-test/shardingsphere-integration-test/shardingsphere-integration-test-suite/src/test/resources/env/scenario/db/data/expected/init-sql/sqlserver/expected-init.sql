@@ -15,9 +15,6 @@
 -- limitations under the License.
 --
 
-CREATE USER 'root'@'%' IDENTIFIED BY 'Root@123';
-GRANT All privileges ON *.* TO 'root'@'%';
-
 DROP DATABASE IF EXISTS expected_dataset;
 CREATE DATABASE expected_dataset;
 

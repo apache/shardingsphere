@@ -15,9 +15,6 @@
 -- limitations under the License.
 --
 
-CREATE USER 'root'@'%' IDENTIFIED BY 'Root@123';
-GRANT All privileges ON *.* TO 'root'@'%';
-
 DROP SCHEMA encrypt;
 CREATE SCHEMA encrypt;
 

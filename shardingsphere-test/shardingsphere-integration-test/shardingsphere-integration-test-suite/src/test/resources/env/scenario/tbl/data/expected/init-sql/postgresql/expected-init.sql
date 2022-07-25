@@ -18,7 +18,7 @@
 DROP DATABASE IF EXISTS expected_dataset;
 CREATE DATABASE expected_dataset;
 
-GRANT ALL PRIVILEGES ON DATABASE expected_dataset TO root;
+GRANT ALL PRIVILEGES ON DATABASE expected_dataset TO test_user;
 
 \c expected_dataset;
 

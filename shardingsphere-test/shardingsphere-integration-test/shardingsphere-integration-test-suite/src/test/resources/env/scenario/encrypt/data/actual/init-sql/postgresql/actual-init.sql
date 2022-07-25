@@ -17,7 +17,7 @@
 
 CREATE DATABASE encrypt;
 
-GRANT ALL PRIVILEGES ON DATABASE encrypt TO root;
+GRANT ALL PRIVILEGES ON DATABASE encrypt TO test_user;
 
 \c encrypt
 

@@ -36,26 +36,26 @@ CREATE DATABASE encrypt_read_ds_7;
 CREATE DATABASE encrypt_read_ds_8;
 CREATE DATABASE encrypt_read_ds_9;
 
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_0 TO root;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_1 TO root;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_2 TO root;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_3 TO root;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_4 TO root;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_5 TO root;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_6 TO root;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_7 TO root;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_8 TO root;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_9 TO root;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_0 TO root;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_1 TO root;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_2 TO root;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_3 TO root;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_4 TO root;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_5 TO root;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_6 TO root;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_7 TO root;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_8 TO root;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_9 TO root;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_0 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_1 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_2 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_3 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_4 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_5 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_6 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_7 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_8 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_9 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_0 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_1 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_2 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_3 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_4 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_5 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_6 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_7 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_8 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_read_ds_9 TO test_user;
 
 \c encrypt_write_ds_0
 

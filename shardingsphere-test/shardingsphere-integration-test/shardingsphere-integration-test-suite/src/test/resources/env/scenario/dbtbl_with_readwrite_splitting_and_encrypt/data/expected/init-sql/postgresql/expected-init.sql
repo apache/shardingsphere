@@ -18,7 +18,7 @@
 DROP DATABASE IF EXISTS write_dataset;
 CREATE DATABASE write_dataset;
 
-GRANT ALL PRIVILEGES ON DATABASE write_dataset TO root;
+GRANT ALL PRIVILEGES ON DATABASE write_dataset TO test_user;
 
 \c write_dataset;
 
@@ -50,7 +50,7 @@ CREATE INDEX user_index_t_user ON t_user (user_id);
 DROP DATABASE IF EXISTS read_dataset;
 CREATE DATABASE read_dataset;
 
-GRANT ALL PRIVILEGES ON DATABASE read_dataset TO root;
+GRANT ALL PRIVILEGES ON DATABASE read_dataset TO test_user;
 
 \c read_dataset;
 

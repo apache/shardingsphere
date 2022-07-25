@@ -15,20 +15,5 @@
 -- limitations under the License.
 --
 
-DROP DATABASE IF EXISTS expected_dataset;
-CREATE DATABASE expected_dataset;
-
-GRANT ALL PRIVILEGES ON DATABASE expected_dataset TO test_user;
-
-\c expected_dataset;
-
-DROP TABLE IF EXISTS t_user;
-DROP TABLE IF EXISTS t_user_item;
-DROP TABLE IF EXISTS t_single_table;
-
-CREATE TABLE t_user (user_id INT NOT NULL, address_id INT NOT NULL, pwd VARCHAR(45) NULL, status VARCHAR(45) NULL, PRIMARY KEY (user_id));
-CREATE TABLE t_user_item (item_id INT NOT NULL, user_id INT NOT NULL, status VARCHAR(45) NULL, creation_date DATE, PRIMARY KEY (item_id));
-CREATE TABLE t_single_table (single_id INT NOT NULL, id INT NOT NULL, status VARCHAR(45) NULL, PRIMARY KEY (single_id));
-
-
-CREATE INDEX user_index_t_user ON t_user (user_id);
+CREATE USER 'test_user'@'%' IDENTIFIED BY 'Root@123';
+GRANT ALL ON *.* TO 'test_user'@'%';

@@ -15,9 +15,6 @@
 -- limitations under the License.
 --
 
-CREATE USER 'root'@'%' IDENTIFIED BY 'Root@123';
-GRANT All privileges ON *.* TO 'root'@'%';
-
 DROP DATABASE IF EXISTS db_0;
 DROP DATABASE IF EXISTS db_1;
 DROP DATABASE IF EXISTS db_2;
