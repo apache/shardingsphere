@@ -135,18 +135,16 @@ public final class ProjectionEngineTest {
     }
     
     private List<ExpressionSegment> getExpressionSegments() {
-        List<ExpressionSegment> list = new ArrayList<>();
+        List<ExpressionSegment> result = new ArrayList<>();
         FunctionSegment functionSegment = new FunctionSegment(7, 28, "IFNULL", "IFNULL(MAX(status), 0)");
         AggregationProjectionSegment parameter = new AggregationProjectionSegment(14, 24, AggregationType.MAX, "(status)");
         functionSegment.getParameters().add(parameter);
-        list.add(functionSegment);
-        
+        result.add(functionSegment);
         ExpressionSegment right = new LiteralExpressionSegment(25, 25, 1);
         ExpressionSegment binaryOperationExpression = new BinaryOperationExpression(7, 25, parameter, right, "+", "IFNULL(status, 0)+1");
-        list.add(binaryOperationExpression);
-        
-        list.add(null);
-        return list;
+        result.add(binaryOperationExpression);
+        result.add(null);
+        return result;
     }
     
     @Test
