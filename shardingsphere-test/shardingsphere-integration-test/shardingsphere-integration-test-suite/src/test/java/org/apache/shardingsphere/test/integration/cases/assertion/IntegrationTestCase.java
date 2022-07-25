@@ -38,9 +38,6 @@ public final class IntegrationTestCase {
     @XmlAttribute(name = "sql")
     private String sql;
     
-    @XmlAttribute(name = "print-sql")
-    private String printSql;
-    
     @XmlAttribute(name = "db-types")
     private String dbTypes;
     
