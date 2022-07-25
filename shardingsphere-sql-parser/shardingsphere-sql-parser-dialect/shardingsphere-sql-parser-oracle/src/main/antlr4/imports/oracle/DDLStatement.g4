@@ -3242,11 +3242,11 @@ pdbUnplugEncrypt
     ;
 
 pdbSettingsClauses
-    : pdbName? pdbSettingCluase
+    : pdbName? pdbSettingClause
     | CONTAINERS containersClause
     ;
 
-pdbSettingCluase
+pdbSettingClause
     : DEFAULT EDITION EQ_ editionName
     | SET DEFAULT (BIGFILE | SMALLFILE) TABLESPACE
     | DEFAULT TABLESPACE tablespaceName
