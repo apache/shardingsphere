@@ -32,7 +32,7 @@ import java.util.Optional;
  */
 public final class PostgreSQLContainer extends DockerStorageContainer {
     
-    private static final String[] DEFAULT_COMMANDS_PARTS = new String[]{"wal_level=logical"};
+    private static final String[] DEFAULT_COMMAND_PARTS = new String[]{"wal_level=logical"};
     
     private final String[] extraCommandParts;
     
@@ -44,7 +44,7 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
     @Override
     protected void configure() {
         List<String> commandParts = new LinkedList<>();
-        for (String each : CommandPartUtil.mergeCommandParts(DEFAULT_COMMANDS_PARTS, extraCommandParts)) {
+        for (String each : CommandPartUtil.mergeCommandParts(DEFAULT_COMMAND_PARTS, extraCommandParts)) {
             commandParts.add("-c");
             commandParts.add(each);
         }

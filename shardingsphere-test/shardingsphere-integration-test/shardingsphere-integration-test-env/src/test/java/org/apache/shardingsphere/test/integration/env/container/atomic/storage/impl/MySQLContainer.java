@@ -23,8 +23,6 @@ import org.apache.shardingsphere.test.integration.env.container.atomic.storage.D
 import org.apache.shardingsphere.test.integration.env.container.atomic.util.CommandPartUtil;
 import org.testcontainers.containers.BindMode;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -32,7 +30,7 @@ import java.util.Optional;
  */
 public final class MySQLContainer extends DockerStorageContainer {
     
-    private static final String[] DEFAULT_COMMANDS_PARTS = new String[]{"--sql_mode=", "--default-authentication-plugin=mysql_native_password", "--lower_case_table_names=1"};
+    private static final String[] DEFAULT_COMMAND_PARTS = new String[]{"--sql_mode=", "--default-authentication-plugin=mysql_native_password", "--lower_case_table_names=1"};
     
     private final String[] extraCommandParts;
     
@@ -44,12 +42,7 @@ public final class MySQLContainer extends DockerStorageContainer {
     @Override
     protected void configure() {
         // extra command config will override config at my.cnf.
-        List<String> commandParts = new LinkedList<>();
-        for (String each : CommandPartUtil.mergeCommandParts(DEFAULT_COMMANDS_PARTS, extraCommandParts)) {
-            commandParts.add("-c");
-            commandParts.add(each);
-        }
-        setCommand(commandParts.toArray(new String[0]));
+        setCommand(CommandPartUtil.mergeCommandParts(DEFAULT_COMMAND_PARTS, extraCommandParts));
         addEnv("LANG", "C.UTF-8");
         addEnv("MYSQL_ROOT_PASSWORD", getUnifiedPassword());
         addEnv("MYSQL_ROOT_HOST", "%");
