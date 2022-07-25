@@ -18,17 +18,24 @@
 package org.apache.shardingsphere.integration.transaction.framework.container.compose;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.integration.transaction.factory.DatabaseContainerFactory;
 import org.apache.shardingsphere.integration.transaction.framework.container.database.DatabaseContainer;
+import org.apache.shardingsphere.integration.transaction.framework.container.jdbc.ShardingSphereJDBCContainer;
 import org.apache.shardingsphere.integration.transaction.framework.container.proxy.ShardingSphereProxyDockerContainer;
+import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
 import org.apache.shardingsphere.test.integration.env.container.atomic.governance.GovernanceContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.governance.impl.ZookeeperContainer;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 
+import java.util.Objects;
+
 /**
  * Composed container, include governance container and database container.
  */
+@Slf4j
 @Getter
 public final class DockerComposedContainer extends BaseComposedContainer {
     
@@ -38,25 +45,48 @@ public final class DockerComposedContainer extends BaseComposedContainer {
     
     private final ShardingSphereProxyDockerContainer proxyContainer;
     
+    private final ShardingSphereJDBCContainer jdbcContainer;
+    
     private final DatabaseContainer databaseContainer;
     
-    public DockerComposedContainer(final DatabaseType databaseType, final String dockerImageName) {
-        this.databaseType = databaseType;
-        ShardingSphereProxyDockerContainer proxyContainer = new ShardingSphereProxyDockerContainer(databaseType);
+    public DockerComposedContainer(final TransactionParameterized parameterized) {
+        this.databaseType = parameterized.getDatabaseType();
         governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
-        databaseContainer = getContainers().registerContainer(DatabaseContainerFactory.newInstance(databaseType, dockerImageName));
-        proxyContainer.dependsOn(governanceContainer, databaseContainer);
-        this.proxyContainer = getContainers().registerContainer(proxyContainer);
+        databaseContainer = getContainers().registerContainer(DatabaseContainerFactory.newInstance(this.databaseType, parameterized.getDockerImageName()));
+        if (TransactionTestConstants.PROXY.equalsIgnoreCase(parameterized.getAdapter())) {
+            this.jdbcContainer = null;
+            ShardingSphereProxyDockerContainer proxyContainer = new ShardingSphereProxyDockerContainer(this.databaseType);
+            proxyContainer.dependsOn(governanceContainer, databaseContainer);
+            this.proxyContainer = getContainers().registerContainer(proxyContainer);
+        } else {
+            this.proxyContainer = null;
+            ShardingSphereJDBCContainer jdbcContainer = new ShardingSphereJDBCContainer(databaseContainer,
+                    Objects.requireNonNull(ShardingSphereJDBCContainer.class.getClassLoader().getResource(getShardingSphereConfigResource(parameterized))).getFile());
+            this.jdbcContainer = getContainers().registerContainer(jdbcContainer);
+        }
+    }
+    
+    private String getShardingSphereConfigResource(final TransactionParameterized parameterized) {
+        String result = String.format("env/%s/%s/config-sharding-%s.yaml", parameterized.getAdapter().toLowerCase(),
+                parameterized.getDatabaseType().getType().toLowerCase(), parameterized.getTransactionType().toString().toLowerCase());
+        log.info("Transaction IT tests use the configuration file: {}", result);
+        return result;
     }
     
     @Override
     public void stop() {
         super.stop();
-        proxyContainer.stop();
+        if (null != proxyContainer) {
+            proxyContainer.stop();
+        }
+        if (null != jdbcContainer) {
+            jdbcContainer.stop();
+        }
     }
     
     @Override
     public String getProxyJdbcUrl(final String databaseName) {
         return DataSourceEnvironment.getURL(databaseType, proxyContainer.getHost(), proxyContainer.getFirstMappedPort(), databaseName);
     }
+    
 }

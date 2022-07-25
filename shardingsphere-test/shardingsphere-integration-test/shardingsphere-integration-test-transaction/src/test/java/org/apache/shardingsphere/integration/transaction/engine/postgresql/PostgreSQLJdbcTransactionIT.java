@@ -15,16 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.transaction.engine.mysql;
+package org.apache.shardingsphere.integration.transaction.engine.postgresql;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
-import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
-import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -33,18 +30,17 @@ import org.junit.runners.Parameterized.Parameters;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Objects;
 
 /**
- * MySQL general transaction test case with proxy container, includes multiple cases.
+ * PostgreSQL general transaction test case with JDBC container, includes multiple cases.
  */
 @Slf4j
 @RunWith(Parameterized.class)
-public final class MySQLProxyTransactionIT extends BaseTransactionITCase {
+public final class PostgreSQLJdbcTransactionIT extends BaseTransactionITCase {
     
     private final TransactionParameterized parameterized;
     
-    public MySQLProxyTransactionIT(final TransactionParameterized parameterized) throws SQLException {
+    public PostgreSQLJdbcTransactionIT(final TransactionParameterized parameterized) throws SQLException {
         super(parameterized);
         this.parameterized = parameterized;
         log.info("Parameterized:{}", parameterized);
@@ -52,19 +48,7 @@ public final class MySQLProxyTransactionIT extends BaseTransactionITCase {
     
     @Parameters(name = "{0}")
     public static Collection<TransactionParameterized> getParameters() {
-        return getTransactionParameterizedList(MySQLProxyTransactionIT.class);
-    }
-    
-    @Before
-    @SneakyThrows(SQLException.class)
-    public void before() {
-        if (TransactionTestConstants.PROXY.equalsIgnoreCase(parameterized.getAdapter())) {
-            if (Objects.equals(parameterized.getTransactionType(), TransactionType.LOCAL)) {
-                alterLocalTransactionRule();
-            } else if (Objects.equals(parameterized.getTransactionType(), TransactionType.XA)) {
-                alterXaAtomikosTransactionRule();
-            }
-        }
+        return getTransactionParameterizedList(PostgreSQLJdbcTransactionIT.class);
     }
     
     @After

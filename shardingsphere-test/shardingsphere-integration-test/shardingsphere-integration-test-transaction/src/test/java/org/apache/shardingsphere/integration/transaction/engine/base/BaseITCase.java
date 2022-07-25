@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.integration.transaction.engine.base;
 
+import com.zaxxer.hikari.HikariDataSource;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -43,7 +44,9 @@ import org.apache.shardingsphere.integration.transaction.framework.param.Transac
 import org.apache.shardingsphere.integration.transaction.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.integration.transaction.util.TransactionTestCaseClassScanner;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
+import org.apache.shardingsphere.transaction.core.TransactionType;
 
+import javax.sql.DataSource;
 import javax.xml.bind.JAXB;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -54,6 +57,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
@@ -88,6 +92,8 @@ public abstract class BaseITCase {
     
     private final DatabaseType databaseType;
     
+    private final String adapter;
+    
     @Getter
     private AutoDataSource dataSource;
     
@@ -99,10 +105,41 @@ public abstract class BaseITCase {
     
     public BaseITCase(final TransactionParameterized parameterized) {
         databaseType = parameterized.getDatabaseType();
+        adapter = parameterized.getAdapter();
         composedContainer = createAndStartComposedContainer(parameterized);
         commonSQLCommand = getSqlCommand();
         initActualDataSources();
-        createProxyDatabase(parameterized.getDatabaseType());
+        if (isProxyAdapter(parameterized)) {
+            createProxyDatabase();
+        } else {
+            createJdbcDataSource();
+        }
+    }
+    
+    private void createJdbcDataSource() {
+        if (composedContainer instanceof DockerComposedContainer) {
+            DockerComposedContainer dockerComposedContainer = (DockerComposedContainer) composedContainer;
+            DatabaseContainer databaseContainer = dockerComposedContainer.getDatabaseContainer();
+            Map<String, DataSource> actualDataSourceMap = databaseContainer.getActualDataSourceMap();
+            actualDataSourceMap.put("ds_0", createDataSource(databaseContainer, DS_0));
+            actualDataSourceMap.put("ds_1", createDataSource(databaseContainer, DS_1));
+            dataSource = new JDBCDataSource(dockerComposedContainer);
+        }
+    }
+    
+    private DataSource createDataSource(final DatabaseContainer databaseContainer, final String dataSourceName) {
+        HikariDataSource result = new HikariDataSource();
+        result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
+        result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, databaseContainer.getHost(), databaseContainer.getMappedPort(databaseContainer.getPort()), dataSourceName));
+        result.setUsername(databaseContainer.getUsername());
+        result.setPassword(databaseContainer.getPassword());
+        result.setMaximumPoolSize(4);
+        result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
+        return result;
+    }
+    
+    protected boolean isProxyAdapter(final TransactionParameterized parameterized) {
+        return parameterized.getAdapter().equalsIgnoreCase(TransactionTestConstants.PROXY);
     }
     
     protected static Collection<TransactionParameterized> getTransactionParameterizedList(final Class<? extends BaseTransactionITCase> testCaseClass) {
@@ -157,7 +194,19 @@ public abstract class BaseITCase {
                 log.info("Collect transaction test case, runMode is not matched, skip: {}.", caseClass.getName());
                 continue;
             }
-            result.add(new TransactionParameterized(getSqlDatabaseType(currentTestCaseInfo.getDbType()), getDockerImageName(currentTestCaseInfo.getDbType(), version), caseClass));
+            addParametersByTransactionTypes(result, version, currentTestCaseInfo, caseClass, annotation);
+        }
+    }
+    
+    private static void addParametersByTransactionTypes(final Collection<TransactionParameterized> result, final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
+                                                        final Class<? extends BaseTransactionTestCase> caseClass, final TransactionTestCase annotation) {
+        for (TransactionType each : annotation.transactionTypes()) {
+            if (!ENV.getAllowTransactionTypes().isEmpty() && !ENV.getAllowTransactionTypes().contains(each.toString())) {
+                log.info("Collect transaction test case, need to run transaction types don't contain this, skip: {}-{}.", caseClass.getName(), each);
+                continue;
+            }
+            result.add(new TransactionParameterized(getSqlDatabaseType(currentTestCaseInfo.getDbType()), currentTestCaseInfo.getRunningAdaptor(), each,
+                    getDockerImageName(currentTestCaseInfo.getDbType(), version), caseClass));
         }
     }
     
@@ -193,7 +242,7 @@ public abstract class BaseITCase {
     private BaseComposedContainer createAndStartComposedContainer(final TransactionParameterized parameterized) {
         final BaseComposedContainer composedContainer;
         if (ENV.getItEnvType() == TransactionITEnvTypeEnum.DOCKER) {
-            composedContainer = new DockerComposedContainer(parameterized.getDatabaseType(), parameterized.getDockerImageName());
+            composedContainer = new DockerComposedContainer(parameterized);
         } else {
             composedContainer = new NativeComposedContainer(parameterized.getDatabaseType());
         }
@@ -255,11 +304,10 @@ public abstract class BaseITCase {
     
     @SneakyThrows(SQLException.class)
     protected Connection getProxyConnection() {
-        String jdbcUrl = composedContainer.getProxyJdbcUrl(SHARDING_DB);
-        return DriverManager.getConnection(jdbcUrl, ENV.getProxyUserName(), ENV.getProxyPassword());
+        return dataSource.getConnection();
     }
     
-    protected void createProxyDatabase(final DatabaseType databaseType) {
+    protected void createProxyDatabase() {
         String jdbcUrl = getProxyJdbcUrl(databaseType);
         try (Connection connection = DriverManager.getConnection(jdbcUrl, ENV.getProxyUserName(), ENV.getProxyPassword())) {
             if (ENV.getItEnvType() == TransactionITEnvTypeEnum.NATIVE) {
