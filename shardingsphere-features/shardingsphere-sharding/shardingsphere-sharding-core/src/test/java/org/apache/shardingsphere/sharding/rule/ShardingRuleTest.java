@@ -549,8 +549,10 @@ public final class ShardingRuleTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(MySQLSelectStatement.class));
         when(sqlStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(sqlStatementContext.getTablesContext().getSchemaName()).thenReturn(Optional.empty());
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("db_schema");
         assertFalse(
-                createMaximumShardingRule().isAllBindingTables(mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS), sqlStatementContext, Arrays.asList("logic_Table", "sub_Logic_Table")));
+                createMaximumShardingRule().isAllBindingTables(database, sqlStatementContext, Arrays.asList("logic_Table", "sub_Logic_Table")));
     }
     
     @Test
