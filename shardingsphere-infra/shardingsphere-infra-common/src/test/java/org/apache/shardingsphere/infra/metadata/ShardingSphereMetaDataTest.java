@@ -97,7 +97,7 @@ public final class ShardingSphereMetaDataTest {
         PostgreSQLDatabaseType databaseType = new PostgreSQLDatabaseType();
         ShardingSphereDatabase actual = ShardingSphereDatabase.create("foo_db", databaseType, databaseType,
                 mock(DataSourceProvidedDatabaseConfiguration.class), new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
-        assertNotNull(actual.getSchemas().get("public"));
+        assertNotNull(actual.getSchema("public"));
     }
     
     @Test
@@ -105,6 +105,6 @@ public final class ShardingSphereMetaDataTest {
         MySQLDatabaseType databaseType = new MySQLDatabaseType();
         ShardingSphereDatabase actual = ShardingSphereDatabase.create("foo_db", databaseType, databaseType,
                 mock(DataSourceProvidedDatabaseConfiguration.class), new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
-        assertNotNull(actual.getSchemas().get("foo_db"));
+        assertNotNull(actual.getSchema("foo_db"));
     }
 }

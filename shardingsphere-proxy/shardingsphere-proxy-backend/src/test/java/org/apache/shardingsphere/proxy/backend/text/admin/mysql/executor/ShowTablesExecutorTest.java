@@ -80,7 +80,7 @@ public final class ShowTablesExecutorTest extends ProxyContextRestorer {
         tables.put("t_test", new ShardingSphereTable("T_TEST", Collections.emptyList(), Collections.emptyList(), Collections.emptyList()));
         ShardingSphereSchema schema = new ShardingSphereSchema(tables);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getSchemas().get(String.format(DATABASE_PATTERN, 0))).thenReturn(schema);
+        when(database.getSchema(String.format(DATABASE_PATTERN, 0))).thenReturn(schema);
         when(database.isComplete()).thenReturn(true);
         when(database.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         Map<String, ShardingSphereDatabase> result = new HashMap<>(2, 1);

@@ -106,7 +106,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
             throw new DatabaseNotExistedException(databaseName);
         }
         String defaultSchema = DatabaseTypeEngine.getDefaultSchemaName(getDatabaseType(), databaseName);
-        return tablesContext.getSchemaName().map(optional -> database.getSchemas().get(optional)).orElseGet(() -> database.getSchemas().get(defaultSchema));
+        return tablesContext.getSchemaName().map(optional -> database.getSchema(optional)).orElseGet(() -> database.getSchema(defaultSchema));
     }
     
     private Collection<SimpleTableSegment> getAllSimpleTableSegments() {
