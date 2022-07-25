@@ -131,7 +131,7 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         for (Entry<String, YamlProxyDataSourceConfiguration> entry : yamlDataSourceMap.entrySet()) {
             dataSourcePropsMap.put(entry.getKey(), DataSourcePropertiesCreator.create(HikariDataSource.class.getName(), dataSourceConfigSwapper.swap(entry.getValue())));
         }
-        validator.validate(dataSourcePropsMap);
+        validator.validate(dataSourcePropsMap, getConnectionSession().getDatabaseType());
         try {
             ProxyContext.getInstance().getContextManager().updateResources(databaseName, dataSourcePropsMap);
         } catch (final SQLException ex) {
