@@ -34,7 +34,7 @@ public final class ShowSQLTranslatorRuleHandler extends QueryableRALBackendHandl
     
     private static final String TYPE = "type";
     
-    private static final String USE_ORIGINAL_SQL_WHEN_TRANSLATING_FAILED = "useOriginalSQLWhenTranslatingFailed";
+    private static final String USE_ORIGINAL_SQL_WHEN_TRANSLATING_FAILED = "use_original_sql_when_translating_failed";
     
     @Override
     protected Collection<String> getColumnNames() {
