@@ -32,23 +32,19 @@ public final class ShardingRemoveTokenGeneratorTest {
     
     @Test
     public void assertIsGenerateSQLTokenWithNonSelectStatement() {
-        ShardingRemoveTokenGenerator shardingRemoveTokenGenerator = new ShardingRemoveTokenGenerator();
-        assertFalse(shardingRemoveTokenGenerator.isGenerateSQLToken(mock(InsertStatementContext.class)));
+        assertFalse(new ShardingRemoveTokenGenerator().isGenerateSQLToken(mock(InsertStatementContext.class)));
     }
     
     @Test
     public void assertIsGenerateSQLTokenWithEmptyAggregationDistinctProjections() {
-        ShardingRemoveTokenGenerator shardingRemoveTokenGenerator = new ShardingRemoveTokenGenerator();
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(selectStatementContext.getProjectionsContext().getAggregationDistinctProjections().isEmpty()).thenReturn(Boolean.TRUE);
-        assertFalse(shardingRemoveTokenGenerator.isGenerateSQLToken(selectStatementContext));
+        when(selectStatementContext.getProjectionsContext().getAggregationDistinctProjections().isEmpty()).thenReturn(true);
+        assertFalse(new ShardingRemoveTokenGenerator().isGenerateSQLToken(selectStatementContext));
     }
     
     @Test
     public void assertIsGenerateSQLTokenWithNonEmptyAggregationDistinctProjections() {
-        ShardingRemoveTokenGenerator shardingRemoveTokenGenerator = new ShardingRemoveTokenGenerator();
         SelectStatementContext selectStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        when(selectStatementContext.getProjectionsContext().getAggregationDistinctProjections().isEmpty()).thenReturn(Boolean.FALSE);
-        assertTrue(shardingRemoveTokenGenerator.isGenerateSQLToken(selectStatementContext));
+        assertTrue(new ShardingRemoveTokenGenerator().isGenerateSQLToken(selectStatementContext));
     }
 }
