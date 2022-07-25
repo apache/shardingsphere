@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.test.integration.framework.param.model;
 
-import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
