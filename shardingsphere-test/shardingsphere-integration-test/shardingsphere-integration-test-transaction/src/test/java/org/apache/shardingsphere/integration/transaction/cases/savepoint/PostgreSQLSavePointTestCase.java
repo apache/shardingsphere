@@ -54,18 +54,20 @@ public final class PostgreSQLSavePointTestCase extends BaseSavePointTestCase {
             conn.setSavepoint("point");
             Assert.fail("Expect exception, but no exception report.");
         } catch (SQLException ex) {
-            Assert.assertEquals("25P01", ex.getSQLState());
+            Assert.assertEquals("Savepoint can only be used in transaction blocks.", ex.getMessage());
         }
         try {
             conn.rollback(new PSQLSavepoint("point1"));
             Assert.fail("Expect exception, but no exception report.");
         } catch (SQLException ex) {
+            // TODO can not run to get the correct result in JDBC mode. 
             Assert.assertTrue(ex.getMessage().endsWith("ERROR: ROLLBACK TO SAVEPOINT can only be used in transaction blocks"));
         }
         try {
             conn.releaseSavepoint(new PSQLSavepoint("point1"));
             Assert.fail("Expect exception, but no exception report.");
         } catch (SQLException ex) {
+            // TODO can not run to get the correct result in JDBC mode.
             Assert.assertTrue(ex.getMessage().endsWith("ERROR: RELEASE SAVEPOINT can only be used in transaction blocks"));
         }
     }

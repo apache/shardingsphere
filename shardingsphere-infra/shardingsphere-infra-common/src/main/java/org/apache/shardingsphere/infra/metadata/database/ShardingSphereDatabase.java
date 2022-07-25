@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.metadata.database;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
@@ -47,7 +46,6 @@ import java.util.stream.Collectors;
 /**
  * ShardingSphere database.
  */
-@RequiredArgsConstructor
 @Getter
 public final class ShardingSphereDatabase {
     
@@ -60,6 +58,16 @@ public final class ShardingSphereDatabase {
     private final ShardingSphereRuleMetaData ruleMetaData;
     
     private final Map<String, ShardingSphereSchema> schemas;
+    
+    public ShardingSphereDatabase(final String name, final DatabaseType protocolType, final ShardingSphereResource resource,
+                                  final ShardingSphereRuleMetaData ruleMetaData, final Map<String, ShardingSphereSchema> schemas) {
+        this.name = name;
+        this.protocolType = protocolType;
+        this.resource = resource;
+        this.ruleMetaData = ruleMetaData;
+        this.schemas = new ConcurrentHashMap<>(schemas);
+        schemas.forEach((key, value) -> this.schemas.put(key.toLowerCase(), value));
+    }
     
     /**
      * Create database meta data.
@@ -105,6 +113,45 @@ public final class ShardingSphereDatabase {
     
     private static ShardingSphereResource createResource(final Map<String, DataSource> dataSourceMap) {
         return new ShardingSphereResource(dataSourceMap);
+    }
+    
+    /**
+     * Get schema.
+     *
+     * @param schemaName schema name
+     * @return schema
+     */
+    public ShardingSphereSchema getSchema(final String schemaName) {
+        return schemas.get(schemaName.toLowerCase());
+    }
+    
+    /**
+     * Put schema.
+     *
+     * @param schemaName schema name
+     * @param schema schema
+     */
+    public void putSchema(final String schemaName, final ShardingSphereSchema schema) {
+        schemas.put(schemaName.toLowerCase(), schema);
+    }
+    
+    /**
+     * Remove schema.
+     *
+     * @param schemaName schema name
+     */
+    public void removeSchema(final String schemaName) {
+        schemas.remove(schemaName.toLowerCase());
+    }
+    
+    /**
+     * Judge contains schema from database or not.
+     *
+     * @param schemaName schema name
+     * @return contains schema from database or not
+     */
+    public boolean containsSchema(final String schemaName) {
+        return schemas.containsKey(schemaName.toLowerCase());
     }
     
     /**

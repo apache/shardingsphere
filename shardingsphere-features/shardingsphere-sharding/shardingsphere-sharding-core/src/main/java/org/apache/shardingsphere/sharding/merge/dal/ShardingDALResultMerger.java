@@ -61,7 +61,7 @@ public final class ShardingDALResultMerger implements ResultMerger {
         if (dalStatement instanceof MySQLShowDatabasesStatement) {
             return new LocalDataMergedResult(Collections.singleton(new LocalDataQueryResultRow(databaseName)));
         }
-        ShardingSphereSchema schema = database.getSchemas().get(schemaName);
+        ShardingSphereSchema schema = database.getSchema(schemaName);
         if (dalStatement instanceof MySQLShowTablesStatement) {
             return new LogicTablesMergedResult(shardingRule, sqlStatementContext, schema, queryResults);
         }

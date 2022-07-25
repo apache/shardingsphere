@@ -67,7 +67,7 @@ public final class ShowShardingHintStatusExecutor extends AbstractHintQueryExecu
             throw new RuleNotExistedException();
         }
         String schemaName = DatabaseTypeEngine.getDefaultSchemaName(connectionSession.getDatabaseType(), connectionSession.getDatabaseName());
-        Collection<String> tableNames = database.getSchemas().get(schemaName).getAllTableNames();
+        Collection<String> tableNames = database.getSchema(schemaName).getAllTableNames();
         for (String each : tableNames) {
             if (HintManager.isDatabaseShardingOnly()) {
                 fillShardingValues(results, each, HintManager.getDatabaseShardingValues(), Collections.emptyList());
