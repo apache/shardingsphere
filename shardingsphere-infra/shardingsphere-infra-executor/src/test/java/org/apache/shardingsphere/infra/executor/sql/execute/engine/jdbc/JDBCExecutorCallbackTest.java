@@ -102,14 +102,14 @@ public final class JDBCExecutorCallbackTest {
     @Test
     public void assertExecuteFailedAndProtocolTypeDifferentWithDatabaseType() throws SQLException {
         Object saneResult = new Object();
-        JDBCExecutorCallback<Object> callback = new JDBCExecutorCallback<Object>(DatabaseTypeFactory.getInstance("MySQL"), DatabaseTypeFactory.getInstance("PostgreSQL"), 
+        JDBCExecutorCallback<Object> callback = new JDBCExecutorCallback<Object>(DatabaseTypeFactory.getInstance("MySQL"), DatabaseTypeFactory.getInstance("PostgreSQL"),
                 mock(SelectStatement.class), true, new EventBusContext()) {
-        
+            
             @Override
             protected Object executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 throw new SQLException();
             }
-        
+            
             @Override
             protected Optional<Object> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
                 return Optional.of(saneResult);
@@ -123,12 +123,12 @@ public final class JDBCExecutorCallbackTest {
     public void assertExecuteSQLExceptionOccurredAndProtocolTypeSameAsDatabaseType() throws SQLException {
         JDBCExecutorCallback<Object> callback = new JDBCExecutorCallback<Object>(DatabaseTypeFactory.getInstance("MySQL"), DatabaseTypeFactory.getInstance("PostgreSQL"),
                 mock(SelectStatement.class), true, new EventBusContext()) {
-        
+            
             @Override
             protected Object executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
                 throw new SQLException();
             }
-        
+            
             @Override
             protected Optional<Object> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
                 return Optional.empty();
