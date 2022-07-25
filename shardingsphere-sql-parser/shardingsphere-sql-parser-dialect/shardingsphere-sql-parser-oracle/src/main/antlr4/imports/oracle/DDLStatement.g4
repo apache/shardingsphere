@@ -3262,7 +3262,7 @@ clauseOptions
 
 optionClauses
     : EQ_ LP_ clauseOptionOrPattern (COMMA_ clauseOptionOrPattern)* RP_
-    | EQ_ LP_ SQ_ clauseOption SQ_ RP_ optionValues+
+    | EQ_ LP_ clauseOption RP_ optionValues+
     | ALL (EXCEPT EQ_ LP_ clauseOptionOrPattern (COMMA_ clauseOptionOrPattern)* RP_)?
     ;
 
