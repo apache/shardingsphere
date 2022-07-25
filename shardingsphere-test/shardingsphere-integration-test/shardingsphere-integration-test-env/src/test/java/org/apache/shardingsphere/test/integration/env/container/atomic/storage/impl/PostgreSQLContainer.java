@@ -45,7 +45,7 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
     protected void configure() {
         List<String> commandParts = new LinkedList<>();
         for (String each : CommandPartUtil.mergeCommandParts(DEFAULT_COMMAND_PARTS, this.commandParts)) {
-            commandParts.add("--");
+            commandParts.add("-c");
             commandParts.add(each);
         }
         setCommand(commandParts.toArray(new String[0]));
