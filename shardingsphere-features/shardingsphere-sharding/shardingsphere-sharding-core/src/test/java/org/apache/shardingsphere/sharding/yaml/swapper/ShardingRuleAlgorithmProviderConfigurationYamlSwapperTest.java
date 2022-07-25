@@ -1,4 +1,3 @@
-
 /*
  * Licensed to the Apache Software Foundation (ASF) under one or more
  * contributor license agreements.  See the NOTICE file distributed with
@@ -22,72 +21,83 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfiguration
 import org.apache.shardingsphere.sharding.algorithm.config.AlgorithmProvidedShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
-import org.junit.Before;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardingAuditStrategyConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
 import org.junit.Test;
 
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 
 public final class ShardingRuleAlgorithmProviderConfigurationYamlSwapperTest {
-
-    private AlgorithmProvidedShardingRuleConfiguration ruleConfig;
-
-    @Before
-    public void setUp() {
-        ruleConfig = mock(AlgorithmProvidedShardingRuleConfiguration.class);
-    }
-
+    
     @Test
     public void assertSwapToYamlConfiguration() {
-        YamlShardingRuleConfiguration actualResult = getSwapper().swapToYamlConfiguration(createAlgorithmProvidedShardingRuleConfiguration());
-        assertNotNull(actualResult);
-        assertThat(actualResult.getDefaultShardingColumn(), equalTo("foo_column"));
-        assertThat(actualResult.getScalingName(), equalTo("foo_scale_name"));
+        YamlShardingRuleConfiguration actual = getSwapper().swapToYamlConfiguration(createAlgorithmProvidedShardingRuleConfiguration());
+        assertFalse(actual.getBindingTables().isEmpty());
+        assertFalse(actual.getBroadcastTables().isEmpty());
+        assertThat(actual.getDefaultShardingColumn(), is("foo_column"));
+        assertThat(actual.getScalingName(), is("foo_scale_name"));
     }
-
+    
+    private AlgorithmProvidedShardingRuleConfiguration createAlgorithmProvidedShardingRuleConfiguration() {
+        AlgorithmProvidedShardingRuleConfiguration result = new AlgorithmProvidedShardingRuleConfiguration();
+        result.getTables().add(new ShardingTableRuleConfiguration("foo_db"));
+        result.getAutoTables().add(new ShardingAutoTableRuleConfiguration("foo_db"));
+        result.getBindingTableGroups().add("foo_bind_tb");
+        result.setBroadcastTables(Collections.singleton("foo_broad_cast_tb"));
+        result.setDefaultDatabaseShardingStrategy(mock(ShardingStrategyConfiguration.class));
+        result.setDefaultTableShardingStrategy(mock(ShardingStrategyConfiguration.class));
+        result.setDefaultKeyGenerateStrategy(mock(KeyGenerateStrategyConfiguration.class));
+        result.setDefaultAuditStrategy(mock(ShardingAuditStrategyConfiguration.class));
+        result.setDefaultShardingColumn("foo_column");
+        result.setScalingName("foo_scale_name");
+        return result;
+    }
+    
     @Test
     public void assertSwapToObject() {
-        AlgorithmProvidedShardingRuleConfiguration algorithmProvidedShardingRuleConfiguration = getSwapper().swapToObject(createYamlShardingRuleConfiguration());
-        assertThat(algorithmProvidedShardingRuleConfiguration.getDefaultShardingColumn(), equalTo("foo_column"));
+        AlgorithmProvidedShardingRuleConfiguration actual = getSwapper().swapToObject(createYamlShardingRuleConfiguration());
+        assertFalse(actual.getTables().isEmpty());
+        assertFalse(actual.getAutoTables().isEmpty());
+        assertFalse(actual.getBindingTableGroups().isEmpty());
+        assertFalse(actual.getBroadcastTables().isEmpty());
+        assertThat(actual.getDefaultShardingColumn(), is("foo_column"));
     }
-
-    @Test
-    public void assertGetRuleTagName() {
-        assertThat(getSwapper().getRuleTagName(), equalTo("SHARDING"));
-    }
-
-    private ShardingRuleAlgorithmProviderConfigurationYamlSwapper getSwapper() {
-        return (ShardingRuleAlgorithmProviderConfigurationYamlSwapper) YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurations(Collections.singletonList(ruleConfig)).get(ruleConfig);
-    }
-
-    private AlgorithmProvidedShardingRuleConfiguration createAlgorithmProvidedShardingRuleConfiguration() {
-        AlgorithmProvidedShardingRuleConfiguration algorithmProvidedShardingRuleConfiguration = new AlgorithmProvidedShardingRuleConfiguration();
-        ShardingTableRuleConfiguration shardingTableRuleConfiguration = new ShardingTableRuleConfiguration("foo_db");
-        algorithmProvidedShardingRuleConfiguration.setTables(Collections.singletonList(shardingTableRuleConfiguration));
-        ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfiguration = new ShardingAutoTableRuleConfiguration("foo_db");
-        algorithmProvidedShardingRuleConfiguration.setAutoTables(Collections.singletonList(shardingAutoTableRuleConfiguration));
-        algorithmProvidedShardingRuleConfiguration.setBindingTableGroups(Collections.singletonList("foo_bind_tb"));
-        algorithmProvidedShardingRuleConfiguration.setDefaultShardingColumn("foo_column");
-        algorithmProvidedShardingRuleConfiguration.setScalingName("foo_scale_name");
-        return algorithmProvidedShardingRuleConfiguration;
-    }
-
+    
     private YamlShardingRuleConfiguration createYamlShardingRuleConfiguration() {
-        YamlShardingRuleConfiguration yamlShardingRuleConfiguration = new YamlShardingRuleConfiguration();
-        Map<String, YamlTableRuleConfiguration> yamlTableRuleConfigurationMap = new HashMap<>();
-        YamlTableRuleConfiguration yamlTableRuleConfiguration = new YamlTableRuleConfiguration();
-        yamlTableRuleConfiguration.setLogicTable("foo_tbl");
-        yamlTableRuleConfigurationMap.put("foo_key", yamlTableRuleConfiguration);
-        yamlShardingRuleConfiguration.setTables(yamlTableRuleConfigurationMap);
-        yamlShardingRuleConfiguration.setDefaultShardingColumn("foo_column");
-        return yamlShardingRuleConfiguration;
+        YamlShardingRuleConfiguration result = new YamlShardingRuleConfiguration();
+        YamlTableRuleConfiguration yamlTableRuleConfig = new YamlTableRuleConfiguration();
+        yamlTableRuleConfig.setLogicTable("foo_tbl");
+        result.getTables().put("foo_key", yamlTableRuleConfig);
+        YamlShardingAutoTableRuleConfiguration yamlShardingAutoTableRuleConfiguration = new YamlShardingAutoTableRuleConfiguration();
+        yamlShardingAutoTableRuleConfiguration.setLogicTable("foo_auto_tbl");
+        result.getAutoTables().put("foo_auto_key", yamlShardingAutoTableRuleConfiguration);
+        result.setBindingTables(Collections.singleton("foo_btb"));
+        result.setBroadcastTables(Collections.singleton("foo_ctb"));
+        result.setDefaultDatabaseStrategy(mock(YamlShardingStrategyConfiguration.class));
+        result.setDefaultTableStrategy(mock(YamlShardingStrategyConfiguration.class));
+        YamlKeyGenerateStrategyConfiguration yamlKeyGenerateStrategyConfiguration = new YamlKeyGenerateStrategyConfiguration();
+        yamlKeyGenerateStrategyConfiguration.setColumn("foo_column");
+        result.setDefaultKeyGenerateStrategy(yamlKeyGenerateStrategyConfiguration);
+        result.setDefaultAuditStrategy(mock(YamlShardingAuditStrategyConfiguration.class));
+
+        result.setDefaultShardingColumn("foo_column");
+        return result;
+    }
+    
+    private ShardingRuleAlgorithmProviderConfigurationYamlSwapper getSwapper() {
+        AlgorithmProvidedShardingRuleConfiguration ruleConfig = mock(AlgorithmProvidedShardingRuleConfiguration.class);
+        return (ShardingRuleAlgorithmProviderConfigurationYamlSwapper) YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurations(Collections.singleton(ruleConfig)).get(ruleConfig);
     }
 }

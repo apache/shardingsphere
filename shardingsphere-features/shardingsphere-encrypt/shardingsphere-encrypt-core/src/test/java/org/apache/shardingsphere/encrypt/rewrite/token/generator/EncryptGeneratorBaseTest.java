@@ -75,7 +75,7 @@ public abstract class EncryptGeneratorBaseTest {
         result.getValues().add(new InsertValuesSegment(0, 0, createValueExpressions()));
         return result;
     }
-
+    
     private static List<ExpressionSegment> createValueExpressions() {
         List<ExpressionSegment> result = new ArrayList<>(4);
         result.add(new ParameterMarkerExpressionSegment(0, 0, 1));

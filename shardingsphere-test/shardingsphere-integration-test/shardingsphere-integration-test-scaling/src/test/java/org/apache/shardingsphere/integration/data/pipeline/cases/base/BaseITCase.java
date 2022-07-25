@@ -35,11 +35,11 @@ import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEn
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.BaseComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.DockerComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.NativeComposedContainer;
-import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.DatabaseContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.integration.data.pipeline.framework.watcher.ScalingWatcher;
 import org.apache.shardingsphere.integration.data.pipeline.util.DatabaseTypeUtil;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.junit.Rule;
 import org.opengauss.util.PSQLException;
@@ -118,9 +118,9 @@ public abstract class BaseITCase {
         }
         composedContainer.start();
         if (ENV.getItEnvType() == ScalingITEnvTypeEnum.DOCKER) {
-            DatabaseContainer databaseContainer = ((DockerComposedContainer) composedContainer).getDatabaseContainer();
-            username = databaseContainer.getUsername();
-            password = databaseContainer.getPassword();
+            DockerStorageContainer storageContainer = ((DockerComposedContainer) composedContainer).getStorageContainer();
+            username = storageContainer.getUsername();
+            password = storageContainer.getUnifiedPassword();
         } else {
             username = ENV.getActualDataSourceUsername(databaseType);
             password = ENV.getActualDataSourcePassword(databaseType);
@@ -148,7 +148,7 @@ public abstract class BaseITCase {
         if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
             jdbcUrl = JDBC_URL_APPENDER.appendQueryProperties(jdbcUrl, ScalingCaseHelper.getPostgreSQLQueryProperties());
         }
-        try (Connection connection = DriverManager.getConnection(jdbcUrl, "root", "root")) {
+        try (Connection connection = DriverManager.getConnection(jdbcUrl, "root", "Root@123")) {
             if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
                 try {
                     executeWithLog(connection, "DROP DATABASE sharding_db");
@@ -168,7 +168,7 @@ public abstract class BaseITCase {
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(getDatabaseType()));
         result.setJdbcUrl(composedContainer.getProxyJdbcUrl(databaseName));
         result.setUsername("root");
-        result.setPassword("root");
+        result.setPassword("Root@123");
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
@@ -193,13 +193,13 @@ public abstract class BaseITCase {
     protected void addSourceResource() {
         // TODO if mysql can append database firstly, they can be combined
         if (databaseType instanceof MySQLDatabaseType) {
-            try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl(""), "root", "root")) {
+            try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl(""), "root", "Root@123")) {
                 connection.createStatement().execute("USE sharding_db");
                 addSourceResource0(connection);
             }
         } else {
             Properties queryProps = ScalingCaseHelper.getPostgreSQLQueryProperties();
-            try (Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl("sharding_db"), queryProps), "root", "root")) {
+            try (Connection connection = DriverManager.getConnection(JDBC_URL_APPENDER.appendQueryProperties(getComposedContainer().getProxyJdbcUrl("sharding_db"), queryProps), "root", "Root@123")) {
                 addSourceResource0(connection);
             }
         }
@@ -230,11 +230,10 @@ public abstract class BaseITCase {
     
     private String getActualJdbcUrlTemplate(final String databaseName) {
         if (ScalingITEnvTypeEnum.DOCKER == ENV.getItEnvType()) {
-            final DatabaseContainer databaseContainer = ((DockerComposedContainer) composedContainer).getDatabaseContainer();
-            return DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", databaseContainer.getPort(), databaseName);
-        } else {
-            return DataSourceEnvironment.getURL(getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), databaseName);
+            DockerStorageContainer storageContainer = ((DockerComposedContainer) composedContainer).getStorageContainer();
+            return DataSourceEnvironment.getURL(getDatabaseType(), getDatabaseType().getType().toLowerCase() + ".host", storageContainer.getPort(), databaseName);
         }
+        return DataSourceEnvironment.getURL(getDatabaseType(), "127.0.0.1", ENV.getActualDataSourceDefaultPort(databaseType), databaseName);
     }
     
     protected void initShardingAlgorithm() {
