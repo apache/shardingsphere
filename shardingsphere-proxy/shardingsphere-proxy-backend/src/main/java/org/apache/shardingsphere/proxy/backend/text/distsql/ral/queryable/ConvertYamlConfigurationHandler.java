@@ -153,8 +153,8 @@ public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<
             ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfigurationYamlSwapper().swapToObject((YamlShardingRuleConfiguration) rule);
             appendShardingAlgorithm(shardingRuleConfig, stringBuilder);
             appendShardingTableRules(shardingRuleConfig, stringBuilder);
+            appendShardingBindingTableRules(shardingRuleConfig, stringBuilder);
         }
-
     }
 
     private void appendShardingAlgorithm(final ShardingRuleConfiguration shardingRuleConfig, final StringBuilder stringBuilder) {
@@ -199,7 +199,7 @@ public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<
                 stringBuilder.append(DistSQLScriptConstants.COMMA);
             }
         }
-        stringBuilder.append(DistSQLScriptConstants.SEMI);
+        stringBuilder.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
     }
 
     private String appendTableStrategy(final ShardingTableRuleConfiguration shardingTableRuleConfig) {
@@ -214,6 +214,24 @@ public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<
             String shardingAlgorithmName = shardingTableRuleConfig.getTableShardingStrategy().getShardingAlgorithmName();
             result.append(String.format(DistSQLScriptConstants.TABLE_SHARDING_STRATEGY, shardingColumn, shardingAlgorithmName));
         }
+        return result.toString();
+    }
+    
+    private void appendShardingBindingTableRules(final ShardingRuleConfiguration shardingRuleConfig, final StringBuilder stringBuilder) {
+        String bindings = getBinding(shardingRuleConfig.getBindingTableGroups().iterator());
+        stringBuilder.append(String.format(DistSQLScriptConstants.SHARDING_BINDING_TABLE_RULES, bindings));
+    }
+
+    private String getBinding(final Iterator<String> iterator) {
+        StringBuilder result = new StringBuilder();
+        while (iterator.hasNext()) {
+            String binding = iterator.next();
+            result.append(String.format(DistSQLScriptConstants.BINDING, binding));
+            if (iterator.hasNext()) {
+                result.append(DistSQLScriptConstants.COMMA);
+            }
+        }
+        result.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
         return result.toString();
     }
 }

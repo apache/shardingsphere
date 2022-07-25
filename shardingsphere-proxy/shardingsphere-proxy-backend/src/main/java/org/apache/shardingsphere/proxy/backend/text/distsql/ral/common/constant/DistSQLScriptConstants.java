@@ -86,4 +86,8 @@ public final class DistSQLScriptConstants {
             + System.lineSeparator();
 
     public static final String TABLE_SHARDING_STRATEGY = "TABLE_STRATEGY(TYPE=standard, SHARDING_COLUMN=%s, SHARDING_ALGORITHM=%s)";
+    
+    public static final String SHARDING_BINDING_TABLE_RULES = "CREATE SHARDING BINDING TABLE RULES %s";
+
+    public static final String BINDING = "(%s)";
 }
