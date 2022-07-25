@@ -41,7 +41,7 @@ public final class MySQLContainer extends DockerStorageContainer {
     
     @Override
     protected void configure() {
-        withCommand(CommandPartUtil.mergeCommandParts(DEFAULT_COMMAND_PARTS, extraCommandParts));
+        setCommand(CommandPartUtil.mergeCommandParts(DEFAULT_COMMAND_PARTS, extraCommandParts));
         addEnv("LANG", "C.UTF-8");
         addEnv("MYSQL_ROOT_PASSWORD", getUnifiedPassword());
         addEnv("MYSQL_ROOT_HOST", "%");

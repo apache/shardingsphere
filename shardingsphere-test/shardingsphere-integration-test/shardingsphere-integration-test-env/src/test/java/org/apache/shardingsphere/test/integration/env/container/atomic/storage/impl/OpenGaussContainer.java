@@ -32,7 +32,7 @@ import java.util.Optional;
  */
 public final class OpenGaussContainer extends DockerStorageContainer {
     
-    private static final String[] DEFAULT_COMMANDS_PARTS = new String[]{"max_connections=400"};
+    private static final String[] DEFAULT_COMMANDS_PARTS = new String[]{"max_connections=400", "wal_level=logical", "max_replication_slots=10", "wal_sender_timeout=0"};
     
     private final String[] extraCommandParts;
     

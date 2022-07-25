@@ -31,8 +31,8 @@ import java.util.Optional;
  */
 public final class PostgreSQLContainer extends DockerStorageContainer {
     
-    private static final String[] DEFAULT_COMMANDS_PARTS = new String[]{"max_connections=400", "wal_level=logical", "max_replication_slots=10", "log_timezone=Asia/Shanghai", "listen_addresses=*",
-            "wal_sender_timeout=0", "TimeZone=Asia/Shanghai"};
+    private static final String[] DEFAULT_COMMANDS_PARTS = new String[]{"max_connections=400", "wal_level=logical", "max_replication_slots=10", "log_timezone=Asia/Shanghai", "wal_sender_timeout=0",
+            "TimeZone=Asia/Shanghai"};
     
     private final String[] extraCommandParts;
     
