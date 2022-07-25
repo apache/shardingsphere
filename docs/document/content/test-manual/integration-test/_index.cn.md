@@ -176,7 +176,7 @@ IDEA -> Run -> Edit Configurations -> Add New Configuration -> Remote JVM Debug
 
 编辑对应的信息：
 Name : 一个描述性的名字，例如 docker-debug
-Host : 可以访问 docker 的 ip，例如本机启动的 Docker 127.0.0.1
+Host : 可以访问 docker 的 IP，例如本机启动的 Docker 127.0.0.1
 Port : 调试端口 3308
 use module classpath : 项目根目录 shardingsphere
 
