@@ -114,8 +114,8 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
         List<ReadwriteSplittingDataSourceRuleConfiguration> configurations = Arrays.asList(createDataSourceRuleConfig("write_ds_0", Arrays.asList("read_ds_0", "read_ds_1")));
         when(config.getDataSources()).thenReturn(configurations);
         Properties props = new Properties();
-        props.setProperty("read_ds_2",  "1");
-        props.setProperty("read_ds_1",  "2");
+        props.setProperty("read_ds_2", "1");
+        props.setProperty("read_ds_1", "2");
         ShardingSphereAlgorithmConfiguration algorithm = new ShardingSphereAlgorithmConfiguration("WEIGHT", props);
         when(config.getLoadBalancers()).thenReturn(Collections.singletonMap("weight_ds", algorithm));
         Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);

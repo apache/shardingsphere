@@ -28,7 +28,7 @@ public final class RuleConfigurationFixtureChecker implements RuleConfigurationC
     
     @Override
     public void check(final String databaseName, final RuleConfigurationFixture config,
-                      final Map<String, DataSource> dataSourceMap, Collection<ShardingSphereRule> rules) {
+                      final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
     }
     
     @Override
