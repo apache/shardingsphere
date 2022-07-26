@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.context.SQLUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutorCallback;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -46,7 +47,6 @@ import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -71,6 +71,7 @@ public final class JDBCExecutorCallbackTest {
         when(databaseMetaData.getURL()).thenReturn("jdbc:mysql://localhost:3306/test");
         units = Collections.singletonList(
                 new JDBCExecutionUnit(new ExecutionUnit("ds", new SQLUnit("SELECT now()", Collections.emptyList())), ConnectionMode.CONNECTION_STRICTLY, preparedStatement));
+        SQLExecutorExceptionHandler.setExceptionThrown(true);
     }
     
     @SuppressWarnings("unchecked")
@@ -92,10 +93,47 @@ public final class JDBCExecutorCallbackTest {
         Field field = JDBCExecutorCallback.class.getDeclaredField("CACHED_DATASOURCE_METADATA");
         field.setAccessible(true);
         Map<String, DataSourceMetaData> cachedDataSourceMetaData = (Map<String, DataSourceMetaData>) field.get(jdbcExecutorCallback);
-        assertTrue(cachedDataSourceMetaData.isEmpty());
         jdbcExecutorCallback.execute(units, true, Collections.emptyMap());
         assertThat(cachedDataSourceMetaData.size(), is(1));
         jdbcExecutorCallback.execute(units, true, Collections.emptyMap());
         assertThat(cachedDataSourceMetaData.size(), is(1));
+    }
+    
+    @Test
+    public void assertExecuteFailedAndProtocolTypeDifferentWithDatabaseType() throws SQLException {
+        Object saneResult = new Object();
+        JDBCExecutorCallback<Object> callback = new JDBCExecutorCallback<Object>(DatabaseTypeFactory.getInstance("MySQL"), DatabaseTypeFactory.getInstance("PostgreSQL"),
+                mock(SelectStatement.class), true, new EventBusContext()) {
+            
+            @Override
+            protected Object executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+                throw new SQLException();
+            }
+            
+            @Override
+            protected Optional<Object> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
+                return Optional.of(saneResult);
+            }
+        };
+        assertThat(callback.execute(units, true, Collections.emptyMap()), is(Collections.singletonList(saneResult)));
+        assertThat(callback.execute(units, false, Collections.emptyMap()), is(Collections.emptyList()));
+    }
+    
+    @Test(expected = SQLException.class)
+    public void assertExecuteSQLExceptionOccurredAndProtocolTypeSameAsDatabaseType() throws SQLException {
+        JDBCExecutorCallback<Object> callback = new JDBCExecutorCallback<Object>(DatabaseTypeFactory.getInstance("MySQL"), DatabaseTypeFactory.getInstance("PostgreSQL"),
+                mock(SelectStatement.class), true, new EventBusContext()) {
+            
+            @Override
+            protected Object executeSQL(final String sql, final Statement statement, final ConnectionMode connectionMode) throws SQLException {
+                throw new SQLException();
+            }
+            
+            @Override
+            protected Optional<Object> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
+                return Optional.empty();
+            }
+        };
+        callback.execute(units, true, Collections.emptyMap());
     }
 }
