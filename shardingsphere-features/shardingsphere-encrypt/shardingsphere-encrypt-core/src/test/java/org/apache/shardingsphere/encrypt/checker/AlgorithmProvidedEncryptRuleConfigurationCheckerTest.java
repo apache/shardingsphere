@@ -44,7 +44,7 @@ public final class AlgorithmProvidedEncryptRuleConfigurationCheckerTest {
         Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
         assertTrue(checker.isPresent());
         assertThat(checker.get(), instanceOf(AlgorithmProvidedEncryptRuleConfigurationChecker.class));
-        checker.get().check("test", config);
+        checker.get().check("test", config, Collections.emptyMap(), Collections.emptyList());
     }
     
     @SuppressWarnings("unchecked")
@@ -63,7 +63,7 @@ public final class AlgorithmProvidedEncryptRuleConfigurationCheckerTest {
         Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
         assertTrue(checker.isPresent());
         assertThat(checker.get(), instanceOf(AlgorithmProvidedEncryptRuleConfigurationChecker.class));
-        checker.get().check("test", config);
+        checker.get().check("test", config, Collections.emptyMap(), Collections.emptyList());
     }
     
     private AlgorithmProvidedEncryptRuleConfiguration createInvalidCipherColumnConfig() {
@@ -81,7 +81,7 @@ public final class AlgorithmProvidedEncryptRuleConfigurationCheckerTest {
         Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
         assertTrue(checker.isPresent());
         assertThat(checker.get(), instanceOf(AlgorithmProvidedEncryptRuleConfigurationChecker.class));
-        checker.get().check("test", config);
+        checker.get().check("test", config, Collections.emptyMap(), Collections.emptyList());
     }
     
     private AlgorithmProvidedEncryptRuleConfiguration createInvalidAssistColumnConfig() {
