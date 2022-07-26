@@ -153,7 +153,7 @@ Edit the corresponding info:
 Name : a name for this, like docker-debug
 Host : the IP could access container, like 127.0.0.1
 Port : the debug port 3308
-use module classpath : the root of the project shardingsphere
+use module classpath : project root directory shardingsphere
 
 after edit and save the upon info，Run -> Run -> docker-debug will start the remote debug to the Proxy inside docker container.
 
