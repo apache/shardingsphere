@@ -53,8 +53,6 @@ public abstract class AbstractShardingRuleConfigurationChecker<T extends RuleCon
     
     private void checkTableConfiguration(final String databaseName, final Collection<ShardingTableRuleConfiguration> tables, final Collection<ShardingAutoTableRuleConfiguration> autoTables,
                                          final Collection<String> keyGenerators, final Collection<String> auditors, final Collection<String> shardingAlgorithms) {
-        Preconditions.checkState(!tables.isEmpty() || !autoTables.isEmpty(),
-                "No available sharding table or autoTable configurations in database `%s`.", databaseName);
         for (ShardingTableRuleConfiguration each : tables) {
             checkKeyGenerateStrategy(databaseName, each.getKeyGenerateStrategy(), keyGenerators);
             checkAuditStrategy(databaseName, each.getAuditStrategy(), auditors);
