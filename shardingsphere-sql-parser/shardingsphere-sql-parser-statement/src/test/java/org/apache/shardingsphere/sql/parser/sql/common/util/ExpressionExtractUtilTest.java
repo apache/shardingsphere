@@ -129,8 +129,10 @@ public final class ExpressionExtractUtilTest {
         assertFindNotContainsNullLiteralsExpressionIsPresent(new LiteralExpressionSegment(0, 3, "null"), false);
         assertFindNotContainsNullLiteralsExpressionIsPresent(new LiteralExpressionSegment(0, 7, "NOT NULL"), false);
         assertFindNotContainsNullLiteralsExpressionIsPresent(new BinaryOperationExpression(0, 0, null, new LiteralExpressionSegment(0, 3, "NULL"), null, null), false);
+        assertFindNotContainsNullLiteralsExpressionIsPresent(new LiteralExpressionSegment(0, 5, "number"), true);
         assertFindNotContainsNullLiteralsExpressionIsPresent(new ColumnSegment(0, 5, new IdentifierValue("number")), true);
         assertFindNotContainsNullLiteralsExpressionIsPresent(new BinaryOperationExpression(0, 0, new ColumnSegment(0, 10, new IdentifierValue("number")), null, null, null), true);
+        assertFindNotContainsNullLiteralsExpressionIsPresent(new BinaryOperationExpression(0, 0, null, new LiteralExpressionSegment(0, 5, "number"), null, null), true);
     }
 
     private void assertFindNotContainsNullLiteralsExpressionIsPresent(final ExpressionSegment expression, final Boolean result) {
