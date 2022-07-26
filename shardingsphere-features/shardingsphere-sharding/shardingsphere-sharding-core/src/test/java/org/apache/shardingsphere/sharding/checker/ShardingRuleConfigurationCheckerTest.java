@@ -44,13 +44,7 @@ public final class ShardingRuleConfigurationCheckerTest {
         ShardingStrategyConfiguration shardingStrategyConfig = createShardingStrategyConfiguration();
         ruleConfig.setTables(Collections.singleton(createShardingTableRuleConfiguration(shardingStrategyConfig, shardingAuditStrategyConfig, ruleConfig.getDefaultKeyGenerateStrategy())));
         ruleConfig.setAutoTables(Collections.singleton(createShardingAutoTableRuleConfiguration(shardingStrategyConfig, shardingAuditStrategyConfig, ruleConfig.getDefaultKeyGenerateStrategy())));
-        getChecker(ruleConfig).check("foo_db", ruleConfig);
-    }
-    
-    @Test(expected = IllegalStateException.class)
-    public void assertCheckTableConfigurationInitFailed() {
-        ShardingRuleConfiguration ruleConfig = createRuleConfiguration();
-        getChecker(ruleConfig).check("foo_db", ruleConfig);
+        getChecker(ruleConfig).check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList());
     }
     
     @Test(expected = IllegalStateException.class)
@@ -58,7 +52,7 @@ public final class ShardingRuleConfigurationCheckerTest {
         ShardingRuleConfiguration configuration = createRuleConfiguration();
         configuration.setTables(Collections.singletonList(createShardingTableRuleConfiguration(null, null, null)));
         configuration.setAutoTables(Collections.singleton(createShardingAutoTableRuleConfiguration(null, null, null)));
-        getChecker(configuration).check("foo_db", configuration);
+        getChecker(configuration).check("foo_db", configuration, Collections.emptyMap(), Collections.emptyList());
     }
     
     private ShardingRuleConfiguration createRuleConfiguration() {

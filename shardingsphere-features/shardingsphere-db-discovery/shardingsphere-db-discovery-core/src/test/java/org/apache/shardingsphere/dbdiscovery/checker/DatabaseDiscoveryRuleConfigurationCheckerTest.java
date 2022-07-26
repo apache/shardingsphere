@@ -41,7 +41,7 @@ public final class DatabaseDiscoveryRuleConfigurationCheckerTest {
         Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
         assertTrue(checker.isPresent());
         assertThat(checker.get(), instanceOf(DatabaseDiscoveryRuleConfigurationChecker.class));
-        checker.get().check("test", config);
+        checker.get().check("test", config, Collections.emptyMap(), Collections.emptyList());
     }
     
     private DatabaseDiscoveryRuleConfiguration getValidConfiguration() {
@@ -59,7 +59,7 @@ public final class DatabaseDiscoveryRuleConfigurationCheckerTest {
         Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
         assertTrue(checker.isPresent());
         assertThat(checker.get(), instanceOf(DatabaseDiscoveryRuleConfigurationChecker.class));
-        checker.get().check("test", config);
+        checker.get().check("test", config, Collections.emptyMap(), Collections.emptyList());
     }
     
     private DatabaseDiscoveryRuleConfiguration getInvalidConfiguration() {

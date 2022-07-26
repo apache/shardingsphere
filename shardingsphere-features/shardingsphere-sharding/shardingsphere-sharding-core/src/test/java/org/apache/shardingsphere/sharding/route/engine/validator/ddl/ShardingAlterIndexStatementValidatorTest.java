@@ -58,8 +58,8 @@ public final class ShardingAlterIndexStatementValidatorTest {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
         when(table.getIndexes()).thenReturn(indexes);
-        when(database.getSchemas().get("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(database.getSchemas().get("public").get("t_order")).thenReturn(table);
+        when(database.getSchema("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
+        when(database.getSchema("public").get("t_order")).thenReturn(table);
         when(indexes.containsKey("t_order_index")).thenReturn(true);
         when(indexes.containsKey("t_order_index_new")).thenReturn(false);
         new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), database);
@@ -73,8 +73,8 @@ public final class ShardingAlterIndexStatementValidatorTest {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
         when(table.getIndexes()).thenReturn(indexes);
-        when(database.getSchemas().get("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(database.getSchemas().get("public").get("t_order")).thenReturn(table);
+        when(database.getSchema("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
+        when(database.getSchema("public").get("t_order")).thenReturn(table);
         when(indexes.containsKey("t_order_index")).thenReturn(false);
         new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), database);
     }
@@ -87,8 +87,8 @@ public final class ShardingAlterIndexStatementValidatorTest {
         ShardingSphereTable table = mock(ShardingSphereTable.class);
         Map<String, ShardingSphereIndex> indexes = mock(HashMap.class);
         when(table.getIndexes()).thenReturn(indexes);
-        when(database.getSchemas().get("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
-        when(database.getSchemas().get("public").get("t_order")).thenReturn(table);
+        when(database.getSchema("public").getAllTableNames()).thenReturn(Collections.singletonList("t_order"));
+        when(database.getSchema("public").get("t_order")).thenReturn(table);
         when(indexes.containsKey("t_order_index")).thenReturn(true);
         when(indexes.containsKey("t_order_index_new")).thenReturn(true);
         new ShardingAlterIndexStatementValidator().preValidate(shardingRule, new AlterIndexStatementContext(sqlStatement), Collections.emptyList(), database);

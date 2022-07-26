@@ -20,8 +20,11 @@ package org.apache.shardingsphere.integration.transaction.engine.mysql;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
+import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
+import org.apache.shardingsphere.transaction.core.TransactionType;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -30,6 +33,7 @@ import org.junit.runners.Parameterized.Parameters;
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * MySQL general transaction test case with proxy container, includes multiple cases.
@@ -51,6 +55,18 @@ public final class MySQLProxyTransactionIT extends BaseTransactionITCase {
         return getTransactionParameterizedList(MySQLProxyTransactionIT.class);
     }
     
+    @Before
+    @SneakyThrows(SQLException.class)
+    public void before() {
+        if (TransactionTestConstants.PROXY.equalsIgnoreCase(parameterized.getAdapter())) {
+            if (Objects.equals(parameterized.getTransactionType(), TransactionType.LOCAL)) {
+                alterLocalTransactionRule();
+            } else if (Objects.equals(parameterized.getTransactionType(), TransactionType.XA)) {
+                alterXaAtomikosTransactionRule();
+            }
+        }
+    }
+    
     @After
     @SneakyThrows(SQLException.class)
     public void after() {
@@ -60,15 +76,7 @@ public final class MySQLProxyTransactionIT extends BaseTransactionITCase {
     
     @Test
     @SneakyThrows
-    public void assertLocalTransaction() {
-        alterLocalTransactionRule();
-        callTestCases();
-    }
-    
-    @Test
-    @SneakyThrows
-    public void assertDistributedTransaction() {
-        alterXaAtomikosTransactionRule();
+    public void assertTransaction() {
         callTestCases();
     }
     

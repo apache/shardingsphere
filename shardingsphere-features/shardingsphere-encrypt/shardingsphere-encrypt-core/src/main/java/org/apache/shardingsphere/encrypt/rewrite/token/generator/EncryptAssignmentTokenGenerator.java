@@ -49,20 +49,20 @@ import java.util.Optional;
  * Assignment generator for encrypt.
  */
 @Setter
-public final class EncryptAssignmentTokenGenerator implements CollectionSQLTokenGenerator, EncryptRuleAware, DatabaseNameAware {
+public final class EncryptAssignmentTokenGenerator implements CollectionSQLTokenGenerator<SQLStatementContext<?>>, EncryptRuleAware, DatabaseNameAware {
     
     private EncryptRule encryptRule;
     
     private String databaseName;
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
         return sqlStatementContext instanceof UpdateStatementContext || (sqlStatementContext instanceof InsertStatementContext
                 && InsertStatementHandler.getSetAssignmentSegment(((InsertStatementContext) sqlStatementContext).getSqlStatement()).isPresent());
     }
     
     @Override
-    public Collection<EncryptAssignmentToken> generateSQLTokens(final SQLStatementContext sqlStatementContext) {
+    public Collection<EncryptAssignmentToken> generateSQLTokens(final SQLStatementContext<?> sqlStatementContext) {
         Collection<EncryptAssignmentToken> result = new LinkedList<>();
         String tableName = ((TableAvailable) sqlStatementContext).getAllTables().iterator().next().getTableName().getIdentifier().getValue();
         String schemaName = sqlStatementContext.getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(sqlStatementContext.getDatabaseType(), databaseName));

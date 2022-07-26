@@ -42,7 +42,7 @@ public final class MySQLQueryHeaderBuilder implements QueryHeaderBuilder {
         boolean primaryKey;
         if (null != actualTableName && null != database) {
             tableName = getLogicTableName(database, actualTableName);
-            ShardingSphereSchema schema = database.getSchemas().get(schemaName);
+            ShardingSphereSchema schema = database.getSchema(schemaName);
             primaryKey = null != schema
                     && Optional.ofNullable(schema.get(tableName)).map(optional -> optional.getColumns().get(columnName.toLowerCase())).map(ShardingSphereColumn::isPrimaryKey).orElse(false);
         } else {

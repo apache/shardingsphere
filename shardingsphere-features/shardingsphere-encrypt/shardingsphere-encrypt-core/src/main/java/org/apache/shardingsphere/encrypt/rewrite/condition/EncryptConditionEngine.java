@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenE
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.SimpleExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubqueryExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
@@ -110,7 +111,7 @@ public final class EncryptConditionEngine {
     }
     
     private void addEncryptConditions(final Collection<EncryptCondition> encryptConditions, final ExpressionSegment expression, final Map<String, String> expressionTableNames) {
-        if (!ExpressionExtractUtil.findNotContainsNullLiteralsExpression(expression).isPresent()) {
+        if (!findNotContainsNullLiteralsExpression(expression).isPresent()) {
             return;
         }
         for (ColumnSegment each : ColumnExtractor.extract(expression)) {
@@ -119,6 +120,24 @@ public final class EncryptConditionEngine {
             Optional<EncryptCondition> encryptCondition = encryptColumn.isPresent() ? createEncryptCondition(expression, tableName) : Optional.empty();
             encryptCondition.ifPresent(encryptConditions::add);
         }
+    }
+    
+    private Optional<ExpressionSegment> findNotContainsNullLiteralsExpression(final ExpressionSegment expression) {
+        if (isContainsNullLiterals(expression)) {
+            return Optional.empty();
+        }
+        if (expression instanceof BinaryOperationExpression && isContainsNullLiterals(((BinaryOperationExpression) expression).getRight())) {
+            return Optional.empty();
+        }
+        return Optional.ofNullable(expression);
+    }
+    
+    private boolean isContainsNullLiterals(final ExpressionSegment expression) {
+        if (!(expression instanceof LiteralExpressionSegment)) {
+            return false;
+        }
+        String literals = String.valueOf(((LiteralExpressionSegment) expression).getLiterals());
+        return "NULL".equalsIgnoreCase(literals) || "NOT NULL".equalsIgnoreCase(literals);
     }
     
     private Optional<EncryptCondition> createEncryptCondition(final ExpressionSegment expression, final String tableName) {
