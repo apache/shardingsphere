@@ -97,7 +97,7 @@ assignmentValues
     ;
 
 assignmentValue
-    : expr | DEFAULT | blobValue
+    : blobValue | expr | DEFAULT
     ;
 
 blobValue

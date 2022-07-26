@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle drop inmemory join group statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OracleDropInmemoryJoinGroupStatement extends AbstractSQLStatement implements OracleStatement {
 }

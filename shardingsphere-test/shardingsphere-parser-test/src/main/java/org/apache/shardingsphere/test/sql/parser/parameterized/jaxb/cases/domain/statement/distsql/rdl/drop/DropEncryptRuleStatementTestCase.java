@@ -33,8 +33,8 @@ import java.util.List;
 @Setter
 public final class DropEncryptRuleStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute(name = "contains-exist-clause")
-    private boolean containsExistClause;
+    @XmlAttribute(name = "if-exists")
+    private boolean ifExists;
     
     @XmlElement(name = "table")
     private final List<String> tables = new LinkedList<>();

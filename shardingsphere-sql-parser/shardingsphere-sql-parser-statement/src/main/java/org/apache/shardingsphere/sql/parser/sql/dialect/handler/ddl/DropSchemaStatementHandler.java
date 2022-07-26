@@ -33,12 +33,12 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 public final class DropSchemaStatementHandler implements SQLStatementHandler {
     
     /**
-     * Judge whether sql statement is contains cascade or not.
+     * Judge whether SQL statement is contains cascade or not.
      *
      * @param dropSchemaStatement drop schema statement
-     * @return whether sql statement is contains cascade or not
+     * @return SQL statement contains cascade or not
      */
-    public static boolean isContainsCascade(final DropSchemaStatement dropSchemaStatement) {
+    public static boolean containsCascade(final DropSchemaStatement dropSchemaStatement) {
         if (dropSchemaStatement instanceof PostgreSQLStatement) {
             return ((PostgreSQLDropSchemaStatement) dropSchemaStatement).isContainsCascade();
         }

@@ -275,6 +275,7 @@ targetEl
     | aExpr identifier
     | aExpr
     | ASTERISK_
+    | colId DOT_ASTERISK_ AS identifier
     ;
 
 groupClause
@@ -443,21 +444,6 @@ dostmtOptItem
     : STRING_ | LANGUAGE nonReservedWordOrSconst
     ;
 
-lock
-    : LOCK TABLE? relationExprList (IN lockType MODE)? NOWAIT?
-    ;
-
-lockType
-    : ACCESS SHARE
-    | ROW SHARE
-    | ROW EXCLUSIVE
-    | SHARE UPDATE EXCLUSIVE
-    | SHARE
-    | SHARE ROW EXCLUSIVE
-    | EXCLUSIVE
-    | ACCESS EXCLUSIVE
-    ;
-
 checkpoint
     : CHECKPOINT
     ;
@@ -497,26 +483,4 @@ copyWithTableBinary
     : COPY BINARY? qualifiedName (FROM | TO) (fileName | STDIN | STDOUT) (USING? DELIMITERS STRING_)? (WITH NULL AS STRING_)?
     ;
 
-fetch
-    : FETCH fetchArgs
-    ;
-
-fetchArgs
-    : cursorName
-    | (FROM | IN) cursorName
-    | NEXT (FROM | IN)? cursorName
-    | PRIOR (FROM | IN)? cursorName
-    | FIRST (FROM | IN)? cursorName
-    | LAST (FROM | IN)? cursorName
-    | ABSOLUTE signedIconst (FROM | IN)? cursorName
-    | RELATIVE signedIconst (FROM | IN)? cursorName
-    | signedIconst (FROM | IN)? cursorName
-    | ALL (FROM | IN)? cursorName
-    | FORWARD (FROM | IN)? cursorName
-    | FORWARD signedIconst (FROM | IN)? cursorName
-    | FORWARD ALL (FROM | IN)? cursorName
-    | BACKWARD (FROM | IN)? cursorName
-    | BACKWARD signedIconst (FROM | IN)? cursorName
-    | BACKWARD ALL (FROM | IN)? cursorName
-    ;
 

@@ -23,13 +23,26 @@ import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
+import java.util.Optional;
+
 /**
  * Close statement.
  */
-@ToString
 @Getter
 @Setter
+@ToString(callSuper = true)
 public abstract class CloseStatement extends AbstractSQLStatement implements DDLStatement {
     
     private CursorNameSegment cursorName;
+    
+    private boolean closeAll;
+    
+    /**
+     * Get cursor name.
+     *
+     * @return cursor name
+     */
+    public Optional<CursorNameSegment> getCursorName() {
+        return Optional.ofNullable(cursorName);
+    }
 }

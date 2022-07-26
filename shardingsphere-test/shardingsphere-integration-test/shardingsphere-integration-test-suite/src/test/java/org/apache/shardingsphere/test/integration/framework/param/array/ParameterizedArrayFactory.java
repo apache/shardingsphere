@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.framework.param.array;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.test.integration.cases.SQLCommandType;
-import org.apache.shardingsphere.test.integration.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.test.integration.env.runtime.IntegrationTestEnvironment;
 import org.apache.shardingsphere.test.integration.framework.param.model.AssertionParameterizedArray;
 import org.apache.shardingsphere.test.integration.framework.param.model.ParameterizedArray;
 
@@ -44,8 +44,8 @@ public final class ParameterizedArrayFactory {
     public static Collection<AssertionParameterizedArray> getAssertionParameterized(final SQLCommandType sqlCommandType) {
         Collection<AssertionParameterizedArray> result = new LinkedList<>();
         for (String each : ENV.getRunModes()) {
-            if ("Memory".equalsIgnoreCase(each)) {
-                result.addAll(MemoryParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
+            if ("Standalone".equalsIgnoreCase(each)) {
+                result.addAll(StandaloneParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
             } else if ("Cluster".equalsIgnoreCase(each)) {
                 result.addAll(ClusterParameterizedArrayGenerator.getAssertionParameterized(sqlCommandType));
             }
@@ -62,8 +62,8 @@ public final class ParameterizedArrayFactory {
     public static Collection<ParameterizedArray> getCaseParameterized(final SQLCommandType sqlCommandType) {
         Collection<ParameterizedArray> result = new LinkedList<>();
         for (String each : ENV.getRunModes()) {
-            if ("Memory".equalsIgnoreCase(each)) {
-                result.addAll(MemoryParameterizedArrayGenerator.getCaseParameterized(sqlCommandType));
+            if ("Standalone".equalsIgnoreCase(each)) {
+                result.addAll(StandaloneParameterizedArrayGenerator.getCaseParameterized(sqlCommandType));
             } else if ("Cluster".equalsIgnoreCase(each)) {
                 result.addAll(ClusterParameterizedArrayGenerator.getCaseParameterized(sqlCommandType));
             }

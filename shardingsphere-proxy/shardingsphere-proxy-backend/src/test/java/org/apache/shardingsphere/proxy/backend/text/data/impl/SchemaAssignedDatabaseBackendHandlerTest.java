@@ -56,6 +56,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -99,7 +100,7 @@ public final class SchemaAssignedDatabaseBackendHandlerTest extends ProxyContext
         for (int i = 0; i < 10; i++) {
             ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
             when(database.isComplete()).thenReturn(true);
-            when(database.hasDataSource()).thenReturn(true);
+            when(database.containsDataSource()).thenReturn(true);
             when(database.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
             result.put(String.format(DATABASE_PATTERN, i), database);
         }
@@ -108,7 +109,7 @@ public final class SchemaAssignedDatabaseBackendHandlerTest extends ProxyContext
     
     private void mockDatabaseCommunicationEngine(final ResponseHeader responseHeader) {
         when(databaseCommunicationEngine.execute()).thenReturn(responseHeader);
-        when(databaseCommunicationEngineFactory.newTextProtocolInstance(any(), anyString(), any())).thenReturn(databaseCommunicationEngine);
+        when(databaseCommunicationEngineFactory.newDatabaseCommunicationEngine(any(), anyString(), any(), eq(false))).thenReturn(databaseCommunicationEngine);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)
@@ -128,7 +129,7 @@ public final class SchemaAssignedDatabaseBackendHandlerTest extends ProxyContext
     public void assertDatabaseUsingStream() throws SQLException {
         schemaAssignedDatabaseBackendHandler.execute();
         while (schemaAssignedDatabaseBackendHandler.next()) {
-            assertThat(schemaAssignedDatabaseBackendHandler.getRowData().size(), is(1));
+            assertThat(schemaAssignedDatabaseBackendHandler.getRowData().getData().size(), is(1));
         }
     }
 }

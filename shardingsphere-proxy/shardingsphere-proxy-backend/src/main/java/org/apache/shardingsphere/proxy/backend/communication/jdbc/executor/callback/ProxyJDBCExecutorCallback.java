@@ -51,9 +51,10 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     
     private boolean hasMetaData;
     
-    public ProxyJDBCExecutorCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final JDBCDatabaseCommunicationEngine databaseCommunicationEngine,
+    public ProxyJDBCExecutorCallback(final DatabaseType protocolType, final DatabaseType databaseType, final SQLStatement sqlStatement,
+                                     final JDBCDatabaseCommunicationEngine databaseCommunicationEngine,
                                      final boolean isReturnGeneratedKeys, final boolean isExceptionThrown, final boolean fetchMetaData) {
-        super(databaseType, sqlStatement, isExceptionThrown);
+        super(protocolType, databaseType, sqlStatement, isExceptionThrown, ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext());
         this.databaseCommunicationEngine = databaseCommunicationEngine;
         this.isReturnGeneratedKeys = isReturnGeneratedKeys;
         this.fetchMetaData = fetchMetaData;
@@ -101,8 +102,8 @@ public abstract class ProxyJDBCExecutorCallback extends JDBCExecutorCallback<Exe
     }
     
     @Override
-    protected final Optional<ExecuteResult> getSaneResult(final SQLStatement sqlStatement) {
-        return SaneQueryResultEngineFactory.getInstance(getProtocolTypeType()).getSaneQueryResult(sqlStatement);
+    protected final Optional<ExecuteResult> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
+        return SaneQueryResultEngineFactory.getInstance(getProtocolTypeType()).getSaneQueryResult(sqlStatement, ex);
     }
     
     private DatabaseType getProtocolTypeType() {

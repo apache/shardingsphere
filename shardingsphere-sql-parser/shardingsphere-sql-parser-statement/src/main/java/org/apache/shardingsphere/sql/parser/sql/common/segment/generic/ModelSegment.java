@@ -19,6 +19,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.generic;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.SQLSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
@@ -32,17 +33,18 @@ import java.util.List;
  */
 @RequiredArgsConstructor
 @Getter
+@ToString
 public final class ModelSegment implements SQLSegment {
     
     private final int startIndex;
     
     private final int stopIndex;
     
-    private final List<SubquerySegment> referenceModelSelect = new LinkedList<>();
+    private final List<SubquerySegment> referenceModelSelects = new LinkedList<>();
     
     private final List<OrderBySegment> orderBySegments = new LinkedList<>();
     
     private final List<ColumnSegment> cellAssignmentColumns = new LinkedList<>();
     
-    private final List<SubquerySegment> cellAsssignmentSelect = new LinkedList<>();
+    private final List<SubquerySegment> cellAssignmentSelects = new LinkedList<>();
 }

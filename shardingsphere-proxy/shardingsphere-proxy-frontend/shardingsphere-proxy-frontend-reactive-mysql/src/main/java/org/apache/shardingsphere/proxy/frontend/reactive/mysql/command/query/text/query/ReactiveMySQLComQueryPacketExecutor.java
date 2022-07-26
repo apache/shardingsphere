@@ -30,6 +30,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
+import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.builder.ResponsePacketBuilder;
 import org.apache.shardingsphere.proxy.frontend.reactive.command.executor.ReactiveCommandExecutor;
 
@@ -37,12 +38,13 @@ import java.sql.SQLException;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Reactive COM_QUERY command packet executor for MySQL.
  */
 public final class ReactiveMySQLComQueryPacketExecutor implements ReactiveCommandExecutor {
+    
+    private final ConnectionSession connectionSession;
     
     private final TextProtocolBackendHandler textProtocolBackendHandler;
     
@@ -53,7 +55,8 @@ public final class ReactiveMySQLComQueryPacketExecutor implements ReactiveComman
     private int currentSequenceId;
     
     public ReactiveMySQLComQueryPacketExecutor(final MySQLComQueryPacket packet, final ConnectionSession connectionSession) throws SQLException {
-        textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("MySQL"), packet.getSql(), Optional::empty, connectionSession);
+        this.connectionSession = connectionSession;
+        textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("MySQL"), packet.getSql(), connectionSession);
         characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
     }
     
@@ -65,9 +68,9 @@ public final class ReactiveMySQLComQueryPacketExecutor implements ReactiveComman
             try {
                 if (ResponseType.QUERY == responseType) {
                     while (textProtocolBackendHandler.next()) {
-                        result.add(new MySQLTextResultSetRowPacket(++currentSequenceId, textProtocolBackendHandler.getRowData()));
+                        result.add(new MySQLTextResultSetRowPacket(++currentSequenceId, textProtocolBackendHandler.getRowData().getData()));
                     }
-                    result.add(new MySQLEofPacket(++currentSequenceId));
+                    result.add(new MySQLEofPacket(++currentSequenceId, ServerStatusFlagCalculator.calculateFor(connectionSession)));
                 }
                 return Future.succeededFuture(result);
             } catch (final SQLException ex) {
@@ -78,14 +81,14 @@ public final class ReactiveMySQLComQueryPacketExecutor implements ReactiveComman
     
     private Collection<DatabasePacket<?>> processQuery(final QueryResponseHeader queryResponseHeader) {
         responseType = ResponseType.QUERY;
-        Collection<DatabasePacket<?>> result = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, characterSet);
+        Collection<DatabasePacket<?>> result = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, characterSet, ServerStatusFlagCalculator.calculateFor(connectionSession));
         currentSequenceId = result.size();
         return result;
     }
     
     private Collection<DatabasePacket<?>> processUpdate(final UpdateResponseHeader updateResponseHeader) {
         responseType = ResponseType.UPDATE;
-        return ResponsePacketBuilder.buildUpdateResponsePackets(updateResponseHeader);
+        return ResponsePacketBuilder.buildUpdateResponsePackets(updateResponseHeader, ServerStatusFlagCalculator.calculateFor(connectionSession));
     }
     
     @Override

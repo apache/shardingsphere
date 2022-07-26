@@ -18,4 +18,7 @@
 
 <sql-parser-test-cases>
     <alter-sequence sql-case-id="alter_sequence" />
+    <alter-sequence sql-case-id="alter_sequence_rename_to" />
+    <alter-sequence sql-case-id="alter_sequence_owner_to" />
+    <alter-sequence sql-case-id="alter_sequence_no_cycle" />
 </sql-parser-test-cases>

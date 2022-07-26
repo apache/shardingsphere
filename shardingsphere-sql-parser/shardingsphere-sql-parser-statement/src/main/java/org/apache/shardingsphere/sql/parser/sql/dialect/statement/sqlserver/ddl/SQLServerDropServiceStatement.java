@@ -25,6 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
 /**
  * SQLServer drop service statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class SQLServerDropServiceStatement extends AbstractSQLStatement implements DDLStatement, SQLServerStatement {
 }

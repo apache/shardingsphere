@@ -21,21 +21,18 @@ import org.apache.shardingsphere.infra.database.metadata.dialect.SQL92DataSource
 import org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter;
 import org.junit.Test;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.junit.Assert.assertTrue;
 
 public final class SQL92DatabaseTypeTest {
     
     @Test
-    public void assertGetName() {
-        assertThat(new SQL92DatabaseType().getType(), is("SQL92"));
+    public void assertGetQuoteCharacter() {
+        assertThat(new SQL92DatabaseType().getQuoteCharacter(), is(QuoteCharacter.QUOTE));
     }
     
     @Test
@@ -45,30 +42,16 @@ public final class SQL92DatabaseTypeTest {
     
     @Test
     public void assertGetDataSourceMetaData() {
-        assertThat(new SQL92DatabaseType().getDataSourceMetaData("jdbc:h2:mem:primary_ds_0", "sa"), instanceOf(SQL92DataSourceMetaData.class));
-        assertThat(new SQL92DatabaseType().getDataSourceMetaData("jdbc:mariadb://localhost:3306/demo_ds_0", "sa"), instanceOf(SQL92DataSourceMetaData.class));
-        assertThat(new SQL92DatabaseType().getDataSourceMetaData("jdbc:mysql://127.0.0.1/demo_ds_0", "root"), instanceOf(SQL92DataSourceMetaData.class));
-        assertThat(new SQL92DatabaseType().getDataSourceMetaData("jdbc:postgresql://localhost:5432/demo_ds_0", "postgres"), instanceOf(SQL92DataSourceMetaData.class));
-        assertThat(new SQL92DatabaseType().getDataSourceMetaData("jdbc:oracle:oci:@127.0.0.1/demo_ds_0", "scott"), instanceOf(SQL92DataSourceMetaData.class));
-        assertThat(new SQL92DatabaseType().getDataSourceMetaData("jdbc:microsoft:sqlserver://127.0.0.1;DatabaseName=ds_0", "sa"), instanceOf(SQL92DataSourceMetaData.class));
+        assertThat(new SQL92DatabaseType().getDataSourceMetaData("jdbc:xxx", "root"), instanceOf(SQL92DataSourceMetaData.class));
     }
     
     @Test
-    public void assertGetSchema() throws SQLException {
-        Connection connection = mock(Connection.class);
-        when(connection.getSchema()).thenReturn("ds");
-        assertThat(new SQL92DatabaseType().getSchema(connection), is("ds"));
+    public void assertGetSystemDatabases() {
+        assertTrue(new SQL92DatabaseType().getSystemDatabaseSchemaMap().isEmpty());
     }
     
     @Test
-    public void assertFormatTableNamePattern() {
-        assertThat(new SQL92DatabaseType().formatTableNamePattern("tbl"), is("tbl"));
-    }
-    
-    @Test
-    public void assertGetQuoteCharacter() {
-        QuoteCharacter actual = new SQL92DatabaseType().getQuoteCharacter();
-        assertThat(actual.getStartDelimiter(), is("\""));
-        assertThat(actual.getEndDelimiter(), is("\""));
+    public void assertGetSystemSchemas() {
+        assertTrue(new SQL92DatabaseType().getSystemSchemas().isEmpty());
     }
 }

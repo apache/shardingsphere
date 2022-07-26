@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseTy
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseExtraSQLITCase;
 import org.apache.shardingsphere.integration.data.pipeline.cases.task.PostgreSQLIncrementTask;
-import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.helper.ScalingCaseHelper;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.sharding.algorithm.keygen.SnowflakeKeyGenerateAlgorithm;
@@ -32,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,8 +46,6 @@ import static org.junit.Assert.assertTrue;
 @RunWith(Parameterized.class)
 public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
     
-    private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
-    
     private final ScalingParameterized parameterized;
     
     public PostgreSQLGeneralScalingIT(final ScalingParameterized parameterized) {
@@ -58,10 +57,13 @@ public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
     @Parameters(name = "{0}")
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
-        for (String dockerImageName : ENV.getPostgresVersions()) {
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NONE) {
+            return result;
+        }
+        for (String dockerImageName : ENV.listDatabaseDockerImageNames(new PostgreSQLDatabaseType())) {
             result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), dockerImageName, "env/scenario/general/postgresql.xml"));
         }
-        for (String dockerImageName : ENV.getOpenGaussVersions()) {
+        for (String dockerImageName : ENV.listDatabaseDockerImageNames(new OpenGaussDatabaseType())) {
             result.add(new ScalingParameterized(new OpenGaussDatabaseType(), dockerImageName, "env/scenario/general/postgresql.xml"));
         }
         return result;
@@ -74,17 +76,30 @@ public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
         assertTrue(waitShardingAlgorithmEffect(15));
         createScalingRule();
         createSchema("test");
-        getCreateOrderWithItemSharingTableRule();
+        createOrderTableRule();
+        createOrderItemTableRule();
         createOrderTable();
-        createTableIndexList();
         createOrderItemTable();
+        // TODO wait kernel support create index if not exists
+        // createTableIndexList("test");
+        executeWithLog("COMMENT ON COLUMN test.t_order.user_id IS 'user id';");
         SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
         Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(keyGenerateAlgorithm, parameterized.getDatabaseType(), 3000);
         getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
         getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
-        startIncrementTask(new PostgreSQLIncrementTask(getJdbcTemplate(), new SnowflakeKeyGenerateAlgorithm(), "test", true));
         addTargetResource();
-        getJdbcTemplate().execute(getCommonSQLCommand().getAutoAlterOrderWithItemShardingTableRule());
-        assertCheckMatchConsistencySuccess();
+        startIncrementTask(new PostgreSQLIncrementTask(getJdbcTemplate(), new SnowflakeKeyGenerateAlgorithm(), "test", true, 20));
+        executeWithLog(getCommonSQLCommand().getAlterOrderWithItemAutoTableRule());
+        String jobId = getScalingJobId();
+        waitScalingFinished(jobId);
+        stopScaling(jobId);
+        executeWithLog(String.format("INSERT INTO test.t_order (id,order_id,user_id,status) VALUES (%s, %s, %s, '%s')", keyGenerateAlgorithm.generateKey(), 1, 1, "afterStopScaling"));
+        startScaling(jobId);
+        assertCheckScalingSuccess(jobId);
+        applyScaling(jobId);
+        assertPreviewTableSuccess("t_order", Arrays.asList("ds_2", "ds_3", "ds_4"));
+        assertPreviewTableSuccess("t_order_item", Arrays.asList("ds_2", "ds_3", "ds_4"));
+        restoreScalingSourceWriting(jobId);
+        assertRestoreScalingSourceWriting();
     }
 }

@@ -31,13 +31,11 @@ import java.util.Properties;
  */
 public final class CosIdIntervalShardingAlgorithm extends AbstractCosIdIntervalShardingAlgorithm<Comparable<?>> {
     
-    public static final String TYPE = CosIdAlgorithmConstants.TYPE_PREFIX + "INTERVAL";
+    private static final String DATE_TIME_PATTERN_KEY = "datetime-pattern";
     
-    public static final String DATE_TIME_PATTERN_KEY = "datetime-pattern";
+    private static final String TIMESTAMP_SECOND_UNIT = "SECOND";
     
-    public static final String TIMESTAMP_SECOND_UNIT = "SECOND";
-    
-    public static final String TIMESTAMP_UNIT_KEY = "ts-unit";
+    private static final String TIMESTAMP_UNIT_KEY = "ts-unit";
     
     private boolean isSecondTs;
     
@@ -77,6 +75,6 @@ public final class CosIdIntervalShardingAlgorithm extends AbstractCosIdIntervalS
     
     @Override
     public String getType() {
-        return TYPE;
+        return CosIdAlgorithmConstants.TYPE_PREFIX + "INTERVAL";
     }
 }

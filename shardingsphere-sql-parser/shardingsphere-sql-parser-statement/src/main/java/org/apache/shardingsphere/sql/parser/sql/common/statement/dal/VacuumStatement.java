@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Vacuum statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class VacuumStatement extends AbstractSQLStatement implements DALStatement {
 }

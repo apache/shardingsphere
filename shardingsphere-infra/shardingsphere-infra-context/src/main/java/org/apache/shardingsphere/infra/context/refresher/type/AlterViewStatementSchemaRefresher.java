@@ -46,8 +46,6 @@ import java.util.Optional;
  */
 public final class AlterViewStatementSchemaRefresher implements MetaDataRefresher<AlterViewStatement> {
     
-    private static final String TYPE = AlterViewStatement.class.getName();
-    
     @Override
     public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData,
                                                     final Map<String, OptimizerPlannerContext> optimizerPlanners,
@@ -60,18 +58,18 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
             String renameViewName = renameView.get().getTableName().getIdentifier().getValue();
             putTableMetaData(database, federationDatabaseMetaData, optimizerPlanners, logicDataSourceNames, schemaName, renameViewName, props);
             removeTableMetaData(database, federationDatabaseMetaData, optimizerPlanners, schemaName, viewName);
-            event.getAlteredTables().add(database.getSchemas().get(schemaName).get(renameViewName));
+            event.getAlteredTables().add(database.getSchema(schemaName).get(renameViewName));
             event.getDroppedTables().add(viewName);
         } else {
             putTableMetaData(database, federationDatabaseMetaData, optimizerPlanners, logicDataSourceNames, schemaName, viewName, props);
-            event.getAlteredTables().add(database.getSchemas().get(schemaName).get(viewName));
+            event.getAlteredTables().add(database.getSchema(schemaName).get(viewName));
         }
         return Optional.of(event);
     }
     
     private void removeTableMetaData(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData,
                                      final Map<String, OptimizerPlannerContext> optimizerPlanners, final String schemaName, final String viewName) {
-        database.getSchemas().get(schemaName).remove(viewName);
+        database.getSchema(schemaName).remove(viewName);
         database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.remove(schemaName, viewName));
         federationDatabaseMetaData.removeTableMetadata(schemaName, viewName);
         optimizerPlanners.put(federationDatabaseMetaData.getName(), OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
@@ -85,9 +83,9 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
         GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(database.getProtocolType(),
                 database.getResource().getDatabaseType(), database.getResource().getDataSources(), database.getRuleMetaData().getRules(), props, schemaName);
         Map<String, ShardingSphereSchema> schemaMap = GenericSchemaBuilder.build(Collections.singletonList(viewName), materials);
-        Optional<ShardingSphereTable> actualViewMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.getTables().get(viewName));
+        Optional<ShardingSphereTable> actualViewMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.get(viewName));
         actualViewMetaData.ifPresent(optional -> {
-            database.getSchemas().get(schemaName).put(viewName, optional);
+            database.getSchema(schemaName).put(viewName, optional);
             federationDatabaseMetaData.putTable(schemaName, optional);
             optimizerPlanners.put(federationDatabaseMetaData.getName(), OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
         });
@@ -100,6 +98,6 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
     
     @Override
     public String getType() {
-        return TYPE;
+        return AlterViewStatement.class.getName();
     }
 }

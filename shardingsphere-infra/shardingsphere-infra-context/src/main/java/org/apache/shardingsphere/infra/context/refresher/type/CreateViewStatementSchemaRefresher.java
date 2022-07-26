@@ -44,8 +44,6 @@ import java.util.Optional;
  */
 public final class CreateViewStatementSchemaRefresher implements MetaDataRefresher<CreateViewStatement> {
     
-    private static final String TYPE = CreateViewStatement.class.getName();
-    
     @Override
     public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData,
                                                     final Map<String, OptimizerPlannerContext> optimizerPlanners,
@@ -58,9 +56,9 @@ public final class CreateViewStatementSchemaRefresher implements MetaDataRefresh
         GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(database.getProtocolType(),
                 database.getResource().getDatabaseType(), database.getResource().getDataSources(), database.getRuleMetaData().getRules(), props, schemaName);
         Map<String, ShardingSphereSchema> schemaMap = GenericSchemaBuilder.build(Collections.singletonList(viewName), materials);
-        Optional<ShardingSphereTable> actualViewMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.getTables().get(viewName));
+        Optional<ShardingSphereTable> actualViewMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.get(viewName));
         if (actualViewMetaData.isPresent()) {
-            database.getSchemas().get(schemaName).put(viewName, actualViewMetaData.get());
+            database.getSchema(schemaName).put(viewName, actualViewMetaData.get());
             federationDatabaseMetaData.putTable(schemaName, actualViewMetaData.get());
             optimizerPlanners.put(federationDatabaseMetaData.getName(), OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
             SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);
@@ -77,6 +75,6 @@ public final class CreateViewStatementSchemaRefresher implements MetaDataRefresh
     
     @Override
     public String getType() {
-        return TYPE;
+        return CreateViewStatement.class.getName();
     }
 }

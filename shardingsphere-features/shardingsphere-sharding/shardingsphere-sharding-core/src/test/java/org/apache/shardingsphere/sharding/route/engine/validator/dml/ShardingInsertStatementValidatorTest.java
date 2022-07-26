@@ -93,7 +93,7 @@ public final class ShardingInsertStatementValidatorTest {
     
     private InsertStatementContext createInsertStatementContext(final List<Object> parameters, final InsertStatement insertStatement) {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getSchemas().get(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
+        when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         return new InsertStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), parameters, insertStatement, DefaultDatabase.LOGIC_NAME);
     }
     
@@ -208,7 +208,7 @@ public final class ShardingInsertStatementValidatorTest {
     
     private void mockShardingRuleForUpdateShardingColumn() {
         TableRule tableRule = mock(TableRule.class);
-        when(tableRule.getActualDatasourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
+        when(tableRule.getActualDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
         when(tableRule.getActualTableNames("ds_1")).thenReturn(Collections.singletonList("user"));
         when(shardingRule.findShardingColumn("id", "user")).thenReturn(Optional.of("id"));
         when(shardingRule.getTableRule("user")).thenReturn(tableRule);

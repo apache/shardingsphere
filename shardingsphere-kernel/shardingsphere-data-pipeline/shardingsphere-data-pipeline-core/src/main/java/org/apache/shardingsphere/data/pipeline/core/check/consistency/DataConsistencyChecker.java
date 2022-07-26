@@ -77,8 +77,7 @@ public final class DataConsistencyChecker {
     public DataConsistencyChecker(final RuleAlteredJobConfiguration jobConfig) {
         this.jobConfig = jobConfig;
         logicTableNames = jobConfig.splitLogicTableNames();
-        ShardingSphereDatabase database = PipelineContext.getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(jobConfig.getDatabaseName());
-        tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(database.getSchemas()));
+        tableNameSchemaNameMapping = new TableNameSchemaNameMapping(TableNameSchemaNameMapping.convert(jobConfig.getSchemaTablesMap()));
     }
     
     /**
@@ -214,12 +213,12 @@ public final class DataConsistencyChecker {
     private ShardingSphereTable getTableMetaData(final String databaseName, final String logicTableName) {
         ContextManager contextManager = PipelineContext.getContextManager();
         Preconditions.checkNotNull(contextManager, "ContextManager null");
-        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabases().get(databaseName);
+        ShardingSphereDatabase database = contextManager.getMetaDataContexts().getMetaData().getDatabase(databaseName);
         if (null == database) {
             throw new RuntimeException("Can not get meta data by database name " + databaseName);
         }
         String schemaName = tableNameSchemaNameMapping.getSchemaName(logicTableName);
-        ShardingSphereSchema schema = database.getSchemas().get(schemaName);
+        ShardingSphereSchema schema = database.getSchema(schemaName);
         if (null == schema) {
             throw new RuntimeException("Can not get schema by schema name " + schemaName + ", logicTableName=" + logicTableName);
         }

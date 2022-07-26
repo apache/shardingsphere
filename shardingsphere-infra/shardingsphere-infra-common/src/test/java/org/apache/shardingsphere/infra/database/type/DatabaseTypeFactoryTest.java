@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.OracleDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.SQL92DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.SQLServerDatabaseType;
-import org.apache.shardingsphere.infra.fixture.FixtureDatabaseType;
+import org.apache.shardingsphere.infra.fixture.InfraDatabaseTypeFixture;
 import org.junit.Test;
 
 import java.util.Collection;
@@ -39,7 +39,15 @@ public final class DatabaseTypeFactoryTest {
     
     @Test
     public void assertGetInstance() {
-        assertThat(DatabaseTypeFactory.getInstance("FIXTURE"), instanceOf(FixtureDatabaseType.class));
+        assertThat(DatabaseTypeFactory.getInstance("INFRA.FIXTURE"), instanceOf(InfraDatabaseTypeFixture.class));
+        assertThat(DatabaseTypeFactory.getInstance("SQL92"), instanceOf(SQL92DatabaseType.class));
+        assertThat(DatabaseTypeFactory.getInstance("MySQL"), instanceOf(MySQLDatabaseType.class));
+        assertThat(DatabaseTypeFactory.getInstance("MariaDB"), instanceOf(MariaDBDatabaseType.class));
+        assertThat(DatabaseTypeFactory.getInstance("PostgreSQL"), instanceOf(PostgreSQLDatabaseType.class));
+        assertThat(DatabaseTypeFactory.getInstance("OpenGauss"), instanceOf(OpenGaussDatabaseType.class));
+        assertThat(DatabaseTypeFactory.getInstance("Oracle"), instanceOf(OracleDatabaseType.class));
+        assertThat(DatabaseTypeFactory.getInstance("SQLServer"), instanceOf(SQLServerDatabaseType.class));
+        assertThat(DatabaseTypeFactory.getInstance("H2"), instanceOf(H2DatabaseType.class));
     }
     
     @Test
@@ -47,7 +55,7 @@ public final class DatabaseTypeFactoryTest {
         Collection<DatabaseType> actual = DatabaseTypeFactory.getInstances();
         assertThat(actual.size(), is(9));
         Iterator<DatabaseType> iterator = actual.iterator();
-        assertThat(iterator.next(), instanceOf(FixtureDatabaseType.class));
+        assertThat(iterator.next(), instanceOf(InfraDatabaseTypeFixture.class));
         assertThat(iterator.next(), instanceOf(SQL92DatabaseType.class));
         assertThat(iterator.next(), instanceOf(MySQLDatabaseType.class));
         assertThat(iterator.next(), instanceOf(MariaDBDatabaseType.class));

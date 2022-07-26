@@ -1,29 +1,31 @@
 +++
-pre = "<b>6.8. </b>"
+pre = "<b>5.8. </b>"
 title = "Readwrite-splitting"
 weight = 8
 chapter = true
 +++
 
-## ReadwriteSplittingType
+## ReadQueryLoadBalanceAlgorithm
 
-| *SPI Name*                                 | *Description*                 |
-| ----------------------------------------- | ------------------------- |
-| ReadwriteSplittingType                    | Readwrite-splitting type  |
+### Fully-qualified class name
 
-| *Implementation Class*                               | *Description*                         |
-| ----------------------------------------- | -------------------------------- |
-| StaticReadwriteSplittingType              | Static readwrite-splitting type  |
-| DynamicReadwriteSplittingType             | Dynamic readwrite-splitting type |
+[`org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-readwrite-splitting/shardingsphere-readwrite-splitting-api/src/main/java/org/apache/shardingsphere/readwritesplitting/spi/ReadQueryLoadBalanceAlgorithm.java)
 
-## ReplicaLoadBalanceAlgorithm
+### Definition
 
-| *SPI Name*                            | *Description*                                           |
-| ------------------------------------- | ------------------------------------------------------- |
-| ReplicaLoadBalanceAlgorithm           | Load balance algorithm of replica databases             |
+Read query load balance algorithm's definition
 
-| *Implementation Class*                | *Description*                                           |
-| ------------------------------------- | ------------------------------------------------------- |
-| RoundRobinReplicaLoadBalanceAlgorithm | Round robin load balance algorithm of replica databases |
-| RandomReplicaLoadBalanceAlgorithm     | Random load balance algorithm of replica databases      |
-| WeightReplicaLoadBalanceAlgorithm     | Weight load balance algorithm of replica databases      |
+### Implementation classes
+
+| *Configuration Type*      | *Description*                                                                                                                                                                                                        | *Fully-qualified class name* |
+| ------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------- |
+| ROUND_ROBIN               | the read database load balancer algorithm based on polling                                                                                                                                                           | [`org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RoundRobinReadQueryLoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-readwrite-splitting/shardingsphere-readwrite-splitting-core/src/main/java/org/apache/shardingsphere/readwritesplitting/algorithm/loadbalance/RoundRobinReadQueryLoadBalanceAlgorithm.java) |
+| RANDOM                    | the read database load balancer algorithm based on random                                                                                                                                                            | [`org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReadQueryLoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-readwrite-splitting/shardingsphere-readwrite-splitting-core/src/main/java/org/apache/shardingsphere/readwritesplitting/algorithm/loadbalance/RandomReadQueryLoadBalanceAlgorithm.java) |
+| WEIGHT                    | the read database load balancer algorithm based on weight                                                                                                                                                            | [`org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.WeightReadQueryLoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-readwrite-splitting/shardingsphere-readwrite-splitting-core/src/main/java/org/apache/shardingsphere/readwritesplitting/algorithm/loadbalance/WeightReadQueryLoadBalanceAlgorithm.java) |
+| TRANSACTION_RANDOM        | Whether in a transaction or not, read requests are routed to multiple replicas using a random strategy                                                                                                               | [`org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.TransactionRandomReadQueryLoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-readwrite-splitting/shardingsphere-readwrite-splitting-core/src/main/java/org/apache/shardingsphere/readwritesplitting/algorithm/loadbalance/TransactionRandomReadQueryLoadBalanceAlgorithm.java) |
+| TRANSACTION_ROUND_ROBIN   | Whether in a transaction or not, read requests are routed to multiple replicas using a round-robin strategy                                                                                                          | [`org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.TransactionRoundRobinReadQueryLoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-readwrite-splitting/shardingsphere-readwrite-splitting-core/src/main/java/org/apache/shardingsphere/readwritesplitting/algorithm/loadbalance/TransactionRoundRobinReadQueryLoadBalanceAlgorithm.java) |
+| TRANSACTION_WEIGHT        | Whether in a transaction or not, read requests are routed to multiple replicas using a weight strategy                                                                                                               | [`org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.TransactionWeightReadQueryLoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-readwrite-splitting/shardingsphere-readwrite-splitting-core/src/main/java/org/apache/shardingsphere/readwritesplitting/algorithm/loadbalance/TransactionWeightReadQueryLoadBalanceAlgorithm.java) |
+| FIXED_REPLICA_RANDOM      | Open transaction, and the read request is routed to a fixed replica using a random strategy; if the transaction is not opened, each read traffic is routed to a different replica using the specified algorithm      | [`org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.FixedReplicaRandomReadQueryLoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-readwrite-splitting/shardingsphere-readwrite-splitting-core/src/main/java/org/apache/shardingsphere/readwritesplitting/algorithm/loadbalance/FixedReplicaRandomReadQueryLoadBalanceAlgorithm.java) |
+| FIXED_REPLICA_ROUND_ROBIN | Open transaction, and the read request is routed to a fixed replica using a round-robin strategy; if the transaction is not opened, each read traffic is routed to a different replica using the specified algorithm | [`org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.FixedReplicaRoundRobinReadQueryLoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-readwrite-splitting/shardingsphere-readwrite-splitting-core/src/main/java/org/apache/shardingsphere/readwritesplitting/algorithm/loadbalance/FixedReplicaRoundRobinReadQueryLoadBalanceAlgorithm.java) |
+| FIXED_REPLICA_WEIGHT      | Open transaction, and the read request is routed to a fixed replica using a weight strategy; if the transaction is not opened, each read traffic is routed to a different replica using the specified algorithm      | [`org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.FixedReplicaWeightReadQueryLoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-readwrite-splitting/shardingsphere-readwrite-splitting-core/src/main/java/org/apache/shardingsphere/readwritesplitting/algorithm/loadbalance/FixedReplicaWeightReadQueryLoadBalanceAlgorithm.java) |
+| FIXED_PRIMARY             | All read traffic is routed to the primary                                                                                                                                                                            | [`org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.FixedPrimaryReadQueryLoadBalanceAlgorithm`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-features/shardingsphere-readwrite-splitting/shardingsphere-readwrite-splitting-core/src/main/java/org/apache/shardingsphere/readwritesplitting/algorithm/loadbalance/FixedPrimaryReadQueryLoadBalanceAlgorithm.java) |

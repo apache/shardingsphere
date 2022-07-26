@@ -22,9 +22,9 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.dbdiscovery.fixture.CoreDatabaseDiscoveryProviderAlgorithmFixture;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilder;
-import org.apache.shardingsphere.infra.rule.builder.schema.DatabaseRuleBuilderFactory;
+import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilder;
+import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRuleBuilderFactory;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Test;
 
@@ -33,6 +33,9 @@ import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilderTest {
     
@@ -41,11 +44,12 @@ public final class AlgorithmProvidedDatabaseDiscoveryRuleBuilderTest {
     public void assertBuild() {
         AlgorithmProvidedDatabaseDiscoveryRuleConfiguration algorithmProvidedRuleConfig = new AlgorithmProvidedDatabaseDiscoveryRuleConfiguration(
                 Collections.singletonList(new DatabaseDiscoveryDataSourceRuleConfiguration("name", Collections.singletonList("name"), "", "discoveryTypeName")),
-                Collections.singletonMap("ha_heartbeat",
-                        new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
+                Collections.singletonMap("ha_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
                 Collections.singletonMap("discoveryTypeName", new CoreDatabaseDiscoveryProviderAlgorithmFixture()));
         DatabaseRuleBuilder builder = DatabaseRuleBuilderFactory.getInstanceMap(Collections.singletonList(algorithmProvidedRuleConfig)).get(algorithmProvidedRuleConfig);
-        assertThat(builder.build(algorithmProvidedRuleConfig, "", Collections.singletonMap("name", new MockedDataSource()), Collections.emptyList(), new ConfigurationProperties(new Properties())),
-                instanceOf(DatabaseDiscoveryRule.class));
+        InstanceContext instanceContext = mock(InstanceContext.class, RETURNS_DEEP_STUBS);
+        when(instanceContext.getInstance().getCurrentInstanceId()).thenReturn("foo_id");
+        assertThat(builder.build(algorithmProvidedRuleConfig, "",
+                Collections.singletonMap("name", new MockedDataSource()), Collections.emptyList(), instanceContext), instanceOf(DatabaseDiscoveryRule.class));
     }
 }

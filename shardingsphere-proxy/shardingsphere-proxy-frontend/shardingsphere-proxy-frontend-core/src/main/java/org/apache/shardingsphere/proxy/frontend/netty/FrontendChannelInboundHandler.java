@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.frontend.netty;
 
-import com.google.common.base.Preconditions;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
@@ -38,8 +37,6 @@ import org.apache.shardingsphere.proxy.frontend.spi.DatabaseProtocolFrontendEngi
 import org.apache.shardingsphere.proxy.frontend.state.ProxyStateContext;
 import org.apache.shardingsphere.transaction.rule.TransactionRule;
 
-import java.util.Optional;
-
 /**
  * Frontend channel inbound handler.
  */
@@ -54,13 +51,8 @@ public final class FrontendChannelInboundHandler extends ChannelInboundHandlerAd
     
     public FrontendChannelInboundHandler(final DatabaseProtocolFrontendEngine databaseProtocolFrontendEngine, final Channel channel) {
         this.databaseProtocolFrontendEngine = databaseProtocolFrontendEngine;
-        connectionSession = new ConnectionSession(DatabaseTypeFactory.getInstance(databaseProtocolFrontendEngine.getType()), getTransactionRule().getDefaultType(), channel);
-    }
-    
-    private TransactionRule getTransactionRule() {
-        Optional<TransactionRule> result = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
-        Preconditions.checkState(result.isPresent());
-        return result.get();
+        connectionSession = new ConnectionSession(DatabaseTypeFactory.getInstance(databaseProtocolFrontendEngine.getType()),
+                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class).getDefaultType(), channel);
     }
     
     @Override

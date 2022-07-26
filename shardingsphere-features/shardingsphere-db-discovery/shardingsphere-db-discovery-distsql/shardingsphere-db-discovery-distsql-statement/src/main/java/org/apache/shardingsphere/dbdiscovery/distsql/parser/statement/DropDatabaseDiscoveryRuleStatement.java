@@ -19,7 +19,6 @@ package org.apache.shardingsphere.dbdiscovery.distsql.parser.statement;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.subject.impl.DatabaseDiscoverySubjectSupplier;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 
 import java.util.Collection;
@@ -29,12 +28,12 @@ import java.util.Collection;
  */
 @RequiredArgsConstructor
 @Getter
-public final class DropDatabaseDiscoveryRuleStatement extends DropRuleStatement implements DatabaseDiscoverySubjectSupplier {
+public final class DropDatabaseDiscoveryRuleStatement extends DropRuleStatement {
     
     private final Collection<String> ruleNames;
     
-    public DropDatabaseDiscoveryRuleStatement(final Collection<String> ruleNames, final boolean containsExistClause) {
-        setContainsExistClause(containsExistClause);
+    public DropDatabaseDiscoveryRuleStatement(final boolean ifExists, final Collection<String> ruleNames) {
+        super(ifExists);
         this.ruleNames = ruleNames;
     }
 }

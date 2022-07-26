@@ -17,15 +17,24 @@
 
 package org.apache.shardingsphere.infra.instance.workerid;
 
+import java.util.Properties;
+
 /**
  * Worker id generator.
  */
 public interface WorkerIdGenerator {
     
+    String WORKER_ID_KEY = "worker-id";
+    
+    long DEFAULT_WORKER_ID = 0L;
+    
+    long MAX_WORKER_ID = 1023L;
+    
     /**
      * Generate worker id.
-     * 
+     *
+     * @param props props
      * @return worker id
      */
-    long generate();
+    long generate(Properties props);
 }

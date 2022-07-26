@@ -40,7 +40,7 @@ public final class GovernanceExecuteProcessReporterTest {
         ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext = mockExecutionGroupContext();
         ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(logicSQL.getSql(), executionGroupContext, ExecuteProcessConstants.EXECUTE_ID);
         GovernanceExecuteProcessReporter reporter = new GovernanceExecuteProcessReporter();
-        reporter.report(logicSQL, executionGroupContext, ExecuteProcessConstants.EXECUTE_ID);
+        reporter.report(logicSQL, executionGroupContext, ExecuteProcessConstants.EXECUTE_ID, EventBusContextHolderFixture.EVENT_BUS_CONTEXT);
         assertThat(subscriber.getValue(), is(executeProcessContext.getExecutionID()));
     }
     

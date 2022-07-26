@@ -57,7 +57,7 @@ shadowRule:
 *SHOW SHADOW RULES*
 
 ```sql
-mysql> show shadow rules;
+mysql> SHOW SHADOW RULES;
 +--------------------+-------------+-------------+--------------+
 | rule_name          | source_name | shadow_name | shadow_table |
 +--------------------+-------------+-------------+--------------+
@@ -69,7 +69,7 @@ mysql> show shadow rules;
 *SHOW SHADOW RULE ruleName*
 
 ```sql
-mysql> show shadow rule shadow_rule_1;
+mysql> SHOW SHADOW RULE shadow_rule_1;
 +------------------+-------------+-------------+--------------+
 | rule_name        | source_name | shadow_name | shadow_table |
 +------------------+-------------+-------------+--------------+
@@ -81,7 +81,7 @@ mysql> show shadow rule shadow_rule_1;
 *SHOW SHADOW TABLE RULES*
 
 ```sql
-mysql> show shadow table rules;
+mysql> SHOW SHADOW TABLE RULES;
 +--------------+--------------------------------------------------------------------------------+
 | shadow_table | shadow_algorithm_name                                                          |
 +--------------+--------------------------------------------------------------------------------+
@@ -93,7 +93,7 @@ mysql> show shadow table rules;
 *SHOW SHADOW ALGORITHMS*
 
 ```sql
-mysql> show shadow algorithms;
+mysql> SHOW SHADOW ALGORITHMS;
 +-------------------------+--------------------+-------------------------------------------+----------------+
 | shadow_algorithm_name   | type               | props                                     | is_default     |
 +-------------------------+--------------------+-------------------------------------------+----------------+

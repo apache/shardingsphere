@@ -18,12 +18,18 @@
 package org.apache.shardingsphere.integration.data.pipeline.cases.base;
 
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.ExtraSQLCommand;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
+import org.apache.shardingsphere.integration.data.pipeline.util.DatabaseTypeUtil;
 
 import javax.xml.bind.JAXB;
-import java.util.List;
+import java.util.Objects;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+@Slf4j
 public abstract class BaseExtraSQLITCase extends BaseITCase {
     
     @Getter
@@ -31,7 +37,7 @@ public abstract class BaseExtraSQLITCase extends BaseITCase {
     
     public BaseExtraSQLITCase(final ScalingParameterized parameterized) {
         super(parameterized);
-        extraSQLCommand = JAXB.unmarshal(BaseExtraSQLITCase.class.getClassLoader().getResource(parameterized.getScenario()), ExtraSQLCommand.class);
+        extraSQLCommand = JAXB.unmarshal(Objects.requireNonNull(BaseExtraSQLITCase.class.getClassLoader().getResource(parameterized.getScenario())), ExtraSQLCommand.class);
     }
     
     protected void createNoUseTable() {
@@ -43,14 +49,45 @@ public abstract class BaseExtraSQLITCase extends BaseITCase {
         executeWithLog(extraSQLCommand.getCreateTableOrder());
     }
     
-    protected void createTableIndexList() {
-        List<String> createTableIndexList = extraSQLCommand.getCreateTableIndexList();
-        for (String each : createTableIndexList) {
-            executeWithLog(each);
+    protected void createTableIndexList(final String schema) {
+        if (DatabaseTypeUtil.isPostgreSQL(getDatabaseType())) {
+            executeWithLog(String.format("CREATE INDEX IF NOT EXISTS idx_user_id ON %s.t_order ( user_id )", schema));
+        } else if (DatabaseTypeUtil.isOpenGauss(getDatabaseType())) {
+            executeWithLog(String.format("CREATE INDEX idx_user_id ON %s.t_order ( user_id )", schema));
         }
     }
     
     protected void createOrderItemTable() {
         executeWithLog(extraSQLCommand.getCreateTableOrderItem());
+    }
+    
+    @Override
+    protected void assertStopScalingSourceWriting() {
+        assertFalse(executeSql(extraSQLCommand.getUpdateTableOrderStatus()));
+        assertFalse(executeSql(extraSQLCommand.getCreateIndexStatus()));
+    }
+    
+    @Override
+    protected void assertRestoreScalingSourceWriting() {
+        assertTrue(executeSql(extraSQLCommand.getUpdateTableOrderStatus()));
+        assertTrue(executeSql(extraSQLCommand.getCreateIndexStatus()));
+    }
+    
+    private boolean executeSql(final String sql) {
+        try {
+            getJdbcTemplate().execute(sql);
+            return true;
+            // CHECKSTYLE:OFF
+        } catch (final Exception ex) {
+            // CHECKSTYLE:ON
+            // TODO openGauss seem return the different error message, need to check it
+            if (DatabaseTypeUtil.isOpenGauss(getDatabaseType())) {
+                log.info("openGauss error msg:{}", ex.getMessage());
+                return false;
+            } else {
+                assertTrue(ex.getMessage(), ex.getCause().getMessage().endsWith("The database sharding_db is read-only"));
+            }
+            return false;
+        }
     }
 }

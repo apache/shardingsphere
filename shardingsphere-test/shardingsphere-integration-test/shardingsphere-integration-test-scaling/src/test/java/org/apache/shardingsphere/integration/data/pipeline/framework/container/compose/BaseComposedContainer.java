@@ -18,11 +18,7 @@
 package org.apache.shardingsphere.integration.data.pipeline.framework.container.compose;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.factory.DatabaseContainerFactory;
-import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.DockerDatabaseContainer;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.ITContainers;
-import org.apache.shardingsphere.test.integration.util.NetworkAliasUtil;
+import org.apache.shardingsphere.test.integration.env.container.atomic.ITContainers;
 import org.testcontainers.lifecycle.Startable;
 
 @Getter
@@ -30,11 +26,8 @@ public abstract class BaseComposedContainer implements Startable {
     
     private final ITContainers containers;
     
-    private final DockerDatabaseContainer databaseContainer;
-    
-    public BaseComposedContainer(final DatabaseType databaseType, final String dockerImageName) {
-        this.containers = new ITContainers("");
-        this.databaseContainer = containers.registerContainer(DatabaseContainerFactory.newInstance(databaseType, dockerImageName), NetworkAliasUtil.getNetworkAlias("db"));
+    public BaseComposedContainer() {
+        containers = new ITContainers("");
     }
     
     /**
@@ -44,6 +37,13 @@ public abstract class BaseComposedContainer implements Startable {
      * @return proxy jdbc url
      */
     public abstract String getProxyJdbcUrl(String databaseName);
+    
+    /**
+     * Clean up database.
+     *
+     * @param databaseName database name
+     */
+    public abstract void cleanUpDatabase(String databaseName);
     
     @Override
     public void start() {

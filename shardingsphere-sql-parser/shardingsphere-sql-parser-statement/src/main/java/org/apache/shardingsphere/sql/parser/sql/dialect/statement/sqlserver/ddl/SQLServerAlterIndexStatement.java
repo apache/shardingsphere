@@ -29,7 +29,7 @@ import java.util.Optional;
  * SQLServer alter index statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class SQLServerAlterIndexStatement extends AlterIndexStatement implements SQLServerStatement {
     
     private SimpleTableSegment table;

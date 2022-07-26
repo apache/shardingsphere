@@ -33,7 +33,6 @@ import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsis
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyChecker;
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
@@ -46,14 +45,12 @@ import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsist
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.lifecycle.domain.JobBriefInfo;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.lock.LockMode;
+import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
-import org.apache.shardingsphere.scaling.core.job.environment.ScalingEnvironmentManager;
+import org.apache.shardingsphere.mode.manager.lock.definition.LockDefinitionFactory;
 
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
@@ -171,18 +168,19 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         verifyManualMode(jobConfig);
         verifyJobNotStopped(jobConfigPOJO);
         verifyJobNotCompleted(jobConfig);
-        String databaseName = jobConfig.getDatabaseName();
-        stopClusterWriteDB(databaseName, jobId);
+        stopClusterWriteDB(jobConfig);
     }
     
     @Override
-    public void stopClusterWriteDB(final String databaseName, final String jobId) {
+    public void stopClusterWriteDB(final RuleAlteredJobConfiguration jobConfig) {
+        String databaseName = jobConfig.getDatabaseName();
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        if (lockContext.isLocked(databaseName)) {
+        LockDefinition lockDefinition = LockDefinitionFactory.newDatabaseLockDefinition(databaseName);
+        if (lockContext.isLocked(lockDefinition)) {
             log.info("stopClusterWriteDB, already stopped");
             return;
         }
-        if (lockContext.tryLock(databaseName, LockMode.READ)) {
+        if (lockContext.tryLock(lockDefinition)) {
             log.info("stopClusterWriteDB, tryLockSuccess=true");
             return;
         }
@@ -196,16 +194,17 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         RuleAlteredJobConfiguration jobConfig = getJobConfig(jobConfigPOJO);
         verifyManualMode(jobConfig);
-        String databaseName = jobConfig.getDatabaseName();
-        restoreClusterWriteDB(databaseName, jobId);
+        restoreClusterWriteDB(jobConfig);
     }
     
     @Override
-    public void restoreClusterWriteDB(final String databaseName, final String jobId) {
+    public void restoreClusterWriteDB(final RuleAlteredJobConfiguration jobConfig) {
+        String databaseName = jobConfig.getDatabaseName();
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        if (lockContext.isLocked(databaseName)) {
-            log.info("restoreClusterWriteDB, before releaseLock, databaseName={}, jobId={}", databaseName, jobId);
-            lockContext.releaseLock(databaseName);
+        LockDefinition lockDefinition = LockDefinitionFactory.newDatabaseLockDefinition(databaseName);
+        if (lockContext.isLocked(lockDefinition)) {
+            log.info("restoreClusterWriteDB, before releaseLock, databaseName={}, jobId={}", databaseName, jobConfig.getJobId());
+            lockContext.releaseLock(lockDefinition);
             return;
         }
         log.info("restoreClusterWriteDB, isLocked false, databaseName={}", databaseName);
@@ -321,7 +320,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
             }
         }
         ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(jobConfig.getDatabaseName(), jobConfig.getActiveVersion(), jobConfig.getNewVersion());
-        ShardingSphereEventBus.getInstance().post(taskFinishedEvent);
+        PipelineContext.getContextManager().getInstanceContext().getEventBusContext().post(taskFinishedEvent);
         // TODO rewrite job status update after job progress structure refactor
         RuleAlteredJobSchedulerCenter.updateJobStatus(jobId, JobStatus.FINISHED);
         for (int each : repositoryAPI.getShardingItems(jobId)) {
@@ -337,11 +336,6 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         log.info("Scaling job {} reset target table", jobId);
         JobConfigurationPOJO jobConfigPOJO = getElasticJobConfigPOJO(jobId);
         verifyJobStopped(jobConfigPOJO);
-        try {
-            new ScalingEnvironmentManager().cleanupTargetTables(getJobConfig(jobConfigPOJO));
-        } catch (final SQLException ex) {
-            throw new PipelineJobExecutionException("Reset target table failed for job " + jobId, ex);
-        }
     }
     
     @Override

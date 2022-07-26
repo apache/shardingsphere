@@ -123,8 +123,8 @@
         <property name="sqlSessionFactoryBeanName" value="sqlSessionFactory"/>
     </bean>
 </#if>
-    
-<#if mode!="memory">
+
+<#if mode?exists>
     <#include "../mode/spring-namespace/config/${mode}.ftl" />
 </#if>
 <#assign ruleRefs="">
@@ -142,6 +142,13 @@
         </#if>
         <props>
             <prop key="sql-show">true</prop>
+        <#if transaction=="xa-atomikos">
+            <prop key="xa-transaction-manager-type">Atomikos</prop>
+        <#elseif transaction=="xa-narayana">
+            <prop key="xa-transaction-manager-type">Narayana</prop>
+        <#elseif transaction=="xa-bitronix">
+            <prop key="xa-transaction-manager-type">Bitronix</prop>
+        </#if>
         </props>
     </shardingsphere:data-source>
 </beans>

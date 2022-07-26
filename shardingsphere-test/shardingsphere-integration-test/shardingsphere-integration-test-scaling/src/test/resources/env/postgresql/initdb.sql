@@ -13,10 +13,17 @@
 -- WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 -- See the License for the specific language governing permissions and
 -- limitations under the License.
---
 
-CREATE DATABASE ds_0;
-CREATE DATABASE ds_1;
-CREATE DATABASE ds_2;
-CREATE DATABASE ds_3;
-CREATE DATABASE ds_4;
+CREATE DATABASE scaling_it_0;
+CREATE DATABASE scaling_it_1;
+CREATE DATABASE scaling_it_2;
+CREATE DATABASE scaling_it_3;
+CREATE DATABASE scaling_it_4;
+CREATE USER normal_user WITH ENCRYPTED PASSWORD 'Root@123';
+CREATE DATABASE normal_user;
+ALTER ROLE normal_user CREATEDB REPLICATION;
+GRANT CREATE, CONNECT ON DATABASE scaling_it_0 TO normal_user;
+GRANT CREATE, CONNECT ON DATABASE scaling_it_1 TO normal_user;
+GRANT CREATE, CONNECT ON DATABASE scaling_it_2 TO normal_user;
+GRANT CREATE, CONNECT ON DATABASE scaling_it_3 TO normal_user;
+GRANT CREATE, CONNECT ON DATABASE scaling_it_4 TO normal_user;

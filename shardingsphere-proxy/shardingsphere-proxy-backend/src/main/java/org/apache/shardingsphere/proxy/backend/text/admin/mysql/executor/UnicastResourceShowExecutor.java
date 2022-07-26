@@ -35,15 +35,14 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -73,14 +72,14 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
     public void execute(final ConnectionSession connectionSession) throws SQLException {
         String originDatabase = connectionSession.getDatabaseName();
         String databaseName = null == originDatabase ? getFirstDatabaseName() : originDatabase;
-        if (!ProxyContext.getInstance().getDatabase(databaseName).hasDataSource()) {
+        if (!ProxyContext.getInstance().getDatabase(databaseName).containsDataSource()) {
             throw new RuleNotExistedException();
         }
         try {
             connectionSession.setCurrentDatabase(databaseName);
             SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(),
                     sqlStatement, connectionSession.getDefaultDatabaseName());
-            databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection());
+            databaseCommunicationEngine = databaseCommunicationEngineFactory.newDatabaseCommunicationEngine(sqlStatementContext, sql, connectionSession.getBackendConnection(), false);
             responseHeader = databaseCommunicationEngine.execute();
             mergedResult = new TransparentMergedResult(createQueryResult());
         } finally {
@@ -94,7 +93,7 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
         if (databaseNames.isEmpty()) {
             throw new NoDatabaseSelectedException();
         }
-        Optional<String> result = databaseNames.stream().filter(each -> ProxyContext.getInstance().getDatabase(each).hasDataSource()).findFirst();
+        Optional<String> result = databaseNames.stream().filter(each -> ProxyContext.getInstance().getDatabase(each).containsDataSource()).findFirst();
         if (!result.isPresent()) {
             throw new RuleNotExistedException();
         }
@@ -112,8 +111,8 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
     private QueryResult createQueryResult() throws SQLException {
         List<MemoryQueryResultDataRow> rows = new LinkedList<>();
         while (databaseCommunicationEngine.next()) {
-            Collection<Object> data = databaseCommunicationEngine.getQueryResponseRow().getData();
-            rows.add(new MemoryQueryResultDataRow(new ArrayList<>(data)));
+            List<Object> data = databaseCommunicationEngine.getQueryResponseRow().getData();
+            rows.add(new MemoryQueryResultDataRow(data));
         }
         return new RawMemoryQueryResult(getQueryResultMetaData(), rows);
     }

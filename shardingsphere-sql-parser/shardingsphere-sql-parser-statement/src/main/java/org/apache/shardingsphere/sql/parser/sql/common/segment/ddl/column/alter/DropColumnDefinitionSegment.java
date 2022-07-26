@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.column.alter
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.AlterDefinitionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 
@@ -31,6 +32,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Getter
 @EqualsAndHashCode
+@ToString
 public final class DropColumnDefinitionSegment implements AlterDefinitionSegment {
     
     private final int startIndex;

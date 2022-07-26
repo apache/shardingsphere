@@ -68,6 +68,7 @@ public final class CreateDatabaseBackendHandlerTest extends ProxyContextRestorer
     @SneakyThrows
     @Test(expected = DBCreateExistsException.class)
     public void assertExecuteCreateExistDatabase() {
+        when(ProxyContext.getInstance().databaseExists("test_db")).thenReturn(true);
         when(statement.getDatabaseName()).thenReturn("test_db");
         assertThat(handler.execute(), instanceOf(UpdateResponseHeader.class));
     }
@@ -76,7 +77,7 @@ public final class CreateDatabaseBackendHandlerTest extends ProxyContextRestorer
     @Test
     public void assertExecuteCreateExistDatabaseWithIfNotExists() {
         when(statement.getDatabaseName()).thenReturn("test_db");
-        when(statement.isContainsNotExistClause()).thenReturn(true);
+        when(statement.isIfNotExists()).thenReturn(true);
         assertThat(handler.execute(), instanceOf(UpdateResponseHeader.class));
     }
 }

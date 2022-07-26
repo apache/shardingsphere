@@ -28,9 +28,9 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLS
 /**
  * SQLServer drop login statement.
  */
-@ToString
 @Getter
 @Setter
+@ToString(callSuper = true)
 public final class SQLServerDropLoginStatement extends AbstractSQLStatement implements DCLStatement, SQLServerStatement {
     
     private LoginSegment loginSegment;

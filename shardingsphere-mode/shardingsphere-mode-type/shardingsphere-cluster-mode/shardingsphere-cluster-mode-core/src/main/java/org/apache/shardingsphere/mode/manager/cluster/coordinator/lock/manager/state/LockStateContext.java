@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.state;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.mutex.ShardingSphereInterMutexLockHolder;
+import org.apache.shardingsphere.infra.lock.LockNameDefinition;
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.required.RequiredSPI;
 
@@ -28,64 +28,24 @@ import org.apache.shardingsphere.spi.type.required.RequiredSPI;
 public interface LockStateContext extends RequiredSPI {
     
     /**
-     * Init lock state context.
-     *
-     * @param lockHolder lock holder
-     */
-    default void init(ShardingSphereInterMutexLockHolder lockHolder) {
-        throw new UnsupportedOperationException();
-    }
-    
-    /**
      * Register lock state.
      *
-     * @param databaseName database name
+     * @param lockName lock name definition
      */
-    void register(String databaseName);
-    
-    /**
-     * Register lock state.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     */
-    default void register(String databaseName, String schemaName) {
-        throw new UnsupportedOperationException();
-    }
-    
-    /**
-     * Un register lock state.
-     *
-     * @param databaseName database name
-     */
-    void unregister(String databaseName);
+    void register(LockNameDefinition lockName);
     
     /**
      * Un-register lock state.
      *
-     * @param databaseName database name
-     * @param schemaName schema name
+     * @param lockName lock name definition
      */
-    default void unregister(String databaseName, String schemaName) {
-        throw new UnsupportedOperationException();
-    }
+    void unregister(LockNameDefinition lockName);
     
     /**
      * Is locked.
      *
-     * @param databaseName database name
+     * @param lockName lock name definition
      * @return is locked or not
      */
-    boolean isLocked(String databaseName);
-    
-    /**
-     * Is locked.
-     *
-     * @param databaseName database name
-     * @param schemaName schema name
-     * @return is locked or not
-     */
-    default boolean isLocked(String databaseName, String schemaName) {
-        throw new UnsupportedOperationException();
-    }
+    boolean isLocked(LockNameDefinition lockName);
 }

@@ -39,8 +39,6 @@ import java.util.Optional;
  */
 public final class CreateIndexStatementSchemaRefresher implements MetaDataRefresher<CreateIndexStatement> {
     
-    private static final String TYPE = CreateIndexStatement.class.getName();
-    
     @Override
     public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData,
                                                     final Map<String, OptimizerPlannerContext> optimizerPlanners,
@@ -52,14 +50,14 @@ public final class CreateIndexStatementSchemaRefresher implements MetaDataRefres
             return Optional.empty();
         }
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
-        database.getSchemas().get(schemaName).get(tableName).getIndexes().put(indexName, new ShardingSphereIndex(indexName));
+        database.getSchema(schemaName).get(tableName).getIndexes().put(indexName, new ShardingSphereIndex(indexName));
         SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);
-        event.getAlteredTables().add(database.getSchemas().get(schemaName).get(tableName));
+        event.getAlteredTables().add(database.getSchema(schemaName).get(tableName));
         return Optional.of(event);
     }
     
     @Override
     public String getType() {
-        return TYPE;
+        return CreateIndexStatement.class.getName();
     }
 }

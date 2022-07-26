@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Alter analytic view statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class AlterAnalyticViewStatement extends AbstractSQLStatement implements DDLStatement {
 }

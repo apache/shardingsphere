@@ -19,19 +19,18 @@ package org.apache.shardingsphere.driver.state;
 
 import org.apache.shardingsphere.infra.state.StateType;
 import org.junit.Test;
-import org.mockito.Mockito;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 public final class DriverStateFactoryTest {
     
     @Test
     public void assertGetInstance() {
-        StateType stateType = Mockito.mock(StateType.class);
+        StateType stateType = mock(StateType.class);
         when(stateType.name()).thenReturn("FIXTURE");
         assertThat(DriverStateFactory.getInstance(stateType), instanceOf(DriverState.class));
     }
-    
 }

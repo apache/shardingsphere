@@ -84,11 +84,11 @@ public final class DropDatabaseDiscoveryProviderAlgorithmStatementUpdaterTest {
     }
     
     private DropDatabaseDiscoveryTypeStatement createSQLStatement() {
-        return new DropDatabaseDiscoveryTypeStatement(Collections.singleton("type_name"));
+        return new DropDatabaseDiscoveryTypeStatement(false, Collections.singleton("type_name"));
     }
     
     private DropDatabaseDiscoveryTypeStatement createSQLStatementWithIfExists() {
-        return new DropDatabaseDiscoveryTypeStatement(Collections.singleton("type_name_0"), true);
+        return new DropDatabaseDiscoveryTypeStatement(true, Collections.singleton("type_name_0"));
     }
     
     private DatabaseDiscoveryRuleConfiguration createCurrentRuleConfiguration() {

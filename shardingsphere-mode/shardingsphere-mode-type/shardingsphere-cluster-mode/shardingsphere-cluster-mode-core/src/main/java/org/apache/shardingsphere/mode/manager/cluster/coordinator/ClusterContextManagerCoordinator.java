@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
-import com.google.common.base.Preconditions;
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.eventbus.ShardingSphereEventBus;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.BatchYamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.metadata.database.schema.QualifiedDatabase;
-import org.apache.shardingsphere.infra.rule.identifier.type.InstanceAwareRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.StatusContainedRule;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.StaticDataSourceContainedRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.props.PropertiesChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.GlobalRuleConfigurationsChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.RuleConfigurationsChangedEvent;
@@ -37,7 +37,6 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.version.DatabaseVersionChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ShowProcessListManager;
@@ -49,18 +48,14 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.statu
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListTriggerEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.ShowProcessListUnitCompleteEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.StateEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.WorkerIdEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdAddedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.XaRecoveryIdDeletedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.StorageNodeChangedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.PrimaryStateChangedEvent;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.storage.event.StorageNodeChangedEvent;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeDataSource;
 import org.apache.shardingsphere.mode.metadata.storage.StorageNodeStatus;
-import org.apache.shardingsphere.mode.metadata.storage.event.StorageNodeDataSourceChangedEvent;
 import org.apache.shardingsphere.mode.metadata.storage.event.PrimaryDataSourceChangedEvent;
-import org.apache.shardingsphere.transaction.rule.TransactionRule;
+import org.apache.shardingsphere.mode.metadata.storage.event.StorageNodeDataSourceChangedEvent;
 
 import java.sql.SQLException;
 import java.util.Collection;
@@ -72,20 +67,21 @@ import java.util.stream.Collectors;
 /**
  * Cluster context manager coordinator.
  */
+@SuppressWarnings("UnstableApiUsage")
 public final class ClusterContextManagerCoordinator {
     
-    private final MetaDataPersistService metaDataPersistService;
-    
-    private final ContextManager contextManager;
+    private final MetaDataPersistService persistService;
     
     private final RegistryCenter registryCenter;
     
-    public ClusterContextManagerCoordinator(final MetaDataPersistService metaDataPersistService, final ContextManager contextManager, final RegistryCenter registryCenter) {
-        this.metaDataPersistService = metaDataPersistService;
-        this.contextManager = contextManager;
+    private final ContextManager contextManager;
+    
+    public ClusterContextManagerCoordinator(final MetaDataPersistService persistService, final RegistryCenter registryCenter, final ContextManager contextManager) {
+        this.persistService = persistService;
         this.registryCenter = registryCenter;
-        ShardingSphereEventBus.getInstance().register(this);
-        buildSpecialRules();
+        this.contextManager = contextManager;
+        contextManager.getInstanceContext().getEventBusContext().register(this);
+        disableDataSources();
     }
     
     /**
@@ -106,7 +102,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final DatabaseDeletedEvent event) {
-        contextManager.deleteDatabase(event.getDatabaseName());
+        contextManager.dropDatabase(event.getDatabaseName());
     }
     
     /**
@@ -130,23 +126,14 @@ public final class ClusterContextManagerCoordinator {
     }
     
     /**
-     * Renew properties.
-     *
-     * @param event properties changed event
-     */
-    @Subscribe
-    public synchronized void renew(final PropertiesChangedEvent event) {
-        contextManager.alterProperties(event.getProps());
-    }
-    
-    /**
      * Renew meta data of the schema.
      *
      * @param event meta data changed event
      */
     @Subscribe
     public synchronized void renew(final SchemaChangedEvent event) {
-        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getChangedTableMetaData(), event.getDeletedTable());
+        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getChangedTableMetaData());
+        contextManager.alterSchema(event.getDatabaseName(), event.getSchemaName(), event.getDeletedTable());
     }
     
     /**
@@ -156,9 +143,9 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final RuleConfigurationsChangedEvent event) {
-        if (metaDataPersistService.getDatabaseVersionPersistService().isActiveVersion(event.getDatabaseName(), event.getDatabaseVersion())) {
+        if (persistService.getMetaDataVersionPersistService().isActiveVersion(event.getDatabaseName(), event.getDatabaseVersion())) {
             contextManager.alterRuleConfiguration(event.getDatabaseName(), event.getRuleConfigurations());
-            buildSpecialRules();
+            disableDataSources();
         }
     }
     
@@ -169,9 +156,9 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final DataSourceChangedEvent event) {
-        if (metaDataPersistService.getDatabaseVersionPersistService().isActiveVersion(event.getDatabaseName(), event.getDatabaseVersion())) {
+        if (persistService.getMetaDataVersionPersistService().isActiveVersion(event.getDatabaseName(), event.getDatabaseVersion())) {
             contextManager.alterDataSourceConfiguration(event.getDatabaseName(), event.getDataSourcePropertiesMap());
-            buildSpecialRules();
+            disableDataSources();
         }
     }
     
@@ -183,9 +170,16 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final StorageNodeChangedEvent event) {
         QualifiedDatabase qualifiedDatabase = event.getQualifiedDatabase();
-        contextManager.getMetaDataContexts().getMetaData().getDatabases().get(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
-                .stream().filter(each -> each instanceof StatusContainedRule)
-                .forEach(each -> ((StatusContainedRule) each).updateStatus(new StorageNodeDataSourceChangedEvent(qualifiedDatabase, event.getDataSource())));
+        Optional<ShardingSphereRule> dynamicDataSourceRule = contextManager.getMetaDataContexts().getMetaData().getDatabase(qualifiedDatabase.getDatabaseName()).getRuleMetaData()
+                .getRules().stream().filter(each -> each instanceof DynamicDataSourceContainedRule).findFirst();
+        if (dynamicDataSourceRule.isPresent()) {
+            ((DynamicDataSourceContainedRule) dynamicDataSourceRule.get()).updateStatus(new StorageNodeDataSourceChangedEvent(qualifiedDatabase, event.getDataSource()));
+            return;
+        }
+        Optional<ShardingSphereRule> staticDataSourceRule = contextManager.getMetaDataContexts().getMetaData().getDatabase(qualifiedDatabase.getDatabaseName()).getRuleMetaData()
+                .getRules().stream().filter(each -> each instanceof StaticDataSourceContainedRule).findFirst();
+        staticDataSourceRule.ifPresent(shardingSphereRule -> ((StaticDataSourceContainedRule) shardingSphereRule)
+                .updateStatus(new StorageNodeDataSourceChangedEvent(qualifiedDatabase, event.getDataSource())));
     }
     
     /**
@@ -196,11 +190,11 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final PrimaryStateChangedEvent event) {
         QualifiedDatabase qualifiedDatabase = event.getQualifiedDatabase();
-        contextManager.getMetaDataContexts().getMetaData().getDatabases().get(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
+        contextManager.getMetaDataContexts().getMetaData().getDatabase(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
                 .stream()
-                .filter(each -> each instanceof StatusContainedRule)
-                .forEach(each -> ((StatusContainedRule) each)
-                        .updateStatus(new PrimaryDataSourceChangedEvent(qualifiedDatabase)));
+                .filter(each -> each instanceof DynamicDataSourceContainedRule)
+                .forEach(each -> ((DynamicDataSourceContainedRule) each)
+                        .restartHeartBeatJob(new PrimaryDataSourceChangedEvent(qualifiedDatabase), contextManager.getInstanceContext()));
     }
     
     /**
@@ -211,7 +205,7 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final GlobalRuleConfigurationsChangedEvent event) {
         contextManager.alterGlobalRuleConfiguration(event.getRuleConfigurations());
-        buildSpecialRules();
+        disableDataSources();
     }
     
     /**
@@ -222,18 +216,6 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final StateEvent event) {
         contextManager.getInstanceContext().updateInstanceStatus(event.getInstanceId(), event.getStatus());
-    }
-    
-    /**
-     * Renew instance worker id.
-     *
-     * @param event worker id event
-     */
-    @Subscribe
-    public synchronized void renew(final WorkerIdEvent event) {
-        if (contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId().equals(event.getInstanceId())) {
-            contextManager.getInstanceContext().updateWorkerId(event.getWorkerId());
-        }
     }
     
     /**
@@ -248,45 +230,13 @@ public final class ClusterContextManagerCoordinator {
     }
     
     /**
-     * Renew instance xa recovery id event.
-     *
-     * @param event xa recovery id added event
-     */
-    @Subscribe
-    public synchronized void renew(final XaRecoveryIdAddedEvent event) {
-        if (contextManager.getInstanceContext().addXaRecoveryId(event.getInstanceId(), event.getXaRecoveryId())) {
-            Optional<TransactionRule> transactionRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
-            Preconditions.checkState(transactionRule.isPresent());
-            for (String each : transactionRule.get().getResources().keySet()) {
-                transactionRule.get().addResource(contextManager.getMetaDataContexts().getMetaData().getDatabases().get(each));
-            }
-        }
-    }
-    
-    /**
-     * Renew instance xa recovery id event.
-     *
-     * @param event xa recovery id deleted event
-     */
-    @Subscribe
-    public synchronized void renew(final XaRecoveryIdDeletedEvent event) {
-        if (contextManager.getInstanceContext().deleteXaRecoveryId(event.getInstanceId(), event.getXaRecoveryId())) {
-            Optional<TransactionRule> transactionRule = contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findSingleRule(TransactionRule.class);
-            Preconditions.checkState(transactionRule.isPresent());
-            for (String each : transactionRule.get().getResources().keySet()) {
-                transactionRule.get().addResource(contextManager.getMetaDataContexts().getMetaData().getDatabases().get(each));
-            }
-        }
-    }
-    
-    /**
      * Renew instance list.
      *
      * @param event compute node online event
      */
     @Subscribe
     public synchronized void renew(final InstanceOnlineEvent event) {
-        contextManager.getInstanceContext().addComputeNodeInstance(registryCenter.getComputeNodeStatusService().loadComputeNodeInstance(event.getInstanceDefinition()));
+        contextManager.getInstanceContext().addComputeNodeInstance(registryCenter.getComputeNodeStatusService().loadComputeNodeInstance(event.getInstanceMetaData()));
     }
     
     /**
@@ -296,7 +246,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final InstanceOfflineEvent event) {
-        contextManager.getInstanceContext().deleteComputeNodeInstance(new ComputeNodeInstance(event.getInstanceDefinition()));
+        contextManager.getInstanceContext().deleteComputeNodeInstance(new ComputeNodeInstance(event.getInstanceMetaData()));
     }
     
     /**
@@ -306,9 +256,20 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final DatabaseVersionChangedEvent event) {
-        Map<String, DataSourceProperties> dataSourcePropertiesMap = metaDataPersistService.getDataSourceService().load(event.getDatabaseName(), event.getActiveVersion());
-        Collection<RuleConfiguration> ruleConfigs = metaDataPersistService.getDatabaseRulePersistService().load(event.getDatabaseName(), event.getActiveVersion());
+        Map<String, DataSourceProperties> dataSourcePropertiesMap = persistService.getDataSourceService().load(event.getDatabaseName(), event.getActiveVersion());
+        Collection<RuleConfiguration> ruleConfigs = persistService.getDatabaseRulePersistService().load(event.getDatabaseName(), event.getActiveVersion());
         contextManager.alterDataSourceAndRuleConfiguration(event.getDatabaseName(), dataSourcePropertiesMap, ruleConfigs);
+        disableDataSources();
+    }
+    
+    /**
+     * Renew properties.
+     *
+     * @param event properties changed event
+     */
+    @Subscribe
+    public synchronized void renew(final PropertiesChangedEvent event) {
+        contextManager.alterProperties(event.getProps());
     }
     
     /**
@@ -318,7 +279,7 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void triggerShowProcessList(final ShowProcessListTriggerEvent event) {
-        if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getInstanceDefinition().getInstanceId())) {
+        if (!event.getInstanceId().equals(contextManager.getInstanceContext().getInstance().getMetaData().getId())) {
             return;
         }
         Collection<YamlExecuteProcessContext> processContexts = ShowProcessListManager.getInstance().getAllProcessContext();
@@ -342,19 +303,15 @@ public final class ClusterContextManagerCoordinator {
         }
     }
     
-    private void buildSpecialRules() {
-        contextManager.getMetaDataContexts().getMetaData().getGlobalRuleMetaData().findRules(InstanceAwareRule.class).forEach(each -> each.setInstanceContext(contextManager.getInstanceContext()));
+    private void disableDataSources() {
         contextManager.getMetaDataContexts().getMetaData().getDatabases().forEach((key, value) -> value.getRuleMetaData().getRules().forEach(each -> {
-            if (each instanceof StatusContainedRule) {
-                disableDataSources((StatusContainedRule) each);
-            }
-            if (each instanceof InstanceAwareRule) {
-                ((InstanceAwareRule) each).setInstanceContext(contextManager.getInstanceContext());
+            if (each instanceof StaticDataSourceContainedRule) {
+                disableDataSources((StaticDataSourceContainedRule) each);
             }
         }));
     }
     
-    private void disableDataSources(final StatusContainedRule rule) {
+    private void disableDataSources(final StaticDataSourceContainedRule rule) {
         Map<String, StorageNodeDataSource> storageNodes = registryCenter.getStorageNodeStatusService().loadStorageNodes();
         Map<String, StorageNodeDataSource> disableDataSources = storageNodes.entrySet().stream().filter(entry -> StorageNodeStatus.isDisable(entry.getValue().getStatus()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));

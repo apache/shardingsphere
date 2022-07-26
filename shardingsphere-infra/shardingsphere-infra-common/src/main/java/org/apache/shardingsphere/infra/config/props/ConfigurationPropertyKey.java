@@ -78,20 +78,10 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     SHOW_PROCESS_LIST_ENABLED("show-process-list-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**
-     * The length of time in milliseconds an SQL waits for a global lock before giving up.
-     */
-    LOCK_WAIT_TIMEOUT_MILLISECONDS("lock-wait-timeout-milliseconds", String.valueOf(50000L), long.class, false),
-    
-    /**
      * Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
      * The default value is -1, which means set the minimum value for different JDBC drivers.
      */
     PROXY_BACKEND_QUERY_FETCH_SIZE("proxy-backend-query-fetch-size", String.valueOf(-1), int.class, false),
-    
-    /**
-     * Whether check duplicate table.
-     */
-    CHECK_DUPLICATE_TABLE_ENABLED("check-duplicate-table-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**
      * Proxy frontend executor size. The default value is 0, which means let Netty decide.
@@ -132,7 +122,12 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     /**
      * Proxy Netty backlog size.
      */
-    PROXY_NETTY_BACKLOG("proxy-netty-backlog", "1024", int.class, false);
+    PROXY_NETTY_BACKLOG("proxy-netty-backlog", "1024", int.class, false),
+    
+    /**
+     * Proxy instance type.
+     */
+    PROXY_INSTANCE_TYPE("proxy-instance-type", "Proxy", String.class, true);
     
     private final String key;
     

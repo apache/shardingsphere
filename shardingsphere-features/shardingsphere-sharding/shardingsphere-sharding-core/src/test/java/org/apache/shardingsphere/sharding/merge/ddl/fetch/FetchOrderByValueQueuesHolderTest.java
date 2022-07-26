@@ -41,7 +41,7 @@ public final class FetchOrderByValueQueuesHolderTest {
         assertTrue(FetchOrderByValueGroupsHolder.getOrderByValueGroups().containsKey("t_order_cursor"));
         assertTrue(FetchOrderByValueGroupsHolder.getMinGroupRowCounts().containsKey("t_order_cursor"));
         FetchOrderByValueGroupsHolder.remove();
-        assertFalse(FetchOrderByValueGroupsHolder.getOrderByValueGroups().containsKey("t_order_cursor"));
-        assertFalse(FetchOrderByValueGroupsHolder.getMinGroupRowCounts().containsKey("t_order_cursor"));
+        assertTrue(FetchOrderByValueGroupsHolder.getOrderByValueGroups().isEmpty());
+        assertTrue(FetchOrderByValueGroupsHolder.getMinGroupRowCounts().isEmpty());
     }
 }

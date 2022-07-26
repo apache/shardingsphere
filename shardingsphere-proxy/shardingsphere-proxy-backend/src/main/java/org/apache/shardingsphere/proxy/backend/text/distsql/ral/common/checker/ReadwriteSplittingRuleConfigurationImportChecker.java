@@ -21,11 +21,10 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
-import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.factory.ReplicaLoadBalanceAlgorithmFactory;
+import org.apache.shardingsphere.readwritesplitting.factory.ReadQueryLoadBalanceAlgorithmFactory;
 
 import java.util.Collection;
 import java.util.LinkedHashSet;
@@ -56,14 +55,16 @@ public final class ReadwriteSplittingRuleConfigurationImportChecker {
         Collection<String> requireResources = new LinkedHashSet<>();
         Collection<String> requireDiscoverableResources = new LinkedHashSet<>();
         currentRuleConfig.getDataSources().forEach(each -> {
-            if (each.getAutoAwareDataSourceName().isPresent()) {
-                requireDiscoverableResources.add(each.getAutoAwareDataSourceName().get());
+            if (null != each.getDynamicStrategy()) {
+                requireDiscoverableResources.add(each.getDynamicStrategy().getAutoAwareDataSourceName());
             }
-            if (each.getWriteDataSourceName().isPresent()) {
-                requireResources.add(each.getWriteDataSourceName().get());
-            }
-            if (each.getReadDataSourceNames().isPresent()) {
-                requireResources.addAll(new InlineExpressionParser(each.getReadDataSourceNames().get()).splitAndEvaluate());
+            if (null != each.getStaticStrategy()) {
+                if (null != each.getStaticStrategy().getWriteDataSourceName()) {
+                    requireResources.add(each.getStaticStrategy().getWriteDataSourceName());
+                }
+                if (!each.getStaticStrategy().getReadDataSourceNames().isEmpty()) {
+                    requireResources.addAll(each.getStaticStrategy().getReadDataSourceNames());
+                }
             }
         });
         Collection<String> notExistResources = database.getResource().getNotExistedResources(requireResources);
@@ -80,7 +81,7 @@ public final class ReadwriteSplittingRuleConfigurationImportChecker {
     
     private void checkLoadBalancers(final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws DistSQLException {
         Collection<String> notExistedLoadBalancers = currentRuleConfig.getLoadBalancers().values().stream().map(ShardingSphereAlgorithmConfiguration::getType)
-                .filter(each -> !ReplicaLoadBalanceAlgorithmFactory.contains(each)).collect(Collectors.toList());
+                .filter(each -> !ReadQueryLoadBalanceAlgorithmFactory.contains(each)).collect(Collectors.toList());
         DistSQLException.predictionThrow(notExistedLoadBalancers.isEmpty(), () -> new InvalidAlgorithmConfigurationException("Load balancers", notExistedLoadBalancers));
     }
 }

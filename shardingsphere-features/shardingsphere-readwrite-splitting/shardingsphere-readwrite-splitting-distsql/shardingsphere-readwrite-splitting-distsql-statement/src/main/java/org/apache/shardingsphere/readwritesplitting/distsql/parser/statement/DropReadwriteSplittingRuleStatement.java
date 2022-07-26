@@ -18,23 +18,20 @@
 package org.apache.shardingsphere.readwritesplitting.distsql.parser.statement;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
-import org.apache.shardingsphere.distsql.parser.subject.impl.ReadwriteSplittingSubjectSupplier;
 
 import java.util.Collection;
 
 /**
  * Drop readwrite splitting rule statement.
  */
-@RequiredArgsConstructor
 @Getter
-public final class DropReadwriteSplittingRuleStatement extends DropRuleStatement implements ReadwriteSplittingSubjectSupplier {
+public final class DropReadwriteSplittingRuleStatement extends DropRuleStatement {
     
     private final Collection<String> ruleNames;
     
-    public DropReadwriteSplittingRuleStatement(final boolean containsExistClause, final Collection<String> ruleNames) {
-        setContainsExistClause(containsExistClause);
+    public DropReadwriteSplittingRuleStatement(final boolean ifExists, final Collection<String> ruleNames) {
+        super(ifExists);
         this.ruleNames = ruleNames;
     }
 }

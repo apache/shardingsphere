@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Alter foreign table statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class AlterForeignTableStatement extends AbstractSQLStatement implements DDLStatement {
 }

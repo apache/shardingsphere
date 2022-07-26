@@ -39,8 +39,8 @@ public final class OpenGaussQueryHeaderBuilderTest {
         when(queryResultMetaData.getColumnType(columnIndex)).thenReturn(Types.INTEGER);
         when(queryResultMetaData.getColumnTypeName(columnIndex)).thenReturn("int");
         when(queryResultMetaData.getColumnLength(columnIndex)).thenReturn(11);
-        QueryHeader expected = new PostgreSQLQueryHeaderBuilder().build(queryResultMetaData, null, null, queryResultMetaData.getColumnLabel(columnIndex), columnIndex, null);
-        QueryHeader actual = new OpenGaussQueryHeaderBuilder().build(queryResultMetaData, null, null, queryResultMetaData.getColumnLabel(columnIndex), columnIndex, null);
+        QueryHeader expected = new PostgreSQLQueryHeaderBuilder().build(queryResultMetaData, null, null, queryResultMetaData.getColumnLabel(columnIndex), columnIndex);
+        QueryHeader actual = new OpenGaussQueryHeaderBuilder().build(queryResultMetaData, null, null, queryResultMetaData.getColumnLabel(columnIndex), columnIndex);
         assertThat(actual.getColumnLabel(), is(expected.getColumnLabel()));
         assertThat(actual.getColumnType(), is(expected.getColumnType()));
         assertThat(actual.getColumnTypeName(), is(expected.getColumnTypeName()));

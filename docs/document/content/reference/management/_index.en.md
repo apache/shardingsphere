@@ -1,7 +1,7 @@
 +++
-pre = "<b>7.1. </b>"
+pre = "<b>8.2. </b>"
 title = "Management"
-weight = 1
+weight = 2
 +++
 
 ## Data Structure in Registry Center
@@ -22,7 +22,7 @@ namespace
    ├     ├     ├     ├──...    
    ├     ├     ├──versions                    # Metadata version list      
    ├     ├     ├     ├──${versionNumber}      # Metadata version
-   ├     ├     ├     ├     ├──dataSources     # Datasource configuration
+   ├     ├     ├     ├     ├──dataSources     # Data source configuration
    ├     ├     ├     ├     ├──rules           # Rule configuration  
    ├     ├     ├     ├──...
    ├     ├     ├──active_version              # Active metadata version

@@ -42,8 +42,6 @@ import java.util.Optional;
  */
 public final class CreateSchemaStatementSchemaRefresher implements MetaDataRefresher<CreateSchemaStatement> {
     
-    private static final String TYPE = CreateSchemaStatement.class.getName();
-    
     @Override
     public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData,
                                                     final Map<String, OptimizerPlannerContext> optimizerPlanners,
@@ -54,7 +52,7 @@ public final class CreateSchemaStatementSchemaRefresher implements MetaDataRefre
             return Optional.empty();
         }
         String actualSchemaName = schema.get().getValue();
-        database.getSchemas().put(actualSchemaName, new ShardingSphereSchema());
+        database.putSchema(actualSchemaName, new ShardingSphereSchema());
         federationDatabaseMetaData.putSchemaMetadata(actualSchemaName, new FederationSchemaMetaData(actualSchemaName, new LinkedHashMap<>()));
         optimizerPlanners.put(federationDatabaseMetaData.getName(), OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
         AddSchemaEvent event = new AddSchemaEvent(database.getName(), actualSchemaName);
@@ -63,6 +61,6 @@ public final class CreateSchemaStatementSchemaRefresher implements MetaDataRefre
     
     @Override
     public String getType() {
-        return TYPE;
+        return CreateSchemaStatement.class.getName();
     }
 }

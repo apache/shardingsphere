@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Alter database link statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class AlterDatabaseLinkStatement extends AbstractSQLStatement implements DDLStatement {
 }

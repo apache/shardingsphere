@@ -17,38 +17,18 @@
 
 package org.apache.shardingsphere.mode.manager.lock;
 
-import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.mode.manager.lock.definition.LockDefinitionFactory;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatementType;
 
 /**
  * Lock judge engine for ShardingSphere.
  */
-@RequiredArgsConstructor
-public final class ShardingSphereLockJudgeEngine {
+public final class ShardingSphereLockJudgeEngine implements LockJudgeEngine {
     
-    private final LockContext lockContext;
-    
-    /**
-     * Is locked.
-     *
-     * @param databaseName database name
-     * @param sqlStatement sql statement
-     * @return is locked or not
-     */
-    public boolean isLocked(final String databaseName, final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof DMLStatement) {
-            if (sqlStatement instanceof SelectStatement) {
-                return false;
-            }
-            return lockContext.isLocked(databaseName);
-        }
-        if (sqlStatement instanceof DDLStatement) {
-            return lockContext.isLocked(databaseName);
-        }
-        return false;
+    @Override
+    public boolean isLocked(final LockContext lockContext, final String databaseName, final SQLStatementContext<?> sqlStatementContext) {
+        return SQLStatementType.involvesDataChanges(sqlStatementContext.getSqlStatement()) && lockContext.isLocked(LockDefinitionFactory.newDatabaseLockDefinition(databaseName));
     }
 }

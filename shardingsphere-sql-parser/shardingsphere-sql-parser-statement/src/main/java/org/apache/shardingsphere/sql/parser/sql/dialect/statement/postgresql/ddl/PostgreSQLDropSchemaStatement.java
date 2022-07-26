@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
  */
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLDropSchemaStatement extends DropSchemaStatement implements PostgreSQLStatement {
     
     private boolean containsCascade;

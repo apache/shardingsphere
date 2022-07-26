@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
@@ -26,10 +26,12 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 /**
  * OpenGauss drop table statement.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
-@ToString
+@ToString(callSuper = true)
 public final class OpenGaussDropTableStatement extends DropTableStatement implements OpenGaussStatement {
     
-    private boolean containsExistClause;
+    private final boolean ifExists;
+    
+    private final boolean containsCascade;
 }

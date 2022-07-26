@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.apache.shardingsphere</groupId>
         <artifactId>shardingsphere-infra-datetime-type</artifactId>
-        <version>5.1.2-SNAPSHOT</version>
+        <version>5.1.3-SNAPSHOT</version>
     </parent>
     <artifactId>shardingsphere-database-datetime</artifactId>
     
@@ -36,6 +36,13 @@
             <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-sharding-core</artifactId>
             <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.shardingsphere</groupId>
+            <artifactId>shardingsphere-test-fixture</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
         </dependency>
         
         <dependency>

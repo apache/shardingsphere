@@ -32,7 +32,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Optional;
 
 /**
  * Database type of openGauss.
@@ -42,7 +41,7 @@ public final class OpenGaussDatabaseType implements SchemaSupportedDatabaseType 
     private static final Map<String, Collection<String>> SYSTEM_DATABASE_SCHEMA_MAP = new HashMap<>();
     
     private static final Collection<String> SYSTEM_SCHEMAS = new HashSet<>(Arrays.asList("information_schema", "pg_catalog",
-            "blockchain", "cstore", "db4ai", "dbe_perf", "dbe_pldebugger", "gaussdb", "oracle", "pkg_service", "snapshot", "sqladvisor"));
+            "blockchain", "cstore", "db4ai", "dbe_perf", "dbe_pldebugger", "gaussdb", "oracle", "pkg_service", "snapshot", "sqladvisor", "dbe_pldeveloper", "pg_toast", "pkg_util"));
     
     static {
         SYSTEM_DATABASE_SCHEMA_MAP.put("postgres", SYSTEM_SCHEMAS);
@@ -61,11 +60,6 @@ public final class OpenGaussDatabaseType implements SchemaSupportedDatabaseType 
     @Override
     public OpenGaussDataSourceMetaData getDataSourceMetaData(final String url, final String username) {
         return new OpenGaussDataSourceMetaData(url);
-    }
-    
-    @Override
-    public Optional<String> getDataSourceClassName() {
-        return Optional.of("org.opengauss.ds.PGSimpleDataSource");
     }
     
     @Override

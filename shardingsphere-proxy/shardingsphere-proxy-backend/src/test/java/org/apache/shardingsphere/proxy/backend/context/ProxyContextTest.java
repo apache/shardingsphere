@@ -31,7 +31,6 @@ import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedExcep
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.junit.Test;
 
-import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.Map;
@@ -52,7 +51,8 @@ public final class ProxyContextTest extends ProxyContextRestorer {
     
     @Test
     public void assertInit() {
-        ProxyContext.init(new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class)), mock(InstanceContext.class, RETURNS_DEEP_STUBS)));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(), mock(OptimizerContext.class));
+        ProxyContext.init(new ContextManager(metaDataContexts, mock(InstanceContext.class, RETURNS_DEEP_STUBS)));
         assertThat(ProxyContext.getInstance().getContextManager().getMetaDataContexts(), is(ProxyContext.getInstance().getContextManager().getMetaDataContexts()));
         assertTrue(ProxyContext.getInstance().getStateContext().isPresent());
         assertThat(ProxyContext.getInstance().getStateContext(), is(ProxyContext.getInstance().getStateContext()));
@@ -116,14 +116,18 @@ public final class ProxyContextTest extends ProxyContextRestorer {
     private Map<String, ShardingSphereDatabase> createDatabases() {
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(10, 1);
         for (int i = 0; i < 10; i++) {
-            result.put(String.format(SCHEMA_PATTERN, i), mock(ShardingSphereDatabase.class));
+            ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+            when(database.getName()).thenReturn(String.format(SCHEMA_PATTERN, i));
+            result.put(String.format(SCHEMA_PATTERN, i), database);
         }
         return result;
     }
     
     private Map<String, ShardingSphereDatabase> mockDatabases() {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
-        return Collections.singletonMap("db", result);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
+        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
+        result.put("db", database);
+        return result;
     }
 }

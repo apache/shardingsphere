@@ -17,13 +17,24 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DoStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLStatement;
+
+import java.util.List;
 
 /**
  * MySQL do statement.
  */
-@ToString
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@ToString(callSuper = true)
 public final class MySQLDoStatement extends DoStatement implements MySQLStatement {
+    
+    private List<ExpressionSegment> parameters;
 }

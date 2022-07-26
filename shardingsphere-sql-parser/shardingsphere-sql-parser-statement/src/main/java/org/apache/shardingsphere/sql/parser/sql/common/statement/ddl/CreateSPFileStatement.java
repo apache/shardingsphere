@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Create server parameter file statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class CreateSPFileStatement extends AbstractSQLStatement implements DDLStatement {
 }

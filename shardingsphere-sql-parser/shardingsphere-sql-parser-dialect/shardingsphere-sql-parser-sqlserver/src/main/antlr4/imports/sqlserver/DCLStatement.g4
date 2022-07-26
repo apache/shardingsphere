@@ -334,7 +334,7 @@ ignoredNameIdentifier
     ;
 
 dropUser
-    : DROP USER (IF EXISTS)? userName
+    : DROP USER ifExists? userName
     ;
 
 alterUser
@@ -355,7 +355,7 @@ createRole
     ;
 
 dropRole
-    : DROP ROLE (IF EXISTS)? name
+    : DROP ROLE ifExists? name
     ;
 
 alterRole

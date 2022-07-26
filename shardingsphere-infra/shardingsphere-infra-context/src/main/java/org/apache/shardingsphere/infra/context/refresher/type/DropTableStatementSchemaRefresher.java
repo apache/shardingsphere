@@ -39,8 +39,6 @@ import java.util.Optional;
  */
 public final class DropTableStatementSchemaRefresher implements MetaDataRefresher<DropTableStatement> {
     
-    private static final String TYPE = DropTableStatement.class.getName();
-    
     @Override
     public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData,
                                                     final Map<String, OptimizerPlannerContext> optimizerPlanners,
@@ -48,7 +46,7 @@ public final class DropTableStatementSchemaRefresher implements MetaDataRefreshe
                                                     final ConfigurationProperties props) throws SQLException {
         SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);
         sqlStatement.getTables().forEach(each -> {
-            database.getSchemas().get(schemaName).remove(each.getTableName().getIdentifier().getValue());
+            database.getSchema(schemaName).remove(each.getTableName().getIdentifier().getValue());
             federationDatabaseMetaData.removeTableMetadata(schemaName, each.getTableName().getIdentifier().getValue());
             optimizerPlanners.put(federationDatabaseMetaData.getName(), OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
             event.getDroppedTables().add(each.getTableName().getIdentifier().getValue());
@@ -68,6 +66,6 @@ public final class DropTableStatementSchemaRefresher implements MetaDataRefreshe
     
     @Override
     public String getType() {
-        return TYPE;
+        return DropTableStatement.class.getName();
     }
 }

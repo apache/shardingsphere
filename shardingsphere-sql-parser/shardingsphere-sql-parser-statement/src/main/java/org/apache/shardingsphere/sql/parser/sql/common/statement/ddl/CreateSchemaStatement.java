@@ -30,7 +30,7 @@ import java.util.Optional;
  */
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public abstract class CreateSchemaStatement extends AbstractSQLStatement implements DDLStatement {
     
     private IdentifierValue schemaName;

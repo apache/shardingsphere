@@ -42,8 +42,6 @@ import java.util.Optional;
  */
 public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresher<AlterIndexStatement> {
     
-    private static final String TYPE = AlterIndexStatement.class.getName();
-    
     @Override
     public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData,
                                                     final Map<String, OptimizerPlannerContext> optimizerPlanners,
@@ -55,9 +53,9 @@ public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresh
         }
         String actualSchemaName = sqlStatement.getIndex().get().getOwner().map(optional -> optional.getIdentifier().getValue()).orElse(schemaName);
         String indexName = sqlStatement.getIndex().get().getIndexName().getIdentifier().getValue();
-        Optional<String> logicTableName = findLogicTableName(database.getSchemas().get(actualSchemaName), indexName);
+        Optional<String> logicTableName = findLogicTableName(database.getSchema(actualSchemaName), indexName);
         if (logicTableName.isPresent()) {
-            ShardingSphereTable table = database.getSchemas().get(actualSchemaName).get(logicTableName.get());
+            ShardingSphereTable table = database.getSchema(actualSchemaName).get(logicTableName.get());
             Preconditions.checkNotNull(table, "Can not get the table '%s' metadata!", logicTableName.get());
             table.getIndexes().remove(indexName);
             String renameIndexName = renameIndex.get().getIndexName().getIdentifier().getValue();
@@ -75,6 +73,6 @@ public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresh
     
     @Override
     public String getType() {
-        return TYPE;
+        return AlterIndexStatement.class.getName();
     }
 }

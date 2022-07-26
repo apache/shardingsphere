@@ -21,4 +21,5 @@
     <alter-operator sql-case-id="alter_operator_set_schema" />
     <alter-operator sql-case-id="alter_operator_set" />
     <alter-operator sql-case-id="alter_operator_set_restrict_join" />
+    <alter-operator sql-case-id="alter_operator_compile" />
 </sql-parser-test-cases>

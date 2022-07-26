@@ -149,10 +149,10 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
      * Determine whether the current database has a data source.
      *
      * @param databaseName database name
-     * @return has datasource or not
+     * @return has data source or not
      */
-    protected static Boolean hasDatasource(final String databaseName) {
-        return ProxyContext.getInstance().getDatabase(databaseName).hasDataSource();
+    protected static Boolean hasDataSource(final String databaseName) {
+        return ProxyContext.getInstance().getDatabase(databaseName).containsDataSource();
     }
     
     /**
@@ -168,7 +168,7 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
     
     private static Collection<ShardingSphereRule> getRules(final String databaseName) {
         Collection<ShardingSphereRule> result;
-        result = new LinkedList<>(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getRuleMetaData().getRules());
+        result = new LinkedList<>(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getRuleMetaData().getRules());
         result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
         return result;
     }
@@ -197,9 +197,9 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
          */
         @Override
         protected List<String> getDatabaseNames(final ConnectionSession connectionSession) {
-            String database = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee()))
-                    .filter(AbstractDatabaseMetadataExecutor::hasDatasource).findFirst().orElseThrow(ResourceNotExistedException::new);
-            return Collections.singletonList(database);
+            Optional<String> database = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee()))
+                    .filter(AbstractDatabaseMetadataExecutor::hasDataSource).findFirst();
+            return database.isPresent() ? Collections.singletonList(database.get()) : Collections.emptyList();
         }
         
         /**
@@ -210,7 +210,7 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
          */
         @Override
         protected void getSourceData(final String databaseName, final FunctionWithException<ResultSet, SQLException> callback) throws SQLException {
-            ShardingSphereResource resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getResource();
+            ShardingSphereResource resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResource();
             Optional<Entry<String, DataSource>> dataSourceEntry = resource.getDataSources().entrySet().stream().findFirst();
             log.info("Actual SQL: {} ::: {}", dataSourceEntry.orElseThrow(ResourceNotExistedException::new).getKey(), sql);
             try (

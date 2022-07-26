@@ -57,7 +57,7 @@ public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
     @Before
     public void init() {
         database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(null, Collections.emptyList()));
+        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
     }
     
     @Test(expected = RequiredRuleMissedException.class)
@@ -133,7 +133,7 @@ public final class DropDatabaseDiscoveryRuleStatementUpdaterTest {
     }
     
     private DropDatabaseDiscoveryRuleStatement createSQLStatementWithIfExists() {
-        return new DropDatabaseDiscoveryRuleStatement(Collections.singleton("ha_group_0"), true);
+        return new DropDatabaseDiscoveryRuleStatement(true, Collections.singleton("ha_group_0"));
     }
     
     private DatabaseDiscoveryRuleConfiguration createCurrentRuleConfiguration() {

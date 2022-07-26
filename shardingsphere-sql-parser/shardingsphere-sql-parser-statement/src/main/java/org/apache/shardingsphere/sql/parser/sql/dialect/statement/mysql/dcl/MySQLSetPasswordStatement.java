@@ -25,6 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL set password statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLSetPasswordStatement extends AbstractSQLStatement implements DCLStatement, MySQLStatement {
 }

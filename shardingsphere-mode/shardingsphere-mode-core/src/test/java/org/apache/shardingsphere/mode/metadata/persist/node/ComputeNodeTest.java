@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.mode.metadata.persist.node;
 
-import org.apache.shardingsphere.infra.instance.definition.InstanceType;
+import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -61,6 +61,11 @@ public final class ComputeNodeTest {
     }
     
     @Test
+    public void assertGetInstanceWorkerIdRootNodePath() {
+        assertThat(ComputeNode.getInstanceWorkerIdRootNodePath(), is("/nodes/compute_nodes/worker_id"));
+    }
+    
+    @Test
     public void assertGetInstanceIdByComputeNodePath() {
         assertThat(ComputeNode.getInstanceIdByComputeNode("/nodes/compute_nodes/status/foo_instance_1"), is("foo_instance_1"));
         assertThat(ComputeNode.getInstanceIdByComputeNode("/nodes/compute_nodes/worker_id/foo_instance_2"), is("foo_instance_2"));
@@ -70,16 +75,6 @@ public final class ComputeNodeTest {
     @Test
     public void assertGetInstanceStatusNodePath() {
         assertThat(ComputeNode.getInstanceStatusNodePath("foo_instance"), is("/nodes/compute_nodes/status/foo_instance"));
-    }
-    
-    @Test
-    public void assertGetInstanceXaRecoveryIdNodePath() {
-        assertThat(ComputeNode.getInstanceXaRecoveryIdNodePath("foo_xa_recovery_id", "foo_instance"), is("/nodes/compute_nodes/xa_recovery_id/foo_xa_recovery_id/foo_instance"));
-    }
-    
-    @Test
-    public void assertGetXaRecoveryIdNodePath() {
-        assertThat(ComputeNode.getXaRecoveryIdNodePath(), is("/nodes/compute_nodes/xa_recovery_id"));
     }
     
     @Test

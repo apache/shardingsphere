@@ -71,6 +71,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -97,9 +98,11 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     }
     
     private Map<String, ShardingSphereDatabase> getDatabases() {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
-        return Collections.singletonMap("db", result);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
+        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
+        result.put("db", database);
+        return result;
     }
     
     @Test
@@ -113,7 +116,7 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     public void assertExecuteShardingTableRuleContext() throws SQLException {
         setContextManager(true);
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase("db");
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
         ResponseHeader response = RDLBackendHandlerFactory.newInstance(mock(CreateShardingTableRuleStatement.class), connectionSession).execute();
         assertThat(response, instanceOf(UpdateResponseHeader.class));
     }
@@ -264,7 +267,9 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
     
     private void setContextManager(final boolean isGovernance) {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = isGovernance ? mockMetaDataContexts() : new MetaDataContexts(mock(MetaDataPersistService.class));
+        MetaDataContexts metaDataContexts = isGovernance
+                ? mockMetaDataContexts()
+                : new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(), mock(OptimizerContext.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
     }
@@ -275,7 +280,9 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
         when(database.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(database.getResource().getDataSources()).thenReturn(Collections.emptyMap());
         when(database.getResource().getNotExistedResources(any())).thenReturn(Collections.emptyList());
-        when(result.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("db", database));
+        when(database.getRuleMetaData()).thenReturn(new ShardingSphereRuleMetaData(Collections.emptyList()));
+        when(result.getMetaData().containsDatabase("db")).thenReturn(true);
+        when(result.getMetaData().getDatabase("db")).thenReturn(database);
         return result;
     }
     
@@ -287,7 +294,7 @@ public final class DistSQLBackendHandlerFactoryTest extends ProxyContextRestorer
         ShardingSphereRuleMetaData ruleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(ruleMetaData.getConfigurations()).thenReturn(Collections.singleton(mock(ShadowRuleConfiguration.class)));
         when(database.getRuleMetaData()).thenReturn(ruleMetaData);
-        when(metaDataContexts.getMetaData().getDatabases()).thenReturn(Collections.singletonMap("db", database));
+        when(metaDataContexts.getMetaData().getDatabase("db")).thenReturn(database);
     }
     
     private void mockScalingContext() {

@@ -73,7 +73,7 @@ public final class ExampleGeneratorFactory {
     @SneakyThrows({URISyntaxException.class, IOException.class})
     private YamlExampleConfiguration swapConfigToObject() {
         URL url = ExampleGeneratorFactory.class.getResource(CONFIG_FILE);
-        File file =  null == url ? new File(CONFIG_FILE) : new File(url.toURI().getPath());
+        File file = null == url ? new File(CONFIG_FILE) : new File(url.toURI().getPath());
         return YamlEngine.unmarshal(file, YamlExampleConfiguration.class);
     }
 }

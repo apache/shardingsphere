@@ -27,29 +27,30 @@ import org.apache.shardingsphere.sql.parser.sql.common.extractor.TableExtractor;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.column.ColumnSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.WhereSegment;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl.OpenGaussFetchStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.FetchStatement;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 /**
  * Fetch statement context.
  */
 @Getter
-public final class FetchStatementContext extends CommonSQLStatementContext<OpenGaussFetchStatement> implements CursorAvailable, WhereAvailable, CursorDefinitionAware {
+public final class FetchStatementContext extends CommonSQLStatementContext<FetchStatement> implements CursorAvailable, WhereAvailable, CursorDefinitionAware {
     
     private CursorStatementContext cursorStatementContext;
     
     private TablesContext tablesContext;
     
-    public FetchStatementContext(final OpenGaussFetchStatement sqlStatement) {
+    public FetchStatementContext(final FetchStatement sqlStatement) {
         super(sqlStatement);
         tablesContext = new TablesContext(Collections.emptyList(), getDatabaseType());
     }
     
     @Override
-    public CursorNameSegment getCursorName() {
-        return getSqlStatement().getCursorName();
+    public Optional<CursorNameSegment> getCursorName() {
+        return Optional.of(getSqlStatement().getCursorName());
     }
     
     @Override

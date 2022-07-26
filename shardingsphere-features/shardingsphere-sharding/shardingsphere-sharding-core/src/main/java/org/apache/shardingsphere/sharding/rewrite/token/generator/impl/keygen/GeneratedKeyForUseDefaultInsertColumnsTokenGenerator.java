@@ -34,7 +34,7 @@ public final class GeneratedKeyForUseDefaultInsertColumnsTokenGenerator extends 
     
     @Override
     protected boolean isGenerateSQLToken(final InsertStatementContext insertStatementContext) {
-        return insertStatementContext.useDefaultColumns();
+        return !insertStatementContext.containsInsertColumns();
     }
     
     @Override

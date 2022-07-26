@@ -24,9 +24,7 @@ import java.util.List;
 
 import static org.hamcrest.CoreMatchers.hasItems;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class InlineExpressionParserTest {
     
@@ -107,17 +105,6 @@ public final class InlineExpressionParserTest {
         List<String> expected = new InlineExpressionParser(expression.toString()).splitAndEvaluate();
         assertThat(expected.size(), is(1024));
         assertThat(expected, hasItems("ds_0.t_user_0", "ds_15.t_user_1023"));
-    }
-    
-    @Test
-    public void assertValidInlineExpression() {
-        assertTrue(InlineExpressionParser.isInlineExpression("t_$->{\"new_order1\"}"));
-        assertTrue(InlineExpressionParser.isInlineExpression("t_${\"new_order2\"}"));
-    }
-    
-    @Test
-    public void assertInValidInLineExpression() {
-        assertFalse(InlineExpressionParser.isInlineExpression("t_>{\"new_order1\"}"));
     }
     
     @Test

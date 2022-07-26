@@ -84,17 +84,17 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
     @Override
     protected List<String> getDatabaseNames(final ConnectionSession connectionSession) {
         Collection<String> databaseNames = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee())).collect(Collectors.toList());
-        SCHEMA_WITHOUT_DATA_SOURCE.addAll(databaseNames.stream().filter(each -> !AbstractDatabaseMetadataExecutor.hasDatasource(each)).collect(Collectors.toSet()));
-        List<String> result = databaseNames.stream().filter(AbstractDatabaseMetadataExecutor::hasDatasource).collect(Collectors.toList());
+        SCHEMA_WITHOUT_DATA_SOURCE.addAll(databaseNames.stream().filter(each -> !AbstractDatabaseMetadataExecutor.hasDataSource(each)).collect(Collectors.toSet()));
+        List<String> result = databaseNames.stream().filter(AbstractDatabaseMetadataExecutor::hasDataSource).collect(Collectors.toList());
         if (!SCHEMA_WITHOUT_DATA_SOURCE.isEmpty()) {
-            fillSchemasWithoutDatasource();
+            fillSchemasWithoutDataSource();
         }
         return result;
     }
     
     @Override
     protected void rowPostProcessing(final String databaseName, final Map<String, Object> rowMap, final Map<String, String> aliasMap) {
-        ShardingSphereResource resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getResource();
+        ShardingSphereResource resource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResource();
         Set<String> catalogs = resource.getDataSources().keySet().stream().map(each -> resource.getDataSourceMetaData(each).getCatalog()).collect(Collectors.toSet());
         schemaNameAlias = aliasMap.getOrDefault(SCHEMA_NAME, "");
         String rowValue = rowMap.getOrDefault(schemaNameAlias, "").toString();
@@ -106,7 +106,7 @@ public final class SelectInformationSchemataExecutor extends DefaultDatabaseMeta
         }
     }
     
-    private void fillSchemasWithoutDatasource() {
+    private void fillSchemasWithoutDataSource() {
         if (SCHEMA_WITHOUT_DATA_SOURCE.isEmpty()) {
             return;
         }

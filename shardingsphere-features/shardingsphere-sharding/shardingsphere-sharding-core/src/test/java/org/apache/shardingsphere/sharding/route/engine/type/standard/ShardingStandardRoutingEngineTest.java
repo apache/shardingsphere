@@ -105,7 +105,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     }
     
     @Test
-    public void assertRouteByMixedWithHintDatasource() {
+    public void assertRouteByMixedWithHintDataSource() {
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_ds_test", createShardingConditions("t_hint_ds_test"));
         HintManager hintManager = HintManager.getInstance();
         hintManager.addDatabaseShardingValue("t_hint_ds_test", 1);
@@ -119,7 +119,7 @@ public final class ShardingStandardRoutingEngineTest extends AbstractRoutingEngi
     }
     
     @Test
-    public void assertRouteByMixedWithHintDatasourceOnly() {
+    public void assertRouteByMixedWithHintDataSourceOnly() {
         ShardingStandardRoutingEngine standardRoutingEngine = createShardingStandardRoutingEngine("t_hint_ds_test",
                 new ShardingConditions(Collections.emptyList(), mock(SQLStatementContext.class), mock(ShardingRule.class)));
         HintManager hintManager = HintManager.getInstance();

@@ -32,5 +32,6 @@ execute
     | dropDatabaseDiscoveryType
     | dropDatabaseDiscoveryHeartbeat
     | alterDatabaseDiscoveryType
+    | countDatabaseDiscoveryRule
     ) SEMI?
     ;

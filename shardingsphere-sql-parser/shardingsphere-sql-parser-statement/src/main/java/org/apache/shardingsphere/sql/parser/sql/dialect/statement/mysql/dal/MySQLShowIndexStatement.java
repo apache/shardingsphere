@@ -32,7 +32,7 @@ import java.util.Optional;
  * MySQL show index statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class MySQLShowIndexStatement extends AbstractSQLStatement implements DALStatement, MySQLStatement {
     
     @Getter

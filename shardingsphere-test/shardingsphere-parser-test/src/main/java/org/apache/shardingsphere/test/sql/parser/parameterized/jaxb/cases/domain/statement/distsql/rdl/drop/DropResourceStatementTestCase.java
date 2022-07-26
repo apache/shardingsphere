@@ -33,8 +33,8 @@ import java.util.List;
 @Setter
 public final class DropResourceStatementTestCase extends SQLParserTestCase {
     
-    @XmlAttribute(name = "contains-exist-clause")
-    private boolean containsExistClause;
+    @XmlAttribute(name = "if-exists")
+    private boolean ifExists;
     
     @XmlElement(name = "data-source")
     private final List<String> dataSources = new LinkedList<>();

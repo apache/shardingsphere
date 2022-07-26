@@ -64,7 +64,8 @@ public final class EncryptSchemaMetaDataDecoratorTest {
         when(encryptTable.getAssistedQueryColumns()).thenReturn(Collections.emptyList());
         when(encryptTable.getPlainColumns()).thenReturn(Collections.singleton("pwd_plain"));
         when(encryptTable.isCipherColumn("pwd_cipher")).thenReturn(true);
-        when(encryptTable.getLogicColumn("pwd_cipher")).thenReturn("pwd");
+        when(encryptTable.getLogicColumnByCipherColumn("pwd_cipher")).thenReturn("pwd");
+        when(encryptTable.getLogicColumnByPlainColumn("pwd_plain")).thenReturn("pwd");
         return result;
     }
     

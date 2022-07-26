@@ -44,8 +44,6 @@ import java.util.Optional;
  */
 public final class CreateTableStatementSchemaRefresher implements MetaDataRefresher<CreateTableStatement> {
     
-    private static final String TYPE = CreateTableStatement.class.getName();
-    
     @Override
     public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData,
                                                     final Map<String, OptimizerPlannerContext> optimizerPlanners,
@@ -58,9 +56,9 @@ public final class CreateTableStatementSchemaRefresher implements MetaDataRefres
         GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(database.getProtocolType(),
                 database.getResource().getDatabaseType(), database.getResource().getDataSources(), database.getRuleMetaData().getRules(), props, schemaName);
         Map<String, ShardingSphereSchema> schemaMap = GenericSchemaBuilder.build(Collections.singletonList(tableName), materials);
-        Optional<ShardingSphereTable> actualTableMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.getTables().get(tableName));
+        Optional<ShardingSphereTable> actualTableMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.get(tableName));
         if (actualTableMetaData.isPresent()) {
-            database.getSchemas().get(schemaName).put(tableName, actualTableMetaData.get());
+            database.getSchema(schemaName).put(tableName, actualTableMetaData.get());
             federationDatabaseMetaData.putTable(schemaName, actualTableMetaData.get());
             optimizerPlanners.put(federationDatabaseMetaData.getName(), OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
             SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);
@@ -77,6 +75,6 @@ public final class CreateTableStatementSchemaRefresher implements MetaDataRefres
     
     @Override
     public String getType() {
-        return TYPE;
+        return CreateTableStatement.class.getName();
     }
 }

@@ -47,7 +47,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Result set for show unused data source.
+ * Query result set for show unused data source.
  */
 public final class UnusedDataSourceQueryResultSet implements DistSQLResultSet {
     

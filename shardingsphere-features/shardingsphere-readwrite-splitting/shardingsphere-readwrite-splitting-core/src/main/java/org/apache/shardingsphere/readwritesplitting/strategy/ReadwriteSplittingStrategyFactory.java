@@ -17,19 +17,19 @@
 
 package org.apache.shardingsphere.readwritesplitting.strategy;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.datasource.strategy.DynamicDataSourceStrategy;
-import org.apache.shardingsphere.infra.datasource.strategy.DynamicDataSourceStrategyFactory;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
+import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
+import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.strategy.type.DynamicReadwriteSplittingStrategy;
 import org.apache.shardingsphere.readwritesplitting.strategy.type.StaticReadwriteSplittingStrategy;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
-import java.util.Properties;
 
 /**
  * Readwrite splitting strategy factory.
@@ -40,27 +40,23 @@ public final class ReadwriteSplittingStrategyFactory {
     /**
      * Create new instance of readwrite splitting strategy.
      * 
-     * @param type type of readwrite splitting strategy
-     * @param props properties of readwrite splitting strategy
+     * @param readwriteSplittingConfig readwrite-splitting rule config
+     * @param builtRules built rules
      * @return created instance
      */
-    public static ReadwriteSplittingStrategy newInstance(final String type, final Properties props) {
-        return "STATIC".equalsIgnoreCase(type) ? createStaticReadwriteSplittingStrategy(props) : createDynamicReadwriteSplittingStrategy(props);
+    public static ReadwriteSplittingStrategy newInstance(final ReadwriteSplittingDataSourceRuleConfiguration readwriteSplittingConfig, final Collection<ShardingSphereRule> builtRules) {
+        return null != readwriteSplittingConfig.getStaticStrategy() ? createStaticReadwriteSplittingStrategy(readwriteSplittingConfig.getStaticStrategy())
+                : createDynamicReadwriteSplittingStrategy(readwriteSplittingConfig.getDynamicStrategy(), builtRules);
     }
     
-    private static StaticReadwriteSplittingStrategy createStaticReadwriteSplittingStrategy(final Properties props) {
-        String writeDataSourceName = props.getProperty("write-data-source-name");
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(writeDataSourceName), "Write data source name is required.");
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(props.getProperty("read-data-source-names")), "Read data source names are required.");
-        List<String> readDataSourceNames = Splitter.on(",").trimResults().splitToList(props.getProperty("read-data-source-names"));
-        return new StaticReadwriteSplittingStrategy(writeDataSourceName, readDataSourceNames);
+    private static StaticReadwriteSplittingStrategy createStaticReadwriteSplittingStrategy(final StaticReadwriteSplittingStrategyConfiguration staticConfig) {
+        return new StaticReadwriteSplittingStrategy(staticConfig.getWriteDataSourceName(), staticConfig.getReadDataSourceNames());
     }
     
-    private static DynamicReadwriteSplittingStrategy createDynamicReadwriteSplittingStrategy(final Properties props) {
-        String autoAwareDataSourceName = props.getProperty("auto-aware-data-source-name");
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(autoAwareDataSourceName), "Auto aware data source name is required.");
-        Optional<DynamicDataSourceStrategy> dynamicDataSourceStrategy = DynamicDataSourceStrategyFactory.findInstance();
-        Preconditions.checkArgument(dynamicDataSourceStrategy.isPresent(), "Dynamic data source strategy is required.");
-        return new DynamicReadwriteSplittingStrategy(autoAwareDataSourceName, dynamicDataSourceStrategy.get());
+    private static DynamicReadwriteSplittingStrategy createDynamicReadwriteSplittingStrategy(final DynamicReadwriteSplittingStrategyConfiguration dynamicConfig,
+                                                                                             final Collection<ShardingSphereRule> builtRules) {
+        Optional<ShardingSphereRule> dynamicDataSourceStrategy = builtRules.stream().filter(each -> each instanceof DynamicDataSourceContainedRule).findFirst();
+        boolean allowWriteDataSourceQuery = Strings.isNullOrEmpty(dynamicConfig.getWriteDataSourceQueryEnabled()) ? Boolean.TRUE : Boolean.parseBoolean(dynamicConfig.getWriteDataSourceQueryEnabled());
+        return new DynamicReadwriteSplittingStrategy(dynamicConfig.getAutoAwareDataSourceName(), allowWriteDataSourceQuery, (DynamicDataSourceContainedRule) dynamicDataSourceStrategy.get());
     }
 }

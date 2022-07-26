@@ -25,6 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL alter logfile group statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLAlterLogfileGroupStatement extends AbstractSQLStatement implements DDLStatement, MySQLStatement {
 }

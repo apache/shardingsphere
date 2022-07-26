@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle create restore point statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OracleCreateRestorePointStatement extends AbstractSQLStatement implements OracleStatement {
 }

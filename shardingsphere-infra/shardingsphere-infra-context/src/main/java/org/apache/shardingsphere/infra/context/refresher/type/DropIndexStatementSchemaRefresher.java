@@ -44,8 +44,6 @@ import java.util.Optional;
  */
 public final class DropIndexStatementSchemaRefresher implements MetaDataRefresher<DropIndexStatement> {
     
-    private static final String TYPE = DropIndexStatement.class.getName();
-    
     @Override
     public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData,
                                                     final Map<String, OptimizerPlannerContext> optimizerPlanners,
@@ -58,7 +56,7 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
             if (!logicTableName.isPresent()) {
                 continue;
             }
-            ShardingSphereTable table = database.getSchemas().get(actualSchemaName).get(logicTableName.get());
+            ShardingSphereTable table = database.getSchema(actualSchemaName).get(logicTableName.get());
             table.getIndexes().remove(each.getIndexName().getIdentifier().getValue());
             event.getSchemaAlteredEvents().add(buildSchemaAlteredEvent(database.getName(), actualSchemaName, table));
         }
@@ -82,6 +80,6 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
     
     @Override
     public String getType() {
-        return TYPE;
+        return DropIndexStatement.class.getName();
     }
 }

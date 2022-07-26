@@ -18,21 +18,18 @@
 package org.apache.shardingsphere.scaling.distsql.statement;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.distsql.parser.subject.impl.ScalingSubjectSupplier;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropRuleStatement;
 
 /**
  * Drop sharding scaling rule statement.
  */
-@RequiredArgsConstructor
 @Getter
-public final class DropShardingScalingRuleStatement extends DropRuleStatement implements ScalingSubjectSupplier {
+public final class DropShardingScalingRuleStatement extends DropRuleStatement {
     
     private final String scalingName;
     
-    public DropShardingScalingRuleStatement(final boolean containsExistClause, final String scalingName) {
-        setContainsExistClause(containsExistClause);
+    public DropShardingScalingRuleStatement(final boolean ifExists, final String scalingName) {
+        super(ifExists);
         this.scalingName = scalingName;
     }
 }

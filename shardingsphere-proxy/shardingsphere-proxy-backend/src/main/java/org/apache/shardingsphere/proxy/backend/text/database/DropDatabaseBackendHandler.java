@@ -51,16 +51,16 @@ public final class DropDatabaseBackendHandler implements TextProtocolBackendHand
         if (isDropCurrentDatabase(sqlStatement.getDatabaseName())) {
             connectionSession.setCurrentDatabase(null);
         }
-        ProxyContext.getInstance().getContextManager().deleteDatabase(sqlStatement.getDatabaseName());
+        ProxyContext.getInstance().getContextManager().dropDatabase(sqlStatement.getDatabaseName());
         return new UpdateResponseHeader(sqlStatement);
     }
     
     private void check(final DropDatabaseStatement sqlStatement, final Grantee grantee) {
-        String databaseName = sqlStatement.getDatabaseName();
+        String databaseName = sqlStatement.getDatabaseName().toLowerCase();
         if (!SQLCheckEngine.check(databaseName, getRules(databaseName), grantee)) {
             throw new UnknownDatabaseException(databaseName);
         }
-        if (!sqlStatement.isContainsExistClause() && !ProxyContext.getInstance().getAllDatabaseNames().contains(databaseName)) {
+        if (!sqlStatement.isIfExists() && !ProxyContext.getInstance().databaseExists(databaseName)) {
             throw new DBDropNotExistsException(databaseName);
         }
     }
@@ -71,7 +71,7 @@ public final class DropDatabaseBackendHandler implements TextProtocolBackendHand
     
     private static Collection<ShardingSphereRule> getRules(final String databaseName) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
-        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(databaseName);
+        ShardingSphereDatabase database = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName);
         if (null != database && null != database.getRuleMetaData()) {
             result.addAll(database.getRuleMetaData().getRules());
         }

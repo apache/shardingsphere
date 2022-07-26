@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 /**
  * OpenGauss begin transaction statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OpenGaussBeginTransactionStatement extends BeginTransactionStatement implements OpenGaussStatement {
 }

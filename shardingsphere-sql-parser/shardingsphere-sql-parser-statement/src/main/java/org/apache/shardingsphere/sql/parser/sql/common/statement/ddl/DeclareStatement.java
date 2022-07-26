@@ -17,12 +17,22 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
+import lombok.Getter;
+import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 /**
  * Declare statement.
  */
-@ToString
+@Getter
+@Setter
+@ToString(callSuper = true)
 public abstract class DeclareStatement extends AbstractSQLStatement implements DDLStatement {
+    
+    private CursorNameSegment cursorName;
+    
+    private SelectStatement select;
 }

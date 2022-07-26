@@ -59,8 +59,9 @@ import java.util.stream.Collectors;
 public final class MetaDataChangedWatcher implements GovernanceWatcher<GovernanceEvent> {
     
     @Override
-    public Collection<String> getWatchingKeys() {
-        return Collections.singleton(DatabaseMetaDataNode.getMetaDataNodePath());
+    public Collection<String> getWatchingKeys(final String databaseName) {
+        return null == databaseName ? Collections.singleton(DatabaseMetaDataNode.getMetaDataNodePath())
+                : Collections.singleton(DatabaseMetaDataNode.getDatabaseNamePath(databaseName));
     }
     
     @Override
@@ -80,10 +81,7 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         if (isTableMetaDataChanged(event)) {
             return createSchemaChangedEvent(event);
         }
-        if (Type.UPDATED == event.getType()) {
-            return createUpdateGovernanceEvent(event);
-        }
-        return Optional.empty();
+        return createRuleAndDataSourceChangedEvent(event);
     }
     
     private boolean isLogicDatabaseChanged(final DataChangedEvent event) {
@@ -128,19 +126,23 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
         return Optional.empty();
     }
     
-    private Optional<GovernanceEvent> createUpdateGovernanceEvent(final DataChangedEvent event) {
+    private Optional<GovernanceEvent> createRuleAndDataSourceChangedEvent(final DataChangedEvent event) {
         Optional<String> databaseName = DatabaseMetaDataNode.getDatabaseNameByDatabasePath(event.getKey());
         if (!databaseName.isPresent() || Strings.isNullOrEmpty(event.getValue())) {
             return Optional.empty();
         }
-        if (event.getKey().equals(DatabaseMetaDataNode.getActiveVersionPath(databaseName.get()))) {
+        if (event.getType() == Type.UPDATED && event.getKey().equals(DatabaseMetaDataNode.getActiveVersionPath(databaseName.get()))) {
             return Optional.of(new DatabaseVersionChangedEvent(databaseName.get(), event.getValue()));
         }
         Optional<String> databaseVersion = DatabaseMetaDataNode.getVersionByDataSourcesPath(event.getKey());
-        if (databaseVersion.isPresent()) {
+        if (databaseVersion.isPresent() && event.getType() != Type.DELETED) {
             return Optional.of(createDataSourceChangedEvent(databaseName.get(), databaseVersion.get(), event));
         }
-        return DatabaseMetaDataNode.getVersionByRulesPath(event.getKey()).map(optional -> new RuleConfigurationsChangedEvent(databaseName.get(), optional, getRuleConfigurations(event.getValue())));
+        databaseVersion = DatabaseMetaDataNode.getVersionByRulesPath(event.getKey());
+        if (databaseVersion.isPresent() && event.getType() != Type.DELETED) {
+            return Optional.of(new RuleConfigurationsChangedEvent(databaseName.get(), databaseVersion.get(), getRuleConfigurations(event.getValue())));
+        }
+        return Optional.empty();
     }
     
     @SuppressWarnings("unchecked")

@@ -33,4 +33,14 @@ public enum StorageNodeStatus {
     public static boolean isDisable(final String status) {
         return DISABLED.name().toLowerCase().equals(status);
     }
+    
+    /**
+     * Storage node disable or enable.
+     *
+     * @param status storage node status
+     * @return disable or enable
+     */
+    public static boolean isEnable(final String status) {
+        return ENABLED.name().toLowerCase().equals(status);
+    }
 }

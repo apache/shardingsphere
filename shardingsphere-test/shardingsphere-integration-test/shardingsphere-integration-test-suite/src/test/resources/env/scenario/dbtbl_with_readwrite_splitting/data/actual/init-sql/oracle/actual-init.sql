@@ -15,7 +15,7 @@
 -- limitations under the License.
 --
 
-CREATE USER 'root'@'%' IDENTIFIED BY '';
+CREATE USER 'root'@'%' IDENTIFIED BY 'Root@123';
 GRANT All privileges ON *.* TO 'root'@'%';
 
 DROP SCHEMA write_ds_0;

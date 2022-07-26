@@ -34,10 +34,10 @@ public final class SingleTableDropSchemaMetadataValidator implements SingleTable
     
     @Override
     public void validate(final SingleTableRule rule, final SQLStatementContext<DropSchemaStatement> sqlStatementContext, final ShardingSphereDatabase database) {
-        boolean containsCascade = DropSchemaStatementHandler.isContainsCascade(sqlStatementContext.getSqlStatement());
+        boolean containsCascade = DropSchemaStatementHandler.containsCascade(sqlStatementContext.getSqlStatement());
         for (IdentifierValue each : sqlStatementContext.getSqlStatement().getSchemaNames()) {
             String schemaName = each.getValue();
-            ShardingSphereSchema schema = database.getSchemas().get(schemaName);
+            ShardingSphereSchema schema = database.getSchema(schemaName);
             if (null == schema) {
                 throw new ShardingSphereException("Schema %s does not exist.", schemaName);
             }

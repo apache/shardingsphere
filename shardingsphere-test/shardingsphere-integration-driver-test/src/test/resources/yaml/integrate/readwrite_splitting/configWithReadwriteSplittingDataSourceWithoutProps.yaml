@@ -42,10 +42,11 @@ rules:
 - !READWRITE_SPLITTING
   dataSources:
     readwrite_ds:
-      type: Static
-      props:
-        write-data-source-name: db_write
-        read-data-source-names: read_ds_0,read_ds_1
+      staticStrategy:
+        writeDataSourceName: db_write
+        readDataSourceNames:
+          - read_ds_0
+          - read_ds_1
 
 mode:
   type: Cluster

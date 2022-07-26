@@ -17,9 +17,9 @@ Generated codes: `target/generated-sources/shardingsphere-${product}-sample`
 ## Configuration Item Explanation
 
 | *Name*      | *Description*     | *Options*                                                                                                                            |
-|:------------|-------------------|:-------------------------------------------------------------------------------------------------------------------------------------|
+|:----------- | ----------------- |:------------------------------------------------------------------------------------------------------------------------------------ |
 | product     | product           | jdbc, proxy                                                                                                                          |
-| mode        | operating mode    | memory, cluster-zookeeper, cluster-etcd, standalone-file                                                                             |
+| mode        | operating mode    | cluster-zookeeper, cluster-etcd, standalone                                                                                          |
 | transaction | transaction type  | local                                                                                                                                |
 | features    | feature set       | sharding, readwrite-splitting, db-discovery, encrypt                                                                                 |
 | frameworks  | framework set     | jdbc, spring-boot-starter-jdbc, spring-boot-starter-jpa, spring-boot-starter-mybatis, spring-namespace-jpa, spring-namespace-mybatis |

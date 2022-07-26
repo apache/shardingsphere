@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.cases.base.BaseExtraSQLITCase;
-import org.apache.shardingsphere.integration.data.pipeline.env.IntegrationTestEnvironment;
+import org.apache.shardingsphere.integration.data.pipeline.env.enums.ScalingITEnvTypeEnum;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.sharding.algorithm.keygen.UUIDKeyGenerateAlgorithm;
 import org.junit.Test;
@@ -31,6 +31,7 @@ import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
@@ -38,11 +39,9 @@ import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.Assert.assertTrue;
 
-@Slf4j
 @RunWith(Parameterized.class)
+@Slf4j
 public class TextPrimaryKeyScalingIT extends BaseExtraSQLITCase {
-    
-    private static final IntegrationTestEnvironment ENV = IntegrationTestEnvironment.getInstance();
     
     public TextPrimaryKeyScalingIT(final ScalingParameterized parameterized) {
         super(parameterized);
@@ -52,13 +51,16 @@ public class TextPrimaryKeyScalingIT extends BaseExtraSQLITCase {
     @Parameters(name = "{0}")
     public static Collection<ScalingParameterized> getParameters() {
         Collection<ScalingParameterized> result = new LinkedList<>();
-        for (String version : ENV.getMysqlVersions()) {
+        if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NONE) {
+            return result;
+        }
+        for (String version : ENV.listDatabaseDockerImageNames(new MySQLDatabaseType())) {
             result.add(new ScalingParameterized(new MySQLDatabaseType(), version, "env/scenario/primarykey/text_primary_key/mysql.xml"));
         }
-        for (String version : ENV.getPostgresVersions()) {
+        for (String version : ENV.listDatabaseDockerImageNames(new PostgreSQLDatabaseType())) {
             result.add(new ScalingParameterized(new PostgreSQLDatabaseType(), version, "env/scenario/primarykey/text_primary_key/postgresql.xml"));
         }
-        for (String version : ENV.getOpenGaussVersions()) {
+        for (String version : ENV.listDatabaseDockerImageNames(new OpenGaussDatabaseType())) {
             result.add(new ScalingParameterized(new OpenGaussDatabaseType(), version, "env/scenario/primarykey/text_primary_key/postgresql.xml"));
         }
         return result;
@@ -70,12 +72,17 @@ public class TextPrimaryKeyScalingIT extends BaseExtraSQLITCase {
         initShardingAlgorithm();
         assertTrue(waitShardingAlgorithmEffect(15));
         createScalingRule();
-        createOrderSharingTableRule();
+        createOrderTableRule();
         createOrderTable();
         batchInsertOrder();
         addTargetResource();
-        executeWithLog(getCommonSQLCommand().getAutoAlterOrderShardingTableRule());
-        assertCheckMatchConsistencySuccess();
+        executeWithLog(getCommonSQLCommand().getAlterOrderAutoTableRule());
+        String jobId = getScalingJobId();
+        waitScalingFinished(jobId);
+        assertCheckScalingSuccess(jobId);
+        applyScaling(jobId);
+        assertPreviewTableSuccess("t_order", Arrays.asList("ds_2", "ds_3", "ds_4"));
+        restoreScalingSourceWriting(getScalingJobId());
     }
     
     private void batchInsertOrder() {

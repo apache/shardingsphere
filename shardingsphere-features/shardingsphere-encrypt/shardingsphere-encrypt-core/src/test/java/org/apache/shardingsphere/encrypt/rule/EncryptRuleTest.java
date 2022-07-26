@@ -58,24 +58,6 @@ public final class EncryptRuleTest {
         assertTrue(actual.findEncryptTable("t_encrypt").isPresent());
     }
     
-    @Test(expected = IllegalArgumentException.class)
-    public void assertNewInstanceWithInvalidConfiguration() {
-        ShardingSphereAlgorithmConfiguration encryptAlgorithmConfig = new ShardingSphereAlgorithmConfiguration("CORE.FIXTURE", new Properties());
-        EncryptColumnRuleConfiguration encryptColumnConfig = new EncryptColumnRuleConfiguration("encrypt_column", "encrypt_cipher", "", "", "test_encryptor", null);
-        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig), null);
-        EncryptRuleConfiguration ruleConfig = new EncryptRuleConfiguration(Collections.singleton(tableConfig), Collections.singletonMap("invalid_encryptor", encryptAlgorithmConfig));
-        new EncryptRule(ruleConfig);
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertNewInstanceWithInvalidAlgorithmProvidedEncryptRuleConfiguration() {
-        EncryptColumnRuleConfiguration encryptColumnConfig = new EncryptColumnRuleConfiguration("encrypt_column", "encrypt_cipher", "", "", "test_encryptor", null);
-        EncryptTableRuleConfiguration tableConfig = new EncryptTableRuleConfiguration("t_encrypt", Collections.singletonList(encryptColumnConfig), null);
-        AlgorithmProvidedEncryptRuleConfiguration ruleConfig = new AlgorithmProvidedEncryptRuleConfiguration(
-                Collections.singleton(tableConfig), Collections.singletonMap("invalid_encryptor", new CoreEncryptAlgorithmFixture()), true);
-        new EncryptRule(ruleConfig);
-    }
-    
     @Test
     public void assertFindEncryptTable() {
         assertTrue(new EncryptRule(createEncryptRuleConfiguration()).findEncryptTable("t_encrypt").isPresent());

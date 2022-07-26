@@ -20,7 +20,7 @@ mode:
   repository:
     type: ZooKeeper
     props:
-      namespace: it_db
+      namespace: it_db_mysql
       server-lists: zk.host:2181
       timeToLiveSeconds: 60
       operationTimeoutMilliseconds: 500
@@ -31,7 +31,7 @@ mode:
 rules:
   - !AUTHORITY
     users:
-      - root@:root
+      - root@:Root@123
     provider:
       type: ALL_PERMITTED
 

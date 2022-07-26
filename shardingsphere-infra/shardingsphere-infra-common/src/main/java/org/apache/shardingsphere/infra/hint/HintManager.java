@@ -22,11 +22,9 @@ import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Optional;
 
 /**
  * The manager that use hint to inject sharding key directly through {@code ThreadLocal}.
@@ -43,9 +41,6 @@ public final class HintManager implements AutoCloseable {
     private boolean databaseShardingOnly;
     
     private boolean writeRouteOnly;
-    
-    @Setter
-    private String dataSourceName;
     
     /**
      * Get a new instance for {@code HintManager}.
@@ -189,15 +184,6 @@ public final class HintManager implements AutoCloseable {
      */
     public static boolean isInstantiated() {
         return null != HINT_MANAGER_HOLDER.get();
-    }
-    
-    /**
-     * Get data source name.
-     *
-     * @return dataSource name
-     */
-    public static Optional<String> getDataSourceName() {
-        return Optional.ofNullable(HINT_MANAGER_HOLDER.get()).map(optional -> optional.dataSourceName);
     }
     
     @Override

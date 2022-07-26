@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Alter rule statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class AlterRuleStatement extends AbstractSQLStatement implements DDLStatement {
 }
