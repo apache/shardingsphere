@@ -141,20 +141,26 @@ public final class RuleAlteredJobPreparer {
             log.info("dataSourcePreparer null, ignore prepare target");
             return;
         }
-        DatabaseType sourceDatabaseType = DatabaseTypeFactory.getInstance(jobConfig.getSourceDatabaseType());
-        DatabaseType targetDatabaseType = DatabaseTypeFactory.getInstance(jobConfig.getTargetDatabaseType());
-        if (!sourceDatabaseType.isSchemaAvailable() || !targetDatabaseType.isSchemaAvailable()) {
-            log.info("prepareTargetSchemas, one of source or target database type schema is not available, ignore");
-            return;
-        }
         TableNameSchemaNameMapping tableNameSchemaNameMapping = jobContext.getTaskConfig().getDumperConfig().getTableNameSchemaNameMapping();
         PrepareTargetSchemasParameter prepareTargetSchemasParameter = new PrepareTargetSchemasParameter(jobConfig.splitLogicTableNames(),
                 DatabaseTypeFactory.getInstance(jobConfig.getTargetDatabaseType()),
                 jobConfig.getDatabaseName(), jobContext.getTaskConfig().getImporterConfig().getDataSourceConfig(), jobContext.getDataSourceManager(), tableNameSchemaNameMapping);
-        dataSourcePreparer.get().prepareTargetSchemas(prepareTargetSchemasParameter);
+        if (isSourceAndTargetSchemaAvailable(jobConfig)) {
+            dataSourcePreparer.get().prepareTargetSchemas(prepareTargetSchemasParameter);
+        }
         PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(jobConfig.getDatabaseName(), jobContext.getTaskConfig().getImporterConfig().getDataSourceConfig(),
                 jobContext.getDataSourceManager(), jobConfig.getTablesFirstDataNodes(), tableNameSchemaNameMapping);
         dataSourcePreparer.get().prepareTargetTables(prepareTargetTablesParameter);
+    }
+
+    private boolean isSourceAndTargetSchemaAvailable(RuleAlteredJobConfiguration jobConfig) {
+        DatabaseType sourceDatabaseType = DatabaseTypeFactory.getInstance(jobConfig.getSourceDatabaseType());
+        DatabaseType targetDatabaseType = DatabaseTypeFactory.getInstance(jobConfig.getTargetDatabaseType());
+        if (!sourceDatabaseType.isSchemaAvailable() || !targetDatabaseType.isSchemaAvailable()) {
+            log.info("prepareTargetSchemas, one of source or target database type schema is not available, ignore");
+            return false;
+        }
+        return true;
     }
     
     private void checkSourceDataSource(final RuleAlteredJobContext jobContext) {

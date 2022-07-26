@@ -34,17 +34,17 @@ public final class PrepareTargetTablesParameter {
     
     private final JobDataNodeLine tablesFirstDataNodes;
     
-    private final PipelineDataSourceConfiguration pipelineDataSourceConfiguration;
+    private final PipelineDataSourceConfiguration dataSourceConfig;
     
     private final PipelineDataSourceManager dataSourceManager;
     
     private final TableNameSchemaNameMapping tableNameSchemaNameMapping;
     
-    public PrepareTargetTablesParameter(@NonNull final String databaseName, @NonNull final PipelineDataSourceConfiguration pipelineDataSourceConfiguration,
+    public PrepareTargetTablesParameter(@NonNull final String databaseName, @NonNull final PipelineDataSourceConfiguration dataSourceConfig,
                                         @NonNull final PipelineDataSourceManager dataSourceManager,
                                         @NonNull final String tablesFirstDataNodes, final TableNameSchemaNameMapping tableNameSchemaNameMapping) {
         this.databaseName = databaseName;
-        this.pipelineDataSourceConfiguration = pipelineDataSourceConfiguration;
+        this.dataSourceConfig = dataSourceConfig;
         this.tablesFirstDataNodes = JobDataNodeLine.unmarshal(tablesFirstDataNodes);
         this.dataSourceManager = dataSourceManager;
         this.tableNameSchemaNameMapping = tableNameSchemaNameMapping;

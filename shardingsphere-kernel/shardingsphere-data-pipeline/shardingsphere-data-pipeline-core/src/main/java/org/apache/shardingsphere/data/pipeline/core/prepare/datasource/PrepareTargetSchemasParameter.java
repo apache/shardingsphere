@@ -38,7 +38,7 @@ public final class PrepareTargetSchemasParameter {
     
     private final String databaseName;
     
-    private final PipelineDataSourceConfiguration pipelineDataSourceConfiguration;
+    private final PipelineDataSourceConfiguration dataSourceConfig;
     
     private final PipelineDataSourceManager dataSourceManager;
     
