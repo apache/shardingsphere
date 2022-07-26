@@ -1,7 +1,7 @@
 +++
 pre = "<b>1.4 </b>"
 title = "Advantages"
-weight = 1
+weight = 4
 chapter = true
 +++
 
