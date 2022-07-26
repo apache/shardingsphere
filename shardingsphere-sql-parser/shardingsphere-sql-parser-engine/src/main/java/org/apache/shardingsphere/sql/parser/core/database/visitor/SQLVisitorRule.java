@@ -592,6 +592,8 @@ public enum SQLVisitorRule {
     
     ALTER_DISKGROUP("AlterDiskgroup", SQLStatementType.DDL),
     
+    ALTER_HIERARCHY("AlterHierarchy", SQLStatementType.DDL),
+    
     ALTER_INDEX_TYPE("AlterIndexType", SQLStatementType.DDL),
     
     CURSOR("Cursor", SQLStatementType.DDL),

@@ -118,5 +118,7 @@ execute
     | alterIndexType
     | alterMaterializedView
     | alterMaterializedViewLog
+    | alterFunction
+    | alterHierarchy
     ) SEMI_?
     ;
