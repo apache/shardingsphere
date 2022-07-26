@@ -20,7 +20,11 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.work
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Test;
+import org.mockito.Mockito;
+import org.mockito.internal.util.collections.Sets;
+import org.mockito.stubbing.Answer;
 
 import java.util.Optional;
 import java.util.Properties;
@@ -49,8 +53,11 @@ public final class ClusterWorkerIdGeneratorTest {
         InstanceMetaData instanceMetaData = mock(InstanceMetaData.class);
         when(instanceMetaData.getId()).thenReturn("foo_id");
         RegistryCenter registryCenter = mock(RegistryCenter.class, RETURNS_DEEP_STUBS);
+        ClusterPersistRepository repository = mock(ClusterPersistRepository.class);
+        Mockito.doAnswer((Answer<Object>) invocation -> "foo_id").when(repository).persistEphemeral("/worker_id/0", "foo_id");
+        when(registryCenter.getRepository()).thenReturn(repository);
         when(registryCenter.getComputeNodeStatusService().loadInstanceWorkerId("foo_id")).thenReturn(Optional.empty());
-        when(registryCenter.getRepository().getSequentialId("/worker_id/foo_id", "")).thenReturn("100");
-        assertThat(new ClusterWorkerIdGenerator(registryCenter, instanceMetaData).generate(new Properties()), is(100L));
+        when(registryCenter.getComputeNodeStatusService().getAssignedWorkerIds()).thenReturn(Sets.newSet(1L));
+        assertThat(new ClusterWorkerIdGenerator(registryCenter, instanceMetaData).generate(new Properties()), is(0L));
     }
 }

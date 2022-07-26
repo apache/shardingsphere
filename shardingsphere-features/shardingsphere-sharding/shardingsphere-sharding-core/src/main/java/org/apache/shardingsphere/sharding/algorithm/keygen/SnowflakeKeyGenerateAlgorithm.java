@@ -43,8 +43,6 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     public static final long EPOCH;
     
-    private static final String WORKER_ID_KEY = "worker-id";
-    
     private static final String MAX_VIBRATION_OFFSET_KEY = "max-vibration-offset";
     
     private static final String MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS_KEY = "max-tolerate-time-difference-milliseconds";
@@ -59,8 +57,6 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     private static final long TIMESTAMP_LEFT_SHIFT_BITS = WORKER_ID_LEFT_SHIFT_BITS + WORKER_ID_BITS;
     
-    private static final long WORKER_ID_MAX_VALUE = (1L << WORKER_ID_BITS) - 1;
-    
     private static final int DEFAULT_VIBRATION_VALUE = 1;
     
     private static final int MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS = 10;
@@ -73,8 +69,6 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     @Getter
     private Properties props;
     
-    private long workerId;
-    
     private int maxVibrationOffset;
     
     private int maxTolerateTimeDifferenceMilliseconds;
@@ -84,6 +78,8 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     private volatile long sequence;
     
     private volatile long lastMilliseconds;
+    
+    private volatile InstanceContext instanceContext;
     
     static {
         Calendar calendar = Calendar.getInstance();
@@ -104,21 +100,10 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     @Override
     public void setInstanceContext(final InstanceContext instanceContext) {
-        workerId = initWorkerId(instanceContext);
-    }
-    
-    private long initWorkerId(final InstanceContext instanceContext) {
-        long result = null == instanceContext ? parseWorkerId() : instanceContext.generateWorkerId(props);
-        rangeValidate(result);
-        return result;
-    }
-    
-    private long parseWorkerId() {
-        return null == props ? DEFAULT_WORKER_ID : Long.parseLong(props.getOrDefault(WORKER_ID_KEY, DEFAULT_WORKER_ID).toString());
-    }
-    
-    private void rangeValidate(final long workerId) {
-        Preconditions.checkArgument(workerId >= 0L && workerId <= WORKER_ID_MAX_VALUE, "Illegal worker id.");
+        this.instanceContext = instanceContext;
+        if (null != instanceContext) {
+            instanceContext.generateWorkerId(props);
+        }
     }
     
     private int getMaxVibrationOffset(final Properties props) {
@@ -146,7 +131,7 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
             sequence = sequenceOffset;
         }
         lastMilliseconds = currentMilliseconds;
-        return ((currentMilliseconds - EPOCH) << TIMESTAMP_LEFT_SHIFT_BITS) | (workerId << WORKER_ID_LEFT_SHIFT_BITS) | sequence;
+        return ((currentMilliseconds - EPOCH) << TIMESTAMP_LEFT_SHIFT_BITS) | (getWorkerId() << WORKER_ID_LEFT_SHIFT_BITS) | sequence;
     }
     
     @SneakyThrows(InterruptedException.class)
@@ -172,6 +157,10 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     @SuppressWarnings("NonAtomicOperationOnVolatileField")
     private void vibrateSequenceOffset() {
         sequenceOffset = sequenceOffset >= maxVibrationOffset ? 0 : sequenceOffset + 1;
+    }
+    
+    private long getWorkerId() {
+        return null == instanceContext ? DEFAULT_WORKER_ID : instanceContext.getWorkerId();
     }
     
     @Override
