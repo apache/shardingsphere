@@ -104,6 +104,8 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
     
     private Map<String, ShardingSphereDatabase> mockDatabases() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.containsDataSource()).thenReturn(true);
+        when(database.isComplete()).thenReturn(true);
         when(database.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
