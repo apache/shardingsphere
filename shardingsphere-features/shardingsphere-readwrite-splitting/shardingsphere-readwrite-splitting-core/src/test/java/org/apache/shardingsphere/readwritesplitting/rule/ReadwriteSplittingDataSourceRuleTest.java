@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.readwritesplitting.rule;
 
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReadQueryLoadBalanceAlgorithm;
-import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RoundRobinReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.junit.Before;
@@ -40,27 +39,6 @@ public final class ReadwriteSplittingDataSourceRuleTest {
                 new ReadwriteSplittingDataSourceRuleConfiguration("test_pr",
                         new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds_0", "read_ds_1")), null, null),
                 new RandomReadQueryLoadBalanceAlgorithm(), Collections.emptyList());
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertNewReadwriteSplittingDataSourceRuleWithoutName() {
-        new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("",
-                new StaticReadwriteSplittingStrategyConfiguration("write_ds", Arrays.asList("read_ds")),
-                null, null), new RoundRobinReadQueryLoadBalanceAlgorithm(), Collections.emptyList());
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertNewReadwriteSplittingDataSourceRuleWithoutWriteDataSourceName() {
-        new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("ds",
-                new StaticReadwriteSplittingStrategyConfiguration("", Arrays.asList("read_ds")),
-                null, null), new RoundRobinReadQueryLoadBalanceAlgorithm(), Collections.emptyList());
-    }
-    
-    @Test(expected = IllegalArgumentException.class)
-    public void assertNewReadwriteSplittingDataSourceRuleWithEmptyReadDataSourceName() {
-        new ReadwriteSplittingDataSourceRule(new ReadwriteSplittingDataSourceRuleConfiguration("ds",
-                new StaticReadwriteSplittingStrategyConfiguration("write_ds", Collections.emptyList()),
-                null, null), new RoundRobinReadQueryLoadBalanceAlgorithm(), Collections.emptyList());
     }
     
     @Test

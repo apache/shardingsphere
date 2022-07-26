@@ -19,15 +19,19 @@ package org.apache.shardingsphere.readwritesplitting.checker;
 
 import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.config.checker.RuleConfigurationCheckerFactory;
+import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.junit.Test;
 
+import javax.sql.DataSource;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
@@ -45,12 +49,13 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
         Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
         assertTrue(checker.isPresent());
         assertThat(checker.get(), instanceOf(ReadwriteSplittingRuleConfigurationChecker.class));
-        checker.get().check("test", config);
+        checker.get().check("test", config, Collections.emptyMap(), Arrays.asList(mock(DynamicDataSourceContainedRule.class)));
     }
     
     private ReadwriteSplittingRuleConfiguration createValidConfiguration() {
         ReadwriteSplittingRuleConfiguration result = mock(ReadwriteSplittingRuleConfiguration.class);
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = mock(ReadwriteSplittingDataSourceRuleConfiguration.class);
+        when(dataSourceConfig.getName()).thenReturn("readwrite_ds");
         when(dataSourceConfig.getDynamicStrategy()).thenReturn(new DynamicReadwriteSplittingStrategyConfiguration("ds0", "false"));
         when(result.getDataSources()).thenReturn(Collections.singletonList(dataSourceConfig));
         return result;
@@ -63,12 +68,13 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
         Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
         assertTrue(checker.isPresent());
         assertThat(checker.get(), instanceOf(ReadwriteSplittingRuleConfigurationChecker.class));
-        checker.get().check("test", config);
+        checker.get().check("test", config, Collections.emptyMap(), Collections.emptyList());
     }
     
     private ReadwriteSplittingRuleConfiguration createInvalidConfiguration() {
         ReadwriteSplittingRuleConfiguration result = mock(ReadwriteSplittingRuleConfiguration.class);
         ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfig = mock(ReadwriteSplittingDataSourceRuleConfiguration.class);
+        when(dataSourceConfig.getName()).thenReturn("readwrite_ds");
         when(result.getDataSources()).thenReturn(Collections.singleton(dataSourceConfig));
         return result;
     }
@@ -78,12 +84,12 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
     public void assertCheckWhenConfigInvalidWriteDataSource() {
         ReadwriteSplittingRuleConfiguration config = mock(ReadwriteSplittingRuleConfiguration.class);
         List<ReadwriteSplittingDataSourceRuleConfiguration> configurations = Arrays.asList(createDataSourceRuleConfig(
-                "write_ds", Collections.emptyList()), createDataSourceRuleConfig("write_ds", Collections.emptyList()));
+                "write_ds", Arrays.asList("ds_0", "ds_1")), createDataSourceRuleConfig("write_ds", Arrays.asList("ds_2", "ds_3")));
         when(config.getDataSources()).thenReturn(configurations);
         Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
         assertTrue(checker.isPresent());
         assertThat(checker.get(), instanceOf(ReadwriteSplittingRuleConfigurationChecker.class));
-        checker.get().check("test", config);
+        checker.get().check("test", config, mockDataSources(), Collections.emptyList());
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})
@@ -96,7 +102,7 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
         Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
         assertTrue(checker.isPresent());
         assertThat(checker.get(), instanceOf(ReadwriteSplittingRuleConfigurationChecker.class));
-        checker.get().check("test", config);
+        checker.get().check("test", config, mockDataSources(), Collections.emptyList());
     }
     
     private ReadwriteSplittingDataSourceRuleConfiguration createDataSourceRuleConfig(final String writeDataSource, final List<String> readDataSources) {
@@ -105,6 +111,13 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
         when(readwriteSplittingStrategy.getWriteDataSourceName()).thenReturn(writeDataSource);
         when(readwriteSplittingStrategy.getReadDataSourceNames()).thenReturn(readDataSources);
         when(result.getStaticStrategy()).thenReturn(readwriteSplittingStrategy);
+        when(result.getName()).thenReturn("readwrite_ds");
+        return result;
+    }
+    
+    private Map<String, DataSource> mockDataSources() {
+        Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
+        result.put("read_ds_0", mock(DataSource.class));
         return result;
     }
 }

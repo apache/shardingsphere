@@ -41,11 +41,6 @@ import static org.junit.Assert.assertTrue;
 
 public final class ReadwriteSplittingRuleTest {
     
-    @Test(expected = IllegalArgumentException.class)
-    public void assertNewWithEmptyDataSourceRule() {
-        new ReadwriteSplittingRule(new ReadwriteSplittingRuleConfiguration(Collections.emptyList(), Collections.emptyMap()), Collections.emptyList());
-    }
-    
     @Test
     public void assertFindDataSourceRule() {
         Optional<ReadwriteSplittingDataSourceRule> actual = createReadwriteSplittingRule().findDataSourceRule("readwrite");

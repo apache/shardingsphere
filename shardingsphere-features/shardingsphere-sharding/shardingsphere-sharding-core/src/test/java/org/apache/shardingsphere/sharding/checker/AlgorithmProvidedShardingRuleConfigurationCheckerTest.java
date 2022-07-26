@@ -46,13 +46,13 @@ public final class AlgorithmProvidedShardingRuleConfigurationCheckerTest {
         ShardingStrategyConfiguration shardingStrategyConfig = createShardingStrategyConfiguration();
         ruleConfig.setTables(Collections.singleton(createShardingTableRuleConfiguration(shardingStrategyConfig, shardingAuditStrategyConfig, ruleConfig.getDefaultKeyGenerateStrategy())));
         ruleConfig.setAutoTables(Collections.singleton(createShardingAutoTableRuleConfiguration(shardingStrategyConfig, shardingAuditStrategyConfig, ruleConfig.getDefaultKeyGenerateStrategy())));
-        getChecker(ruleConfig).check("foo_db", ruleConfig);
+        getChecker(ruleConfig).check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList());
     }
     
     @Test(expected = IllegalStateException.class)
     public void assertCheckTableConfigurationInitFailed() {
         AlgorithmProvidedShardingRuleConfiguration ruleConfig = createRuleConfiguration();
-        getChecker(ruleConfig).check("foo_db", ruleConfig);
+        getChecker(ruleConfig).check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList());
     }
     
     @Test(expected = IllegalStateException.class)
@@ -60,7 +60,7 @@ public final class AlgorithmProvidedShardingRuleConfigurationCheckerTest {
         AlgorithmProvidedShardingRuleConfiguration ruleConfig = createRuleConfiguration();
         ruleConfig.setTables(Collections.singleton(createShardingTableRuleConfiguration(null, null, null)));
         ruleConfig.setAutoTables(Collections.singleton(createShardingAutoTableRuleConfiguration(null, null, null)));
-        getChecker(ruleConfig).check("foo_db", ruleConfig);
+        getChecker(ruleConfig).check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList());
     }
     
     private AlgorithmProvidedShardingRuleConfiguration createRuleConfiguration() {
@@ -78,7 +78,7 @@ public final class AlgorithmProvidedShardingRuleConfigurationCheckerTest {
         return result;
     }
     
-    private ShardingTableRuleConfiguration createShardingTableRuleConfiguration(final ShardingStrategyConfiguration shardingStrategyConfig, 
+    private ShardingTableRuleConfiguration createShardingTableRuleConfiguration(final ShardingStrategyConfiguration shardingStrategyConfig,
                                                                                 final ShardingAuditStrategyConfiguration shardingAuditStrategyConfig,
                                                                                 final KeyGenerateStrategyConfiguration keyGenerateStrategyConfig) {
         ShardingTableRuleConfiguration result = new ShardingTableRuleConfiguration("foo_tbl");
