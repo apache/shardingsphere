@@ -48,12 +48,6 @@ public final class ShardingRuleConfigurationCheckerTest {
     }
     
     @Test(expected = IllegalStateException.class)
-    public void assertCheckTableConfigurationInitFailed() {
-        ShardingRuleConfiguration ruleConfig = createRuleConfiguration();
-        getChecker(ruleConfig).check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList());
-    }
-    
-    @Test(expected = IllegalStateException.class)
     public void assertCheckTableConfigurationFailed() {
         ShardingRuleConfiguration configuration = createRuleConfiguration();
         configuration.setTables(Collections.singletonList(createShardingTableRuleConfiguration(null, null, null)));

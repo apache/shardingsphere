@@ -49,20 +49,6 @@ public final class AlgorithmProvidedShardingRuleConfigurationCheckerTest {
         getChecker(ruleConfig).check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList());
     }
     
-    @Test(expected = IllegalStateException.class)
-    public void assertCheckTableConfigurationInitFailed() {
-        AlgorithmProvidedShardingRuleConfiguration ruleConfig = createRuleConfiguration();
-        getChecker(ruleConfig).check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList());
-    }
-    
-    @Test(expected = IllegalStateException.class)
-    public void assertCheckTableConfigurationFailed() {
-        AlgorithmProvidedShardingRuleConfiguration ruleConfig = createRuleConfiguration();
-        ruleConfig.setTables(Collections.singleton(createShardingTableRuleConfiguration(null, null, null)));
-        ruleConfig.setAutoTables(Collections.singleton(createShardingAutoTableRuleConfiguration(null, null, null)));
-        getChecker(ruleConfig).check("foo_db", ruleConfig, Collections.emptyMap(), Collections.emptyList());
-    }
-    
     private AlgorithmProvidedShardingRuleConfiguration createRuleConfiguration() {
         AlgorithmProvidedShardingRuleConfiguration result = new AlgorithmProvidedShardingRuleConfiguration();
         result.getShardingAlgorithms().put("foo_algorithm", mock(ShardingAlgorithm.class));
