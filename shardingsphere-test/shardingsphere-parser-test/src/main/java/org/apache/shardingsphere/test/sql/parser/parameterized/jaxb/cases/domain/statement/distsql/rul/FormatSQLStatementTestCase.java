@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.statement.ddl;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rul;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Drop database statement context.
+ * Format SQL statement test case.
  */
 @Getter
-public final class DropDatabaseStatementContext extends CommonSQLStatementContext<DropDatabaseStatement> {
+@Setter
+public final class FormatSQLStatementTestCase extends SQLParserTestCase {
     
-    public DropDatabaseStatementContext(final DropDatabaseStatement sqlStatement) {
-        super(sqlStatement);
-    }
+    @XmlAttribute(name = "sql")
+    private String sql;
 }
