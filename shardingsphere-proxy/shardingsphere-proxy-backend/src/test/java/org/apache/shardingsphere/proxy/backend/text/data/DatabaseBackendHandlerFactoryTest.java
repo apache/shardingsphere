@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.proxy.backend.text.data;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.data.impl.SchemaAssignedDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.UnicastDatabaseBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
@@ -57,6 +57,6 @@ public final class DatabaseBackendHandlerFactoryTest {
         SQLStatementContext<SQLStatement> context = mock(SQLStatementContext.class);
         when(context.getSqlStatement()).thenReturn(mock(SQLStatement.class));
         DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(context, sql, mock(ConnectionSession.class));
-        assertThat(actual, instanceOf(SchemaAssignedDatabaseBackendHandler.class));
+        assertThat(actual, instanceOf(DatabaseCommunicationEngine.class));
     }
 }

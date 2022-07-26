@@ -21,9 +21,9 @@ import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRule
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.data.impl.SchemaAssignedDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
@@ -53,7 +53,7 @@ public final class MySQLSetVariableAdminExecutorTest extends ProxyContextRestore
         ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
         when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData())
                 .thenReturn(new ShardingSphereRuleMetaData(Collections.singletonList(new SQLParserRule(new SQLParserRuleConfiguration(false, new CacheOption(1, 1), new CacheOption(1, 1))))));
-        try (MockedConstruction<SchemaAssignedDatabaseBackendHandler> mockConstruction = mockConstruction(SchemaAssignedDatabaseBackendHandler.class)) {
+        try (MockedConstruction<JDBCDatabaseCommunicationEngine> mockConstruction = mockConstruction(JDBCDatabaseCommunicationEngine.class)) {
             executor.execute(connectionSession);
             verify(mockConstruction.constructed().get(0)).execute();
         }

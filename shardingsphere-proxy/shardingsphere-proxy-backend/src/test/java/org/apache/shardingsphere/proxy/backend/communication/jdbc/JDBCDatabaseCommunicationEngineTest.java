@@ -135,7 +135,7 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
         });
         Exception ex = null;
         try {
-            engine.getQueryResponseRow();
+            engine.getRowData();
         } catch (final SQLException | IndexOutOfBoundsException e) {
             ex = e;
         } finally {

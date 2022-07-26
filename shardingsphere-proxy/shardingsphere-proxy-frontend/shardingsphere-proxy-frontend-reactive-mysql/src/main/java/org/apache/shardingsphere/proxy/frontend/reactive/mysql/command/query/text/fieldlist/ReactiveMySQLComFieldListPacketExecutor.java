@@ -76,7 +76,7 @@ public final class ReactiveMySQLComFieldListPacketExecutor implements ReactiveCo
     
     @Override
     public Future<Collection<DatabasePacket<?>>> executeFuture() {
-        return databaseCommunicationEngine.execute().compose(unused -> {
+        return databaseCommunicationEngine.executeFuture().compose(unused -> {
             try {
                 return Future.succeededFuture(createColumnDefinition41Packets());
             } catch (SQLException ex) {
@@ -88,7 +88,7 @@ public final class ReactiveMySQLComFieldListPacketExecutor implements ReactiveCo
     private Collection<DatabasePacket<?>> createColumnDefinition41Packets() throws SQLException {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
         while (databaseCommunicationEngine.next()) {
-            String columnName = databaseCommunicationEngine.getQueryResponseRow().getCells().iterator().next().getData().toString();
+            String columnName = databaseCommunicationEngine.getRowData().getCells().iterator().next().getData().toString();
             result.add(new MySQLColumnDefinition41Packet(
                     ++currentSequenceId, characterSet, databaseName, packet.getTable(), packet.getTable(), columnName, columnName, 100, MySQLBinaryColumnType.MYSQL_TYPE_VARCHAR, 0, true));
         }
