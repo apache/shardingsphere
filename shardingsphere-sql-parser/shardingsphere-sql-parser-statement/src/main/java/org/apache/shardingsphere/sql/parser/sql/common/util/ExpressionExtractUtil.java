@@ -23,7 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.constant.LogicalOperator;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BinaryOperationExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.FunctionSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.LiteralExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.simple.ParameterMarkerExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.predicate.AndPredicate;
 
@@ -83,32 +82,8 @@ public final class ExpressionExtractUtil {
     
     private static AndPredicate createAndPredicate(final ExpressionSegment expression) {
         AndPredicate result = new AndPredicate();
-        findNotContainsNullLiteralsExpression(expression).ifPresent(optional -> result.getPredicates().add(optional));
+        result.getPredicates().add(expression);
         return result;
-    }
-    
-    /**
-     * Find not contains null literals expression.
-     *
-     * @param expression ExpressionSegment
-     * @return expression which not contains null literals
-     */
-    public static Optional<ExpressionSegment> findNotContainsNullLiteralsExpression(final ExpressionSegment expression) {
-        if (isContainsNullLiterals(expression)) {
-            return Optional.empty();
-        }
-        if (expression instanceof BinaryOperationExpression && isContainsNullLiterals(((BinaryOperationExpression) expression).getRight())) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable(expression);
-    }
-    
-    private static boolean isContainsNullLiterals(final ExpressionSegment expression) {
-        if (!(expression instanceof LiteralExpressionSegment)) {
-            return false;
-        }
-        String literals = String.valueOf(((LiteralExpressionSegment) expression).getLiterals());
-        return "NULL".equalsIgnoreCase(literals) || "NOT NULL".equalsIgnoreCase(literals);
     }
     
     /**
