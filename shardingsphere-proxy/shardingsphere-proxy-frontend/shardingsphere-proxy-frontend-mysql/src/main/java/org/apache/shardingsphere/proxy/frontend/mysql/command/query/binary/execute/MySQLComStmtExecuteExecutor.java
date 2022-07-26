@@ -148,7 +148,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     
     @Override
     public MySQLPacket getQueryRowPacket() throws SQLException {
-        QueryResponseRow queryResponseRow = databaseCommunicationEngine.getQueryResponseRow();
+        QueryResponseRow queryResponseRow = databaseCommunicationEngine.getRowData();
         return new MySQLBinaryResultSetRowPacket(++currentSequenceId, createBinaryRow(queryResponseRow));
     }
     

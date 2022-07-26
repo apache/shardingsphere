@@ -18,20 +18,31 @@
 package org.apache.shardingsphere.proxy.backend.text.data;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
+import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
+import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.data.impl.SchemaAssignedDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.data.impl.UnicastDatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.junit.Test;
+import org.mockito.MockedConstruction;
+
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
-public final class DatabaseBackendHandlerFactoryTest {
+public final class DatabaseBackendHandlerFactoryTest extends ProxyContextRestorer {
     
     @Test
     public void assertNewInstanceReturnedUnicastDatabaseBackendHandlerWithDAL() {
@@ -54,9 +65,22 @@ public final class DatabaseBackendHandlerFactoryTest {
     @Test
     public void assertNewInstanceReturnedSchemaAssignedDatabaseBackendHandler() {
         String sql = "SELECT 1 FROM user WHERE id = 1";
-        SQLStatementContext<SQLStatement> context = mock(SQLStatementContext.class);
+        SQLStatementContext<SQLStatement> context = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(context.getSqlStatement()).thenReturn(mock(SQLStatement.class));
-        DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(context, sql, mock(ConnectionSession.class));
-        assertThat(actual, instanceOf(SchemaAssignedDatabaseBackendHandler.class));
+        when(context.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
+        ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
+        when(database.isComplete()).thenReturn(true);
+        when(database.containsDataSource()).thenReturn(true);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase("db")).thenReturn(database);
+        when(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().containsDatabase("db")).thenReturn(true);
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        when(connectionSession.getDatabaseName()).thenReturn("db");
+        when(connectionSession.getBackendConnection()).thenReturn(mock(JDBCBackendConnection.class));
+        when(connectionSession.getBackendConnection().getConnectionSession()).thenReturn(connectionSession);
+        try (MockedConstruction<JDBCDatabaseCommunicationEngine> unused = mockConstruction(JDBCDatabaseCommunicationEngine.class)) {
+            DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(context, sql, connectionSession);
+            assertThat(actual, instanceOf(DatabaseCommunicationEngine.class));
+        }
     }
 }

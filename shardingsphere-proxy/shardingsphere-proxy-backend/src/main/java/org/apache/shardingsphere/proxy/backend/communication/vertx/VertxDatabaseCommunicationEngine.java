@@ -36,7 +36,7 @@ import java.util.List;
 /**
  * Vert.x database communication engine.
  */
-public final class VertxDatabaseCommunicationEngine extends DatabaseCommunicationEngine<Future<ResponseHeader>> {
+public final class VertxDatabaseCommunicationEngine extends DatabaseCommunicationEngine {
     
     private final ReactiveProxySQLExecutor reactiveProxySQLExecutor;
     
@@ -52,7 +52,7 @@ public final class VertxDatabaseCommunicationEngine extends DatabaseCommunicatio
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
     @Override
-    public Future<ResponseHeader> execute() {
+    public Future<ResponseHeader> executeFuture() {
         try {
             ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
             ExecutionContext executionContext = getKernelProcessor()
@@ -81,5 +81,10 @@ public final class VertxDatabaseCommunicationEngine extends DatabaseCommunicatio
             // CHECKSTYLE:ON
             return Future.failedFuture(ex);
         }
+    }
+    
+    @Override
+    public ResponseHeader execute() throws SQLException {
+        throw new UnsupportedOperationException();
     }
 }

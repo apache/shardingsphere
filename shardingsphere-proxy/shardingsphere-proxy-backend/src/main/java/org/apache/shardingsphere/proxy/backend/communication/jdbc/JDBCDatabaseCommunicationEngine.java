@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 
-import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
@@ -68,7 +67,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * JDBC database communication engine.
  */
-public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunicationEngine<ResponseHeader> {
+public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunicationEngine {
     
     private final ProxySQLExecutor proxySQLExecutor;
     
@@ -117,8 +116,8 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
      * @return backend response
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    @SneakyThrows(SQLException.class)
-    public ResponseHeader execute() {
+    @Override
+    public ResponseHeader execute() throws SQLException {
         LogicSQL logicSQL = getLogicSQL();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         ExecutionContext executionContext = getKernelProcessor().generateExecutionContext(
@@ -181,6 +180,7 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
      *
      * @throws SQLException SQL exception
      */
+    @Override
     public void close() throws SQLException {
         Collection<SQLException> result = new LinkedList<>();
         result.addAll(closeResultSets());
