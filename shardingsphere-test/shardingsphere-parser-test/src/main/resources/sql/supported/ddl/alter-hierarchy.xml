@@ -16,12 +16,7 @@
   ~ limitations under the License.
   -->
 
-<sql-parser-test-cases>
-    <alter-function sql-case-id="alter_function_rename" />
-    <alter-function sql-case-id="alter_function_owner" />
-    <alter-function sql-case-id="alter_function_set_schema" />
-    <alter-function sql-case-id="alter_function_reset" />
-    <alter-function sql-case-id="alter_function_set" />
-    <alter-function sql-case-id="alter_function_depend_on" />
-    <alter-function sql-case-id="alter_function_compile" />
-</sql-parser-test-cases>
+<sql-cases>
+    <sql-case id="alter_hierarchy_compile" value="ALTER HIERARCHY product_hier COMPILE;" db-types="Oracle" />
+    <sql-case id="alter_hierarchy_rename" value="ALTER HIERARCHY product_hier RENAME TO myproduct_hier;" db-types="Oracle" />
+</sql-cases>
