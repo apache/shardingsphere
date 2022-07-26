@@ -145,7 +145,7 @@ Use the following command to skip the image building and run the integration tes
 ```shell
 docker run -itd -p 3307:3307 -p 3308:3308 -v ${PWD}:/opt/shardingsphere-proxy/conf/ apache/shardingsphere-proxy-test:latest
 ```
-execute the upon command will expose Proxy port and Proxy debug proxy, use IDE like IDEA could connect and debug the Proxy in container by following steps:
+execute the upon command will expose Proxy port and Proxy debug port, use IDE like IDEA could connect and debug the Proxy in container by following steps:
 
 IDEA -> Run -> Edit Configurations -> Add New Configuration -> Remote JVM Debug
 
