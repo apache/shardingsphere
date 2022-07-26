@@ -140,7 +140,7 @@ Use the following command to skip the image building and run the integration tes
 ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Pit.env.docker -Dit.cluster.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_1,scenario_name_n} -Dit.cluster.databases=MySQL
 ```
 
-#### debug the Proxy inside docker
+#### debug the Proxy inside docker container
 
 ```shell
 docker run -itd -p 3307:3307 -p 3308:3308 -v ${PWD}:/opt/shardingsphere-proxy/conf/ apache/shardingsphere-proxy-test:latest
