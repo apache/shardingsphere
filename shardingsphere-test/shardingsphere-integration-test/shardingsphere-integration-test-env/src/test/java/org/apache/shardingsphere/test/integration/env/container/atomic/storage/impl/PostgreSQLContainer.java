@@ -48,11 +48,6 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
     }
     
     @Override
-    protected String getNormalUsername() {
-        return "scaling";
-    }
-    
-    @Override
     public int getPort() {
         return 5432;
     }

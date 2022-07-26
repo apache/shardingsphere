@@ -152,6 +152,6 @@ public final class DatabaseTypeEngine {
      * @return default schema name
      */
     public static String getDefaultSchemaName(final DatabaseType databaseType, final String databaseName) {
-        return databaseType instanceof SchemaSupportedDatabaseType ? ((SchemaSupportedDatabaseType) databaseType).getDefaultSchema() : databaseName;
+        return databaseType instanceof SchemaSupportedDatabaseType ? ((SchemaSupportedDatabaseType) databaseType).getDefaultSchema() : databaseName.toLowerCase();
     }
 }

@@ -123,7 +123,9 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
      */
     public abstract String getRootUsername();
     
-    protected abstract String getNormalUsername();
+    protected final String getNormalUsername() {
+        return "normal_user";
+    }
     
     /**
      * Get database port.
