@@ -218,7 +218,7 @@ public final class DataConsistencyChecker {
             throw new RuntimeException("Can not get meta data by database name " + databaseName);
         }
         String schemaName = tableNameSchemaNameMapping.getSchemaName(logicTableName);
-        ShardingSphereSchema schema = database.getSchemas().get(schemaName);
+        ShardingSphereSchema schema = database.getSchema(schemaName);
         if (null == schema) {
             throw new RuntimeException("Can not get schema by schema name " + schemaName + ", logicTableName=" + logicTableName);
         }

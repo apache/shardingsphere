@@ -39,6 +39,7 @@ public final class EncryptInsertValuesTokenGeneratorTest extends EncryptGenerato
         EncryptInsertValuesTokenGenerator encryptInsertValuesTokenGenerator = new EncryptInsertValuesTokenGenerator();
         encryptInsertValuesTokenGenerator.setEncryptRule(createEncryptRule());
         encryptInsertValuesTokenGenerator.setPreviousSQLTokens(Collections.emptyList());
+        encryptInsertValuesTokenGenerator.setDatabaseName("db_schema");
         assertThat(encryptInsertValuesTokenGenerator.generateSQLToken(createInsertStatementContext(Arrays.asList(1, "Tom", 0, "123456"))).toString(), is("(?, ?, ?, ?, ?, ?)"));
     }
     
@@ -48,6 +49,7 @@ public final class EncryptInsertValuesTokenGeneratorTest extends EncryptGenerato
         encryptInsertValuesTokenGenerator.setDatabaseName("db-001");
         encryptInsertValuesTokenGenerator.setEncryptRule(createEncryptRule());
         encryptInsertValuesTokenGenerator.setPreviousSQLTokens(getPreviousSQLTokens());
+        encryptInsertValuesTokenGenerator.setDatabaseName("db_schema");
         assertThat(encryptInsertValuesTokenGenerator.generateSQLToken(createInsertStatementContext(Arrays.asList(1, "Tom", 0, "123456"))).toString(), is("(?, ?, ?, ?, ?, ?)"));
     }
 }

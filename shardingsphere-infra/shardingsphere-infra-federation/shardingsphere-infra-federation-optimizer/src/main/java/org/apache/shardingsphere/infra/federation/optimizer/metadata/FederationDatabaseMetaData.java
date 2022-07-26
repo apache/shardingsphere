@@ -56,6 +56,16 @@ public final class FederationDatabaseMetaData {
     }
     
     /**
+     * Judge contains schema from database or not.
+     *
+     * @param schemaName schema name
+     * @return contains schema from database or not
+     */
+    public boolean containsSchemaMetadata(final String schemaName) {
+        return schemas.containsKey(schemaName.toLowerCase());
+    }
+    
+    /**
      * Put table.
      *
      * @param schemaName schema name
@@ -82,7 +92,7 @@ public final class FederationDatabaseMetaData {
      * @param tableName table name
      */
     public void removeTableMetadata(final String schemaName, final String tableName) {
-        if (schemas.containsKey(schemaName.toLowerCase())) {
+        if (containsSchemaMetadata(schemaName)) {
             schemas.get(schemaName.toLowerCase()).remove(tableName.toLowerCase());
         }
     }

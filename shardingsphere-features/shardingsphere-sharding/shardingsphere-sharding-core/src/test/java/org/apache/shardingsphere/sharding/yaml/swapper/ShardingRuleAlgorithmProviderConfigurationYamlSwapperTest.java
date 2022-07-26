@@ -91,7 +91,7 @@ public final class ShardingRuleAlgorithmProviderConfigurationYamlSwapperTest {
         yamlKeyGenerateStrategyConfiguration.setColumn("foo_column");
         result.setDefaultKeyGenerateStrategy(yamlKeyGenerateStrategyConfiguration);
         result.setDefaultAuditStrategy(mock(YamlShardingAuditStrategyConfiguration.class));
-
+        
         result.setDefaultShardingColumn("foo_column");
         return result;
     }

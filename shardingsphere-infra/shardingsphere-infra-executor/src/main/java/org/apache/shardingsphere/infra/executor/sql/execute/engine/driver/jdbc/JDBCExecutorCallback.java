@@ -52,6 +52,8 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     
     private static final Map<String, DataSourceMetaData> CACHED_DATASOURCE_METADATA = new ConcurrentHashMap<>();
     
+    private final DatabaseType protocolType;
+    
     @Getter
     private final DatabaseType databaseType;
     
@@ -60,6 +62,10 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
     private final boolean isExceptionThrown;
     
     private final EventBusContext eventBusContext;
+    
+    public JDBCExecutorCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown, final EventBusContext eventBusContext) {
+        this(databaseType, databaseType, sqlStatement, isExceptionThrown, eventBusContext);
+    }
     
     @Override
     public final Collection<T> execute(final Collection<JDBCExecutionUnit> executionUnits, final boolean isTrunkThread, final Map<String, Object> dataMap) throws SQLException {
@@ -91,12 +97,11 @@ public abstract class JDBCExecutorCallback<T> implements ExecutorCallback<JDBCEx
             finishReport(dataMap, jdbcExecutionUnit);
             return result;
         } catch (final SQLException ex) {
-            if (!isTrunkThread) {
-                return null;
-            }
-            Optional<T> saneResult = getSaneResult(sqlStatement, ex);
-            if (saneResult.isPresent()) {
-                return saneResult.get();
+            if (!databaseType.equals(protocolType)) {
+                Optional<T> saneResult = getSaneResult(sqlStatement, ex);
+                if (saneResult.isPresent()) {
+                    return isTrunkThread ? saneResult.get() : null;
+                }
             }
             sqlExecutionHook.finishFailure(ex);
             SQLExecutorExceptionHandler.handleException(ex);

@@ -104,7 +104,7 @@ public final class ShardingCreateTableStatementValidatorTest {
         SQLStatementContext<CreateTableStatement> sqlStatementContext = new CreateTableStatementContext(sqlStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn("sharding_db");
-        when(database.getSchemas().get(schemaName).containsTable("t_order")).thenReturn(true);
+        when(database.getSchema(schemaName).containsTable("t_order")).thenReturn(true);
         new ShardingCreateTableStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database);
     }
     

@@ -52,7 +52,7 @@ public final class ShardingConditionEngineFactoryTest {
     
     @Before
     public void setUp() {
-        when(database.getSchemas().get(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
+        when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
     }
     
     @SuppressWarnings({"rawtypes", "unchecked"})

@@ -53,6 +53,8 @@ public final class IntegrationTestEnvironment {
     
     private final List<String> needToRunTestCases;
     
+    private final List<String> allowTransactionTypes;
+    
     private final Map<String, TransactionTestCaseRegistry> transactionTestCaseRegistryMap;
     
     private IntegrationTestEnvironment() {
@@ -62,6 +64,7 @@ public final class IntegrationTestEnvironment {
         postgresVersions = splitProperty("transaction.it.docker.postgresql.version");
         openGaussVersions = splitProperty("transaction.it.docker.opengauss.version");
         needToRunTestCases = splitProperty("transaction.it.env.cases");
+        allowTransactionTypes = splitProperty("transaction.it.env.transtypes");
         transactionTestCaseRegistryMap = initTransactionTestCaseRegistryMap();
     }
     

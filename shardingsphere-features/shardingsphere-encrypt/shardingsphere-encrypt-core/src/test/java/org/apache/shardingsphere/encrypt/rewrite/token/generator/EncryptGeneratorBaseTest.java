@@ -70,8 +70,9 @@ public abstract class EncryptGeneratorBaseTest {
         InsertStatement insertStatement = createInsertStatement();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
-        when(database.getSchemas().get(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
-        when(schema.getAllColumnNames(TABLE_NAME)).thenReturn(Arrays.asList("id", "name", "status", "pwd"));
+        when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
+        when(schema.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status", "pwd"));
+
         return new InsertStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), parameters, insertStatement, DefaultDatabase.LOGIC_NAME);
     }
     

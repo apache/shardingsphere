@@ -103,7 +103,7 @@ public final class MySQLQueryHeaderBuilderTest {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         when(schema.get("t_logic_order")).thenReturn(
                 new ShardingSphereTable("t_logic_order", Collections.singleton(column), Collections.singleton(new ShardingSphereIndex("order_id")), Collections.emptyList()));
-        when(result.getSchemas().get(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
+        when(result.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         ShardingRule shardingRule = mock(ShardingRule.class);
         when(shardingRule.findLogicTableByActualTable("t_order")).thenReturn(Optional.of("t_logic_order"));
         when(result.getRuleMetaData().findRules(DataNodeContainedRule.class)).thenReturn(Collections.singleton(shardingRule));

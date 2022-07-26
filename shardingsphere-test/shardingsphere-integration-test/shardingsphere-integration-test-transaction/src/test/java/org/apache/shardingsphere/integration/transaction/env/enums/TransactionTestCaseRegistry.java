@@ -21,8 +21,11 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
+import org.apache.shardingsphere.integration.transaction.engine.mysql.MySQLJdbcTransactionIT;
 import org.apache.shardingsphere.integration.transaction.engine.mysql.MySQLProxyTransactionIT;
+import org.apache.shardingsphere.integration.transaction.engine.opengauss.OpenGaussJdbcTransactionIT;
 import org.apache.shardingsphere.integration.transaction.engine.opengauss.OpenGaussProxyTransactionIT;
+import org.apache.shardingsphere.integration.transaction.engine.postgresql.PostgreSQLJdbcTransactionIT;
 import org.apache.shardingsphere.integration.transaction.engine.postgresql.PostgreSQLProxyTransactionIT;
 
 /**
@@ -32,9 +35,15 @@ import org.apache.shardingsphere.integration.transaction.engine.postgresql.Postg
 @Getter
 public enum TransactionTestCaseRegistry {
     
+    MySQL_JDBC_IT(MySQLJdbcTransactionIT.class, TransactionTestConstants.MYSQL, TransactionTestConstants.JDBC),
+    
     MySQL_PROXY_IT(MySQLProxyTransactionIT.class, TransactionTestConstants.MYSQL, TransactionTestConstants.PROXY),
     
+    OPENGAUSS_JDBC_IT(OpenGaussJdbcTransactionIT.class, TransactionTestConstants.OPENGAUSS, TransactionTestConstants.JDBC),
+    
     OPENGAUSS_PROXY_IT(OpenGaussProxyTransactionIT.class, TransactionTestConstants.OPENGAUSS, TransactionTestConstants.PROXY),
+    
+    POSTGRESQL_JDBC_IT(PostgreSQLJdbcTransactionIT.class, TransactionTestConstants.POSTGRESQL, TransactionTestConstants.JDBC),
     
     POSTGRESQL_PROXY_IT(PostgreSQLProxyTransactionIT.class, TransactionTestConstants.POSTGRESQL, TransactionTestConstants.PROXY);
     

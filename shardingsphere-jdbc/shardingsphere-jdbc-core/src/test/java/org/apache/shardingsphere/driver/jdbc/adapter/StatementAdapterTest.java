@@ -225,6 +225,7 @@ public final class StatementAdapterTest {
         ShardingSphereConnection connection = mock(ShardingSphereConnection.class, RETURNS_DEEP_STUBS);
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
+        when(connection.getDatabaseName()).thenReturn("db");
         when(globalRuleMetaData.getSingleRule(TrafficRule.class)).thenReturn(new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build()));
         ShardingSphereStatement result = new ShardingSphereStatement(connection);
         result.getRoutedStatements().addAll(Arrays.asList(statements));
@@ -239,6 +240,7 @@ public final class StatementAdapterTest {
                 .getMetaDataContexts().getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getRules()).thenReturn(Collections.singletonList(rule));
         TrafficRule trafficRule = new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build());
         ShardingSphereRuleMetaData globalRuleMetaData = mock(ShardingSphereRuleMetaData.class);
+        when(connection.getDatabaseName()).thenReturn("db");
         when(connection.getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData()).thenReturn(globalRuleMetaData);
         when(globalRuleMetaData.getSingleRule(TrafficRule.class)).thenReturn(trafficRule);
         ShardingSphereStatement result = new ShardingSphereStatement(connection);

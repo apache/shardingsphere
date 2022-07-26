@@ -79,7 +79,7 @@ public final class CreateTableSQLGeneratorIT {
         this.parameterized = parameterized;
         rootEntity = JAXB.unmarshal(
                 Objects.requireNonNull(CreateTableSQLGeneratorIT.class.getClassLoader().getResource(parameterized.getScenario())), CreateTableSQLGeneratorAssertionsRootEntity.class);
-        storageContainer = (DockerStorageContainer) StorageContainerFactory.newInstance(parameterized.getDatabaseType(), parameterized.getDockerImageName(), "");
+        storageContainer = (DockerStorageContainer) StorageContainerFactory.newInstance(parameterized.getDatabaseType(), parameterized.getDockerImageName(), "", false);
         storageContainer.start();
     }
     

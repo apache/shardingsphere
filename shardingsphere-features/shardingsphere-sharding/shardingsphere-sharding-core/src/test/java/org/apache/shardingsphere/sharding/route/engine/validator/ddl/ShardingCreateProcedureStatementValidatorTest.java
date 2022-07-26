@@ -69,7 +69,7 @@ public final class ShardingCreateProcedureStatementValidatorTest {
         sqlStatement.setRoutineBody(routineBody);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
-        when(database.getSchemas().get(DefaultDatabase.LOGIC_NAME).containsTable("t_order_item")).thenReturn(true);
+        when(database.getSchema(DefaultDatabase.LOGIC_NAME).containsTable("t_order_item")).thenReturn(true);
         when(shardingRule.isShardingTable("t_order_item")).thenReturn(false);
         SQLStatementContext<CreateProcedureStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
         new ShardingCreateProcedureStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database);
@@ -86,7 +86,9 @@ public final class ShardingCreateProcedureStatementValidatorTest {
         MySQLCreateProcedureStatement sqlStatement = new MySQLCreateProcedureStatement();
         sqlStatement.setRoutineBody(routineBody);
         SQLStatementContext<CreateProcedureStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
-        new ShardingCreateProcedureStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("db_schema");
+        new ShardingCreateProcedureStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database);
     }
     
     @Test(expected = NoSuchTableException.class)
@@ -100,7 +102,9 @@ public final class ShardingCreateProcedureStatementValidatorTest {
         MySQLCreateProcedureStatement sqlStatement = new MySQLCreateProcedureStatement();
         sqlStatement.setRoutineBody(routineBody);
         SQLStatementContext<CreateProcedureStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
-        new ShardingCreateProcedureStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS));
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.getName()).thenReturn("db_schema");
+        new ShardingCreateProcedureStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database);
     }
     
     @Test(expected = TableExistsException.class)
@@ -116,7 +120,7 @@ public final class ShardingCreateProcedureStatementValidatorTest {
         SQLStatementContext<CreateProcedureStatement> sqlStatementContext = new CommonSQLStatementContext<>(sqlStatement);
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
-        when(database.getSchemas().get(DefaultDatabase.LOGIC_NAME).containsTable("t_order")).thenReturn(true);
+        when(database.getSchema(DefaultDatabase.LOGIC_NAME).containsTable("t_order")).thenReturn(true);
         new ShardingCreateProcedureStatementValidator().preValidate(shardingRule, sqlStatementContext, Collections.emptyList(), database);
     }
 }
