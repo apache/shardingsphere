@@ -74,6 +74,16 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithmTest 
         assertTrue(actual.isOnline());
         assertThat(actual.getReplicationDelayMilliseconds(), is(10000L));
     }
+
+    @Test
+    public void assertLoadReplicaStatusWhenDelayThreshldIsNotSet() throws SQLException {
+        Properties props = new Properties();
+        DatabaseDiscoveryProviderAlgorithm algorithm = new MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm();
+        algorithm.init(props);
+        DataSource dataSource = mockDataSourceForReplicaStatus();
+        ReplicaDataSourceStatus actual = algorithm.loadReplicaStatus(dataSource);
+        assertTrue(actual.isOnline());
+    }
     
     private DataSource mockDataSourceForReplicaStatus() throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);

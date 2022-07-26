@@ -123,7 +123,9 @@ public final class MySQLNormalReplicationDatabaseDiscoveryProviderAlgorithm impl
                 Connection connection = replicaDataSource.getConnection();
                 Statement statement = connection.createStatement()) {
             long replicationDelayMilliseconds = queryReplicationDelayMilliseconds(statement);
-            boolean isDelay = replicationDelayMilliseconds >= Long.parseLong(getProps().getProperty("delay-milliseconds-threshold"));
+            boolean isDelay = getProps().containsKey("delay-milliseconds-threshold")
+                    ? replicationDelayMilliseconds >= Long.parseLong(getProps().getProperty("delay-milliseconds-threshold"))
+                    : false;
             return new ReplicaDataSourceStatus(!isDelay, replicationDelayMilliseconds);
         }
     }
