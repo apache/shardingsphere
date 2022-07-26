@@ -63,4 +63,50 @@ public final class DistSQLScriptConstants {
             + ")";
     
     public static final String PROPERTY = "\"%s\"=\"%s\"";
+
+    public static final String CREATE_SHARDING_ALGORITHM = "CREATE SHARDING ALGORITHM";
+
+    public static final String SHARDING_ALGORITHM = " %s ("
+            + System.lineSeparator()
+            + "TYPE(NAME=%s, PROPERTIES(%s))"
+            + System.lineSeparator()
+            + ")";
+
+    public static final String CREATE_SHARDING_TABLE = "CREATE SHARDING TABLE RULE";
+
+    public static final String SHARDING_TABLE = " %s ("
+            + System.lineSeparator()
+            + "DATANODES(\"%s\"),"
+            + System.lineSeparator()
+            + "%s"
+            + System.lineSeparator()
+            + ")";
+
+    public static final String DATABASE_STRATEGY = "DATABASE_STRATEGY";
+
+    public static final String TABLE_STRATEGY = "TABLE_STRATEGY";
+
+    public static final String SHARDING_STRATEGY_STANDARD = "%s(TYPE=%s, SHARDING_COLUMN=%s, SHARDING_ALGORITHM=%s),"
+            + System.lineSeparator();
+
+    public static final String SHARDING_STRATEGY_COMPLEX = "%s(TYPE=%s, SHARDING_COLUMNS=%s, SHARDING_ALGORITHM=%s),"
+            + System.lineSeparator();
+
+    public static final String SHARDING_STRATEGY_HINT = "%s(TYPE=%s, SHARDING_ALGORITHM=%s),"
+            + System.lineSeparator();
+
+    public static final String KEY_GENERATOR_STRATEGY = "KEY_GENERATE_STRATEGY(COLUMN=%s, KEY_GENERATOR=%s),"
+            + System.lineSeparator();
+
+    public static final String CREATE_KEY_GENERATOR = "CREATE SHARDING KEY GENERATOR";
+
+    public static final String KEY_GENERATOR = " %s ("
+            + System.lineSeparator()
+            + "TYPE(NAME=%s)"
+            + System.lineSeparator()
+            + ")";
+
+    public static final String SHARDING_BINDING_TABLE_RULES = "CREATE SHARDING BINDING TABLE RULES %s";
+
+    public static final String BINDING = "(%s)";
 }
