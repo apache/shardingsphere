@@ -60,7 +60,8 @@ public final class AddResourceBackendHandler extends DatabaseRequiredBackendHand
     public ResponseHeader execute(final String databaseName, final AddResourceStatement sqlStatement) throws DistSQLException {
         checkSQLStatement(databaseName, sqlStatement);
         Map<String, DataSourceProperties> dataSourcePropsMap = ResourceSegmentsConverter.convert(databaseType, sqlStatement.getDataSources());
-        validator.validate(dataSourcePropsMap, databaseType);
+        DatabaseType storeType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResource().getDatabaseType();
+        validator.validate(dataSourcePropsMap, storeType);
         try {
             ProxyContext.getInstance().getContextManager().updateResources(databaseName, dataSourcePropsMap);
         } catch (final SQLException | ShardingSphereException ex) {
