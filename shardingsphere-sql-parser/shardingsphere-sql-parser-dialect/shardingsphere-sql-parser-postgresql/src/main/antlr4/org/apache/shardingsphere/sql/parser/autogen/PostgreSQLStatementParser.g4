@@ -169,5 +169,6 @@ execute
     | securityLabelStmt
     | createEventTrigger
     | createForeignDataWrapper
+    | createForeignTable
     ) SEMI_? EOF
     ;
