@@ -154,14 +154,15 @@ public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<
         }
         for (YamlRuleConfiguration rule: rules) {
             ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfigurationYamlSwapper().swapToObject((YamlShardingRuleConfiguration) rule);
-            appendShardingAlgorithm(shardingRuleConfig, stringBuilder);
-            appendKeyGenerator(shardingRuleConfig, stringBuilder);
+            appendShardingAlgorithms(shardingRuleConfig, stringBuilder);
+            appendKeyGenerators(shardingRuleConfig, stringBuilder);
             appendShardingTableRules(shardingRuleConfig, stringBuilder);
+            // TODO append autoTables
             appendShardingBindingTableRules(shardingRuleConfig, stringBuilder);
         }
     }
 
-    private void appendShardingAlgorithm(final ShardingRuleConfiguration shardingRuleConfig, final StringBuilder stringBuilder) {
+    private void appendShardingAlgorithms(final ShardingRuleConfiguration shardingRuleConfig, final StringBuilder stringBuilder) {
         stringBuilder.append(DistSQLScriptConstants.CREATE_SHARDING_ALGORITHM);
         Iterator<Entry<String, ShardingSphereAlgorithmConfiguration>> iterator = shardingRuleConfig.getShardingAlgorithms().entrySet().iterator();
         while (iterator.hasNext()) {
@@ -190,7 +191,7 @@ public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<
         return result.toString();
     }
 
-    private void appendKeyGenerator(final ShardingRuleConfiguration shardingRuleConfig, final StringBuilder stringBuilder) {
+    private void appendKeyGenerators(final ShardingRuleConfiguration shardingRuleConfig, final StringBuilder stringBuilder) {
         stringBuilder.append(DistSQLScriptConstants.CREATE_KEY_GENERATOR);
         Iterator<Entry<String, ShardingSphereAlgorithmConfiguration>> iterator = shardingRuleConfig.getKeyGenerators().entrySet().iterator();
         while (iterator.hasNext()) {
