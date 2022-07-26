@@ -89,6 +89,8 @@ public abstract class DatabaseCommunicationEngine implements DatabaseBackendHand
     private final LockJudgeEngine lockJudgeEngine;
     
     public DatabaseCommunicationEngine(final String driverType, final ShardingSphereDatabase database, final LogicSQL logicSQL, final BackendConnection<?> backendConnection) {
+        SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
+        failedIfBackendNotReady(backendConnection.getConnectionSession(), sqlStatementContext);
         this.driverType = driverType;
         this.database = database;
         this.logicSQL = logicSQL;
@@ -99,11 +101,13 @@ public abstract class DatabaseCommunicationEngine implements DatabaseBackendHand
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getPlannerContexts(),
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps());
         lockJudgeEngine = LockJudgeEngineFactory.getInstance();
-        prepareDatabaseCommunicationEngine(backendConnection.getConnectionSession(), logicSQL.getSqlStatementContext());
+        if (sqlStatementContext instanceof CursorAvailable) {
+            prepareCursorStatementContext((CursorAvailable) sqlStatementContext, backendConnection.getConnectionSession());
+        }
     }
     
     @SneakyThrows(SQLException.class)
-    private void prepareDatabaseCommunicationEngine(final ConnectionSession connectionSession, final SQLStatementContext<?> sqlStatementContext) {
+    private void failedIfBackendNotReady(final ConnectionSession connectionSession, final SQLStatementContext<?> sqlStatementContext) {
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(connectionSession.getDatabaseName());
         boolean isSystemSchema = SystemSchemaUtil.containsSystemSchema(sqlStatementContext.getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames(), database);
         if (!isSystemSchema && !database.containsDataSource()) {
@@ -111,9 +115,6 @@ public abstract class DatabaseCommunicationEngine implements DatabaseBackendHand
         }
         if (!isSystemSchema && !database.isComplete()) {
             throw new RuleNotExistedException();
-        }
-        if (sqlStatementContext instanceof CursorAvailable) {
-            prepareCursorStatementContext((CursorAvailable) sqlStatementContext, connectionSession);
         }
     }
     
