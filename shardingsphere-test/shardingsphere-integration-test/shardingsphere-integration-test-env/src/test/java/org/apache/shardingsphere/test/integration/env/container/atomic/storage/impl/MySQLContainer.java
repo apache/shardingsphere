@@ -49,11 +49,6 @@ public final class MySQLContainer extends DockerStorageContainer {
     }
     
     @Override
-    protected String getNormalUsername() {
-        return "scaling";
-    }
-    
-    @Override
     public int getPort() {
         return 3306;
     }

@@ -41,7 +41,11 @@ public abstract class BaseTransactionITCase extends BaseITCase {
     
     public BaseTransactionITCase(final TransactionParameterized parameterized) throws SQLException {
         super(parameterized);
-        initProxyConfig();
+        if (isProxyAdapter(parameterized)) {
+            initProxyConfig();
+        } else {
+            initJDBCConfig();
+        }
     }
     
     private void initProxyConfig() throws SQLException {
@@ -49,6 +53,10 @@ public abstract class BaseTransactionITCase extends BaseITCase {
         initShardingAlgorithm();
         assertTrue(waitShardingAlgorithmEffect(15));
         initTableRules();
+        createTables();
+    }
+    
+    private void initJDBCConfig() throws SQLException {
         createTables();
     }
     
@@ -88,7 +96,7 @@ public abstract class BaseTransactionITCase extends BaseITCase {
     }
     
     protected void dropAccountTable(final Connection connection) throws SQLException {
-        executeWithLog(connection, "DROP TABLE IF EXISTS ACCOUNT;");
+        executeWithLog(connection, "DROP TABLE IF EXISTS account;");
     }
     
     protected void createOrderItemTable(final Connection connection) throws SQLException {
@@ -96,7 +104,7 @@ public abstract class BaseTransactionITCase extends BaseITCase {
     }
     
     protected void dropOrderItemTable(final Connection connection) throws SQLException {
-        executeWithLog(connection, "DROP TABLE IF EXISTS T_ORDER_ITEM;");
+        executeWithLog(connection, "DROP TABLE IF EXISTS t_order_item;");
     }
     
     protected void createOrderTable(final Connection connection) throws SQLException {
@@ -104,7 +112,7 @@ public abstract class BaseTransactionITCase extends BaseITCase {
     }
     
     protected void dropOrderTable(final Connection connection) throws SQLException {
-        executeWithLog(connection, "DROP TABLE IF EXISTS T_ORDER;");
+        executeWithLog(connection, "DROP TABLE IF EXISTS t_order;");
     }
     
     protected void assertAccountRowCount(final Connection conn, final int rowNum) {
