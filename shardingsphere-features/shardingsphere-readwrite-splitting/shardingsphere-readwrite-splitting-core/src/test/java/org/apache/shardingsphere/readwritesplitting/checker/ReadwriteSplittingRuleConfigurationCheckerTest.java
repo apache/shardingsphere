@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.checker;
 
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.config.checker.RuleConfigurationCheckerFactory;
 import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
@@ -28,6 +29,7 @@ import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.util.Arrays;
+import java.util.Properties;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -105,6 +107,23 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
         checker.get().check("test", config, mockDataSources(), Collections.emptyList());
     }
     
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    @Test(expected = IllegalStateException.class)
+    public void assertCheckWeightLoadBalanceInvalidDataSourceName() {
+        ReadwriteSplittingRuleConfiguration config = mock(ReadwriteSplittingRuleConfiguration.class);
+        List<ReadwriteSplittingDataSourceRuleConfiguration> configurations = Arrays.asList(createDataSourceRuleConfig("write_ds_0", Arrays.asList("read_ds_0", "read_ds_1")));
+        when(config.getDataSources()).thenReturn(configurations);
+        Properties props = new Properties();
+        props.setProperty("read_ds_2",  "1");
+        props.setProperty("read_ds_1",  "2");
+        ShardingSphereAlgorithmConfiguration algorithm = new ShardingSphereAlgorithmConfiguration("WEIGHT", props);
+        when(config.getLoadBalancers()).thenReturn(Collections.singletonMap("weight_ds", algorithm));
+        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
+        assertTrue(checker.isPresent());
+        assertThat(checker.get(), instanceOf(ReadwriteSplittingRuleConfigurationChecker.class));
+        checker.get().check("test", config, mockDataSources(), Collections.emptyList());
+    }
+    
     private ReadwriteSplittingDataSourceRuleConfiguration createDataSourceRuleConfig(final String writeDataSource, final List<String> readDataSources) {
         ReadwriteSplittingDataSourceRuleConfiguration result = mock(ReadwriteSplittingDataSourceRuleConfiguration.class);
         StaticReadwriteSplittingStrategyConfiguration readwriteSplittingStrategy = mock(StaticReadwriteSplittingStrategyConfiguration.class);
@@ -112,12 +131,14 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
         when(readwriteSplittingStrategy.getReadDataSourceNames()).thenReturn(readDataSources);
         when(result.getStaticStrategy()).thenReturn(readwriteSplittingStrategy);
         when(result.getName()).thenReturn("readwrite_ds");
+        when(result.getLoadBalancerName()).thenReturn("weight_ds");
         return result;
     }
     
     private Map<String, DataSource> mockDataSources() {
         Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
         result.put("read_ds_0", mock(DataSource.class));
+        result.put("read_ds_1", mock(DataSource.class));
         return result;
     }
 }
