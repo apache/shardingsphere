@@ -153,7 +153,7 @@ public final class RuleAlteredJobPreparer {
         dataSourcePreparer.get().prepareTargetTables(prepareTargetTablesParameter);
     }
 
-    private boolean isSourceAndTargetSchemaAvailable(RuleAlteredJobConfiguration jobConfig) {
+    private boolean isSourceAndTargetSchemaAvailable(final RuleAlteredJobConfiguration jobConfig) {
         DatabaseType sourceDatabaseType = DatabaseTypeFactory.getInstance(jobConfig.getSourceDatabaseType());
         DatabaseType targetDatabaseType = DatabaseTypeFactory.getInstance(jobConfig.getTargetDatabaseType());
         if (!sourceDatabaseType.isSchemaAvailable() || !targetDatabaseType.isSchemaAvailable()) {
