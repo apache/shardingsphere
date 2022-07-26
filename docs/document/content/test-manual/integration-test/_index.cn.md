@@ -167,16 +167,16 @@ it.cluster.databases=H2,MySQL,Oracle,SQLServer,PostgreSQL
 
 #### 远程 debug Docker 容器中的 Proxy 代码
 
-IT 测试的 Proxy 镜像默认开启了 3308 端口用于远程调试容器中的实例。
+IT 测试的 Proxy 镜像默认开启了 3308 端口用于远程调试容器中的实例。  
 使用 IDEA 等 IDE 工具可以通过如下方式连接并 debug 容器中的 Proxy 代码：
 
 IDEA -> Run -> Edit Configurations -> Add New Configuration -> Remote JVM Debug
 
 编辑对应的信息：
-  - Name : 一个描述性的名字，例如 docker-debug。
-  - Host : 可以访问 docker 的 IP，例如本机启动的 Docker 127.0.0.1。
-  - Port : 调试端口 3308。
-  - use module classpath : 项目根目录 shardingsphere。
+  - Name：一个描述性的名字，例如 docker-debug。
+  - Host：可以访问 docker 的 IP，例如 127.0.0.1。
+  - Port：调试端口 3308。
+  - use module classpath：项目根目录 shardingsphere。
 
 编辑好上面的信息后，在 IDEA 中 Run -> Run -> docker-debug 即可启动 IDEA 的远程 debug。
 

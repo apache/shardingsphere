@@ -142,19 +142,19 @@ Use the following command to skip the image building and run the integration tes
 
 #### debug the Proxy inside docker container
 
-The Proxy Image for testing expose the port 3308 for remote debugging the instance inside docker container.
+The Proxy Image for testing expose the port 3308 for remote debug the instance inside docker container.
 
 Use IDE like IDEA could connect and debug the Proxy in container by following steps:
 
 IDEA -> Run -> Edit Configurations -> Add New Configuration -> Remote JVM Debug
 
 Edit the corresponding info:
-  - Name : a name for this, like docker-debug
-  - Host : the IP could access container, like 127.0.0.1
-  - Port : the debug port 3308
-  - use module classpath : project root directory shardingsphere
+  - Name: a name for this, like docker-debug
+  - Host: the IP could access container, like 127.0.0.1
+  - Port: the debug port 3308
+  - use module classpath: project root directory shardingsphere
 
-after edit and save the upon info, goto Run -> Run -> docker-debug will start the remote debug to the Proxy instance inside docker container.
+After edit and save the upon info, goto Run -> Run -> docker-debug will start the remote debug to the Proxy instance inside docker container.
 
 ## Notice
 
