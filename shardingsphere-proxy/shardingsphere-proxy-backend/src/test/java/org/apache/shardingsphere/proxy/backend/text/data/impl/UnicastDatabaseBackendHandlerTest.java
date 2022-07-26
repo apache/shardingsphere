@@ -78,7 +78,7 @@ public final class UnicastDatabaseBackendHandlerTest extends ProxyContextRestore
     private DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Before
-    public void setUp() {
+    public void setUp() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
@@ -101,7 +101,7 @@ public final class UnicastDatabaseBackendHandlerTest extends ProxyContextRestore
         return result;
     }
     
-    private void mockDatabaseCommunicationEngine(final ResponseHeader responseHeader) {
+    private void mockDatabaseCommunicationEngine(final ResponseHeader responseHeader) throws SQLException {
         when(databaseCommunicationEngine.execute()).thenReturn(responseHeader);
         when(databaseCommunicationEngineFactory.newDatabaseCommunicationEngine(any(), anyString(), any(), eq(false))).thenReturn(databaseCommunicationEngine);
     }

@@ -44,7 +44,7 @@ public final class InsertCipherNameTokenGenerator implements CollectionSQLTokenG
     private EncryptRule encryptRule;
     
     @Override
-    public boolean isGenerateSQLToken(final SQLStatementContext sqlStatementContext) {
+    public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
         if (!(sqlStatementContext instanceof InsertStatementContext)) {
             return false;
         }

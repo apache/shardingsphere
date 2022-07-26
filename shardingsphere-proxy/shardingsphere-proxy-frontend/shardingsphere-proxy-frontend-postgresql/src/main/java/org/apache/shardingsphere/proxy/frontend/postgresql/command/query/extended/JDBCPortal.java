@@ -182,7 +182,7 @@ public final class JDBCPortal implements Portal<Void> {
     }
     
     private PostgreSQLPacket nextPacket() throws SQLException {
-        return new PostgreSQLDataRowPacket(getData(null != databaseCommunicationEngine ? databaseCommunicationEngine.getQueryResponseRow() : textProtocolBackendHandler.getRowData()));
+        return new PostgreSQLDataRowPacket(getData(null != databaseCommunicationEngine ? databaseCommunicationEngine.getRowData() : textProtocolBackendHandler.getRowData()));
     }
     
     private List<Object> getData(final QueryResponseRow queryResponseRow) {

@@ -115,7 +115,7 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
         when(responseHeader.getQueryHeaders()).thenReturn(Collections.singletonList(queryHeader));
         when(databaseCommunicationEngine.execute()).thenReturn(responseHeader);
         when(databaseCommunicationEngine.next()).thenReturn(true, true, false);
-        when(databaseCommunicationEngine.getQueryResponseRow()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 0))),
+        when(databaseCommunicationEngine.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 0))),
                 new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1))));
         portal.bind();
         assertThat(portal.describe(), instanceOf(PostgreSQLRowDescriptionPacket.class));
@@ -137,7 +137,7 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
         when(responseHeader.getQueryHeaders()).thenReturn(Collections.singletonList(queryHeader));
         when(databaseCommunicationEngine.execute()).thenReturn(responseHeader);
         when(databaseCommunicationEngine.next()).thenReturn(true, true);
-        when(databaseCommunicationEngine.getQueryResponseRow()).thenReturn(
+        when(databaseCommunicationEngine.getRowData()).thenReturn(
                 new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 0))),
                 new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1))));
         setField(portal, "resultFormats", Collections.singletonList(PostgreSQLValueFormat.BINARY));

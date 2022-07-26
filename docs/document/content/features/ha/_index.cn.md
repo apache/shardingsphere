@@ -1,5 +1,5 @@
 +++
-pre = "<b>4.7. </b>"
+pre = "<b>3.7. </b>"
 title = "高可用"
 weight = 7
 chapter = true
