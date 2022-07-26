@@ -1,6 +1,7 @@
 --
 -- Licensed to the Apache Software Foundation (ASF) under one or more
 -- contributor license agreements.  See the NOTICE file distributed with
+-- this work for additional information regarding copyright ownership.
 -- The ASF licenses this file to You under the Apache License, Version 2.0
 -- (the "License"); you may not use this file except in compliance with
 -- the License.  You may obtain a copy of the License at
@@ -19,10 +20,10 @@ CREATE DATABASE scaling_it_2;
 CREATE DATABASE scaling_it_3;
 CREATE DATABASE scaling_it_4;
 CREATE USER normal_user WITH ENCRYPTED PASSWORD 'Root@123';
-CREATE DATABASE scaling;
-ALTER ROLE scaling CREATEDB REPLICATION;
-GRANT CREATE, CONNECT ON DATABASE scaling_it_0 TO scaling;
-GRANT CREATE, CONNECT ON DATABASE scaling_it_1 TO scaling;
-GRANT CREATE, CONNECT ON DATABASE scaling_it_2 TO scaling;
-GRANT CREATE, CONNECT ON DATABASE scaling_it_3 TO scaling;
-GRANT CREATE, CONNECT ON DATABASE scaling_it_4 TO scaling;
+CREATE DATABASE normal_user;
+ALTER ROLE normal_user CREATEDB REPLICATION;
+GRANT CREATE, CONNECT ON DATABASE scaling_it_0 TO normal_user;
+GRANT CREATE, CONNECT ON DATABASE scaling_it_1 TO normal_user;
+GRANT CREATE, CONNECT ON DATABASE scaling_it_2 TO normal_user;
+GRANT CREATE, CONNECT ON DATABASE scaling_it_3 TO normal_user;
+GRANT CREATE, CONNECT ON DATABASE scaling_it_4 TO normal_user;

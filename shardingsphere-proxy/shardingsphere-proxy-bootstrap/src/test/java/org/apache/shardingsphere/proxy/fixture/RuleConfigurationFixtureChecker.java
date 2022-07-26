@@ -18,11 +18,17 @@
 package org.apache.shardingsphere.proxy.fixture;
 
 import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+
+import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.Map;
 
 public final class RuleConfigurationFixtureChecker implements RuleConfigurationChecker<RuleConfigurationFixture> {
     
     @Override
-    public void check(final String databaseName, final RuleConfigurationFixture config) {
+    public void check(final String databaseName, final RuleConfigurationFixture config,
+                      final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
     }
     
     @Override
