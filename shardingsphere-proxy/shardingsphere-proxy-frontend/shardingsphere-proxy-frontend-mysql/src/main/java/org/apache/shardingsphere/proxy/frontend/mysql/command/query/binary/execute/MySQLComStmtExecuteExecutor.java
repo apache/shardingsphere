@@ -33,13 +33,7 @@ import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
-import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.SQLStatementDatabaseHolder;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
-import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
@@ -54,14 +48,11 @@ import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCa
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLPreparedStatement;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.builder.ResponsePacketBuilder;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.transaction.utils.AutoCommitUtils;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -73,8 +64,6 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     private final MySQLComStmtExecutePacket packet;
     
     private final ConnectionSession connectionSession;
-    
-    private JDBCDatabaseCommunicationEngine databaseCommunicationEngine;
     
     private TextProtocolBackendHandler textProtocolBackendHandler;
     
@@ -100,19 +89,10 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         if (sqlStatementContext instanceof TableAvailable) {
             ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(SQLStatementDatabaseHolder::set);
         }
-        String databaseName = connectionSession.getDatabaseName();
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        SQLCheckEngine.check(sqlStatementContext, Collections.emptyList(), getRules(databaseName), databaseName, metaDataContexts.getMetaData().getDatabases(), connectionSession.getGrantee());
-        // TODO Refactor the following branch
-        if (sqlStatement instanceof TCLStatement) {
-            textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("MySQL"), preparedStatement.getSql(), sqlStatement, connectionSession);
-        } else {
-            databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new LogicSQL(sqlStatementContext, preparedStatement.getSql(), parameters),
-                    connectionSession.getBackendConnection(), true);
-        }
-        ResponseHeader responseHeader = null != databaseCommunicationEngine ? databaseCommunicationEngine.execute() : textProtocolBackendHandler.execute();
-        int characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
-        return responseHeader instanceof QueryResponseHeader ? processQuery((QueryResponseHeader) responseHeader, characterSet) : processUpdate((UpdateResponseHeader) responseHeader);
+        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, preparedStatement.getSql(), parameters);
+        textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("MySQL"), logicSQL, connectionSession, true);
+        ResponseHeader responseHeader = textProtocolBackendHandler.execute();
+        return responseHeader instanceof QueryResponseHeader ? processQuery((QueryResponseHeader) responseHeader) : processUpdate((UpdateResponseHeader) responseHeader);
     }
     
     private MySQLPreparedStatement updateAndGetPreparedStatement() {
@@ -123,15 +103,9 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
         return result;
     }
     
-    private static Collection<ShardingSphereRule> getRules(final String databaseName) {
-        Collection<ShardingSphereRule> result;
-        result = new LinkedList<>(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getRuleMetaData().getRules());
-        result.addAll(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getRules());
-        return result;
-    }
-    
-    private Collection<DatabasePacket<?>> processQuery(final QueryResponseHeader queryResponseHeader, final int characterSet) {
+    private Collection<DatabasePacket<?>> processQuery(final QueryResponseHeader queryResponseHeader) {
         responseType = ResponseType.QUERY;
+        int characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
         Collection<DatabasePacket<?>> result = ResponsePacketBuilder.buildQueryResponsePackets(queryResponseHeader, characterSet, ServerStatusFlagCalculator.calculateFor(connectionSession));
         currentSequenceId = result.size();
         return result;
@@ -144,12 +118,12 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     
     @Override
     public boolean next() throws SQLException {
-        return null != databaseCommunicationEngine && databaseCommunicationEngine.next();
+        return textProtocolBackendHandler.next();
     }
     
     @Override
     public MySQLPacket getQueryRowPacket() throws SQLException {
-        QueryResponseRow queryResponseRow = databaseCommunicationEngine.getRowData();
+        QueryResponseRow queryResponseRow = textProtocolBackendHandler.getRowData();
         return new MySQLBinaryResultSetRowPacket(++currentSequenceId, createBinaryRow(queryResponseRow));
     }
     
@@ -163,11 +137,6 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     
     @Override
     public void close() throws SQLException {
-        if (null != databaseCommunicationEngine) {
-            databaseCommunicationEngine.close();
-        }
-        if (null != textProtocolBackendHandler) {
-            textProtocolBackendHandler.close();
-        }
+        textProtocolBackendHandler.close();
     }
 }
