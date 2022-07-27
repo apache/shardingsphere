@@ -31,7 +31,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 /**
  * Database communication engine factory.
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
+@SuppressWarnings({"unchecked"})
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseCommunicationEngineFactory {
     
