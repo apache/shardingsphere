@@ -21,7 +21,7 @@ Only supports shadow algorithm with comments attached. In stress testing scenari
 The shadow determination will first determine whether the execution SQL contains comments  or not. If the result is a yes, the HINT shadow algorithm configured in the shadow rules determines them in order. The SQL statement is routed to the shadow database if any of the determinations are successful.
 If the execution SQL does not contain comments or the HINT shadow algorithm determination is unsuccessful, the SQL statements are routed to the production database.
 
-##References
+## References
 [JAVA API: shadow database configuration](/en/user-manual/shardingsphere-jdbc/java-api/rules/shadow/)  
 [YAMLconfiguration: shadow database](/en/user-manual/shardingsphere-jdbc/yaml-config/rules/shadow/)  
 [ Spring Boot Starter: shadow database configuration](/en/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/shadow/)  
