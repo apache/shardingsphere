@@ -19,6 +19,7 @@ package org.apache.shardingsphere.integration.transaction.cases.readonly;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
 import org.junit.Assert;
@@ -35,8 +36,8 @@ import java.sql.Statement;
 @TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL})
 public final class MySQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
     
-    public MySQLSetReadOnlyTestCase(final DataSource dataSource) {
-        super(dataSource);
+    public MySQLSetReadOnlyTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
+        super(baseTransactionITCase, dataSource);
     }
     
     @Override

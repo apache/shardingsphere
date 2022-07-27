@@ -80,7 +80,12 @@ public abstract class BaseITCase {
     
     protected static final String DS_1 = TRANSACTION_IT + "_1";
     
-    protected static final Collection<String> ALL_DS = Arrays.asList(DS_0, DS_1);
+    /**
+     * For adding resource tests.
+     */
+    protected static final String DS_2 = TRANSACTION_IT + "_2";
+    
+    protected static final Collection<String> ALL_DS = Arrays.asList(DS_0, DS_1, DS_2);
     
     protected static final String SHARDING_DB = "sharding_db";
     
@@ -189,9 +194,9 @@ public abstract class BaseITCase {
                 log.info("Collect transaction test case, dbType is not matched, skip: {}.", caseClass.getName());
                 continue;
             }
-            Optional<String> runMode = Arrays.stream(annotation.runModes()).filter(each -> currentTestCaseInfo.getRunningAdaptor().equalsIgnoreCase(each)).findAny();
-            if (!runMode.isPresent()) {
-                log.info("Collect transaction test case, runMode is not matched, skip: {}.", caseClass.getName());
+            Optional<String> runAdapters = Arrays.stream(annotation.adapters()).filter(each -> currentTestCaseInfo.getRunningAdaptor().equalsIgnoreCase(each)).findAny();
+            if (!runAdapters.isPresent()) {
+                log.info("Collect transaction test case, runAdapter is not matched, skip: {}.", caseClass.getName());
                 continue;
             }
             addParametersByTransactionTypes(result, version, currentTestCaseInfo, caseClass, annotation);
@@ -378,6 +383,48 @@ public abstract class BaseITCase {
                 .replace("${ds0}", getActualJdbcUrlTemplate(DS_0))
                 .replace("${ds1}", getActualJdbcUrlTemplate(DS_1));
         executeWithLog(connection, addSourceResource);
+    }
+    
+    /**
+     * Add ds_2 resource to proxy.
+     * 
+     * @param connection connection
+     */
+    @SneakyThrows(SQLException.class)
+    public void addNewResource(final Connection connection) {
+        String addSourceResource = commonSQLCommand.getSourceAddNewResourceTemplate()
+                .replace("${user}", ENV.getActualDataSourceUsername(databaseType))
+                .replace("${password}", ENV.getActualDataSourcePassword(databaseType))
+                .replace("${ds2}", getActualJdbcUrlTemplate(DS_2));
+        executeWithLog(connection, addSourceResource);
+        int resourceCount = countWithLog("SHOW DATABASE RESOURCES FROM sharding_db");
+        assertThat(resourceCount, is(3));
+    }
+    
+    /**
+     * Drop previous account table rule and create the table rule with three data sources.
+     * 
+     * @param connection connection
+     */
+    @SneakyThrows(SQLException.class)
+    public void createThreeDataSourceAccountTableRule(final Connection connection) {
+        executeWithLog(connection, "DROP SHARDING TABLE RULE account;");
+        executeWithLog(connection, getCommonSQLCommand().getCreateThreeDataSourceAccountTableRule());
+        int ruleCount = countWithLog("SHOW SHARDING TABLE RULES FROM sharding_db;");
+        assertThat(ruleCount, is(3));
+    }
+    
+    /**
+     * Create the account table rule with one data source.
+     * 
+     * @param connection connection
+     */
+    @SneakyThrows(SQLException.class)
+    public void createOriginalAccountTableRule(final Connection connection) {
+        executeWithLog(connection, "DROP SHARDING TABLE RULE account;");
+        executeWithLog(connection, getCommonSQLCommand().getCreateOneDataSourceAccountTableRule());
+        int ruleCount = countWithLog("SHOW SHARDING TABLE RULES FROM sharding_db;");
+        assertThat(ruleCount, is(3));
     }
     
     private String getActualJdbcUrlTemplate(final String databaseName) {
