@@ -123,7 +123,7 @@ SQL 用例在 `resources/cases/${SQL-TYPE}/${SQL-TYPE}-integration-test-cases.xm
 所有的属性值都可以通过 Maven 命令行 `-D` 的方式动态注入。
 
 ```properties
-# 运行模式，多值可用都好分隔。可选值：Standalone, Cluster
+# 运行模式，多值可用逗号分隔。可选值：Standalone, Cluster
 it.run.modes=Cluster
 
 # 场景类型，多个值可用逗号分隔。可选值：db, tbl, dbtbl_with_replica_query, replica_query
