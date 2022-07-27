@@ -200,11 +200,12 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
     public void assertExecuteSetStatement() throws SQLException {
         when(textProtocolBackendHandler.execute()).thenReturn(mock(UpdateResponseHeader.class));
         when(textProtocolBackendHandler.next()).thenReturn(false);
+        String sql = "set client_encoding = utf8";
         PostgreSQLSetStatement setStatement = new PostgreSQLSetStatement();
         VariableAssignSegment variableAssignSegment = new VariableAssignSegment();
         variableAssignSegment.setVariable(new VariableSegment());
         setStatement.getVariableAssigns().add(variableAssignSegment);
-        PostgreSQLPreparedStatement preparedStatement = new PostgreSQLPreparedStatement("set client_encoding = utf8", setStatement, new CommonSQLStatementContext<>(setStatement), Collections.emptyList());
+        PostgreSQLPreparedStatement preparedStatement = new PostgreSQLPreparedStatement(sql, setStatement, new CommonSQLStatementContext<>(setStatement), Collections.emptyList());
         JDBCPortal portal = new JDBCPortal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection);
         portal.bind();
         List<PostgreSQLPacket> actualPackets = portal.execute(0);
