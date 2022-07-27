@@ -64,6 +64,7 @@ public final class CloseResourceTestCase extends BaseTransactionTestCase {
         conn.setAutoCommit(false);
         assertTableRowCount(conn, TransactionTestConstants.ACCOUNT, 0);
         executeWithLog(conn, "insert into account(id, BALANCE, TRANSACTION_ID) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6);");
+        assertTableRowCount(conn, TransactionTestConstants.ACCOUNT, 6);
         conn.rollback();
         assertTableRowCount(conn, TransactionTestConstants.ACCOUNT, 0);
     }
@@ -73,6 +74,7 @@ public final class CloseResourceTestCase extends BaseTransactionTestCase {
         conn.setAutoCommit(false);
         assertTableRowCount(conn, TransactionTestConstants.ACCOUNT, 0);
         executeWithLog(conn, "insert into account(id, BALANCE, TRANSACTION_ID) values(1, 1, 1),(2, 2, 2),(3, 3, 3),(4, 4, 4),(5, 5, 5),(6, 6, 6);");
+        assertTableRowCount(conn, TransactionTestConstants.ACCOUNT, 6);
         conn.commit();
         assertTableRowCount(conn, TransactionTestConstants.ACCOUNT, 6);
     }

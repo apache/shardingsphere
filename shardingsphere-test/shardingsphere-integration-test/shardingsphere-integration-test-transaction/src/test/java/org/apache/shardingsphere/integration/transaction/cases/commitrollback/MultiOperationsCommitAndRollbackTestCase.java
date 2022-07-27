@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.integration.transaction.cases.commitrollback;
 
+import com.google.common.base.Preconditions;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
@@ -55,9 +56,11 @@ public final class MultiOperationsCommitAndRollbackTestCase extends BaseTransact
         assertTableRowCount(conn, TransactionTestConstants.ACCOUNT, 0);
         executeWithLog(conn, "insert into account(id, balance, transaction_id) values(1, 1, 1);");
         executeWithLog(conn, "insert into account(id, balance, transaction_id) values(2, 2, 2);");
-        executeUpdateWithLog(conn, "update account set balance=3 and transaction_id=3 where id=2;");
+        executeUpdateWithLog(conn, "update account set balance=3, transaction_id=3 where id=2;");
+        assertQueryAccount(conn, 1, 3);
         conn.rollback();
         assertTableRowCount(conn, TransactionTestConstants.ACCOUNT, 0);
+        assertQueryAccount(conn, 1, 2);
     }
     
     private void assertCommit() throws SQLException {
@@ -67,23 +70,29 @@ public final class MultiOperationsCommitAndRollbackTestCase extends BaseTransact
         executeWithLog(conn, "insert into account(id, balance, transaction_id) values(1, 1, 1);");
         executeWithLog(conn, "insert into account(id, balance, transaction_id) values(2, 2, 2);");
         executeUpdateWithLog(conn, "update account set balance=3, transaction_id=3 where id=2;");
+        assertQueryAccount(conn, 1, 3);
         conn.commit();
         assertTableRowCount(conn, TransactionTestConstants.ACCOUNT, 2);
-        assertQueryAccount(conn);
+        assertQueryAccount(conn, 1, 3);
     }
     
-    private void assertQueryAccount(final Connection conn) throws SQLException {
+    private void assertQueryAccount(final Connection conn, final int... expectedBalances) throws SQLException {
+        Preconditions.checkArgument(2 == expectedBalances.length);
         Statement queryStatement = conn.createStatement();
         ResultSet rs = queryStatement.executeQuery("select * from account;");
         while (rs.next()) {
             int id = rs.getInt("id");
-            int balance = rs.getInt("balance");
+            int actualBalance = rs.getInt("balance");
             if (id == 1) {
-                Assert.assertEquals(String.format("Balance is %s, should be 1.", balance), balance, 1);
+                assertBalance(actualBalance, expectedBalances[0]);
             }
             if (id == 2) {
-                Assert.assertEquals(String.format("Balance is %s, should be 3.", balance), balance, 3);
+                assertBalance(actualBalance, expectedBalances[1]);
             }
         }
+    }
+    
+    private void assertBalance(final int balance, final int expectedBalance) {
+        Assert.assertEquals(String.format("Balance is %s, should be %s.", balance, expectedBalance), balance, expectedBalance);
     }
 }
