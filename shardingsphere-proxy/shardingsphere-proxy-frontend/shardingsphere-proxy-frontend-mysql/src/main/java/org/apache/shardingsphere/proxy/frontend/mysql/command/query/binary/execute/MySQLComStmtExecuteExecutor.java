@@ -47,8 +47,6 @@ import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLPreparedStatement;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.builder.ResponsePacketBuilder;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
-import org.apache.shardingsphere.transaction.utils.AutoCommitUtils;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -75,10 +73,6 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
         MySQLPreparedStatement preparedStatement = updateAndGetPreparedStatement();
-        SQLStatement sqlStatement = preparedStatement.getSqlStatement();
-        if (AutoCommitUtils.needOpenTransaction(sqlStatement)) {
-            connectionSession.getBackendConnection().handleAutoCommit();
-        }
         List<Object> parameters = packet.readParameters(preparedStatement.getParameterTypes(), preparedStatement.getLongData().keySet());
         preparedStatement.getLongData().forEach(parameters::set);
         SQLStatementContext<?> sqlStatementContext = preparedStatement.getSqlStatementContext().get();

@@ -133,6 +133,9 @@ public final class TextProtocolBackendHandlerFactory {
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         String sql = logicSQL.getSql();
         handleAutoCommit(sqlStatement, connectionSession);
+        if (sqlStatement instanceof TCLStatement) {
+            return TransactionBackendHandlerFactory.newInstance((SQLStatementContext<TCLStatement>) sqlStatementContext, sql, connectionSession);
+        }
         Optional<TextProtocolBackendHandler> backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession, sql);
         if (backendHandler.isPresent()) {
             return backendHandler.get();
@@ -154,9 +157,6 @@ public final class TextProtocolBackendHandlerFactory {
                 : connectionSession.getDatabaseName();
         SQLCheckEngine.check(sqlStatementContext, Collections.emptyList(),
                 getRules(databaseName), databaseName, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(), connectionSession.getGrantee());
-        if (sqlStatement instanceof TCLStatement) {
-            return TransactionBackendHandlerFactory.newInstance((SQLStatementContext<TCLStatement>) sqlStatementContext, sql, connectionSession);
-        }
         backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession);
         return backendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(logicSQL, connectionSession, preferPreparedStatement));
     }
