@@ -62,7 +62,7 @@ public final class DatabaseCommunicationEngineFactory {
             JDBCBackendConnection jdbcBackendConnection = (JDBCBackendConnection) backendConnection;
             String driverType = preferPreparedStatement || !logicSQL.getParameters().isEmpty() ? JDBCDriverType.PREPARED_STATEMENT : JDBCDriverType.STATEMENT;
             result = (T) new JDBCDatabaseCommunicationEngine(driverType, database, logicSQL, jdbcBackendConnection);
-            jdbcBackendConnection.add((JDBCDatabaseCommunicationEngine) result);
+            jdbcBackendConnection.add(result);
         } else {
             VertxBackendConnection vertxBackendConnection = (VertxBackendConnection) backendConnection;
             result = (T) new VertxDatabaseCommunicationEngine(database, logicSQL, vertxBackendConnection);

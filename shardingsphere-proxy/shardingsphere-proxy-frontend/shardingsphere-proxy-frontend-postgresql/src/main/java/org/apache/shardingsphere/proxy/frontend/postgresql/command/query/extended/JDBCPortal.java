@@ -36,12 +36,8 @@ import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilderRule;
-import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
@@ -57,7 +53,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssig
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.sql.SQLException;
@@ -79,8 +74,6 @@ public final class JDBCPortal implements Portal<Void> {
     
     private final List<PostgreSQLValueFormat> resultFormats;
     
-    private final JDBCDatabaseCommunicationEngine databaseCommunicationEngine;
-    
     private final TextProtocolBackendHandler textProtocolBackendHandler;
     
     private final JDBCBackendConnection backendConnection;
@@ -93,8 +86,7 @@ public final class JDBCPortal implements Portal<Void> {
         this.sqlStatement = preparedStatement.getSqlStatement();
         this.resultFormats = resultFormats;
         this.backendConnection = backendConnection;
-        if (sqlStatement instanceof TCLStatement || sqlStatement instanceof EmptyStatement || sqlStatement instanceof DistSQLStatement || sqlStatement instanceof SetStatement) {
-            databaseCommunicationEngine = null;
+        if (sqlStatement instanceof EmptyStatement || sqlStatement instanceof DistSQLStatement) {
             textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("PostgreSQL"),
                     preparedStatement.getSql(), sqlStatement, backendConnection.getConnectionSession());
             return;
@@ -102,30 +94,15 @@ public final class JDBCPortal implements Portal<Void> {
         String databaseName = backendConnection.getConnectionSession().getDefaultDatabaseName();
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(
                 ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(), parameters, sqlStatement, databaseName);
-        if (containsSystemTable(sqlStatementContext.getTablesContext().getTableNames()) || sqlStatementContext instanceof CursorAvailable) {
-            databaseCommunicationEngine = null;
-            DatabaseType databaseType = ProxyContext.getInstance().getDatabase(databaseName).getResource().getDatabaseType();
-            textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(databaseType, preparedStatement.getSql(), sqlStatement, backendConnection.getConnectionSession());
-            return;
-        }
-        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new LogicSQL(sqlStatementContext, preparedStatement.getSql(), parameters),
-                backendConnection, true);
-        textProtocolBackendHandler = null;
-    }
-    
-    private boolean containsSystemTable(final Collection<String> tableNames) {
-        for (String each : tableNames) {
-            if (SystemSchemaBuilderRule.POSTGRESQL_PG_CATALOG.getTables().contains(each)) {
-                return true;
-            }
-        }
-        return false;
+        DatabaseType databaseType = ProxyContext.getInstance().getDatabase(databaseName).getResource().getDatabaseType();
+        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, preparedStatement.getSql(), parameters);
+        textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(databaseType, logicSQL, backendConnection.getConnectionSession(), true);
     }
     
     @SneakyThrows(SQLException.class)
     @Override
     public Void bind() {
-        responseHeader = null != databaseCommunicationEngine ? databaseCommunicationEngine.execute() : textProtocolBackendHandler.execute();
+        responseHeader = textProtocolBackendHandler.execute();
         return null;
     }
     
@@ -180,11 +157,11 @@ public final class JDBCPortal implements Portal<Void> {
     }
     
     private boolean hasNext() throws SQLException {
-        return null != databaseCommunicationEngine && databaseCommunicationEngine.next() || null != textProtocolBackendHandler && textProtocolBackendHandler.next();
+        return textProtocolBackendHandler.next();
     }
     
     private PostgreSQLPacket nextPacket() throws SQLException {
-        return new PostgreSQLDataRowPacket(getData(null != databaseCommunicationEngine ? databaseCommunicationEngine.getRowData() : textProtocolBackendHandler.getRowData()));
+        return new PostgreSQLDataRowPacket(getData(textProtocolBackendHandler.getRowData()));
     }
     
     private List<Object> getData(final QueryResponseRow queryResponseRow) {
@@ -219,7 +196,7 @@ public final class JDBCPortal implements Portal<Void> {
     }
     
     private void suspendPortal() {
-        backendConnection.markResourceInUse(databaseCommunicationEngine);
+        backendConnection.markResourceInUse(textProtocolBackendHandler);
     }
     
     private long getUpdateCount() {
@@ -229,11 +206,7 @@ public final class JDBCPortal implements Portal<Void> {
     @SneakyThrows(SQLException.class)
     @Override
     public void close() {
-        if (null != databaseCommunicationEngine) {
-            backendConnection.unmarkResourceInUse(databaseCommunicationEngine);
-        }
-        if (null != textProtocolBackendHandler) {
-            textProtocolBackendHandler.close();
-        }
+        backendConnection.unmarkResourceInUse(textProtocolBackendHandler);
+        textProtocolBackendHandler.close();
     }
 }

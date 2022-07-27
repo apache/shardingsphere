@@ -28,7 +28,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
@@ -72,7 +71,7 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
     private ContextManager mockContextManager;
     
     @Mock
-    private JDBCDatabaseCommunicationEngine databaseCommunicationEngine;
+    private TextProtocolBackendHandler databaseCommunicationEngine;
     
     @Mock
     private TextProtocolBackendHandler textProtocolBackendHandler;
