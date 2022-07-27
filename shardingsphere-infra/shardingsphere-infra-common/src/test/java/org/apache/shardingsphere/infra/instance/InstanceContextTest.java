@@ -65,6 +65,14 @@ public final class InstanceContextTest {
     }
     
     @Test
+    public void assertGetWorkerId() {
+        ComputeNodeInstance computeNodeInstance = mock(ComputeNodeInstance.class);
+        when(computeNodeInstance.getWorkerId()).thenReturn(0L);
+        InstanceContext context = new InstanceContext(computeNodeInstance, new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfig, lockContext, eventBusContext);
+        assertThat(context.getWorkerId(), is(0L));
+    }
+    
+    @Test
     public void assertGenerateWorkerId() {
         InstanceContext context = new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfig, lockContext, eventBusContext);
         long actual = context.generateWorkerId(new Properties());
