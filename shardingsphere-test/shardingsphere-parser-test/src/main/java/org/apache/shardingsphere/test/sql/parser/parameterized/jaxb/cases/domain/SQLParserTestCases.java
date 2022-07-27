@@ -1030,7 +1030,7 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "parse-sql")
     private final List<ParseStatementTestCase> parseStatementAsserts = new LinkedList<>();
-
+    
     @XmlElement(name = "format-sql")
     private final List<FormatSQLStatementTestCase> formatSQLStatementAsserts = new LinkedList<>();
     
