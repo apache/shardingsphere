@@ -31,6 +31,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.e
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.MySQLComStmtExecutePacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
@@ -89,7 +90,7 @@ public final class ReactiveMySQLComStmtExecuteExecutor implements ReactiveComman
         MySQLPreparedStatement preparedStatement = updateAndGetPreparedStatement();
         List<Object> parameters = packet.readParameters(preparedStatement.getParameterTypes(), preparedStatement.getLongData().keySet());
         preparedStatement.getLongData().forEach(parameters::set);
-        SQLStatementContext<?> sqlStatementContext = preparedStatement.getSqlStatementContext();
+        SQLStatementContext<?> sqlStatementContext = preparedStatement.getSqlStatementContext().get();
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).setUpParameters(parameters);
         }
@@ -107,7 +108,7 @@ public final class ReactiveMySQLComStmtExecuteExecutor implements ReactiveComman
             textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("MySQL"), preparedStatement.getSql(), sqlStatement, connectionSession);
         } else {
             databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance()
-                    .newDatabaseCommunicationEngine(sqlStatementContext, preparedStatement.getSql(), parameters, connectionSession.getBackendConnection());
+                    .newDatabaseCommunicationEngine(new LogicSQL(sqlStatementContext, preparedStatement.getSql(), parameters), connectionSession.getBackendConnection(), true);
         }
         return (null != databaseCommunicationEngine ? databaseCommunicationEngine.executeFuture() : textProtocolBackendHandler.executeFuture()).compose(responseHeader -> {
             Collection<DatabasePacket<?>> headerPackets = responseHeader instanceof QueryResponseHeader ? processQuery((QueryResponseHeader) responseHeader, characterSet)

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary;
 
 import lombok.Getter;
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.MySQLPreparedStatementParameterType;
@@ -28,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -42,9 +44,15 @@ public final class MySQLPreparedStatement implements PreparedStatement {
     
     private final SQLStatement sqlStatement;
     
+    @NonNull
     private final SQLStatementContext<?> sqlStatementContext;
     
     private List<MySQLPreparedStatementParameterType> parameterTypes = Collections.emptyList();
     
     private final Map<Integer, byte[]> longData = new ConcurrentHashMap<>();
+    
+    @Override
+    public Optional<SQLStatementContext<?>> getSqlStatementContext() {
+        return Optional.of(sqlStatementContext);
+    }
 }

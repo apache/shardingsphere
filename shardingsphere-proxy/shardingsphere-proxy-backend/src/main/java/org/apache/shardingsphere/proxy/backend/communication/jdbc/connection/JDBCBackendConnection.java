@@ -27,11 +27,11 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMod
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCConnectionManager;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
 import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtil;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -59,9 +59,9 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
-    private final Collection<JDBCDatabaseCommunicationEngine> databaseCommunicationEngines = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
+    private final Collection<TextProtocolBackendHandler> handlers = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
     
-    private final Collection<JDBCDatabaseCommunicationEngine> inUseDatabaseCommunicationEngines = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
+    private final Collection<TextProtocolBackendHandler> inUseHandlers = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
     
     private final Collection<ConnectionPostProcessor<Connection>> connectionPostProcessors = new LinkedList<>();
     
@@ -147,30 +147,30 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     }
     
     /**
-     * Add database communication engine.
+     * Add handler.
      *
-     * @param databaseCommunicationEngine database communication engine to be added
+     * @param handler handler to be added
      */
-    public void add(final JDBCDatabaseCommunicationEngine databaseCommunicationEngine) {
-        databaseCommunicationEngines.add(databaseCommunicationEngine);
+    public void add(final TextProtocolBackendHandler handler) {
+        handlers.add(handler);
     }
     
     /**
-     * Mark a database communication engine as in use.
+     * Mark a handler as in use.
      *
-     * @param databaseCommunicationEngine database communication engine to be added
+     * @param handler handler to be marked
      */
-    public void markResourceInUse(final JDBCDatabaseCommunicationEngine databaseCommunicationEngine) {
-        inUseDatabaseCommunicationEngines.add(databaseCommunicationEngine);
+    public void markResourceInUse(final TextProtocolBackendHandler handler) {
+        inUseHandlers.add(handler);
     }
     
     /**
-     * Unmark an in use database communication engine.
+     * Unmark a in use proxy backend handler.
      *
-     * @param databaseCommunicationEngine database communication engine to be added
+     * @param handler proxy backend handler to be added
      */
-    public void unmarkResourceInUse(final JDBCDatabaseCommunicationEngine databaseCommunicationEngine) {
-        inUseDatabaseCommunicationEngines.remove(databaseCommunicationEngine);
+    public void unmarkResourceInUse(final TextProtocolBackendHandler handler) {
+        inUseHandlers.remove(handler);
     }
     
     @Override
@@ -191,13 +191,13 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     public Void closeExecutionResources() throws BackendConnectionException {
         synchronized (this) {
             Collection<Exception> result = new LinkedList<>();
-            result.addAll(closeDatabaseCommunicationEngines(false));
+            result.addAll(closeHandlers(false));
             result.addAll(closeFederationExecutor());
             if (!connectionSession.getTransactionStatus().isInConnectionHeldTransaction()) {
-                result.addAll(closeDatabaseCommunicationEngines(true));
+                result.addAll(closeHandlers(true));
                 result.addAll(closeConnections(false));
             } else if (closed.get()) {
-                result.addAll(closeDatabaseCommunicationEngines(true));
+                result.addAll(closeHandlers(true));
                 result.addAll(closeConnections(true));
             }
             if (result.isEmpty()) {
@@ -211,7 +211,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     public Void closeAllResources() {
         synchronized (this) {
             closed.set(true);
-            closeDatabaseCommunicationEngines(true);
+            closeHandlers(true);
             closeConnections(true);
             closeFederationExecutor();
             return null;
@@ -219,15 +219,15 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     }
     
     /**
-     * Close database communication engines.
+     * Close handlers.
      *
-     * @param includeInUse include engines in use
-     * @return SQL exception when engine close
+     * @param includeInUse include handlers in use
+     * @return SQL exception when handler close
      */
-    public Collection<SQLException> closeDatabaseCommunicationEngines(final boolean includeInUse) {
+    public Collection<SQLException> closeHandlers(final boolean includeInUse) {
         Collection<SQLException> result = new LinkedList<>();
-        for (JDBCDatabaseCommunicationEngine each : databaseCommunicationEngines) {
-            if (!includeInUse && inUseDatabaseCommunicationEngines.contains(each)) {
+        for (TextProtocolBackendHandler each : handlers) {
+            if (!includeInUse && inUseHandlers.contains(each)) {
                 continue;
             }
             try {
@@ -237,9 +237,9 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
             }
         }
         if (includeInUse) {
-            inUseDatabaseCommunicationEngines.clear();
+            inUseHandlers.clear();
         }
-        databaseCommunicationEngines.retainAll(inUseDatabaseCommunicationEngines);
+        handlers.retainAll(inUseHandlers);
         return result;
     }
     

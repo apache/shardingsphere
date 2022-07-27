@@ -28,7 +28,6 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.ext
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
@@ -72,9 +71,6 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
     private ContextManager mockContextManager;
     
     @Mock
-    private JDBCDatabaseCommunicationEngine databaseCommunicationEngine;
-    
-    @Mock
     private TextProtocolBackendHandler textProtocolBackendHandler;
     
     @Mock
@@ -99,6 +95,7 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
         when(preparedStatement.getSqlStatement()).thenReturn(new EmptyStatement());
         List<PostgreSQLValueFormat> resultFormats = new ArrayList<>(Arrays.asList(PostgreSQLValueFormat.TEXT, PostgreSQLValueFormat.BINARY));
         portal = new JDBCPortal("", preparedStatement, Collections.emptyList(), resultFormats, backendConnection);
+        setField(portal, "textProtocolBackendHandler", textProtocolBackendHandler);
     }
     
     @Test
@@ -108,14 +105,12 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecuteSelectStatementWithDatabaseCommunicationEngineAndReturnAllRows() throws SQLException {
-        setField(portal, "databaseCommunicationEngine", databaseCommunicationEngine);
-        setField(portal, "textProtocolBackendHandler", null);
         QueryResponseHeader responseHeader = mock(QueryResponseHeader.class);
         QueryHeader queryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.INTEGER, "columnTypeName", 0, 0, false, false, false, false);
         when(responseHeader.getQueryHeaders()).thenReturn(Collections.singletonList(queryHeader));
-        when(databaseCommunicationEngine.execute()).thenReturn(responseHeader);
-        when(databaseCommunicationEngine.next()).thenReturn(true, true, false);
-        when(databaseCommunicationEngine.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 0))),
+        when(textProtocolBackendHandler.execute()).thenReturn(responseHeader);
+        when(textProtocolBackendHandler.next()).thenReturn(true, true, false);
+        when(textProtocolBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 0))),
                 new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1))));
         portal.bind();
         assertThat(portal.describe(), instanceOf(PostgreSQLRowDescriptionPacket.class));
@@ -130,14 +125,12 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecuteSelectStatementWithDatabaseCommunicationEngineAndPortalSuspended() throws SQLException {
-        setField(portal, "databaseCommunicationEngine", databaseCommunicationEngine);
-        setField(portal, "textProtocolBackendHandler", null);
         QueryResponseHeader responseHeader = mock(QueryResponseHeader.class);
         QueryHeader queryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.INTEGER, "columnTypeName", 0, 0, false, false, false, false);
         when(responseHeader.getQueryHeaders()).thenReturn(Collections.singletonList(queryHeader));
-        when(databaseCommunicationEngine.execute()).thenReturn(responseHeader);
-        when(databaseCommunicationEngine.next()).thenReturn(true, true);
-        when(databaseCommunicationEngine.getRowData()).thenReturn(
+        when(textProtocolBackendHandler.execute()).thenReturn(responseHeader);
+        when(textProtocolBackendHandler.next()).thenReturn(true, true);
+        when(textProtocolBackendHandler.getRowData()).thenReturn(
                 new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 0))),
                 new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1))));
         setField(portal, "resultFormats", Collections.singletonList(PostgreSQLValueFormat.BINARY));
@@ -154,10 +147,8 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecuteUpdateWithDatabaseCommunicationEngine() throws SQLException {
-        setField(portal, "databaseCommunicationEngine", databaseCommunicationEngine);
-        setField(portal, "textProtocolBackendHandler", null);
-        when(databaseCommunicationEngine.execute()).thenReturn(mock(UpdateResponseHeader.class));
-        when(databaseCommunicationEngine.next()).thenReturn(false);
+        when(textProtocolBackendHandler.execute()).thenReturn(mock(UpdateResponseHeader.class));
+        when(textProtocolBackendHandler.next()).thenReturn(false);
         portal.bind();
         assertThat(portal.describe(), is(PostgreSQLNoDataPacket.getInstance()));
         setField(portal, "sqlStatement", mock(InsertStatement.class));
@@ -167,10 +158,8 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecuteEmptyStatementWithDatabaseCommunicationEngine() throws SQLException {
-        setField(portal, "databaseCommunicationEngine", databaseCommunicationEngine);
-        setField(portal, "textProtocolBackendHandler", null);
-        when(databaseCommunicationEngine.execute()).thenReturn(mock(UpdateResponseHeader.class));
-        when(databaseCommunicationEngine.next()).thenReturn(false);
+        when(textProtocolBackendHandler.execute()).thenReturn(mock(UpdateResponseHeader.class));
+        when(textProtocolBackendHandler.next()).thenReturn(false);
         portal.bind();
         assertThat(portal.describe(), is(PostgreSQLNoDataPacket.getInstance()));
         List<PostgreSQLPacket> actualPackets = portal.execute(0);
@@ -187,10 +176,8 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
     
     @Test
     public void assertClose() throws SQLException {
-        setField(portal, "databaseCommunicationEngine", databaseCommunicationEngine);
-        setField(portal, "textProtocolBackendHandler", textProtocolBackendHandler);
         portal.close();
-        verify(backendConnection).unmarkResourceInUse(databaseCommunicationEngine);
+        verify(backendConnection).unmarkResourceInUse(textProtocolBackendHandler);
         verify(textProtocolBackendHandler).close();
     }
     

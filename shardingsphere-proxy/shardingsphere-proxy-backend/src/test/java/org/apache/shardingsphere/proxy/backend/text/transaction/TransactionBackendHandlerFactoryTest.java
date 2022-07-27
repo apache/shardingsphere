@@ -18,9 +18,11 @@
 package org.apache.shardingsphere.proxy.backend.text.transaction;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
@@ -45,6 +47,9 @@ import java.lang.reflect.Field;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
@@ -98,7 +103,7 @@ public final class TransactionBackendHandlerFactoryTest extends ProxyContextRest
         try (MockedStatic<DatabaseCommunicationEngineFactory> mockedStatic = mockStatic(DatabaseCommunicationEngineFactory.class)) {
             DatabaseCommunicationEngineFactory mockFactory = mock(DatabaseCommunicationEngineFactory.class);
             mockedStatic.when(DatabaseCommunicationEngineFactory::getInstance).thenReturn(mockFactory);
-            when(mockFactory.newDatabaseCommunicationEngine(context, null, null, false)).thenReturn(mock(DatabaseCommunicationEngine.class));
+            when(mockFactory.newDatabaseCommunicationEngine(any(LogicSQL.class), nullable(BackendConnection.class), anyBoolean())).thenReturn(mock(DatabaseCommunicationEngine.class));
             assertThat(TransactionBackendHandlerFactory.newInstance(context, null, mock(ConnectionSession.class)), instanceOf(DatabaseCommunicationEngine.class));
         }
     }

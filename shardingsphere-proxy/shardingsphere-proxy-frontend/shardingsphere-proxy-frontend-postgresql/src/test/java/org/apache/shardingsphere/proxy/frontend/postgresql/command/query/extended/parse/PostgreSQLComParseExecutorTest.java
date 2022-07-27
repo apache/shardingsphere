@@ -47,10 +47,10 @@ import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Optional;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -143,7 +143,7 @@ public final class PostgreSQLComParseExecutorTest extends ProxyContextRestorer {
         PostgreSQLPreparedStatement actualPreparedStatement = connectionSession.getPreparedStatementRegistry().getPreparedStatement(statementId);
         assertThat(actualPreparedStatement.getSql(), is(sql));
         assertThat(actualPreparedStatement.getSqlStatement(), instanceOf(ShowVariableStatement.class));
-        assertNull(actualPreparedStatement.getSqlStatementContext());
+        assertThat(actualPreparedStatement.getSqlStatementContext(), is(Optional.empty()));
         assertThat(actualPreparedStatement.getParameterTypes(), is(Collections.emptyList()));
     }
 }
