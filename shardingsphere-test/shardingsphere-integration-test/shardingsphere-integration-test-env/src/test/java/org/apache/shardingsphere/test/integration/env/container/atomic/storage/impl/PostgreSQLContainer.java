@@ -32,7 +32,7 @@ import java.util.Optional;
  */
 public final class PostgreSQLContainer extends DockerStorageContainer {
     
-    private static final String[] DEFAULT_COMMAND_PARTS = new String[]{"wal_level=logical"};
+    private static final String[] DEFAULT_COMMAND_PARTS = new String[]{"config_file=/etc/postgresql/postgresql.conf"};
     
     private final String[] commandParts;
     
