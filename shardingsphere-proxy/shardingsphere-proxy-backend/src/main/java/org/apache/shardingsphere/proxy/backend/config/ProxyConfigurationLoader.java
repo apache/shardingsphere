@@ -18,11 +18,17 @@
 package org.apache.shardingsphere.proxy.backend.config;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
+import com.google.common.collect.Multiset.Entry;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfiguration;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperFactory;
 import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyDatabaseConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.yaml.YamlProxyServerConfiguration;
@@ -105,7 +111,29 @@ public final class ProxyConfigurationLoader {
             result.setDatabaseName(result.getSchemaName());
         }
         Preconditions.checkNotNull(result.getDatabaseName(), "Property `databaseName` in file `%s` is required.", yamlFile.getName());
+        checkDuplicateRule(result.getRules(), yamlFile);
         return Optional.of(result);
+    }
+    
+    private static void checkDuplicateRule(final Collection<YamlRuleConfiguration> ruleConfigurations, final File yamlFile) {
+        if (ruleConfigurations.isEmpty()) {
+            return;
+        }
+        Multiset<Class<? extends RuleConfiguration>> multiset = HashMultiset.create();
+        ruleConfigurations.forEach(each -> multiset.add(each.getRuleConfigurationType()));
+        Optional<Entry<Class<? extends RuleConfiguration>>> duplicateRuleConfiguration = multiset.entrySet().stream().filter(each -> each.getCount() > 1).findFirst();
+        if (duplicateRuleConfiguration.isPresent()) {
+            throw new IllegalStateException(String.format("Duplicate rule tag '!%s' in file %s.", getDuplicateRuleTagName(duplicateRuleConfiguration.get().getElement()), yamlFile.getName()));
+        }
+    }
+    
+    @SuppressWarnings("rawtypes")
+    private static Object getDuplicateRuleTagName(final Class<? extends RuleConfiguration> ruleConfigurationClass) {
+        Optional<YamlRuleConfigurationSwapper> optional = YamlRuleConfigurationSwapperFactory.getAllInstances().stream().filter(each -> ruleConfigurationClass.equals(each.getTypeClass())).findFirst();
+        if (optional.isPresent()) {
+            return optional.get().getRuleTagName();
+        }
+        throw new IllegalStateException("Not find rule tag name of class " + ruleConfigurationClass);
     }
     
     private static File[] findRuleConfigurationFiles(final File path) {
