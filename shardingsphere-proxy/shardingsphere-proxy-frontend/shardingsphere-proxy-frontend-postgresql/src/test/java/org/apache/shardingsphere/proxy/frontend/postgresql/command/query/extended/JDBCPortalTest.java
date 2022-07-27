@@ -25,7 +25,9 @@ import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.Pos
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.PostgreSQLRowDescriptionPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.command.query.extended.execute.PostgreSQLPortalSuspendedPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
+import org.apache.shardingsphere.db.protocol.postgresql.packet.handshake.PostgreSQLParameterStatusPacket;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
@@ -43,8 +45,11 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.frontend.postgresql.ProxyContextRestorer;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.EmptyStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLSetStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSelectStatement;
 import org.junit.After;
@@ -189,6 +194,23 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
         assertThat(portal.describe(), is(PostgreSQLNoDataPacket.getInstance()));
         List<PostgreSQLPacket> actualPackets = portal.execute(0);
         assertThat(actualPackets.iterator().next(), instanceOf(PostgreSQLEmptyQueryResponsePacket.class));
+    }
+    
+    @Test
+    public void assertExecuteSetStatement() throws SQLException {
+        when(textProtocolBackendHandler.execute()).thenReturn(mock(UpdateResponseHeader.class));
+        when(textProtocolBackendHandler.next()).thenReturn(false);
+        PostgreSQLSetStatement setStatement = new PostgreSQLSetStatement();
+        VariableAssignSegment variableAssignSegment = new VariableAssignSegment();
+        variableAssignSegment.setVariable(new VariableSegment());
+        setStatement.getVariableAssigns().add(variableAssignSegment);
+        PostgreSQLPreparedStatement preparedStatement = new PostgreSQLPreparedStatement("set client_encoding = utf8", setStatement, new CommonSQLStatementContext<>(setStatement), Collections.emptyList());
+        JDBCPortal portal = new JDBCPortal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection);
+        portal.bind();
+        List<PostgreSQLPacket> actualPackets = portal.execute(0);
+        assertThat(actualPackets.size(), is(2));
+        assertThat(actualPackets.get(0), instanceOf(PostgreSQLCommandCompletePacket.class));
+        assertThat(actualPackets.get(1), instanceOf(PostgreSQLParameterStatusPacket.class));
     }
     
     @Test(expected = IllegalStateException.class)
