@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.proxy.frontend.mysql.command.query.text.fieldlist;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLBinaryColumnType;
 import org.apache.shardingsphere.db.protocol.mysql.constant.MySQLConstants;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLColumnDefinition41Packet;
@@ -44,6 +45,7 @@ import java.util.LinkedList;
 /**
  * COM_FIELD_LIST packet executor for MySQL.
  */
+@RequiredArgsConstructor
 public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
     
     private static final String SQL = "SHOW COLUMNS FROM %s FROM %s";
@@ -52,18 +54,13 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
     
     private final ConnectionSession connectionSession;
     
-    private final String databaseName;
-    
-    private final JDBCDatabaseCommunicationEngine databaseCommunicationEngine;
-    
-    private final int characterSet;
+    private JDBCDatabaseCommunicationEngine databaseCommunicationEngine;
     
     private int currentSequenceId;
     
-    public MySQLComFieldListPacketExecutor(final MySQLComFieldListPacket packet, final ConnectionSession connectionSession) {
-        this.packet = packet;
-        this.connectionSession = connectionSession;
-        databaseName = connectionSession.getDefaultDatabaseName();
+    @Override
+    public Collection<DatabasePacket<?>> execute() throws SQLException {
+        String databaseName = connectionSession.getDefaultDatabaseName();
         String sql = String.format(SQL, packet.getTable(), databaseName);
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
@@ -72,19 +69,15 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), sqlStatement, databaseName);
         JDBCBackendConnection backendConnection = (JDBCBackendConnection) connectionSession.getBackendConnection();
         databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(sqlStatementContext, sql, backendConnection, false);
-        characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
-    }
-    
-    @Override
-    public Collection<DatabasePacket<?>> execute() throws SQLException {
         databaseCommunicationEngine.execute();
-        return createColumnDefinition41Packets();
+        return createColumnDefinition41Packets(databaseName);
     }
     
-    private Collection<DatabasePacket<?>> createColumnDefinition41Packets() throws SQLException {
+    private Collection<DatabasePacket<?>> createColumnDefinition41Packets(final String databaseName) throws SQLException {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
+        int characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
         while (databaseCommunicationEngine.next()) {
-            String columnName = databaseCommunicationEngine.getQueryResponseRow().getCells().iterator().next().getData().toString();
+            String columnName = databaseCommunicationEngine.getRowData().getCells().iterator().next().getData().toString();
             result.add(new MySQLColumnDefinition41Packet(
                     ++currentSequenceId, characterSet, databaseName, packet.getTable(), packet.getTable(), columnName, columnName, 100, MySQLBinaryColumnType.MYSQL_TYPE_VARCHAR, 0, true));
         }

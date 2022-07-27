@@ -3214,6 +3214,18 @@ forRefreshClause
     : FOR ((SYNCHRONOUS REFRESH USING stagingLogName) | (FAST REFRESH))
     ;
 
+alterFunction
+    : ALTER FUNCTION function (functionCompileClause | (EDITIONABLE | NONEDITIONABLE))
+    ;
+
+functionCompileClause
+    : COMPILE DEBUG? compilerParametersClause* (REUSE SETTINGS)?
+    ;
+
+alterHierarchy
+    : ALTER HIERARCHY hierarchyName (RENAME TO hierarchyName | COMPILE)
+    ;
+
 alterLockdownProfile
     : ALTER LOCKDOWN PROFILE profileName (lockdownFeatures | lockdownOptions | lockdownStatements)
     ;

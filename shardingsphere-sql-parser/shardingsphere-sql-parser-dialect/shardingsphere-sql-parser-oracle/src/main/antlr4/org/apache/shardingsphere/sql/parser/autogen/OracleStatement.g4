@@ -118,6 +118,8 @@ execute
     | alterIndexType
     | alterMaterializedView
     | alterMaterializedViewLog
+    | alterFunction
+    | alterHierarchy
     | alterLockdownProfile
     ) SEMI_?
     ;

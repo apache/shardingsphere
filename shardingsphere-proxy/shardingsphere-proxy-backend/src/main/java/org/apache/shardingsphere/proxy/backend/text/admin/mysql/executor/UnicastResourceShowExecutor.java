@@ -111,7 +111,7 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
     private QueryResult createQueryResult() throws SQLException {
         List<MemoryQueryResultDataRow> rows = new LinkedList<>();
         while (databaseCommunicationEngine.next()) {
-            List<Object> data = databaseCommunicationEngine.getQueryResponseRow().getData();
+            List<Object> data = databaseCommunicationEngine.getRowData().getData();
             rows.add(new MemoryQueryResultDataRow(data));
         }
         return new RawMemoryQueryResult(getQueryResultMetaData(), rows);
