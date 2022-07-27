@@ -21,6 +21,7 @@ import org.apache.shardingsphere.authority.factory.AuthorityProviderAlgorithmFac
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.provider.database.DatabasePermittedPrivilegesProviderAlgorithm;
+import org.apache.shardingsphere.authority.provider.database.model.subject.DatabaseAccessSubject;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
@@ -41,7 +42,7 @@ public final class DatabasePermittedPrivilegesProviderAlgorithmTest {
         Optional<ShardingSpherePrivileges> privileges = actual.findPrivileges(new Grantee("user1", "127.0.0.2"));
         assertTrue(privileges.isPresent());
         assertTrue(privileges.get().hasPrivileges("test"));
-        assertTrue(privileges.get().hasPrivileges("*"));
+        assertTrue(privileges.get().hasPrivileges(new DatabaseAccessSubject("*"), Collections.emptyList()));
     }
     
     private DatabasePermittedPrivilegesProviderAlgorithm createAuthorityProviderAlgorithm() {
