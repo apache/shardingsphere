@@ -28,12 +28,13 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Collections;
 
 public final class ShadowRuleConfigurationCheckerTest {
     
     @Test
     public void assertCheck() {
-        new ShadowRuleConfigurationChecker().check("", createShadowRuleConfiguration());
+        new ShadowRuleConfigurationChecker().check("", createShadowRuleConfiguration(), Collections.emptyMap(), Collections.emptyList());
     }
     
     private ShadowRuleConfiguration createShadowRuleConfiguration() {

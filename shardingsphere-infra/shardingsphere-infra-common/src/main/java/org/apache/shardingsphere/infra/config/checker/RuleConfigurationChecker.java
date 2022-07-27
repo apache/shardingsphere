@@ -18,8 +18,13 @@
 package org.apache.shardingsphere.infra.config.checker;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.ordered.OrderedSPI;
+
+import javax.sql.DataSource;
+import java.util.Collection;
+import java.util.Map;
 
 /**
  * Rule configuration checker.
@@ -34,6 +39,8 @@ public interface RuleConfigurationChecker<T extends RuleConfiguration> extends O
      * 
      * @param databaseName database name to be checked
      * @param config rule configuration to be checked
+     * @param dataSourceMap data sources to be checked
+     * @param rules rules to be checked
      */
-    void check(String databaseName, T config);
+    void check(String databaseName, T config, Map<String, DataSource> dataSourceMap, Collection<ShardingSphereRule> rules);
 }

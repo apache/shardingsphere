@@ -109,7 +109,7 @@ public final class ReactiveMySQLComStmtExecuteExecutor implements ReactiveComman
             databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance()
                     .newDatabaseCommunicationEngine(sqlStatementContext, preparedStatement.getSql(), parameters, connectionSession.getBackendConnection());
         }
-        return (null != databaseCommunicationEngine ? databaseCommunicationEngine.execute() : textProtocolBackendHandler.executeFuture()).compose(responseHeader -> {
+        return (null != databaseCommunicationEngine ? databaseCommunicationEngine.executeFuture() : textProtocolBackendHandler.executeFuture()).compose(responseHeader -> {
             Collection<DatabasePacket<?>> headerPackets = responseHeader instanceof QueryResponseHeader ? processQuery((QueryResponseHeader) responseHeader, characterSet)
                     : processUpdate((UpdateResponseHeader) responseHeader);
             List<DatabasePacket<?>> result = new LinkedList<>(headerPackets);
@@ -160,7 +160,7 @@ public final class ReactiveMySQLComStmtExecuteExecutor implements ReactiveComman
     }
     
     private MySQLPacket getQueryRowPacket() throws SQLException {
-        QueryResponseRow queryResponseRow = databaseCommunicationEngine.getQueryResponseRow();
+        QueryResponseRow queryResponseRow = databaseCommunicationEngine.getRowData();
         return new MySQLBinaryResultSetRowPacket(++currentSequenceId, createBinaryRow(queryResponseRow));
     }
     
