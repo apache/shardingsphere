@@ -135,6 +135,7 @@ This will reduce the difficulty for ShardingSphere testing.
 ```bash
 ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/pom.xml -Pit.env.docker -Dit.cluster.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_1,scenario_name_n} -Dit.cluster.databases=MySQL
 ```
+
 Running the above command will build a Docker image `apache/shardingsphere-proxy-test:latest` for integration testing.
 The existing test Docker image can be reused without rebuilding if only the test code is modified.
 Use the following command to skip the image building and run the integration tests directly:
