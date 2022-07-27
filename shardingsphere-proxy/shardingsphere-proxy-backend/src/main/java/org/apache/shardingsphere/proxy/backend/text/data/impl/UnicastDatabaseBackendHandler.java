@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
@@ -60,7 +59,7 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
         }
         connectionSession.setCurrentDatabase(databaseName);
         databaseCommunicationEngine = databaseCommunicationEngineFactory.newDatabaseCommunicationEngine(sqlStatementContext, sql, connectionSession.getBackendConnection(), false);
-        return ((Future<ResponseHeader>) databaseCommunicationEngine.execute()).eventually(unused -> {
+        return databaseCommunicationEngine.executeFuture().eventually(unused -> {
             connectionSession.setCurrentDatabase(databaseName);
             return Future.succeededFuture();
         });
@@ -76,7 +75,7 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
         try {
             connectionSession.setCurrentDatabase(databaseName);
             databaseCommunicationEngine = databaseCommunicationEngineFactory.newDatabaseCommunicationEngine(sqlStatementContext, sql, connectionSession.getBackendConnection(), false);
-            return (ResponseHeader) databaseCommunicationEngine.execute();
+            return databaseCommunicationEngine.execute();
         } finally {
             connectionSession.setCurrentDatabase(databaseName);
         }
@@ -101,13 +100,11 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
     
     @Override
     public QueryResponseRow getRowData() throws SQLException {
-        return databaseCommunicationEngine.getQueryResponseRow();
+        return databaseCommunicationEngine.getRowData();
     }
     
     @Override
     public void close() throws SQLException {
-        if (databaseCommunicationEngine instanceof JDBCDatabaseCommunicationEngine) {
-            ((JDBCDatabaseCommunicationEngine) databaseCommunicationEngine).close();
-        }
+        databaseCommunicationEngine.close();
     }
 }

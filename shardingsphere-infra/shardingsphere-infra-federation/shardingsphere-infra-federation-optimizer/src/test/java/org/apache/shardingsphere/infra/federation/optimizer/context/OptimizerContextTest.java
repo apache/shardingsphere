@@ -80,7 +80,7 @@ public final class OptimizerContextTest {
     public void assertAlterDatabase() {
         OptimizerContext optimizerContext = createOptimizerContext();
         ShardingSphereDatabase database = createDatabase();
-        database.getSchemas().get("foo_schema").getTables().put("bar_tbl", mock(ShardingSphereTable.class));
+        database.getSchema("foo_schema").getTables().put("bar_tbl", mock(ShardingSphereTable.class));
         optimizerContext.alterDatabase(database, mock(ShardingSphereRuleMetaData.class));
         Optional<FederationSchemaMetaData> schemaMetadata = optimizerContext.getFederationMetaData().getDatabase("foo_db").getSchemaMetadata("foo_schema");
         assertTrue(schemaMetadata.isPresent());
@@ -91,7 +91,7 @@ public final class OptimizerContextTest {
     public void assertAddSchema() {
         OptimizerContext optimizerContext = createOptimizerContext();
         optimizerContext.addSchema("FOO_DB", "foo_schema");
-        assertTrue(optimizerContext.getFederationMetaData().getDatabase("foo_db").getSchemas().containsKey("foo_schema"));
+        assertTrue(optimizerContext.getFederationMetaData().getDatabase("foo_db").containsSchemaMetadata("foo_schema"));
         assertTrue(optimizerContext.getPlannerContexts().get("foo_db").getConverters().containsKey("foo_schema"));
         assertTrue(optimizerContext.getPlannerContexts().get("foo_db").getValidators().containsKey("foo_schema"));
     }

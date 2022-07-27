@@ -38,7 +38,7 @@ public final class FederationDatabaseMetaDataTest {
         FederationDatabaseMetaData databaseMetaData = new FederationDatabaseMetaData("foo_db", Collections.emptyMap());
         FederationSchemaMetaData schemaMetaData = mock(FederationSchemaMetaData.class);
         databaseMetaData.putSchemaMetadata("foo_schema", schemaMetaData);
-        assertThat(databaseMetaData.getSchemas().get("foo_schema"), is(schemaMetaData));
+        assertThat(databaseMetaData.getSchemaMetadata("foo_schema").get(), is(schemaMetaData));
     }
     
     @Test
@@ -47,10 +47,10 @@ public final class FederationDatabaseMetaDataTest {
         schemas.put("foo_schema_1", mock(ShardingSphereSchema.class));
         schemas.put("foo_schema_2", mock(ShardingSphereSchema.class));
         FederationDatabaseMetaData databaseMetaData = new FederationDatabaseMetaData("foo_db", schemas);
-        assertTrue(databaseMetaData.getSchemas().containsKey("foo_schema_1"));
+        assertTrue(databaseMetaData.containsSchemaMetadata("foo_schema_1"));
         databaseMetaData.removeSchemaMetadata("foo_schema_1");
-        assertFalse(databaseMetaData.getSchemas().containsKey("foo_schema_1"));
-        assertTrue(databaseMetaData.getSchemas().containsKey("foo_schema_2"));
+        assertFalse(databaseMetaData.containsSchemaMetadata("foo_schema_1"));
+        assertTrue(databaseMetaData.containsSchemaMetadata("foo_schema_2"));
     }
     
     @Test

@@ -138,12 +138,12 @@ public class SpringBootStarterTest {
     }
     
     private void assertReadwriteSplittingRule(final ReadwriteSplittingRule actual) {
-        assertThat(actual.getDataSourceMapper(), is(Collections.singletonMap("readwrite_ds", Arrays.asList("write_ds", "read_ds_0", "read_ds_1"))));
+        assertThat(actual.getDataSourceMapper(), is(Collections.singletonMap("readwrite_ds", Arrays.asList("write_ds", "ds0", "ds1"))));
         ReadwriteSplittingDataSourceRule dataSourceRule = actual.getSingleDataSourceRule();
         assertThat(dataSourceRule.getName(), is("readwrite_ds"));
         StaticReadwriteSplittingStrategy staticReadwriteSplittingType = (StaticReadwriteSplittingStrategy) dataSourceRule.getReadwriteSplittingStrategy();
         assertThat(staticReadwriteSplittingType.getWriteDataSource(), is("write_ds"));
-        assertThat(staticReadwriteSplittingType.getReadDataSources(), is(Arrays.asList("read_ds_0", "read_ds_1")));
+        assertThat(staticReadwriteSplittingType.getReadDataSources(), is(Arrays.asList("ds0", "ds1")));
         assertThat(dataSourceRule.getLoadBalancer(), instanceOf(RandomReadQueryLoadBalanceAlgorithm.class));
     }
     

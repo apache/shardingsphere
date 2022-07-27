@@ -155,7 +155,7 @@ public final class ClusterContextManagerCoordinatorTest {
         when(database.getResource().getDataSources()).thenReturn(Collections.emptyMap());
         when(database.getResource().getDatabaseType()).thenReturn(new MySQLDatabaseType());
         when(database.getProtocolType()).thenReturn(new MySQLDatabaseType());
-        when(database.getSchemas().get("foo_schema")).thenReturn(mock(ShardingSphereSchema.class));
+        when(database.getSchema("foo_schema")).thenReturn(mock(ShardingSphereSchema.class));
         when(database.getRuleMetaData().getRules()).thenReturn(new LinkedList<>());
         when(database.getRuleMetaData().getConfigurations()).thenReturn(Collections.emptyList());
         when(database.getRuleMetaData().findRules(ResourceHeldRule.class)).thenReturn(Collections.emptyList());
@@ -193,16 +193,16 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertRenewForSchemaAdded() {
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").getSchemas().get("foo_schema")).thenReturn(null);
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").getSchema("foo_schema")).thenReturn(null);
         coordinator.renew(new SchemaAddedEvent("db", "foo_schema"));
-        verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").getSchemas()).put(argThat(argument -> argument.equals("foo_schema")), any(ShardingSphereSchema.class));
+        verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db")).putSchema(argThat(argument -> argument.equals("foo_schema")), any(ShardingSphereSchema.class));
     }
     
     @Test
     public void assertRenewForSchemaDeleted() {
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").getSchemas().containsKey("foo_schema")).thenReturn(true);
+        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").containsSchema("foo_schema")).thenReturn(true);
         coordinator.renew(new SchemaDeletedEvent("db", "foo_schema"));
-        verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").getSchemas()).remove("foo_schema");
+        verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db")).removeSchema("foo_schema");
     }
     
     @Test
@@ -211,7 +211,7 @@ public final class ClusterContextManagerCoordinatorTest {
         SchemaChangedEvent event = new SchemaChangedEvent("db", "db", changedTableMetaData, null);
         coordinator.renew(event);
         // assertTrue(contextManager.getMetaDataContexts().getMetaData().containsKey("db"));
-        verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").getSchemas().get("db")).put("t_order", event.getChangedTableMetaData());
+        verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").getSchema("db")).put("t_order", event.getChangedTableMetaData());
     }
     
     @Test

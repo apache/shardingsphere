@@ -55,18 +55,18 @@ public final class AlterTableStatementSchemaRefresher implements MetaDataRefresh
             String renameTable = sqlStatement.getRenameTable().get().getTableName().getIdentifier().getValue();
             putTableMetaData(database, federationDatabaseMetaData, optimizerPlanners, logicDataSourceNames, schemaName, renameTable, props);
             removeTableMetaData(database, federationDatabaseMetaData, optimizerPlanners, schemaName, tableName);
-            event.getAlteredTables().add(database.getSchemas().get(schemaName).get(renameTable));
+            event.getAlteredTables().add(database.getSchema(schemaName).get(renameTable));
             event.getDroppedTables().add(tableName);
         } else {
             putTableMetaData(database, federationDatabaseMetaData, optimizerPlanners, logicDataSourceNames, schemaName, tableName, props);
-            event.getAlteredTables().add(database.getSchemas().get(schemaName).get(tableName));
+            event.getAlteredTables().add(database.getSchema(schemaName).get(tableName));
         }
         return Optional.of(event);
     }
     
     private void removeTableMetaData(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData,
                                      final Map<String, OptimizerPlannerContext> optimizerPlanners, final String schemaName, final String tableName) {
-        database.getSchemas().get(schemaName).remove(tableName);
+        database.getSchema(schemaName).remove(tableName);
         database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.remove(schemaName, tableName));
         federationDatabaseMetaData.removeTableMetadata(schemaName, tableName);
         optimizerPlanners.put(federationDatabaseMetaData.getName(), OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
@@ -82,7 +82,7 @@ public final class AlterTableStatementSchemaRefresher implements MetaDataRefresh
         Map<String, ShardingSphereSchema> schemaMap = GenericSchemaBuilder.build(Collections.singletonList(tableName), materials);
         Optional<ShardingSphereTable> actualTableMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.get(tableName));
         actualTableMetaData.ifPresent(optional -> {
-            database.getSchemas().get(schemaName).put(tableName, optional);
+            database.getSchema(schemaName).put(tableName, optional);
             federationDatabaseMetaData.putTable(schemaName, optional);
             optimizerPlanners.put(federationDatabaseMetaData.getName(), OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
         });

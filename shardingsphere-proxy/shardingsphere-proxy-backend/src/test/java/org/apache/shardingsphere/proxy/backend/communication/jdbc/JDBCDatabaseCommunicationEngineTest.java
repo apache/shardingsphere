@@ -104,6 +104,8 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
     
     private Map<String, ShardingSphereDatabase> mockDatabases() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.containsDataSource()).thenReturn(true);
+        when(database.isComplete()).thenReturn(true);
         when(database.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
@@ -135,7 +137,7 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
         });
         Exception ex = null;
         try {
-            engine.getQueryResponseRow();
+            engine.getRowData();
         } catch (final SQLException | IndexOutOfBoundsException e) {
             ex = e;
         } finally {
@@ -146,7 +148,7 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
     private ShardingSphereDatabase createDatabaseMetaData() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingSphereColumn column = new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false);
-        when(result.getSchemas().get(DefaultDatabase.LOGIC_NAME).get("t_logic_order")).thenReturn(
+        when(result.getSchema(DefaultDatabase.LOGIC_NAME).get("t_logic_order")).thenReturn(
                 new ShardingSphereTable("t_logic_order", Collections.singletonList(column), Collections.singletonList(new ShardingSphereIndex("order_id")), Collections.emptyList()));
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(mock(ShardingRule.class)));
         when(result.getName()).thenReturn("sharding_schema");

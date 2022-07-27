@@ -18,7 +18,7 @@
 DROP DATABASE IF EXISTS prod_dataset;
 CREATE DATABASE prod_dataset;
 
-GRANT ALL PRIVILEGES ON DATABASE prod_dataset TO root;
+GRANT ALL PRIVILEGES ON DATABASE prod_dataset TO test_user;
 
 \c prod_dataset;
 
@@ -31,7 +31,7 @@ CREATE TABLE t_shadow (order_id BIGINT NOT NULL, user_id INT NOT NULL, order_nam
 DROP DATABASE IF EXISTS shadow_dataset;
 CREATE DATABASE shadow_dataset;
 
-GRANT ALL PRIVILEGES ON DATABASE shadow_dataset TO root;
+GRANT ALL PRIVILEGES ON DATABASE shadow_dataset TO test_user;
 
 \c shadow_dataset;
 
