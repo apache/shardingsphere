@@ -37,7 +37,6 @@ public final class TransactionRuleTest {
         TransactionRuleConfiguration transactionRuleConfiguration = mock(TransactionRuleConfiguration.class);
         when(transactionRuleConfiguration.getDefaultType()).thenReturn("XA");
         when(transactionRuleConfiguration.getProviderType()).thenReturn("Atomikos");
-        Map<String, ShardingSphereDatabase> databaseMap = new HashMap<>();
         ShardingSphereDatabase db1 = mock(ShardingSphereDatabase.class);
         ShardingSphereResource resource1 = mock(ShardingSphereResource.class);
         when(resource1.getDatabaseType()).thenReturn(new OpenGaussDatabaseType());
@@ -46,6 +45,7 @@ public final class TransactionRuleTest {
         ShardingSphereResource resource2 = mock(ShardingSphereResource.class);
         when(resource2.getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
         when(db2.getResource()).thenReturn(resource2);
+        Map<String, ShardingSphereDatabase> databaseMap = new HashMap<>();
         databaseMap.put("db1", db1);
         databaseMap.put("db2", db2);
         TransactionRule transactionRule = new TransactionRule(transactionRuleConfiguration, databaseMap, null);
