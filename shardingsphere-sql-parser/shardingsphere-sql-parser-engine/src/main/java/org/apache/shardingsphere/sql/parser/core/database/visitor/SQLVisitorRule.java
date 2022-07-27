@@ -620,7 +620,9 @@ public enum SQLVisitorRule {
     
     CREATE_EVENT_TRIGGER("CreateEventTrigger", SQLStatementType.DDL),
     
-    CREATE_FOREIGN_DATA_WRAPPER("CreateForeignDataWrapper", SQLStatementType.DDL);
+    CREATE_FOREIGN_DATA_WRAPPER("CreateForeignDataWrapper", SQLStatementType.DDL),
+    
+    CREATE_FOREIGN_TABLE("CreateForeignTable", SQLStatementType.DDL);
     
     private final String name;
     
