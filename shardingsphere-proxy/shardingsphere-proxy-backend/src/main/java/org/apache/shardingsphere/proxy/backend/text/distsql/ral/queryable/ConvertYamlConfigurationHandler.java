@@ -147,12 +147,12 @@ public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<
             }
         }
     }
-
+    
     private void appendRules(final Collection<YamlRuleConfiguration> rules, final StringBuilder stringBuilder) {
         if (rules.isEmpty()) {
             return;
         }
-        for (YamlRuleConfiguration rule: rules) {
+        for (YamlRuleConfiguration rule : rules) {
             ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfigurationYamlSwapper().swapToObject((YamlShardingRuleConfiguration) rule);
             appendShardingAlgorithms(shardingRuleConfig, stringBuilder);
             appendKeyGenerators(shardingRuleConfig, stringBuilder);
@@ -161,7 +161,7 @@ public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<
             appendShardingBindingTableRules(shardingRuleConfig, stringBuilder);
         }
     }
-
+    
     private void appendShardingAlgorithms(final ShardingRuleConfiguration shardingRuleConfig, final StringBuilder stringBuilder) {
         stringBuilder.append(DistSQLScriptConstants.CREATE_SHARDING_ALGORITHM);
         Iterator<Entry<String, ShardingSphereAlgorithmConfiguration>> iterator = shardingRuleConfig.getShardingAlgorithms().entrySet().iterator();
@@ -177,7 +177,7 @@ public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<
         }
         stringBuilder.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
     }
-
+    
     private String appendShardingAlgorithmProperties(final Properties property) {
         StringBuilder result = new StringBuilder();
         Iterator<Entry<Object, Object>> iterator = property.entrySet().iterator();
@@ -190,7 +190,7 @@ public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<
         }
         return result.toString();
     }
-
+    
     private void appendKeyGenerators(final ShardingRuleConfiguration shardingRuleConfig, final StringBuilder stringBuilder) {
         stringBuilder.append(DistSQLScriptConstants.CREATE_KEY_GENERATOR);
         Iterator<Entry<String, ShardingSphereAlgorithmConfiguration>> iterator = shardingRuleConfig.getKeyGenerators().entrySet().iterator();
@@ -205,7 +205,7 @@ public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<
         }
         stringBuilder.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
     }
-
+    
     private void appendShardingTableRules(final ShardingRuleConfiguration shardingRuleConfig, final StringBuilder stringBuilder) {
         stringBuilder.append(DistSQLScriptConstants.CREATE_SHARDING_TABLE);
         Iterator<ShardingTableRuleConfiguration> iterator = shardingRuleConfig.getTables().iterator();
@@ -221,7 +221,7 @@ public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<
         }
         stringBuilder.append(DistSQLScriptConstants.SEMI).append(System.lineSeparator());
     }
-
+    
     private String appendTableStrategy(final ShardingTableRuleConfiguration shardingTableRuleConfig) {
         StringBuilder result = new StringBuilder();
         if (null != shardingTableRuleConfig.getDatabaseShardingStrategy()) {
@@ -238,7 +238,7 @@ public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<
         }
         return result.substring(0, result.length() - 2);
     }
-
+    
     private StringBuilder getStrategy(final ShardingStrategyConfiguration shardingStrategyConfiguration, final String strategyType, final StringBuilder result) {
         String type = shardingStrategyConfiguration.getType().toLowerCase();
         String shardingAlgorithmName = shardingStrategyConfiguration.getShardingAlgorithmName();
@@ -266,7 +266,7 @@ public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<
         String bindings = getBinding(shardingRuleConfig.getBindingTableGroups().iterator());
         stringBuilder.append(String.format(DistSQLScriptConstants.SHARDING_BINDING_TABLE_RULES, bindings));
     }
-
+    
     private String getBinding(final Iterator<String> iterator) {
         StringBuilder result = new StringBuilder();
         while (iterator.hasNext()) {
