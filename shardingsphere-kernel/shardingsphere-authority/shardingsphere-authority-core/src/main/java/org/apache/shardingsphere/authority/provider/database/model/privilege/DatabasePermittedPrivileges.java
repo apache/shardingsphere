@@ -32,6 +32,8 @@ import java.util.Set;
 @RequiredArgsConstructor
 public final class DatabasePermittedPrivileges implements ShardingSpherePrivileges {
     
+    private static final String KEY_SUPER = "*";
+    
     private final Set<String> databases;
     
     @Override
@@ -40,10 +42,7 @@ public final class DatabasePermittedPrivileges implements ShardingSpherePrivileg
     
     @Override
     public boolean hasPrivileges(final String database) {
-        if ("*".equalsIgnoreCase(database)) {
-            return true;
-        }
-        return databases.contains(database);
+        return database.contains(KEY_SUPER) || databases.contains(database);
     }
     
     @Override
