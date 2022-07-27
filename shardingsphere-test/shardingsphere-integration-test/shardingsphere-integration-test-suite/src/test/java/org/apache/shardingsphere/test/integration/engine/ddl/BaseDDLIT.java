@@ -61,13 +61,13 @@ public abstract class BaseDDLIT extends SingleITCase {
         try (Connection connection = getTargetDataSource().getConnection()) {
             executeInitSQLs(connection);
         }
-        intervalTime();
+        sleepIntervalTime();
     }
     
     @SneakyThrows(InterruptedException.class)
-    private void intervalTime() {
+    private void sleepIntervalTime() {
         if ("Cluster".equalsIgnoreCase(getMode())) {
-            TimeUnit.MILLISECONDS.sleep(200);
+            TimeUnit.MILLISECONDS.sleep(200L);
         }
     }
     
@@ -80,7 +80,7 @@ public abstract class BaseDDLIT extends SingleITCase {
             }
         } catch (final SQLException | NoSuchTableException ignored) {
         }
-        intervalTime();
+        sleepIntervalTime();
     }
     
     private void executeInitSQLs(final Connection connection) throws SQLException {
