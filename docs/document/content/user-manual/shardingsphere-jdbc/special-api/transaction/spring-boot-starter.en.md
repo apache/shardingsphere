@@ -3,7 +3,12 @@ title = "Use Spring Boot Starter"
 weight = 2
 +++
 
-## Import Maven Dependency
+## Background
+
+ShardingSphere-JDBC can be used through spring boot starter.
+## Prerequisites
+
+Introducing Maven dependency
 
 ```xml
 <dependency>
@@ -12,14 +17,21 @@ weight = 2
     <version>${shardingsphere.version}</version>
 </dependency>
 
-<!-- import if using XA transaction -->
+<!-- This module is required when using XA transactions -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>shardingsphere-transaction-xa-core</artifactId>
     <version>${shardingsphere.version}</version>
 </dependency>
 
-<!-- import if using BASE transaction -->
+<!-- This module is required when using XA's Narayana mode -->
+<dependency>
+    <groupId>org.apache.shardingsphere</groupId>
+    <artifactId>shardingsphere-transaction-xa-narayana</artifactId>
+    <version>${project.version}</version>
+</dependency>
+
+<!-- This module is required when using BASE transactions -->
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>shardingsphere-transaction-base-seata-at</artifactId>
@@ -27,7 +39,14 @@ weight = 2
 </dependency>
 ```
 
-## Configure Transaction Manager
+## Procedure
+
+1. Configure the transaction Type
+2. Use distributed transactions
+
+## Sample
+
+### Configure the transaction Type
 
 ```java
 @Configuration
@@ -46,16 +65,16 @@ public class TransactionConfiguration {
 }
 ```
 
-## Use Distributed Transaction
+### Use distributed transactions
 
 ```java
 @Transactional
-@ShardingSphereTransactionType(TransactionType.XA)  // Support TransactionType.LOCAL, TransactionType.XA, TransactionType.BASE
+@ShardingSphereTransactionType(TransactionType.XA)  // 支持TransactionType.LOCAL, TransactionType.XA, TransactionType.BASE
 public void insert() {
-    jdbcTemplate.execute("INSERT INTO t_order (user_id, status) VALUES (?, ?)", (PreparedStatementCallback<Object>) ps -> {
+        jdbcTemplate.execute("INSERT INTO t_order (user_id, status) VALUES (?, ?)", (PreparedStatementCallback<Object>) ps -> {
         ps.setObject(1, i);
         ps.setObject(2, "init");
         ps.executeUpdate();
-    });
-}
+        });
+        }
 ```

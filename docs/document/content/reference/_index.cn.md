@@ -5,4 +5,4 @@ weight = 7
 chapter = true
 +++
 
-本章包含了 Apache ShardingSphere 的技术实现细节和测试流程，供开发者和用户参考。
+本章包含了 Apache ShardingSphere 的技术实现细节，供开发者和用户参考。

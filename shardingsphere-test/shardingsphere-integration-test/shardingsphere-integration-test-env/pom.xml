@@ -34,8 +34,9 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-infra-common</artifactId>
+            <artifactId>shardingsphere-integration-test-fixture</artifactId>
             <version>${project.version}</version>
+            <type>test-jar</type>
         </dependency>
         
         <dependency>
@@ -50,6 +51,11 @@
     </dependencies>
     
     <build>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+        </testResources>
         <plugins>
             <plugin>
                 <artifactId>maven-jar-plugin</artifactId>

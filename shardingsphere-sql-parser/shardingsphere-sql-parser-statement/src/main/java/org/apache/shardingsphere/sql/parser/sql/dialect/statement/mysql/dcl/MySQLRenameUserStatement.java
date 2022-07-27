@@ -25,6 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL rename user statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLRenameUserStatement extends AbstractSQLStatement implements DCLStatement, MySQLStatement {
 }

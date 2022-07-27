@@ -38,6 +38,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.J
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.StatementOption;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
@@ -124,9 +125,9 @@ public final class PostgreSQLBatchedStatementsExecutor {
     
     private ExecutionContext createExecutionContext(final LogicSQL logicSQL) {
         SQLCheckEngine.check(logicSQL.getSqlStatementContext(), logicSQL.getParameters(),
-                metaDataContexts.getMetaData().getDatabases().get(connectionSession.getDatabaseName()).getRuleMetaData().getRules(),
+                metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getRuleMetaData().getRules(),
                 connectionSession.getDatabaseName(), metaDataContexts.getMetaData().getDatabases(), null);
-        return kernelProcessor.generateExecutionContext(logicSQL, metaDataContexts.getMetaData().getDatabases().get(connectionSession.getDatabaseName()),
+        return kernelProcessor.generateExecutionContext(logicSQL, metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()),
                 metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps());
     }
     
@@ -143,7 +144,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
     }
     
     private void addBatchedParametersToPreparedStatements() throws SQLException {
-        Collection<ShardingSphereRule> rules = metaDataContexts.getMetaData().getDatabases().get(connectionSession.getDatabaseName()).getRuleMetaData().getRules();
+        Collection<ShardingSphereRule> rules = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getRuleMetaData().getRules();
         DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine = new DriverExecutionPrepareEngine<>(
                 JDBCDriverType.PREPARED_STATEMENT, metaDataContexts.getMetaData().getProps().<Integer>getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY),
                 (JDBCBackendConnection) connectionSession.getBackendConnection(), (JDBCBackendStatement) connectionSession.getStatementManager(), new StatementOption(false), rules);
@@ -173,8 +174,10 @@ public final class PostgreSQLBatchedStatementsExecutor {
     
     private int executeBatchedPreparedStatements() throws SQLException {
         boolean isExceptionThrown = SQLExecutorExceptionHandler.isExceptionThrown();
-        DatabaseType databaseType = metaDataContexts.getMetaData().getDatabases().get(connectionSession.getDatabaseName()).getResource().getDatabaseType();
-        JDBCExecutorCallback<int[]> callback = new BatchedStatementsJDBCExecutorCallback(databaseType, preparedStatement.getSqlStatement(), isExceptionThrown);
+        ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName());
+        DatabaseType databaseType = database.getResource().getDatabaseType();
+        DatabaseType protocolType = database.getProtocolType();
+        JDBCExecutorCallback<int[]> callback = new BatchedStatementsJDBCExecutorCallback(protocolType, databaseType, preparedStatement.getSqlStatement(), isExceptionThrown);
         List<int[]> executeResults = jdbcExecutor.execute(executionGroupContext, callback);
         int result = 0;
         for (int[] eachResult : executeResults) {
@@ -187,8 +190,8 @@ public final class PostgreSQLBatchedStatementsExecutor {
     
     private static class BatchedStatementsJDBCExecutorCallback extends JDBCExecutorCallback<int[]> {
         
-        BatchedStatementsJDBCExecutorCallback(final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
-            super(databaseType, sqlStatement, isExceptionThrown);
+        BatchedStatementsJDBCExecutorCallback(final DatabaseType protocolType, final DatabaseType databaseType, final SQLStatement sqlStatement, final boolean isExceptionThrown) {
+            super(protocolType, databaseType, sqlStatement, isExceptionThrown, ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext());
         }
         
         @Override
@@ -202,7 +205,7 @@ public final class PostgreSQLBatchedStatementsExecutor {
         
         @SuppressWarnings("OptionalContainsCollection")
         @Override
-        protected Optional<int[]> getSaneResult(final SQLStatement sqlStatement) {
+        protected Optional<int[]> getSaneResult(final SQLStatement sqlStatement, final SQLException ex) {
             return Optional.empty();
         }
     }

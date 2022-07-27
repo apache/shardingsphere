@@ -19,6 +19,7 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domai
 
 import com.google.common.base.Preconditions;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.CommonStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.AlterResourceGroupStatementTestCase;
@@ -94,6 +95,8 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterAggregateStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterAnalyticViewStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterAttributeDimensionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterAuditPolicyStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterClusterStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterCollationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterConversionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDatabaseDictionaryStatementTestCase;
@@ -102,6 +105,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDefaultPrivilegesTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDimensionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDirectoryStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDiskgroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterDomainStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterExtensionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterFlashbackArchiveStatementTestCase;
@@ -109,19 +113,24 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterForeignTableTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterFunctionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterGroupStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterHierarchyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterIndexStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterIndexTypeStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterInmemoryJoinGroupStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterJavaStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterLanguageStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterLibraryStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterMaterializedViewLogStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterMaterializedViewStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterMaterializedZonemapStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterOperatorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterOutlineStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterPackageStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterPolicyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterProcedureStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterPublicationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterRoutineStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterPolicyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSchemaStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSequenceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterServerStatementTestCase;
@@ -134,7 +143,6 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTriggerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterTypeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterViewStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterInmemoryJoinGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AnalyzeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AssociateStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AuditStatementTestCase;
@@ -155,8 +163,11 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDiskgroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateDomainStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateEditionStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateEventTriggerStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateExtensionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateFlashbackArchiveStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateForeignDataWrapperStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateForeignTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateFunctionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateIndexStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.CreateInmemoryJoinGroupStatementTestCase;
@@ -236,6 +247,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.FetchStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.FlashbackDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.FlashbackTableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.ListenStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.MoveStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.NoAuditStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.NotifyStmtStatementTestCase;
@@ -251,31 +263,32 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AddShardingHintTableValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterInstanceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterLocalTransactionRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterSQLParserRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterTrafficRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.AlterXATransactionRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ApplyDistSQLStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearHintStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearReadwriteSplittingHintStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ClearShardingHintStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.CountInstanceRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.CreateTrafficRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.DiscardDistSQLStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.DropTrafficRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ExportDatabaseConfigurationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ImportDatabaseConfigurationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.LabelInstanceStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ParseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.PrepareDistSQLStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.PreviewStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.RefreshTableMetadataStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetReadwriteSplittingHintStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetShardingHintDatabaseValueStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetVariableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowAllVariableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowAuthorityRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowInstanceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowReadwriteSplittingHintStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowReadwriteSplittingReadResourcesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowSQLParserRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowSQLTranslatorRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowScalingListStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowShardingHintStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowTableMetadataStatementTestCase;
@@ -305,6 +318,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShadowAlgorithmStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShadowRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingAlgorithmStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingAuditorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingAutoTableRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingBindingTableRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.alter.AlterShardingBroadcastTableRulesStatementTestCase;
@@ -348,7 +362,13 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingKeyGeneratorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingScalingRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rdl.drop.DropShardingTableRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountDatabaseDiscoveryRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountDatabaseRulesStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountEncryptRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountReadwriteSplittingRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountShadowRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountShardingRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.CountSingleTableRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowDataBaseDiscoveryRulesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowDefaultShardingStrategyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowEncryptRulesStatementTestCase;
@@ -371,12 +391,16 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowSingleTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowUnusedShardingAlgorithmsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rql.ShowUnusedShardingKeyGeneratorsStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rul.FormatSQLStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rul.ParseStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rul.PreviewStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.CallStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.CheckpointStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.CopyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.DeleteStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.DoStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.InsertStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.LockTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.MergeStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.SelectStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dml.UpdateStatementTestCase;
@@ -391,10 +415,11 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.SetTransactionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.UnlockStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.tcl.XATestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.ListenStatementTestCase;
 
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -435,6 +460,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "drop-table")
     private final List<DropTableStatementTestCase> dropTableTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "lock-table")
+    private final List<LockTableStatementTestCase> lockTableTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-text-search")
     private final List<DropTextSearchStatementTestCase> dropTextSearchTestCases = new LinkedList<>();
@@ -1003,8 +1031,14 @@ public final class SQLParserTestCases {
     @XmlElement(name = "parse-sql")
     private final List<ParseStatementTestCase> parseStatementAsserts = new LinkedList<>();
     
+    @XmlElement(name = "format-sql")
+    private final List<FormatSQLStatementTestCase> formatSQLStatementAsserts = new LinkedList<>();
+    
     @XmlElement(name = "show-variable")
     private final List<ShowVariableStatementTestCase> showVariableTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-all-variable")
+    private final List<ShowAllVariableStatementTestCase> showAllVariableTestCases = new LinkedList<>();
     
     @XmlElement(name = "set-variable")
     private final List<SetVariableStatementTestCase> setVariableTestCases = new LinkedList<>();
@@ -1093,9 +1127,6 @@ public final class SQLParserTestCases {
     @XmlElement(name = "show-instance")
     private final List<ShowInstanceStatementTestCase> showInstanceTestCases = new LinkedList<>();
     
-    @XmlElement(name = "count-instance-rules")
-    private final List<CountInstanceRulesStatementTestCase> countInstanceRulesTestCases = new LinkedList<>();
-    
     @XmlElement(name = "clone")
     private final List<CloneStatementTestCase> cloneTestCases = new LinkedList<>();
     
@@ -1158,6 +1189,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "alter-sharding-key-generator")
     private final List<AlterShardingKeyGeneratorStatementTestCase> alterShardingKeyGeneratorTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-sharding-auditor")
+    private final List<AlterShardingAuditorStatementTestCase> alterShardingAuditorTestCases = new LinkedList<>();
     
     @XmlElement(name = "drop-sharding-key-generator")
     private final List<DropShardingKeyGeneratorStatementTestCase> dropShardingKeyGeneratorTestCases = new LinkedList<>();
@@ -1249,6 +1283,12 @@ public final class SQLParserTestCases {
     @XmlElement(name = "alter-sql-parser-rule")
     private final List<AlterSQLParserRuleStatementTestCase> alterSQLParserRuleTestCases = new LinkedList<>();
     
+    @XmlElement(name = "alter-local-transaction-rule")
+    private final List<AlterLocalTransactionRuleStatementTestCase> alterLocalTransactionRuleTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-xa-transaction-rule")
+    private final List<AlterXATransactionRuleStatementTestCase> alterXATransactionRuleTestCases = new LinkedList<>();
+    
     @XmlElement(name = "drop-traffic-rule")
     private final List<DropTrafficRuleStatementTestCase> dropTrafficRuleTestCases = new LinkedList<>();
     
@@ -1311,6 +1351,27 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "alter-materialized-view")
     private final List<AlterMaterializedViewStatementTestCase> alterMaterializedViewTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-materialized-view-log")
+    private final List<AlterMaterializedViewLogStatementTestCase> alterMaterializedViewLogTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-java")
+    private final List<AlterJavaStatementTestCase> alterJavaTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-audit-policy")
+    private final List<AlterAuditPolicyStatementTestCase> alterAuditPolicyTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-cluster")
+    private final List<AlterClusterStatementTestCase> alterClusterTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-diskgroup")
+    private final List<AlterDiskgroupStatementTestCase> alterDiskgroupTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-hierarchy")
+    private final List<AlterHierarchyStatementTestCase> alterHierarchyTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-index-type")
+    private final List<AlterIndexTypeStatementTestCase> alterIndexTypeTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-operator")
     private final List<AlterOperatorStatementTestCase> alterOperatorTestCases = new LinkedList<>();
@@ -1519,6 +1580,24 @@ public final class SQLParserTestCases {
     @XmlElement(name = "create-access-method")
     private final List<CreateAccessMethodStatementTestCase> createAccessMethodTestCases = new LinkedList<>();
     
+    @XmlElement(name = "count-single-table-rule")
+    private final List<CountSingleTableRuleStatementTestCase> countSingleTableRuleStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "count-sharding-rule")
+    private final List<CountShardingRuleStatementTestCase> countShardingRuleStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "count-readwrite-splitting-rule")
+    private final List<CountReadwriteSplittingRuleStatementTestCase> countReadwriteSplittingRuleStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "count-db-discovery-rule")
+    private final List<CountDatabaseDiscoveryRuleStatementTestCase> countDatabaseDiscoveryRuleStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "count-encrypt-rule")
+    private final List<CountEncryptRuleStatementTestCase> countEncryptRuleStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "count-shadow-rule")
+    private final List<CountShadowRuleStatementTestCase> countShadowRuleStatementTestCases = new LinkedList<>();
+    
     @XmlElement(name = "create-collation")
     private final List<CreateCollationStatementTestCase> createCollationStatementTestCases = new LinkedList<>();
     
@@ -1528,390 +1607,46 @@ public final class SQLParserTestCases {
     @XmlElement(name = "reassign-owned")
     private final List<ReassignOwnedStatementTestCase> reassignOwnedStatementTestCases = new LinkedList<>();
     
+    @XmlElement(name = "create-event-trigger")
+    private final List<CreateEventTriggerStatementTestCase> createEventTriggerStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-foreign-data-wrapper")
+    private final List<CreateForeignDataWrapperStatementTestCase> createForeignDataWrapperStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-sql-translator-rule")
+    private final List<ShowSQLTranslatorRuleStatementTestCase> showSQLTranslatorRuleStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-foreign-table")
+    private final List<CreateForeignTableStatementTestCase> createForeignTableStatementTestCases = new LinkedList<>();
+    
     /**
      * Get all SQL parser test cases.
      *
      * @return all SQL parser test cases
      */
-    // CHECKSTYLE:OFF
+    @SuppressWarnings("unchecked")
+    @SneakyThrows(IllegalAccessException.class)
     public Map<String, SQLParserTestCase> getAllSQLParserTestCases() {
         Map<String, SQLParserTestCase> result = new HashMap<>();
-        putAll(selectTestCases, result);
-        putAll(updateTestCases, result);
-        putAll(deleteTestCases, result);
-        putAll(insertTestCases, result);
-        putAll(createTableTestCases, result);
-        putAll(createEditionTestCases, result);
-        putAll(alterTableTestCases, result);
-        putAll(dropTableTestCases, result);
-        putAll(dropTextSearchTestCases, result);
-        putAll(truncateTestCases, result);
-        putAll(dropEditionTestCases, result);
-        putAll(dropOutlineTestCases, result);
-        putAll(alterOutlineTestCases, result);
-        putAll(createIndexTestCases, result);
-        putAll(alterIndexTestCases, result);
-        putAll(dropIndexTestCases, result);
-        putAll(setConstraintsTestCases, result);
-        putAll(setTransactionTestCases, result);
-        putAll(beginTransactionTestCases, result);
-        putAll(setAutoCommitTestCases, result);
-        putAll(commitTestCases, result);
-        putAll(rollbackTestCases, result);
-        putAll(savepointTestCases, result);
-        putAll(grantTestCases, result);
-        putAll(revokeTestCases, result);
-        putAll(createUserTestCases, result);
-        putAll(alterUserTestCases, result);
-        putAll(dropUserTestCases, result);
-        putAll(renameUserTestCases, result);
-        putAll(denyUserTestCases, result);
-        putAll(createLoginTestCases, result);
-        putAll(alterLoginTestCases, result);
-        putAll(dropLoginTestCases, result);
-        putAll(createRoleTestCases, result);
-        putAll(alterRoleTestCases, result);
-        putAll(dropRoleTestCases, result);
-        putAll(setDefaultRoleTestCases, result);
-        putAll(setRoleTestCases, result);
-        putAll(setPasswordTestCases, result);
-        putAll(useTestCases, result);
-        putAll(describeTestCases, result);
-        putAll(showDatabasesTestCases, result);
-        putAll(showTablesTestCases, result);
-        putAll(showFunctionStatusTestCases, result);
-        putAll(showProcedureStatusTestCases, result);
-        putAll(showRelaylogEventsTestCases, result);
-        putAll(showSlaveHostsTestCases, result);
-        putAll(showProcedureCodeTestCases, result);
-        putAll(showColumnsTestCases, result);
-        putAll(showCreateTableTestCases, result);
-        putAll(showCreateTriggerTestCases, result);
-        putAll(showCreateUserTestCases, result);
-        putAll(showTableStatusTestCases, result);
-        putAll(showIndexTestCases, result);
-        putAll(showTestCases, result);
-        putAll(setParameterTestCases, result);
-        putAll(commonTestCases, result);
-        putAll(alterFunctionTestCases, result);
-        putAll(alterServerTestCases, result);
-        putAll(alterSessionTestCases, result);
-        putAll(alterSynonymTestCases, result);
-        putAll(alterTypeTestCases, result);
-        putAll(alterRuleTestCases, result);
-        putAll(alterRoutineTestCases, result);
-        putAll(alterDirectoryTestCases, result);
-        putAll(alterSystemTestCases, result);
-        putAll(alterProcedureTestCases, result);
-        putAll(alterPublicationTestCases, result);
-        putAll(alterPolicyTestCases, result);
-        putAll(alterDatabaseTestCases, result);
-        putAll(alterDimensionTestCases, result);
-        putAll(createViewTestCases, result);
-        putAll(createSynonymTestCases, result);
-        putAll(createAggregateTestCases, result);
-        putAll(createPublicationTestCases, result);
-        putAll(dropSynonymTestCases, result);
-        putAll(createDirectoryTestCases, result);
-        putAll(createTriggerTestCases, result);
-        putAll(createServerTestCases, result);
-        putAll(createProcedureTestCases, result);
-        putAll(createFunctionTestCases, result);
-        putAll(createDatabaseTestCases, result);
-        putAll(createDatabaseLinkTestCases, result);
-        putAll(dropDatabaseLinkTestCases, result);
-        putAll(alterDatabaseDictionaryTestCases, result);
-        putAll(alterDatabaseLinkTestCases, result);
-        putAll(alterViewTestCases, result);
-        putAll(alterPackageTestCases, result);
-        putAll(dropPackageTestCases, result);
-        putAll(createDimensionTestCases, result);
-        putAll(dropDimensionTestCases, result);
-        putAll(dropDirectoryTestCases, result);
-        putAll(dropViewTestCases, result);
-        putAll(dropTriggerTestCases, result);
-        putAll(alterTriggerTestCases, result);
-        putAll(dropEventTriggerTestCases, result);
-        putAll(showTriggerTestCases, result);
-        putAll(dropServerTestCases, result);
-        putAll(dropPolicyTestCases, result);
-        putAll(dropProcedureTestCases, result);
-        putAll(dropRoutineTestCases, result);
-        putAll(dropRuleTestCases, result);
-        putAll(dropStatisticsTestCases, result);
-        putAll(dropPublicationTestCases, result);
-        putAll(dropSubscriptionTestCases, result);
-        putAll(dropFunctionTestCases, result);
-        putAll(dropGroupTestCases, result);
-        putAll(dropDatabaseTestCases, result);
-        putAll(callProcedureTestCases, result);
-        putAll(doTestCases, result);
-        putAll(copyTestCases, result);
-        putAll(xaTestCases, result);
-        putAll(mergeTestCases, result);
-        putAll(createSequenceTestCases, result);
-        putAll(alterSequenceTestCases, result);
-        putAll(dropSequenceTestCases, result);
-        putAll(analyzeTestCases, result);
-        putAll(associateStatisticsTestCases, result);
-        putAll(disassociateStatisticsTestCases, result);
-        putAll(auditTestCases, result);
-        putAll(noAuditTestCases, result);
-        putAll(commentTestCases, result);
-        putAll(flashbackDatabaseTestCases, result);
-        putAll(flashbackTableTestCases, result);
-        putAll(purgeTestCases, result);
-        putAll(renameTestCases, result);
-        putAll(addResourceTestCases, result);
-        putAll(alterResourceTestCases, result);
-        putAll(alterDatabaseDiscoveryDefinitionRuleTestCases, result);
-        putAll(alterDataBaseDiscoveryConstructionRuleTestCases, result);
-        putAll(alterEncryptRuleTestCases, result);
-        putAll(alterReadwriteSplittingRuleTestCases, result);
-        putAll(alterShardingBindingTableRulesTestCases, result);
-        putAll(alterShardingBroadcastTableRulesTestCases, result);
-        putAll(alterShardingAutoTableRuleTestCases, result);
-        putAll(createDatabaseDiscoveryDefinitionRuleTestCases, result);
-        putAll(createDataBaseDiscoveryConstructionRuleTestCases, result);
-        putAll(createDatabaseDiscoveryTypeTestCases, result);
-        putAll(createDatabaseDiscoveryHeartbeatTestCases, result);
-        putAll(alterDatabaseDiscoveryHeartbeatTestCases, result);
-        putAll(alterDatabaseDiscoveryTypeTestCases, result);
-        putAll(createEncryptRuleTestCases, result);
-        putAll(createReadwriteSplittingRuleTestCases, result);
-        putAll(createShardingBindingTableRulesTestCases, result);
-        putAll(createShardingBroadcastTableRulesTestCases, result);
-        putAll(createShardingAutoTableRuleTestCases, result);
-        putAll(dropDataBaseDiscoveryRuleTestCases, result);
-        putAll(dropDataBaseDiscoveryTypeTestCases, result);
-        putAll(dropDataBaseDiscoveryHeartbeatTestCases, result);
-        putAll(dropResourceTestCases, result);
-        putAll(dropEncryptRuleTestCases, result);
-        putAll(dropReadwriteSplittingRuleTestCases, result);
-        putAll(dropShardingBindingTableRulesTestCases, result);
-        putAll(dropShardingBroadcastTableRulesTestCases, result);
-        putAll(dropShardingTableRuleTestCases, result);
-        putAll(showDataBaseDiscoveryRulesTestCases, result);
-        putAll(showEncryptRulesTestCases, result);
-        putAll(showReadwriteSplittingRulesTestCases, result);
-        putAll(showShardingBindingTableRulesTestCases, result);
-        putAll(showShardingBroadcastTableRulesTestCases, result);
-        putAll(showShardingAlgorithmsTestCases, result);
-        putAll(showShardingAuditorsTestCases, result);
-        putAll(showShardingTableRulesTestCases, result);
-        putAll(showShardingTableRuleTestCases, result);
-        putAll(showScalingListTestCases, result);
-        putAll(checkScalingTestCases, result);
-        putAll(showScalingStatusTestCases, result);
-        putAll(showScalingCheckAlgorithmsTestCases, result);
-        putAll(stopScalingSourceWritingTestCases, result);
-        putAll(restoreScalingSourceWritingTestCases, result);
-        putAll(applyScalingTestCases, result);
-        putAll(resetScalingTestCases, result);
-        putAll(dropScalingTestCases, result);
-        putAll(stopScalingTestCases, result);
-        putAll(startScalingTestCases, result);
-        putAll(createShardingScalingRuleTestCases, result);
-        putAll(dropShardingScalingRuleTestCases, result);
-        putAll(enableShardingScalingRuleTestCases, result);
-        putAll(disableShardingScalingRuleTestCases, result);
-        putAll(showShardingScalingRulesTestCases, result);
-        putAll(showVariableTestCases, result);
-        putAll(setVariableTestCases, result);
-        putAll(previewTestCases, result);
-        putAll(parseStatementAsserts, result);
-        putAll(setReadwriteSplittingHintTestCases, result);
-        putAll(setShardingHintDatabaseValueTestCases, result);
-        putAll(addShardingHintDatabaseValueTestCases, result);
-        putAll(addShardingHintTableValueTestCases, result);
-        putAll(showReadwriteSplittingHintStatusTestCases, result);
-        putAll(showShardingHintStatusTestCases, result);
-        putAll(clearReadwriteSplittingHintTestCases, result);
-        putAll(clearShardingHintTestCases, result);
-        putAll(clearHintTestCases, result);
-        putAll(createShadowRuleTestCases, result);
-        putAll(dropShadowRuleTestCases, result);
-        putAll(alterShadowRuleTestCases, result);
-        putAll(alterShadowAlgorithmTestCases, result);
-        putAll(showShadowRulesTestCases, result);
-        putAll(showShadowTableRulesTestCases, result);
-        putAll(showShadowAlgorithmsTestCases, result);
-        putAll(dropShadowAlgorithmTestCases, result);
-        putAll(createServiceTestCases, result);
-        putAll(alterServiceTestCases, result);
-        putAll(dropServiceTestCases, result);
-        putAll(createSchemaTestCases, result);
-        putAll(alterSchemaTestCases, result);
-        putAll(dropSchemaTestCases, result);
-        putAll(installComponentTestCases, result);
-        putAll(flushTestCases, result);
-        putAll(installPluginTestCases, result);
-        putAll(showInstanceTestCases, result);
-        putAll(countInstanceRulesTestCases, result);
-        putAll(cloneTestCases, result);
-        putAll(showReadwriteSplittingReadResourcesTestCases, result);
-        putAll(uninstallComponentTestCases, result);
-        putAll(alterResourceGroupTestCases, result);
-        putAll(createResourceGroupTestCases, result);
-        putAll(dropResourceGroupTestCases, result);
-        putAll(binlogTestCases, result);
-        putAll(uninstallPluginTestCases, result);
-        putAll(showSingleTableTestCases, result);
-        putAll(showSingleTableRulesTestCases, result);
-        putAll(showShardingTableNodesTestCases, result);
-        putAll(setResourceGroupTestCases, result);
-        putAll(optimizeTableTestCases, result);
-        putAll(repairTableTestCases, result);
-        putAll(createShardingAlgorithmTestCases, result);
-        putAll(createShardingKeyGeneratorTestCases, result);
-        putAll(createShardingAuditorTestCases, result);
-        putAll(createDefaultShardingStrategyTestCases, result);
-        putAll(alterDefaultShardingStrategyTestCases, result);
-        putAll(createShardingTableRuleTestCases, result);
-        putAll(alterShardingTableRuleTestCases, result);
-        putAll(resetTestCases, result);
-        putAll(resetPersistTestCases, result);
-        putAll(showReplicasTestCases, result);
-        putAll(showReplicaStatusTestCases, result);
-        putAll(showSlaveStatusTestCases, result);
-        putAll(alterShardingAlgorithmTestCases, result);
-        putAll(alterShardingKeyGeneratorTestCases, result);
-        putAll(killTestCases, result);
-        putAll(createDefaultShadowAlgorithmTestCases, result);
-        putAll(cacheIndexTestCases, result);
-        putAll(loadIndexInfoTestCases, result);
-        putAll(createShadowAlgorithmTestCases, result);
-        putAll(createDefaultSingleTableRuleTestCases, result);
-        putAll(alterDefaultSingleTableRuleTestCases, result);
-        putAll(dropDefaultSingleTableRuleTestCases, result);
-        putAll(shutdownTestCases, result);
-        putAll(showOpenTablesTestCases, result);
-        putAll(showStatusTestCases, result);
-        putAll(checkTableTestCases, result);
-        putAll(checksumTableTestCases, result);
-        putAll(refreshTableMetadataTestCases, result);
-        putAll(showEventsTestCases, result);
-        putAll(showCharacterSetTestCases, result);
-        putAll(showCollationTestCases, result);
-        putAll(showVariablesTestCases, result);
-        putAll(showShardingKeyGeneratorsTestCases, result);
-        putAll(showDefaultShardingStrategyTestCases, result);
-        putAll(dropShardingKeyGeneratorTestCases, result);
-        putAll(dropDefaultShardingStrategyTestCases, result);
-        putAll(delimiterTestCases, result);
-        putAll(dropDomainTestCases, result);
-        putAll(showSQLParserRuleTestCases, result);
-        putAll(createDomainTestCases, result);
-        putAll(createRuleTestCases, result);
-        putAll(showAuthorityRuleTestCases, result);
-        putAll(showTransactionRuleTestCases, result);
-        putAll(showTrafficRulesTestCases, result);
-        putAll(createTrafficRulesTestCases, result);
-        putAll(alterTrafficRulesTestCases, result);
-        putAll(alterSQLParserRuleTestCases, result);
-        putAll(createTypeTestCases, result);
-        putAll(createConversionTestCases, result);
-        putAll(createCastTestCases, result);
-        putAll(dropConversionTestCases, result);
-        putAll(alterDomainTestCases, result);
-        putAll(alterAggregateTestCases, result);
-        putAll(alterConversionTestCases, result);
-        putAll(alterCollationTestCases, result);
-        putAll(alterDefaultPrivilegesTestCases, result);
-        putAll(alterForeignDataWrapperTestCases, result);
-        putAll(alterForeignTableTestCases, result);
-        putAll(dropForeignTableTestCases, result);
-        putAll(alterGroupTestCases, result);
-        putAll(alterMaterializedViewTestCases, result);
-        putAll(alterOperatorTestCases, result);
-        putAll(createTextSearchTestCases, result);
-        putAll(alterTextSearchTestCases, result);
-        putAll(createLanguageTestCases, result);
-        putAll(alterLanguageTestCases, result);
-        putAll(dropLanguageTestCases, result);
-        putAll(showTableMetadataTestCases, result);
-        putAll(dropTrafficRuleTestCases, result);
-        putAll(labelTestCases, result);
-        putAll(unlabelTestCases, result);
-        putAll(alterInstanceTestCases, result);
-        putAll(prepareDistSQLTestCases, result);
-        putAll(applyDistSQLTestCases, result);
-        putAll(discardDistSQLTestCases, result);
-        putAll(helpTestCases, result);
-        putAll(showUnusedShardingAlgorithmsTestCases, result);
-        putAll(showUnusedShardingKeyGeneratorsTestCases, result);
-        putAll(renameTableTestCases, result);
-        putAll(showBinlogEventsTestCases, result);
-        putAll(createExtensionTestCases, result);
-        putAll(countDatabaseRulesTestCases, result);
-        putAll(alterExtensionTestCases, result);
-        putAll(dropExtensionTestCases, result);
-        putAll(declareTestCases, result);
-        putAll(discardTestCases, result);
-        putAll(lockTestCases, result);
-        putAll(unlockTestCases, result);
-        putAll(exportDatabaseConfigurationTestCases, result);
-        putAll(showRulesUsedResourceTestCases, result);
-        putAll(preparedTestCases, result);
-        putAll(showShardingTableRulesUsedAlgorithmTestCases, result);
-        putAll(showShardingTableRulesUsedKeyGeneratorTestCases, result);
-        putAll(setUserTestCases, result);
-        putAll(dropShardingAlgorithmTestCases, result);
-        putAll(createTablespaceTestCases, result);
-        putAll(importDatabaseConfigurationTestCases, result);
-        putAll(dropOwnedTestCases, result);
-        putAll(dropOperatorTestCases, result);
-        putAll(dropMaterializedViewTestCases, result);
-        putAll(dropCastTestCases, result);
-        putAll(dropAggregateTestCases, result);
-        putAll(dropCollationTestCases, result);
-        putAll(dropForeignDataWrapperTestCases, result);
-        putAll(dropTypeTestCases, result);
-        putAll(dropOperatorClassTestCases, result);
-        putAll(dropOperatorFamilyTestCases, result);
-        putAll(dropAccessMethodTestCases, result);
-        putAll(revertTestCases, result);
-        putAll(alterAnalyticViewTestCases, result);
-        putAll(alterAttributeDimensionTestCases, result);
-        putAll(createContextTestCases, result);
-        putAll(createSPFileTestCases, result);
-        putAll(createPFileTestCases, result);
-        putAll(createControlFileTestCases, result);
-        putAll(createFlashbackArchiveTestCases, result);
-        putAll(alterFlashbackArchiveTestCases, result);
-        putAll(dropFlashbackArchiveTestCases, result);
-        putAll(createDiskgroupTestCases, result);
-        putAll(dropDiskgroupTestCases, result);
-        putAll(createRollbackSegmentTestCases, result);
-        putAll(dropRollbackSegmentTestCases, result);
-        putAll(listenTestCases, result);
-        putAll(notifyTestCases, result);
-        putAll(refreshMatViewStmtStatementTestCases, result);
-        putAll(reindexStatementTestCases, result);
-        putAll(unlistenTestCases, result);
-        putAll(securityLabelStmtStatementTestCases, result);
-        putAll(createLockdownProfileTestCases, result);
-        putAll(dropLockdownProfileTestCases, result);
-        putAll(createInmemoryJoinGroupTestCases, result);
-        putAll(alterInmemoryJoinGroupTestCases, result);
-        putAll(dropInmemoryJoinGroupTestCases, result);
-        putAll(createRestorePointTestCases, result);
-        putAll(dropRestorePointTestCases, result);
-        putAll(alterLibraryTestCases, result);
-        putAll(alterMaterializedZonemapTestCases, result);
-        putAll(cursorTestCases, result);
-        putAll(closeTestCases, result);
-        putAll(moveTestCases, result);
-        putAll(fetchTestCases, result);
-        putAll(checkpointTestCases, result);
-        putAll(clusterStatementTestCases, result);
-        putAll(createAccessMethodTestCases, result);
-        putAll(createCollationStatementTestCases, result);
-        putAll(prepareTransactionTestCases, result);
-        putAll(reassignOwnedStatementTestCases, result);
+        for (Field each : SQLParserTestCases.class.getDeclaredFields()) {
+            if (isSQLParserTestCasesField(each)) {
+                each.setAccessible(true);
+                List<? extends SQLParserTestCase> testCases = (List<? extends SQLParserTestCase>) each.get(this);
+                if (!testCases.isEmpty()) {
+                    putAll(testCases, result);
+                }
+            }
+        }
         return result;
     }
-    // CHECKSTYLE:ON
+    
+    private boolean isSQLParserTestCasesField(final Field field) {
+        if (field.isAnnotationPresent(XmlElement.class) && List.class == field.getType() && field.getGenericType() instanceof ParameterizedType) {
+            Class<?> actualTypeArgument = (Class<?>) ((ParameterizedType) field.getGenericType()).getActualTypeArguments()[0];
+            return SQLParserTestCase.class.isAssignableFrom(actualTypeArgument);
+        }
+        return false;
+    }
     
     private void putAll(final List<? extends SQLParserTestCase> sqlParserTestCases, final Map<String, SQLParserTestCase> target) {
         Map<String, SQLParserTestCase> sqlParserTestCaseMap = getSQLParserTestCases(sqlParserTestCases);

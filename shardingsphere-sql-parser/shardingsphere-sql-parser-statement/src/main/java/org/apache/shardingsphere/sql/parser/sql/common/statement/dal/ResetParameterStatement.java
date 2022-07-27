@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.dal;
 
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
  * Reset parameter statement.
  */
+@ToString(callSuper = true)
 public abstract class ResetParameterStatement extends AbstractSQLStatement implements DALStatement {
 }

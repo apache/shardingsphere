@@ -29,7 +29,7 @@ import java.util.Optional;
  * OpenGauss alter index statement.
  */
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class OpenGaussAlterIndexStatement extends AlterIndexStatement implements OpenGaussStatement {
     
     private IndexSegment renameIndex;

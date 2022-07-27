@@ -37,6 +37,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
+import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
@@ -94,6 +95,8 @@ public final class FilterableTableScanExecutor {
     
     private final FilterableTableScanExecutorContext executorContext;
     
+    private final EventBusContext eventBusContext;
+    
     /**
      * Execute.
      *
@@ -109,7 +112,7 @@ public final class FilterableTableScanExecutor {
         // TODO replace sql parse with sql convert
         FederationContext federationContext = executorContext.getFederationContext();
         LogicSQL logicSQL = createLogicSQL(federationContext.getDatabases(), sqlString, databaseType);
-        ShardingSphereDatabase database = federationContext.getDatabases().get(databaseName);
+        ShardingSphereDatabase database = federationContext.getDatabases().get(databaseName.toLowerCase());
         ExecutionContext context = new KernelProcessor().generateExecutionContext(logicSQL, database, globalRuleMetaData, executorContext.getProps());
         if (federationContext.isPreview() || databaseType.getSystemSchemas().contains(schemaName)) {
             federationContext.getExecutionUnits().addAll(context.getExecutionUnits());
@@ -122,9 +125,9 @@ public final class FilterableTableScanExecutor {
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits());
             setParameters(executionGroupContext.getInputGroups());
-            ExecuteProcessEngine.initialize(context.getLogicSQL(), executionGroupContext, executorContext.getProps());
+            ExecuteProcessEngine.initialize(context.getLogicSQL(), executionGroupContext, executorContext.getProps(), eventBusContext);
             List<QueryResult> queryResults = execute(executionGroupContext, databaseType);
-            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID());
+            ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), eventBusContext);
             MergeEngine mergeEngine = new MergeEngine(database, executorContext.getProps());
             MergedResult mergedResult = mergeEngine.merge(queryResults, logicSQL.getSqlStatementContext());
             Collection<Statement> statements = getStatements(executionGroupContext.getInputGroups());

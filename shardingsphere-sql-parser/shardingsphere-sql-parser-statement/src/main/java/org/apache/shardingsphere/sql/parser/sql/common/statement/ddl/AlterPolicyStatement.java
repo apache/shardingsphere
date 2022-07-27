@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
  * Alter policy statement.
  */
+@ToString(callSuper = true)
 public abstract class AlterPolicyStatement extends AbstractSQLStatement implements DDLStatement {
 }

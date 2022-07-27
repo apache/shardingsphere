@@ -17,28 +17,18 @@
 
 package org.apache.shardingsphere.mode.manager.lock;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.mode.manager.lock.definition.LockNameDefinitionFactory;
+import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.mode.manager.lock.definition.LockDefinitionFactory;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatementType;
 
 /**
  * Lock judge engine for ShardingSphere.
  */
-@RequiredArgsConstructor
-public final class ShardingSphereLockJudgeEngine extends AbstractLockJudgeEngine {
+public final class ShardingSphereLockJudgeEngine implements LockJudgeEngine {
     
-    /**
-     * Is locked.
-     *
-     * @param databaseName database name
-     * @param sqlStatementContext sql statement context
-     * @return is locked or not
-     */
     @Override
-    public boolean isLocked(final String databaseName, final SQLStatementContext<?> sqlStatementContext) {
-        if (isWriteStatement(sqlStatementContext.getSqlStatement())) {
-            return getLockContext().isLocked(LockNameDefinitionFactory.newDatabaseDefinition(databaseName));
-        }
-        return false;
+    public boolean isLocked(final LockContext lockContext, final String databaseName, final SQLStatementContext<?> sqlStatementContext) {
+        return SQLStatementType.involvesDataChanges(sqlStatementContext.getSqlStatement()) && lockContext.isLocked(LockDefinitionFactory.newDatabaseLockDefinition(databaseName));
     }
 }

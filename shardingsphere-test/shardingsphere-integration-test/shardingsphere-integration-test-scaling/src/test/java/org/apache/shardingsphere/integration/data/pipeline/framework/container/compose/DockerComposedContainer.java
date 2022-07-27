@@ -19,45 +19,43 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.container.
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.factory.DatabaseContainerFactory;
-import org.apache.shardingsphere.integration.data.pipeline.framework.container.cluster.ZookeeperContainer;
-import org.apache.shardingsphere.integration.data.pipeline.framework.container.database.DatabaseContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.proxy.ShardingSphereProxyDockerContainer;
-import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.governance.GovernanceContainer;
-import org.apache.shardingsphere.test.integration.util.NetworkAliasUtil;
+import org.apache.shardingsphere.test.integration.env.container.atomic.governance.GovernanceContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.governance.impl.ZookeeperContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainerFactory;
+import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 
 /**
  * Composed container, include governance container and database container.
  */
-@Getter
 public final class DockerComposedContainer extends BaseComposedContainer {
     
     private final DatabaseType databaseType;
     
-    private final GovernanceContainer governanceContainer;
-    
     private final ShardingSphereProxyDockerContainer proxyContainer;
     
-    private final DatabaseContainer databaseContainer;
+    @Getter
+    private final DockerStorageContainer storageContainer;
     
     public DockerComposedContainer(final DatabaseType databaseType, final String dockerImageName) {
         this.databaseType = databaseType;
+        GovernanceContainer governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
+        storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, dockerImageName, "", false));
         ShardingSphereProxyDockerContainer proxyContainer = new ShardingSphereProxyDockerContainer(databaseType);
-        governanceContainer = getContainers().registerContainer(new ZookeeperContainer(), NetworkAliasUtil.getNetworkAlias("zk"));
-        databaseContainer = getContainers().registerContainer(DatabaseContainerFactory.newInstance(databaseType, dockerImageName), NetworkAliasUtil.getNetworkAlias("db"));
-        proxyContainer.dependsOn(governanceContainer, databaseContainer);
-        this.proxyContainer = getContainers().registerContainer(proxyContainer, NetworkAliasUtil.getNetworkAlias("sharding-proxy"));
-    }
-    
-    @Override
-    public void stop() {
-        super.stop();
-        proxyContainer.stop();
+        proxyContainer.dependsOn(governanceContainer, storageContainer);
+        ShardingSphereProxyDockerContainer anotherProxyContainer = new ShardingSphereProxyDockerContainer(databaseType);
+        anotherProxyContainer.dependsOn(governanceContainer, storageContainer);
+        this.proxyContainer = getContainers().registerContainer(proxyContainer);
+        getContainers().registerContainer(anotherProxyContainer);
     }
     
     @Override
     public String getProxyJdbcUrl(final String databaseName) {
         return DataSourceEnvironment.getURL(databaseType, proxyContainer.getHost(), proxyContainer.getFirstMappedPort(), databaseName);
+    }
+    
+    @Override
+    public void cleanUpDatabase(final String databaseName) {
     }
 }

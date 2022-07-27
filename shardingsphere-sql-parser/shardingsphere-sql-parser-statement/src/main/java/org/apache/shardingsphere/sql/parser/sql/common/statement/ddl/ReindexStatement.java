@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Reindex statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class ReindexStatement extends AbstractSQLStatement implements DDLStatement {
 }

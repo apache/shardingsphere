@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL create user statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLCreateUserStatement extends CreateUserStatement implements PostgreSQLStatement {
 }

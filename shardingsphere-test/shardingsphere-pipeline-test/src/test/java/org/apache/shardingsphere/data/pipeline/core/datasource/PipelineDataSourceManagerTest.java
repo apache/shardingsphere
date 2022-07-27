@@ -21,8 +21,10 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAltere
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
+import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.ReflectionUtil;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -37,6 +39,11 @@ import static org.junit.Assert.assertTrue;
 public final class PipelineDataSourceManagerTest {
     
     private RuleAlteredJobConfiguration jobConfig;
+    
+    @BeforeClass
+    public static void beforeClass() {
+        PipelineContextUtil.mockModeConfigAndContextManager();
+    }
     
     @Before
     public void setUp() {

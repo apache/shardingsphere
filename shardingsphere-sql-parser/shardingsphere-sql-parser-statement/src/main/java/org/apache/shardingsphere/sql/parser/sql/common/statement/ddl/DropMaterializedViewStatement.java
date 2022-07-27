@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Drop materialized view statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class DropMaterializedViewStatement extends AbstractSQLStatement implements DDLStatement {
 }

@@ -60,7 +60,7 @@ public final class ShardingDDLResultMergerTest {
     public void assertBuildFetchStreamMergedResult() throws SQLException {
         ShardingDDLResultMerger merger = new ShardingDDLResultMerger();
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(database.getSchemas().get(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
+        when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         assertThat(merger.merge(createMultiQueryResults(), createFetchStatementContext(database), mock(ShardingSphereDatabase.class)), instanceOf(FetchStreamMergedResult.class));
     }
     

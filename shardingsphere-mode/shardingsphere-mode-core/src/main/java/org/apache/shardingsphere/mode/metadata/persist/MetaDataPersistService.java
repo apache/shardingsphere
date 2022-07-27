@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.metadata.persist;
 
-import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
@@ -25,21 +24,19 @@ import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCre
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
-import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseVersionPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseMetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.impl.DataSourcePersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.impl.DatabaseRulePersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.impl.GlobalRulePersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.impl.PropertiesPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.config.database.DataSourcePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.config.database.DatabaseRulePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.config.global.GlobalRulePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.config.global.PropertiesPersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
-import org.apache.shardingsphere.transaction.config.TransactionRuleConfiguration;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -60,7 +57,7 @@ public final class MetaDataPersistService {
     
     private final PropertiesPersistService propsService;
     
-    private final DatabaseVersionPersistService databaseVersionPersistService;
+    private final MetaDataVersionPersistService metaDataVersionPersistService;
     
     public MetaDataPersistService(final PersistRepository repository) {
         this.repository = repository;
@@ -69,7 +66,7 @@ public final class MetaDataPersistService {
         databaseRulePersistService = new DatabaseRulePersistService(repository);
         globalRuleService = new GlobalRulePersistService(repository);
         propsService = new PropertiesPersistService(repository);
-        databaseVersionPersistService = new DatabaseVersionPersistService(repository);
+        metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
     }
     
     /**
@@ -135,22 +132,5 @@ public final class MetaDataPersistService {
             }
         }
         return result;
-    }
-    
-    /**
-     * Persist transaction rule.
-     *
-     * @param props transaction props
-     * @param isOverwrite whether overwrite registry center's configuration if existed
-     */
-    public void persistTransactionRule(final Properties props, final boolean isOverwrite) {
-        Collection<RuleConfiguration> ruleConfigs = globalRuleService.load();
-        Optional<RuleConfiguration> ruleConfig = ruleConfigs.stream().filter(each -> each instanceof TransactionRuleConfiguration).findFirst();
-        Preconditions.checkState(ruleConfig.isPresent());
-        if (!props.equals(((TransactionRuleConfiguration) ruleConfig.get()).getProps())) {
-            ((TransactionRuleConfiguration) ruleConfig.get()).getProps().clear();
-            ((TransactionRuleConfiguration) ruleConfig.get()).getProps().putAll(props);
-            globalRuleService.persist(ruleConfigs, isOverwrite);
-        }
     }
 }

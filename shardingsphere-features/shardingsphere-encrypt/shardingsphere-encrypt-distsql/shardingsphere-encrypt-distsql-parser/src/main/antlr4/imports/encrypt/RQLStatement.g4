@@ -27,6 +27,10 @@ tableRule
     : RULE tableName
     ;
 
+countEncryptRule
+    : COUNT ENCRYPT RULE (FROM databaseName)?
+    ;
+
 databaseName
     : IDENTIFIER
     ;

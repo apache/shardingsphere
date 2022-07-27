@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.ddl;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateIndexStatement;
@@ -27,9 +29,13 @@ import java.util.Optional;
 /**
  * OpenGauss create index statement.
  */
+@RequiredArgsConstructor
+@Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public final class OpenGaussCreateIndexStatement extends CreateIndexStatement implements OpenGaussStatement {
+    
+    private final boolean ifNotExists;
     
     private Integer generatedIndexStartIndex;
     

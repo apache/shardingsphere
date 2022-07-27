@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle alter trigger statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OracleAlterTriggerStatement extends AlterTriggerStatement implements OracleStatement {
 }

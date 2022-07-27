@@ -57,8 +57,6 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     private static final long TIMESTAMP_LEFT_SHIFT_BITS = WORKER_ID_LEFT_SHIFT_BITS + WORKER_ID_BITS;
     
-    private static final long WORKER_ID_MAX_VALUE = 1L << WORKER_ID_BITS;
-    
     private static final int DEFAULT_VIBRATION_VALUE = 1;
     
     private static final int MAX_TOLERATE_TIME_DIFFERENCE_MILLISECONDS = 10;
@@ -81,8 +79,7 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     
     private volatile long lastMilliseconds;
     
-    @Setter
-    private InstanceContext instanceContext;
+    private volatile InstanceContext instanceContext;
     
     static {
         Calendar calendar = Calendar.getInstance();
@@ -99,6 +96,14 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
         this.props = props;
         maxVibrationOffset = getMaxVibrationOffset(props);
         maxTolerateTimeDifferenceMilliseconds = getMaxTolerateTimeDifferenceMilliseconds(props);
+    }
+    
+    @Override
+    public void setInstanceContext(final InstanceContext instanceContext) {
+        this.instanceContext = instanceContext;
+        if (null != instanceContext) {
+            instanceContext.generateWorkerId(props);
+        }
     }
     
     private int getMaxVibrationOffset(final Properties props) {
@@ -155,12 +160,7 @@ public final class SnowflakeKeyGenerateAlgorithm implements KeyGenerateAlgorithm
     }
     
     private long getWorkerId() {
-        if (null == instanceContext) {
-            return DEFAULT_WORKER_ID;
-        }
-        long result = instanceContext.getWorkerId();
-        Preconditions.checkArgument(result >= 0L && result < WORKER_ID_MAX_VALUE, "Illegal worker id.");
-        return result;
+        return null == instanceContext ? DEFAULT_WORKER_ID : instanceContext.getWorkerId();
     }
     
     @Override

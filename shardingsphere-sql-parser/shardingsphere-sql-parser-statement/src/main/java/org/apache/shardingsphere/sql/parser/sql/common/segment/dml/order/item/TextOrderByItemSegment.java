@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item;
 
+import lombok.ToString;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OrderDirection;
 
 /**
  * Order by item segment for text.
  */
+@ToString
 public abstract class TextOrderByItemSegment extends OrderByItemSegment {
     
     protected TextOrderByItemSegment(final int startIndex, final int stopIndex, final OrderDirection orderDirection, final OrderDirection nullOrderDirection) {

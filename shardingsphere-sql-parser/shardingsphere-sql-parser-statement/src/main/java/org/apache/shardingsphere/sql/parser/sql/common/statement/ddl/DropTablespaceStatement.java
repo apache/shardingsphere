@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Drop tablespace statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class DropTablespaceStatement extends AbstractSQLStatement implements DDLStatement {
 }

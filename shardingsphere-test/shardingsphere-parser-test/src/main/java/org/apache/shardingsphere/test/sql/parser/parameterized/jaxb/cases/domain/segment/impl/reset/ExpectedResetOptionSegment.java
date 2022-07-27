@@ -32,7 +32,7 @@ public final class ExpectedResetOptionSegment extends AbstractExpectedSQLSegment
     private boolean master;
     
     @XmlAttribute(name = "binary-log-file-index-number")
-    private Integer binaryLogFileIndexNumber;
+    private Long binaryLogFileIndexNumber;
     
     @XmlAttribute(name = "all")
     private boolean all;

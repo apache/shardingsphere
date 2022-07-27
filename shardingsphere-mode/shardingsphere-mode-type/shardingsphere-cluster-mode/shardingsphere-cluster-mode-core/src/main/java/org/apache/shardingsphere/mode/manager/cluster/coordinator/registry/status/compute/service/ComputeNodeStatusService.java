@@ -30,8 +30,11 @@ import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositor
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -143,7 +146,23 @@ public final class ComputeNodeStatusService {
         ComputeNodeInstance result = new ComputeNodeInstance(instanceMetaData);
         result.setLabels(loadInstanceLabels(instanceMetaData.getId()));
         result.switchState(loadInstanceStatus(instanceMetaData.getId()));
-        loadInstanceWorkerId(instanceMetaData.getId()).ifPresent(result::setWorkerId);
+        return result;
+    }
+    
+    /**
+     * Get assigned worker ids.
+     *
+     * @return assigned worker ids
+     */
+    public Set<Long> getAssignedWorkerIds() {
+        Set<Long> result = new LinkedHashSet<>();
+        List<String> childrenKeys = repository.getChildrenKeys(ComputeNode.getInstanceWorkerIdRootNodePath());
+        for (String each : childrenKeys) {
+            String workerId = repository.get(ComputeNode.getInstanceWorkerIdNodePath(each));
+            if (null != workerId) {
+                result.add(Long.parseLong(workerId));
+            }
+        }
         return result;
     }
 }

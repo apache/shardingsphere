@@ -39,10 +39,12 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     
     private final boolean incrementOrderItemTogether;
     
+    private final int executeCountLimit;
+    
     @Override
     public void run() {
         int executeCount = 0;
-        while (executeCount < 20 && !Thread.currentThread().isInterrupted()) {
+        while (executeCount < executeCountLimit && !Thread.currentThread().isInterrupted()) {
             Object orderPrimaryKey = insertOrder();
             if (executeCount % 2 == 0) {
                 jdbcTemplate.update(prefixSchema("DELETE FROM ${schema}t_order WHERE id = ?", schema), orderPrimaryKey);
@@ -60,13 +62,15 @@ public final class PostgreSQLIncrementTask extends BaseIncrementTask {
     }
     
     private Object insertOrder() {
-        Object[] orderInsertDate = new Object[]{keyGenerateAlgorithm.generateKey(), ThreadLocalRandom.current().nextInt(0, 6), ThreadLocalRandom.current().nextInt(0, 6)};
-        jdbcTemplate.update(prefixSchema("INSERT INTO ${schema}t_order (id,order_id,user_id) VALUES (?, ?, ?)", schema), orderInsertDate);
+        String status = ThreadLocalRandom.current().nextInt() % 2 == 0 ? null : "NOT-NULL";
+        Object[] orderInsertDate = new Object[]{keyGenerateAlgorithm.generateKey(), ThreadLocalRandom.current().nextInt(0, 6), ThreadLocalRandom.current().nextInt(0, 6), status};
+        jdbcTemplate.update(prefixSchema("INSERT INTO ${schema}t_order (id,order_id,user_id,status) VALUES (?, ?, ?, ?)", schema), orderInsertDate);
         return orderInsertDate[0];
     }
     
     private Object insertOrderItem() {
-        Object[] orderInsertItemDate = new Object[]{keyGenerateAlgorithm.generateKey(), ThreadLocalRandom.current().nextInt(0, 6), ThreadLocalRandom.current().nextInt(0, 6), "OK"};
+        String status = ThreadLocalRandom.current().nextInt() % 2 == 0 ? null : "NOT-NULL";
+        Object[] orderInsertItemDate = new Object[]{keyGenerateAlgorithm.generateKey(), ThreadLocalRandom.current().nextInt(0, 6), ThreadLocalRandom.current().nextInt(0, 6), status};
         jdbcTemplate.update(prefixSchema("INSERT INTO ${schema}t_order_item(item_id,order_id,user_id,status) VALUES(?,?,?,?)", schema), orderInsertItemDate);
         return orderInsertItemDate[0];
     }

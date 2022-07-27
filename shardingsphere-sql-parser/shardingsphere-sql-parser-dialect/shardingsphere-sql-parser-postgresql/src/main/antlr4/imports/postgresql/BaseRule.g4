@@ -275,6 +275,7 @@ unreservedWord
     | MOD
     | NAME
     | NAMES
+    | NATIONAL
     | NEW
     | NEXT
     | NFC
@@ -307,6 +308,7 @@ unreservedWord
     | PARTITION
     | PASSING
     | PASSWORD
+    | PATH
     | PLAIN
     | PLANS
     | POLICY
@@ -1596,14 +1598,11 @@ seqOptList
 seqOptElem
     : AS simpleTypeName
     | CACHE numericOnly
-    | CYCLE
-    | NO CYCLE
+    | NO? CYCLE
     | INCREMENT BY? numericOnly
-    | MAXVALUE numericOnly
-    | MINVALUE numericOnly
-    | NO MAXVALUE
-    | NO MINVALUE
-    | OWNED BY anyName
+    | (MAXVALUE | MINVALUE) numericOnly
+    | NO (MAXVALUE | MINVALUE)
+    | OWNED BY (anyName | NONE)
     | SEQUENCE NAME anyName
     | START WITH? numericOnly
     | RESTART

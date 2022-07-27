@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL security label statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLSecurityLabelStmtStatement extends SecurityLabelStmtStatement implements PostgreSQLStatement {
 }

@@ -44,6 +44,8 @@ public enum SQLVisitorRule {
     
     COPY("Copy", SQLStatementType.DML),
     
+    LOCKTABLE("LockTable", SQLStatementType.DML),
+    
     CREATE_TABLE("CreateTable", SQLStatementType.DDL),
     
     CREATE_AGGREGATE("CreateAggregate", SQLStatementType.DDL),
@@ -69,6 +71,8 @@ public enum SQLVisitorRule {
     ALTER_GROUP("AlterGroup", SQLStatementType.DDL),
     
     ALTER_MATERIALIZED_VIEW("AlterMaterializedView", SQLStatementType.DDL),
+    
+    ALTER_MATERIALIZED_VIEW_LOG("AlterMaterializedViewLog", SQLStatementType.DDL),
     
     ALTER_OPERATOR("AlterOperator", SQLStatementType.DDL),
     
@@ -580,6 +584,18 @@ public enum SQLVisitorRule {
     
     ALTER_MATERIALIZED_ZONEMAP("AlterMaterializedZonemap", SQLStatementType.DDL),
     
+    ALTER_JAVA("AlterJava", SQLStatementType.DDL),
+    
+    ALTER_AUDIT_POLICY("AlterAuditPolicy", SQLStatementType.DDL),
+    
+    ALTER_CLUSTER("AlterCluster", SQLStatementType.DDL),
+    
+    ALTER_DISKGROUP("AlterDiskgroup", SQLStatementType.DDL),
+    
+    ALTER_HIERARCHY("AlterHierarchy", SQLStatementType.DDL),
+    
+    ALTER_INDEX_TYPE("AlterIndexType", SQLStatementType.DDL),
+    
     CURSOR("Cursor", SQLStatementType.DDL),
     
     CLOSE("Close", SQLStatementType.DDL),
@@ -600,7 +616,13 @@ public enum SQLVisitorRule {
     
     REASSIGN_OWNED("ReassignOwned", SQLStatementType.DCL),
     
-    CREATE_COLLATION("CreateCollation", SQLStatementType.DDL);
+    CREATE_COLLATION("CreateCollation", SQLStatementType.DDL),
+    
+    CREATE_EVENT_TRIGGER("CreateEventTrigger", SQLStatementType.DDL),
+    
+    CREATE_FOREIGN_DATA_WRAPPER("CreateForeignDataWrapper", SQLStatementType.DDL),
+    
+    CREATE_FOREIGN_TABLE("CreateForeignTable", SQLStatementType.DDL);
     
     private final String name;
     

@@ -28,7 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
  */
 @RequiredArgsConstructor
 @Getter
-@ToString
+@ToString(callSuper = true)
 public final class OpenGaussDropTableStatement extends DropTableStatement implements OpenGaussStatement {
     
     private final boolean ifExists;

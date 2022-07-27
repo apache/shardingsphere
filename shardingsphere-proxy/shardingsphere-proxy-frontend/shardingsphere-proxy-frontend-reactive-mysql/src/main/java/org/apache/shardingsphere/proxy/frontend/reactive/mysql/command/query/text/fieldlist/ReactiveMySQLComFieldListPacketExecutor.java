@@ -68,15 +68,15 @@ public final class ReactiveMySQLComFieldListPacketExecutor implements ReactiveCo
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         SQLParserRule sqlParserRule = metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(
-                DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getMetaData().getDatabases().get(databaseName).getProtocolType())).parse(sql, false);
+                DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType())).parse(sql, false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), sqlStatement, databaseName);
-        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection());
+        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(sqlStatementContext, sql, connectionSession.getBackendConnection(), false);
         characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
     }
     
     @Override
     public Future<Collection<DatabasePacket<?>>> executeFuture() {
-        return databaseCommunicationEngine.execute().compose(unused -> {
+        return databaseCommunicationEngine.executeFuture().compose(unused -> {
             try {
                 return Future.succeededFuture(createColumnDefinition41Packets());
             } catch (SQLException ex) {
@@ -88,7 +88,7 @@ public final class ReactiveMySQLComFieldListPacketExecutor implements ReactiveCo
     private Collection<DatabasePacket<?>> createColumnDefinition41Packets() throws SQLException {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
         while (databaseCommunicationEngine.next()) {
-            String columnName = databaseCommunicationEngine.getQueryResponseRow().getCells().iterator().next().getData().toString();
+            String columnName = databaseCommunicationEngine.getRowData().getCells().iterator().next().getData().toString();
             result.add(new MySQLColumnDefinition41Packet(
                     ++currentSequenceId, characterSet, databaseName, packet.getTable(), packet.getTable(), columnName, columnName, 100, MySQLBinaryColumnType.MYSQL_TYPE_VARCHAR, 0, true));
         }

@@ -90,15 +90,15 @@ public abstract class AbstractBaseExecutorTest {
         TransactionRule transactionRule = mockTransactionRule();
         when(globalRuleMetaData.getSingleRule(TransactionRule.class)).thenReturn(transactionRule);
         when(globalRuleMetaData.getSingleRule(TrafficRule.class)).thenReturn(new TrafficRule(new DefaultTrafficRuleConfigurationBuilder().build()));
-        when(result.getMetaData().getDatabases().get(DefaultDatabase.LOGIC_NAME).getResource().getDatabaseType()).thenReturn(DatabaseTypeFactory.getInstance("H2"));
+        when(result.getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME).getResource().getDatabaseType()).thenReturn(DatabaseTypeFactory.getInstance("H2"));
         ShardingRule shardingRule = mockShardingRule();
-        when(result.getMetaData().getDatabases().get(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getRules()).thenReturn(Collections.singleton(shardingRule));
+        when(result.getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getRules()).thenReturn(Collections.singleton(shardingRule));
         return result;
     }
     
     private TransactionRule mockTransactionRule() {
         TransactionRule result = mock(TransactionRule.class);
-        when(result.getResources()).thenReturn(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, new ShardingSphereTransactionManagerEngine()));
+        when(result.getResource()).thenReturn(new ShardingSphereTransactionManagerEngine());
         return result;
     }
     
@@ -111,5 +111,6 @@ public abstract class AbstractBaseExecutorTest {
     @After
     public void tearDown() {
         executorEngine.close();
+        TransactionTypeHolder.clear();
     }
 }

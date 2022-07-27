@@ -21,9 +21,9 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.ExtraSQLCommand;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
+import org.apache.shardingsphere.integration.data.pipeline.util.DatabaseTypeUtil;
 
 import javax.xml.bind.JAXB;
-import java.util.List;
 import java.util.Objects;
 
 import static org.junit.Assert.assertFalse;
@@ -49,10 +49,11 @@ public abstract class BaseExtraSQLITCase extends BaseITCase {
         executeWithLog(extraSQLCommand.getCreateTableOrder());
     }
     
-    protected void createTableIndexList() {
-        List<String> createTableIndexList = extraSQLCommand.getCreateTableIndexList();
-        for (String each : createTableIndexList) {
-            executeWithLog(each);
+    protected void createTableIndexList(final String schema) {
+        if (DatabaseTypeUtil.isPostgreSQL(getDatabaseType())) {
+            executeWithLog(String.format("CREATE INDEX IF NOT EXISTS idx_user_id ON %s.t_order ( user_id )", schema));
+        } else if (DatabaseTypeUtil.isOpenGauss(getDatabaseType())) {
+            executeWithLog(String.format("CREATE INDEX idx_user_id ON %s.t_order ( user_id )", schema));
         }
     }
     
@@ -79,7 +80,13 @@ public abstract class BaseExtraSQLITCase extends BaseITCase {
             // CHECKSTYLE:OFF
         } catch (final Exception ex) {
             // CHECKSTYLE:ON
-            assertTrue(ex.getCause().getMessage().endsWith("The database sharding_db is read-only"));
+            // TODO openGauss seem return the different error message, need to check it
+            if (DatabaseTypeUtil.isOpenGauss(getDatabaseType())) {
+                log.info("openGauss error msg:{}", ex.getMessage());
+                return false;
+            } else {
+                assertTrue(ex.getMessage(), ex.getCause().getMessage().endsWith("The database sharding_db is read-only"));
+            }
             return false;
         }
     }

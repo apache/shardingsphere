@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle set role statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OracleSetRoleStatement extends SetRoleStatement implements OracleStatement {
 }

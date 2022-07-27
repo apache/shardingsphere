@@ -167,5 +167,8 @@ execute
     | refreshMatViewStmt
     | reindex
     | securityLabelStmt
+    | createEventTrigger
+    | createForeignDataWrapper
+    | createForeignTable
     ) SEMI_? EOF
     ;

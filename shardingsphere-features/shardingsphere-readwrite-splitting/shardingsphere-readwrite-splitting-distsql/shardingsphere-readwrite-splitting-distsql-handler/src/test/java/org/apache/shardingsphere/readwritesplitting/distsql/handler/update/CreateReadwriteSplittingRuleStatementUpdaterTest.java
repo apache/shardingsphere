@@ -31,7 +31,7 @@ import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingD
 import org.apache.shardingsphere.readwritesplitting.api.strategy.StaticReadwriteSplittingStrategyConfiguration;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.segment.ReadwriteSplittingRuleSegment;
 import org.apache.shardingsphere.readwritesplitting.distsql.parser.statement.CreateReadwriteSplittingRuleStatement;
-import org.apache.shardingsphere.readwritesplitting.factory.ReplicaLoadBalanceAlgorithmFactory;
+import org.apache.shardingsphere.readwritesplitting.factory.ReadQueryLoadBalanceAlgorithmFactory;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.junit.Before;
@@ -114,17 +114,18 @@ public final class CreateReadwriteSplittingRuleStatementUpdaterTest {
         ExportableRule exportableRule = mock(ExportableRule.class);
         when(exportableRule.getExportData()).thenReturn(Collections.singletonMap(ExportableConstants.EXPORT_DB_DISCOVERY_PRIMARY_DATA_SOURCES, Collections.singletonMap("ms_group", "ds_0")));
         when(database.getRuleMetaData().findRules(ExportableRule.class)).thenReturn(Collections.singleton(exportableRule));
-        MockedStatic<ReplicaLoadBalanceAlgorithmFactory> mockedFactory = mockStatic(ReplicaLoadBalanceAlgorithmFactory.class);
-        mockedFactory.when(() -> ReplicaLoadBalanceAlgorithmFactory.contains("TEST")).thenReturn(true);
-        ReadwriteSplittingRuleSegment dynamicSegment = new ReadwriteSplittingRuleSegment("dynamic_rule", "ms_group", "false", "TEST", new Properties());
-        ReadwriteSplittingRuleSegment staticSegment = new ReadwriteSplittingRuleSegment("static_rule", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), "TEST", new Properties());
-        ShardingSphereServiceLoader.register(ReadQueryLoadBalanceAlgorithm.class);
-        CreateReadwriteSplittingRuleStatement statement = new CreateReadwriteSplittingRuleStatement(Arrays.asList(dynamicSegment, staticSegment));
-        updater.checkSQLStatement(database, statement, null);
-        ReadwriteSplittingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(statement);
-        ReadwriteSplittingRuleConfiguration currentRuleConfig = new ReadwriteSplittingRuleConfiguration(new ArrayList<>(), new HashMap<>());
-        updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
-        assertThat(currentRuleConfig.getDataSources().size(), is(2));
+        try (MockedStatic<ReadQueryLoadBalanceAlgorithmFactory> mockedFactory = mockStatic(ReadQueryLoadBalanceAlgorithmFactory.class)) {
+            mockedFactory.when(() -> ReadQueryLoadBalanceAlgorithmFactory.contains("TEST")).thenReturn(true);
+            ReadwriteSplittingRuleSegment dynamicSegment = new ReadwriteSplittingRuleSegment("dynamic_rule", "ms_group", "false", "TEST", new Properties());
+            ReadwriteSplittingRuleSegment staticSegment = new ReadwriteSplittingRuleSegment("static_rule", "write_ds_0", Arrays.asList("read_ds_0", "read_ds_1"), "TEST", new Properties());
+            ShardingSphereServiceLoader.register(ReadQueryLoadBalanceAlgorithm.class);
+            CreateReadwriteSplittingRuleStatement statement = new CreateReadwriteSplittingRuleStatement(Arrays.asList(dynamicSegment, staticSegment));
+            updater.checkSQLStatement(database, statement, null);
+            ReadwriteSplittingRuleConfiguration toBeCreatedRuleConfig = updater.buildToBeCreatedRuleConfiguration(statement);
+            ReadwriteSplittingRuleConfiguration currentRuleConfig = new ReadwriteSplittingRuleConfiguration(new ArrayList<>(), new HashMap<>());
+            updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeCreatedRuleConfig);
+            assertThat(currentRuleConfig.getDataSources().size(), is(2));
+        }
     }
     
     private CreateReadwriteSplittingRuleStatement createSQLStatement(final String loadBalancerName) {

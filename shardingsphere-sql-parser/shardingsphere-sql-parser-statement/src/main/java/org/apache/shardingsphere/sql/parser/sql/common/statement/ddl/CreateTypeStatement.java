@@ -23,6 +23,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStat
 /**
  * Create type statement.
  */
-@ToString
+@ToString(callSuper = true)
 public abstract class CreateTypeStatement extends AbstractSQLStatement implements DDLStatement {
 }

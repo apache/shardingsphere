@@ -43,11 +43,6 @@ public final class OpenGaussScalingEntry implements ScalingEntry {
     }
     
     @Override
-    public Class<OpenGaussEnvironmentChecker> getEnvironmentCheckerClass() {
-        return OpenGaussEnvironmentChecker.class;
-    }
-    
-    @Override
     public String getType() {
         return "openGauss";
     }

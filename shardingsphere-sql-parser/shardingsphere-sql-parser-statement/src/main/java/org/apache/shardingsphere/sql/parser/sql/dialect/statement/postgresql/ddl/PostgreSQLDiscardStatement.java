@@ -25,6 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL discard statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLDiscardStatement extends AbstractSQLStatement implements DDLStatement, PostgreSQLStatement {
 }

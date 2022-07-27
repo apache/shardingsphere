@@ -86,15 +86,6 @@ public final class RuleAlteredJobSchedulerCenter {
     }
     
     /**
-     * Check whether the same job exists.
-     * @param jobId job id
-     * @return exist then true else false
-     */
-    public static boolean existJob(final String jobId) {
-        return JOB_SCHEDULER_MAP.containsKey(jobId);
-    }
-    
-    /**
      * Update job status for all job sharding.
      *
      * @param jobId job id

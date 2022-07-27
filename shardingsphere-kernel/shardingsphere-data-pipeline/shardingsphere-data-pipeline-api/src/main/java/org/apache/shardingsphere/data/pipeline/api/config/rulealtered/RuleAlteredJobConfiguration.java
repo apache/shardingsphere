@@ -56,6 +56,11 @@ public final class RuleAlteredJobConfiguration implements PipelineJobConfigurati
      */
     private final Map<String, List<String>> alteredRuleYamlClassNameTablesMap;
     
+    /**
+     * Map{schema name, logic table names}.
+     */
+    private final Map<String, List<String>> schemaTablesMap;
+    
     private final String logicTables;
     
     /**

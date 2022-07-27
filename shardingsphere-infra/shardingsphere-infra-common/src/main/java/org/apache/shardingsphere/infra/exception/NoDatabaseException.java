@@ -17,12 +17,9 @@
 
 package org.apache.shardingsphere.infra.exception;
 
-import lombok.Getter;
-
 /**
  * No Database exception.
  */
-@Getter
 public final class NoDatabaseException extends ShardingSphereException {
     
     private static final long serialVersionUID = -835255743584004153L;

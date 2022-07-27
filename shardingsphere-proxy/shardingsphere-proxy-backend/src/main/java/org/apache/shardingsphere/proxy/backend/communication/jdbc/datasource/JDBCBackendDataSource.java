@@ -67,7 +67,7 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     @SuppressWarnings("SynchronizationOnLocalVariableOrMethodParameter")
     public List<Connection> getConnections(final String databaseName, final String dataSourceName,
                                            final int connectionSize, final ConnectionMode connectionMode, final TransactionType transactionType) throws SQLException {
-        DataSource dataSource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getResource().getDataSources().get(dataSourceName);
+        DataSource dataSource = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getResource().getDataSources().get(dataSourceName);
         if (dataSourceName.contains(".")) {
             String dataSourceStr = dataSourceName.split("\\.")[0];
             if (GlobalDataSourceRegistry.getInstance().getCachedDataSourceDataSources().containsKey(dataSourceStr)) {
@@ -105,7 +105,7 @@ public final class JDBCBackendDataSource implements BackendDataSource {
     
     private Connection createConnection(final String databaseName, final String dataSourceName, final DataSource dataSource, final TransactionType transactionType) throws SQLException {
         TransactionRule transactionRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(TransactionRule.class);
-        ShardingSphereTransactionManager transactionManager = transactionRule.getResources().get(databaseName).getTransactionManager(transactionType);
+        ShardingSphereTransactionManager transactionManager = transactionRule.getResource().getTransactionManager(transactionType);
         Connection result = isInTransaction(transactionManager) ? transactionManager.getConnection(dataSourceName) : dataSource.getConnection();
         if (dataSourceName.contains(".")) {
             String catalog = dataSourceName.split("\\.")[1];

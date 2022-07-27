@@ -19,8 +19,8 @@ package org.apache.shardingsphere.data.pipeline.core.api.impl;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyContentCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCountCheckResult;
@@ -136,10 +136,9 @@ public final class RuleAlteredJobAPIImplTest {
             log.error("source is null, jobConfig={}", YamlEngine.marshal(jobConfig));
         }
         initTableData(jobConfig);
-        String databaseName = jobConfig.getDatabaseName();
-        ruleAlteredJobAPI.stopClusterWriteDB(databaseName, jobId.get());
+        ruleAlteredJobAPI.stopClusterWriteDB(jobConfig);
         Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobId.get());
-        ruleAlteredJobAPI.restoreClusterWriteDB(databaseName, jobId.get());
+        ruleAlteredJobAPI.restoreClusterWriteDB(jobConfig);
         assertThat(checkResultMap.size(), is(1));
     }
     
@@ -149,10 +148,9 @@ public final class RuleAlteredJobAPIImplTest {
         assertTrue(jobId.isPresent());
         RuleAlteredJobConfiguration jobConfig = ruleAlteredJobAPI.getJobConfig(jobId.get());
         initTableData(jobConfig);
-        String databaseName = jobConfig.getDatabaseName();
-        ruleAlteredJobAPI.stopClusterWriteDB(databaseName, jobId.get());
+        ruleAlteredJobAPI.stopClusterWriteDB(jobConfig);
         Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobId.get(), "FIXTURE", null);
-        ruleAlteredJobAPI.restoreClusterWriteDB(databaseName, jobId.get());
+        ruleAlteredJobAPI.restoreClusterWriteDB(jobConfig);
         assertThat(checkResultMap.size(), is(1));
         assertTrue(checkResultMap.get("t_order").getCountCheckResult().isMatched());
         assertThat(checkResultMap.get("t_order").getCountCheckResult().getTargetRecordsCount(), is(2L));
@@ -235,7 +233,7 @@ public final class RuleAlteredJobAPIImplTest {
         ruleAlteredJobAPI.stop(jobId.get());
         ruleAlteredJobAPI.reset(jobId.get());
         Map<String, DataConsistencyCheckResult> checkResultMap = ruleAlteredJobAPI.dataConsistencyCheck(jobConfig);
-        assertThat(checkResultMap.get("t_order").getCountCheckResult().getTargetRecordsCount(), is(0L));
+        assertThat(checkResultMap.get("t_order").getCountCheckResult().getTargetRecordsCount(), is(2L));
     }
     
     @SneakyThrows(SQLException.class)

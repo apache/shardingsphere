@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.MySQLSta
 /**
  * MySQL rollback statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class MySQLRollbackStatement extends RollbackStatement implements MySQLStatement {
 }

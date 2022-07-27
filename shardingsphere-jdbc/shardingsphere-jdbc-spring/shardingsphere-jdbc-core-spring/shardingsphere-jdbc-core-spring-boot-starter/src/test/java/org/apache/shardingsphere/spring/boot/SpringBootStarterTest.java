@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReplicaLoadBalanceAlgorithm;
+import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.RandomReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingDataSourceRule;
 import org.apache.shardingsphere.readwritesplitting.rule.ReadwriteSplittingRule;
 import org.apache.shardingsphere.readwritesplitting.strategy.type.StaticReadwriteSplittingStrategy;
@@ -73,7 +73,7 @@ public class SpringBootStarterTest {
     
     @Test
     public void assertDataSources() {
-        Map<String, DataSource> dataSources = getContextManager(dataSource).getMetaDataContexts().getMetaData().getDatabases().get("foo_db").getResource().getDataSources();
+        Map<String, DataSource> dataSources = getContextManager(dataSource).getMetaDataContexts().getMetaData().getDatabase("foo_db").getResource().getDataSources();
         assertThat(dataSources.size(), is(2));
         assertTrue(dataSources.containsKey("ds0"));
         assertTrue(dataSources.containsKey("ds1"));
@@ -81,7 +81,7 @@ public class SpringBootStarterTest {
     
     @Test
     public void assertRules() {
-        Collection<ShardingSphereRule> rules = getContextManager(dataSource).getMetaDataContexts().getMetaData().getDatabases().get("foo_db").getRuleMetaData().getRules();
+        Collection<ShardingSphereRule> rules = getContextManager(dataSource).getMetaDataContexts().getMetaData().getDatabase("foo_db").getRuleMetaData().getRules();
         assertThat(rules.size(), is(5));
         for (ShardingSphereRule each : rules) {
             if (each instanceof ShardingRule) {
@@ -138,13 +138,13 @@ public class SpringBootStarterTest {
     }
     
     private void assertReadwriteSplittingRule(final ReadwriteSplittingRule actual) {
-        assertThat(actual.getDataSourceMapper(), is(Collections.singletonMap("readwrite_ds", Arrays.asList("write_ds", "read_ds_0", "read_ds_1"))));
+        assertThat(actual.getDataSourceMapper(), is(Collections.singletonMap("readwrite_ds", Arrays.asList("write_ds", "ds0", "ds1"))));
         ReadwriteSplittingDataSourceRule dataSourceRule = actual.getSingleDataSourceRule();
         assertThat(dataSourceRule.getName(), is("readwrite_ds"));
         StaticReadwriteSplittingStrategy staticReadwriteSplittingType = (StaticReadwriteSplittingStrategy) dataSourceRule.getReadwriteSplittingStrategy();
         assertThat(staticReadwriteSplittingType.getWriteDataSource(), is("write_ds"));
-        assertThat(staticReadwriteSplittingType.getReadDataSources(), is(Arrays.asList("read_ds_0", "read_ds_1")));
-        assertThat(dataSourceRule.getLoadBalancer(), instanceOf(RandomReplicaLoadBalanceAlgorithm.class));
+        assertThat(staticReadwriteSplittingType.getReadDataSources(), is(Arrays.asList("ds0", "ds1")));
+        assertThat(dataSourceRule.getLoadBalancer(), instanceOf(RandomReadQueryLoadBalanceAlgorithm.class));
     }
     
     private void assertEncryptRule(final EncryptRule actual) {
@@ -157,7 +157,7 @@ public class SpringBootStarterTest {
     }
     
     private void assertEncryptTable(final EncryptTable actual) {
-        assertThat(actual.getLogicColumn("pwd_cipher"), is("pwd"));
+        assertThat(actual.getLogicColumnByCipherColumn("pwd_cipher"), is("pwd"));
         assertThat(actual.getPlainColumns(), is(Collections.singletonList("pwd_plain")));
         assertThat(actual.getAssistedQueryColumns(), is(Collections.singletonList("pwd_assisted_query_cipher")));
     }

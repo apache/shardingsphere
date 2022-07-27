@@ -17,8 +17,11 @@
 
 package org.apache.shardingsphere.sharding.algorithm.keygen.fixture;
 
+import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
+
+import java.util.Properties;
 
 @RequiredArgsConstructor
 public final class WorkerIdGeneratorFixture implements WorkerIdGenerator {
@@ -26,7 +29,8 @@ public final class WorkerIdGeneratorFixture implements WorkerIdGenerator {
     private final long fixtureWorkerId;
     
     @Override
-    public long generate() {
+    public long generate(final Properties props) {
+        Preconditions.checkArgument(fixtureWorkerId >= 0L && fixtureWorkerId <= MAX_WORKER_ID, "Illegal worker id.");
         return fixtureWorkerId;
     }
 }

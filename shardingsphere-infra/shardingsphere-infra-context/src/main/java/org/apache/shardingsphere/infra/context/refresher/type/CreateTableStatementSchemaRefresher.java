@@ -58,7 +58,7 @@ public final class CreateTableStatementSchemaRefresher implements MetaDataRefres
         Map<String, ShardingSphereSchema> schemaMap = GenericSchemaBuilder.build(Collections.singletonList(tableName), materials);
         Optional<ShardingSphereTable> actualTableMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.get(tableName));
         if (actualTableMetaData.isPresent()) {
-            database.getSchemas().get(schemaName).put(tableName, actualTableMetaData.get());
+            database.getSchema(schemaName).put(tableName, actualTableMetaData.get());
             federationDatabaseMetaData.putTable(schemaName, actualTableMetaData.get());
             optimizerPlanners.put(federationDatabaseMetaData.getName(), OptimizerPlannerContextFactory.create(federationDatabaseMetaData));
             SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);

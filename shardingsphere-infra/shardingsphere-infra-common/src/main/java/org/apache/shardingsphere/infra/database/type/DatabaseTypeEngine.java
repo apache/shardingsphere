@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -48,12 +49,7 @@ public final class DatabaseTypeEngine {
      * @return protocol type
      */
     public static DatabaseType getProtocolType(final DatabaseConfiguration databaseConfig, final ConfigurationProperties props) {
-        Optional<DatabaseType> configuredDatabaseType = findConfiguredDatabaseType(props);
-        if (configuredDatabaseType.isPresent()) {
-            return configuredDatabaseType.get();
-        }
-        Collection<DataSource> dataSources = databaseConfig.getDataSources().isEmpty() ? databaseConfig.getDataSources().values() : Collections.emptyList();
-        return getDatabaseType(dataSources);
+        return findConfiguredDatabaseType(props).orElseGet(() -> getDatabaseType(databaseConfig.getDataSources().values()));
     }
     
     /**
@@ -114,7 +110,7 @@ public final class DatabaseTypeEngine {
         try (Connection connection = dataSource.getConnection()) {
             return getDatabaseType(connection.getMetaData().getURL());
         } catch (final SQLException ex) {
-            throw new IllegalArgumentException(ex.getMessage(), ex);
+            throw new ShardingSphereException(ex.getMessage(), ex);
         }
     }
     
@@ -156,6 +152,6 @@ public final class DatabaseTypeEngine {
      * @return default schema name
      */
     public static String getDefaultSchemaName(final DatabaseType databaseType, final String databaseName) {
-        return databaseType instanceof SchemaSupportedDatabaseType ? ((SchemaSupportedDatabaseType) databaseType).getDefaultSchema() : databaseName;
+        return databaseType instanceof SchemaSupportedDatabaseType ? ((SchemaSupportedDatabaseType) databaseType).getDefaultSchema() : databaseName.toLowerCase();
     }
 }

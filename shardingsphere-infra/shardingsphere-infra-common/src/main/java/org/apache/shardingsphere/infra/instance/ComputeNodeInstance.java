@@ -24,6 +24,7 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.infra.state.StateType;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -34,13 +35,13 @@ import java.util.Collection;
 @Setter
 public final class ComputeNodeInstance {
     
-    private final InstanceMetaData instanceMetaData;
+    private final InstanceMetaData metaData;
     
     private final StateContext state = new StateContext();
     
-    private Collection<String> labels;
+    private Collection<String> labels = new ArrayList<>();
     
-    private Long workerId;
+    private volatile long workerId;
     
     /**
      * Set labels.
@@ -69,6 +70,6 @@ public final class ComputeNodeInstance {
      * @return current instance id
      */
     public String getCurrentInstanceId() {
-        return instanceMetaData.getId();
+        return metaData.getId();
     }
 }

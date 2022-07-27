@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.Pos
 /**
  * PostgreSQL truncate table statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class PostgreSQLTruncateStatement extends TruncateStatement implements PostgreSQLStatement {
 }

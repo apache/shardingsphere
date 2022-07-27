@@ -36,10 +36,12 @@ public final class MySQLIncrementTask extends BaseIncrementTask {
     
     private final Boolean incrementOrderItemTogether;
     
+    private final int executeCountLimit;
+    
     @Override
     public void run() {
         int executeCount = 0;
-        while (executeCount < 20 && !Thread.currentThread().isInterrupted()) {
+        while (executeCount < executeCountLimit && !Thread.currentThread().isInterrupted()) {
             Object orderPrimaryKey = insertOrder();
             if (executeCount % 2 == 0) {
                 jdbcTemplate.update("DELETE FROM t_order WHERE id = ?", orderPrimaryKey);
@@ -58,13 +60,15 @@ public final class MySQLIncrementTask extends BaseIncrementTask {
     
     private Object insertOrder() {
         ThreadLocalRandom random = ThreadLocalRandom.current();
-        Object[] orderInsertDate = new Object[]{keyGenerateAlgorithm.generateKey(), random.nextInt(0, 6), random.nextInt(0, 6), random.nextInt(1, 99)};
-        jdbcTemplate.update("INSERT INTO t_order (id,order_id,user_id,t_unsigned_int) VALUES (?, ?, ?, ?)", orderInsertDate);
+        String status = random.nextInt() % 2 == 0 ? null : "NOT-NULL";
+        Object[] orderInsertDate = new Object[]{keyGenerateAlgorithm.generateKey(), random.nextInt(0, 6), random.nextInt(0, 6), random.nextInt(1, 99), status};
+        jdbcTemplate.update("INSERT INTO t_order (id,order_id,user_id,t_unsigned_int,status) VALUES (?, ?, ?, ?, ?)", orderInsertDate);
         return orderInsertDate[0];
     }
     
     private Object insertOrderItem() {
-        Object[] orderInsertItemDate = new Object[]{keyGenerateAlgorithm.generateKey(), ThreadLocalRandom.current().nextInt(0, 6), ThreadLocalRandom.current().nextInt(0, 6), "OK"};
+        String status = ThreadLocalRandom.current().nextInt() % 2 == 0 ? null : "NOT-NULL";
+        Object[] orderInsertItemDate = new Object[]{keyGenerateAlgorithm.generateKey(), ThreadLocalRandom.current().nextInt(0, 6), ThreadLocalRandom.current().nextInt(0, 6), status};
         jdbcTemplate.update("INSERT INTO t_order_item(item_id,order_id,user_id,status) VALUES(?,?,?,?)", orderInsertItemDate);
         return orderInsertItemDate[0];
     }
@@ -72,6 +76,7 @@ public final class MySQLIncrementTask extends BaseIncrementTask {
     private void updateOrderByPrimaryKey(final Object primaryKey) {
         Object[] updateData = {"updated" + Instant.now().getEpochSecond(), ThreadLocalRandom.current().nextInt(0, 100), primaryKey};
         jdbcTemplate.update("UPDATE t_order SET status = ?,t_unsigned_int = ? WHERE id = ?", updateData);
+        jdbcTemplate.update("UPDATE t_order SET status = null,t_unsigned_int = 299,t_timestamp='0000-00-00 00:00:00' WHERE id = ?", primaryKey);
     }
     
     private void setNullToOrderFields(final Object primaryKey) {

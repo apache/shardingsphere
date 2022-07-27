@@ -54,6 +54,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -77,7 +78,7 @@ public final class UnicastDatabaseBackendHandlerTest extends ProxyContextRestore
     private DatabaseCommunicationEngine databaseCommunicationEngine;
     
     @Before
-    public void setUp() {
+    public void setUp() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(getDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
@@ -100,9 +101,9 @@ public final class UnicastDatabaseBackendHandlerTest extends ProxyContextRestore
         return result;
     }
     
-    private void mockDatabaseCommunicationEngine(final ResponseHeader responseHeader) {
+    private void mockDatabaseCommunicationEngine(final ResponseHeader responseHeader) throws SQLException {
         when(databaseCommunicationEngine.execute()).thenReturn(responseHeader);
-        when(databaseCommunicationEngineFactory.newTextProtocolInstance(any(), anyString(), any())).thenReturn(databaseCommunicationEngine);
+        when(databaseCommunicationEngineFactory.newDatabaseCommunicationEngine(any(), anyString(), any(), eq(false))).thenReturn(databaseCommunicationEngine);
     }
     
     @SneakyThrows(ReflectiveOperationException.class)

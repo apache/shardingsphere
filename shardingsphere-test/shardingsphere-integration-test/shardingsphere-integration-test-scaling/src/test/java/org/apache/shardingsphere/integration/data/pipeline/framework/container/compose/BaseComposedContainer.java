@@ -18,16 +18,16 @@
 package org.apache.shardingsphere.integration.data.pipeline.framework.container.compose;
 
 import lombok.Getter;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.ITContainers;
+import org.apache.shardingsphere.test.integration.env.container.atomic.ITContainers;
 import org.testcontainers.lifecycle.Startable;
 
+@Getter
 public abstract class BaseComposedContainer implements Startable {
     
-    @Getter
     private final ITContainers containers;
     
     public BaseComposedContainer() {
-        this.containers = new ITContainers("");
+        containers = new ITContainers("");
     }
     
     /**
@@ -37,6 +37,13 @@ public abstract class BaseComposedContainer implements Startable {
      * @return proxy jdbc url
      */
     public abstract String getProxyJdbcUrl(String databaseName);
+    
+    /**
+     * Clean up database.
+     *
+     * @param databaseName database name
+     */
+    public abstract void cleanUpDatabase(String databaseName);
     
     @Override
     public void start() {

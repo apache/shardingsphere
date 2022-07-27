@@ -22,8 +22,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateFunct
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
- * SQLServer create index statement.
+ * SQLServer create function statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class SQLServerCreateFunctionStatement extends CreateFunctionStatement implements SQLServerStatement {
 }

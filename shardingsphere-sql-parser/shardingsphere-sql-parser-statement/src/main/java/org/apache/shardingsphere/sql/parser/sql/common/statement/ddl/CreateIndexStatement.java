@@ -33,7 +33,7 @@ import java.util.LinkedList;
  */
 @Getter
 @Setter
-@ToString
+@ToString(callSuper = true)
 public abstract class CreateIndexStatement extends AbstractSQLStatement implements DDLStatement {
     
     private IndexSegment index;

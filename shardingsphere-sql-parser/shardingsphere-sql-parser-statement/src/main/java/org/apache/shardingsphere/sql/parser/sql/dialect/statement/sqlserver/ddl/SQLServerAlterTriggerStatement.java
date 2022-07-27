@@ -18,13 +18,13 @@
 package org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.ddl;
 
 import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.AlterTriggerStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.sqlserver.SQLServerStatement;
 
 /**
  * SQLServer alter trigger statement.
  */
-@ToString
-public final class SQLServerAlterTriggerStatement extends AbstractSQLStatement implements DDLStatement, SQLServerStatement {
+@ToString(callSuper = true)
+public final class SQLServerAlterTriggerStatement extends AlterTriggerStatement implements DDLStatement, SQLServerStatement {
 }
