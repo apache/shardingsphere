@@ -65,6 +65,16 @@ public final class ShardingAuditChecker implements SQLChecker<ShardingRule> {
         return new SQLCheckResult(true, "");
     }
     
+    @Override
+    public boolean check(final Grantee grantee, final ShardingRule rule) {
+        return true;
+    }
+    
+    @Override
+    public boolean check(final Grantee grantee, final BiPredicate<Object, Object> validator, final Object cipher, final ShardingRule rule) {
+        return true;
+    }
+    
     private Collection<ShardingAuditStrategyConfiguration> getShardingAuditStrategies(final SQLStatementContext<?> sqlStatementContext, final ShardingRule rule) {
         Collection<String> tableNames = sqlStatementContext.getTablesContext().getTableNames();
         Collection<ShardingAuditStrategyConfiguration> result = new ArrayList<>(tableNames.size());
@@ -74,16 +84,6 @@ public final class ShardingAuditChecker implements SQLChecker<ShardingRule> {
             }
         }
         return result;
-    }
-    
-    @Override
-    public boolean check(final Grantee grantee, final ShardingRule rule) {
-        return true;
-    }
-    
-    @Override
-    public boolean check(final Grantee grantee, final BiPredicate<Object, Object> validator, final Object cipher, final ShardingRule rule) {
-        return true;
     }
     
     @Override
