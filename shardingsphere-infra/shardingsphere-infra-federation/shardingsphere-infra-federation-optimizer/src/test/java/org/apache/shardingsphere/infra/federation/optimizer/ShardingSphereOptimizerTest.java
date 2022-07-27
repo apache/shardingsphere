@@ -159,7 +159,7 @@ public final class ShardingSphereOptimizerTest {
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
         String expected = "EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t0):INTEGER], expr#3=[12], expr#4=[=($t2, $t3)], user_id=[$t0], $condition=[$t4])\n"
                 + "  EnumerableTableScan(table=[[federate_jdbc, t_user_info]])\n";
-        assertThat(actual.replaceAll("\\s*", ""), is(expected.replaceAll("\\s*", "")));
+        assertThat(actual, is(expected));
     }
     
     @Test
