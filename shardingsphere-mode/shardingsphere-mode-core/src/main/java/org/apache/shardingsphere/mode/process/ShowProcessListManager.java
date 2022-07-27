@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process;
+package org.apache.shardingsphere.mode.process;
 
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.lock.ShowProcessListSimpleLock;
+import org.apache.shardingsphere.mode.process.lock.ShowProcessListSimpleLock;
 
 import java.util.Collection;
 import java.util.Map;
@@ -35,6 +35,7 @@ public final class ShowProcessListManager {
     
     private static final ShowProcessListManager INSTANCE = new ShowProcessListManager();
     
+    @Getter
     private final Map<String, YamlExecuteProcessContext> processContextMap = new ConcurrentHashMap<>();
     
     @Getter

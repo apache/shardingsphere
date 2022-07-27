@@ -15,20 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event;
+package org.apache.shardingsphere.mode.process.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
 
 /**
- * Execute process unit report event.
+ * Show process list request event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ExecuteProcessUnitReportEvent {
-    
-    private final String executionID;
-    
-    private final ExecuteProcessUnit executeProcessUnit;
+public final class ShowProcessListRequestEvent {
 }

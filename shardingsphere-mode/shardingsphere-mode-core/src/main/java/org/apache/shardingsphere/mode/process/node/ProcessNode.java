@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.node;
+package org.apache.shardingsphere.mode.process.node;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

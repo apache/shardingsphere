@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.lock;
+package org.apache.shardingsphere.mode.process.lock;
 
 import lombok.SneakyThrows;
 
