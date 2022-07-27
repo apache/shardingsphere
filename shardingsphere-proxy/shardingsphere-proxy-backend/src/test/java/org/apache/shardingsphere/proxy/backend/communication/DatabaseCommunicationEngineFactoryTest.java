@@ -73,7 +73,8 @@ public final class DatabaseCommunicationEngineFactoryTest extends ProxyContextRe
         when(backendConnection.getConnectionSession().getDatabaseName()).thenReturn("db");
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
-        DatabaseCommunicationEngine engine = DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new LogicSQL(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false);
+        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, "schemaName", Collections.emptyList());
+        DatabaseCommunicationEngine engine = DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(logicSQL, backendConnection, false);
         assertThat(engine, instanceOf(DatabaseCommunicationEngine.class));
     }
     

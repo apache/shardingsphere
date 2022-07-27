@@ -36,8 +36,6 @@ import org.mockito.MockedConstruction;
 
 import java.util.Collections;
 
-import java.util.Collections;
-
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -82,7 +80,7 @@ public final class DatabaseBackendHandlerFactoryTest extends ProxyContextRestore
         when(connectionSession.getBackendConnection()).thenReturn(mock(JDBCBackendConnection.class));
         when(connectionSession.getBackendConnection().getConnectionSession()).thenReturn(connectionSession);
         try (MockedConstruction<JDBCDatabaseCommunicationEngine> unused = mockConstruction(JDBCDatabaseCommunicationEngine.class)) {
-            DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(context, sql, connectionSession);
+            DatabaseBackendHandler actual = DatabaseBackendHandlerFactory.newInstance(new LogicSQL(context, sql, Collections.emptyList()), connectionSession, false);
             assertThat(actual, instanceOf(DatabaseCommunicationEngine.class));
         }
     }
