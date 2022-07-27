@@ -62,7 +62,7 @@ public final class MySQLProxyTransactionIT extends BaseTransactionITCase {
             if (Objects.equals(parameterized.getTransactionType(), TransactionType.LOCAL)) {
                 alterLocalTransactionRule();
             } else if (Objects.equals(parameterized.getTransactionType(), TransactionType.XA)) {
-                alterXaAtomikosTransactionRule();
+                alterXaTransactionRule();
             }
         }
     }
@@ -82,7 +82,7 @@ public final class MySQLProxyTransactionIT extends BaseTransactionITCase {
     
     @SneakyThrows
     private void callTestCases() {
-        parameterized.getTransactionTestCaseClass().getConstructor(DataSource.class).newInstance(getDataSource()).executeTest();
+        parameterized.getTransactionTestCaseClass().getConstructor(BaseTransactionITCase.class, DataSource.class).newInstance(this, getDataSource()).executeTest();
     }
     
 }

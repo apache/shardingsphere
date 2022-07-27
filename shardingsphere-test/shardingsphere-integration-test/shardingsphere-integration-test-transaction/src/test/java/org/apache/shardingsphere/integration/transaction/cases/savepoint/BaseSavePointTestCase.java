@@ -20,6 +20,7 @@ package org.apache.shardingsphere.integration.transaction.cases.savepoint;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
+import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -32,8 +33,8 @@ import java.sql.Savepoint;
 @Slf4j
 public abstract class BaseSavePointTestCase extends BaseTransactionTestCase {
     
-    public BaseSavePointTestCase(final DataSource dataSource) {
-        super(dataSource);
+    public BaseSavePointTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
+        super(baseTransactionITCase, dataSource);
     }
     
     @SneakyThrows(SQLException.class)

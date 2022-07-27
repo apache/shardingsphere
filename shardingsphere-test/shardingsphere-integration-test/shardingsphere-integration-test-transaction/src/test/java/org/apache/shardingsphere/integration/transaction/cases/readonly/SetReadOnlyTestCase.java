@@ -20,6 +20,7 @@ package org.apache.shardingsphere.integration.transaction.cases.readonly;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
+import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.junit.Assert;
 
 import javax.sql.DataSource;
@@ -34,8 +35,8 @@ import java.sql.Statement;
 @Slf4j
 public abstract class SetReadOnlyTestCase extends BaseTransactionTestCase {
     
-    public SetReadOnlyTestCase(final DataSource dataSource) {
-        super(dataSource);
+    public SetReadOnlyTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
+        super(baseTransactionITCase, dataSource);
     }
     
     @SneakyThrows
