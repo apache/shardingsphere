@@ -78,10 +78,10 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
                 databaseTypes.add(entry.getValue().getResource().getDatabaseType());
             }
         }
+        Preconditions.checkState(databaseTypes.size() < 2, "Multiple types of databases are not supported");
         if (dataSourceMap.isEmpty()) {
             return new ShardingSphereTransactionManagerEngine();
         }
-        Preconditions.checkState(databaseTypes.size() < 2, "Multiple types of databases are not supported");
         result.init(databaseTypes.iterator().next(), dataSourceMap, providerType);
         return result;
     }
