@@ -17,36 +17,36 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.generic.SubstitutableColumnNameToken;
 import org.junit.Test;
 
+import java.util.Collection;
 import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
 
-public final class EncryptForUseDefaultInsertColumnsTokenGeneratorTest extends EncryptGeneratorBaseTest {
+public final class EncryptPredicateColumnTokenGeneratorTest extends EncryptGeneratorBaseTest {
     
     @Test
     public void assertIsGenerateSQLToken() {
-        EncryptForUseDefaultInsertColumnsTokenGenerator tokenGenerator = new EncryptForUseDefaultInsertColumnsTokenGenerator();
+        EncryptPredicateColumnTokenGenerator tokenGenerator = new EncryptPredicateColumnTokenGenerator();
+        tokenGenerator.setDatabaseName(DefaultDatabase.LOGIC_NAME);
         tokenGenerator.setEncryptRule(createEncryptRule());
-        assertFalse(tokenGenerator.isGenerateSQLToken(createInsertStatementContext(Collections.emptyList())));
+        tokenGenerator.setSchemas(Collections.emptyMap());
+        assertTrue(tokenGenerator.isGenerateSQLToken(createUpdatesStatementContext()));
     }
     
     @Test
     public void assertGenerateSQLTokenFromGenerateNewSQLToken() {
-        EncryptForUseDefaultInsertColumnsTokenGenerator tokenGenerator = new EncryptForUseDefaultInsertColumnsTokenGenerator();
+        EncryptPredicateColumnTokenGenerator tokenGenerator = new EncryptPredicateColumnTokenGenerator();
+        tokenGenerator.setDatabaseName(DefaultDatabase.LOGIC_NAME);
         tokenGenerator.setEncryptRule(createEncryptRule());
-        tokenGenerator.setPreviousSQLTokens(Collections.emptyList());
-        assertThat(tokenGenerator.generateSQLToken(createInsertStatementContext(Collections.emptyList())).toString(), is("(id, name, status, pwd_cipher, pwd_assist, pwd_plain)"));
-    }
-    
-    @Test
-    public void assertGenerateSQLTokenFromPreviousSQLTokens() {
-        EncryptForUseDefaultInsertColumnsTokenGenerator tokenGenerator = new EncryptForUseDefaultInsertColumnsTokenGenerator();
-        tokenGenerator.setEncryptRule(createEncryptRule());
-        tokenGenerator.setPreviousSQLTokens(getPreviousSQLTokens());
-        assertThat(tokenGenerator.generateSQLToken(createInsertStatementContext(Collections.emptyList())).toString(), is("(id, name, status, pwd_cipher, pwd_assist, pwd_plain)"));
+        tokenGenerator.setSchemas(Collections.emptyMap());
+        Collection<SubstitutableColumnNameToken> substitutableColumnNameTokens = tokenGenerator.generateSQLTokens(createUpdatesStatementContext());
+        assertThat(substitutableColumnNameTokens.size(), is(1));
+        assertThat(substitutableColumnNameTokens.iterator().next().toString(null), is("pwd_plain"));
     }
 }
