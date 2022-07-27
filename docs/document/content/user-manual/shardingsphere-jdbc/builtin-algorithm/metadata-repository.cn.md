@@ -3,9 +3,15 @@ title = "元数据持久化仓库"
 weight = 1
 +++
 
-## H2 数据库持久化
+## 背景信息
 
-类型：H2
+Apache ShardingSphere 为不同的运行模式提供了不同的元数据持久化方式，用户在配置运行模式的同时可以选择合适的方式来存储元数据。
+
+## 参数解释
+
+### 文件持久化
+
+类型：File
 
 适用模式：Standalone
 
@@ -13,11 +19,10 @@ weight = 1
 
 | *名称*                        | *数据类型* | *说明*            | *默认值*         |
 | ---------------------------- | --------- | ---------------- | --------------- |
-| jdbcUrl                      | String    | 连接数据库的 URL   | jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL |
-| user                         | String    | 访问数据库的用户名  | sa                                                                      |
-| password                     | String    | 访问数据库的密码    |                                                                         |
+| path                    | String    | 元数据存储路径   | .shardingsphere|
 
-## ZooKeeper 持久化
+
+### ZooKeeper 持久化
 
 类型：ZooKeeper
 
@@ -33,7 +38,7 @@ weight = 1
 | operationTimeoutMilliseconds | int       | 客户端操作超时的毫秒数  | 500           |
 | digest                       | String    | 登录认证密码          |               |
 
-## Etcd 持久化
+### Etcd 持久化
 
 类型：Etcd
 
@@ -45,3 +50,39 @@ weight = 1
 | ---------------------------- | --------- | ------------------- | --------------- |
 | timeToLiveSeconds            | long      | 临时数据失效的秒数     | 30              |
 | connectionTimeout            | long      | 连接超时秒数          | 30              |
+
+## 操作步骤
+
+1. 在 server.yaml 中配置 Mode 运行模式
+1. 配置元数据持久化仓库类型
+
+## 配置示例
+
+- 单机模式配置方式
+
+```yaml
+mode:
+  type: Standalone
+  repository:
+    type: File
+    props:
+       path: ~/user/.shardingsphere
+  overwrite: false
+```
+
+- 集群模式
+
+```yaml
+mode:
+  type: Cluster
+  repository:
+    type: zookeeper
+    props:
+      namespace: governance_ds
+      server-lists: localhost:2181
+      retryIntervalMilliseconds: 500
+      timeToLiveSeconds: 60
+      maxRetries: 3
+      operationTimeoutMilliseconds: 500
+  overwrite: false
+```
