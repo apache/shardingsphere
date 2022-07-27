@@ -32,6 +32,9 @@ Integration test depends on existed database environment, developer need to setu
 Firstly, setup configuration file `/shardingsphere-integration-test-suite/src/test/resources/env-native.properties`, for example: 
 
 ```properties
+# running mode，could define multiple mode(Standalone,Cluster)
+it.run.modes=Cluster
+
 # the switch for PK, concurrent, column index testing and so on
 it.run.additional.cases=false
 
