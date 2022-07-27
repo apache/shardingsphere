@@ -1,5 +1,5 @@
 +++
-pre = "<b>7.1. </b>"
+pre = "<b>6.1. </b>"
 title = "Integration Test"
 weight = 1
 +++
@@ -32,6 +32,9 @@ Integration test depends on existed database environment, developer need to setu
 Firstly, setup configuration file `/shardingsphere-integration-test-suite/src/test/resources/env-native.properties`, for example: 
 
 ```properties
+# running mode，could define multiple mode(Standalone,Cluster)
+it.run.modes=Cluster
+
 # the switch for PK, concurrent, column index testing and so on
 it.run.additional.cases=false
 
@@ -139,6 +142,22 @@ Use the following command to skip the image building and run the integration tes
 ```bash
 ./mvnw -B clean install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Pit.env.docker -Dit.cluster.adapters=proxy,jdbc -Dit.scenarios=${scenario_name_1,scenario_name_1,scenario_name_n} -Dit.cluster.databases=MySQL
 ```
+
+#### debug the Proxy inside docker container
+
+The Proxy Image for testing expose the port 3308 for remote debug the instance inside docker container.
+
+Use IDE like IDEA could connect and debug the Proxy in container by following steps:
+
+IDEA -> Run -> Edit Configurations -> Add New Configuration -> Remote JVM Debug
+
+Edit the corresponding info:
+  - Name: a name for this, like docker-debug
+  - Host: the IP could access container, like 127.0.0.1
+  - Port: the debug port 3308
+  - use module classpath: project root directory shardingsphere
+
+After edit and save the upon info, goto Run -> Run -> docker-debug will start the remote debug to the Proxy instance inside docker container.
 
 ## Notice
 

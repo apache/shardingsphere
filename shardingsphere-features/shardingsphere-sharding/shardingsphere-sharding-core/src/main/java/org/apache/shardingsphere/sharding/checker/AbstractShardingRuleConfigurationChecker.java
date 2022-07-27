@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.checker;
 import com.google.common.base.Preconditions;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
@@ -27,7 +28,9 @@ import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerate
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.NoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
 
+import javax.sql.DataSource;
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Abstract sharding rule configuration checker.
@@ -37,7 +40,7 @@ import java.util.Collection;
 public abstract class AbstractShardingRuleConfigurationChecker<T extends RuleConfiguration> implements RuleConfigurationChecker<T> {
     
     @Override
-    public final void check(final String databaseName, final T config) {
+    public final void check(final String databaseName, final T config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
         Collection<String> keyGenerators = getKeyGenerators(config);
         Collection<String> auditors = getAuditors(config);
         Collection<String> shardingAlgorithms = getShardingAlgorithms(config);
@@ -50,8 +53,6 @@ public abstract class AbstractShardingRuleConfigurationChecker<T extends RuleCon
     
     private void checkTableConfiguration(final String databaseName, final Collection<ShardingTableRuleConfiguration> tables, final Collection<ShardingAutoTableRuleConfiguration> autoTables,
                                          final Collection<String> keyGenerators, final Collection<String> auditors, final Collection<String> shardingAlgorithms) {
-        Preconditions.checkState(!tables.isEmpty() || !autoTables.isEmpty(),
-                "No available sharding table or autoTable configurations in database `%s`.", databaseName);
         for (ShardingTableRuleConfiguration each : tables) {
             checkKeyGenerateStrategy(databaseName, each.getKeyGenerateStrategy(), keyGenerators);
             checkAuditStrategy(databaseName, each.getAuditStrategy(), auditors);

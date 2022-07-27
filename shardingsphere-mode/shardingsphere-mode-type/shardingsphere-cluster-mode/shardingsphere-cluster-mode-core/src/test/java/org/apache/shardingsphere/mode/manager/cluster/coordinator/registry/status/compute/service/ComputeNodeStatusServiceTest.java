@@ -122,7 +122,7 @@ public final class ComputeNodeStatusServiceTest {
     
     @Test
     public void assertGetUsedWorkerIds() {
-        new ComputeNodeStatusService(repository).getUsedWorkerIds();
+        new ComputeNodeStatusService(repository).getAssignedWorkerIds();
         verify(repository).getChildrenKeys(ComputeNode.getInstanceWorkerIdRootNodePath());
     }
 }

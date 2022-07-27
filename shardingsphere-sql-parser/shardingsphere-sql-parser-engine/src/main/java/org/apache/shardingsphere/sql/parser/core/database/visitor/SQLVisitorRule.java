@@ -592,6 +592,8 @@ public enum SQLVisitorRule {
     
     ALTER_DISKGROUP("AlterDiskgroup", SQLStatementType.DDL),
     
+    ALTER_HIERARCHY("AlterHierarchy", SQLStatementType.DDL),
+    
     ALTER_INDEX_TYPE("AlterIndexType", SQLStatementType.DDL),
     
     CURSOR("Cursor", SQLStatementType.DDL),
@@ -618,7 +620,9 @@ public enum SQLVisitorRule {
     
     CREATE_EVENT_TRIGGER("CreateEventTrigger", SQLStatementType.DDL),
     
-    CREATE_FOREIGN_DATA_WRAPPER("CreateForeignDataWrapper", SQLStatementType.DDL);
+    CREATE_FOREIGN_DATA_WRAPPER("CreateForeignDataWrapper", SQLStatementType.DDL),
+    
+    CREATE_FOREIGN_TABLE("CreateForeignTable", SQLStatementType.DDL);
     
     private final String name;
     

@@ -41,6 +41,8 @@ public final class ComputeNodeInstance {
     
     private Collection<String> labels = new ArrayList<>();
     
+    private volatile long workerId;
+    
     /**
      * Set labels.
      *
