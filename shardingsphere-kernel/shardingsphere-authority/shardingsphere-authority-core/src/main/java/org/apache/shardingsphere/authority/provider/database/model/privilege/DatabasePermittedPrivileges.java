@@ -24,6 +24,7 @@ import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.provider.database.model.subject.DatabaseAccessSubject;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Set;
 
 /**
@@ -42,6 +43,12 @@ public final class DatabasePermittedPrivileges implements ShardingSpherePrivileg
     
     @Override
     public boolean hasPrivileges(final String database) {
+        Iterator iter = databases.iterator();
+        while (iter.hasNext()) {
+            if (iter.next().equals(KEY_SUPER)) {
+                return true;
+            }
+        }
         return database.contains(KEY_SUPER) || databases.contains(database);
     }
     
