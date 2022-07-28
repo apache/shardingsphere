@@ -138,10 +138,12 @@ public final class SelectStatementContextTest {
     }
     
     private void assertSetIndexForItemsByColumnOrderByWithOwner(final SelectStatement selectStatement) {
-        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         selectStatement.setOrderBy(new OrderBySegment(0, 0, Collections.singletonList(createOrderByItemSegment(COLUMN_ORDER_BY_WITH_OWNER))));
         selectStatement.setProjections(createProjectionsSegment());
-        selectStatement.setFrom(new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("table"))));
+        SimpleTableSegment tableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("table")));
+        tableSegment.setOwner(new OwnerSegment(0, 0, new IdentifierValue(DefaultDatabase.LOGIC_NAME.toUpperCase())));
+        selectStatement.setFrom(tableSegment);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         SelectStatementContext selectStatementContext = new SelectStatementContext(
                 Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
         selectStatementContext.setIndexes(Collections.emptyMap());
