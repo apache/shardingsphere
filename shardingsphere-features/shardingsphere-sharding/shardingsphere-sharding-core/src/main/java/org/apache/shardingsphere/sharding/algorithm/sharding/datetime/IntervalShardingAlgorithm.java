@@ -317,7 +317,7 @@ public final class IntervalShardingAlgorithm implements StandardShardingAlgorith
     }
     
     private Month parseMonth(final Comparable<?> endpoint) {
-        return (Month) endpoint;
+        return Month.of(Integer.parseInt(getDateTimeText(endpoint).substring(0, dateTimePatternLength)));
     }
     
     private YearMonth parseYearMonth(final Comparable<?> endpoint) {
