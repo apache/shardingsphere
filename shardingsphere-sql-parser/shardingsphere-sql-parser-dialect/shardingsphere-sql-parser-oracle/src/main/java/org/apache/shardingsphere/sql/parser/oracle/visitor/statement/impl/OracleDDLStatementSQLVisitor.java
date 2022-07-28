@@ -956,22 +956,22 @@ public final class OracleDDLStatementSQLVisitor extends OracleStatementSQLVisito
     public ASTNode visitAlterMaterializedViewLog(final AlterMaterializedViewLogContext ctx) {
         return new OracleAlterMaterializedViewLogStatement();
     }
-
+    
     @Override
     public ASTNode visitAlterFunction(final AlterFunctionContext ctx) {
         return new OracleAlterFunctionStatement();
     }
-
+    
     @Override
     public ASTNode visitAlterHierarchy(final AlterHierarchyContext ctx) {
         return new OracleAlterHierarchyStatement();
     }
-
+    
     @Override
     public ASTNode visitAlterLockdownProfile(final AlterLockdownProfileContext ctx) {
         return new OracleAlterLockdownProfileStatement();
     }
-
+    
     @Override
     public ASTNode visitAlterPluggableDatabase(final AlterPluggableDatabaseContext ctx) {
         return new OracleAlterPluggableDatabaseStatement();
