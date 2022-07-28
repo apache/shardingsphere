@@ -47,7 +47,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.function.BiPredicate;
 
@@ -78,8 +77,11 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
             return new SQLCheckResult(false, String.format("Unknown database '%s'", currentDatabase));
         }
         PrivilegeType privilegeType = getPrivilege(sqlStatementContext.getSqlStatement());
-        String errorMessage = Objects.isNull(privilegeType) ? "" : String.format("Access denied for operation %s", privilegeType.name());
-        return privileges.map(optional -> new SQLCheckResult(optional.hasPrivileges(Collections.singletonList(privilegeType)), errorMessage)).orElseGet(() -> new SQLCheckResult(false, ""));
+        return privileges.map(optional -> {
+            boolean isPassed = optional.hasPrivileges(Collections.singletonList(privilegeType));
+            String errorMessage = isPassed || null == privilegeType ? "" : String.format("Access denied for operation %s", privilegeType.name());
+            return new SQLCheckResult(isPassed, errorMessage);
+        }).orElseGet(() -> new SQLCheckResult(false, ""));
     }
     
     @Override
