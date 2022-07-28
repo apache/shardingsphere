@@ -596,6 +596,8 @@ public enum SQLVisitorRule {
     
     ALTER_INDEX_TYPE("AlterIndexType", SQLStatementType.DDL),
     
+    ALTER_LOCKDOWN_PROFILE("AlterLockdownProfile", SQLStatementType.DDL),
+    
     CURSOR("Cursor", SQLStatementType.DDL),
     
     CLOSE("Close", SQLStatementType.DDL),

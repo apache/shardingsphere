@@ -120,5 +120,6 @@ execute
     | alterMaterializedViewLog
     | alterFunction
     | alterHierarchy
+    | alterLockdownProfile
     ) SEMI_?
     ;

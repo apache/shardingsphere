@@ -17,9 +17,11 @@
 
 package org.apache.shardingsphere.integration.transaction.cases.base;
 
+import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
 
 import javax.sql.DataSource;
@@ -34,12 +36,15 @@ import static org.junit.Assert.assertEquals;
  * Base transaction test case.
  */
 @Slf4j
+@Getter(AccessLevel.PROTECTED)
 public abstract class BaseTransactionTestCase {
     
-    @Getter
-    private DataSource dataSource;
+    private final BaseTransactionITCase baseTransactionITCase;
     
-    public BaseTransactionTestCase(final DataSource dataSource) {
+    private final DataSource dataSource;
+    
+    public BaseTransactionTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
+        this.baseTransactionITCase = baseTransactionITCase;
         this.dataSource = dataSource;
     }
     

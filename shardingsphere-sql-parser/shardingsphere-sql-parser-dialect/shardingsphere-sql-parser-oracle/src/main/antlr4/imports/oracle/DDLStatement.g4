@@ -3225,3 +3225,66 @@ functionCompileClause
 alterHierarchy
     : ALTER HIERARCHY hierarchyName (RENAME TO hierarchyName | COMPILE)
     ;
+
+alterLockdownProfile
+    : ALTER LOCKDOWN PROFILE profileName (lockdownFeatures | lockdownOptions | lockdownStatements)
+    ;
+
+lockdownFeatures
+    : (DISABLE | ENABLE) FEATURE featureClauses
+    ;
+
+featureClauses
+    : EQ_ LP_ featureName (COMMA_ featureName)* RP_
+    | ALL (EXCEPT (EQ_ LP_ featureName (COMMA_ featureName)* RP_))?
+    ;
+
+lockdownOptions
+    : (DISABLE | ENABLE) OPTION lockDownOptionClauses
+    ;
+
+lockDownOptionClauses
+    : EQ_ LP_ optionName (COMMA_ optionName)* RP_
+    | ALL (EXCEPT (EQ_ LP_ optionName (COMMA_ optionName)* RP_))?
+    ;
+
+lockdownStatements
+    : (DISABLE | ENABLE) STATEMENT lockdownStatementsClauses
+    ;
+
+lockdownStatementsClauses
+    : EQ_ LP_ sqlStatement (COMMA_ sqlStatement )* RP_
+    | EQ_ LP_ sqlStatement RP_ statementClauses
+    | ALL (EXCEPT (EQ_ LP_ sqlStatement (COMMA_ sqlStatement)* RP_))?
+    ;
+
+statementClauses
+    : CLAUSE statementsSubClauses
+    ;
+
+statementsSubClauses
+    : EQ_ LP_ clause (COMMA_ clause)* RP_
+    | EQ_ LP_ clause RP_ clauseOptions
+    | ALL (EXCEPT (EQ_ LP_ clause (COMMA_ clause)* RP_))?
+    ;
+
+clauseOptions
+    : OPTION optionClauses
+    ;
+
+optionClauses
+    : EQ_ LP_ clauseOptionOrPattern (COMMA_ clauseOptionOrPattern)* RP_
+    | EQ_ LP_ clauseOption RP_ optionValues+
+    | ALL (EXCEPT EQ_ LP_ clauseOptionOrPattern (COMMA_ clauseOptionOrPattern)* RP_)?
+    ;
+
+clauseOptionOrPattern
+    : clauseOption | clauseOptionPattern
+    ;
+
+optionValues
+    : VALUE EQ_ LP_ optionValue (COMMA_ optionValue)* RP_
+    | MINVALUE EQ_ optionValue
+    | MAXVALUE EQ_ optionValue
+    ;
+
