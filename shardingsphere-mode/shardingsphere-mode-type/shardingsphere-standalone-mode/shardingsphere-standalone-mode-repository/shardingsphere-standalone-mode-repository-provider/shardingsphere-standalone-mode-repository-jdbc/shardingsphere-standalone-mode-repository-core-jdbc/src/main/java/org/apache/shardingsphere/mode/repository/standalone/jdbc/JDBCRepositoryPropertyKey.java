@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.repository.standalone.h2;
+package org.apache.shardingsphere.mode.repository.standalone.jdbc;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.properties.TypedPropertyKey;
  */
 @RequiredArgsConstructor
 @Getter
-public enum H2RepositoryPropertyKey implements TypedPropertyKey {
+public enum JDBCRepositoryPropertyKey implements TypedPropertyKey {
     
     JDBC_URL("jdbc_url", "", String.class),
     

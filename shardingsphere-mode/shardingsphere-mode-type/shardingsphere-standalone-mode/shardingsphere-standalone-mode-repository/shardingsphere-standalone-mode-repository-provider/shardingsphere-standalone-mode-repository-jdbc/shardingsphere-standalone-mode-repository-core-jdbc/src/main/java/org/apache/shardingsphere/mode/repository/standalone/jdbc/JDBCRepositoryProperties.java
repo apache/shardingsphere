@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.repository.standalone.h2;
+package org.apache.shardingsphere.mode.repository.standalone.jdbc;
 
 import org.apache.shardingsphere.infra.properties.TypedProperties;
 
 import java.util.Properties;
 
 /**
- * H2 repository properties.
+ * JDBC repository properties.
  */
-public final class H2RepositoryProperties extends TypedProperties<H2RepositoryPropertyKey> {
+public class JDBCRepositoryProperties extends TypedProperties<JDBCRepositoryPropertyKey> {
     
-    public H2RepositoryProperties(final Properties props) {
-        super(H2RepositoryPropertyKey.class, props);
+    public JDBCRepositoryProperties(final Properties props) {
+        super(JDBCRepositoryPropertyKey.class, props);
     }
 }

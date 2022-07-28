@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.repository.standalone.h2;
+package org.apache.shardingsphere.mode.repository.standalone.jdbc;
 
 import com.google.common.base.Strings;
 import lombok.SneakyThrows;
@@ -32,43 +32,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
-import java.util.Properties;
 import java.util.UUID;
 
 /**
- * H2 repository.
+ * JDBC repository.
  */
 @Slf4j
-public final class H2Repository implements StandalonePersistRepository {
-    
-    private static final String DEFAULT_JDBC_URL = "jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL";
-    
-    private static final String DEFAULT_USER = "sa";
-    
-    private static final String DEFAULT_PASSWORD = "";
+public abstract class JDBCRepository implements StandalonePersistRepository {
     
     private static final String SEPARATOR = "/";
     
-    private String jdbcUrl;
-    
-    private String user;
-    
-    private String password;
-    
     private Connection connection;
     
-    @Override
-    public void init(final Properties props) {
-        H2RepositoryProperties localRepositoryProps = new H2RepositoryProperties(props);
-        jdbcUrl = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(H2RepositoryPropertyKey.JDBC_URL))).orElse(DEFAULT_JDBC_URL);
-        user = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(H2RepositoryPropertyKey.USER))).orElse(DEFAULT_USER);
-        password = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(H2RepositoryPropertyKey.PASSWORD))).orElse(DEFAULT_PASSWORD);
-        initTable();
-    }
-    
     @SneakyThrows
-    private void initTable() {
+    protected void initTable(final String jdbcUrl, final String user, final String password) {
         connection = DriverManager.getConnection(jdbcUrl, user, password);
         try (Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS REPOSITORY");
@@ -82,10 +59,10 @@ public final class H2Repository implements StandalonePersistRepository {
                 PreparedStatement statement = connection.prepareStatement("SELECT value FROM REPOSITORY WHERE key = '" + key + "'");
                 ResultSet resultSet = statement.executeQuery()) {
             if (resultSet.next()) {
-                return Optional.ofNullable(Strings.emptyToNull(resultSet.getString("value"))).map(each -> each.replace("\"", "'")).orElse("");
+                return resultSet.getString("value");
             }
         } catch (final SQLException ex) {
-            log.error("Get H2 data by key: {} failed", key, ex);
+            log.error("Get {} data by key: {} failed", getType(), key, ex);
         }
         return "";
     }
@@ -106,15 +83,13 @@ public final class H2Repository implements StandalonePersistRepository {
             }
             return resultChildren;
         } catch (final SQLException ex) {
-            log.error("Get children H2 data by key: {} failed", key, ex);
+            log.error("Get children {} data by key: {} failed", getType(), key, ex);
         }
         return Collections.emptyList();
     }
     
     @Override
     public void persist(final String key, final String value) {
-        // Single quotation marks are the keywords executed by H2. Replace with double quotation marks.
-        String insensitiveValue = value.replace("'", "\"");
         String[] paths = Arrays.stream(key.split(SEPARATOR)).filter(each -> !Strings.isNullOrEmpty(each)).toArray(String[]::new);
         String tempPrefix = "";
         String parent = SEPARATOR;
@@ -134,12 +109,12 @@ public final class H2Repository implements StandalonePersistRepository {
             }
             String keyValue = get(key);
             if (Strings.isNullOrEmpty(keyValue)) {
-                insert(key, insensitiveValue, parent);
+                insert(key, value, parent);
             } else {
-                update(key, insensitiveValue);
+                update(key, value);
             }
         } catch (final SQLException ex) {
-            log.error("Persist H2 data to key: {} failed", key, ex);
+            log.error("Persist {} data to key: {} failed", getType(), key, ex);
         }
     }
     
@@ -160,7 +135,7 @@ public final class H2Repository implements StandalonePersistRepository {
         try (PreparedStatement statement = connection.prepareStatement("DELETE FROM REPOSITORY WHERE key = '" + key + "'")) {
             statement.executeUpdate();
         } catch (final SQLException ex) {
-            log.error("Delete H2 data by key: {} failed", key, ex);
+            log.error(String.format("Delete %s data by key: {} failed", getType()), key, ex);
         }
     }
     
@@ -171,17 +146,7 @@ public final class H2Repository implements StandalonePersistRepository {
                 connection.close();
             }
         } catch (final SQLException ex) {
-            log.error("Failed to release H2 database resources.", ex);
+            log.error(String.format("Failed to release %s database resources.", getType()), ex);
         }
-    }
-    
-    @Override
-    public String getType() {
-        return "H2";
-    }
-    
-    @Override
-    public boolean isDefault() {
-        return true;
     }
 }
