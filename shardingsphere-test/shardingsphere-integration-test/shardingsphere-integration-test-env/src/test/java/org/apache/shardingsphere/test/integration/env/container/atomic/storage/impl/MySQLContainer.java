@@ -38,15 +38,9 @@ public final class MySQLContainer extends DockerStorageContainer {
         // TODO need auto set server-id by generator, now always set server-id to 1
         setCommand("--server-id=1");
         addEnv("LANG", "C.UTF-8");
-        addEnv("MYSQL_ROOT_PASSWORD", getUnifiedPassword());
-        addEnv("MYSQL_ROOT_HOST", "%");
+        addEnv("MYSQL_RANDOM_ROOT_PASSWORD", "yes");
         withClasspathResourceMapping("/env/mysql/my.cnf", "/etc/mysql/my.cnf", BindMode.READ_ONLY);
         super.configure();
-    }
-    
-    @Override
-    public String getRootUsername() {
-        return "root";
     }
     
     @Override
