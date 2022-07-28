@@ -31,6 +31,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -55,11 +56,12 @@ public abstract class JDBCRepository implements StandalonePersistRepository {
     
     @Override
     public String get(final String key) {
-        try (
-                PreparedStatement statement = connection.prepareStatement("SELECT value FROM REPOSITORY WHERE key = '" + key + "'");
-                ResultSet resultSet = statement.executeQuery()) {
-            if (resultSet.next()) {
-                return resultSet.getString("value");
+        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT value FROM REPOSITORY WHERE key = ?")) {
+            preparedStatement.setString(1, key);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    return resultSet.getString("value");
+                }
             }
         } catch (final SQLException ex) {
             log.error("Get {} data by key: {} failed", getType(), key, ex);
@@ -69,19 +71,20 @@ public abstract class JDBCRepository implements StandalonePersistRepository {
     
     @Override
     public List<String> getChildrenKeys(final String key) {
-        try (
-                PreparedStatement statement = connection.prepareStatement("SELECT key FROM REPOSITORY WHERE parent = '" + key + "'");
-                ResultSet resultSet = statement.executeQuery()) {
-            List<String> resultChildren = new ArrayList<>(10);
-            while (resultSet.next()) {
-                String childrenKey = resultSet.getString("key");
-                if (Strings.isNullOrEmpty(childrenKey)) {
-                    continue;
+        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT key FROM REPOSITORY WHERE parent = ?")) {
+            preparedStatement.setString(1, key);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                List<String> resultChildren = new LinkedList<>();
+                while (resultSet.next()) {
+                    String childrenKey = resultSet.getString("key");
+                    if (Strings.isNullOrEmpty(childrenKey)) {
+                        continue;
+                    }
+                    int lastIndexOf = childrenKey.lastIndexOf(SEPARATOR);
+                    resultChildren.add(childrenKey.substring(lastIndexOf + 1));
                 }
-                int lastIndexOf = childrenKey.lastIndexOf(SEPARATOR);
-                resultChildren.add(childrenKey.substring(lastIndexOf + 1));
-            }
-            return resultChildren;
+                return new ArrayList<>(resultChildren);
+        }
         } catch (final SQLException ex) {
             log.error("Get children {} data by key: {} failed", getType(), key, ex);
         }
@@ -119,21 +122,28 @@ public abstract class JDBCRepository implements StandalonePersistRepository {
     }
     
     private void insert(final String key, final String value, final String parent) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement("INSERT INTO REPOSITORY VALUES('" + UUID.randomUUID() + "','" + key + "','" + value + "','" + parent + "')")) {
-            statement.executeUpdate();
+        try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO REPOSITORY VALUES(?, ?, ?, ?)")) {
+            preparedStatement.setString(1, UUID.randomUUID().toString());
+            preparedStatement.setString(2, key);
+            preparedStatement.setString(3, value);
+            preparedStatement.setString(4, parent);
+            preparedStatement.executeUpdate();
         }
     }
     
     private void update(final String key, final String value) throws SQLException {
-        try (PreparedStatement statement = connection.prepareStatement("UPDATE REPOSITORY SET value = '" + value + "' WHERE key = '" + key + "'")) {
-            statement.executeUpdate();
+        try (PreparedStatement preparedStatement = connection.prepareStatement("UPDATE REPOSITORY SET value = ? WHERE key = ?")) {
+            preparedStatement.setString(1, value);
+            preparedStatement.setString(2, key);
+            preparedStatement.executeUpdate();
         }
     }
     
     @Override
     public void delete(final String key) {
-        try (PreparedStatement statement = connection.prepareStatement("DELETE FROM REPOSITORY WHERE key = '" + key + "'")) {
-            statement.executeUpdate();
+        try (PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM REPOSITORY WHERE key = ?")) {
+            preparedStatement.setString(1, key);
+            preparedStatement.executeUpdate();
         } catch (final SQLException ex) {
             log.error(String.format("Delete %s data by key: {} failed", getType()), key, ex);
         }
@@ -142,7 +152,7 @@ public abstract class JDBCRepository implements StandalonePersistRepository {
     @Override
     public void close() {
         try {
-            if (connection != null) {
+            if (null != connection) {
                 connection.close();
             }
         } catch (final SQLException ex) {
