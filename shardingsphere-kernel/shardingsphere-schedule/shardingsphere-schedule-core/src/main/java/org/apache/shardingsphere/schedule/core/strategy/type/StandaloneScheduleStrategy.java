@@ -29,4 +29,9 @@ public final class StandaloneScheduleStrategy implements ScheduleStrategy {
     public void startSchedule(final CronJob job) {
         // TODO
     }
+    
+    @Override
+    public void closeSchedule(final String jobName) {
+        // TODO
+    }
 }

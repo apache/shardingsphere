@@ -165,6 +165,17 @@ public final class DatabaseDiscoveryRule implements DatabaseRule, DataSourceCont
         initHeartBeatJobs(instanceContext.getInstance().getCurrentInstanceId());
     }
     
+    @Override
+    public void closeHeartBeatJob() {
+        Optional<ScheduleStrategy> scheduleStrategy = ScheduleContextFactory.getInstance().get(instanceContext.getInstance().getCurrentInstanceId());
+        if (scheduleStrategy.isPresent()) {
+            for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
+                DatabaseDiscoveryDataSourceRule rule = entry.getValue();
+                scheduleStrategy.get().closeSchedule(rule.getDatabaseDiscoveryProviderAlgorithm().getType() + "-" + databaseName + "-" + rule.getGroupName());
+            }
+        }
+    }
+    
     private void initHeartBeatJobs(final String instanceId) {
         Optional<ScheduleStrategy> scheduleStrategy = ScheduleContextFactory.getInstance().get(instanceId);
         if (scheduleStrategy.isPresent()) {

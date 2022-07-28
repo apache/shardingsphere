@@ -170,6 +170,9 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final StorageNodeChangedEvent event) {
         QualifiedDatabase qualifiedDatabase = event.getQualifiedDatabase();
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getQualifiedDatabase().getDatabaseName())) {
+            return;
+        }
         Optional<ShardingSphereRule> dynamicDataSourceRule = contextManager.getMetaDataContexts().getMetaData().getDatabase(qualifiedDatabase.getDatabaseName()).getRuleMetaData()
                 .getRules().stream().filter(each -> each instanceof DynamicDataSourceContainedRule).findFirst();
         if (dynamicDataSourceRule.isPresent()) {
@@ -189,6 +192,9 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final PrimaryStateChangedEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getQualifiedDatabase().getDatabaseName())) {
+            return;
+        }
         QualifiedDatabase qualifiedDatabase = event.getQualifiedDatabase();
         contextManager.getMetaDataContexts().getMetaData().getDatabase(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
                 .stream()

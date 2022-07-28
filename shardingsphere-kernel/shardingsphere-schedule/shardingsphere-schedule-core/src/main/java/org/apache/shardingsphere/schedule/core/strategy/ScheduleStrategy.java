@@ -30,4 +30,11 @@ public interface ScheduleStrategy {
      * @param job cron job
      */
     void startSchedule(CronJob job);
+    
+    /**
+     * close schedule.
+     *
+     * @param jobName job name
+     */
+    void closeSchedule(String jobName);
 }
