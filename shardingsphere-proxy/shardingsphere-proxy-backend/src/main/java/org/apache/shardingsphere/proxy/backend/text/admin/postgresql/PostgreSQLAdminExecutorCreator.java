@@ -31,10 +31,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 /**
  * Database admin executor creator for PostgreSQL.
@@ -69,8 +70,10 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
             if (isQueryPgTable(selectedTableNames)) {
                 return Optional.of(new SelectTableExecutor(sql));
             }
-            if (selectedTableNames.stream().anyMatch(each -> each.startsWith(PG_PREFIX))) {
-                return Optional.of(new DefaultDatabaseMetadataExecutor(sql));
+            for (String each : selectedTableNames) {
+                if (each.startsWith(PG_PREFIX)) {
+                    return Optional.of(new DefaultDatabaseMetadataExecutor(sql));
+                }
             }
         }
         return sqlStatement instanceof SetStatement ? Optional.of(new PostgreSQLSetVariableAdminExecutor((SetStatement) sqlStatement)) : Optional.empty();
@@ -78,20 +81,27 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
     
     private boolean isQueryPgTable(final Collection<String> selectedTableNames) {
         boolean isComplexQueryTable = selectedTableNames.contains(PG_CLASS) && selectedTableNames.contains(PG_TRIGGER) && selectedTableNames.contains(PG_INHERITS);
-        return selectedTableNames.contains(PG_TABLESPACE) || isComplexQueryTable;
+        return isComplexQueryTable || selectedTableNames.contains(PG_TABLESPACE);
     }
     
     private Collection<String> getSelectedTableNames(final SelectStatement sqlStatement) {
         TableExtractor extractor = new TableExtractor();
         extractor.extractTablesFromSelect(sqlStatement);
-        List<TableSegment> subQueryTableSegment = extractor.getTableContext().stream().filter(each -> each instanceof SubqueryTableSegment).map(each -> {
-            TableExtractor subExtractor = new TableExtractor();
-            subExtractor.extractTablesFromSelect(((SubqueryTableSegment) each).getSubquery().getSelect());
-            return subExtractor.getTableContext();
-        }).flatMap(Collection::stream).collect(Collectors.toList());
-        extractor.getTableContext().addAll(subQueryTableSegment);
-        return extractor.getTableContext().stream().filter(each -> each instanceof SimpleTableSegment)
-                .map(each -> ((SimpleTableSegment) each).getTableName().getIdentifier().getValue()).collect(Collectors.toList());
+        List<TableSegment> extracted = new LinkedList<>(extractor.getTableContext());
+        for (TableSegment each : extractor.getTableContext()) {
+            if (each instanceof SubqueryTableSegment) {
+                TableExtractor subExtractor = new TableExtractor();
+                subExtractor.extractTablesFromSelect(((SubqueryTableSegment) each).getSubquery().getSelect());
+                extracted.addAll(subExtractor.getTableContext());
+            }
+        }
+        List<String> result = new ArrayList<>(extracted.size());
+        for (TableSegment each : extracted) {
+            if (each instanceof SimpleTableSegment) {
+                result.add(((SimpleTableSegment) each).getTableName().getIdentifier().getValue());
+            }
+        }
+        return result;
     }
     
     @Override
