@@ -48,20 +48,12 @@ public final class IntegrationTestEnvironment {
     
     private final List<String> openGaussVersions;
     
-    private final String[] commandParts;
-    
     private IntegrationTestEnvironment() {
         props = loadProperties();
         itEnvType = ScalingITEnvTypeEnum.valueOf(StringUtils.defaultIfBlank(props.getProperty("scaling.it.env.type").toUpperCase(), ScalingITEnvTypeEnum.NONE.name()));
         mysqlVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.mysql.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         postgresVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.postgresql.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         openGaussVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.opengauss.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
-        String commands = props.getOrDefault("scaling.it.database.command", "").toString();
-        if (StringUtils.isNotBlank(commands)) {
-            commandParts = commands.split(",");
-        } else {
-            commandParts = new String[0];
-        }
     }
     
     @SneakyThrows(IOException.class)

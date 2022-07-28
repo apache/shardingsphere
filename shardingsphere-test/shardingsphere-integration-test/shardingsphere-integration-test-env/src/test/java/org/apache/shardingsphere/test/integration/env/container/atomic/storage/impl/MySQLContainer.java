@@ -29,17 +29,14 @@ import java.util.Optional;
  */
 public final class MySQLContainer extends DockerStorageContainer {
     
-    private final String[] commandParts;
-    
     public MySQLContainer(final String dockerImageName, final String scenario, final boolean useRootUsername, final String... commandParts) {
         super(DatabaseTypeFactory.getInstance("MySQL"), Strings.isNullOrEmpty(dockerImageName) ? "mysql/mysql-server:5.7" : dockerImageName, scenario, useRootUsername);
-        this.commandParts = commandParts;
     }
     
     @Override
     protected void configure() {
-        // command config will override config at my.cnf.
-        setCommand(commandParts);
+        // TODO need auto set server-id by generator, now always set server-id to 1
+        setCommand("--server-id=1");
         addEnv("LANG", "C.UTF-8");
         addEnv("MYSQL_ROOT_PASSWORD", getUnifiedPassword());
         addEnv("MYSQL_ROOT_HOST", "%");

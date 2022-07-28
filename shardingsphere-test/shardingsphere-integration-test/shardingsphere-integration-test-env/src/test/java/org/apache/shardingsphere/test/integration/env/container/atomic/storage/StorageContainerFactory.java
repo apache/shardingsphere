@@ -38,17 +38,16 @@ public final class StorageContainerFactory {
      * @param dockerImageName docker image name
      * @param scenario scenario
      * @param useRootUsername use root username
-     * @param commandParts command parts
      * @return created instance
      */
-    public static StorageContainer newInstance(final DatabaseType databaseType, final String dockerImageName, final String scenario, final boolean useRootUsername, final String... commandParts) {
+    public static StorageContainer newInstance(final DatabaseType databaseType, final String dockerImageName, final String scenario, final boolean useRootUsername) {
         switch (databaseType.getType()) {
             case "MySQL":
-                return new MySQLContainer(dockerImageName, scenario, useRootUsername, commandParts);
+                return new MySQLContainer(dockerImageName, scenario, useRootUsername);
             case "PostgreSQL":
-                return new PostgreSQLContainer(dockerImageName, scenario, useRootUsername, commandParts);
+                return new PostgreSQLContainer(dockerImageName, scenario, useRootUsername);
             case "openGauss":
-                return new OpenGaussContainer(dockerImageName, scenario, useRootUsername, commandParts);
+                return new OpenGaussContainer(dockerImageName, scenario, useRootUsername);
             case "H2":
                 return new H2Container(scenario);
             default:
