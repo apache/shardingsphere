@@ -153,13 +153,12 @@ public abstract class BaseTransactionITCase extends BaseITCase {
         assertTrue(waitExpectedTransactionRule(TransactionType.LOCAL, "", 5));
     }
     
-    protected void alterXaTransactionRule() throws SQLException {
-        String providerType = TransactionTestConstants.NARAYANA;
+    protected void alterXaTransactionRule(final String providerType) throws SQLException {
         Connection connection = getProxyConnection();
         if (isExpectedTransactionRule(connection, TransactionType.XA, providerType)) {
             return;
         }
-        String alterXaTransactionRule = getCommonSQLCommand().getAlterXaAtomikosTransactionRule().replace("${providerType}", providerType);
+        String alterXaTransactionRule = getCommonSQLCommand().getAlterXATransactionRule().replace("${providerType}", providerType);
         executeWithLog(connection, alterXaTransactionRule);
         assertTrue(waitExpectedTransactionRule(TransactionType.XA, providerType, 5));
     }
