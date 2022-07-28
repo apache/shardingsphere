@@ -59,4 +59,15 @@ public final class ShardingSphereDatabasesFactoryTest {
         assertThat(rules.iterator().next(), instanceOf(FixtureDatabaseRule.class));
         assertTrue(actual.get("foo_db").getResource().getDataSources().isEmpty());
     }
+    
+    @Test
+    public void assertCreateDatabaseMapWhenConfigUppercaseDatabaseName() throws SQLException {
+        DatabaseConfiguration databaseConfig = new DataSourceProvidedDatabaseConfiguration(Collections.emptyMap(), Collections.singleton(new FixtureRuleConfiguration()));
+        Map<String, ShardingSphereDatabase> actual = ShardingSphereDatabasesFactory.create(
+                Collections.singletonMap("FOO_DB", databaseConfig), new ConfigurationProperties(new Properties()), mock(InstanceContext.class));
+        Collection<ShardingSphereRule> rules = actual.get("foo_db").getRuleMetaData().getRules();
+        assertThat(rules.size(), is(1));
+        assertThat(rules.iterator().next(), instanceOf(FixtureDatabaseRule.class));
+        assertTrue(actual.get("foo_db").getResource().getDataSources().isEmpty());
+    }
 }
