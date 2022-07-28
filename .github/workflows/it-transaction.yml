@@ -43,6 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       postgresql_version: postgres:12-alpine
+      opengauss_version: enmotech/opengauss:2.1.0
       mysql_version: 5.7
     timeout-minutes: 60
     steps:
@@ -63,3 +64,5 @@ jobs:
         run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.docker.mysql.version=${{ env.mysql_version }}
       - name: Run Transaction PostgreSQL Integration Test
         run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.docker.postgresql.version=${{ env.postgresql_version }}
+      - name: Run Transaction OpenGauss Integration Test
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/pom.xml -Dtransaction.it.env.type=docker -Dtransaction.it.docker.opengauss.version=${{ env.opengauss_version }}
