@@ -20,11 +20,8 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.storage.
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
-import org.apache.shardingsphere.test.integration.env.container.atomic.util.CommandPartUtil;
 import org.testcontainers.containers.BindMode;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Optional;
 
 /**
@@ -32,26 +29,16 @@ import java.util.Optional;
  */
 public final class PostgreSQLContainer extends DockerStorageContainer {
     
-    private static final String[] DEFAULT_COMMAND_PARTS = new String[]{"config_file=/etc/postgresql/postgresql.conf"};
-    
-    private final String[] commandParts;
-    
-    public PostgreSQLContainer(final String dockerImageName, final String scenario, final boolean useRootUsername, final String... commandParts) {
+    public PostgreSQLContainer(final String dockerImageName, final String scenario, final boolean useRootUsername) {
         super(DatabaseTypeFactory.getInstance("PostgreSQL"), Strings.isNullOrEmpty(dockerImageName) ? "postgres:12-alpine" : dockerImageName, scenario, useRootUsername);
-        this.commandParts = commandParts;
     }
     
     @Override
     protected void configure() {
-        List<String> commandParts = new LinkedList<>();
-        for (String each : CommandPartUtil.mergeCommandParts(DEFAULT_COMMAND_PARTS, this.commandParts)) {
-            commandParts.add("-c");
-            commandParts.add(each);
-        }
-        setCommand(commandParts.toArray(new String[0]));
         addEnv("POSTGRES_USER", getRootUsername());
         addEnv("POSTGRES_PASSWORD", getUnifiedPassword());
         withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/etc/postgresql/postgresql.conf", BindMode.READ_ONLY);
+        setCommand("-c config_file=/etc/postgresql/postgresql.conf");
         super.configure();
     }
     
