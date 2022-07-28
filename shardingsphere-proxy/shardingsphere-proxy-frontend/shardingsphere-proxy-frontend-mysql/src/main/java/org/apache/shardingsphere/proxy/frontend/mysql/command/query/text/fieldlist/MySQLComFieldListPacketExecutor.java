@@ -24,6 +24,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLCol
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.fieldlist.MySQLComFieldListPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
@@ -40,6 +41,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -68,7 +70,8 @@ public final class MySQLComFieldListPacketExecutor implements CommandExecutor {
                 DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType())).parse(sql, false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), sqlStatement, databaseName);
         JDBCBackendConnection backendConnection = (JDBCBackendConnection) connectionSession.getBackendConnection();
-        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(sqlStatementContext, sql, backendConnection, false);
+        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sql, Collections.emptyList());
+        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(logicSQL, backendConnection, false);
         databaseCommunicationEngine.execute();
         return createColumnDefinition41Packets(databaseName);
     }

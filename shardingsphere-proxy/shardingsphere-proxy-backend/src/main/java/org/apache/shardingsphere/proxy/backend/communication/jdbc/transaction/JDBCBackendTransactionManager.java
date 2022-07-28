@@ -60,7 +60,7 @@ public final class JDBCBackendTransactionManager implements TransactionManager<V
         if (!connection.getConnectionSession().getTransactionStatus().isInTransaction()) {
             connection.getConnectionSession().getTransactionStatus().setInTransaction(true);
             TransactionHolder.setInTransaction();
-            connection.closeDatabaseCommunicationEngines(true);
+            connection.closeHandlers(true);
             connection.closeConnections(false);
         }
         if (TransactionType.LOCAL == transactionType || null == shardingSphereTransactionManager) {

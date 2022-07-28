@@ -67,11 +67,27 @@
     <create-account-table-rule>
         CREATE SHARDING TABLE RULE account (
         DATANODES("ds_${0..1}.account_${0..1}"),
-        DATABASE_STRATEGY(TYPE=standard,SHARDING_COLUMN=id,SHARDING_ALGORITHM=database_id_inline),
-        TABLE_STRATEGY(TYPE=standard,SHARDING_COLUMN=id,SHARDING_ALGORITHM=account_inline),
+        DATABASE_STRATEGY(TYPE=standard, SHARDING_COLUMN=id, SHARDING_ALGORITHM=database_id_inline),
+        TABLE_STRATEGY(TYPE=standard, SHARDING_COLUMN=id, SHARDING_ALGORITHM=account_inline),
         KEY_GENERATE_STRATEGY(COLUMN=id,TYPE(NAME=snowflake))
         )
     </create-account-table-rule>
+
+    <create-one-data-source-account-table-rule>
+        CREATE SHARDING TABLE RULE account (
+        DATANODES("ds_0.account_${0..1}"),
+        DATABASE_STRATEGY(TYPE=standard, SHARDING_COLUMN=id, SHARDING_ALGORITHM(TYPE(NAME=inline, PROPERTIES("algorithm-expression"="ds_${id % 1}")))),
+        TABLE_STRATEGY(TYPE=standard, SHARDING_COLUMN=id, SHARDING_ALGORITHM(TYPE(NAME=inline, PROPERTIES("algorithm-expression"="account_${Math.floorMod(Math.floorDiv(id.longValue(), 1L), 2L)}"))))
+        )
+    </create-one-data-source-account-table-rule>
+
+    <create-three-data-source-account-table-rule>
+        CREATE SHARDING TABLE RULE account (
+        DATANODES("ds_${0..2}.account_${0..1}"),
+        DATABASE_STRATEGY(TYPE=standard, SHARDING_COLUMN=id, SHARDING_ALGORITHM(TYPE(NAME=inline, PROPERTIES("algorithm-expression"="ds_${id % 3}")))),
+        TABLE_STRATEGY(TYPE=standard, SHARDING_COLUMN=id, SHARDING_ALGORITHM(TYPE(NAME=inline, PROPERTIES("algorithm-expression"="account_${Math.floorMod(Math.floorDiv(id.longValue(), 3L), 2L)}"))))
+        )
+    </create-three-data-source-account-table-rule>
 
     <alter-local-transaction-rule>
         ALTER TRANSACTION RULE ( DEFAULT=LOCAL )
@@ -81,7 +97,7 @@
         ALTER TRANSACTION RULE
         (
         DEFAULT=XA,
-        TYPE(NAME=Atomikos)
+        TYPE(NAME=${providerType})
         )
     </alter-xa-atomikos-transaction-rule>
 
@@ -97,6 +113,14 @@
         )
     </source-add-resource-template>
 
+    <source-add-new-resource-template>
+        ADD RESOURCE ds_2 (
+            URL="${ds2}",
+            USER=${user},
+            PASSWORD=${password}
+        )
+    </source-add-new-resource-template>
+    
     <create-account-table>
         CREATE TABLE account
         (

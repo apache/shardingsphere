@@ -19,6 +19,7 @@ package org.apache.shardingsphere.integration.transaction.cases.savepoint;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
 import org.junit.Assert;
@@ -35,8 +36,8 @@ import java.sql.SQLException;
 @TransactionTestCase(dbTypes = {TransactionTestConstants.OPENGAUSS})
 public final class OpenGaussSavePointTestCase extends BaseSavePointTestCase {
     
-    public OpenGaussSavePointTestCase(final DataSource dataSource) {
-        super(dataSource);
+    public OpenGaussSavePointTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
+        super(baseTransactionITCase, dataSource);
     }
     
     @Override

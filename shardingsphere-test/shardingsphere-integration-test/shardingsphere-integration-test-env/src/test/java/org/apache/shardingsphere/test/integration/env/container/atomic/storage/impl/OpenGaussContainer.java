@@ -22,6 +22,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
 import org.testcontainers.containers.BindMode;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -29,13 +31,21 @@ import java.util.Optional;
  */
 public final class OpenGaussContainer extends DockerStorageContainer {
     
-    public OpenGaussContainer(final String dockerImageName, final String scenario, final boolean useRootUsername) {
+    private final String[] commandParts;
+    
+    public OpenGaussContainer(final String dockerImageName, final String scenario, final boolean useRootUsername, final String... commandParts) {
         super(DatabaseTypeFactory.getInstance("openGauss"), Strings.isNullOrEmpty(dockerImageName) ? "enmotech/opengauss:3.0.0" : dockerImageName, scenario, useRootUsername);
+        this.commandParts = commandParts;
     }
     
     @Override
     protected void configure() {
-        withCommand("--max_connections=600");
+        List<String> commandParts = new LinkedList<>();
+        for (String each : this.commandParts) {
+            commandParts.add("-c");
+            commandParts.add(each);
+        }
+        setCommand(commandParts.toArray(new String[0]));
         addEnv("GS_PASSWORD", getUnifiedPassword());
         withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/usr/local/opengauss/share/postgresql/postgresql.conf.sample", BindMode.READ_ONLY);
         withClasspathResourceMapping("/env/opengauss/pg_hba.conf", "/usr/local/opengauss/share/postgresql/pg_hba.conf.sample", BindMode.READ_ONLY);

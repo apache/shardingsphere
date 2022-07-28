@@ -37,4 +37,11 @@ public final class TransactionTestConstants {
     public static final String DEFAULT_TYPE = "default_type";
     
     public static final String PROVIDER_TYPE = "provider_type";
+    
+    public static final String ATOMIKOS = "Atomikos";
+    
+    public static final String NARAYANA = "Narayana";
+    
+    public static final String BITRONIX = "Bitronix";
+    
 }

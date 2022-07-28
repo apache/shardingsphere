@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.transaction;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -35,6 +36,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.StartTransa
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.XAStatement;
 import org.apache.shardingsphere.transaction.core.TransactionOperationType;
+
+import java.util.Collections;
 
 /**
  * Transaction backend handler factory.
@@ -78,6 +81,7 @@ public final class TransactionBackendHandlerFactory {
         if (tclStatement instanceof XAStatement) {
             return new TransactionXAHandler(sqlStatementContext, sql, connectionSession);
         }
-        return DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(sqlStatementContext, sql, connectionSession.getBackendConnection(), false);
+        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sql, Collections.emptyList());
+        return DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(logicSQL, connectionSession.getBackendConnection(), false);
     }
 }

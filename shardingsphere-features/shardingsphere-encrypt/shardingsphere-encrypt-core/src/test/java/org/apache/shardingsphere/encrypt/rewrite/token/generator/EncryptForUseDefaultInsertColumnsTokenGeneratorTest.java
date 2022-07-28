@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -31,14 +30,14 @@ public final class EncryptForUseDefaultInsertColumnsTokenGeneratorTest extends E
     @Test
     public void assertIsGenerateSQLToken() {
         EncryptForUseDefaultInsertColumnsTokenGenerator tokenGenerator = new EncryptForUseDefaultInsertColumnsTokenGenerator();
-        tokenGenerator.setEncryptRule(new EncryptRule(createEncryptRuleConfiguration()));
+        tokenGenerator.setEncryptRule(createEncryptRule());
         assertFalse(tokenGenerator.isGenerateSQLToken(createInsertStatementContext(Collections.emptyList())));
     }
     
     @Test
     public void assertGenerateSQLTokenFromGenerateNewSQLToken() {
         EncryptForUseDefaultInsertColumnsTokenGenerator tokenGenerator = new EncryptForUseDefaultInsertColumnsTokenGenerator();
-        tokenGenerator.setEncryptRule(new EncryptRule(createEncryptRuleConfiguration()));
+        tokenGenerator.setEncryptRule(createEncryptRule());
         tokenGenerator.setPreviousSQLTokens(Collections.emptyList());
         assertThat(tokenGenerator.generateSQLToken(createInsertStatementContext(Collections.emptyList())).toString(), is("(id, name, status, pwd_cipher, pwd_assist, pwd_plain)"));
     }
@@ -46,7 +45,7 @@ public final class EncryptForUseDefaultInsertColumnsTokenGeneratorTest extends E
     @Test
     public void assertGenerateSQLTokenFromPreviousSQLTokens() {
         EncryptForUseDefaultInsertColumnsTokenGenerator tokenGenerator = new EncryptForUseDefaultInsertColumnsTokenGenerator();
-        tokenGenerator.setEncryptRule(new EncryptRule(createEncryptRuleConfiguration()));
+        tokenGenerator.setEncryptRule(createEncryptRule());
         tokenGenerator.setPreviousSQLTokens(getPreviousSQLTokens());
         assertThat(tokenGenerator.generateSQLToken(createInsertStatementContext(Collections.emptyList())).toString(), is("(id, name, status, pwd_cipher, pwd_assist, pwd_plain)"));
     }
