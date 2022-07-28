@@ -15,27 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber;
+package org.apache.shardingsphere.mode.process.subscriber;
 
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
+import java.util.ArrayList;
+import java.util.Collections;
 import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
+import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.BatchYamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessUnit;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ShowProcessListManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessReportEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessSummaryReportEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessUnitReportEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ShowProcessListRequestEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ShowProcessListResponseEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.lock.ShowProcessListSimpleLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.node.ProcessNode;
+import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.mode.persist.PersistRepository;
+import org.apache.shardingsphere.mode.process.ShowProcessListManager;
+import org.apache.shardingsphere.mode.process.event.ExecuteProcessReportEvent;
+import org.apache.shardingsphere.mode.process.event.ExecuteProcessSummaryReportEvent;
+import org.apache.shardingsphere.mode.process.event.ExecuteProcessUnitReportEvent;
+import org.apache.shardingsphere.mode.process.event.ShowProcessListRequestEvent;
+import org.apache.shardingsphere.mode.process.event.ShowProcessListResponseEvent;
+import org.apache.shardingsphere.mode.process.lock.ShowProcessListSimpleLock;
+import org.apache.shardingsphere.mode.process.node.ProcessNode;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -50,13 +54,19 @@ import java.util.stream.Stream;
  */
 public final class ProcessRegistrySubscriber {
     
-    private final ClusterPersistRepository repository;
+    private final PersistRepository repository;
     
     private final EventBusContext eventBusContext;
     
-    public ProcessRegistrySubscriber(final ClusterPersistRepository repository, final EventBusContext eventBusContext) {
+    public ProcessRegistrySubscriber(final PersistRepository repository, final EventBusContext eventBusContext) {
         this.repository = repository;
         this.eventBusContext = eventBusContext;
+        eventBusContext.register(this);
+    }
+    
+    public ProcessRegistrySubscriber(final EventBusContext eventBusContext) {
+        this.eventBusContext = eventBusContext;
+        repository = null;
         eventBusContext.register(this);
     }
     
@@ -67,6 +77,22 @@ public final class ProcessRegistrySubscriber {
      */
     @Subscribe
     public void loadShowProcessListData(final ShowProcessListRequestEvent event) {
+        if (null != repository) {
+            loadClusterShowProcessListData();
+        } else {
+            loadStandaloneShowProcessListData();
+        }
+    }
+    
+    private void loadStandaloneShowProcessListData() {
+        BatchYamlExecuteProcessContext batchYamlExecuteProcessContext = new BatchYamlExecuteProcessContext(new ArrayList<>(
+                ShowProcessListManager.getInstance().getProcessContextMap().values()));
+        eventBusContext.post(new ShowProcessListResponseEvent(batchYamlExecuteProcessContext.getContexts().isEmpty()
+                ? Collections.emptyList()
+                : Collections.singletonList(YamlEngine.marshal(batchYamlExecuteProcessContext))));
+    }
+    
+    private void loadClusterShowProcessListData() {
         String showProcessListId = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString();
         boolean triggerIsComplete = false;
         Collection<String> triggerPaths = getTriggerPaths(showProcessListId);

@@ -15,19 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event;
+package org.apache.shardingsphere.mode.process.event;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-import java.util.Collection;
-
 /**
- * Show process list response event.
+ * Execute process report event.
  */
 @RequiredArgsConstructor
 @Getter
-public final class ShowProcessListResponseEvent {
+public final class ExecuteProcessReportEvent {
     
-    private final Collection<String> batchProcessContexts;
+    private final String executionID;
 }
