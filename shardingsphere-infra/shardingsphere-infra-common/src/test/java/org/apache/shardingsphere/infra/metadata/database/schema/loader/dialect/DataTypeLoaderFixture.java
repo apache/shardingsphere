@@ -24,7 +24,7 @@ import java.sql.SQLException;
 import java.util.Map;
 
 /**
- * MySQL data type loader.
+ * Data type loader fixture.
  */
 public final class DataTypeLoaderFixture extends AbstractDataTypeLoader {
     
