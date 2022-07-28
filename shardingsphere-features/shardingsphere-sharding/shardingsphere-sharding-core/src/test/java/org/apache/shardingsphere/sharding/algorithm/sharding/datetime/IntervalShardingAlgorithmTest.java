@@ -444,5 +444,8 @@ public final class IntervalShardingAlgorithmTest {
         Collection<String> actualAsMonth = shardingAlgorithmByMonthInJSR310.doSharding(availableTablesForMonthInJSR310DataSources,
                 new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.closed(Month.of(4), Month.of(10))));
         assertThat(actualAsMonth.size(), is(4));
+        Collection<String> actualAsMonthString = shardingAlgorithmByMonthInJSR310.doSharding(availableTablesForMonthInJSR310DataSources,
+                new RangeShardingValue<>("t_order", "create_time", DATA_NODE_INFO, Range.closed("04", "10")));
+        assertThat(actualAsMonthString.size(), is(4));
     }
 }
