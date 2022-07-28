@@ -24,13 +24,15 @@ import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransact
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
-import org.junit.Assert;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Integration test of multiple operations in one transaction.
@@ -83,16 +85,16 @@ public final class MultiOperationsCommitAndRollbackTestCase extends BaseTransact
         while (rs.next()) {
             int id = rs.getInt("id");
             int actualBalance = rs.getInt("balance");
-            if (id == 1) {
+            if (1 == id) {
                 assertBalance(actualBalance, expectedBalances[0]);
             }
-            if (id == 2) {
+            if (2 == id) {
                 assertBalance(actualBalance, expectedBalances[1]);
             }
         }
     }
     
-    private void assertBalance(final int balance, final int expectedBalance) {
-        Assert.assertEquals(String.format("Balance is %s, should be %s.", balance, expectedBalance), balance, expectedBalance);
+    private void assertBalance(final int actual, final int expected) {
+        assertThat(String.format("Balance is %s, should be %s.", actual, expected), actual, is(expected));
     }
 }

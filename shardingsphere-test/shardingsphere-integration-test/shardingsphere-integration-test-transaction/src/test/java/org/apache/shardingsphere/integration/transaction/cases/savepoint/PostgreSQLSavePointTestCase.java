@@ -22,12 +22,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
-import org.junit.Assert;
 import org.postgresql.jdbc.PSQLSavepoint;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 /**
  * PostgreSQL savepoint transaction integration test.
@@ -53,23 +57,23 @@ public final class PostgreSQLSavePointTestCase extends BaseSavePointTestCase {
         Connection conn = getDataSource().getConnection();
         try {
             conn.setSavepoint("point");
-            Assert.fail("Expect exception, but no exception report.");
+            fail("Expect exception, but no exception report.");
         } catch (SQLException ex) {
-            Assert.assertEquals("Savepoint can only be used in transaction blocks.", ex.getMessage());
+            assertThat(ex.getMessage(), is("Savepoint can only be used in transaction blocks."));
         }
         try {
             conn.rollback(new PSQLSavepoint("point1"));
-            Assert.fail("Expect exception, but no exception report.");
+            fail("Expect exception, but no exception report.");
         } catch (SQLException ex) {
             // TODO can not run to get the correct result in JDBC mode.
-            Assert.assertTrue(ex.getMessage().endsWith("ERROR: ROLLBACK TO SAVEPOINT can only be used in transaction blocks"));
+            assertTrue(ex.getMessage().endsWith("ERROR: ROLLBACK TO SAVEPOINT can only be used in transaction blocks"));
         }
         try {
             conn.releaseSavepoint(new PSQLSavepoint("point1"));
-            Assert.fail("Expect exception, but no exception report.");
+            fail("Expect exception, but no exception report.");
         } catch (SQLException ex) {
             // TODO can not run to get the correct result in JDBC mode.
-            Assert.assertTrue(ex.getMessage().endsWith("ERROR: RELEASE SAVEPOINT can only be used in transaction blocks"));
+            assertTrue(ex.getMessage().endsWith("ERROR: RELEASE SAVEPOINT can only be used in transaction blocks"));
         }
     }
 }
