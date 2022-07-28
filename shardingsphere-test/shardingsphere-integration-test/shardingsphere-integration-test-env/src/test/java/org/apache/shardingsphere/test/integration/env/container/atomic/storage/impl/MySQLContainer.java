@@ -29,13 +29,17 @@ import java.util.Optional;
  */
 public final class MySQLContainer extends DockerStorageContainer {
     
-    public MySQLContainer(final String dockerImageName, final String scenario, final boolean useRootUsername) {
+    private final String[] commandParts;
+    
+    public MySQLContainer(final String dockerImageName, final String scenario, final boolean useRootUsername, final String... commandParts) {
         super(DatabaseTypeFactory.getInstance("MySQL"), Strings.isNullOrEmpty(dockerImageName) ? "mysql/mysql-server:5.7" : dockerImageName, scenario, useRootUsername);
+        this.commandParts = commandParts;
     }
     
     @Override
     protected void configure() {
-        withCommand("--sql_mode=", "--default-authentication-plugin=mysql_native_password", "--lower_case_table_names=1");
+        // command config will override config at my.cnf.
+        setCommand(commandParts);
         addEnv("LANG", "C.UTF-8");
         addEnv("MYSQL_ROOT_PASSWORD", getUnifiedPassword());
         addEnv("MYSQL_ROOT_HOST", "%");

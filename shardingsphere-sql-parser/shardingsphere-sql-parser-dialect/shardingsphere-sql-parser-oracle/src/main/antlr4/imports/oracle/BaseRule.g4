@@ -97,7 +97,7 @@ unreservedWord
     | SYSGUID | SYSBACKUP | SYSDBA | SYSDG | SYSKM | SYSOPER | DBA_RECYCLEBIN |SCHEMA
     | DO | DEFINER | CURRENT_USER | CASCADED | CLOSE | OPEN | NEXT | NAME | NAMES
     | COLLATION | REAL | TYPE | FIRST | RANK | SAMPLE | SYSTIMESTAMP | INTERVAL | MINUTE | ANY 
-    | LENGTH | SINGLE_C | capacityUnit | TARGET | PUBLIC | ID
+    | LENGTH | SINGLE_C | capacityUnit | TARGET | PUBLIC | ID | STATE
     ;
 
 schemaName
@@ -223,7 +223,6 @@ dbLink
 parameterValue
     : literals | identifier
     ;
-
 
 dispatcherName
     : stringLiterals
@@ -1442,3 +1441,93 @@ varrayType
 stagingLogName
     : identifier
     ;
+
+featureName
+   : STRING_
+   ;
+
+optionName
+    : STRING_
+    ;
+
+clauseOption
+    : STRING_
+    ;
+
+clauseOptionPattern
+    : STRING_
+    ;
+
+optionValue
+    : STRING_
+    ;
+
+clause
+    : STRING_
+    ;
+
+sqlStatement
+    : STRING_
+    ;
+
+
+transportSecret
+    : STRING_
+    ;
+
+hostName
+    : STRING_
+    ;
+
+mapObject
+    : STRING_
+    ;
+
+refreshInterval
+    : INTEGER_
+    ;
+
+sourcePdbName
+    : STRING_
+    ;
+
+appName
+    : STRING_
+    ;
+
+commentValue
+    : STRING_
+    ;
+
+appVersion
+    : NUMBER_
+    ;
+
+startAppVersion
+    : NUMBER_
+    ;
+
+endAppVersion
+    : NUMBER_
+    ;
+
+patchNumber
+    : INTEGER_
+    ;
+
+snapshotInterval
+    : INTEGER_
+    ;
+
+snapshotName
+    : STRING_
+    ;
+
+maxPdbSnapshots
+    : INTEGER_
+    ;
+
+maxNumberOfSnapshots
+    : INTEGER_
+    ;
+

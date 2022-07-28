@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.transaction.rule;
 
+import com.google.common.base.Preconditions;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -30,9 +31,11 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import javax.sql.DataSource;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Transaction rule.
@@ -66,14 +69,20 @@ public final class TransactionRule implements GlobalRule, ResourceHeldRule<Shard
         if (databases.isEmpty()) {
             return new ShardingSphereTransactionManagerEngine();
         }
-        ShardingSphereTransactionManagerEngine result = new ShardingSphereTransactionManagerEngine();
         Map<String, DataSource> dataSourceMap = new HashMap<>(databases.size());
-        DatabaseType databaseType = null;
+        Set<DatabaseType> databaseTypes = new HashSet<>();
         for (Entry<String, ShardingSphereDatabase> entry : databases.entrySet()) {
             dataSourceMap.putAll(entry.getValue().getResource().getDataSources());
-            databaseType = entry.getValue().getProtocolType();
+            if (null != entry.getValue().getResource().getDatabaseType()) {
+                databaseTypes.add(entry.getValue().getResource().getDatabaseType());
+            }
         }
-        result.init(databaseType, dataSourceMap, providerType);
+        Preconditions.checkState(databaseTypes.size() < 2, "Multiple types of databases are not supported");
+        if (dataSourceMap.isEmpty()) {
+            return new ShardingSphereTransactionManagerEngine();
+        }
+        ShardingSphereTransactionManagerEngine result = new ShardingSphereTransactionManagerEngine();
+        result.init(databaseTypes.iterator().next(), dataSourceMap, providerType);
         return result;
     }
     

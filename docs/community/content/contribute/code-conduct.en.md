@@ -48,6 +48,7 @@ The following code of conduct is based on full compliance with [ASF CODE OF COND
  - Include Javadoc, todo and fixme only in the comments.
  - Only `public` classes and methods need javadoc, other methods, classes and override methods do not need javadoc.
  - conditional operator(<expression1> ? <expression2> : <expression3>) `nested use` is forbidden.
+ - Avoid using Java Stream in hot methods, unless the performance of using Stream is better than using loop in that situation.
 
 ## Contributor Covenant Unit Test of Conduct
 

@@ -74,6 +74,8 @@ public enum SQLVisitorRule {
     
     ALTER_MATERIALIZED_VIEW_LOG("AlterMaterializedViewLog", SQLStatementType.DDL),
     
+    ALTER_PLUGGABLE_DATABASE("AlterPluggableDatabase", SQLStatementType.DDL),
+    
     ALTER_OPERATOR("AlterOperator", SQLStatementType.DDL),
     
     DROP_TABLE("DropTable", SQLStatementType.DDL),
@@ -595,6 +597,8 @@ public enum SQLVisitorRule {
     ALTER_HIERARCHY("AlterHierarchy", SQLStatementType.DDL),
     
     ALTER_INDEX_TYPE("AlterIndexType", SQLStatementType.DDL),
+    
+    ALTER_LOCKDOWN_PROFILE("AlterLockdownProfile", SQLStatementType.DDL),
     
     CURSOR("Cursor", SQLStatementType.DDL),
     
