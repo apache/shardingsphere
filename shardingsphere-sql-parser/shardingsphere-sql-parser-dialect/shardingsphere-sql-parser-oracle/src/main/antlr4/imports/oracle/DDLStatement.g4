@@ -3385,7 +3385,7 @@ snapshotClauses
     ;
 
 pdbSnapshotClause
-    : ENABLE SNAPSHOT (MANUAL | (EVERY snapshotInterval (HOURS | MINUTES)) | NONE)
+    : SNAPSHOT (MANUAL | (EVERY snapshotInterval (HOURS | MINUTES)) | NONE)
     ;
 
 materializeClause
