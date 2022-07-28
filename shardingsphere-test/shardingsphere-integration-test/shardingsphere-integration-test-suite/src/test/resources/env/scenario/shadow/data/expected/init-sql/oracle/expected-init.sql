@@ -15,10 +15,6 @@
 -- limitations under the License.
 --
 
-CREATE USER 'root'@'%' IDENTIFIED BY '';
-GRANT All privileges ON *.* TO 'root'@'%';
-
-
 DROP SCHEMA prod_dataset;
 CREATE SCHEMA prod_dataset;
 

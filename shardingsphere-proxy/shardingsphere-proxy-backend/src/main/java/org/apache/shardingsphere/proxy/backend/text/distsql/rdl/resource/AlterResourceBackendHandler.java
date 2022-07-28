@@ -19,6 +19,8 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.rdl.resource;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.distsql.parser.segment.DataSourceSegment;
+import org.apache.shardingsphere.distsql.parser.segment.HostnameAndPortBasedDataSourceSegment;
+import org.apache.shardingsphere.distsql.parser.segment.URLBasedDataSourceSegment;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrl;
 import org.apache.shardingsphere.infra.database.metadata.url.StandardJdbcUrlParser;
@@ -30,6 +32,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.DuplicateResourceException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.InvalidResourcesException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
+import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
@@ -37,6 +40,7 @@ import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.DatabaseRequiredBackendHandler;
 
 import javax.sql.DataSource;
+import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -63,12 +67,10 @@ public final class AlterResourceBackendHandler extends DatabaseRequiredBackendHa
     public ResponseHeader execute(final String databaseName, final AlterResourceStatement sqlStatement) throws DistSQLException {
         checkSQLStatement(databaseName, sqlStatement);
         Map<String, DataSourceProperties> dataSourcePropsMap = ResourceSegmentsConverter.convert(databaseType, sqlStatement.getDataSources());
-        validator.validate(dataSourcePropsMap);
+        validator.validate(dataSourcePropsMap, databaseType);
         try {
             ProxyContext.getInstance().getContextManager().updateResources(databaseName, dataSourcePropsMap);
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
+        } catch (final SQLException | ShardingSphereException ex) {
             log.error("Alter resource failed", ex);
             throw new InvalidResourcesException(Collections.singleton(ex.getMessage()));
         }
@@ -109,11 +111,16 @@ public final class AlterResourceBackendHandler extends DatabaseRequiredBackendHa
     }
     
     private boolean isIdenticalDatabase(final DataSourceSegment segment, final DataSource dataSource) {
-        String hostName = segment.getHostname();
-        String port = segment.getPort();
-        String database = segment.getDatabase();
-        if (null != segment.getUrl() && (null == hostName || null == port || null == database)) {
-            JdbcUrl segmentJdbcUrl = new StandardJdbcUrlParser().parse(segment.getUrl());
+        String hostName = null;
+        String port = null;
+        String database = null;
+        if (segment instanceof HostnameAndPortBasedDataSourceSegment) {
+            hostName = ((HostnameAndPortBasedDataSourceSegment) segment).getHostname();
+            port = ((HostnameAndPortBasedDataSourceSegment) segment).getPort();
+            database = ((HostnameAndPortBasedDataSourceSegment) segment).getDatabase();
+        }
+        if (segment instanceof URLBasedDataSourceSegment) {
+            JdbcUrl segmentJdbcUrl = new StandardJdbcUrlParser().parse(((URLBasedDataSourceSegment) segment).getUrl());
             hostName = segmentJdbcUrl.getHostname();
             port = String.valueOf(segmentJdbcUrl.getPort());
             database = segmentJdbcUrl.getDatabase();

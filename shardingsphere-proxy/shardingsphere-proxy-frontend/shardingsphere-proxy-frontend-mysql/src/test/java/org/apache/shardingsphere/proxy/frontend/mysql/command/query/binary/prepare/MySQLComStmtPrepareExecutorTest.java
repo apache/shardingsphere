@@ -84,7 +84,7 @@ public final class MySQLComStmtPrepareExecutorTest extends ProxyContextRestorer 
         CacheOption cacheOption = new CacheOption(1024, 1024);
         when(metaDataContexts.getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class))
                 .thenReturn(new SQLParserRule(new SQLParserRuleConfiguration(false, cacheOption, cacheOption)));
-        when(metaDataContexts.getMetaData().getDatabases().get(connectionSession.getDatabaseName()).getProtocolType()).thenReturn(new MySQLDatabaseType());
+        when(metaDataContexts.getMetaData().getDatabase(connectionSession.getDatabaseName()).getProtocolType()).thenReturn(new MySQLDatabaseType());
     }
     
     @Test(expected = UnsupportedPreparedStatementException.class)
@@ -111,7 +111,7 @@ public final class MySQLComStmtPrepareExecutorTest extends ProxyContextRestorer 
         MySQLPreparedStatement actualPreparedStatement = connectionSession.getPreparedStatementRegistry().getPreparedStatement(1);
         assertThat(actualPreparedStatement.getSql(), is(sql));
         assertThat(actualPreparedStatement.getSqlStatement(), instanceOf(MySQLSelectStatement.class));
-        assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(SelectStatementContext.class));
+        assertThat(actualPreparedStatement.getSqlStatementContext().get(), instanceOf(SelectStatementContext.class));
         MySQLStatementIDGenerator.getInstance().unregisterConnection(1);
     }
     
@@ -129,7 +129,7 @@ public final class MySQLComStmtPrepareExecutorTest extends ProxyContextRestorer 
         MySQLPreparedStatement actualPreparedStatement = connectionSession.getPreparedStatementRegistry().getPreparedStatement(1);
         assertThat(actualPreparedStatement.getSql(), is(sql));
         assertThat(actualPreparedStatement.getSqlStatement(), instanceOf(MySQLUpdateStatement.class));
-        assertThat(actualPreparedStatement.getSqlStatementContext(), instanceOf(UpdateStatementContext.class));
+        assertThat(actualPreparedStatement.getSqlStatementContext().get(), instanceOf(UpdateStatementContext.class));
         MySQLStatementIDGenerator.getInstance().unregisterConnection(1);
     }
     

@@ -21,6 +21,8 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.junit.Test;
 
+import java.util.Optional;
+
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
@@ -50,7 +52,7 @@ public final class PreparedStatementRegistryTest {
         }
         
         @Override
-        public SQLStatementContext<?> getSqlStatementContext() {
+        public Optional<SQLStatementContext<?>> getSqlStatementContext() {
             throw new UnsupportedOperationException();
         }
     }

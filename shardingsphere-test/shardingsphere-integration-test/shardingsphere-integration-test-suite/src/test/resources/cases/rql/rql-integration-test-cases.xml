@@ -97,6 +97,10 @@
         <assertion expected-data-file="show_single_tables.xml" />
     </test-case>
     
+    <test-case sql="COUNT SINGLE_TABLE RULE" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
+        <assertion expected-data-file="count_single_table_rule.xml" />
+    </test-case>
+    
     <test-case sql="SHOW READWRITE_SPLITTING RULES" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
         <assertion expected-data-file="show_readwrite_splitting_rules.xml" />
     </test-case>
@@ -112,5 +116,17 @@
     <!--TODO add db discovery tests-->
     <test-case sql="SHOW DB_DISCOVERY RULES" scenario-types="sharding_governance">
         <assertion expected-data-file="show_discovery_rules.xml" />
+    </test-case>
+    
+    <test-case sql="SHOW DB_DISCOVERY TYPES" scenario-types="sharding_governance">
+        <assertion expected-data-file="show_discovery_types.xml" />
+    </test-case>
+    
+    <test-case sql="SHOW DB_DISCOVERY HEARTBEATS" scenario-types="sharding_governance">
+        <assertion expected-data-file="show_discovery_heartbeats.xml" />
+    </test-case>
+    
+    <test-case sql="COUNT DATABASE RULES" scenario-types="db,tbl,readwrite_splitting,encrypt,dbtbl_with_readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt">
+        <assertion expected-data-file="count_database_rules.xml" />
     </test-case>
 </integration-test-cases>

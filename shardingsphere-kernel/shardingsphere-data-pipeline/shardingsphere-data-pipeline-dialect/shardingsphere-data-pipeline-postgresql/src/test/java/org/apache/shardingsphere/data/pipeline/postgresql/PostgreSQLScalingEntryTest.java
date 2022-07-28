@@ -34,7 +34,6 @@ public final class PostgreSQLScalingEntryTest {
     public void assertGetScalingEntryByDatabaseType() {
         ScalingEntry scalingEntry = ScalingEntryFactory.getInstance("PostgreSQL");
         assertThat(scalingEntry, instanceOf(PostgreSQLScalingEntry.class));
-        assertThat(scalingEntry.getEnvironmentCheckerClass(), equalTo(PostgreSQLEnvironmentChecker.class));
         assertThat(scalingEntry.getImporterClass(), equalTo(PostgreSQLImporter.class));
         assertThat(scalingEntry.getInventoryDumperClass(), equalTo(PostgreSQLInventoryDumper.class));
         assertThat(scalingEntry.getIncrementalDumperClass(), equalTo(PostgreSQLWalDumper.class));

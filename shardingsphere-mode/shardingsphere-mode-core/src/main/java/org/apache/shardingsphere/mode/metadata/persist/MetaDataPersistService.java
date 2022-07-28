@@ -24,12 +24,12 @@ import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCre
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
-import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseVersionPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.MetaDataVersionPersistService;
 import org.apache.shardingsphere.mode.metadata.persist.service.DatabaseMetaDataPersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.impl.DataSourcePersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.impl.DatabaseRulePersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.impl.GlobalRulePersistService;
-import org.apache.shardingsphere.mode.metadata.persist.service.impl.PropertiesPersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.config.database.DataSourcePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.config.database.DatabaseRulePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.config.global.GlobalRulePersistService;
+import org.apache.shardingsphere.mode.metadata.persist.service.config.global.PropertiesPersistService;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 
 import javax.sql.DataSource;
@@ -57,7 +57,7 @@ public final class MetaDataPersistService {
     
     private final PropertiesPersistService propsService;
     
-    private final DatabaseVersionPersistService databaseVersionPersistService;
+    private final MetaDataVersionPersistService metaDataVersionPersistService;
     
     public MetaDataPersistService(final PersistRepository repository) {
         this.repository = repository;
@@ -66,7 +66,7 @@ public final class MetaDataPersistService {
         databaseRulePersistService = new DatabaseRulePersistService(repository);
         globalRuleService = new GlobalRulePersistService(repository);
         propsService = new PropertiesPersistService(repository);
-        databaseVersionPersistService = new DatabaseVersionPersistService(repository);
+        metaDataVersionPersistService = new MetaDataVersionPersistService(repository);
     }
     
     /**

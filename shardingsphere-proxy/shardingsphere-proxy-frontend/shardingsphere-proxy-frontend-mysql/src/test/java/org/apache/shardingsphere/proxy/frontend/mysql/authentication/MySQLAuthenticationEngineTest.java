@@ -49,9 +49,10 @@ import org.junit.Test;
 import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
-import java.util.Collections;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Map;
+import java.util.LinkedHashMap;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -160,10 +161,10 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
     
     private void setMetaDataContexts() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
-        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(Collections.singletonMap("sharding_db", mock(ShardingSphereDatabase.class)), mock(ShardingSphereRuleMetaData.class),
-                        new ConfigurationProperties(new Properties())),
-                mock(OptimizerContext.class));
+        Map<String, ShardingSphereDatabase> databases = new LinkedHashMap<>(1, 1);
+        databases.put("sharding_db", mock(ShardingSphereDatabase.class));
+        MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(databases, mock(ShardingSphereRuleMetaData.class),
+                new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
     }

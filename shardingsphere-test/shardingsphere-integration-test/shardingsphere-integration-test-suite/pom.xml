@@ -30,12 +30,6 @@
     <dependencies>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-integration-test-fixture</artifactId>
-            <version>${project.version}</version>
-            <type>test-jar</type>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.shardingsphere</groupId>
             <artifactId>shardingsphere-integration-test-env</artifactId>
             <version>${project.version}</version>
             <type>test-jar</type>
@@ -83,6 +77,9 @@
                         <configuration>
                             <outputDirectory>target/test-classes</outputDirectory>
                             <resources>
+                                <resource>
+                                    <directory>${project.basedir}/../shardingsphere-integration-test-env/src/test/resources</directory>
+                                </resource>
                                 <resource>
                                     <directory>src/test/resources</directory>
                                     <filtering>true</filtering>

@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.communication;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.JDBCDriverType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
@@ -29,13 +28,10 @@ import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxBackendC
 import org.apache.shardingsphere.proxy.backend.communication.vertx.VertxDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
-import java.util.Collections;
-import java.util.List;
-
 /**
  * Database communication engine factory.
  */
-@SuppressWarnings({"unchecked", "rawtypes"})
+@SuppressWarnings("unchecked")
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DatabaseCommunicationEngineFactory {
     
@@ -51,48 +47,22 @@ public final class DatabaseCommunicationEngineFactory {
     }
     
     /**
-     * Create new instance of text protocol backend handler.
+     * Create new instance of {@link DatabaseCommunicationEngine}.
      *
      * @param <T> type of DatabaseCommunicationEngine
-     * @param sqlStatementContext SQL statement context
-     * @param sql SQL to be executed
+     * @param logicSQL Logic SQL
      * @param backendConnection backend connection
+     * @param preferPreparedStatement use prepared statement as possible
      * @return created instance
      */
-    public <T extends DatabaseCommunicationEngine> T newTextProtocolInstance(final SQLStatementContext<?> sqlStatementContext, final String sql, final BackendConnection<?> backendConnection) {
+    public <T extends DatabaseCommunicationEngine> T newDatabaseCommunicationEngine(final LogicSQL logicSQL, final BackendConnection<?> backendConnection, final boolean preferPreparedStatement) {
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(backendConnection.getConnectionSession().getDatabaseName());
-        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sql, Collections.emptyList());
         T result;
         if (backendConnection instanceof JDBCBackendConnection) {
             JDBCBackendConnection jdbcBackendConnection = (JDBCBackendConnection) backendConnection;
-            result = (T) new JDBCDatabaseCommunicationEngine(JDBCDriverType.STATEMENT, database, logicSQL, jdbcBackendConnection);
-            jdbcBackendConnection.add((JDBCDatabaseCommunicationEngine) result);
-        } else {
-            VertxBackendConnection vertxBackendConnection = (VertxBackendConnection) backendConnection;
-            result = (T) new VertxDatabaseCommunicationEngine(database, logicSQL, vertxBackendConnection);
-        }
-        return result;
-    }
-    
-    /**
-     * Create new instance of binary protocol backend handler.
-     *
-     * @param <T> type of DatabaseCommunicationEngine
-     * @param sqlStatementContext SQL statement context
-     * @param sql SQL to be executed
-     * @param parameters SQL parameters
-     * @param backendConnection backend connection
-     * @return created instance
-     */
-    public <T extends DatabaseCommunicationEngine> T newBinaryProtocolInstance(final SQLStatementContext<?> sqlStatementContext,
-                                                                               final String sql, final List<Object> parameters, final BackendConnection<?> backendConnection) {
-        ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(backendConnection.getConnectionSession().getDatabaseName());
-        LogicSQL logicSQL = new LogicSQL(sqlStatementContext, sql, parameters);
-        T result;
-        if (backendConnection instanceof JDBCBackendConnection) {
-            JDBCBackendConnection jdbcBackendConnection = (JDBCBackendConnection) backendConnection;
-            result = (T) new JDBCDatabaseCommunicationEngine(JDBCDriverType.PREPARED_STATEMENT, database, logicSQL, jdbcBackendConnection);
-            jdbcBackendConnection.add((JDBCDatabaseCommunicationEngine) result);
+            String driverType = preferPreparedStatement || !logicSQL.getParameters().isEmpty() ? JDBCDriverType.PREPARED_STATEMENT : JDBCDriverType.STATEMENT;
+            result = (T) new JDBCDatabaseCommunicationEngine(driverType, database, logicSQL, jdbcBackendConnection);
+            jdbcBackendConnection.add(result);
         } else {
             VertxBackendConnection vertxBackendConnection = (VertxBackendConnection) backendConnection;
             result = (T) new VertxDatabaseCommunicationEngine(database, logicSQL, vertxBackendConnection);

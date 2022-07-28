@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.Open
 /**
  * OpenGauss alter materialized view statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OpenGaussAlterMaterializedViewStatement extends AlterMaterializedViewStatement implements OpenGaussStatement {
 }

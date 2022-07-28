@@ -56,7 +56,7 @@ public final class DropIndexStatementSchemaRefresher implements MetaDataRefreshe
             if (!logicTableName.isPresent()) {
                 continue;
             }
-            ShardingSphereTable table = database.getSchemas().get(actualSchemaName).get(logicTableName.get());
+            ShardingSphereTable table = database.getSchema(actualSchemaName).get(logicTableName.get());
             table.getIndexes().remove(each.getIndexName().getIdentifier().getValue());
             event.getSchemaAlteredEvents().add(buildSchemaAlteredEvent(database.getName(), actualSchemaName, table));
         }

@@ -23,10 +23,12 @@ import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.RDLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rul.RULStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.RALStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rdl.RDLStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rql.RQLStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rul.RULStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
@@ -49,6 +51,8 @@ public final class DistSQLStatementAssert {
             RQLStatementAssert.assertIs(assertContext, (RQLStatement) actual, expected);
         } else if (actual instanceof RALStatement) {
             RALStatementAssert.assertIs(assertContext, (RALStatement) actual, expected);
+        } else if (actual instanceof RULStatement) {
+            RULStatementAssert.assertIs(assertContext, (RULStatement) actual, expected);
         }
     }
 }

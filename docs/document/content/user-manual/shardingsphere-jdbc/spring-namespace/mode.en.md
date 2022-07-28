@@ -3,6 +3,10 @@ title = "Mode Configuration"
 weight = 1
 +++
 
+## Background
+
+The default configuration uses memory mode.
+
 ## Parameters Explained
 
 ### Standalone Mode
@@ -37,7 +41,7 @@ Namespace：[http://shardingsphere.apache.org/schema/shardingsphere/mode-reposit
 
 ## Operating Procedures
 
-Import MAVEN dependency
+Introduce MAVEN dependency
 
 ```xml
 <dependency>
@@ -65,10 +69,14 @@ Import MAVEN dependency
                   http://shardingsphere.apache.org/schema/shardingsphere/datasource/datasource.xsd
                            http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone
                            http://shardingsphere.apache.org/schema/shardingsphere/mode-repository/standalone/repository.xsd">
-    <standalone:repository id="standaloneRepository" type="H2"/>
+    <standalone:repository id="standaloneRepository" type="File">
+        <props>
+            <prop key="path">.shardingsphere</prop>
+        </props>
+    </standalone:repository>
 
-    <shardingsphere:data-source id="ds" database-name="foo_db" data-source-names="..." rule-refs="...">
-        <shardingsphere:mode type="Standalone" repository-ref="standaloneRepository" />
+    <shardingsphere:data-source id="ds" database-name="foo_db" data-source-names="..." rule-refs="..." >
+        <shardingsphere:mode type="Standalone" repository-ref="standaloneRepository" overwrite="false" />
     </shardingsphere:data-source>
 </beans>
 ``` 

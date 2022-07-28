@@ -19,10 +19,9 @@ package org.apache.shardingsphere.proxy.backend.text.data.impl;
 
 import io.vertx.core.Future;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
-import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
@@ -43,9 +42,7 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
     
     private final DatabaseCommunicationEngineFactory databaseCommunicationEngineFactory = DatabaseCommunicationEngineFactory.getInstance();
     
-    private final SQLStatementContext<?> sqlStatementContext;
-    
-    private final String sql;
+    private final LogicSQL logicSQL;
     
     private final ConnectionSession connectionSession;
     
@@ -59,8 +56,8 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
             throw new RuleNotExistedException();
         }
         connectionSession.setCurrentDatabase(databaseName);
-        databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection());
-        return ((Future<ResponseHeader>) databaseCommunicationEngine.execute()).eventually(unused -> {
+        databaseCommunicationEngine = databaseCommunicationEngineFactory.newDatabaseCommunicationEngine(logicSQL, connectionSession.getBackendConnection(), false);
+        return databaseCommunicationEngine.executeFuture().eventually(unused -> {
             connectionSession.setCurrentDatabase(databaseName);
             return Future.succeededFuture();
         });
@@ -75,8 +72,8 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
         }
         try {
             connectionSession.setCurrentDatabase(databaseName);
-            databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection());
-            return (ResponseHeader) databaseCommunicationEngine.execute();
+            databaseCommunicationEngine = databaseCommunicationEngineFactory.newDatabaseCommunicationEngine(logicSQL, connectionSession.getBackendConnection(), false);
+            return databaseCommunicationEngine.execute();
         } finally {
             connectionSession.setCurrentDatabase(databaseName);
         }
@@ -101,13 +98,11 @@ public final class UnicastDatabaseBackendHandler implements DatabaseBackendHandl
     
     @Override
     public QueryResponseRow getRowData() throws SQLException {
-        return databaseCommunicationEngine.getQueryResponseRow();
+        return databaseCommunicationEngine.getRowData();
     }
     
     @Override
     public void close() throws SQLException {
-        if (databaseCommunicationEngine instanceof JDBCDatabaseCommunicationEngine) {
-            ((JDBCDatabaseCommunicationEngine) databaseCommunicationEngine).close();
-        }
+        databaseCommunicationEngine.close();
     }
 }

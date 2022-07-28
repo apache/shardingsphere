@@ -38,8 +38,8 @@ public final class ClusterPersistRepositoryConfigurationYamlSwapper implements P
     
     @Override
     public ClusterPersistRepositoryConfiguration swapToObject(final YamlPersistRepositoryConfiguration yamlConfig) {
-        return new ClusterPersistRepositoryConfiguration(yamlConfig.getType(), yamlConfig.getProps().getProperty("namespace"),
-                yamlConfig.getProps().getProperty("server-lists"), yamlConfig.getProps());
+        return new ClusterPersistRepositoryConfiguration(
+                yamlConfig.getType(), yamlConfig.getProps().getProperty("namespace"), yamlConfig.getProps().getProperty("server-lists"), yamlConfig.getProps());
     }
     
     @Override

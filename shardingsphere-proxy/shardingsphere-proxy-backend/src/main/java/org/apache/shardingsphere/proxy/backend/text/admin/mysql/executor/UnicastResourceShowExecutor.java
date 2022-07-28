@@ -19,6 +19,7 @@ package org.apache.shardingsphere.proxy.backend.text.admin.mysql.executor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -44,6 +45,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectState
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -79,7 +81,8 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
             connectionSession.setCurrentDatabase(databaseName);
             SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(),
                     sqlStatement, connectionSession.getDefaultDatabaseName());
-            databaseCommunicationEngine = databaseCommunicationEngineFactory.newTextProtocolInstance(sqlStatementContext, sql, connectionSession.getBackendConnection());
+            databaseCommunicationEngine = databaseCommunicationEngineFactory.newDatabaseCommunicationEngine(new LogicSQL(sqlStatementContext, sql, Collections.emptyList()),
+                    connectionSession.getBackendConnection(), false);
             responseHeader = databaseCommunicationEngine.execute();
             mergedResult = new TransparentMergedResult(createQueryResult());
         } finally {
@@ -111,7 +114,7 @@ public final class UnicastResourceShowExecutor implements DatabaseAdminQueryExec
     private QueryResult createQueryResult() throws SQLException {
         List<MemoryQueryResultDataRow> rows = new LinkedList<>();
         while (databaseCommunicationEngine.next()) {
-            List<Object> data = databaseCommunicationEngine.getQueryResponseRow().getData();
+            List<Object> data = databaseCommunicationEngine.getRowData().getData();
             rows.add(new MemoryQueryResultDataRow(data));
         }
         return new RawMemoryQueryResult(getQueryResultMetaData(), rows);

@@ -106,6 +106,9 @@
                             <outputDirectory>target/test-classes</outputDirectory>
                             <resources>
                                 <resource>
+                                    <directory>${project.basedir}/../shardingsphere-integration-test-env/src/test/resources</directory>
+                                </resource>
+                                <resource>
                                     <directory>src/test/resources</directory>
                                     <filtering>true</filtering>
                                 </resource>

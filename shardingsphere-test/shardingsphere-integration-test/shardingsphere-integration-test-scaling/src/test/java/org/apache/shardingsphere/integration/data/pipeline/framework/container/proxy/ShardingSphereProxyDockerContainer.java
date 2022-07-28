@@ -20,9 +20,9 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.container.
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.integration.data.pipeline.util.DatabaseTypeUtil;
-import org.apache.shardingsphere.test.integration.env.DataSourceEnvironment;
-import org.apache.shardingsphere.test.integration.framework.container.atomic.DockerITContainer;
-import org.apache.shardingsphere.test.integration.framework.container.wait.JDBCConnectionWaitStrategy;
+import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
+import org.apache.shardingsphere.test.integration.env.container.wait.JDBCConnectionWaitStrategy;
+import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.testcontainers.containers.BindMode;
 
 import java.sql.DriverManager;
@@ -44,15 +44,22 @@ public final class ShardingSphereProxyDockerContainer extends DockerITContainer 
     protected void configure() {
         withExposedPorts(3307);
         mapConfigurationFiles();
-        if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
-            setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), "postgres"), "root", "root")));
-        } else {
-            setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), ""), "root", "root")));
+        // TODO openGauss can't use this wait strategy now.
+        if (DatabaseTypeUtil.isPostgreSQL(databaseType)) {
+            setWaitStrategy(
+                    new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), "postgres"), "root", "Root@123")));
+        } else if (DatabaseTypeUtil.isMySQL(databaseType)) {
+            setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), ""), "root", "Root@123")));
         }
     }
     
     private void mapConfigurationFiles() {
         withClasspathResourceMapping(String.format("/env/%s/server.yaml", databaseType.getType().toLowerCase()), "/opt/shardingsphere-proxy/conf/server.yaml", BindMode.READ_ONLY);
         withClasspathResourceMapping("/env/logback.xml", "/opt/shardingsphere-proxy/conf/logback.xml", BindMode.READ_ONLY);
+    }
+    
+    @Override
+    public String getAbbreviation() {
+        return "proxy";
     }
 }

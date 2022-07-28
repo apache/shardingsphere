@@ -24,6 +24,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle drop operator statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OracleDropOperatorStatement extends DropOperatorStatement implements OracleStatement {
 }

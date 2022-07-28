@@ -116,5 +116,10 @@ execute
     | alterOperator
     | alterDiskgroup
     | alterIndexType
+    | alterMaterializedView
+    | alterMaterializedViewLog
+    | alterFunction
+    | alterHierarchy
+    | alterLockdownProfile
     ) SEMI_?
     ;

@@ -17,6 +17,13 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
@@ -36,6 +43,7 @@ import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializerFactory;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
+import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparerFactory;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
@@ -53,15 +61,6 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.lock.LockScope;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.scaling.core.job.check.EnvironmentCheckerFactory;
-
-import javax.sql.DataSource;
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Rule altered job preparer.
@@ -137,16 +136,31 @@ public final class RuleAlteredJobPreparer {
     
     private void prepareTarget(final RuleAlteredJobContext jobContext) {
         RuleAlteredJobConfiguration jobConfig = jobContext.getJobConfig();
-        Optional<DataSourcePreparer> dataSourcePreparer = EnvironmentCheckerFactory.getDataSourcePreparer(jobConfig.getTargetDatabaseType());
+        Optional<DataSourcePreparer> dataSourcePreparer = DataSourcePreparerFactory.getInstance(jobConfig.getTargetDatabaseType());
         if (!dataSourcePreparer.isPresent()) {
             log.info("dataSourcePreparer null, ignore prepare target");
             return;
         }
         TableNameSchemaNameMapping tableNameSchemaNameMapping = jobContext.getTaskConfig().getDumperConfig().getTableNameSchemaNameMapping();
-        PrepareTargetSchemasParameter prepareTargetSchemasParameter = new PrepareTargetSchemasParameter(jobContext.getTaskConfig(), jobContext.getDataSourceManager(), tableNameSchemaNameMapping);
-        dataSourcePreparer.get().prepareTargetSchemas(prepareTargetSchemasParameter);
-        PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(jobContext.getTaskConfig(), jobContext.getDataSourceManager(), tableNameSchemaNameMapping);
+        PrepareTargetSchemasParameter prepareTargetSchemasParameter = new PrepareTargetSchemasParameter(jobConfig.splitLogicTableNames(),
+                DatabaseTypeFactory.getInstance(jobConfig.getTargetDatabaseType()),
+                jobConfig.getDatabaseName(), jobContext.getTaskConfig().getImporterConfig().getDataSourceConfig(), jobContext.getDataSourceManager(), tableNameSchemaNameMapping);
+        if (isSourceAndTargetSchemaAvailable(jobConfig)) {
+            dataSourcePreparer.get().prepareTargetSchemas(prepareTargetSchemasParameter);
+        }
+        PrepareTargetTablesParameter prepareTargetTablesParameter = new PrepareTargetTablesParameter(jobConfig.getDatabaseName(), jobContext.getTaskConfig().getImporterConfig().getDataSourceConfig(),
+                jobContext.getDataSourceManager(), jobConfig.getTablesFirstDataNodes(), tableNameSchemaNameMapping);
         dataSourcePreparer.get().prepareTargetTables(prepareTargetTablesParameter);
+    }
+
+    private boolean isSourceAndTargetSchemaAvailable(final RuleAlteredJobConfiguration jobConfig) {
+        DatabaseType sourceDatabaseType = DatabaseTypeFactory.getInstance(jobConfig.getSourceDatabaseType());
+        DatabaseType targetDatabaseType = DatabaseTypeFactory.getInstance(jobConfig.getTargetDatabaseType());
+        if (!sourceDatabaseType.isSchemaAvailable() || !targetDatabaseType.isSchemaAvailable()) {
+            log.info("prepareTargetSchemas, one of source or target database type schema is not available, ignore");
+            return false;
+        }
+        return true;
     }
     
     private void checkSourceDataSource(final RuleAlteredJobContext jobContext) {

@@ -56,7 +56,7 @@ public final class SelectTableExecutor extends DefaultDatabaseMetadataExecutor {
     protected void initDatabaseData(final String databaseName) {
         ShardingSphereDatabase database = ProxyContext.getInstance().getDatabase(databaseName);
         String schemaName = DatabaseTypeEngine.getDefaultSchemaName(database.getResource().getDatabaseType(), databaseName);
-        tableNames = new ArrayList<>(database.getSchemas().get(schemaName).getAllTableNames());
+        tableNames = new ArrayList<>(database.getSchema(schemaName).getAllTableNames());
     }
     
     @Override

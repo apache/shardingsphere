@@ -59,15 +59,18 @@ public final class EncryptRuleStatementConverter {
     }
     
     private static EncryptColumnRuleConfiguration createEncryptColumnRuleConfiguration(final String tableName, final EncryptColumnSegment columnSegment) {
+        String assistedQueryEncryptorName = null == columnSegment.getAssistedQueryEncryptor() ? null : getAssistedQueryEncryptorName(tableName, columnSegment.getName());
         return new EncryptColumnRuleConfiguration(columnSegment.getName(), columnSegment.getCipherColumn(), columnSegment.getAssistedQueryColumn(),
-                columnSegment.getPlainColumn(), getEncryptorName(tableName, columnSegment.getName()), getAssistedQueryEncryptorName(tableName, columnSegment.getName()), null);
+                columnSegment.getPlainColumn(), getEncryptorName(tableName, columnSegment.getName()), assistedQueryEncryptorName, null);
     }
     
     private static Map<String, ShardingSphereAlgorithmConfiguration> createEncryptorConfigurations(final EncryptRuleSegment ruleSegment) {
-        Map<String, ShardingSphereAlgorithmConfiguration> result = new HashMap<>();
+        Map<String, ShardingSphereAlgorithmConfiguration> result = new HashMap<>(ruleSegment.getColumns().size(), 1);
         for (EncryptColumnSegment each : ruleSegment.getColumns()) {
             result.put(getEncryptorName(ruleSegment.getTableName(), each.getName()), createEncryptorConfiguration(each));
-            result.put(getAssistedQueryEncryptorName(ruleSegment.getTableName(), each.getName()), createAssistedQueryEncryptorConfiguration(each));
+            if (null != each.getAssistedQueryEncryptor()) {
+                result.put(getAssistedQueryEncryptorName(ruleSegment.getTableName(), each.getName()), createAssistedQueryEncryptorConfiguration(each));
+            }
         }
         return result;
     }

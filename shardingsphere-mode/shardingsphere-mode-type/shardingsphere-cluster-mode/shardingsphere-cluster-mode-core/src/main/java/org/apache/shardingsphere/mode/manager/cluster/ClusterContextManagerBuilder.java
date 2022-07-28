@@ -48,10 +48,10 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
         ClusterPersistRepository repository = ClusterPersistRepositoryFactory.getInstance((ClusterPersistRepositoryConfiguration) parameter.getModeConfiguration().getRepository());
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
         persistConfigurations(persistService, parameter);
-        RegistryCenter registryCenter = new RegistryCenter(repository, new EventBusContext());
+        RegistryCenter registryCenter = new RegistryCenter(repository, new EventBusContext(), parameter.getInstanceMetaData(), parameter.getDatabaseConfigs());
         InstanceContext instanceContext = buildInstanceContext(registryCenter, parameter);
         registryCenter.getRepository().watchSessionConnection(instanceContext);
-        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, parameter.getDatabaseConfigs(), parameter.getInstanceMetaData(), instanceContext);
+        MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, parameter.getDatabaseConfigs(), instanceContext);
         persistMetaData(metaDataContexts);
         ContextManager result = new ContextManager(metaDataContexts, instanceContext);
         registerOnline(persistService, registryCenter, parameter, result);
@@ -70,14 +70,14 @@ public final class ClusterContextManagerBuilder implements ContextManagerBuilder
     }
     
     private void persistMetaData(final MetaDataContexts metaDataContexts) {
-        metaDataContexts.getMetaData().getDatabases().forEach((databaseName, schemas) -> schemas.getSchemas()
-                .forEach((schemaName, tables) -> metaDataContexts.getPersistService().getDatabaseMetaDataService().persistMetaData(databaseName, schemaName, tables)));
+        metaDataContexts.getMetaData().getDatabases().values().forEach(
+                each -> each.getSchemas().forEach((schemaName, tables) -> metaDataContexts.getPersistService().getDatabaseMetaDataService().persistMetaData(each.getName(), schemaName, tables)));
     }
     
     private void registerOnline(final MetaDataPersistService persistService, final RegistryCenter registryCenter,
                                 final ContextManagerBuilderParameter parameter, final ContextManager contextManager) {
         contextManager.getInstanceContext().getInstance().setLabels(parameter.getLabels());
-        contextManager.getInstanceContext().getComputeNodeInstances().addAll(registryCenter.getComputeNodeStatusService().loadAllComputeNodeInstances());
+        contextManager.getInstanceContext().getAllClusterInstances().addAll(registryCenter.getComputeNodeStatusService().loadAllComputeNodeInstances());
         new ClusterContextManagerCoordinator(persistService, registryCenter, contextManager);
         registryCenter.onlineInstance(contextManager.getInstanceContext().getInstance());
     }

@@ -29,18 +29,12 @@ import org.apache.shardingsphere.spi.type.required.RequiredSPI;
 public interface LockJudgeEngine extends RequiredSPI {
     
     /**
-     * Init.
-     *
-     * @param lockContext lock context
-     */
-    void init(LockContext lockContext);
-    
-    /**
      * Is locked.
      *
+     * @param lockContext lock context
      * @param databaseName database name
      * @param sqlStatementContext sql statement context
      * @return is locked or not
      */
-    boolean isLocked(String databaseName, SQLStatementContext<?> sqlStatementContext);
+    boolean isLocked(LockContext lockContext, String databaseName, SQLStatementContext<?> sqlStatementContext);
 }

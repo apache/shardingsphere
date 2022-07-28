@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
@@ -58,7 +59,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 /**
  * Text protocol backend handler factory.
@@ -71,26 +71,38 @@ public final class TextProtocolBackendHandlerFactory {
     }
     
     /**
-     * Create new instance of text protocol backend handler.
+     * Create new instance of backend handler.
      *
      * @param databaseType database type
      * @param sql SQL to be executed
-     * @param sqlStatementSupplier optional SQL statement supplier
      * @param connectionSession connection session
      * @return created instance
      * @throws SQLException SQL exception
      */
-    @SuppressWarnings("unchecked")
-    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final String sql, final Supplier<Optional<SQLStatement>> sqlStatementSupplier,
-                                                         final ConnectionSession connectionSession) throws SQLException {
-        String trimSQL = SQLUtil.trimComment(sql);
-        if (Strings.isNullOrEmpty(trimSQL)) {
+    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final String sql, final ConnectionSession connectionSession) throws SQLException {
+        if (Strings.isNullOrEmpty(SQLUtil.trimComment(sql))) {
             return new SkipBackendHandler(new EmptyStatement());
         }
-        SQLStatement sqlStatement = sqlStatementSupplier.get().orElseGet(() -> {
-            SQLParserRule sqlParserRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
-            return sqlParserRule.getSQLParserEngine(getProtocolType(databaseType, connectionSession).getType()).parse(sql, false);
-        });
+        SQLParserRule sqlParserRule = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getGlobalRuleMetaData().getSingleRule(SQLParserRule.class);
+        SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(getProtocolType(databaseType, connectionSession).getType()).parse(sql, false);
+        return newInstance(databaseType, sql, sqlStatement, connectionSession);
+    }
+    
+    /**
+     * Create new instance of backend handler.
+     *
+     * @param databaseType database type
+     * @param sql SQL to be executed
+     * @param sqlStatement SQL statement
+     * @param connectionSession connection session
+     * @return created instance
+     * @throws SQLException SQL exception
+     */
+    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final String sql, final SQLStatement sqlStatement,
+                                                         final ConnectionSession connectionSession) throws SQLException {
+        if (sqlStatement instanceof EmptyStatement) {
+            return new SkipBackendHandler(new EmptyStatement());
+        }
         databaseType.handleRollbackOnly(connectionSession.getTransactionStatus().isRollbackOnly(), sqlStatement);
         checkUnsupportedSQLStatement(sqlStatement);
         if (sqlStatement instanceof DistSQLStatement) {
@@ -99,9 +111,31 @@ public final class TextProtocolBackendHandlerFactory {
             }
             return DistSQLBackendHandlerFactory.newInstance((DistSQLStatement) sqlStatement, connectionSession);
         }
-        handleAutoCommit(sqlStatement, connectionSession);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(),
                 sqlStatement, connectionSession.getDefaultDatabaseName());
+        return newInstance(databaseType, new LogicSQL(sqlStatementContext, sql, Collections.emptyList()), connectionSession, false);
+    }
+    
+    /**
+     * Create new instance of backend handler.
+     *
+     * @param databaseType database type
+     * @param logicSQL logic SQL
+     * @param connectionSession connection session
+     * @param preferPreparedStatement use prepared statement as possible
+     * @return created instance
+     * @throws SQLException SQL exception
+     */
+    @SuppressWarnings("unchecked")
+    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final LogicSQL logicSQL, final ConnectionSession connectionSession,
+                                                         final boolean preferPreparedStatement) throws SQLException {
+        SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
+        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
+        String sql = logicSQL.getSql();
+        handleAutoCommit(sqlStatement, connectionSession);
+        if (sqlStatement instanceof TCLStatement) {
+            return TransactionBackendHandlerFactory.newInstance((SQLStatementContext<TCLStatement>) sqlStatementContext, sql, connectionSession);
+        }
         Optional<TextProtocolBackendHandler> backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession, sql);
         if (backendHandler.isPresent()) {
             return backendHandler.get();
@@ -123,18 +157,15 @@ public final class TextProtocolBackendHandlerFactory {
                 : connectionSession.getDatabaseName();
         SQLCheckEngine.check(sqlStatementContext, Collections.emptyList(),
                 getRules(databaseName), databaseName, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(), connectionSession.getGrantee());
-        if (sqlStatement instanceof TCLStatement) {
-            return TransactionBackendHandlerFactory.newInstance((SQLStatementContext<TCLStatement>) sqlStatementContext, sql, connectionSession);
-        }
         backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession);
-        return backendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(sqlStatementContext, sql, connectionSession));
+        return backendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(logicSQL, connectionSession, preferPreparedStatement));
     }
     
     private static DatabaseType getProtocolType(final DatabaseType defaultDatabaseType, final ConnectionSession connectionSession) {
         String databaseName = connectionSession.getDatabaseName();
         return Strings.isNullOrEmpty(databaseName) || !ProxyContext.getInstance().databaseExists(databaseName)
                 ? defaultDatabaseType
-                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().get(databaseName).getProtocolType();
+                : ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabase(databaseName).getProtocolType();
     }
     
     private static void handleAutoCommit(final SQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
@@ -165,7 +196,7 @@ public final class TextProtocolBackendHandlerFactory {
             return contexts.getMetaData().getGlobalRuleMetaData().getRules();
         }
         Collection<ShardingSphereRule> result;
-        result = new LinkedList<>(contexts.getMetaData().getDatabases().get(databaseName).getRuleMetaData().getRules());
+        result = new LinkedList<>(contexts.getMetaData().getDatabase(databaseName).getRuleMetaData().getRules());
         result.addAll(contexts.getMetaData().getGlobalRuleMetaData().getRules());
         return result;
     }

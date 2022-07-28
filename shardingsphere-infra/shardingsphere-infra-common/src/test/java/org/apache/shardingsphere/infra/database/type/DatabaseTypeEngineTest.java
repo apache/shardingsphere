@@ -148,6 +148,6 @@ public final class DatabaseTypeEngineTest {
         DatabaseType schemaSupportDatabaseType = DatabaseTypeFactory.getInstance("openGauss");
         assertThat(DatabaseTypeEngine.getDefaultSchemaName(schemaSupportDatabaseType, ""), is("public"));
         DatabaseType schemaNoSupportDatabaseType = DatabaseTypeFactory.getInstance("MySQL");
-        assertThat(DatabaseTypeEngine.getDefaultSchemaName(schemaNoSupportDatabaseType, "MySQL"), is("MySQL"));
+        assertThat(DatabaseTypeEngine.getDefaultSchemaName(schemaNoSupportDatabaseType, "MySQL"), is("mysql"));
     }
 }

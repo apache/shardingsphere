@@ -25,6 +25,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleS
 /**
  * Oracle alter dimension statement.
  */
-@ToString
+@ToString(callSuper = true)
 public final class OracleAlterDimensionStatement extends AbstractSQLStatement implements DDLStatement, OracleStatement {
 }

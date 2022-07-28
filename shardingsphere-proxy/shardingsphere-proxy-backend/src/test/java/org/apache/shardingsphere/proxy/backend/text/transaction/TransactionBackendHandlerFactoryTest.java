@@ -18,15 +18,18 @@
 package org.apache.shardingsphere.proxy.backend.text.transaction;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
+import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
+import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.data.impl.SchemaAssignedDatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
@@ -37,14 +40,19 @@ import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Answers;
+import org.mockito.MockedStatic;
 
 import java.lang.reflect.Field;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 
 public final class TransactionBackendHandlerFactoryTest extends ProxyContextRestorer {
@@ -92,7 +100,12 @@ public final class TransactionBackendHandlerFactoryTest extends ProxyContextRest
     public void assertBroadcastBackendHandlerReturnedWhenTCLStatementNotHit() {
         SQLStatementContext<TCLStatement> context = mock(SQLStatementContext.class);
         when(context.getSqlStatement()).thenReturn(mock(TCLStatement.class));
-        assertThat(TransactionBackendHandlerFactory.newInstance(context, null, mock(ConnectionSession.class)), instanceOf(SchemaAssignedDatabaseBackendHandler.class));
+        try (MockedStatic<DatabaseCommunicationEngineFactory> mockedStatic = mockStatic(DatabaseCommunicationEngineFactory.class)) {
+            DatabaseCommunicationEngineFactory mockFactory = mock(DatabaseCommunicationEngineFactory.class);
+            mockedStatic.when(DatabaseCommunicationEngineFactory::getInstance).thenReturn(mockFactory);
+            when(mockFactory.newDatabaseCommunicationEngine(any(LogicSQL.class), nullable(BackendConnection.class), anyBoolean())).thenReturn(mock(DatabaseCommunicationEngine.class));
+            assertThat(TransactionBackendHandlerFactory.newInstance(context, null, mock(ConnectionSession.class)), instanceOf(DatabaseCommunicationEngine.class));
+        }
     }
     
     @SuppressWarnings("unchecked")

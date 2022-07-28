@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
@@ -65,6 +66,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.LinkedHashMap;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
@@ -102,10 +104,14 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
     }
     
     private Map<String, ShardingSphereDatabase> mockDatabases() {
-        ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        when(result.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
-        when(result.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
-        return Collections.singletonMap("db", result);
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        when(database.containsDataSource()).thenReturn(true);
+        when(database.isComplete()).thenReturn(true);
+        when(database.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
+        when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
+        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
+        result.put("db", database);
+        return result;
     }
     
     @Test
@@ -113,7 +119,7 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         JDBCDatabaseCommunicationEngine engine =
-                DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, "schemaName", Collections.emptyList(), backendConnection);
+                DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new LogicSQL(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, true);
         assertNotNull(engine);
         assertThat(engine, instanceOf(DatabaseCommunicationEngine.class));
         Field queryHeadersField = DatabaseCommunicationEngine.class.getDeclaredField("queryHeaders");
@@ -132,7 +138,7 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
         });
         Exception ex = null;
         try {
-            engine.getQueryResponseRow();
+            engine.getRowData();
         } catch (final SQLException | IndexOutOfBoundsException e) {
             ex = e;
         } finally {
@@ -143,7 +149,7 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
     private ShardingSphereDatabase createDatabaseMetaData() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         ShardingSphereColumn column = new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false);
-        when(result.getSchemas().get(DefaultDatabase.LOGIC_NAME).get("t_logic_order")).thenReturn(
+        when(result.getSchema(DefaultDatabase.LOGIC_NAME).get("t_logic_order")).thenReturn(
                 new ShardingSphereTable("t_logic_order", Collections.singletonList(column), Collections.singletonList(new ShardingSphereIndex("order_id")), Collections.emptyList()));
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(mock(ShardingRule.class)));
         when(result.getName()).thenReturn("sharding_schema");
@@ -169,7 +175,7 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         JDBCDatabaseCommunicationEngine engine =
-                DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, "schemaName", Collections.emptyList(), backendConnection);
+                DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new LogicSQL(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false);
         engine.add(statement);
         Collection<?> actual = getField(engine, "cachedStatements");
         assertThat(actual.size(), is(1));
@@ -181,7 +187,7 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         JDBCDatabaseCommunicationEngine engine =
-                DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, "schemaName", Collections.emptyList(), backendConnection);
+                DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new LogicSQL(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false);
         engine.add(resultSet);
         Collection<?> actual = getField(engine, "cachedResultSets");
         assertThat(actual.size(), is(1));
@@ -193,7 +199,7 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         JDBCDatabaseCommunicationEngine engine =
-                DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, "schemaName", Collections.emptyList(), backendConnection);
+                DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new LogicSQL(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false);
         Collection<ResultSet> cachedResultSets = getField(engine, "cachedResultSets");
         cachedResultSets.add(resultSet);
         Collection<Statement> cachedStatements = getField(engine, "cachedStatements");
@@ -211,7 +217,7 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
         SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         when(sqlStatementContext.getTablesContext().getSchemaNames()).thenReturn(Collections.emptyList());
         JDBCDatabaseCommunicationEngine engine =
-                DatabaseCommunicationEngineFactory.getInstance().newBinaryProtocolInstance(sqlStatementContext, "schemaName", Collections.emptyList(), backendConnection);
+                DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new LogicSQL(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, false);
         Collection<ResultSet> cachedResultSets = getField(engine, "cachedResultSets");
         SQLException sqlExceptionByResultSet = new SQLException("ResultSet");
         doThrow(sqlExceptionByResultSet).when(resultSet).close();
