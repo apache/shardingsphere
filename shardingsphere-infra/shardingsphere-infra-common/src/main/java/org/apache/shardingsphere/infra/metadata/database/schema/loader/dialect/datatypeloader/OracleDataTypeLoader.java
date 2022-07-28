@@ -15,37 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.metadata.database.schema.loader.common;
+package org.apache.shardingsphere.infra.metadata.database.schema.loader.dialect.datatypeloader;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.AbstractDataTypeLoader;
 
 import java.sql.DatabaseMetaData;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.Map;
-import java.util.TreeMap;
 
 /**
- * Data type loader.
+ * Oracle data type loader.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class DataTypeLoader {
+public final class OracleDataTypeLoader extends AbstractDataTypeLoader {
     
     /**
      * Load data type.
-     * 
+     *
      * @param database database
      * @return data type map
      * @throws SQLException SQL exception
      */
-    public static Map<String, Integer> load(final DatabaseMetaData database) throws SQLException {
-        Map<String, Integer> result = new TreeMap<>(String.CASE_INSENSITIVE_ORDER);
-        try (ResultSet resultSet = database.getTypeInfo()) {
-            while (resultSet.next()) {
-                result.put(resultSet.getString("TYPE_NAME"), resultSet.getInt("DATA_TYPE"));
-            }
-        }
+    public Map<String, Integer> load(final DatabaseMetaData database) throws SQLException {
+        Map<String, Integer> result = super.load(database);
+        result.putIfAbsent("NUMBER", Types.NUMERIC);
         return result;
+    }
+    
+    @Override
+    public String getType() {
+        return "Oracle";
     }
 }
