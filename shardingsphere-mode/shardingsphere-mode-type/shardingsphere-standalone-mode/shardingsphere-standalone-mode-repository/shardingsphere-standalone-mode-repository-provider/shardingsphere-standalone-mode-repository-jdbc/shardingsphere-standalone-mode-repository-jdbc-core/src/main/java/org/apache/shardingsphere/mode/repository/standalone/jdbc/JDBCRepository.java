@@ -49,14 +49,14 @@ public abstract class JDBCRepository implements StandalonePersistRepository {
     protected void initTable(final String jdbcUrl, final String user, final String password) {
         connection = DriverManager.getConnection(jdbcUrl, user, password);
         try (Statement statement = connection.createStatement()) {
-            statement.execute("DROP TABLE IF EXISTS REPOSITORY");
-            statement.execute("CREATE TABLE REPOSITORY(id varchar(36) PRIMARY KEY, key TEXT, value TEXT, parent TEXT)");
+            statement.execute("DROP TABLE IF EXISTS repository");
+            statement.execute("CREATE TABLE repository(id varchar(36) PRIMARY KEY, key TEXT, value TEXT, parent TEXT)");
         }
     }
     
     @Override
     public String get(final String key) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT value FROM REPOSITORY WHERE key = ?")) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT value FROM repository WHERE key = ?")) {
             preparedStatement.setString(1, key);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
@@ -71,7 +71,7 @@ public abstract class JDBCRepository implements StandalonePersistRepository {
     
     @Override
     public List<String> getChildrenKeys(final String key) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT key FROM REPOSITORY WHERE parent = ?")) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT key FROM repository WHERE parent = ?")) {
             preparedStatement.setString(1, key);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 List<String> resultChildren = new LinkedList<>();
@@ -122,7 +122,7 @@ public abstract class JDBCRepository implements StandalonePersistRepository {
     }
     
     private void insert(final String key, final String value, final String parent) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO REPOSITORY VALUES(?, ?, ?, ?)")) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO repository VALUES(?, ?, ?, ?)")) {
             preparedStatement.setString(1, UUID.randomUUID().toString());
             preparedStatement.setString(2, key);
             preparedStatement.setString(3, value);
@@ -132,7 +132,7 @@ public abstract class JDBCRepository implements StandalonePersistRepository {
     }
     
     private void update(final String key, final String value) throws SQLException {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("UPDATE REPOSITORY SET value = ? WHERE key = ?")) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("UPDATE repository SET value = ? WHERE key = ?")) {
             preparedStatement.setString(1, value);
             preparedStatement.setString(2, key);
             preparedStatement.executeUpdate();
@@ -141,7 +141,7 @@ public abstract class JDBCRepository implements StandalonePersistRepository {
     
     @Override
     public void delete(final String key) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM REPOSITORY WHERE key = ?")) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("DELETE FROM repository WHERE key = ?")) {
             preparedStatement.setString(1, key);
             preparedStatement.executeUpdate();
         } catch (final SQLException ex) {
