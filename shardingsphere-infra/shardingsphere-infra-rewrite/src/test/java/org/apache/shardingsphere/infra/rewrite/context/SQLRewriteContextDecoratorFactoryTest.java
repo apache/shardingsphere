@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite.context;
 
-import org.apache.shardingsphere.infra.rewrite.fixture.FixtureRule;
+import org.apache.shardingsphere.test.fixture.rule.FixtureRule;
 import org.apache.shardingsphere.infra.rewrite.fixture.FixtureSQLRewriteContextDecorator;
 import org.junit.Test;
 
