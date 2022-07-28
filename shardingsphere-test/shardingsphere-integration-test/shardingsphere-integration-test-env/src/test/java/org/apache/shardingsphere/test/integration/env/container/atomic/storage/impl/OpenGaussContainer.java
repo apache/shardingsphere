@@ -31,8 +31,8 @@ import java.util.Optional;
  */
 public final class OpenGaussContainer extends DockerStorageContainer {
     
-    public OpenGaussContainer(final String dockerImageName, final String scenario, final boolean useRootUsername, final String... commandParts) {
-        super(DatabaseTypeFactory.getInstance("openGauss"), Strings.isNullOrEmpty(dockerImageName) ? "enmotech/opengauss:3.0.0" : dockerImageName, scenario, useRootUsername);
+    public OpenGaussContainer(final String dockerImageName, final String scenario) {
+        super(DatabaseTypeFactory.getInstance("openGauss"), Strings.isNullOrEmpty(dockerImageName) ? "enmotech/opengauss:3.0.0" : dockerImageName, scenario);
     }
     
     @Override

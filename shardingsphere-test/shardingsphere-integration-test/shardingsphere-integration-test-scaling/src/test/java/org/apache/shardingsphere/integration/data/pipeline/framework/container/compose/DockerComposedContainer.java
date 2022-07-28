@@ -41,8 +41,8 @@ public final class DockerComposedContainer extends BaseComposedContainer {
     public DockerComposedContainer(final DatabaseType databaseType, final String dockerImageName) {
         this.databaseType = databaseType;
         GovernanceContainer governanceContainer = getContainers().registerContainer(new ZookeeperContainer());
-        storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, dockerImageName, "", false));
-        ShardingSphereProxyDockerContainer proxyContainer = new ShardingSphereProxyDockerContainer(databaseType, dockerImageName);
+        storageContainer = getContainers().registerContainer((DockerStorageContainer) StorageContainerFactory.newInstance(databaseType, dockerImageName, ""));
+        ShardingSphereProxyDockerContainer proxyContainer = new ShardingSphereProxyDockerContainer(databaseType);
         proxyContainer.dependsOn(governanceContainer, storageContainer);
         ShardingSphereProxyDockerContainer anotherProxyContainer = new ShardingSphereProxyDockerContainer(databaseType, dockerImageName);
         anotherProxyContainer.dependsOn(governanceContainer, storageContainer);

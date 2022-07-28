@@ -50,18 +50,14 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     @Getter(AccessLevel.NONE)
     private final String scenario;
     
-    @Getter(AccessLevel.NONE)
-    private final boolean useRootUsername;
-    
     private final Map<String, DataSource> actualDataSourceMap;
     
     private final Map<String, DataSource> expectedDataSourceMap;
     
-    public DockerStorageContainer(final DatabaseType databaseType, final String dockerImageName, final String scenario, final boolean useRootUsername) {
+    public DockerStorageContainer(final DatabaseType databaseType, final String dockerImageName, final String scenario) {
         super(databaseType.getType().toLowerCase(), dockerImageName);
         this.databaseType = databaseType;
         this.scenario = scenario;
-        this.useRootUsername = useRootUsername;
         actualDataSourceMap = new LinkedHashMap<>();
         expectedDataSourceMap = new LinkedHashMap<>();
     }
@@ -114,6 +110,10 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
      * @return username
      */
     public final String getUsername() {
+        return getNormalUsername();
+    }
+    
+    protected final String getNormalUsername() {
         return "test_user";
     }
     
