@@ -22,9 +22,16 @@ import lombok.NoArgsConstructor;
 import org.apache.calcite.adapter.enumerable.EnumerableRules;
 import org.apache.calcite.plan.ConventionTraitDef;
 import org.apache.calcite.plan.RelOptPlanner;
+import org.apache.calcite.plan.RelOptRule;
+import org.apache.calcite.plan.hep.HepMatchOrder;
+import org.apache.calcite.plan.hep.HepPlanner;
+import org.apache.calcite.plan.hep.HepProgramBuilder;
 import org.apache.calcite.plan.volcano.VolcanoPlanner;
 import org.apache.calcite.rel.RelCollationTraitDef;
 import org.apache.calcite.rel.rules.CoreRules;
+
+import java.util.Collection;
+import java.util.LinkedList;
 
 /**
  * Query optimize planner factory.
@@ -32,15 +39,30 @@ import org.apache.calcite.rel.rules.CoreRules;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class QueryOptimizePlannerFactory {
     
+    private static final int DEFAULT_MATCH_LIMIT = 1024;
+    
     /**
-     * Create new instance of query optimize planner.
+     * Create new instance of volcano planner.
      *
-     * @return created instance
+     * @return volcano planner instance
      */
-    public static RelOptPlanner newInstance() {
+    public static RelOptPlanner createVolcanoPlanner() {
         RelOptPlanner result = new VolcanoPlanner();
         setUpRules(result);
         return result;
+    }
+    
+    /**
+     * Create new instance of hep planner.
+     *
+     * @return hep planner instance
+     */
+    public static RelOptPlanner createHepPlanner() {
+        HepProgramBuilder builder = new HepProgramBuilder();
+        builder.addGroupBegin().addRuleCollection(getSubQueryRules()).addGroupEnd().addMatchOrder(HepMatchOrder.DEPTH_FIRST);
+        builder.addGroupBegin().addRuleCollection(getFilterRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
+        builder.addMatchLimit(DEFAULT_MATCH_LIMIT);
+        return new HepPlanner(builder.build());
     }
     
     private static void setUpRules(final RelOptPlanner planner) {
@@ -55,5 +77,33 @@ public final class QueryOptimizePlannerFactory {
         planner.addRule(EnumerableRules.ENUMERABLE_TABLE_SCAN_RULE);
         planner.addRule(EnumerableRules.ENUMERABLE_AGGREGATE_RULE);
         planner.addRule(EnumerableRules.ENUMERABLE_FILTER_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_CORRELATE_RULE);
+    }
+    
+    private static Collection<RelOptRule> getSubQueryRules() {
+        Collection<RelOptRule> result = new LinkedList<>();
+        result.add(CoreRules.FILTER_SUB_QUERY_TO_CORRELATE);
+        result.add(CoreRules.PROJECT_SUB_QUERY_TO_CORRELATE);
+        result.add(CoreRules.JOIN_SUB_QUERY_TO_CORRELATE);
+        return result;
+    }
+    
+    private static Collection<RelOptRule> getFilterRules() {
+        Collection<RelOptRule> result = new LinkedList<>();
+        result.add(CoreRules.FILTER_INTO_JOIN);
+        result.add(CoreRules.JOIN_CONDITION_PUSH);
+        result.add(CoreRules.SORT_JOIN_TRANSPOSE);
+        result.add(CoreRules.PROJECT_CORRELATE_TRANSPOSE);
+        result.add(CoreRules.FILTER_AGGREGATE_TRANSPOSE);
+        result.add(CoreRules.FILTER_PROJECT_TRANSPOSE);
+        result.add(CoreRules.FILTER_SET_OP_TRANSPOSE);
+        result.add(CoreRules.FILTER_PROJECT_TRANSPOSE);
+        result.add(CoreRules.FILTER_REDUCE_EXPRESSIONS);
+        result.add(CoreRules.PROJECT_REDUCE_EXPRESSIONS);
+        result.add(CoreRules.FILTER_MERGE);
+        result.add(CoreRules.PROJECT_CALC_MERGE);
+        result.add(CoreRules.JOIN_PUSH_EXPRESSIONS);
+        result.add(CoreRules.JOIN_PUSH_TRANSITIVE_PREDICATES);
+        return result;
     }
 }
