@@ -21,6 +21,10 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
 
+import javax.sql.DataSource;
+import java.util.LinkedHashMap;
+import java.util.Map;
+
 /**
  * Docker storage container.
  */
@@ -29,9 +33,12 @@ public abstract class DatabaseContainer extends DockerITContainer {
     
     private final DatabaseType databaseType;
     
+    private final Map<String, DataSource> actualDataSourceMap;
+    
     public DatabaseContainer(final DatabaseType databaseType, final String dockerImageName) {
         super(databaseType.getType().toLowerCase(), dockerImageName);
         this.databaseType = databaseType;
+        actualDataSourceMap = new LinkedHashMap<>();
     }
     
     /**

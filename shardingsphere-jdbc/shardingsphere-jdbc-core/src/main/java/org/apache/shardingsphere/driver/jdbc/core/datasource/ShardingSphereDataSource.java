@@ -21,7 +21,6 @@ import org.apache.shardingsphere.driver.jdbc.adapter.AbstractDataSourceAdapter;
 import org.apache.shardingsphere.driver.jdbc.context.JDBCContext;
 import org.apache.shardingsphere.driver.state.DriverStateContext;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.checker.RuleConfigurationCheckerFactory;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceProvidedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
@@ -61,15 +60,9 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
     
     public ShardingSphereDataSource(final String databaseName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,
                                     final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
-        checkRuleConfiguration(databaseName, ruleConfigs);
         this.databaseName = databaseName;
         contextManager = createContextManager(databaseName, modeConfig, dataSourceMap, ruleConfigs, null == props ? new Properties() : props);
         jdbcContext = new JDBCContext(contextManager.getDataSourceMap(databaseName));
-    }
-    
-    @SuppressWarnings("unchecked")
-    private void checkRuleConfiguration(final String databaseName, final Collection<RuleConfiguration> ruleConfigs) {
-        ruleConfigs.forEach(each -> RuleConfigurationCheckerFactory.findInstance(each).ifPresent(optional -> optional.check(databaseName, each)));
     }
     
     private ContextManager createContextManager(final String databaseName, final ModeConfiguration modeConfig, final Map<String, DataSource> dataSourceMap,

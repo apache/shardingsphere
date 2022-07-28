@@ -20,8 +20,10 @@ package org.apache.shardingsphere.readwritesplitting.checker;
 import org.apache.shardingsphere.readwritesplitting.algorithm.config.AlgorithmProvidedReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingOrder;
+import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 
 import java.util.Collection;
+import java.util.Map;
 
 /**
  * Algorithm provided readwrite-splitting ruleConfiguration checker.
@@ -31,6 +33,11 @@ public final class AlgorithmProvidedReadwriteSplittingRuleConfigurationChecker e
     @Override
     protected Collection<ReadwriteSplittingDataSourceRuleConfiguration> getDataSources(final AlgorithmProvidedReadwriteSplittingRuleConfiguration config) {
         return config.getDataSources();
+    }
+    
+    @Override
+    protected Map<String, ReadQueryLoadBalanceAlgorithm> getLoadBalancer(final AlgorithmProvidedReadwriteSplittingRuleConfiguration config) {
+        return config.getLoadBalanceAlgorithms();
     }
     
     @Override

@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.readwritesplitting.rule;
 
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
@@ -62,13 +61,10 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     
     public ReadwriteSplittingRule(final ReadwriteSplittingRuleConfiguration ruleConfig, final Collection<ShardingSphereRule> builtRules) {
         configuration = ruleConfig;
-        Preconditions.checkArgument(!ruleConfig.getDataSources().isEmpty(), "Replica query data source rules can not be empty.");
         ruleConfig.getLoadBalancers().forEach((key, value) -> loadBalancers.put(key, ReadQueryLoadBalanceAlgorithmFactory.newInstance(value)));
         dataSourceRules = new HashMap<>(ruleConfig.getDataSources().size(), 1);
         for (ReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
-            // TODO check if can not find load balancer should throw exception.
-            ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = Strings.isNullOrEmpty(each.getLoadBalancerName()) || !loadBalancers.containsKey(each.getLoadBalancerName())
-                    ? ReadQueryLoadBalanceAlgorithmFactory.newInstance()
+            ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = null == loadBalancers.get(each.getLoadBalancerName()) ? ReadQueryLoadBalanceAlgorithmFactory.newInstance()
                     : loadBalancers.get(each.getLoadBalancerName());
             dataSourceRules.put(each.getName(), new ReadwriteSplittingDataSourceRule(each, loadBalanceAlgorithm, builtRules));
         }
@@ -76,13 +72,10 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     
     public ReadwriteSplittingRule(final AlgorithmProvidedReadwriteSplittingRuleConfiguration ruleConfig, final Collection<ShardingSphereRule> builtRules) {
         configuration = ruleConfig;
-        Preconditions.checkArgument(!ruleConfig.getDataSources().isEmpty(), "Replica query data source rules can not be empty.");
         loadBalancers.putAll(ruleConfig.getLoadBalanceAlgorithms());
         dataSourceRules = new HashMap<>(ruleConfig.getDataSources().size(), 1);
         for (ReadwriteSplittingDataSourceRuleConfiguration each : ruleConfig.getDataSources()) {
-            // TODO check if can not find load balancer should throw exception.
-            ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = Strings.isNullOrEmpty(each.getLoadBalancerName()) || !loadBalancers.containsKey(each.getLoadBalancerName())
-                    ? ReadQueryLoadBalanceAlgorithmFactory.newInstance()
+            ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = null == loadBalancers.get(each.getLoadBalancerName()) ? ReadQueryLoadBalanceAlgorithmFactory.newInstance()
                     : loadBalancers.get(each.getLoadBalancerName());
             dataSourceRules.put(each.getName(), new ReadwriteSplittingDataSourceRule(each, loadBalanceAlgorithm, builtRules));
         }

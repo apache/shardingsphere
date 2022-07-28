@@ -49,11 +49,6 @@ public final class OpenGaussContainer extends DockerStorageContainer {
     }
     
     @Override
-    protected String getNormalUsername() {
-        return "scaling";
-    }
-    
-    @Override
     public int getPort() {
         return 5432;
     }

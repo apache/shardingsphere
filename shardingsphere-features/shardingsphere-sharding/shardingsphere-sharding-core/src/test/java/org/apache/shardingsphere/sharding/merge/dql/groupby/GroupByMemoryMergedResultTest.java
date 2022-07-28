@@ -67,6 +67,7 @@ public final class GroupByMemoryMergedResultTest {
     
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
+        when(database.getName()).thenReturn("db_schema");
         ShardingDQLResultMerger resultMerger = new ShardingDQLResultMerger(DatabaseTypeFactory.getInstance("MySQL"));
         MergedResult actual = resultMerger.merge(Arrays.asList(createQueryResult(), createQueryResult(), createQueryResult()), createSelectStatementContext(), database);
         assertTrue(actual.next());
@@ -77,6 +78,7 @@ public final class GroupByMemoryMergedResultTest {
     
     @Test
     public void assertNextForSomeResultSetsEmpty() throws SQLException {
+        when(database.getName()).thenReturn("db_schema");
         QueryResult queryResult1 = createQueryResult();
         when(queryResult1.next()).thenReturn(true, false);
         when(queryResult1.getValue(1, Object.class)).thenReturn(20);
@@ -137,6 +139,7 @@ public final class GroupByMemoryMergedResultTest {
     
     @Test
     public void assertNextForAggregationResultSetsEmpty() throws SQLException {
+        when(database.getName()).thenReturn("db_schema");
         QueryResult queryResult1 = createQueryResult();
         when(queryResult1.next()).thenReturn(true, false);
         when(queryResult1.getValue(1, Object.class)).thenReturn(20);
