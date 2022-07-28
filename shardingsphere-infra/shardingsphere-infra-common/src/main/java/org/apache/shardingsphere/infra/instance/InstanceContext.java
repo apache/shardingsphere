@@ -97,13 +97,24 @@ public final class InstanceContext {
     }
     
     /**
+     * Get worker id.
+     *
+     * @return worker id
+     */
+    public long getWorkerId() {
+        return instance.getWorkerId();
+    }
+    
+    /**
      * Generate worker id.
      *
      * @param props properties
      * @return worker id
      */
     public long generateWorkerId(final Properties props) {
-        return workerIdGenerator.generate(props);
+        long result = workerIdGenerator.generate(props);
+        instance.setWorkerId(result);
+        return getWorkerId();
     }
     
     /**

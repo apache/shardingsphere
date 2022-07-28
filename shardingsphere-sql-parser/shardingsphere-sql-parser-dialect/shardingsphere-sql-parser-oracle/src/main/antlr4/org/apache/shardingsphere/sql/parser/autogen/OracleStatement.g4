@@ -118,6 +118,9 @@ execute
     | alterIndexType
     | alterMaterializedView
     | alterMaterializedViewLog
+    | alterFunction
+    | alterHierarchy
+    | alterLockdownProfile
     | alterPluggableDatabase
     ) SEMI_?
     ;

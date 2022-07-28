@@ -50,6 +50,11 @@ public final class PostgreSQLPreparedStatement implements PreparedStatement {
     @Getter(AccessLevel.NONE)
     private PostgreSQLPacket rowDescription;
     
+    @Override
+    public Optional<SQLStatementContext<?>> getSqlStatementContext() {
+        return Optional.ofNullable(sqlStatementContext);
+    }
+    
     /**
      * Describe parameters of the prepared statement.
      *

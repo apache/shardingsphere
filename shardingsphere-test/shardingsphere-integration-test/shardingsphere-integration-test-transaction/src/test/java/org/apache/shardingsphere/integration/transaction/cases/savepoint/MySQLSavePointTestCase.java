@@ -19,6 +19,7 @@ package org.apache.shardingsphere.integration.transaction.cases.savepoint;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
 
@@ -31,8 +32,8 @@ import javax.sql.DataSource;
 @TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL})
 public final class MySQLSavePointTestCase extends BaseSavePointTestCase {
     
-    public MySQLSavePointTestCase(final DataSource dataSource) {
-        super(dataSource);
+    public MySQLSavePointTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
+        super(baseTransactionITCase, dataSource);
     }
     
     @Override

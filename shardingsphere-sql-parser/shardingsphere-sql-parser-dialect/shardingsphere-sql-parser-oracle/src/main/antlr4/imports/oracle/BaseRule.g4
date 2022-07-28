@@ -224,7 +224,6 @@ parameterValue
     : literals | identifier
     ;
 
-
 dispatcherName
     : stringLiterals
     ;
@@ -1442,6 +1441,35 @@ varrayType
 stagingLogName
     : identifier
     ;
+
+featureName
+   : STRING_
+   ;
+
+optionName
+    : STRING_
+    ;
+
+clauseOption
+    : STRING_
+    ;
+
+clauseOptionPattern
+    : STRING_
+    ;
+
+optionValue
+    : STRING_
+    ;
+
+clause
+    : STRING_
+    ;
+
+sqlStatement
+    : STRING_
+    ;
+
 
 transportSecret
     : STRING_

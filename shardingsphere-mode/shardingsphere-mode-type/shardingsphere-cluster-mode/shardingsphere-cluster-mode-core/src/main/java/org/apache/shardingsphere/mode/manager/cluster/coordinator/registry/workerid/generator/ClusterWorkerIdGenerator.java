@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.generator;
 
+import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -24,8 +25,14 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.RegistryCenter;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.workerid.node.WorkerIdNode;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryException;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Optional;
+import java.util.PriorityQueue;
 import java.util.Properties;
+import java.util.Set;
 
 /**
  * Worker id generator for cluster mode.
@@ -33,8 +40,6 @@ import java.util.Properties;
 @RequiredArgsConstructor
 @Slf4j
 public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
-    
-    private static final int MAX_RETRY = 3;
     
     private final RegistryCenter registryCenter;
     
@@ -44,37 +49,42 @@ public final class ClusterWorkerIdGenerator implements WorkerIdGenerator {
     
     @Override
     public long generate(final Properties props) {
-        long result = registryCenter.getComputeNodeStatusService().loadInstanceWorkerId(instanceMetaData.getId()).orElseGet(this::generate);
+        long result = registryCenter.getComputeNodeStatusService().loadInstanceWorkerId(instanceMetaData.getId()).orElseGet(this::reGenerate);
         checkIneffectiveConfiguration(result, props);
         return result;
     }
     
-    private long generate() {
-        long result;
-        int retryTimes = 0;
+    private Long reGenerate() {
+        Optional<Long> result;
         do {
-            retryTimes++;
-            result = generateSequentialId();
-            if (result > MAX_WORKER_ID) {
-                result = result % MAX_WORKER_ID + 1;
-            }
-            // TODO check may retry should in the front of id generate
-            if (retryTimes > MAX_RETRY) {
-                throw new ShardingSphereException("System assigned %s failed, assigned %s was %s", WORKER_ID_KEY, WORKER_ID_KEY, result);
-            }
-        } while (isAssignedWorkerId(result));
-        registryCenter.getComputeNodeStatusService().persistInstanceWorkerId(instanceMetaData.getId(), result);
-        return result;
+            result = generateAvailableWorkerId();
+        } while (!result.isPresent());
+        Long generatedWorkId = result.get();
+        registryCenter.getComputeNodeStatusService().persistInstanceWorkerId(instanceMetaData.getId(), generatedWorkId);
+        return generatedWorkId;
     }
     
-    private long generateSequentialId() {
-        String sequentialId = registryCenter.getRepository().getSequentialId(WorkerIdNode.getWorkerIdGeneratorPath(instanceMetaData.getId()), "");
-        // TODO maybe throw exception is better if `null == sequentialId`
-        return null == sequentialId ? DEFAULT_WORKER_ID : Long.parseLong(sequentialId);
-    }
-    
-    private boolean isAssignedWorkerId(final long workerId) {
-        return registryCenter.getComputeNodeStatusService().getUsedWorkerIds().contains(workerId);
+    private Optional<Long> generateAvailableWorkerId() {
+        Set<Long> assignedWorkerIds = registryCenter.getComputeNodeStatusService().getAssignedWorkerIds();
+        if (assignedWorkerIds.size() > 1024) {
+            throw new ShardingSphereException("System assigned %s failed, Illegal max vibration offset.", WORKER_ID_KEY);
+        }
+        Collection<Long> maxAvailableIds = new ArrayList<>(1024);
+        for (int i = 0; i < 1024; i++) {
+            maxAvailableIds.add((long) i);
+        }
+        PriorityQueue<Long> priorityQueue = new PriorityQueue<>(maxAvailableIds);
+        for (Long each : assignedWorkerIds) {
+            priorityQueue.remove(each);
+        }
+        Long preselectedWorkerId = priorityQueue.poll();
+        Preconditions.checkState(null != preselectedWorkerId, "Preselected worker-id can not be null.");
+        try {
+            registryCenter.getRepository().persistEphemeral(WorkerIdNode.getWorkerIdGeneratorPath(preselectedWorkerId.toString()), instanceMetaData.getId());
+            return Optional.of(preselectedWorkerId);
+        } catch (final ClusterPersistRepositoryException ignore) {
+            return Optional.empty();
+        }
     }
     
     private void checkIneffectiveConfiguration(final long generatedWorkerId, final Properties props) {

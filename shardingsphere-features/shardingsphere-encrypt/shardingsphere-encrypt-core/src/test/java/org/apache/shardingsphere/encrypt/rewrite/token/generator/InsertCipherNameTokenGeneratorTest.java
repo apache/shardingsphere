@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.encrypt.rewrite.token.generator;
 
-import org.apache.shardingsphere.encrypt.rule.EncryptRule;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +35,7 @@ public final class InsertCipherNameTokenGeneratorTest extends EncryptGeneratorBa
     
     @Before
     public void setup() {
-        generator.setEncryptRule(new EncryptRule(createEncryptRuleConfiguration()));
+        generator.setEncryptRule(createEncryptRule());
     }
     
     @Test
