@@ -29,7 +29,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDB
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
@@ -74,9 +74,9 @@ public final class TransactionBackendHandlerFactoryTest extends ProxyContextRest
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         SQLStatementContext<CommitStatement> context = mock(SQLStatementContext.class);
         when(context.getSqlStatement()).thenReturn(mock(CommitStatement.class));
-        TextProtocolBackendHandler textProtocolBackendHandler = TransactionBackendHandlerFactory.newInstance(context, null, connectionSession);
-        assertThat(textProtocolBackendHandler, instanceOf(TransactionBackendHandler.class));
-        TransactionBackendHandler transactionBackendHandler = (TransactionBackendHandler) textProtocolBackendHandler;
+        ProxyBackendHandler proxyBackendHandler = TransactionBackendHandlerFactory.newInstance(context, null, connectionSession);
+        assertThat(proxyBackendHandler, instanceOf(TransactionBackendHandler.class));
+        TransactionBackendHandler transactionBackendHandler = (TransactionBackendHandler) proxyBackendHandler;
         assertFieldOfInstance(transactionBackendHandler, "operationType", is(TransactionOperationType.COMMIT));
         assertFieldOfInstance(getBackendTransactionManager(transactionBackendHandler), "connection", is(backendConnection));
     }
@@ -89,9 +89,9 @@ public final class TransactionBackendHandlerFactoryTest extends ProxyContextRest
         when(connectionSession.getBackendConnection()).thenReturn(backendConnection);
         SQLStatementContext<RollbackStatement> context = mock(SQLStatementContext.class);
         when(context.getSqlStatement()).thenReturn(mock(RollbackStatement.class));
-        TextProtocolBackendHandler textProtocolBackendHandler = TransactionBackendHandlerFactory.newInstance(context, null, connectionSession);
-        assertThat(textProtocolBackendHandler, instanceOf(TransactionBackendHandler.class));
-        TransactionBackendHandler transactionBackendHandler = (TransactionBackendHandler) textProtocolBackendHandler;
+        ProxyBackendHandler proxyBackendHandler = TransactionBackendHandlerFactory.newInstance(context, null, connectionSession);
+        assertThat(proxyBackendHandler, instanceOf(TransactionBackendHandler.class));
+        TransactionBackendHandler transactionBackendHandler = (TransactionBackendHandler) proxyBackendHandler;
         assertFieldOfInstance(transactionBackendHandler, "operationType", is(TransactionOperationType.ROLLBACK));
         assertFieldOfInstance(getBackendTransactionManager(transactionBackendHandler), "connection", is(backendConnection));
     }

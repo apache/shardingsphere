@@ -66,7 +66,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class TextProtocolBackendHandlerFactoryTest extends ProxyContextRestorer {
+public final class ProxyBackendHandlerFactoryTest extends ProxyContextRestorer {
     
     private final DatabaseType databaseType = DatabaseTypeFactory.getInstance("MySQL");
     
@@ -112,95 +112,95 @@ public final class TextProtocolBackendHandlerFactoryTest extends ProxyContextRes
     @Test
     public void assertNewInstanceWithCommonDistSQL() throws SQLException {
         String sql = "set variable transaction_type=LOCAL";
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
+        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(SetVariableHandler.class));
         sql = "show variable transaction_type";
-        actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
+        actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(QueryableRALBackendHandler.class));
         sql = "show all variables";
-        actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
+        actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(QueryableRALBackendHandler.class));
         sql = "set sharding hint database_value=1";
-        actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
+        actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(HintRALBackendHandler.class));
     }
     
     @Test
     public void assertNewInstanceWithBegin() throws SQLException {
         String sql = "BEGIN";
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
+        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(TransactionBackendHandler.class));
     }
     
     @Test
     public void assertNewInstanceWithStartTransaction() throws SQLException {
         String sql = "START TRANSACTION";
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
+        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(TransactionBackendHandler.class));
     }
     
     @Test
     public void assertNewInstanceWithSetAutoCommitToOff() throws SQLException {
         String sql = "SET AUTOCOMMIT=0";
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
+        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(TransactionBackendHandler.class));
     }
     
     @Test
     public void assertNewInstanceWithScopeSetAutoCommitToOff() throws SQLException {
         String sql = "SET @@SESSION.AUTOCOMMIT = OFF";
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
+        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(TransactionBackendHandler.class));
     }
     
     @Test
     public void assertNewInstanceWithSetAutoCommitToOn() throws SQLException {
         String sql = "SET AUTOCOMMIT=1";
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
+        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(TransactionBackendHandler.class));
     }
     
     @Test
     public void assertNewInstanceWithScopeSetAutoCommitToOnForInTransaction() throws SQLException {
         String sql = "SET @@SESSION.AUTOCOMMIT = ON";
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
+        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(TransactionBackendHandler.class));
     }
     
     @Test
     public void assertNewInstanceWithUse() throws SQLException {
         String sql = "use sharding_db";
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
+        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(DatabaseAdminUpdateBackendHandler.class));
     }
     
     @Test
     public void assertNewInstanceWithShowDatabase() throws SQLException {
         String sql = "show databases";
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
+        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(DatabaseAdminQueryBackendHandler.class));
     }
     
     @Test
     public void assertNewInstanceWithSet() throws SQLException {
         String sql = "set @num=1";
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
+        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(DatabaseAdminUpdateBackendHandler.class));
     }
     
     @Test
     public void assertNewInstanceWithShow() throws SQLException {
         String sql = "SHOW VARIABLES LIKE '%x%'";
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
+        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
         sql = "SHOW VARIABLES WHERE Variable_name ='language'";
-        actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
+        actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
         sql = "SHOW CHARACTER SET";
-        actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
+        actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
         sql = "SHOW COLLATION";
-        actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
+        actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(UnicastDatabaseBackendHandler.class));
     }
     
@@ -212,44 +212,44 @@ public final class TextProtocolBackendHandlerFactoryTest extends ProxyContextRes
         ProxyContext proxyContext = ProxyContext.getInstance();
         when(proxyContext.getAllDatabaseNames()).thenReturn(new HashSet<>(Collections.singletonList("db")));
         when(proxyContext.getDatabase("db").containsDataSource()).thenReturn(true);
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
+        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(DatabaseCommunicationEngine.class));
         sql = "select * from information_schema.schemata limit 1";
-        actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
+        actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(DatabaseAdminQueryBackendHandler.class));
     }
     
     @Test
     public void assertNewInstanceWithEmptyString() throws SQLException {
         String sql = "";
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
+        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(SkipBackendHandler.class));
     }
     
     @Test(expected = SQLParsingException.class)
     public void assertNewInstanceWithErrorSQL() throws SQLException {
         String sql = "SELECT";
-        TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
+        ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
     }
     
     @Test(expected = SQLParsingException.class)
     public void assertNewInstanceWithErrorRDL() throws SQLException {
         String sql = "CREATE SHARDING";
-        TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
+        ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
     }
     
     @Test(expected = UnsupportedOperationException.class)
     public void assertUnsupportedNonQueryDistSQLInTransaction() throws SQLException {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         String sql = "CREATE SHARDING KEY GENERATOR snowflake_key_generator (TYPE(NAME=SNOWFLAKE, PROPERTIES(\"max-vibration-offset\"=3)));";
-        TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
+        ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
     }
     
     @Test
     public void assertUnsupportedQueryableRALStatementInTransaction() throws SQLException {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         String sql = "SHOW TRANSACTION RULE;";
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
+        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(QueryableRALBackendHandler.class));
     }
     
@@ -257,7 +257,7 @@ public final class TextProtocolBackendHandlerFactoryTest extends ProxyContextRes
     public void assertUnsupportedRQLStatementInTransaction() throws SQLException {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
         String sql = "SHOW SINGLE TABLE RULES";
-        TextProtocolBackendHandler actual = TextProtocolBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
+        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(RQLBackendHandler.class));
     }
 }

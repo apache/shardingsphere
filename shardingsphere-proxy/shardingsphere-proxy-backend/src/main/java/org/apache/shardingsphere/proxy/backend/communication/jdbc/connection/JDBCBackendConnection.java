@@ -31,7 +31,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JD
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtil;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -59,9 +59,9 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
-    private final Collection<TextProtocolBackendHandler> handlers = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
+    private final Collection<ProxyBackendHandler> backendHandlers = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
     
-    private final Collection<TextProtocolBackendHandler> inUseHandlers = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
+    private final Collection<ProxyBackendHandler> inUseBackendHandlers = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
     
     private final Collection<ConnectionPostProcessor<Connection>> connectionPostProcessors = new LinkedList<>();
     
@@ -151,8 +151,8 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
      *
      * @param handler handler to be added
      */
-    public void add(final TextProtocolBackendHandler handler) {
-        handlers.add(handler);
+    public void add(final ProxyBackendHandler handler) {
+        backendHandlers.add(handler);
     }
     
     /**
@@ -160,8 +160,8 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
      *
      * @param handler handler to be marked
      */
-    public void markResourceInUse(final TextProtocolBackendHandler handler) {
-        inUseHandlers.add(handler);
+    public void markResourceInUse(final ProxyBackendHandler handler) {
+        inUseBackendHandlers.add(handler);
     }
     
     /**
@@ -169,8 +169,8 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
      *
      * @param handler proxy backend handler to be added
      */
-    public void unmarkResourceInUse(final TextProtocolBackendHandler handler) {
-        inUseHandlers.remove(handler);
+    public void unmarkResourceInUse(final ProxyBackendHandler handler) {
+        inUseBackendHandlers.remove(handler);
     }
     
     @Override
@@ -226,8 +226,8 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
      */
     public Collection<SQLException> closeHandlers(final boolean includeInUse) {
         Collection<SQLException> result = new LinkedList<>();
-        for (TextProtocolBackendHandler each : handlers) {
-            if (!includeInUse && inUseHandlers.contains(each)) {
+        for (ProxyBackendHandler each : backendHandlers) {
+            if (!includeInUse && inUseBackendHandlers.contains(each)) {
                 continue;
             }
             try {
@@ -237,9 +237,9 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
             }
         }
         if (includeInUse) {
-            inUseHandlers.clear();
+            inUseBackendHandlers.clear();
         }
-        handlers.retainAll(inUseHandlers);
+        backendHandlers.retainAll(inUseBackendHandlers);
         return result;
     }
     

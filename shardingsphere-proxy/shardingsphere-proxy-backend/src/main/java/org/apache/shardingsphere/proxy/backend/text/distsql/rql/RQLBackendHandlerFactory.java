@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.ProxyBackendHandler;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
@@ -45,7 +45,7 @@ public final class RQLBackendHandlerFactory {
      * @param connectionSession connection session
      * @return RDL backend handler
      */
-    public static TextProtocolBackendHandler newInstance(final RQLStatement sqlStatement, final ConnectionSession connectionSession) {
+    public static ProxyBackendHandler newInstance(final RQLStatement sqlStatement, final ConnectionSession connectionSession) {
         DistSQLResultSet resultSet = TypedSPIRegistry.getRegisteredService(DistSQLResultSet.class, sqlStatement.getClass().getCanonicalName(), new Properties());
         return new RQLBackendHandler(sqlStatement, connectionSession, resultSet);
     }

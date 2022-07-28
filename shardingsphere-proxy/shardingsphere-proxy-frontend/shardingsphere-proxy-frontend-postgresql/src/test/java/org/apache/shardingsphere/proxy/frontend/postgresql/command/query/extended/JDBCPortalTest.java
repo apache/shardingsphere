@@ -42,8 +42,8 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.text.ProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.ProxyBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.frontend.postgresql.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
@@ -89,7 +89,7 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
     private ContextManager mockContextManager;
     
     @Mock
-    private TextProtocolBackendHandler textProtocolBackendHandler;
+    private ProxyBackendHandler proxyBackendHandler;
     
     @Mock
     private ConnectionSession connectionSession;
@@ -97,7 +97,7 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
     @Mock
     private JDBCBackendConnection backendConnection;
     
-    private MockedStatic<TextProtocolBackendHandlerFactory> mockedStatic;
+    private MockedStatic<ProxyBackendHandlerFactory> mockedStatic;
     
     @Before
     public void setup() throws SQLException {
@@ -109,11 +109,11 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
         when(database.getResource().getDatabaseType()).thenReturn(new PostgreSQLDatabaseType());
         when(ProxyContext.getInstance().getDatabase("db")).thenReturn(database);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
-        mockedStatic = mockStatic(TextProtocolBackendHandlerFactory.class);
-        mockedStatic.when(() -> TextProtocolBackendHandlerFactory.newInstance(any(PostgreSQLDatabaseType.class), anyString(), any(SQLStatement.class), eq(connectionSession)))
-                .thenReturn(textProtocolBackendHandler);
-        mockedStatic.when(() -> TextProtocolBackendHandlerFactory.newInstance(any(PostgreSQLDatabaseType.class), any(LogicSQL.class), eq(connectionSession), anyBoolean()))
-                .thenReturn(textProtocolBackendHandler);
+        mockedStatic = mockStatic(ProxyBackendHandlerFactory.class);
+        mockedStatic.when(() -> ProxyBackendHandlerFactory.newInstance(any(PostgreSQLDatabaseType.class), anyString(), any(SQLStatement.class), eq(connectionSession)))
+                .thenReturn(proxyBackendHandler);
+        mockedStatic.when(() -> ProxyBackendHandlerFactory.newInstance(any(PostgreSQLDatabaseType.class), any(LogicSQL.class), eq(connectionSession), anyBoolean()))
+                .thenReturn(proxyBackendHandler);
     }
     
     @After
@@ -132,9 +132,9 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
         QueryResponseHeader responseHeader = mock(QueryResponseHeader.class);
         QueryHeader queryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.INTEGER, "columnTypeName", 0, 0, false, false, false, false);
         when(responseHeader.getQueryHeaders()).thenReturn(Collections.singletonList(queryHeader));
-        when(textProtocolBackendHandler.execute()).thenReturn(responseHeader);
-        when(textProtocolBackendHandler.next()).thenReturn(true, true, false);
-        when(textProtocolBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 0))),
+        when(proxyBackendHandler.execute()).thenReturn(responseHeader);
+        when(proxyBackendHandler.next()).thenReturn(true, true, false);
+        when(proxyBackendHandler.getRowData()).thenReturn(new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 0))),
                 new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1))));
         PostgreSQLPreparedStatement preparedStatement = new PostgreSQLPreparedStatement("", new PostgreSQLSelectStatement(), mock(SelectStatementContext.class), Collections.emptyList());
         List<PostgreSQLValueFormat> resultFormats = new ArrayList<>(Arrays.asList(PostgreSQLValueFormat.TEXT, PostgreSQLValueFormat.BINARY));
@@ -154,9 +154,9 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
         QueryResponseHeader responseHeader = mock(QueryResponseHeader.class);
         QueryHeader queryHeader = new QueryHeader("schema", "table", "columnLabel", "columnName", Types.INTEGER, "columnTypeName", 0, 0, false, false, false, false);
         when(responseHeader.getQueryHeaders()).thenReturn(Collections.singletonList(queryHeader));
-        when(textProtocolBackendHandler.execute()).thenReturn(responseHeader);
-        when(textProtocolBackendHandler.next()).thenReturn(true, true);
-        when(textProtocolBackendHandler.getRowData()).thenReturn(
+        when(proxyBackendHandler.execute()).thenReturn(responseHeader);
+        when(proxyBackendHandler.next()).thenReturn(true, true);
+        when(proxyBackendHandler.getRowData()).thenReturn(
                 new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 0))),
                 new QueryResponseRow(Collections.singletonList(new QueryResponseCell(Types.INTEGER, 1))));
         PostgreSQLPreparedStatement preparedStatement = new PostgreSQLPreparedStatement("", new PostgreSQLSelectStatement(), mock(SelectStatementContext.class), Collections.emptyList());
@@ -174,8 +174,8 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecuteUpdate() throws SQLException {
-        when(textProtocolBackendHandler.execute()).thenReturn(mock(UpdateResponseHeader.class));
-        when(textProtocolBackendHandler.next()).thenReturn(false);
+        when(proxyBackendHandler.execute()).thenReturn(mock(UpdateResponseHeader.class));
+        when(proxyBackendHandler.next()).thenReturn(false);
         PostgreSQLPreparedStatement preparedStatement = new PostgreSQLPreparedStatement("", new PostgreSQLInsertStatement(), mock(InsertStatementContext.class), Collections.emptyList());
         JDBCPortal portal = new JDBCPortal("insert into t values (1)", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection);
         portal.bind();
@@ -186,8 +186,8 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecuteEmptyStatement() throws SQLException {
-        when(textProtocolBackendHandler.execute()).thenReturn(mock(UpdateResponseHeader.class));
-        when(textProtocolBackendHandler.next()).thenReturn(false);
+        when(proxyBackendHandler.execute()).thenReturn(mock(UpdateResponseHeader.class));
+        when(proxyBackendHandler.next()).thenReturn(false);
         PostgreSQLPreparedStatement preparedStatement = new PostgreSQLPreparedStatement("", new EmptyStatement(), null, Collections.emptyList());
         JDBCPortal portal = new JDBCPortal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection);
         portal.bind();
@@ -198,8 +198,8 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecuteSetStatement() throws SQLException {
-        when(textProtocolBackendHandler.execute()).thenReturn(mock(UpdateResponseHeader.class));
-        when(textProtocolBackendHandler.next()).thenReturn(false);
+        when(proxyBackendHandler.execute()).thenReturn(mock(UpdateResponseHeader.class));
+        when(proxyBackendHandler.next()).thenReturn(false);
         String sql = "set client_encoding = utf8";
         PostgreSQLSetStatement setStatement = new PostgreSQLSetStatement();
         VariableAssignSegment variableAssignSegment = new VariableAssignSegment();
@@ -227,7 +227,7 @@ public final class JDBCPortalTest extends ProxyContextRestorer {
         PostgreSQLPreparedStatement preparedStatement = new PostgreSQLPreparedStatement("", new EmptyStatement(), null, Collections.emptyList());
         JDBCPortal portal = new JDBCPortal("", preparedStatement, Collections.emptyList(), Collections.emptyList(), backendConnection);
         portal.close();
-        verify(backendConnection).unmarkResourceInUse(textProtocolBackendHandler);
-        verify(textProtocolBackendHandler).close();
+        verify(backendConnection).unmarkResourceInUse(proxyBackendHandler);
+        verify(proxyBackendHandler).close();
     }
 }

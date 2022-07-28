@@ -38,7 +38,7 @@ import java.util.Optional;
  */
 @RequiredArgsConstructor
 @Getter
-public abstract class DatabaseRequiredBackendHandler<T extends SQLStatement> implements TextProtocolBackendHandler {
+public abstract class DatabaseRequiredBackendHandler<T extends SQLStatement> implements ProxyBackendHandler {
     
     private final T sqlStatement;
     

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.proxy.backend.communication.jdbc.JDBCDatabaseCo
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.ProxyBackendHandler;
 import org.apache.shardingsphere.sharding.merge.ddl.fetch.FetchOrderByValueGroupsHolder;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.XAStatement;
@@ -39,7 +39,7 @@ import java.util.Collections;
  * TODO Currently XA transaction started with `XA START` doesn't support for database with multiple datasource, a flag should be added for this both in init progress and add datasource from distSQL.
  */
 @RequiredArgsConstructor
-public final class TransactionXAHandler implements TextProtocolBackendHandler {
+public final class TransactionXAHandler implements ProxyBackendHandler {
     
     private final XAStatement tclStatement;
     

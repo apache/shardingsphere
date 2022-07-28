@@ -25,9 +25,9 @@ import java.sql.SQLException;
 import java.util.Collections;
 
 /**
- * Text protocol backend handler.
+ * Proxy backend handler.
  */
-public interface TextProtocolBackendHandler {
+public interface ProxyBackendHandler {
     
     /**
      * Execute command.

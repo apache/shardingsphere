@@ -23,14 +23,14 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.scaling.UpdatableS
 import org.apache.shardingsphere.infra.distsql.update.RALUpdaterFactory;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.ProxyBackendHandler;
 
 /**
  * Updatable scaling RAL backend handler factory.
  */
 @RequiredArgsConstructor
 @Setter
-public final class UpdatableScalingRALBackendHandler implements TextProtocolBackendHandler {
+public final class UpdatableScalingRALBackendHandler implements ProxyBackendHandler {
     
     private final UpdatableScalingRALStatement sqlStatement;
     

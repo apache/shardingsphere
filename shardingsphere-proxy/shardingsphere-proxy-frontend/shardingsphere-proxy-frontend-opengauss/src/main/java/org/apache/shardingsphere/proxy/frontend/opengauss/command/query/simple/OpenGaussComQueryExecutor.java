@@ -33,8 +33,8 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.text.ProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.ProxyBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.postgresql.command.PostgreSQLConnectionContext;
@@ -61,7 +61,7 @@ public final class OpenGaussComQueryExecutor implements QueryCommandExecutor {
     
     private final PostgreSQLConnectionContext connectionContext;
     
-    private final TextProtocolBackendHandler textProtocolBackendHandler;
+    private final ProxyBackendHandler proxyBackendHandler;
     
     @Getter
     private volatile ResponseType responseType;
@@ -69,12 +69,12 @@ public final class OpenGaussComQueryExecutor implements QueryCommandExecutor {
     public OpenGaussComQueryExecutor(final PostgreSQLConnectionContext connectionContext, final PostgreSQLComQueryPacket comQueryPacket,
                                      final ConnectionSession connectionSession) throws SQLException {
         this.connectionContext = connectionContext;
-        textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("openGauss"), comQueryPacket.getSql(), connectionSession);
+        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("openGauss"), comQueryPacket.getSql(), connectionSession);
     }
     
     @Override
     public Collection<DatabasePacket<?>> execute() throws SQLException {
-        ResponseHeader responseHeader = textProtocolBackendHandler.execute();
+        ResponseHeader responseHeader = proxyBackendHandler.execute();
         if (responseHeader instanceof QueryResponseHeader) {
             return Collections.singleton(createRowDescriptionPacket((QueryResponseHeader) responseHeader));
         }
@@ -120,16 +120,16 @@ public final class OpenGaussComQueryExecutor implements QueryCommandExecutor {
     
     @Override
     public boolean next() throws SQLException {
-        return textProtocolBackendHandler.next();
+        return proxyBackendHandler.next();
     }
     
     @Override
     public PostgreSQLPacket getQueryRowPacket() throws SQLException {
-        return new PostgreSQLDataRowPacket(textProtocolBackendHandler.getRowData().getData());
+        return new PostgreSQLDataRowPacket(proxyBackendHandler.getRowData().getData());
     }
     
     @Override
     public void close() throws SQLException {
-        textProtocolBackendHandler.close();
+        proxyBackendHandler.close();
     }
 }

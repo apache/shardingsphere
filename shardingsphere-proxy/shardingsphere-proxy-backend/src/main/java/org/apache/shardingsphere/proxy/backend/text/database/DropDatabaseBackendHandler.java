@@ -29,7 +29,7 @@ import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseExceptio
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.ProxyBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
 
 import java.util.Collection;
@@ -39,7 +39,7 @@ import java.util.LinkedList;
  * Drop database backend handler.
  */
 @RequiredArgsConstructor
-public final class DropDatabaseBackendHandler implements TextProtocolBackendHandler {
+public final class DropDatabaseBackendHandler implements ProxyBackendHandler {
     
     private final DropDatabaseStatement sqlStatement;
     
