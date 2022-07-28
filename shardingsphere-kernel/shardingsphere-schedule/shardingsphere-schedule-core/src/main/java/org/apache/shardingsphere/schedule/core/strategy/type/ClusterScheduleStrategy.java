@@ -36,6 +36,7 @@ import org.apache.shardingsphere.schedule.core.strategy.ScheduleStrategy;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 /**
@@ -59,11 +60,7 @@ public final class ClusterScheduleStrategy implements ScheduleStrategy {
         }
     };
     
-    /**
-     * Start schedule.
-     *
-     * @param job cron job
-     */
+    
     @SuppressWarnings("unchecked")
     public void startSchedule(final CronJob job) {
         CoordinatorRegistryCenter registryCenter = getRegistryCenter();
@@ -75,6 +72,11 @@ public final class ClusterScheduleStrategy implements ScheduleStrategy {
         ScheduleJobBootstrap bootstrap = new ScheduleJobBootstrap(registryCenter, new ConsumerSimpleJob(job.getJob()), jobConfig);
         SCHEDULE_JOB_BOOTSTRAP_MAP.put(job.getJobName(), bootstrap);
         SCHEDULE_JOB_BOOTSTRAP_MAP.get(job.getJobName()).schedule();
+    }
+    
+    @Override
+    public void closeSchedule(String jobName) {
+        Optional.ofNullable(SCHEDULE_JOB_BOOTSTRAP_MAP.remove(jobName)).ifPresent(ScheduleJobBootstrap::shutdown);
     }
     
     @SneakyThrows(ConcurrentException.class)

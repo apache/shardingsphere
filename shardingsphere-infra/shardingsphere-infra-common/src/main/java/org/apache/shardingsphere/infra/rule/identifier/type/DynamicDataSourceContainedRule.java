@@ -53,8 +53,14 @@ public interface DynamicDataSourceContainedRule extends ShardingSphereRule {
     
     /**
      * Restart heart beat job.
+     *
      * @param event data source status changed event
      * @param instanceContext instance context
      */
     void restartHeartBeatJob(DataSourceStatusChangedEvent event, InstanceContext instanceContext);
+    
+    /**
+     * Close heart beat.
+     */
+    void closeHeartBeatJob();
 }
