@@ -115,7 +115,6 @@ Directory: `src/test/resources/docker/${SCENARIO-TYPE}`
   - `proxy/conf/config-${SCENARIO-TYPE}.yaml`: rule configuration。
 
 **The Docker environment configuration provides a remote debugging port for ShardingSphere-Proxy. You can find the second exposed port for remote debugging in `shardingsphere-proxy` of the `docker-comemage. yml` file. **
-
 ### Run the test engine
 
 #### Configure the running environment of the test engine
