@@ -1111,6 +1111,14 @@ MAXSIZE
     : M A X S I Z E
     ;
 
+MAX_AUDIT_SIZE
+    : M A X UL_ A U D I T UL_ S I Z E
+    ;
+
+MAX_DIAG_SIZE
+    : M A X UL_ D I A G UL_ S I Z E
+    ;
+
 STORE
     : S T O R E
     ;
@@ -2959,3 +2967,71 @@ CLAUSE
    : C L A U S E
    ;
 
+
+UNPLUG
+    : U N P L U G
+    ;
+
+HOST
+    : H O S T
+    ;
+
+PORT
+    : P O R T
+    ;
+
+EVERY
+    : E V E R Y
+    ;
+
+MINUTES
+    : M I N U T E S
+    ;
+
+HOURS
+    : H O U R S
+    ;
+
+NORELOCATE
+    : N O R E L O C A T E
+    ;
+
+SAVE
+    : S A V E
+    ;
+
+DISCARD
+    : D I S C A R D
+    ;
+
+STATE
+    : S T A T E
+    ;
+
+APPLICATION
+    : A P P L I C A T I O N
+    ;
+
+INSTALL
+    : I N S T A L L
+    ;
+
+MINIMUM
+    : M I N I M U M
+    ;
+
+VERSION
+    : V E R S I O N
+    ;
+
+UNINSTALL
+    : U N I N S T A L L
+    ;
+
+COMPATIBILITY
+    : C O M P A T I B I L I T Y
+    ;
+
+MATERIALIZE
+    : M A T E R I A L I Z E
+    ;

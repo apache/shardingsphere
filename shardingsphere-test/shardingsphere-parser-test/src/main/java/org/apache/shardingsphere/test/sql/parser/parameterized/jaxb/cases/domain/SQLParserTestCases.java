@@ -127,6 +127,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterOperatorStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterOutlineStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterPackageStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterPluggableDatabaseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterPolicyStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterProcedureStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterPublicationStatementTestCase;
@@ -1355,6 +1356,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "alter-materialized-view-log")
     private final List<AlterMaterializedViewLogStatementTestCase> alterMaterializedViewLogTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-pluggable-database")
+    private final List<AlterPluggableDatabaseStatementTestCase> alterPluggableDatabaseTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-java")
     private final List<AlterJavaStatementTestCase> alterJavaTestCases = new LinkedList<>();
