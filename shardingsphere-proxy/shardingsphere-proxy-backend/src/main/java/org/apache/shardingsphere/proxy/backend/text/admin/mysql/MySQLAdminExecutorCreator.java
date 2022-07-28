@@ -51,6 +51,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcessListStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 
+import java.util.Collection;
 import java.util.Optional;
 
 /**
@@ -96,35 +97,43 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
             return Optional.of(new MySQLSetVariableAdminExecutor((SetStatement) sqlStatement));
         }
         if (sqlStatement instanceof SelectStatement) {
-            if (isShowSpecialFunction((SelectStatement) sqlStatement, ShowConnectionIdExecutor.FUNCTION_NAME)) {
-                return Optional.of(new ShowConnectionIdExecutor((SelectStatement) sqlStatement));
+            SelectStatement selectStatement = (SelectStatement) sqlStatement;
+            if (null == selectStatement.getFrom()) {
+                return getSelectFunctionOrVariableExecutor(selectStatement, sql, databaseName);
             }
-            if (isShowSpecialFunction((SelectStatement) sqlStatement, ShowVersionExecutor.FUNCTION_NAME)) {
-                return Optional.of(new ShowVersionExecutor((SelectStatement) sqlStatement));
+            if (isQueryInformationSchema(selectStatement)) {
+                return MySQLInformationSchemaExecutorFactory.newInstance(selectStatement, sql);
             }
-            if (isShowSpecialFunction((SelectStatement) sqlStatement, ShowCurrentUserExecutor.FUNCTION_NAME)
-                    || isShowSpecialFunction((SelectStatement) sqlStatement, ShowCurrentUserExecutor.FUNCTION_NAME_ALIAS)) {
-                return Optional.of(new ShowCurrentUserExecutor());
-            }
-            if ((!hasDatabases() || !hasResources()) && isShowSpecialFunction((SelectStatement) sqlStatement, ShowTransactionExecutor.TRANSACTION_READ_ONLY)) {
-                return Optional.of(new ShowTransactionExecutor(ShowTransactionExecutor.TRANSACTION_READ_ONLY));
-            }
-            if ((!hasDatabases() || !hasResources()) && isShowSpecialFunction((SelectStatement) sqlStatement, ShowTransactionExecutor.TRANSACTION_ISOLATION)) {
-                return Optional.of(new ShowTransactionExecutor(ShowTransactionExecutor.TRANSACTION_ISOLATION));
-            }
-            if (isShowSpecialFunction((SelectStatement) sqlStatement, ShowCurrentDatabaseExecutor.FUNCTION_NAME)) {
-                return Optional.of(new ShowCurrentDatabaseExecutor());
-            }
-            if (isQueryInformationSchema((SelectStatement) sqlStatement)) {
-                return MySQLInformationSchemaExecutorFactory.newInstance((SelectStatement) sqlStatement, sql);
-            }
-            if (isQueryPerformanceSchema((SelectStatement) sqlStatement)) {
+            if (isQueryPerformanceSchema(selectStatement)) {
                 // TODO
                 return Optional.empty();
             }
-            return Optional.ofNullable(mockExecutor(databaseName, (SelectStatement) sqlStatement, sql));
         }
         return Optional.empty();
+    }
+    
+    private Optional<DatabaseAdminExecutor> getSelectFunctionOrVariableExecutor(final SelectStatement selectStatement, final String sql, final String databaseName) {
+        if (isShowSpecialFunction(selectStatement, ShowConnectionIdExecutor.FUNCTION_NAME)) {
+            return Optional.of(new ShowConnectionIdExecutor(selectStatement));
+        }
+        if (isShowSpecialFunction(selectStatement, ShowVersionExecutor.FUNCTION_NAME)) {
+            return Optional.of(new ShowVersionExecutor(selectStatement));
+        }
+        if (isShowSpecialFunction(selectStatement, ShowCurrentUserExecutor.FUNCTION_NAME)
+                || isShowSpecialFunction(selectStatement, ShowCurrentUserExecutor.FUNCTION_NAME_ALIAS)) {
+            return Optional.of(new ShowCurrentUserExecutor());
+        }
+        boolean hasNoResource = hasNoResource();
+        if (hasNoResource && isShowSpecialFunction(selectStatement, ShowTransactionExecutor.TRANSACTION_READ_ONLY)) {
+            return Optional.of(new ShowTransactionExecutor(ShowTransactionExecutor.TRANSACTION_READ_ONLY));
+        }
+        if (hasNoResource && isShowSpecialFunction(selectStatement, ShowTransactionExecutor.TRANSACTION_ISOLATION)) {
+            return Optional.of(new ShowTransactionExecutor(ShowTransactionExecutor.TRANSACTION_ISOLATION));
+        }
+        if (isShowSpecialFunction(selectStatement, ShowCurrentDatabaseExecutor.FUNCTION_NAME)) {
+            return Optional.of(new ShowCurrentDatabaseExecutor());
+        }
+        return mockExecutor(databaseName, selectStatement, sql);
     }
     
     private boolean isShowSpecialFunction(final SelectStatement sqlStatement, final String functionName) {
@@ -148,24 +157,26 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
         return ((SimpleTableSegment) tableSegment).getOwner().isPresent() && specialSchemaName.equalsIgnoreCase(((SimpleTableSegment) tableSegment).getOwner().get().getIdentifier().getValue());
     }
     
-    private DatabaseAdminExecutor mockExecutor(final String databaseName, final SelectStatement sqlStatement, final String sql) {
-        boolean isNotUseSchema = !Optional.ofNullable(databaseName).isPresent() && sqlStatement.getFrom() == null;
-        if (!hasDatabases() || !hasResources()) {
-            return new NoResourceShowExecutor(sqlStatement);
+    private Optional<DatabaseAdminExecutor> mockExecutor(final String databaseName, final SelectStatement sqlStatement, final String sql) {
+        boolean isNotUseSchema = null == databaseName && null == sqlStatement.getFrom();
+        if (hasNoResource()) {
+            return Optional.of(new NoResourceShowExecutor(sqlStatement));
         }
         String driverType = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps().getValue(ConfigurationPropertyKey.PROXY_BACKEND_DRIVER_TYPE);
-        if (isNotUseSchema) {
-            return "ExperimentalVertx".equals(driverType) ? null : new UnicastResourceShowExecutor(sqlStatement, sql);
+        return isNotUseSchema && !"ExperimentalVertx".equals(driverType) ? Optional.of(new UnicastResourceShowExecutor(sqlStatement, sql)) : Optional.empty();
+    }
+    
+    private boolean hasNoResource() {
+        Collection<String> databaseNames = ProxyContext.getInstance().getAllDatabaseNames();
+        if (databaseNames.isEmpty()) {
+            return true;
         }
-        return null;
-    }
-    
-    private boolean hasDatabases() {
-        return !ProxyContext.getInstance().getAllDatabaseNames().isEmpty();
-    }
-    
-    private boolean hasResources() {
-        return ProxyContext.getInstance().getAllDatabaseNames().stream().anyMatch(each -> ProxyContext.getInstance().getDatabase(each).containsDataSource());
+        for (String each : databaseNames) {
+            if (ProxyContext.getInstance().getDatabase(each).containsDataSource()) {
+                return false;
+            }
+        }
+        return true;
     }
     
     @Override
