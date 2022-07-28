@@ -51,6 +51,8 @@ import static org.mockito.Mockito.when;
 
 public final class ShardingSphereOptimizerTest {
     
+    private static final String LINE_SEPARATOR = System.lineSeparator();
+    
     private static final String SELECT_CROSS_JOIN_CONDITION = "SELECT t_order_federate.order_id, t_order_federate.user_id, t_user_info.user_id "
             + "FROM t_order_federate JOIN t_user_info ON t_order_federate.user_id = t_user_info.user_id "
             + "WHERE t_user_info.user_id = 13";
@@ -133,14 +135,14 @@ public final class ShardingSphereOptimizerTest {
         ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_CROSS_JOIN_CONDITION, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
-        String expected = "EnumerableCalc(expr#0..4=[{inputs}], proj#0..1=[{exprs}], user_id0=[$t3])\n"
-                + "  EnumerableCalc(expr#0..6=[{inputs}], proj#0..2=[{exprs}], user_id1=[$t4], information=[$t5])\n"
-                + "    EnumerableHashJoin(condition=[=($3, $6)], joinType=[inner])\n"
-                + "      EnumerableCalc(expr#0..2=[{inputs}], expr#3=[CAST($t1):VARCHAR], proj#0..3=[{exprs}])\n"
-                + "        EnumerableTableScan(table=[[federate_jdbc, t_order_federate]])\n"
-                + "      EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t0):VARCHAR], proj#0..2=[{exprs}])\n"
-                + "        EnumerableFilter(condition=[=(CAST($0):INTEGER, 13)])\n"
-                + "          EnumerableTableScan(table=[[federate_jdbc, t_user_info]])\n";
+        String expected = "EnumerableCalc(expr#0..4=[{inputs}], proj#0..1=[{exprs}], user_id0=[$t3])" + LINE_SEPARATOR
+                + "  EnumerableCalc(expr#0..6=[{inputs}], proj#0..2=[{exprs}], user_id1=[$t4], information=[$t5])" + LINE_SEPARATOR
+                + "    EnumerableHashJoin(condition=[=($3, $6)], joinType=[inner])" + LINE_SEPARATOR
+                + "      EnumerableCalc(expr#0..2=[{inputs}], expr#3=[CAST($t1):VARCHAR], proj#0..3=[{exprs}])" + LINE_SEPARATOR
+                + "        EnumerableTableScan(table=[[federate_jdbc, t_order_federate]])" + LINE_SEPARATOR
+                + "      EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t0):VARCHAR], proj#0..2=[{exprs}])" + LINE_SEPARATOR
+                + "        EnumerableFilter(condition=[=(CAST($0):INTEGER, 13)])" + LINE_SEPARATOR
+                + "          EnumerableTableScan(table=[[federate_jdbc, t_user_info]])" + LINE_SEPARATOR;
         assertThat(actual, is(expected));
     }
     
@@ -149,9 +151,9 @@ public final class ShardingSphereOptimizerTest {
         ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_WHERE_ALL_FIELDS, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
-        String expected = "EnumerableCalc(expr#0..1=[{inputs}], proj#0..1=[{exprs}])\n"
-                + "  EnumerableFilter(condition=[=(CAST($0):INTEGER, 12)])\n"
-                + "    EnumerableTableScan(table=[[federate_jdbc, t_user_info]])\n";
+        String expected = "EnumerableCalc(expr#0..1=[{inputs}], proj#0..1=[{exprs}])" + LINE_SEPARATOR
+                + "  EnumerableFilter(condition=[=(CAST($0):INTEGER, 12)])" + LINE_SEPARATOR
+                + "    EnumerableTableScan(table=[[federate_jdbc, t_user_info]])" + LINE_SEPARATOR;
         assertThat(actual, is(expected));
     }
     
@@ -160,9 +162,9 @@ public final class ShardingSphereOptimizerTest {
         ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_WHERE_SINGLE_FIELD, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
-        String expected = "EnumerableCalc(expr#0..1=[{inputs}], user_id=[$t0])\n"
-                + "  EnumerableFilter(condition=[=(CAST($0):INTEGER, 12)])\n"
-                + "    EnumerableTableScan(table=[[federate_jdbc, t_user_info]])\n";
+        String expected = "EnumerableCalc(expr#0..1=[{inputs}], user_id=[$t0])" + LINE_SEPARATOR
+                + "  EnumerableFilter(condition=[=(CAST($0):INTEGER, 12)])" + LINE_SEPARATOR
+                + "    EnumerableTableScan(table=[[federate_jdbc, t_user_info]])" + LINE_SEPARATOR;
         assertThat(actual, is(expected));
     }
     
@@ -171,13 +173,13 @@ public final class ShardingSphereOptimizerTest {
         ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_CROSS_WHERE, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
-        String expected = "EnumerableCalc(expr#0..4=[{inputs}], proj#0..1=[{exprs}], user_id0=[$t3])\n"
-                + "  EnumerableCalc(expr#0..6=[{inputs}], proj#0..2=[{exprs}], user_id1=[$t4], information=[$t5])\n"
-                + "    EnumerableHashJoin(condition=[=($3, $6)], joinType=[inner])\n"
-                + "      EnumerableCalc(expr#0..2=[{inputs}], expr#3=[CAST($t1):VARCHAR], proj#0..3=[{exprs}])\n"
-                + "        EnumerableTableScan(table=[[federate_jdbc, t_order_federate]])\n"
-                + "      EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t0):VARCHAR], proj#0..2=[{exprs}])\n"
-                + "        EnumerableTableScan(table=[[federate_jdbc, t_user_info]])\n";
+        String expected = "EnumerableCalc(expr#0..4=[{inputs}], proj#0..1=[{exprs}], user_id0=[$t3])" + LINE_SEPARATOR
+                + "  EnumerableCalc(expr#0..6=[{inputs}], proj#0..2=[{exprs}], user_id1=[$t4], information=[$t5])" + LINE_SEPARATOR
+                + "    EnumerableHashJoin(condition=[=($3, $6)], joinType=[inner])" + LINE_SEPARATOR
+                + "      EnumerableCalc(expr#0..2=[{inputs}], expr#3=[CAST($t1):VARCHAR], proj#0..3=[{exprs}])" + LINE_SEPARATOR
+                + "        EnumerableTableScan(table=[[federate_jdbc, t_order_federate]])" + LINE_SEPARATOR
+                + "      EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t0):VARCHAR], proj#0..2=[{exprs}])" + LINE_SEPARATOR
+                + "        EnumerableTableScan(table=[[federate_jdbc, t_user_info]])" + LINE_SEPARATOR;
         assertThat(actual, is(expected));
     }
     
@@ -186,12 +188,12 @@ public final class ShardingSphereOptimizerTest {
         ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_CROSS_JOIN, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
-        String expected = "EnumerableCalc(expr#0..6=[{inputs}], proj#0..1=[{exprs}], user_id0=[$t4])\n"
-                + "  EnumerableHashJoin(condition=[=($3, $6)], joinType=[inner])\n"
-                + "    EnumerableCalc(expr#0..2=[{inputs}], expr#3=[CAST($t1):VARCHAR], proj#0..3=[{exprs}])\n"
-                + "      EnumerableTableScan(table=[[federate_jdbc, t_order_federate]])\n"
-                + "    EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t0):VARCHAR], proj#0..2=[{exprs}])\n"
-                + "      EnumerableTableScan(table=[[federate_jdbc, t_user_info]])\n";
+        String expected = "EnumerableCalc(expr#0..6=[{inputs}], proj#0..1=[{exprs}], user_id0=[$t4])" + LINE_SEPARATOR
+                + "  EnumerableHashJoin(condition=[=($3, $6)], joinType=[inner])" + LINE_SEPARATOR
+                + "    EnumerableCalc(expr#0..2=[{inputs}], expr#3=[CAST($t1):VARCHAR], proj#0..3=[{exprs}])" + LINE_SEPARATOR
+                + "      EnumerableTableScan(table=[[federate_jdbc, t_order_federate]])" + LINE_SEPARATOR
+                + "    EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t0):VARCHAR], proj#0..2=[{exprs}])" + LINE_SEPARATOR
+                + "      EnumerableTableScan(table=[[federate_jdbc, t_user_info]])" + LINE_SEPARATOR;
         assertThat(actual, is(expected));
     }
     
@@ -200,14 +202,14 @@ public final class ShardingSphereOptimizerTest {
         ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_CROSS_WHERE_CONDITION, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
-        String expected = "EnumerableCalc(expr#0..4=[{inputs}], proj#0..1=[{exprs}], user_id0=[$t3])\n"
-                + "  EnumerableCalc(expr#0..6=[{inputs}], proj#0..2=[{exprs}], user_id1=[$t4], information=[$t5])\n"
-                + "    EnumerableHashJoin(condition=[=($3, $6)], joinType=[inner])\n"
-                + "      EnumerableCalc(expr#0..2=[{inputs}], expr#3=[CAST($t1):VARCHAR], proj#0..3=[{exprs}])\n"
-                + "        EnumerableTableScan(table=[[federate_jdbc, t_order_federate]])\n"
-                + "      EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t0):VARCHAR], proj#0..2=[{exprs}])\n"
-                + "        EnumerableFilter(condition=[=(CAST($0):INTEGER, 13)])\n"
-                + "          EnumerableTableScan(table=[[federate_jdbc, t_user_info]])\n";
+        String expected = "EnumerableCalc(expr#0..4=[{inputs}], proj#0..1=[{exprs}], user_id0=[$t3])" + LINE_SEPARATOR
+                + "  EnumerableCalc(expr#0..6=[{inputs}], proj#0..2=[{exprs}], user_id1=[$t4], information=[$t5])" + LINE_SEPARATOR
+                + "    EnumerableHashJoin(condition=[=($3, $6)], joinType=[inner])" + LINE_SEPARATOR
+                + "      EnumerableCalc(expr#0..2=[{inputs}], expr#3=[CAST($t1):VARCHAR], proj#0..3=[{exprs}])" + LINE_SEPARATOR
+                + "        EnumerableTableScan(table=[[federate_jdbc, t_order_federate]])" + LINE_SEPARATOR
+                + "      EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t0):VARCHAR], proj#0..2=[{exprs}])" + LINE_SEPARATOR
+                + "        EnumerableFilter(condition=[=(CAST($0):INTEGER, 13)])" + LINE_SEPARATOR
+                + "          EnumerableTableScan(table=[[federate_jdbc, t_user_info]])" + LINE_SEPARATOR;
         assertThat(actual, is(expected));
     }
     
@@ -216,9 +218,9 @@ public final class ShardingSphereOptimizerTest {
         ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_SUBQUERY_FROM, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
-        String expected = "EnumerableCalc(expr#0..1=[{inputs}], proj#0..1=[{exprs}])\n"
-                + "  EnumerableFilter(condition=[>(CAST($0):INTEGER, 1)])\n"
-                + "    EnumerableTableScan(table=[[federate_jdbc, t_user_info]])\n";
+        String expected = "EnumerableCalc(expr#0..1=[{inputs}], proj#0..1=[{exprs}])" + LINE_SEPARATOR
+                + "  EnumerableFilter(condition=[>(CAST($0):INTEGER, 1)])" + LINE_SEPARATOR
+                + "    EnumerableTableScan(table=[[federate_jdbc, t_user_info]])" + LINE_SEPARATOR;
         assertThat(actual, is(expected));
     }
     
@@ -227,14 +229,14 @@ public final class ShardingSphereOptimizerTest {
         ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_SUBQUERY_WHERE_EXIST, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
-        String expected = "EnumerableCalc(expr#0..3=[{inputs}], proj#0..1=[{exprs}])\n"
-                + "  EnumerableFilter(condition=[IS NOT NULL($3)])\n"
-                + "    EnumerableCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{1}])\n"
-                + "      EnumerableTableScan(table=[[federate_jdbc, t_order_federate]])\n"
-                + "      EnumerableAggregate(group=[{}], agg#0=[MIN($0)])\n"
-                + "        EnumerableCalc(expr#0..1=[{inputs}], expr#2=[true], $f0=[$t2])\n"
-                + "          EnumerableFilter(condition=[=(CAST($cor0.user_id):VARCHAR, CAST($0):VARCHAR)])\n"
-                + "            EnumerableTableScan(table=[[federate_jdbc, t_user_info]])\n";
+        String expected = "EnumerableCalc(expr#0..3=[{inputs}], proj#0..1=[{exprs}])" + LINE_SEPARATOR
+                + "  EnumerableFilter(condition=[IS NOT NULL($3)])" + LINE_SEPARATOR
+                + "    EnumerableCorrelate(correlation=[$cor0], joinType=[left], requiredColumns=[{1}])" + LINE_SEPARATOR
+                + "      EnumerableTableScan(table=[[federate_jdbc, t_order_federate]])" + LINE_SEPARATOR
+                + "      EnumerableAggregate(group=[{}], agg#0=[MIN($0)])" + LINE_SEPARATOR
+                + "        EnumerableCalc(expr#0..1=[{inputs}], expr#2=[true], $f0=[$t2])" + LINE_SEPARATOR
+                + "          EnumerableFilter(condition=[=(CAST($cor0.user_id):VARCHAR, CAST($0):VARCHAR)])" + LINE_SEPARATOR
+                + "            EnumerableTableScan(table=[[federate_jdbc, t_user_info]])" + LINE_SEPARATOR;
         assertThat(actual, is(expected));
     }
     
@@ -243,12 +245,12 @@ public final class ShardingSphereOptimizerTest {
         ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_SUBQUERY_WHERE_IN, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
-        String expected = "EnumerableCalc(expr#0..3=[{inputs}], proj#0..1=[{exprs}])\n"
-                + "  EnumerableHashJoin(condition=[=($1, $3)], joinType=[inner])\n"
-                + "    EnumerableTableScan(table=[[federate_jdbc, t_order_federate]])\n"
-                + "    EnumerableAggregate(group=[{0}])\n"
-                + "      EnumerableCalc(expr#0..1=[{inputs}], user_id=[$t0])\n"
-                + "        EnumerableTableScan(table=[[federate_jdbc, t_user_info]])\n";
+        String expected = "EnumerableCalc(expr#0..3=[{inputs}], proj#0..1=[{exprs}])" + LINE_SEPARATOR
+                + "  EnumerableHashJoin(condition=[=($1, $3)], joinType=[inner])" + LINE_SEPARATOR
+                + "    EnumerableTableScan(table=[[federate_jdbc, t_order_federate]])" + LINE_SEPARATOR
+                + "    EnumerableAggregate(group=[{0}])" + LINE_SEPARATOR
+                + "      EnumerableCalc(expr#0..1=[{inputs}], user_id=[$t0])" + LINE_SEPARATOR
+                + "        EnumerableTableScan(table=[[federate_jdbc, t_user_info]])" + LINE_SEPARATOR;
         assertThat(actual, is(expected));
     }
     
@@ -257,18 +259,18 @@ public final class ShardingSphereOptimizerTest {
         ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
         SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_SUBQUERY_WHERE_BETWEEN, false);
         String actual = optimizer.optimize(databaseName, schemaName, sqlStatement).explain();
-        String expected = "EnumerableCalc(expr#0..4=[{inputs}], proj#0..1=[{exprs}])\n"
-                + "  EnumerableNestedLoopJoin(condition=[<=($1, $4)], joinType=[inner])\n"
-                + "    EnumerableNestedLoopJoin(condition=[>=($1, $3)], joinType=[inner])\n"
-                + "      EnumerableTableScan(table=[[federate_jdbc, t_order_federate]])\n"
-                + "      EnumerableAggregate(group=[{}], agg#0=[SINGLE_VALUE($0)])\n"
-                + "        EnumerableCalc(expr#0..1=[{inputs}], user_id=[$t0])\n"
-                + "          EnumerableFilter(condition=[=(CAST($1):VARCHAR, 'before')])\n"
-                + "            EnumerableTableScan(table=[[federate_jdbc, t_user_info]])\n"
-                + "    EnumerableAggregate(group=[{}], agg#0=[SINGLE_VALUE($0)])\n"
-                + "      EnumerableCalc(expr#0..1=[{inputs}], user_id=[$t0])\n"
-                + "        EnumerableFilter(condition=[=(CAST($1):VARCHAR, 'after')])\n"
-                + "          EnumerableTableScan(table=[[federate_jdbc, t_user_info]])\n";
+        String expected = "EnumerableCalc(expr#0..4=[{inputs}], proj#0..1=[{exprs}])" + LINE_SEPARATOR
+                + "  EnumerableNestedLoopJoin(condition=[<=($1, $4)], joinType=[inner])" + LINE_SEPARATOR
+                + "    EnumerableNestedLoopJoin(condition=[>=($1, $3)], joinType=[inner])" + LINE_SEPARATOR
+                + "      EnumerableTableScan(table=[[federate_jdbc, t_order_federate]])" + LINE_SEPARATOR
+                + "      EnumerableAggregate(group=[{}], agg#0=[SINGLE_VALUE($0)])" + LINE_SEPARATOR
+                + "        EnumerableCalc(expr#0..1=[{inputs}], user_id=[$t0])" + LINE_SEPARATOR
+                + "          EnumerableFilter(condition=[=(CAST($1):VARCHAR, 'before')])" + LINE_SEPARATOR
+                + "            EnumerableTableScan(table=[[federate_jdbc, t_user_info]])" + LINE_SEPARATOR
+                + "    EnumerableAggregate(group=[{}], agg#0=[SINGLE_VALUE($0)])" + LINE_SEPARATOR
+                + "      EnumerableCalc(expr#0..1=[{inputs}], user_id=[$t0])" + LINE_SEPARATOR
+                + "        EnumerableFilter(condition=[=(CAST($1):VARCHAR, 'after')])" + LINE_SEPARATOR
+                + "          EnumerableTableScan(table=[[federate_jdbc, t_user_info]])" + LINE_SEPARATOR;
         assertThat(actual, is(expected));
     }
 }
