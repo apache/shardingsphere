@@ -15,33 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.transaction.engine.constants;
+package org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.ddl;
+
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.oracle.OracleStatement;
 
 /**
- * Constants for transaction test.
+ * Oracle alter lockdown profile statement.
  */
-public final class TransactionTestConstants {
-    
-    public static final String MYSQL = "mysql";
-    
-    public static final String OPENGAUSS = "OpenGauss";
-    
-    public static final String POSTGRESQL = "PostgreSQL";
-    
-    public static final String JDBC = "jdbc";
-    
-    public static final String PROXY = "proxy";
-    
-    public static final String ACCOUNT = "account";
-    
-    public static final String DEFAULT_TYPE = "default_type";
-    
-    public static final String PROVIDER_TYPE = "provider_type";
-    
-    public static final String ATOMIKOS = "Atomikos";
-    
-    public static final String NARAYANA = "Narayana";
-    
-    public static final String BITRONIX = "Bitronix";
-    
+@ToString(callSuper = true)
+public final class OracleAlterLockdownProfileStatement extends AbstractSQLStatement implements OracleStatement {
 }

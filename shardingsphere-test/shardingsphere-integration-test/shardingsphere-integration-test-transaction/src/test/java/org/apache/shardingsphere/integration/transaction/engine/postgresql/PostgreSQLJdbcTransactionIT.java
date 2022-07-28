@@ -66,7 +66,7 @@ public final class PostgreSQLJdbcTransactionIT extends BaseTransactionITCase {
     
     @SneakyThrows
     private void callTestCases() {
-        parameterized.getTransactionTestCaseClass().getConstructor(DataSource.class).newInstance(getDataSource()).executeTest();
+        parameterized.getTransactionTestCaseClass().getConstructor(BaseTransactionITCase.class, DataSource.class).newInstance(this, getDataSource()).executeTest();
     }
     
 }

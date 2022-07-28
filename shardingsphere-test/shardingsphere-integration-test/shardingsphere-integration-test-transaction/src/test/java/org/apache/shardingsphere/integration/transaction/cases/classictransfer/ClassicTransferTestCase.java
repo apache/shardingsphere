@@ -21,6 +21,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
+import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
 import org.junit.Assert;
 
@@ -38,8 +39,8 @@ import java.util.List;
 @TransactionTestCase
 public final class ClassicTransferTestCase extends BaseTransactionTestCase {
     
-    public ClassicTransferTestCase(final DataSource dataSource) {
-        super(dataSource);
+    public ClassicTransferTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
+        super(baseTransactionITCase, dataSource);
     }
     
     @Override

@@ -2946,3 +2946,16 @@ ASYNCHRONOUS
 REPEAT
     : R E P E A T
     ;
+
+FEATURE
+    : F E A T U R E
+    ;
+
+STATEMENT
+    : S T A T E M E N T
+    ;
+
+CLAUSE
+   : C L A U S E
+   ;
+

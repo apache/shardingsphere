@@ -19,6 +19,7 @@ package org.apache.shardingsphere.integration.transaction.cases.commitrollback;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
+import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
 
 import javax.sql.DataSource;
@@ -32,8 +33,8 @@ import java.sql.Statement;
 @TransactionTestCase
 public final class SingleTableCommitAndRollbackTestCase extends BaseTransactionTestCase {
     
-    public SingleTableCommitAndRollbackTestCase(final DataSource dataSource) {
-        super(dataSource);
+    public SingleTableCommitAndRollbackTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
+        super(baseTransactionITCase, dataSource);
     }
     
     @Override

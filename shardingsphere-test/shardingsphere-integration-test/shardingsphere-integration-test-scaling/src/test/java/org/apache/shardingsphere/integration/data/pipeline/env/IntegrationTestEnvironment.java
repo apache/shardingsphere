@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.integration.data.pipeline.env;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -47,20 +48,27 @@ public final class IntegrationTestEnvironment {
     
     private final List<String> openGaussVersions;
     
+    private final String[] commandParts;
+    
     private IntegrationTestEnvironment() {
         props = loadProperties();
         itEnvType = ScalingITEnvTypeEnum.valueOf(StringUtils.defaultIfBlank(props.getProperty("scaling.it.env.type").toUpperCase(), ScalingITEnvTypeEnum.NONE.name()));
         mysqlVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.mysql.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         postgresVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.postgresql.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         openGaussVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.opengauss.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
+        String commands = props.getOrDefault("scaling.it.database.command", "").toString();
+        if (StringUtils.isNotBlank(commands)) {
+            commandParts = commands.split(",");
+        } else {
+            commandParts = new String[0];
+        }
     }
     
+    @SneakyThrows(IOException.class)
     private Properties loadProperties() {
         Properties result = new Properties();
         try (InputStream inputStream = IntegrationTestEnvironment.class.getClassLoader().getResourceAsStream("env/it-env.properties")) {
             result.load(inputStream);
-        } catch (final IOException ex) {
-            throw new RuntimeException(ex);
         }
         for (String each : System.getProperties().stringPropertyNames()) {
             result.setProperty(each, System.getProperty(each));
