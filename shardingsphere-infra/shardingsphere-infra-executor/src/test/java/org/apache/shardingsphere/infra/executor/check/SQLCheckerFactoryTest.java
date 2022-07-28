@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.executor.check;
 
 import org.apache.shardingsphere.infra.executor.check.fixture.SQLCheckerFixture;
-import org.apache.shardingsphere.infra.executor.sql.fixture.FixtureRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.test.fixture.rule.FixtureRule;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -32,6 +32,7 @@ import static org.mockito.Mockito.mock;
 
 public final class SQLCheckerFactoryTest {
     
+    @SuppressWarnings("rawtypes")
     @Test
     public void assertGetInstance() {
         FixtureRule rule = mock(FixtureRule.class);

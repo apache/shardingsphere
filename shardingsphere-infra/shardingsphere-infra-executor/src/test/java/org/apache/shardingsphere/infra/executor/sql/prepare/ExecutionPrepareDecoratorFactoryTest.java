@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.prepare;
 
 import org.apache.shardingsphere.infra.executor.sql.fixture.FixtureExecutionPrepareDecorator;
-import org.apache.shardingsphere.infra.executor.sql.fixture.FixtureRule;
+import org.apache.shardingsphere.test.fixture.rule.FixtureRule;
 import org.junit.Test;
 
 import java.util.Collections;
