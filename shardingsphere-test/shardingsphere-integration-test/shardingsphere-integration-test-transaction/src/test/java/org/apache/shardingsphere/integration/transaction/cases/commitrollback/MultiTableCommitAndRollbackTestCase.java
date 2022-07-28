@@ -20,6 +20,7 @@ package org.apache.shardingsphere.integration.transaction.cases.commitrollback;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
+import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
 
 import javax.sql.DataSource;
@@ -37,8 +38,8 @@ public final class MultiTableCommitAndRollbackTestCase extends BaseTransactionTe
     
     private static final String T_ORDER_ITEM = "t_order_item";
     
-    public MultiTableCommitAndRollbackTestCase(final DataSource dataSource) {
-        super(dataSource);
+    public MultiTableCommitAndRollbackTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
+        super(baseTransactionITCase, dataSource);
     }
     
     @Override

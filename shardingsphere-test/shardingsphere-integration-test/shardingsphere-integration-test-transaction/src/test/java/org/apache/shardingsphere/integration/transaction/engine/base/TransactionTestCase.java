@@ -39,11 +39,11 @@ public @interface TransactionTestCase {
     String[] dbTypes() default {"mysql", "PostgreSQL", "OpenGauss"};
     
     /**
-     * Specifies which modes do the case run on.
+     * Specifies which adapters do the case run on.
      * 
-     * @return run modes
+     * @return run adapters
      */
-    String[] runModes() default {"jdbc", "proxy"};
+    String[] adapters() default {"jdbc", "proxy"};
     
     /**
      * Specifies which transaction types do the case run on.
