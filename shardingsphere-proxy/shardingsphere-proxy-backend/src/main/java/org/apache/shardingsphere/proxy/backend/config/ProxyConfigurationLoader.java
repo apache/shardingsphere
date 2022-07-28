@@ -118,7 +118,8 @@ public final class ProxyConfigurationLoader {
         if (ruleConfigurations.isEmpty()) {
             return;
         }
-        Map<Class<? extends RuleConfiguration>, Long> ruleConfigTypeCountMap = ruleConfigurations.stream().collect(Collectors.groupingBy(YamlRuleConfiguration::getRuleConfigurationType, Collectors.counting()));
+        Map<Class<? extends RuleConfiguration>, Long> ruleConfigTypeCountMap = ruleConfigurations.stream()
+                .collect(Collectors.groupingBy(YamlRuleConfiguration::getRuleConfigurationType, Collectors.counting()));
         Optional<Entry<Class<? extends RuleConfiguration>, Long>> duplicateRuleConfiguration = ruleConfigTypeCountMap.entrySet().stream().filter(each -> each.getValue() > 1).findFirst();
         if (duplicateRuleConfiguration.isPresent()) {
             throw new IllegalStateException(String.format("Duplicate rule tag '!%s' in file %s.", getDuplicateRuleTagName(duplicateRuleConfiguration.get().getKey()), yamlFile.getName()));
