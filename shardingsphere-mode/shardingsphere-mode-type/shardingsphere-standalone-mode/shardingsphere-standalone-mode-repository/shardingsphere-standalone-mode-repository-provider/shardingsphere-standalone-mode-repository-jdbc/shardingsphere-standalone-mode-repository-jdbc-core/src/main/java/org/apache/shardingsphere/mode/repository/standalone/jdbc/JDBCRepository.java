@@ -84,7 +84,7 @@ public abstract class JDBCRepository implements StandalonePersistRepository {
                     resultChildren.add(childrenKey.substring(lastIndexOf + 1));
                 }
                 return new ArrayList<>(resultChildren);
-        }
+            }
         } catch (final SQLException ex) {
             log.error("Get children {} data by key: {} failed", getType(), key, ex);
         }
