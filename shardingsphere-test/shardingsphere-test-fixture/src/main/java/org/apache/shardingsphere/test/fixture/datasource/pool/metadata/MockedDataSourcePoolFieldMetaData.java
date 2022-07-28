@@ -19,6 +19,9 @@ package org.apache.shardingsphere.test.fixture.datasource.pool.metadata;
 
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolFieldMetaData;
 
+/**
+ * Mocked data source pool field meta data.
+ */
 public final class MockedDataSourcePoolFieldMetaData implements DataSourcePoolFieldMetaData {
     
     @Override
