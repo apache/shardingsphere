@@ -18,9 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.config;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
-import com.google.common.collect.Multiset.Entry;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
@@ -41,6 +38,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -114,16 +113,15 @@ public final class ProxyConfigurationLoader {
         checkDuplicateRule(result.getRules(), yamlFile);
         return Optional.of(result);
     }
-    
+
     private static void checkDuplicateRule(final Collection<YamlRuleConfiguration> ruleConfigurations, final File yamlFile) {
         if (ruleConfigurations.isEmpty()) {
             return;
         }
-        Multiset<Class<? extends RuleConfiguration>> multiset = HashMultiset.create();
-        ruleConfigurations.forEach(each -> multiset.add(each.getRuleConfigurationType()));
-        Optional<Entry<Class<? extends RuleConfiguration>>> duplicateRuleConfiguration = multiset.entrySet().stream().filter(each -> each.getCount() > 1).findFirst();
+        Map<Class<? extends RuleConfiguration>, Long> ruleConfigTypeCountMap = ruleConfigurations.stream().collect(Collectors.groupingBy(YamlRuleConfiguration::getRuleConfigurationType, Collectors.counting()));
+        Optional<Entry<Class<? extends RuleConfiguration>, Long>> duplicateRuleConfiguration = ruleConfigTypeCountMap.entrySet().stream().filter(each -> each.getValue() > 1).findFirst();
         if (duplicateRuleConfiguration.isPresent()) {
-            throw new IllegalStateException(String.format("Duplicate rule tag '!%s' in file %s.", getDuplicateRuleTagName(duplicateRuleConfiguration.get().getElement()), yamlFile.getName()));
+            throw new IllegalStateException(String.format("Duplicate rule tag '!%s' in file %s.", getDuplicateRuleTagName(duplicateRuleConfiguration.get().getKey()), yamlFile.getName()));
         }
     }
     
