@@ -77,7 +77,7 @@ public final class ProcessRegistrySubscriber {
      */
     @Subscribe
     public void loadShowProcessListData(final ShowProcessListRequestEvent event) {
-        if (repository != null) {
+        if (null != repository) {
             loadClusterShowProcessListData();
         } else {
             loadStandaloneShowProcessListData();
@@ -88,7 +88,7 @@ public final class ProcessRegistrySubscriber {
         BatchYamlExecuteProcessContext batchYamlExecuteProcessContext = new BatchYamlExecuteProcessContext(new ArrayList<>(
                 ShowProcessListManager.getInstance().getProcessContextMap().values()));
         eventBusContext.post(new ShowProcessListResponseEvent(batchYamlExecuteProcessContext.getContexts().isEmpty()
-                ? null
+                ? Collections.emptyList()
                 : Collections.singletonList(YamlEngine.marshal(batchYamlExecuteProcessContext))));
     }
     
