@@ -113,7 +113,7 @@ public final class ProxyConfigurationLoader {
         checkDuplicateRule(result.getRules(), yamlFile);
         return Optional.of(result);
     }
-
+    
     private static void checkDuplicateRule(final Collection<YamlRuleConfiguration> ruleConfigurations, final File yamlFile) {
         if (ruleConfigurations.isEmpty()) {
             return;
