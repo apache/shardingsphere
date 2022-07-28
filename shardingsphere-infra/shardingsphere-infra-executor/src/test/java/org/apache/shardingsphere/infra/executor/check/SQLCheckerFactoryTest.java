@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.executor.check;
 
 import org.apache.shardingsphere.infra.executor.check.fixture.SQLCheckerFixture;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.test.fixture.rule.FixtureRule;
+import org.apache.shardingsphere.test.fixture.rule.MockedRule;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -35,7 +35,7 @@ public final class SQLCheckerFactoryTest {
     @SuppressWarnings("rawtypes")
     @Test
     public void assertGetInstance() {
-        FixtureRule rule = mock(FixtureRule.class);
+        MockedRule rule = mock(MockedRule.class);
         Map<ShardingSphereRule, SQLChecker> actual = SQLCheckerFactory.getInstance(Collections.singleton(rule));
         assertThat(actual.size(), is(1));
         assertThat(actual.get(rule), instanceOf(SQLCheckerFixture.class));
