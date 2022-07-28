@@ -31,7 +31,7 @@ public final class StandaloneScheduleStrategy implements ScheduleStrategy {
     }
     
     @Override
-    public void closeSchedule(String jobName) {
+    public void closeSchedule(final String jobName) {
         // TODO
     }
 }

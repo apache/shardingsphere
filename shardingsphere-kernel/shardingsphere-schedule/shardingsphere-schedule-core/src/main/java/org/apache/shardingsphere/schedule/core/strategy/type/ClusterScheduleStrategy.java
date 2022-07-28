@@ -60,7 +60,11 @@ public final class ClusterScheduleStrategy implements ScheduleStrategy {
         }
     };
     
-    
+    /**
+     * Start schedule.
+     *
+     * @param job cron job
+     */
     @SuppressWarnings("unchecked")
     public void startSchedule(final CronJob job) {
         CoordinatorRegistryCenter registryCenter = getRegistryCenter();
@@ -75,7 +79,7 @@ public final class ClusterScheduleStrategy implements ScheduleStrategy {
     }
     
     @Override
-    public void closeSchedule(String jobName) {
+    public void closeSchedule(final String jobName) {
         Optional.ofNullable(SCHEDULE_JOB_BOOTSTRAP_MAP.remove(jobName)).ifPresent(ScheduleJobBootstrap::shutdown);
     }
     
