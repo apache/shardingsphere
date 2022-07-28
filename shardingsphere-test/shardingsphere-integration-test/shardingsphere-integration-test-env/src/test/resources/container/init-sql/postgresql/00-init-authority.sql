@@ -16,5 +16,5 @@
 --
 
 CREATE USER test_user WITH ENCRYPTED PASSWORD 'Test@123';
-ALTER ROLE test_user CREATEDB REPLICATION;
+ALTER ROLE test_user Superuser;
 CREATE DATABASE test_user;
