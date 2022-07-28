@@ -114,7 +114,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
      * @return username
      */
     public final String getUsername() {
-        return useRootUsername ? getRootUsername() : getNormalUsername();
+        return getNormalUsername();
     }
     
     /**
@@ -141,7 +141,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
      * @return unified database access password
      */
     public final String getUnifiedPassword() {
-        return "Root@123";
+        return "Test@123";
     }
     
     protected abstract Optional<String> getDefaultDatabaseName();
