@@ -24,7 +24,7 @@
         <artifactId>shardingsphere-standalone-mode-repository-jdbc</artifactId>
         <version>5.1.3-SNAPSHOT</version>
     </parent>
-    <artifactId>shardingsphere-standalone-mode-repository-h2</artifactId>
+    <artifactId>shardingsphere-standalone-mode-repository-jdbc-h2</artifactId>
     
     <dependencies>
         <dependency>
@@ -35,7 +35,7 @@
         
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-standalone-mode-repository-core-jdbc</artifactId>
+            <artifactId>shardingsphere-standalone-mode-repository-jdbc-core</artifactId>
             <version>${project.version}</version>
         </dependency>
         

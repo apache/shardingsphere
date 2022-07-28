@@ -19,7 +19,7 @@ Standalone mode configuration information persistence definition
 
 | *Configuration Type* | *Description*        | *Fully-qualified class name* |
 | -------------------- | -------------------- | ---------------------------- |
-| H2                   | H2-based persistence | [`org.apache.shardingsphere.mode.repository.standalone.h2.H2Repository`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-mode/shardingsphere-mode-type/shardingsphere-standalone-mode/shardingsphere-standalone-mode-repository/shardingsphere-standalone-mode-repository-provider/shardingsphere-standalone-mode-repository-h2/src/main/java/org/apache/shardingsphere/mode/repository/standalone/h2/H2Repository.java) |
+| H2                   | H2-based persistence | [`org.apache.shardingsphere.mode.repository.standalone.h2.H2Repository`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-mode/shardingsphere-mode-type/shardingsphere-standalone-mode/shardingsphere-standalone-mode-repository/shardingsphere-standalone-mode-repository-provider/shardingsphere-standalone-mode-repository-jdbc-h2/src/main/java/org/apache/shardingsphere/mode/repository/standalone/h2/H2Repository.java) |
 
 ## ClusterPersistRepository
 
