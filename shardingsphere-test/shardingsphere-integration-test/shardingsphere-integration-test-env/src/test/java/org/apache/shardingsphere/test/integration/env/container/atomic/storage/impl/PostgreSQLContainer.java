@@ -38,7 +38,7 @@ public final class PostgreSQLContainer extends DockerStorageContainer {
         addEnv("POSTGRES_USER", getRootUsername());
         addEnv("POSTGRES_PASSWORD", getUnifiedPassword());
         withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/etc/postgresql/postgresql.conf", BindMode.READ_ONLY);
-        setCommand("config_file=/etc/postgresql/postgresql.conf");
+        setCommand("-c config_file=/etc/postgresql/postgresql.conf");
         super.configure();
     }
     
