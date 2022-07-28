@@ -51,6 +51,7 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowProcessListStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowTablesStatement;
 
+import java.util.Iterator;
 import java.util.Collection;
 import java.util.Optional;
 
@@ -137,8 +138,10 @@ public final class MySQLAdminExecutorCreator implements DatabaseAdminExecutorCre
     }
     
     private boolean isShowSpecialFunction(final SelectStatement sqlStatement, final String functionName) {
-        ProjectionSegment firstProjection = sqlStatement.getProjections().getProjections().iterator().next();
-        return firstProjection instanceof ExpressionProjectionSegment && functionName.equalsIgnoreCase(((ExpressionProjectionSegment) firstProjection).getText());
+        Iterator<ProjectionSegment> segmentIterator = sqlStatement.getProjections().getProjections().iterator();
+        ProjectionSegment firstProjection = segmentIterator.next();
+        return !segmentIterator.hasNext() && firstProjection instanceof ExpressionProjectionSegment
+                && functionName.equalsIgnoreCase(((ExpressionProjectionSegment) firstProjection).getText());
     }
     
     private boolean isQueryInformationSchema(final SelectStatement sqlStatement) {
