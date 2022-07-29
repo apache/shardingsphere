@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.config.checker;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.checker.fixture.RuleConfigurationCheckerFixture;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.junit.Test;
 
