@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorCreator;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminExecutorCreatorFactory;
@@ -45,13 +45,13 @@ public final class DatabaseAdminBackendHandlerFactory {
      * @param connectionSession connection session
      * @return created instance
      */
-    public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext, final ConnectionSession connectionSession) {
+    public static Optional<ProxyBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext, final ConnectionSession connectionSession) {
         Optional<DatabaseAdminExecutorCreator> creator = DatabaseAdminExecutorCreatorFactory.findInstance(databaseType);
         if (!creator.isPresent()) {
             return Optional.empty();
         }
         Optional<DatabaseAdminExecutor> executor = creator.get().create(sqlStatementContext);
-        return executor.map(optional -> createTextProtocolBackendHandler(sqlStatementContext, connectionSession, optional));
+        return executor.map(optional -> createProxyBackendHandler(sqlStatementContext, connectionSession, optional));
     }
     
     /**
@@ -63,18 +63,18 @@ public final class DatabaseAdminBackendHandlerFactory {
      * @param sql SQL being executed
      * @return created instance
      */
-    public static Optional<TextProtocolBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext,
-                                                                   final ConnectionSession connectionSession, final String sql) {
+    public static Optional<ProxyBackendHandler> newInstance(final DatabaseType databaseType, final SQLStatementContext<?> sqlStatementContext,
+                                                            final ConnectionSession connectionSession, final String sql) {
         Optional<DatabaseAdminExecutorCreator> executorFactory = DatabaseAdminExecutorCreatorFactory.findInstance(databaseType);
         if (!executorFactory.isPresent()) {
             return Optional.empty();
         }
         Optional<DatabaseAdminExecutor> executor = executorFactory.get().create(sqlStatementContext, sql, connectionSession.getDatabaseName());
-        return executor.map(optional -> createTextProtocolBackendHandler(sqlStatementContext, connectionSession, optional));
+        return executor.map(optional -> createProxyBackendHandler(sqlStatementContext, connectionSession, optional));
     }
     
-    private static TextProtocolBackendHandler createTextProtocolBackendHandler(final SQLStatementContext<?> sqlStatementContext,
-                                                                               final ConnectionSession connectionSession, final DatabaseAdminExecutor executor) {
+    private static ProxyBackendHandler createProxyBackendHandler(final SQLStatementContext<?> sqlStatementContext,
+                                                                 final ConnectionSession connectionSession, final DatabaseAdminExecutor executor) {
         if (executor instanceof DatabaseAdminQueryExecutor) {
             return new DatabaseAdminQueryBackendHandler(connectionSession, (DatabaseAdminQueryExecutor) executor);
         }

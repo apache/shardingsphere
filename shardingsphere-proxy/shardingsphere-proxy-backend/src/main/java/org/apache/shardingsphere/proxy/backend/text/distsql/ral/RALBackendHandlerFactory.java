@@ -50,7 +50,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetInsta
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.UnlabelInstanceStatement;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.hint.HintRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.queryable.ConvertYamlConfigurationHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.queryable.ExportDatabaseConfigurationHandler;
@@ -137,7 +137,7 @@ public final class RALBackendHandlerFactory {
      * @return created instance
      * @throws SQLException SQL exception
      */
-    public static TextProtocolBackendHandler newInstance(final RALStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
+    public static ProxyBackendHandler newInstance(final RALStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
         if (sqlStatement instanceof HintRALStatement) {
             return new HintRALBackendHandler((HintRALStatement) sqlStatement, connectionSession);
         }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.proxy.backend.text.database;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.ProxyBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.CreateDatabaseStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropDatabaseStatement;
@@ -41,11 +41,11 @@ public final class DatabaseOperateBackendHandlerFactory {
      * @return created instance
      * @throws SQLException SQL exception
      */
-    public static TextProtocolBackendHandler newInstance(final SQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
+    public static ProxyBackendHandler newInstance(final SQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
         return createBackendHandler(sqlStatement, connectionSession);
     }
     
-    private static TextProtocolBackendHandler createBackendHandler(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
+    private static ProxyBackendHandler createBackendHandler(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
         if (sqlStatement instanceof CreateDatabaseStatement) {
             return new CreateDatabaseBackendHandler((CreateDatabaseStatement) sqlStatement);
         }

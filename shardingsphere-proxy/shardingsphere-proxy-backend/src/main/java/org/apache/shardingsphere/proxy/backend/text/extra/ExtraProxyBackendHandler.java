@@ -17,20 +17,20 @@
 
 package org.apache.shardingsphere.proxy.backend.text.extra;
 
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.ProxyBackendHandler;
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 /**
- * Extra text protocol backend handler.
+ * Extra proxy backend handler.
  */
 @SingletonSPI
-public interface ExtraTextProtocolBackendHandler extends TextProtocolBackendHandler {
+public interface ExtraProxyBackendHandler extends ProxyBackendHandler {
     
     /**
      * Whether accept to process SQL statement.
      * 
-     * @param sqlStatement SQL statement to be judge
+     * @param sqlStatement SQL statement to be judged
      * @return accept or not
      */
     boolean accept(SQLStatement sqlStatement);

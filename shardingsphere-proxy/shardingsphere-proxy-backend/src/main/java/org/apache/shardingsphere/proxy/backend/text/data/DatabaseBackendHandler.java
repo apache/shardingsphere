@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.proxy.backend.text.data;
 
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.ProxyBackendHandler;
 
 /**
  * Database backend handler.
  */
-public interface DatabaseBackendHandler extends TextProtocolBackendHandler {
+public interface DatabaseBackendHandler extends ProxyBackendHandler {
 }

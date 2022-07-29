@@ -30,7 +30,7 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeaderBuilderEngine;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.admin.executor.DatabaseAdminQueryExecutor;
 
 import java.sql.SQLException;
@@ -41,7 +41,7 @@ import java.util.List;
  * Database admin query backend handler.
  */
 @RequiredArgsConstructor
-public final class DatabaseAdminQueryBackendHandler implements TextProtocolBackendHandler {
+public final class DatabaseAdminQueryBackendHandler implements ProxyBackendHandler {
     
     private final ConnectionSession connectionSession;
     

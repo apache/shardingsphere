@@ -40,8 +40,8 @@ import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.text.ProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.ProxyBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.frontend.command.executor.QueryCommandExecutor;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
@@ -63,7 +63,7 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     
     private final ConnectionSession connectionSession;
     
-    private TextProtocolBackendHandler textProtocolBackendHandler;
+    private ProxyBackendHandler proxyBackendHandler;
     
     @Getter
     private ResponseType responseType;
@@ -84,8 +84,8 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
             ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(SQLStatementDatabaseHolder::set);
         }
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, preparedStatement.getSql(), parameters);
-        textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("MySQL"), logicSQL, connectionSession, true);
-        ResponseHeader responseHeader = textProtocolBackendHandler.execute();
+        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("MySQL"), logicSQL, connectionSession, true);
+        ResponseHeader responseHeader = proxyBackendHandler.execute();
         return responseHeader instanceof QueryResponseHeader ? processQuery((QueryResponseHeader) responseHeader) : processUpdate((UpdateResponseHeader) responseHeader);
     }
     
@@ -112,12 +112,12 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     
     @Override
     public boolean next() throws SQLException {
-        return textProtocolBackendHandler.next();
+        return proxyBackendHandler.next();
     }
     
     @Override
     public MySQLPacket getQueryRowPacket() throws SQLException {
-        QueryResponseRow queryResponseRow = textProtocolBackendHandler.getRowData();
+        QueryResponseRow queryResponseRow = proxyBackendHandler.getRowData();
         return new MySQLBinaryResultSetRowPacket(++currentSequenceId, createBinaryRow(queryResponseRow));
     }
     
@@ -131,6 +131,6 @@ public final class MySQLComStmtExecuteExecutor implements QueryCommandExecutor {
     
     @Override
     public void close() throws SQLException {
-        textProtocolBackendHandler.close();
+        proxyBackendHandler.close();
     }
 }

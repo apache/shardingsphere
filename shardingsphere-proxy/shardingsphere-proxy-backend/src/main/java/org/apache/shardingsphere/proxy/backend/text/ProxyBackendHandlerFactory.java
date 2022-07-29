@@ -39,7 +39,7 @@ import org.apache.shardingsphere.proxy.backend.text.admin.DatabaseAdminBackendHa
 import org.apache.shardingsphere.proxy.backend.text.data.DatabaseBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.database.DatabaseOperateBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.distsql.DistSQLBackendHandlerFactory;
-import org.apache.shardingsphere.proxy.backend.text.extra.ExtraTextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.extra.ExtraProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.transaction.TransactionBackendHandlerFactory;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
@@ -61,13 +61,13 @@ import java.util.LinkedList;
 import java.util.Optional;
 
 /**
- * Text protocol backend handler factory.
+ * Proxy backend handler factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class TextProtocolBackendHandlerFactory {
+public final class ProxyBackendHandlerFactory {
     
     static {
-        ShardingSphereServiceLoader.register(ExtraTextProtocolBackendHandler.class);
+        ShardingSphereServiceLoader.register(ExtraProxyBackendHandler.class);
     }
     
     /**
@@ -79,7 +79,7 @@ public final class TextProtocolBackendHandlerFactory {
      * @return created instance
      * @throws SQLException SQL exception
      */
-    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final String sql, final ConnectionSession connectionSession) throws SQLException {
+    public static ProxyBackendHandler newInstance(final DatabaseType databaseType, final String sql, final ConnectionSession connectionSession) throws SQLException {
         if (Strings.isNullOrEmpty(SQLUtil.trimComment(sql))) {
             return new SkipBackendHandler(new EmptyStatement());
         }
@@ -98,8 +98,8 @@ public final class TextProtocolBackendHandlerFactory {
      * @return created instance
      * @throws SQLException SQL exception
      */
-    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final String sql, final SQLStatement sqlStatement,
-                                                         final ConnectionSession connectionSession) throws SQLException {
+    public static ProxyBackendHandler newInstance(final DatabaseType databaseType, final String sql, final SQLStatement sqlStatement,
+                                                  final ConnectionSession connectionSession) throws SQLException {
         if (sqlStatement instanceof EmptyStatement) {
             return new SkipBackendHandler(new EmptyStatement());
         }
@@ -127,8 +127,8 @@ public final class TextProtocolBackendHandlerFactory {
      * @throws SQLException SQL exception
      */
     @SuppressWarnings("unchecked")
-    public static TextProtocolBackendHandler newInstance(final DatabaseType databaseType, final LogicSQL logicSQL, final ConnectionSession connectionSession,
-                                                         final boolean preferPreparedStatement) throws SQLException {
+    public static ProxyBackendHandler newInstance(final DatabaseType databaseType, final LogicSQL logicSQL, final ConnectionSession connectionSession,
+                                                  final boolean preferPreparedStatement) throws SQLException {
         SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
         SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
         String sql = logicSQL.getSql();
@@ -136,7 +136,7 @@ public final class TextProtocolBackendHandlerFactory {
         if (sqlStatement instanceof TCLStatement) {
             return TransactionBackendHandlerFactory.newInstance((SQLStatementContext<TCLStatement>) sqlStatementContext, sql, connectionSession);
         }
-        Optional<TextProtocolBackendHandler> backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession, sql);
+        Optional<ProxyBackendHandler> backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession, sql);
         if (backendHandler.isPresent()) {
             return backendHandler.get();
         }
@@ -144,11 +144,11 @@ public final class TextProtocolBackendHandlerFactory {
         if (sqlStatementContext instanceof TableAvailable) {
             ((TableAvailable) sqlStatementContext).getTablesContext().getDatabaseName().ifPresent(SQLStatementDatabaseHolder::set);
         }
-        Optional<ExtraTextProtocolBackendHandler> extraHandler = findExtraTextProtocolBackendHandler(sqlStatement);
+        Optional<ExtraProxyBackendHandler> extraHandler = findExtraProxyBackendHandler(sqlStatement);
         if (extraHandler.isPresent()) {
             return extraHandler.get();
         }
-        Optional<TextProtocolBackendHandler> databaseOperateHandler = findDatabaseOperateBackendHandler(sqlStatement, connectionSession);
+        Optional<ProxyBackendHandler> databaseOperateHandler = findDatabaseOperateBackendHandler(sqlStatement, connectionSession);
         if (databaseOperateHandler.isPresent()) {
             return databaseOperateHandler.get();
         }
@@ -174,8 +174,8 @@ public final class TextProtocolBackendHandlerFactory {
         }
     }
     
-    private static Optional<ExtraTextProtocolBackendHandler> findExtraTextProtocolBackendHandler(final SQLStatement sqlStatement) {
-        for (ExtraTextProtocolBackendHandler each : ShardingSphereServiceLoader.getServiceInstances(ExtraTextProtocolBackendHandler.class)) {
+    private static Optional<ExtraProxyBackendHandler> findExtraProxyBackendHandler(final SQLStatement sqlStatement) {
+        for (ExtraProxyBackendHandler each : ShardingSphereServiceLoader.getServiceInstances(ExtraProxyBackendHandler.class)) {
             if (each.accept(sqlStatement)) {
                 return Optional.of(each);
             }
@@ -183,7 +183,7 @@ public final class TextProtocolBackendHandlerFactory {
         return Optional.empty();
     }
     
-    private static Optional<TextProtocolBackendHandler> findDatabaseOperateBackendHandler(final SQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
+    private static Optional<ProxyBackendHandler> findDatabaseOperateBackendHandler(final SQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
         if (sqlStatement instanceof CreateDatabaseStatement || sqlStatement instanceof DropDatabaseStatement) {
             return Optional.of(DatabaseOperateBackendHandlerFactory.newInstance(sqlStatement, connectionSession));
         }

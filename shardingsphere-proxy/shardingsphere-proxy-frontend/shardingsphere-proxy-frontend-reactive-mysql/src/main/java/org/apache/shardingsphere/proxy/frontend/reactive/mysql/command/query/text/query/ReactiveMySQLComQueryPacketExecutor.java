@@ -27,8 +27,8 @@ import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.text.ProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.ProxyBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.builder.ResponsePacketBuilder;
@@ -46,7 +46,7 @@ public final class ReactiveMySQLComQueryPacketExecutor implements ReactiveComman
     
     private final ConnectionSession connectionSession;
     
-    private final TextProtocolBackendHandler textProtocolBackendHandler;
+    private final ProxyBackendHandler proxyBackendHandler;
     
     private final int characterSet;
     
@@ -56,19 +56,19 @@ public final class ReactiveMySQLComQueryPacketExecutor implements ReactiveComman
     
     public ReactiveMySQLComQueryPacketExecutor(final MySQLComQueryPacket packet, final ConnectionSession connectionSession) throws SQLException {
         this.connectionSession = connectionSession;
-        textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("MySQL"), packet.getSql(), connectionSession);
+        proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("MySQL"), packet.getSql(), connectionSession);
         characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
     }
     
     @Override
     public Future<Collection<DatabasePacket<?>>> executeFuture() {
-        return textProtocolBackendHandler.executeFuture().compose(responseHeader -> {
+        return proxyBackendHandler.executeFuture().compose(responseHeader -> {
             List<DatabasePacket<?>> result = new LinkedList<>(
                     responseHeader instanceof QueryResponseHeader ? processQuery((QueryResponseHeader) responseHeader) : processUpdate((UpdateResponseHeader) responseHeader));
             try {
                 if (ResponseType.QUERY == responseType) {
-                    while (textProtocolBackendHandler.next()) {
-                        result.add(new MySQLTextResultSetRowPacket(++currentSequenceId, textProtocolBackendHandler.getRowData().getData()));
+                    while (proxyBackendHandler.next()) {
+                        result.add(new MySQLTextResultSetRowPacket(++currentSequenceId, proxyBackendHandler.getRowData().getData()));
                     }
                     result.add(new MySQLEofPacket(++currentSequenceId, ServerStatusFlagCalculator.calculateFor(connectionSession)));
                 }
@@ -94,7 +94,7 @@ public final class ReactiveMySQLComQueryPacketExecutor implements ReactiveComman
     @Override
     public Future<Void> closeFuture() {
         try {
-            textProtocolBackendHandler.close();
+            proxyBackendHandler.close();
             return Future.succeededFuture();
         } catch (final SQLException ex) {
             return Future.failedFuture(ex);

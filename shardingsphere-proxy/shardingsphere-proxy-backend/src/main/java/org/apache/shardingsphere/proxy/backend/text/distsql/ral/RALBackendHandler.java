@@ -20,13 +20,13 @@ package org.apache.shardingsphere.proxy.backend.text.distsql.ral;
 import lombok.Getter;
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.ProxyBackendHandler;
 
 /**
  * RAL backend handler.
  */
 @Getter
-public abstract class RALBackendHandler<E extends RALStatement> implements TextProtocolBackendHandler {
+public abstract class RALBackendHandler<E extends RALStatement> implements ProxyBackendHandler {
     
     private E sqlStatement;
     

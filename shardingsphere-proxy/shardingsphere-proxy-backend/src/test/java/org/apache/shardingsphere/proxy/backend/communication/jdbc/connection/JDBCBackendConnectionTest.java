@@ -36,7 +36,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.transaction.ShardingSphereTransactionManagerEngine;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -315,27 +315,27 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     
     @Test
     public void assertAddDatabaseCommunicationEngine() {
-        TextProtocolBackendHandler expectedEngine = mock(JDBCDatabaseCommunicationEngine.class);
+        ProxyBackendHandler expectedEngine = mock(JDBCDatabaseCommunicationEngine.class);
         backendConnection.add(expectedEngine);
-        Collection<TextProtocolBackendHandler> actual = getDatabaseCommunicationEngines();
+        Collection<ProxyBackendHandler> actual = getDatabaseCommunicationEngines();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(expectedEngine));
     }
     
     @Test
     public void assertMarkDatabaseCommunicationEngineInUse() {
-        TextProtocolBackendHandler expectedEngine = mock(JDBCDatabaseCommunicationEngine.class);
+        ProxyBackendHandler expectedEngine = mock(JDBCDatabaseCommunicationEngine.class);
         backendConnection.add(expectedEngine);
         backendConnection.markResourceInUse(expectedEngine);
-        Collection<TextProtocolBackendHandler> actual = getInUseDatabaseCommunicationEngines();
+        Collection<ProxyBackendHandler> actual = getInUseDatabaseCommunicationEngines();
         assertThat(actual.size(), is(1));
         assertThat(actual.iterator().next(), is(expectedEngine));
     }
     
     @Test
     public void assertUnmarkInUseDatabaseCommunicationEngine() {
-        TextProtocolBackendHandler engine = mock(JDBCDatabaseCommunicationEngine.class);
-        Collection<TextProtocolBackendHandler> actual = getInUseDatabaseCommunicationEngines();
+        ProxyBackendHandler engine = mock(JDBCDatabaseCommunicationEngine.class);
+        Collection<ProxyBackendHandler> actual = getInUseDatabaseCommunicationEngines();
         actual.add(engine);
         backendConnection.unmarkResourceInUse(engine);
         assertTrue(actual.isEmpty());
@@ -343,12 +343,12 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     
     @Test
     public void assertCloseHandlers() throws SQLException {
-        TextProtocolBackendHandler engine = mock(JDBCDatabaseCommunicationEngine.class);
-        TextProtocolBackendHandler inUseEngine = mock(JDBCDatabaseCommunicationEngine.class);
+        ProxyBackendHandler engine = mock(JDBCDatabaseCommunicationEngine.class);
+        ProxyBackendHandler inUseEngine = mock(JDBCDatabaseCommunicationEngine.class);
         SQLException expectedException = mock(SQLException.class);
         doThrow(expectedException).when(engine).close();
-        Collection<TextProtocolBackendHandler> databaseCommunicationEngines = getDatabaseCommunicationEngines();
-        Collection<TextProtocolBackendHandler> inUseDatabaseCommunicationEngines = getInUseDatabaseCommunicationEngines();
+        Collection<ProxyBackendHandler> databaseCommunicationEngines = getDatabaseCommunicationEngines();
+        Collection<ProxyBackendHandler> inUseDatabaseCommunicationEngines = getInUseDatabaseCommunicationEngines();
         databaseCommunicationEngines.add(engine);
         databaseCommunicationEngines.add(inUseEngine);
         inUseDatabaseCommunicationEngines.add(inUseEngine);
@@ -366,18 +366,18 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    private Collection<TextProtocolBackendHandler> getDatabaseCommunicationEngines() {
-        Field field = JDBCBackendConnection.class.getDeclaredField("handlers");
+    private Collection<ProxyBackendHandler> getDatabaseCommunicationEngines() {
+        Field field = JDBCBackendConnection.class.getDeclaredField("backendHandlers");
         field.setAccessible(true);
-        return (Collection<TextProtocolBackendHandler>) field.get(backendConnection);
+        return (Collection<ProxyBackendHandler>) field.get(backendConnection);
     }
     
     @SuppressWarnings("unchecked")
     @SneakyThrows
-    private Collection<TextProtocolBackendHandler> getInUseDatabaseCommunicationEngines() {
-        Field field = JDBCBackendConnection.class.getDeclaredField("inUseHandlers");
+    private Collection<ProxyBackendHandler> getInUseDatabaseCommunicationEngines() {
+        Field field = JDBCBackendConnection.class.getDeclaredField("inUseBackendHandlers");
         field.setAccessible(true);
-        return (Collection<TextProtocolBackendHandler>) field.get(backendConnection);
+        return (Collection<ProxyBackendHandler>) field.get(backendConnection);
     }
     
     @Test

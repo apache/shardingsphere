@@ -24,7 +24,7 @@ import org.apache.shardingsphere.distsql.parser.statement.rul.sql.FormatStatemen
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.ParseStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.PreviewStatement;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rul.sql.FormatSQLHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rul.sql.ParseDistSQLHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rul.sql.PreviewHandler;
@@ -55,7 +55,7 @@ public final class RULBackendHandlerFactory {
      * @return created instance
      * @throws SQLException SQL exception
      */
-    public static TextProtocolBackendHandler newInstance(final RULStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
+    public static ProxyBackendHandler newInstance(final RULStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
         return createRULBackendHandler(sqlStatement, connectionSession);
     }
     

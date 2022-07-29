@@ -30,7 +30,7 @@ import org.apache.shardingsphere.mode.manager.lock.definition.LockDefinitionFact
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedUpdateOperationException;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.text.distsql.ral.RALBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rdl.RDLBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.text.distsql.rql.RQLBackendHandlerFactory;
@@ -49,10 +49,10 @@ public final class DistSQLBackendHandlerFactory {
      *
      * @param sqlStatement dist SQL statement
      * @param connectionSession connection session
-     * @return text protocol backend handler
+     * @return proxy backend handler
      * @throws SQLException SQL exception
      */
-    public static TextProtocolBackendHandler newInstance(final DistSQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
+    public static ProxyBackendHandler newInstance(final DistSQLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
         if (sqlStatement instanceof RQLStatement) {
             return RQLBackendHandlerFactory.newInstance((RQLStatement) sqlStatement, connectionSession);
         }

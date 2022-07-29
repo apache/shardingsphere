@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.ProxyBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.OperationScope;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.BeginTransactionStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.CommitStatement;
@@ -53,7 +53,7 @@ public final class TransactionBackendHandlerFactory {
      * @param connectionSession connection session
      * @return backend handler
      */
-    public static TextProtocolBackendHandler newInstance(final SQLStatementContext<? extends TCLStatement> sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
+    public static ProxyBackendHandler newInstance(final SQLStatementContext<? extends TCLStatement> sqlStatementContext, final String sql, final ConnectionSession connectionSession) {
         TCLStatement tclStatement = sqlStatementContext.getSqlStatement();
         if (tclStatement instanceof BeginTransactionStatement || tclStatement instanceof StartTransactionStatement) {
             return new TransactionBackendHandler(tclStatement, TransactionOperationType.BEGIN, connectionSession);

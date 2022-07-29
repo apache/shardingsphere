@@ -30,7 +30,7 @@ import org.apache.shardingsphere.proxy.backend.communication.vertx.transaction.V
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
+import org.apache.shardingsphere.proxy.backend.text.ProxyBackendHandler;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.ReleaseSavepointStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.RollbackStatement;
@@ -50,7 +50,7 @@ import java.sql.SQLFeatureNotSupportedException;
 /**
  * Do transaction operation.
  */
-public final class TransactionBackendHandler implements TextProtocolBackendHandler {
+public final class TransactionBackendHandler implements ProxyBackendHandler {
     
     private final TCLStatement tclStatement;
     
