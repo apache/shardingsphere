@@ -15,14 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.rewrite.fixture;
+package org.apache.shardingsphere.test.fixture.rule;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import static org.mockito.Mockito.mock;
 
-public final class FixtureRule implements ShardingSphereRule {
+/**
+ * Mocked rule.
+ */
+public final class MockedRule implements ShardingSphereRule {
     
     @Override
     public RuleConfiguration getConfiguration() {
@@ -31,6 +34,6 @@ public final class FixtureRule implements ShardingSphereRule {
     
     @Override
     public String getType() {
-        return FixtureRule.class.getSimpleName();
+        return MockedRule.class.getSimpleName();
     }
 }
