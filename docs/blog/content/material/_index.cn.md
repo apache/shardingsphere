@@ -6,6 +6,7 @@ chapter = true
 
 欢迎阅读 Apache ShardingSphere 的精选博文，也欢迎您的投稿！
 
+
 1. [新版发布｜ShardingSphere 5.0.0-beta 来了！](/cn/material/ss_5.0.0beta/)
 
 2. [停滞数年后，ElasticJob 携首个 Apache 版本 3.0.0-alpha 回归](/cn/material/alpha/)
