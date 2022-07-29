@@ -42,3 +42,4 @@ props:
   proxy-hint-enabled: true
   sql-show: true
   sql-federation-enabled: true
+  proxy-mysql-default-version: 8.0.11

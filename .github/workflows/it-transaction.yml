@@ -28,6 +28,7 @@ on:
       - '!shardingsphere-test/**'
       - 'shardingsphere-test/shardingsphere-integration-test/**'
       - '!shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/**'
+      - '!shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/**'
       - '!*.md'
 
 concurrency:

@@ -21,6 +21,7 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
+import org.testcontainers.shaded.org.apache.commons.lang.StringUtils;
 
 public final class DatabaseTypeUtil {
     
@@ -32,6 +33,20 @@ public final class DatabaseTypeUtil {
      */
     public static boolean isMySQL(final DatabaseType databaseType) {
         return databaseType instanceof MySQLDatabaseType;
+    }
+    
+    /**
+     * Get docker image major version.
+     *
+     * @param dockerImageName dockerImageName
+     * @return major version
+     */
+    public static String parseMajorVersion(final String dockerImageName) {
+        if (StringUtils.isBlank(dockerImageName)) {
+            return "";
+        }
+        String version = dockerImageName.split(":")[1];
+        return version.split("\\.")[0];
     }
     
     /**
