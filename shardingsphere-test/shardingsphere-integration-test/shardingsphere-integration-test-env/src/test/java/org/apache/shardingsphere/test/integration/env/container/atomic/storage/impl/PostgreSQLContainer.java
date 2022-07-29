@@ -29,22 +29,16 @@ import java.util.Optional;
  */
 public final class PostgreSQLContainer extends DockerStorageContainer {
     
-    public PostgreSQLContainer(final String dockerImageName, final String scenario, final boolean useRootUsername) {
-        super(DatabaseTypeFactory.getInstance("PostgreSQL"), Strings.isNullOrEmpty(dockerImageName) ? "postgres:12-alpine" : dockerImageName, scenario, useRootUsername);
+    public PostgreSQLContainer(final String dockerImageName, final String scenario) {
+        super(DatabaseTypeFactory.getInstance("PostgreSQL"), Strings.isNullOrEmpty(dockerImageName) ? "postgres:12-alpine" : dockerImageName, scenario);
     }
     
     @Override
     protected void configure() {
-        addEnv("POSTGRES_USER", getRootUsername());
         addEnv("POSTGRES_PASSWORD", getUnifiedPassword());
         withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/etc/postgresql/postgresql.conf", BindMode.READ_ONLY);
         setCommand("-c config_file=/etc/postgresql/postgresql.conf");
         super.configure();
-    }
-    
-    @Override
-    public String getRootUsername() {
-        return "root";
     }
     
     @Override
