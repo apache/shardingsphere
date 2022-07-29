@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.database.schema.fixture.rule.DataNodeContainedFixtureRule;
 import org.apache.shardingsphere.infra.metadata.database.schema.fixture.rule.TableContainedFixtureRule;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.SchemaMetaDataLoaderEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
@@ -36,6 +35,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -86,7 +86,7 @@ public final class GenericSchemaBuilderTest {
     
     @Test
     public void assertLoadAllTables() throws SQLException {
-        Collection<String> tableNames = new DataNodeContainedFixtureRule().getTables();
+        Collection<String> tableNames = Arrays.asList("data_node_routed_table1", "data_node_routed_table2");
         engine.when(() -> SchemaMetaDataLoaderEngine.load(any(), any())).thenReturn(createSchemaMetaDataMap(tableNames, materials));
         Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(tableNames, materials);
         assertThat(actual.size(), is(1));
