@@ -351,7 +351,7 @@ public final class MySQLAdminExecutorCreatorTest {
         assertFalse(actual.isPresent());
     }
     
-    private void initProxyContext(Map<String, ShardingSphereDatabase> databases) {
+    private void initProxyContext(final Map<String, ShardingSphereDatabase> databases) {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
                 new ShardingSphereMetaData(databases, mock(ShardingSphereRuleMetaData.class),
