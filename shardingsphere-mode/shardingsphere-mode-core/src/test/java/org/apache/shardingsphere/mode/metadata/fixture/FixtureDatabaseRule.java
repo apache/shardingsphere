@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
 
 import static org.mockito.Mockito.mock;
 
-public final class FixtureRule implements DatabaseRule {
+public final class FixtureDatabaseRule implements DatabaseRule {
     
     @Override
     public RuleConfiguration getConfiguration() {
@@ -31,6 +31,6 @@ public final class FixtureRule implements DatabaseRule {
     
     @Override
     public String getType() {
-        return FixtureRule.class.getSimpleName();
+        return FixtureDatabaseRule.class.getSimpleName();
     }
 }

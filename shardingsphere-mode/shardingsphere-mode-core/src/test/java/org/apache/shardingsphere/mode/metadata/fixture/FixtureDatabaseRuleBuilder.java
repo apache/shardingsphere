@@ -25,12 +25,12 @@ import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
 
-public final class FixtureRuleBuilder implements DatabaseRuleBuilder<FixtureRuleConfiguration> {
+public final class FixtureDatabaseRuleBuilder implements DatabaseRuleBuilder<FixtureRuleConfiguration> {
     
     @Override
-    public FixtureRule build(final FixtureRuleConfiguration config, final String databaseName,
-                             final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
-        return new FixtureRule();
+    public FixtureDatabaseRule build(final FixtureRuleConfiguration config, final String databaseName,
+                                     final Map<String, DataSource> dataSources, final Collection<ShardingSphereRule> builtRules, final InstanceContext instanceContext) {
+        return new FixtureDatabaseRule();
     }
     
     @Override
