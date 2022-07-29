@@ -21,7 +21,7 @@ import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurat
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.proxy.backend.exception.BackendException;
 import org.apache.shardingsphere.proxy.backend.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.proxy.backend.text.distsql.ral.common.exception.CommonDistSQLException;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.exception.CommonDistSQLException;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
 import org.junit.Test;
 
