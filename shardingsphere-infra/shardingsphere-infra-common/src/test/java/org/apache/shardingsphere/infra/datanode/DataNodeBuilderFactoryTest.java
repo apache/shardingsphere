@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.datanode;
 
-import org.apache.shardingsphere.infra.fixture.TestDataSourceContainedDataNodeBuilder;
+import org.apache.shardingsphere.infra.fixture.DataNodeBuilderFixture;
 import org.apache.shardingsphere.infra.fixture.FixtureRule;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.junit.Test;
@@ -37,6 +37,6 @@ public final class DataNodeBuilderFactoryTest {
         FixtureRule rule = new FixtureRule();
         Map<ShardingSphereRule, DataNodeBuilder> actual = DataNodeBuilderFactory.getInstances(Collections.singleton(rule));
         assertThat(actual.size(), is(1));
-        assertThat(actual.get(rule), instanceOf(TestDataSourceContainedDataNodeBuilder.class));
+        assertThat(actual.get(rule), instanceOf(DataNodeBuilderFixture.class));
     }
 }

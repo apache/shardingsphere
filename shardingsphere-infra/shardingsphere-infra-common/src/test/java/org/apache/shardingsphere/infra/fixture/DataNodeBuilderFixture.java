@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
 import java.util.Collection;
 import java.util.LinkedList;
 
-public final class TestDataSourceContainedDataNodeBuilder implements DataNodeBuilder<FixtureRule> {
+public final class DataNodeBuilderFixture implements DataNodeBuilder<FixtureRule> {
     
     @Override
     public Collection<DataNode> build(final Collection<DataNode> dataNodes, final FixtureRule rule) {
