@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.fixture;
 
 import org.apache.shardingsphere.data.pipeline.api.job.persist.JobPersistCallback;
 
-public class FixtureJobPersistCallback implements JobPersistCallback {
+public final class FixtureJobPersistCallback implements JobPersistCallback {
     
     @Override
     public String getJobId() {
@@ -32,6 +32,6 @@ public class FixtureJobPersistCallback implements JobPersistCallback {
     }
     
     @Override
-    public void pushPersistEvent(final long persistTime) {
+    public void pushPersistEvent() {
     }
 }

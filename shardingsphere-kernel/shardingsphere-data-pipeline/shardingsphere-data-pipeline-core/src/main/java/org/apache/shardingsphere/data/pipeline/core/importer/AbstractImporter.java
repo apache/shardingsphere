@@ -92,7 +92,7 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
                 rowCount += records.size();
                 flush(dataSourceManager.getDataSource(importerConfig.getDataSourceConfig()), records);
                 channel.ack(records);
-                jobPersistCallback.pushPersistEvent(System.currentTimeMillis());
+                jobPersistCallback.pushPersistEvent();
                 if (0 == round % 50) {
                     log.info("importer write, round={}, rowCount={}", round, rowCount);
                 }

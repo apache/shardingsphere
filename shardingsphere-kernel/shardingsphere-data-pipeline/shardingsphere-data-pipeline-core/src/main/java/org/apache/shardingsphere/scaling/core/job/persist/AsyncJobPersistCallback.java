@@ -42,7 +42,7 @@ public final class AsyncJobPersistCallback implements JobPersistCallback {
     }
     
     @Override
-    public void pushPersistEvent(final long persistTime) {
-        RuleAlteredJobPersistService.triggerPersist(jobId, shardingItem, persistTime);
+    public void pushPersistEvent() {
+        RuleAlteredJobPersistService.triggerPersist(jobId, shardingItem);
     }
 }

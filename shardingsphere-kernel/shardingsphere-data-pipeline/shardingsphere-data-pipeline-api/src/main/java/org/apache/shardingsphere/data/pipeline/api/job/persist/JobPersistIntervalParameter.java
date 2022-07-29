@@ -22,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.ReentrantLock;
 
 @Getter
 @RequiredArgsConstructor
@@ -35,6 +34,4 @@ public final class JobPersistIntervalParameter {
     private final AtomicLong persistTime = new AtomicLong(System.currentTimeMillis());
     
     private final AtomicBoolean alreadyPersisted = new AtomicBoolean(false);
-    
-    private final ReentrantLock lock = new ReentrantLock();
 }

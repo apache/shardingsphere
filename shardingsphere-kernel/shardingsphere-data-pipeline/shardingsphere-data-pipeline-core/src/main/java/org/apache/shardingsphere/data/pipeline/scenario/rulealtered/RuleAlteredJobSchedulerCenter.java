@@ -22,8 +22,9 @@ import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 
-import java.util.Collection;
-import java.util.Optional;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Rule altered job scheduler center.
@@ -33,6 +34,8 @@ import java.util.Optional;
 // TODO extract JobSchedulerCenter
 public final class RuleAlteredJobSchedulerCenter {
     
+    static final Map<String, Map<Integer, RuleAlteredJobScheduler>> JOB_SCHEDULER_MAP = new ConcurrentHashMap<>();
+    
     /**
      * Start a job.
      *
@@ -40,16 +43,17 @@ public final class RuleAlteredJobSchedulerCenter {
      */
     public static void start(final RuleAlteredJobContext jobContext) {
         String jobId = jobContext.getJobId();
+        Map<Integer, RuleAlteredJobScheduler> schedulerMap = JOB_SCHEDULER_MAP.computeIfAbsent(jobId, key -> new ConcurrentHashMap<>());
         int shardingItem = jobContext.getShardingItem();
-        Optional<RuleAlteredJobScheduler> scheduler = RuleAlteredJobPersistService.getJobSchedule(jobId, shardingItem);
-        if (scheduler.isPresent()) {
+        if (schedulerMap.containsKey(shardingItem)) {
             log.warn("schedulerMap contains shardingItem {}, ignore", shardingItem);
             return;
         }
         log.info("start RuleAlteredJobScheduler, jobId={}, shardingItem={}", jobId, shardingItem);
         RuleAlteredJobScheduler jobScheduler = new RuleAlteredJobScheduler(jobContext);
         jobScheduler.start();
-        RuleAlteredJobPersistService.addJobSchedule(jobId, shardingItem, jobScheduler);
+        schedulerMap.put(shardingItem, jobScheduler);
+        RuleAlteredJobPersistService.addJobPersistParameter(jobId, shardingItem);
     }
     
     /**
@@ -59,15 +63,16 @@ public final class RuleAlteredJobSchedulerCenter {
      */
     static void stop(final String jobId) {
         log.info("remove and stop {}", jobId);
-        Collection<RuleAlteredJobScheduler> jobSchedulers = RuleAlteredJobPersistService.listJobSchedule(jobId);
-        if (jobSchedulers.isEmpty()) {
+        Map<Integer, RuleAlteredJobScheduler> schedulerMap = JOB_SCHEDULER_MAP.get(jobId);
+        if (null == schedulerMap) {
             log.info("schedulerMap is null, ignore");
             return;
         }
-        for (RuleAlteredJobScheduler each : jobSchedulers) {
-            each.stop();
+        for (Entry<Integer, RuleAlteredJobScheduler> entry : schedulerMap.entrySet()) {
+            entry.getValue().stop();
         }
-        RuleAlteredJobPersistService.removeJobSchedule(jobId);
+        JOB_SCHEDULER_MAP.remove(jobId);
+        RuleAlteredJobPersistService.removeJobPersistParameter(jobId);
     }
     
     /**
@@ -77,13 +82,13 @@ public final class RuleAlteredJobSchedulerCenter {
      * @param jobStatus job status
      */
     public static void updateJobStatus(final String jobId, final JobStatus jobStatus) {
-        Collection<RuleAlteredJobScheduler> schedulerList = RuleAlteredJobPersistService.listJobSchedule(jobId);
-        if (schedulerList.isEmpty()) {
-            log.info("updateJobStatus, schedulerList is null, ignore");
+        Map<Integer, RuleAlteredJobScheduler> schedulerMap = JOB_SCHEDULER_MAP.get(jobId);
+        if (null == schedulerMap) {
+            log.info("updateJobStatus, schedulerMap is null, ignore");
             return;
         }
-        for (RuleAlteredJobScheduler each : schedulerList) {
-            each.getJobContext().setStatus(jobStatus);
+        for (Entry<Integer, RuleAlteredJobScheduler> entry : schedulerMap.entrySet()) {
+            entry.getValue().getJobContext().setStatus(jobStatus);
         }
     }
 }

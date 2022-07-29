@@ -23,16 +23,15 @@ import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+
 
 /**
  * Rule altered job persist service.
@@ -41,43 +40,14 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public final class RuleAlteredJobPersistService {
     
-    private static final GovernanceRepositoryAPI REPOSITORY_API = PipelineAPIFactory.getGovernanceRepositoryAPI();
+    private static final Map<String, Map<Integer, JobPersistIntervalParameter>> JOB_PERSIST_MAP = new ConcurrentHashMap<>();
     
-    private static final Executor SINGLE_EXECUTOR = Executors.newSingleThreadExecutor(ExecutorThreadFactoryBuilder.build("scaling-job-single-%d"));
+    private static final GovernanceRepositoryAPI REPOSITORY_API = PipelineAPIFactory.getGovernanceRepositoryAPI();
     
     private static final ScheduledExecutorService JOB_PERSIST_EXECUTOR = Executors.newSingleThreadScheduledExecutor(ExecutorThreadFactoryBuilder.build("scaling-job-schedule-%d"));
     
-    private static final Map<String, Map<Integer, RuleAlteredJobScheduler>> JOB_SCHEDULER_MAP = new ConcurrentHashMap<>();
-    
-    private static final Map<String, Map<Integer, JobPersistIntervalParameter>> JOB_PERSIST_MAP = new ConcurrentHashMap<>();
-    
-    private static final int MIN_PERSIST_INTERVAL_MILLIS = 1000;
-    
     static {
-        JOB_PERSIST_EXECUTOR.scheduleWithFixedDelay(new PersistJobContextRunnable(), 5, 2, TimeUnit.SECONDS);
-    }
-    
-    /**
-     * Get job schedule.
-     *
-     * @param jobId job id
-     * @param shardingItem sharding item
-     * @return job schedule
-     */
-    public static Optional<RuleAlteredJobScheduler> getJobSchedule(final String jobId, final int shardingItem) {
-        Map<Integer, RuleAlteredJobScheduler> schedulerMap = JOB_SCHEDULER_MAP.computeIfAbsent(jobId, key -> new ConcurrentHashMap<>());
-        return Optional.ofNullable(schedulerMap.get(shardingItem));
-    }
-    
-    /**
-     * List job schedules.
-     *
-     * @param jobId job id
-     * @return job schedules belong this job id
-     */
-    public static Collection<RuleAlteredJobScheduler> listJobSchedule(final String jobId) {
-        Map<Integer, RuleAlteredJobScheduler> schedulerMap = JOB_SCHEDULER_MAP.computeIfAbsent(jobId, key -> new ConcurrentHashMap<>());
-        return schedulerMap.values();
+        JOB_PERSIST_EXECUTOR.scheduleWithFixedDelay(new PersistJobContextRunnable(), 5, 1, TimeUnit.SECONDS);
     }
     
     /**
@@ -85,9 +55,8 @@ public final class RuleAlteredJobPersistService {
      *
      * @param jobId job id
      */
-    public static void removeJobSchedule(final String jobId) {
-        log.info("Remove job schedule by job id: {}", jobId);
-        JOB_SCHEDULER_MAP.remove(jobId);
+    public static void removeJobPersistParameter(final String jobId) {
+        log.info("Remove job persist, job id: {}", jobId);
         JOB_PERSIST_MAP.remove(jobId);
     }
     
@@ -96,11 +65,9 @@ public final class RuleAlteredJobPersistService {
      *
      * @param jobId job id
      * @param shardingItem sharding item
-     * @param jobScheduler job schedule
      */
-    public static void addJobSchedule(final String jobId, final int shardingItem, final RuleAlteredJobScheduler jobScheduler) {
+    public static void addJobPersistParameter(final String jobId, final int shardingItem) {
         log.info("Add job schedule, jobId={}, shardingItem={}", jobId, shardingItem);
-        JOB_SCHEDULER_MAP.computeIfAbsent(jobId, key -> new ConcurrentHashMap<>()).put(shardingItem, jobScheduler);
         JOB_PERSIST_MAP.computeIfAbsent(jobId, key -> new ConcurrentHashMap<>()).put(shardingItem, new JobPersistIntervalParameter(jobId, shardingItem));
     }
     
@@ -109,9 +76,8 @@ public final class RuleAlteredJobPersistService {
      *
      * @param jobId job id
      * @param shardingItem sharding item
-     * @param currentTimeMills current time mills
      */
-    public static void triggerPersist(final String jobId, final int shardingItem, final long currentTimeMills) {
+    public static void triggerPersist(final String jobId, final int shardingItem) {
         Map<Integer, JobPersistIntervalParameter> intervalParamMap = JOB_PERSIST_MAP.getOrDefault(jobId, Collections.emptyMap());
         JobPersistIntervalParameter parameter = intervalParamMap.get(shardingItem);
         if (null == parameter) {
@@ -119,30 +85,17 @@ public final class RuleAlteredJobPersistService {
             return;
         }
         parameter.getAlreadyPersisted().compareAndSet(true, false);
-        if ((currentTimeMills - parameter.getPersistTime().get()) < MIN_PERSIST_INTERVAL_MILLIS) {
-            return;
-        }
-        if (parameter.getLock().tryLock()) {
-            try {
-                SINGLE_EXECUTOR.execute(() -> persist(jobId, shardingItem, currentTimeMills, parameter));
-                // CHECKSTYLE:OFF
-            } catch (final RuntimeException ex) {
-                // CHECKSTYLE:ON
-                log.error("Persist job process failed, job id: {}, sharding item: {}", jobId, shardingItem, ex);
-            } finally {
-                parameter.getLock().unlock();
-            }
-        }
     }
     
     private static void persist(final String jobId, final int shardingItem, final long persistTimeMillis, final JobPersistIntervalParameter param) {
-        Optional<RuleAlteredJobScheduler> jobSchedule = getJobSchedule(jobId, shardingItem);
-        if (!jobSchedule.isPresent()) {
+        Map<Integer, RuleAlteredJobScheduler> schedulerMap = RuleAlteredJobSchedulerCenter.JOB_SCHEDULER_MAP.computeIfAbsent(jobId, key -> new ConcurrentHashMap<>());
+        RuleAlteredJobScheduler scheduler = schedulerMap.get(shardingItem);
+        if (scheduler == null) {
             log.warn("job schedule not exists, job id: {}, sharding item: {}", jobId, shardingItem);
             return;
         }
         log.info("execute persist, job id={}, sharding item={}, persistTimeMillis={}", jobId, shardingItem, persistTimeMillis);
-        REPOSITORY_API.persistJobProgress(jobSchedule.get().getJobContext());
+        REPOSITORY_API.persistJobProgress(scheduler.getJobContext());
         param.getPersistTime().set(persistTimeMillis);
         param.getAlreadyPersisted().set(true);
     }
@@ -154,20 +107,12 @@ public final class RuleAlteredJobPersistService {
             long currentTimeMillis = System.currentTimeMillis();
             for (Entry<String, Map<Integer, JobPersistIntervalParameter>> entry : JOB_PERSIST_MAP.entrySet()) {
                 entry.getValue().forEach((shardingItem, param) -> {
-                    if (param.getAlreadyPersisted().get() || currentTimeMillis - param.getPersistTime().get() < MIN_PERSIST_INTERVAL_MILLIS) {
+                    AtomicBoolean alreadyPersisted = param.getAlreadyPersisted();
+                    if (alreadyPersisted.get()) {
                         return;
                     }
-                    boolean tryLock = false;
-                    try {
-                        tryLock = param.getLock().tryLock();
-                        if (tryLock) {
-                            persist(entry.getKey(), shardingItem, currentTimeMillis, param);
-                        }
-                    } finally {
-                        if (tryLock) {
-                            param.getLock().unlock();
-                        }
-                    }
+                    persist(entry.getKey(), shardingItem, currentTimeMillis, param);
+                    alreadyPersisted.set(true);
                 });
             }
         }

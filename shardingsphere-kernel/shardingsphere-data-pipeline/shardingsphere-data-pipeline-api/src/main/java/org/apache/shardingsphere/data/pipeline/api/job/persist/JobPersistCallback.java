@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.api.job.persist;
 
+/**
+ * Job persist callback.
+ */
 public interface JobPersistCallback {
     
     /**
@@ -35,8 +38,6 @@ public interface JobPersistCallback {
     
     /**
      * Push persist event.
-     *
-     * @param persistTime persist time
      */
-    void pushPersistEvent(long persistTime);
+    void pushPersistEvent();
 }
