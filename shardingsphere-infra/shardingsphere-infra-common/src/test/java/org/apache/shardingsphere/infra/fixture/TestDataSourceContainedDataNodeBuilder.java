@@ -24,10 +24,10 @@ import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
 import java.util.Collection;
 import java.util.LinkedList;
 
-public final class TestDataSourceContainedDataNodeBuilder implements DataNodeBuilder<TestShardingSphereRule> {
+public final class TestDataSourceContainedDataNodeBuilder implements DataNodeBuilder<FixtureRule> {
     
     @Override
-    public Collection<DataNode> build(final Collection<DataNode> dataNodes, final TestShardingSphereRule rule) {
+    public Collection<DataNode> build(final Collection<DataNode> dataNodes, final FixtureRule rule) {
         Collection<DataNode> result = new LinkedList<>();
         for (DataNode each : dataNodes) {
             result.addAll(DataNodeUtil.buildDataNode(each, rule.getDataSourceMapper()));
@@ -41,7 +41,7 @@ public final class TestDataSourceContainedDataNodeBuilder implements DataNodeBui
     }
     
     @Override
-    public Class<TestShardingSphereRule> getTypeClass() {
-        return TestShardingSphereRule.class;
+    public Class<FixtureRule> getTypeClass() {
+        return FixtureRule.class;
     }
 }

@@ -32,11 +32,11 @@ import java.util.Collection;
 public interface DataNodeBuilder<T extends ShardingSphereRule> extends OrderedSPI<T> {
     
     /**
-     * Build data node.
+     * Build data nodes.
      *
-     * @param dataNodes data node collection
+     * @param dataNodes data nodes
      * @param rule rule
-     * @return data node collection
+     * @return data nodes
      */
     Collection<DataNode> build(Collection<DataNode> dataNodes, T rule);
 }

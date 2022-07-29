@@ -27,7 +27,7 @@ import java.util.Map;
 
 import static org.mockito.Mockito.mock;
 
-public final class TestShardingSphereRule implements DatabaseRule, DataSourceContainedRule {
+public final class FixtureRule implements DatabaseRule, DataSourceContainedRule {
     
     @Override
     public RuleConfiguration getConfiguration() {
@@ -41,6 +41,6 @@ public final class TestShardingSphereRule implements DatabaseRule, DataSourceCon
     
     @Override
     public String getType() {
-        return TestShardingSphereRule.class.getSimpleName();
+        return FixtureRule.class.getSimpleName();
     }
 }
