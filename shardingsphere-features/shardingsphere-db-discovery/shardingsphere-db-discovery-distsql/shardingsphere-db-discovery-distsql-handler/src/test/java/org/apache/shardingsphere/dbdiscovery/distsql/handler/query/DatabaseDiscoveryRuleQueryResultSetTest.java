@@ -38,6 +38,7 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -59,6 +60,15 @@ public final class DatabaseDiscoveryRuleQueryResultSetTest {
         resultSet.init(database, mock(ShowDatabaseDiscoveryRulesStatement.class));
         assertColumns(resultSet.getColumnNames());
         assertRowData(new ArrayList<>(resultSet.getRowData()));
+    }
+
+    @Test
+    public void assertInitWithNullDatabaseDiscoveryRule() {
+        ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
+        DistSQLResultSet resultSet = new DatabaseDiscoveryRuleQueryResultSet();
+        resultSet.init(database, mock(ShowDatabaseDiscoveryRulesStatement.class));
+        assertColumns(resultSet.getColumnNames());
+        assertFalse(resultSet.next());
     }
     
     private DatabaseDiscoveryRuleConfiguration createRuleConfiguration() {
