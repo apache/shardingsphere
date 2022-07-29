@@ -17,30 +17,31 @@
 
 package org.apache.shardingsphere.infra.fixture;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.rule.identifier.scope.DatabaseRule;
-import org.apache.shardingsphere.infra.rule.identifier.type.DataSourceContainedRule;
+import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.datanode.DataNodeBuilder;
+import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
 
 import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
+import java.util.LinkedList;
 
-import static org.mockito.Mockito.mock;
-
-public final class TestShardingSphereRule implements DatabaseRule, DataSourceContainedRule {
+public final class DataNodeBuilderFixture implements DataNodeBuilder<FixtureRule> {
     
     @Override
-    public RuleConfiguration getConfiguration() {
-        return mock(RuleConfiguration.class);
+    public Collection<DataNode> build(final Collection<DataNode> dataNodes, final FixtureRule rule) {
+        Collection<DataNode> result = new LinkedList<>();
+        for (DataNode each : dataNodes) {
+            result.addAll(DataNodeUtil.buildDataNode(each, rule.getDataSourceMapper()));
+        }
+        return result;
     }
     
     @Override
-    public Map<String, Collection<String>> getDataSourceMapper() {
-        return Collections.emptyMap();
+    public int getOrder() {
+        return 3;
     }
     
     @Override
-    public String getType() {
-        return TestShardingSphereRule.class.getSimpleName();
+    public Class<FixtureRule> getTypeClass() {
+        return FixtureRule.class;
     }
 }

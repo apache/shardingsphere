@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.rule.builder.database;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.fixture.TestRuleConfiguration;
+import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureDatabaseRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureDatabaseRuleConfiguration;
 import org.junit.Test;
@@ -51,7 +51,7 @@ public final class DatabaseRuleBuilderFactoryTest {
     @Test
     public void assertGetInstanceMapWithComparator() {
         Iterator<RuleConfiguration> actual = DatabaseRuleBuilderFactory.getInstanceMap(
-                Arrays.asList(new FixtureDatabaseRuleConfiguration(), new TestRuleConfiguration()), Comparator.naturalOrder()).keySet().iterator();
+                Arrays.asList(new FixtureDatabaseRuleConfiguration(), new FixtureRuleConfiguration()), Comparator.naturalOrder()).keySet().iterator();
         assertThat(actual.next(), instanceOf(FixtureDatabaseRuleConfiguration.class));
         assertFalse(actual.hasNext());
     }
