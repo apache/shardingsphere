@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.infra.config.checker;
 
-import org.apache.shardingsphere.infra.fixture.TestRuleConfiguration;
+import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
 
-public final class RuleConfigurationCheckerFixture implements RuleConfigurationChecker<TestRuleConfiguration> {
+public final class RuleConfigurationCheckerFixture implements RuleConfigurationChecker<FixtureRuleConfiguration> {
     
     @Override
-    public void check(final String databaseName, final TestRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
+    public void check(final String databaseName, final FixtureRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
         
     }
     
@@ -37,7 +37,7 @@ public final class RuleConfigurationCheckerFixture implements RuleConfigurationC
     }
     
     @Override
-    public Class<TestRuleConfiguration> getTypeClass() {
-        return TestRuleConfiguration.class;
+    public Class<FixtureRuleConfiguration> getTypeClass() {
+        return FixtureRuleConfiguration.class;
     }
 }

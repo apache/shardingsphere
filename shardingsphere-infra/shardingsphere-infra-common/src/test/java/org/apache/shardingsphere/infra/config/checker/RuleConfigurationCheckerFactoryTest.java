@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.infra.config.checker;
 
-import org.apache.shardingsphere.infra.fixture.TestRuleConfiguration;
 import org.apache.shardingsphere.infra.config.checker.fixture.TestRuleConfigurationWithoutChecker;
+import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.junit.Test;
 
 import java.util.Optional;
@@ -33,7 +33,7 @@ public final class RuleConfigurationCheckerFactoryTest {
     @SuppressWarnings("rawtypes")
     @Test
     public void assertFindInstance() {
-        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(new TestRuleConfiguration());
+        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(new FixtureRuleConfiguration());
         assertTrue(checker.isPresent());
         assertThat(checker.get(), instanceOf(RuleConfigurationCheckerFixture.class));
     }
