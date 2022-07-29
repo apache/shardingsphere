@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.yaml.config.swapper;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.fixture.RuleConfigurationFixture;
 import org.apache.shardingsphere.infra.yaml.config.swapper.fixture.YamlRuleConfigurationFixture;
 import org.junit.Test;
 
@@ -35,7 +35,7 @@ public final class YamlRuleConfigurationSwapperEngineTest {
     
     @Test
     public void assertSwapToYamlConfigurations() {
-        RuleConfigurationFixture ruleConfig = new RuleConfigurationFixture();
+        FixtureRuleConfiguration ruleConfig = new FixtureRuleConfiguration();
         ruleConfig.setName("test");
         Collection<YamlRuleConfiguration> actual = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(Collections.singletonList(ruleConfig));
         assertThat(actual.size(), is(1));
@@ -48,7 +48,7 @@ public final class YamlRuleConfigurationSwapperEngineTest {
         yamlRuleConfig.setName("test");
         Collection<RuleConfiguration> actual = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singletonList(yamlRuleConfig));
         assertThat(actual.size(), is(1));
-        assertThat(((RuleConfigurationFixture) actual.iterator().next()).getName(), is("test"));
+        assertThat(((FixtureRuleConfiguration) actual.iterator().next()).getName(), is("test"));
     }
     
     @Test
