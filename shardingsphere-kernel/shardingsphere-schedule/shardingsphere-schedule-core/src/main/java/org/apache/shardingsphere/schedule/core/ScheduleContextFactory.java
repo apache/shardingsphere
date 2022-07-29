@@ -67,7 +67,7 @@ public final class ScheduleContextFactory {
      * @param instanceId instance id
      * @return get schedule strategy
      */
-    public Optional<ScheduleStrategy> get(final String instanceId) {
-        return Optional.ofNullable(scheduleStrategy.get(instanceId));
+    public ScheduleStrategy get(final String instanceId) {
+        return scheduleStrategy.get(instanceId);
     }
 }
