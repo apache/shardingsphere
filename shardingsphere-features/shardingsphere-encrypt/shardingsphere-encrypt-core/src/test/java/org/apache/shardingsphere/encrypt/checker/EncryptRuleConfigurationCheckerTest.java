@@ -44,7 +44,7 @@ public final class EncryptRuleConfigurationCheckerTest {
         Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
         assertTrue(checker.isPresent());
         assertThat(checker.get(), instanceOf(EncryptRuleConfigurationChecker.class));
-        checker.get().check("test", config);
+        checker.get().check("test", config, Collections.emptyMap(), Collections.emptyList());
     }
     
     private EncryptRuleConfiguration createValidConfiguration() {
@@ -62,7 +62,7 @@ public final class EncryptRuleConfigurationCheckerTest {
         Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
         assertTrue(checker.isPresent());
         assertThat(checker.get(), instanceOf(EncryptRuleConfigurationChecker.class));
-        checker.get().check("test", config);
+        checker.get().check("test", config, Collections.emptyMap(), Collections.emptyList());
     }
     
     private EncryptRuleConfiguration createInvalidCipherColumnConfig() {
@@ -80,7 +80,7 @@ public final class EncryptRuleConfigurationCheckerTest {
         Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
         assertTrue(checker.isPresent());
         assertThat(checker.get(), instanceOf(EncryptRuleConfigurationChecker.class));
-        checker.get().check("test", config);
+        checker.get().check("test", config, Collections.emptyMap(), Collections.emptyList());
     }
     
     private EncryptRuleConfiguration createInvalidAssistColumnConfig() {

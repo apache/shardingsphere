@@ -93,7 +93,7 @@ public final class JDBCBackendTransactionManagerTest extends ProxyContextRestore
         newBackendTransactionManager(TransactionType.LOCAL, false);
         backendTransactionManager.begin();
         verify(transactionStatus).setInTransaction(true);
-        verify(backendConnection).closeDatabaseCommunicationEngines(true);
+        verify(backendConnection).closeHandlers(true);
         verify(backendConnection).closeConnections(false);
         verify(localTransactionManager).begin();
     }

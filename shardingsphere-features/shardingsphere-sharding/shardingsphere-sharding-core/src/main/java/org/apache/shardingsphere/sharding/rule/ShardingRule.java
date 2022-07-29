@@ -725,11 +725,6 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
         return actualDataNodes.stream().filter(each -> each.getDataSourceName().equalsIgnoreCase(catalog)).findFirst().map(DataNode::getTableName);
     }
     
-    @Override
-    public String getType() {
-        return ShardingRule.class.getSimpleName();
-    }
-    
     private boolean isJoinConditionContainsShardingColumns(final ShardingSphereSchema schema, final SelectStatementContext select,
                                                            final Collection<String> tableNames, final Collection<WhereSegment> whereSegments) {
         Collection<String> databaseJoinConditionTables = new HashSet<>(tableNames.size());
@@ -815,5 +810,10 @@ public final class ShardingRule implements DatabaseRule, DataNodeContainedRule, 
             }
         }
         return result;
+    }
+    
+    @Override
+    public String getType() {
+        return ShardingRule.class.getSimpleName();
     }
 }

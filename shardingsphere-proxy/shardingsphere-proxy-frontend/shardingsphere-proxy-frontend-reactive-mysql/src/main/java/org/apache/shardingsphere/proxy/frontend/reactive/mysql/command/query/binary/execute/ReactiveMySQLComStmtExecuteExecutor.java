@@ -31,6 +31,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.e
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.execute.MySQLComStmtExecutePacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
@@ -47,8 +48,8 @@ import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.frontend.command.executor.ResponseType;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.ServerStatusFlagCalculator;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLPreparedStatement;
@@ -76,7 +77,7 @@ public final class ReactiveMySQLComStmtExecuteExecutor implements ReactiveComman
     
     private VertxDatabaseCommunicationEngine databaseCommunicationEngine;
     
-    private TextProtocolBackendHandler textProtocolBackendHandler;
+    private ProxyBackendHandler proxyBackendHandler;
     
     @Getter
     private ResponseType responseType;
@@ -89,7 +90,7 @@ public final class ReactiveMySQLComStmtExecuteExecutor implements ReactiveComman
         MySQLPreparedStatement preparedStatement = updateAndGetPreparedStatement();
         List<Object> parameters = packet.readParameters(preparedStatement.getParameterTypes(), preparedStatement.getLongData().keySet());
         preparedStatement.getLongData().forEach(parameters::set);
-        SQLStatementContext<?> sqlStatementContext = preparedStatement.getSqlStatementContext();
+        SQLStatementContext<?> sqlStatementContext = preparedStatement.getSqlStatementContext().get();
         if (sqlStatementContext instanceof ParameterAware) {
             ((ParameterAware) sqlStatementContext).setUpParameters(parameters);
         }
@@ -104,12 +105,12 @@ public final class ReactiveMySQLComStmtExecuteExecutor implements ReactiveComman
         int characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
         // TODO Refactor the following branch
         if (sqlStatement instanceof TCLStatement) {
-            textProtocolBackendHandler = TextProtocolBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("MySQL"), preparedStatement.getSql(), sqlStatement, connectionSession);
+            proxyBackendHandler = ProxyBackendHandlerFactory.newInstance(DatabaseTypeFactory.getInstance("MySQL"), preparedStatement.getSql(), sqlStatement, connectionSession);
         } else {
             databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance()
-                    .newDatabaseCommunicationEngine(sqlStatementContext, preparedStatement.getSql(), parameters, connectionSession.getBackendConnection());
+                    .newDatabaseCommunicationEngine(new LogicSQL(sqlStatementContext, preparedStatement.getSql(), parameters), connectionSession.getBackendConnection(), true);
         }
-        return (null != databaseCommunicationEngine ? databaseCommunicationEngine.execute() : textProtocolBackendHandler.executeFuture()).compose(responseHeader -> {
+        return (null != databaseCommunicationEngine ? databaseCommunicationEngine.executeFuture() : proxyBackendHandler.executeFuture()).compose(responseHeader -> {
             Collection<DatabasePacket<?>> headerPackets = responseHeader instanceof QueryResponseHeader ? processQuery((QueryResponseHeader) responseHeader, characterSet)
                     : processUpdate((UpdateResponseHeader) responseHeader);
             List<DatabasePacket<?>> result = new LinkedList<>(headerPackets);
@@ -160,7 +161,7 @@ public final class ReactiveMySQLComStmtExecuteExecutor implements ReactiveComman
     }
     
     private MySQLPacket getQueryRowPacket() throws SQLException {
-        QueryResponseRow queryResponseRow = databaseCommunicationEngine.getQueryResponseRow();
+        QueryResponseRow queryResponseRow = databaseCommunicationEngine.getRowData();
         return new MySQLBinaryResultSetRowPacket(++currentSequenceId, createBinaryRow(queryResponseRow));
     }
     
@@ -175,8 +176,8 @@ public final class ReactiveMySQLComStmtExecuteExecutor implements ReactiveComman
     @Override
     public Future<Void> closeFuture() {
         try {
-            if (null != textProtocolBackendHandler) {
-                textProtocolBackendHandler.close();
+            if (null != proxyBackendHandler) {
+                proxyBackendHandler.close();
             }
             return Future.succeededFuture();
         } catch (final SQLException ex) {

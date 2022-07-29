@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.executor.sql.prepare;
 
 import org.apache.shardingsphere.infra.executor.sql.fixture.FixtureExecutionPrepareDecorator;
-import org.apache.shardingsphere.infra.executor.sql.fixture.FixtureRule;
+import org.apache.shardingsphere.test.fixture.rule.MockedRule;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -30,7 +30,7 @@ public final class ExecutionPrepareDecoratorFactoryTest {
     
     @Test
     public void assertGetInstance() {
-        FixtureRule rule = new FixtureRule();
+        MockedRule rule = new MockedRule();
         assertThat(ExecutionPrepareDecoratorFactory.getInstance(Collections.singleton(rule)).get(rule), instanceOf(FixtureExecutionPrepareDecorator.class));
     }
 }

@@ -39,9 +39,9 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metad
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.DatabaseDeletedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaAddedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.event.SchemaDeletedEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.ShowProcessListManager;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.lock.ShowProcessListSimpleLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.node.ProcessNode;
+import org.apache.shardingsphere.mode.process.ShowProcessListManager;
+import org.apache.shardingsphere.mode.process.lock.ShowProcessListSimpleLock;
+import org.apache.shardingsphere.mode.process.node.ProcessNode;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOfflineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.InstanceOnlineEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.status.compute.event.LabelsEvent;
@@ -170,6 +170,9 @@ public final class ClusterContextManagerCoordinator {
     @Subscribe
     public synchronized void renew(final StorageNodeChangedEvent event) {
         QualifiedDatabase qualifiedDatabase = event.getQualifiedDatabase();
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getQualifiedDatabase().getDatabaseName())) {
+            return;
+        }
         Optional<ShardingSphereRule> dynamicDataSourceRule = contextManager.getMetaDataContexts().getMetaData().getDatabase(qualifiedDatabase.getDatabaseName()).getRuleMetaData()
                 .getRules().stream().filter(each -> each instanceof DynamicDataSourceContainedRule).findFirst();
         if (dynamicDataSourceRule.isPresent()) {
@@ -189,12 +192,15 @@ public final class ClusterContextManagerCoordinator {
      */
     @Subscribe
     public synchronized void renew(final PrimaryStateChangedEvent event) {
+        if (!contextManager.getMetaDataContexts().getMetaData().containsDatabase(event.getQualifiedDatabase().getDatabaseName())) {
+            return;
+        }
         QualifiedDatabase qualifiedDatabase = event.getQualifiedDatabase();
         contextManager.getMetaDataContexts().getMetaData().getDatabase(qualifiedDatabase.getDatabaseName()).getRuleMetaData().getRules()
                 .stream()
                 .filter(each -> each instanceof DynamicDataSourceContainedRule)
                 .forEach(each -> ((DynamicDataSourceContainedRule) each)
-                        .restartHeartBeatJob(new PrimaryDataSourceChangedEvent(qualifiedDatabase), contextManager.getInstanceContext()));
+                        .restartHeartBeatJob(new PrimaryDataSourceChangedEvent(qualifiedDatabase)));
     }
     
     /**

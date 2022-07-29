@@ -20,12 +20,15 @@ package org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statemen
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.rul.SQLRULStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rul.sql.FormatStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.ParseStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rul.sql.PreviewStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rul.impl.sql.FormatSQLStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rul.impl.sql.ParseStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.rul.impl.sql.PreviewStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rul.FormatSQLStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rul.ParseStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.rul.PreviewStatementTestCase;
 
@@ -47,6 +50,8 @@ public final class SQLRULStatementAssert {
             PreviewStatementAssert.assertIs(assertContext, (PreviewStatement) actual, (PreviewStatementTestCase) expected);
         } else if (actual instanceof ParseStatement) {
             ParseStatementAssert.assertIs(assertContext, (ParseStatement) actual, (ParseStatementTestCase) expected);
+        } else if (actual instanceof FormatStatement) {
+            FormatSQLStatementAssert.assertIs(assertContext, (FormatStatement) actual, (FormatSQLStatementTestCase) expected);
         }
     }
 }

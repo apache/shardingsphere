@@ -24,6 +24,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.MySQLCol
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.fieldlist.MySQLComFieldListPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.generic.MySQLEofPacket;
 import org.apache.shardingsphere.db.protocol.packet.DatabasePacket;
+import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
@@ -39,6 +40,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 
 /**
@@ -70,13 +72,14 @@ public final class ReactiveMySQLComFieldListPacketExecutor implements ReactiveCo
         SQLStatement sqlStatement = sqlParserRule.getSQLParserEngine(
                 DatabaseTypeEngine.getTrunkDatabaseTypeName(metaDataContexts.getMetaData().getDatabase(databaseName).getProtocolType())).parse(sql, false);
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(metaDataContexts.getMetaData().getDatabases(), sqlStatement, databaseName);
-        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(sqlStatementContext, sql, connectionSession.getBackendConnection(), false);
+        databaseCommunicationEngine = DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new LogicSQL(sqlStatementContext, sql, Collections.emptyList()),
+                connectionSession.getBackendConnection(), false);
         characterSet = connectionSession.getAttributeMap().attr(MySQLConstants.MYSQL_CHARACTER_SET_ATTRIBUTE_KEY).get().getId();
     }
     
     @Override
     public Future<Collection<DatabasePacket<?>>> executeFuture() {
-        return databaseCommunicationEngine.execute().compose(unused -> {
+        return databaseCommunicationEngine.executeFuture().compose(unused -> {
             try {
                 return Future.succeededFuture(createColumnDefinition41Packets());
             } catch (SQLException ex) {
@@ -88,7 +91,7 @@ public final class ReactiveMySQLComFieldListPacketExecutor implements ReactiveCo
     private Collection<DatabasePacket<?>> createColumnDefinition41Packets() throws SQLException {
         Collection<DatabasePacket<?>> result = new LinkedList<>();
         while (databaseCommunicationEngine.next()) {
-            String columnName = databaseCommunicationEngine.getQueryResponseRow().getCells().iterator().next().getData().toString();
+            String columnName = databaseCommunicationEngine.getRowData().getCells().iterator().next().getData().toString();
             result.add(new MySQLColumnDefinition41Packet(
                     ++currentSequenceId, characterSet, databaseName, packet.getTable(), packet.getTable(), columnName, columnName, 100, MySQLBinaryColumnType.MYSQL_TYPE_VARCHAR, 0, true));
         }

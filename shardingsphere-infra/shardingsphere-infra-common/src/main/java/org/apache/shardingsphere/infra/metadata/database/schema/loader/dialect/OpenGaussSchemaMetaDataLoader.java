@@ -20,11 +20,11 @@ package org.apache.shardingsphere.infra.metadata.database.schema.loader.dialect;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
-import org.apache.shardingsphere.infra.metadata.database.schema.loader.common.DataTypeLoader;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.ColumnMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.IndexMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DataTypeLoaderFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.spi.DialectSchemaMetaDataLoader;
 
 import javax.sql.DataSource;
@@ -87,7 +87,7 @@ public final class OpenGaussSchemaMetaDataLoader implements DialectSchemaMetaDat
                                                                                 final Collection<String> schemaNames) throws SQLException {
         Map<String, Multimap<String, ColumnMetaData>> result = new LinkedHashMap<>();
         try (Connection connection = dataSource.getConnection(); PreparedStatement preparedStatement = connection.prepareStatement(getColumnMetaDataSQL(schemaNames, tables))) {
-            Map<String, Integer> dataTypes = DataTypeLoader.load(connection.getMetaData());
+            Map<String, Integer> dataTypes = DataTypeLoaderFactory.getInstance(DatabaseTypeFactory.getInstance("openGauss")).load(connection.getMetaData());
             Set<String> primaryKeys = loadPrimaryKeys(connection, schemaNames);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {

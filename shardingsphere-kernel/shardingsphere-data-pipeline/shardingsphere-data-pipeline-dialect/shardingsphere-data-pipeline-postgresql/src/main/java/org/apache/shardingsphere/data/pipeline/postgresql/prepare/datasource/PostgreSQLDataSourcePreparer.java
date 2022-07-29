@@ -43,7 +43,7 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
     @Override
     public void prepareTargetTables(final PrepareTargetTablesParameter parameter) {
         List<String> createLogicalTableSQLs = listCreateLogicalTableSQL(parameter);
-        try (Connection targetConnection = getTargetCachedDataSource(parameter.getTaskConfig(), parameter.getDataSourceManager()).getConnection()) {
+        try (Connection targetConnection = getTargetCachedDataSource(parameter.getDataSourceConfig(), parameter.getDataSourceManager()).getConnection()) {
             for (String createLogicalTableSQL : createLogicalTableSQLs) {
                 for (String each : Splitter.on(";").splitToList(createLogicalTableSQL).stream().filter(StringUtils::isNotBlank).collect(Collectors.toList())) {
                     executeTargetTableSQL(targetConnection, each);
@@ -59,7 +59,7 @@ public final class PostgreSQLDataSourcePreparer extends AbstractDataSourcePrepar
         List<String> result = new LinkedList<>();
         for (JobDataNodeEntry each : parameter.getTablesFirstDataNodes().getEntries()) {
             String schemaName = parameter.getTableNameSchemaNameMapping().getSchemaName(each.getLogicTableName());
-            result.add(generator.generateLogicDDLSQL(new PostgreSQLDatabaseType(), parameter.getJobConfig().getDatabaseName(), schemaName, each.getLogicTableName()));
+            result.add(generator.generateLogicDDLSQL(new PostgreSQLDatabaseType(), parameter.getDatabaseName(), schemaName, each.getLogicTableName()));
         }
         return result;
     }

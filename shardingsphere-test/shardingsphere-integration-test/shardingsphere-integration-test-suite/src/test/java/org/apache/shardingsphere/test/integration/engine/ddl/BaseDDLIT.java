@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.test.integration.engine.ddl;
 
 import com.google.common.base.Splitter;
+import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
 import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
@@ -39,6 +40,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -59,6 +61,14 @@ public abstract class BaseDDLIT extends SingleITCase {
         try (Connection connection = getTargetDataSource().getConnection()) {
             executeInitSQLs(connection);
         }
+        sleepIntervalTime();
+    }
+    
+    @SneakyThrows(InterruptedException.class)
+    private void sleepIntervalTime() {
+        if ("Cluster".equalsIgnoreCase(getMode())) {
+            TimeUnit.MILLISECONDS.sleep(200L);
+        }
     }
     
     @After
@@ -70,6 +80,7 @@ public abstract class BaseDDLIT extends SingleITCase {
             }
         } catch (final SQLException | NoSuchTableException ignored) {
         }
+        sleepIntervalTime();
     }
     
     private void executeInitSQLs(final Connection connection) throws SQLException {

@@ -17,15 +17,16 @@
 
 package org.apache.shardingsphere.infra.rewrite.fixture;
 
+import org.apache.shardingsphere.test.fixture.rule.MockedRule;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContext;
 import org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 
-public final class FixtureSQLRewriteContextDecorator implements SQLRewriteContextDecorator<FixtureRule> {
+public final class FixtureSQLRewriteContextDecorator implements SQLRewriteContextDecorator<MockedRule> {
     
     @Override
-    public void decorate(final FixtureRule rule, final ConfigurationProperties props, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
+    public void decorate(final MockedRule rule, final ConfigurationProperties props, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
     }
     
     @Override
@@ -34,7 +35,7 @@ public final class FixtureSQLRewriteContextDecorator implements SQLRewriteContex
     }
     
     @Override
-    public Class<FixtureRule> getTypeClass() {
-        return FixtureRule.class;
+    public Class<MockedRule> getTypeClass() {
+        return MockedRule.class;
     }
 }

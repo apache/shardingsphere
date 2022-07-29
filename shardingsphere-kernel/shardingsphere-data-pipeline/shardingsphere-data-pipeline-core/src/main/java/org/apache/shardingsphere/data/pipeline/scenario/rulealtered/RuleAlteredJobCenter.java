@@ -37,6 +37,7 @@ public final class RuleAlteredJobCenter {
      * @param job job
      */
     public static void addJob(final String jobId, final RuleAlteredJob job) {
+        log.info("add job, jobId={}", jobId);
         JOB_MAP.put(jobId, job);
     }
     
@@ -62,6 +63,7 @@ public final class RuleAlteredJobCenter {
             return;
         }
         job.stop();
+        log.info("remove job, jobId={}", jobId);
         JOB_MAP.remove(jobId);
     }
 }

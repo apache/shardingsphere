@@ -26,7 +26,6 @@ import org.apache.shardingsphere.schedule.core.strategy.type.ClusterScheduleStra
 import org.apache.shardingsphere.schedule.core.strategy.type.StandaloneScheduleStrategy;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -67,7 +66,7 @@ public final class ScheduleContextFactory {
      * @param instanceId instance id
      * @return get schedule strategy
      */
-    public Optional<ScheduleStrategy> get(final String instanceId) {
-        return Optional.ofNullable(scheduleStrategy.get(instanceId));
+    public ScheduleStrategy get(final String instanceId) {
+        return scheduleStrategy.get(instanceId);
     }
 }

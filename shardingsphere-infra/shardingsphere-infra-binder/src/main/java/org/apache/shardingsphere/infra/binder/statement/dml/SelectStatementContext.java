@@ -136,10 +136,11 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
                 throw new NoDatabaseException();
             }
         }
-        if (null == databases.get(databaseName)) {
+        ShardingSphereDatabase database = databases.get(databaseName.toLowerCase());
+        if (null == database) {
             throw new DatabaseNotExistedException(databaseName);
         }
-        return databases.get(databaseName.toLowerCase()).getSchemas();
+        return database.getSchemas();
     }
     
     /**

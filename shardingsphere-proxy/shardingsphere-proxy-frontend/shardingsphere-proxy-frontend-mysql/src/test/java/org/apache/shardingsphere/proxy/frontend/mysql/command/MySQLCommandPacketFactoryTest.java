@@ -32,6 +32,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.binary.r
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.fieldlist.MySQLComFieldListPacket;
 import org.apache.shardingsphere.db.protocol.mysql.packet.command.query.text.query.MySQLComQueryPacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.session.PreparedStatementRegistry;
 import org.apache.shardingsphere.proxy.frontend.mysql.command.query.binary.MySQLPreparedStatement;
@@ -47,6 +48,7 @@ import java.sql.SQLException;
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -91,7 +93,7 @@ public final class MySQLCommandPacketFactoryTest {
         when(payload.getByteBuf().getIntLE(anyInt())).thenReturn(1);
         PreparedStatementRegistry preparedStatementRegistry = new PreparedStatementRegistry();
         when(connectionSession.getPreparedStatementRegistry()).thenReturn(preparedStatementRegistry);
-        preparedStatementRegistry.addPreparedStatement(1, new MySQLPreparedStatement("select 1", new MySQLSelectStatement(), null));
+        preparedStatementRegistry.addPreparedStatement(1, new MySQLPreparedStatement("select 1", new MySQLSelectStatement(), mock(SQLStatementContext.class)));
         assertThat(MySQLCommandPacketFactory.newInstance(MySQLCommandPacketType.COM_STMT_EXECUTE, payload, connectionSession), instanceOf(MySQLComStmtExecutePacket.class));
     }
     

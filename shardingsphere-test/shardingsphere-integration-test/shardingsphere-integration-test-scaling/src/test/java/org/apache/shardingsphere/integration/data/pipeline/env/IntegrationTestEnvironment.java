@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.integration.data.pipeline.env;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -55,12 +56,11 @@ public final class IntegrationTestEnvironment {
         openGaussVersions = Arrays.stream(props.getOrDefault("scaling.it.docker.opengauss.version", "").toString().split(",")).filter(StringUtils::isNotBlank).collect(Collectors.toList());
     }
     
+    @SneakyThrows(IOException.class)
     private Properties loadProperties() {
         Properties result = new Properties();
         try (InputStream inputStream = IntegrationTestEnvironment.class.getClassLoader().getResourceAsStream("env/it-env.properties")) {
             result.load(inputStream);
-        } catch (final IOException ex) {
-            throw new RuntimeException(ex);
         }
         for (String each : System.getProperties().stringPropertyNames()) {
             result.setProperty(each, System.getProperty(each));

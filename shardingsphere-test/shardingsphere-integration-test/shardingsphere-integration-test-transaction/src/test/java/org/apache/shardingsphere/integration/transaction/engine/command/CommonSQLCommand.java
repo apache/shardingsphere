@@ -53,6 +53,12 @@ public final class CommonSQLCommand {
     @XmlElement(name = "create-account-table-rule")
     private String createAccountTableRule;
     
+    @XmlElement(name = "create-one-data-source-account-table-rule")
+    private String createOneDataSourceAccountTableRule;
+    
+    @XmlElement(name = "create-three-data-source-account-table-rule")
+    private String createThreeDataSourceAccountTableRule;
+    
     @XmlElement(name = "alter-local-transaction-rule")
     private String alterLocalTransactionRule;
     
@@ -61,6 +67,9 @@ public final class CommonSQLCommand {
     
     @XmlElement(name = "source-add-resource-template")
     private String sourceAddResourceTemplate;
+    
+    @XmlElement(name = "source-add-new-resource-template")
+    private String sourceAddNewResourceTemplate;
     
     @XmlElement(name = "create-account-table")
     private String createAccountTable;
