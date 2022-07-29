@@ -68,6 +68,7 @@ public final class IntegrationTestEnvironment {
         needToRunTestCases = splitProperty("transaction.it.env.cases");
         allowTransactionTypes = splitProperty("transaction.it.env.transtypes");
         allowXAProviders = splitProperty("transaction.it.env.xa.providers");
+        log.info("Loaded properties, allowTransactionTypes:{}, allowXAProviders:{}", allowTransactionTypes, allowXAProviders);
         transactionTestCaseRegistryMap = initTransactionTestCaseRegistryMap();
     }
     
