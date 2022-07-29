@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.rule.identifier.type;
 
-import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.event.DataSourceStatusChangedEvent;
 
@@ -55,9 +54,8 @@ public interface DynamicDataSourceContainedRule extends ShardingSphereRule {
      * Restart heart beat job.
      *
      * @param event data source status changed event
-     * @param instanceContext instance context
      */
-    void restartHeartBeatJob(DataSourceStatusChangedEvent event, InstanceContext instanceContext);
+    void restartHeartBeatJob(DataSourceStatusChangedEvent event);
     
     /**
      * Close heart beat.

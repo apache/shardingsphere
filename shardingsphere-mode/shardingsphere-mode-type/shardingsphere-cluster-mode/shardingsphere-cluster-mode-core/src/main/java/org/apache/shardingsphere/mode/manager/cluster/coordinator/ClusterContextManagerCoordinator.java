@@ -200,7 +200,7 @@ public final class ClusterContextManagerCoordinator {
                 .stream()
                 .filter(each -> each instanceof DynamicDataSourceContainedRule)
                 .forEach(each -> ((DynamicDataSourceContainedRule) each)
-                        .restartHeartBeatJob(new PrimaryDataSourceChangedEvent(qualifiedDatabase), contextManager.getInstanceContext()));
+                        .restartHeartBeatJob(new PrimaryDataSourceChangedEvent(qualifiedDatabase)));
     }
     
     /**
