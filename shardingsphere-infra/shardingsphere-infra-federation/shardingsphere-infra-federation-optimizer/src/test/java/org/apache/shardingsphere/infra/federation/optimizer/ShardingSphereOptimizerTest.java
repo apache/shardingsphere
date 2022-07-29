@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.federation.optimizer;
 
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
@@ -101,7 +102,8 @@ public final class ShardingSphereOptimizerTest {
         tables.put("t_user_info", createUserInfoTableMetaData());
         ShardingSphereDatabase database = new ShardingSphereDatabase(databaseName,
                 new H2DatabaseType(), mockResource(), null, Collections.singletonMap(schemaName, new ShardingSphereSchema(tables)));
-        optimizer = new ShardingSphereOptimizer(OptimizerContextFactory.create(Collections.singletonMap(databaseName, database), createGlobalRuleMetaData()));
+        OptimizerContext optimizerContext = OptimizerContextFactory.create(Collections.singletonMap(databaseName, database), createGlobalRuleMetaData());
+        optimizer = new ShardingSphereOptimizer(optimizerContext, optimizerContext.getPlannerContexts().get(databaseName).getConverters().get(schemaName));
     }
     
     private ShardingSphereRuleMetaData createGlobalRuleMetaData() {

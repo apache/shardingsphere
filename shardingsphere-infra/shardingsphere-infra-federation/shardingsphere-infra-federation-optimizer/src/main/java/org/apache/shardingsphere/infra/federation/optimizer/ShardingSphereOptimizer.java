@@ -36,6 +36,8 @@ public final class ShardingSphereOptimizer {
     
     private final OptimizerContext context;
     
+    private final SqlToRelConverter converter;
+    
     /**
      * Optimize query execution plan.
      * 
@@ -46,7 +48,6 @@ public final class ShardingSphereOptimizer {
      */
     public RelNode optimize(final String databaseName, final String schemaName, final SQLStatement sqlStatement) {
         try {
-            SqlToRelConverter converter = context.getPlannerContexts().get(databaseName).getConverters().get(schemaName);
             SqlNode sqlNode = SQLNodeConverterEngine.convertToSQLNode(sqlStatement);
             RelNode logicPlan = converter.convertQuery(sqlNode, true, true).rel;
             RelNode bestPlan = optimizeWithRBO(logicPlan, context.getPlannerContexts().get(databaseName).getHepPlanners().get(schemaName));
