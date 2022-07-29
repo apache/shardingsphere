@@ -15,10 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.checker.fixture;
+package org.apache.shardingsphere.infra.config.algorithm.fixture;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.function.EnhancedRuleConfiguration;
+import lombok.Getter;
+import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 
-public final class TestRuleConfigurationWithoutChecker implements RuleConfiguration, EnhancedRuleConfiguration {
+import java.util.Properties;
+
+@Getter
+public final class ShardingSphereAlgorithmFixture implements ShardingSphereAlgorithm {
+    
+    private Properties props;
+    
+    private String testValue;
+    
+    @Override
+    public void init(final Properties props) {
+        this.props = props;
+        testValue = props.getProperty("key");
+    }
+    
+    @Override
+    public String getType() {
+        return "FIXTURE";
+    }
 }
