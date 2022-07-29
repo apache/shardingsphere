@@ -19,9 +19,9 @@ name: Transaction Integration Test
 
 on:
   push:
-    branches: [ master, dev, fix-transaction-ci ]
+    branches: [ master, dev ]
     paths:
-      - '*.md'
+      - '!*.md'
   pull_request:
     branches: [ master ]
     paths:
