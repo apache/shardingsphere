@@ -25,7 +25,7 @@ import java.util.Collections;
 
 import static org.mockito.Mockito.mock;
 
-public final class CommonFixtureRule implements TableContainedRule {
+public final class TableContainedFixtureRule implements TableContainedRule {
     
     @Override
     public Collection<String> getTables() {
@@ -39,6 +39,6 @@ public final class CommonFixtureRule implements TableContainedRule {
     
     @Override
     public String getType() {
-        return CommonFixtureRule.class.getSimpleName();
+        return TableContainedFixtureRule.class.getSimpleName();
     }
 }
