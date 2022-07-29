@@ -36,9 +36,9 @@ public final class YamlRuleConfigurationSwapperFactoryTest {
     @SuppressWarnings("rawtypes")
     @Test
     public void assertGetInstanceMapByRuleConfigurations() {
-        FixtureRuleConfiguration ruleConfigurationFixture = new FixtureRuleConfiguration();
-        Map<RuleConfiguration, YamlRuleConfigurationSwapper> actual = YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurations(Collections.singletonList(ruleConfigurationFixture));
-        assertThat(actual.get(ruleConfigurationFixture), instanceOf(YamlRuleConfigurationSwapperFixture.class));
+        FixtureRuleConfiguration ruleConfig = new FixtureRuleConfiguration();
+        Map<RuleConfiguration, YamlRuleConfigurationSwapper> actual = YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurations(Collections.singletonList(ruleConfig));
+        assertThat(actual.get(ruleConfig), instanceOf(YamlRuleConfigurationSwapperFixture.class));
     }
     
     @SuppressWarnings("rawtypes")

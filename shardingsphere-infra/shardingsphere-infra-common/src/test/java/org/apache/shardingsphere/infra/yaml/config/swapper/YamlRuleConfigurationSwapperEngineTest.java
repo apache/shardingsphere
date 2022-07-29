@@ -35,9 +35,7 @@ public final class YamlRuleConfigurationSwapperEngineTest {
     
     @Test
     public void assertSwapToYamlConfigurations() {
-        FixtureRuleConfiguration ruleConfig = new FixtureRuleConfiguration();
-        ruleConfig.setName("test");
-        Collection<YamlRuleConfiguration> actual = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(Collections.singletonList(ruleConfig));
+        Collection<YamlRuleConfiguration> actual = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(Collections.singleton(new FixtureRuleConfiguration("test")));
         assertThat(actual.size(), is(1));
         assertThat(((YamlRuleConfigurationFixture) actual.iterator().next()).getName(), is("test"));
     }
@@ -46,7 +44,7 @@ public final class YamlRuleConfigurationSwapperEngineTest {
     public void assertSwapToRuleConfigurations() {
         YamlRuleConfigurationFixture yamlRuleConfig = new YamlRuleConfigurationFixture();
         yamlRuleConfig.setName("test");
-        Collection<RuleConfiguration> actual = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singletonList(yamlRuleConfig));
+        Collection<RuleConfiguration> actual = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(yamlRuleConfig));
         assertThat(actual.size(), is(1));
         assertThat(((FixtureRuleConfiguration) actual.iterator().next()).getName(), is("test"));
     }

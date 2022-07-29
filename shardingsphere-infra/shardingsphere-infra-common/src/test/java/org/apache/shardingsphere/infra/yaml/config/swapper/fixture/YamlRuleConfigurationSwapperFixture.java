@@ -36,9 +36,7 @@ public final class YamlRuleConfigurationSwapperFixture implements YamlRuleConfig
     
     @Override
     public FixtureRuleConfiguration swapToObject(final YamlRuleConfigurationFixture yamlConfig) {
-        FixtureRuleConfiguration result = new FixtureRuleConfiguration();
-        result.setName(yamlConfig.getName());
-        return result;
+        return new FixtureRuleConfiguration(yamlConfig.getName());
     }
     
     @Override
