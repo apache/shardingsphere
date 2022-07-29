@@ -296,9 +296,6 @@ public final class MySQLAdminExecutorCreatorTest {
         tableSegment.setOwner(new OwnerSegment(7, 8, new IdentifierValue("information_schema")));
         MySQLSelectStatement mySQLSelectStatement = mock(MySQLSelectStatement.class);
         when(mySQLSelectStatement.getFrom()).thenReturn(tableSegment);
-        ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
-        when(projectionsSegment.getProjections()).thenReturn(Collections.singletonList(new ExpressionProjectionSegment(0, 10, "ENGINES")));
-        when(mySQLSelectStatement.getProjections()).thenReturn(projectionsSegment);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mySQLSelectStatement);
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "select ENGINE from ENGINES", "");
         assertTrue(actual.isPresent());
@@ -312,9 +309,6 @@ public final class MySQLAdminExecutorCreatorTest {
         tableSegment.setOwner(new OwnerSegment(7, 8, new IdentifierValue("information_schema")));
         MySQLSelectStatement mySQLSelectStatement = mock(MySQLSelectStatement.class);
         when(mySQLSelectStatement.getFrom()).thenReturn(tableSegment);
-        ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
-        when(projectionsSegment.getProjections()).thenReturn(Collections.singletonList(new ExpressionProjectionSegment(0, 10, "SCHEMATA")));
-        when(mySQLSelectStatement.getProjections()).thenReturn(projectionsSegment);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mySQLSelectStatement);
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "select SCHEMA_NAME from SCHEMATA", "");
         assertTrue(actual.isPresent());
@@ -328,9 +322,6 @@ public final class MySQLAdminExecutorCreatorTest {
         tableSegment.setOwner(new OwnerSegment(7, 8, new IdentifierValue("information_schema")));
         MySQLSelectStatement mySQLSelectStatement = mock(MySQLSelectStatement.class);
         when(mySQLSelectStatement.getFrom()).thenReturn(tableSegment);
-        ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
-        when(projectionsSegment.getProjections()).thenReturn(Collections.singletonList(new ExpressionProjectionSegment(0, 10, "CHARACTER_SETS")));
-        when(mySQLSelectStatement.getProjections()).thenReturn(projectionsSegment);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mySQLSelectStatement);
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "select CHARACTER_SET_NAME from CHARACTER_SETS", "");
         assertFalse(actual.isPresent());
@@ -343,9 +334,6 @@ public final class MySQLAdminExecutorCreatorTest {
         tableSegment.setOwner(new OwnerSegment(7, 8, new IdentifierValue("performance_schema")));
         MySQLSelectStatement mySQLSelectStatement = mock(MySQLSelectStatement.class);
         when(mySQLSelectStatement.getFrom()).thenReturn(tableSegment);
-        ProjectionsSegment projectionsSegment = mock(ProjectionsSegment.class);
-        when(projectionsSegment.getProjections()).thenReturn(Collections.singletonList(new ExpressionProjectionSegment(0, 10, "accounts")));
-        when(mySQLSelectStatement.getProjections()).thenReturn(projectionsSegment);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mySQLSelectStatement);
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "select * from accounts", "");
         assertFalse(actual.isPresent());
