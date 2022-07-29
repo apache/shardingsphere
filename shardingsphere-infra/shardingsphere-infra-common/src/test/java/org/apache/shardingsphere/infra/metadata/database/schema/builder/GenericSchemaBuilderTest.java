@@ -22,12 +22,11 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
-import org.apache.shardingsphere.infra.metadata.database.schema.fixture.rule.TableContainedFixtureRule;
 import org.apache.shardingsphere.infra.metadata.database.schema.fixture.rule.DataNodeContainedFixtureRule;
+import org.apache.shardingsphere.infra.metadata.database.schema.fixture.rule.TableContainedFixtureRule;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.SchemaMetaDataLoaderEngine;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.TableMetaData;
-import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,7 +37,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -65,10 +63,14 @@ public final class GenericSchemaBuilderTest {
     
     @Before
     public void setUp() {
-        Collection<ShardingSphereRule> rules = Arrays.asList(new TableContainedFixtureRule(), new DataNodeContainedFixtureRule());
-        materials = new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap(DefaultDatabase.LOGIC_NAME,
-                mock(DataSource.class)), rules, new ConfigurationProperties(new Properties()), DefaultDatabase.LOGIC_NAME);
+        materials = new GenericSchemaBuilderMaterials(databaseType, databaseType, Collections.singletonMap(DefaultDatabase.LOGIC_NAME, mock(DataSource.class)),
+                Collections.singleton(new TableContainedFixtureRule()), new ConfigurationProperties(new Properties()), DefaultDatabase.LOGIC_NAME);
         schemaMetaDataLoaderEngine = mockStatic(SchemaMetaDataLoaderEngine.class);
+    }
+    
+    @After
+    public void cleanUp() {
+        schemaMetaDataLoaderEngine.close();
     }
     
     @Test
@@ -92,11 +94,6 @@ public final class GenericSchemaBuilderTest {
         Map<String, ShardingSphereSchema> actual = GenericSchemaBuilder.build(tableNames, materials);
         assertThat(actual.size(), is(1));
         assertTables(new ShardingSphereSchema(actual.values().iterator().next().getTables()).getTables());
-    }
-    
-    @After
-    public void cleanUp() {
-        schemaMetaDataLoaderEngine.close();
     }
     
     private void assertTables(final Map<String, ShardingSphereTable> actual) {
