@@ -26,7 +26,6 @@ import org.apache.shardingsphere.schedule.core.strategy.type.ClusterScheduleStra
 import org.apache.shardingsphere.schedule.core.strategy.type.StandaloneScheduleStrategy;
 
 import java.util.Map;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
