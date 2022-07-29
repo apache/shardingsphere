@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.config.checker;
 
-import org.apache.shardingsphere.infra.config.checker.fixture.TestRuleConfigurationWithoutChecker;
+import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.junit.Test;
 
@@ -27,6 +27,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 public final class RuleConfigurationCheckerFactoryTest {
     
@@ -38,10 +39,8 @@ public final class RuleConfigurationCheckerFactoryTest {
         assertThat(checker.get(), instanceOf(RuleConfigurationCheckerFixture.class));
     }
     
-    @SuppressWarnings("rawtypes")
     @Test
     public void assertFindInstanceWithoutChecker() {
-        Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(new TestRuleConfigurationWithoutChecker());
-        assertFalse(checker.isPresent());
+        assertFalse(RuleConfigurationCheckerFactory.findInstance(mock(RuleConfiguration.class)).isPresent());
     }
 }
