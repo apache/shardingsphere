@@ -17,7 +17,13 @@
 
 package org.apache.shardingsphere.infra.fixture;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
 
+@Getter
+@Setter
 public final class FixtureRuleConfiguration implements RuleConfiguration {
+    
+    private String name;
 }
