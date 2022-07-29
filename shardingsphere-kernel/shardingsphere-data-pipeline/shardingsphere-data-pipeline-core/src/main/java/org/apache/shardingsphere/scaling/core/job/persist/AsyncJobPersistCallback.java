@@ -15,25 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.importer;
+package org.apache.shardingsphere.scaling.core.job.persist;
 
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.job.persist.JobPersistCallback;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.importer.AbstractImporter;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobPersistService;
 
 /**
- * MySQL importer.
+ * Async job process persist callback.
  */
-public final class MySQLImporter extends AbstractImporter {
+@RequiredArgsConstructor
+public final class AsyncJobPersistCallback implements JobPersistCallback {
     
-    public MySQLImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel, final JobPersistCallback jobPersistCallback) {
-        super(importerConfig, dataSourceManager, channel, jobPersistCallback);
+    private final String jobId;
+    
+    private final int shardingItem;
+    
+    @Override
+    public String getJobId() {
+        return jobId;
     }
     
     @Override
-    protected String getSchemaName(final String logicTableName) {
-        return null;
+    public int getShardingItem() {
+        return shardingItem;
+    }
+    
+    @Override
+    public void pushPersistEvent(final long persistTime) {
+        RuleAlteredJobPersistService.triggerPersist(jobId, shardingItem, persistTime);
     }
 }

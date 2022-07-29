@@ -46,6 +46,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJ
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration.InputConfiguration;
+import org.apache.shardingsphere.scaling.core.job.persist.AsyncJobPersistCallback;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -76,8 +77,9 @@ public final class InventoryTaskSplitter {
         DataSource dataSource = jobContext.getSourceDataSource();
         PipelineTableMetaDataLoader metaDataLoader = jobContext.getSourceMetaDataLoader();
         ExecuteEngine importerExecuteEngine = jobContext.getRuleAlteredContext().getImporterExecuteEngine();
+        AsyncJobPersistCallback persistCallback = new AsyncJobPersistCallback(jobContext.getJobId(), jobContext.getShardingItem());
         for (InventoryDumperConfiguration each : splitDumperConfig(jobContext, taskConfig.getDumperConfig())) {
-            result.add(new InventoryTask(each, taskConfig.getImporterConfig(), pipelineChannelCreator, dataSourceManager, dataSource, metaDataLoader, importerExecuteEngine));
+            result.add(new InventoryTask(each, taskConfig.getImporterConfig(), pipelineChannelCreator, dataSourceManager, dataSource, metaDataLoader, importerExecuteEngine, persistCallback));
         }
         return result;
     }

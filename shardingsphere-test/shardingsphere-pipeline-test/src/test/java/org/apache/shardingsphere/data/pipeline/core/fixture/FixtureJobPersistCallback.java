@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.importer;
+package org.apache.shardingsphere.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.job.persist.JobPersistCallback;
-import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.importer.AbstractImporter;
 
-/**
- * MySQL importer.
- */
-public final class MySQLImporter extends AbstractImporter {
+public class FixtureJobPersistCallback implements JobPersistCallback {
     
-    public MySQLImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel, final JobPersistCallback jobPersistCallback) {
-        super(importerConfig, dataSourceManager, channel, jobPersistCallback);
+    @Override
+    public String getJobId() {
+        return null;
     }
     
     @Override
-    protected String getSchemaName(final String logicTableName) {
-        return null;
+    public int getShardingItem() {
+        return 0;
+    }
+    
+    @Override
+    public void pushPersistEvent(final long persistTime) {
     }
 }

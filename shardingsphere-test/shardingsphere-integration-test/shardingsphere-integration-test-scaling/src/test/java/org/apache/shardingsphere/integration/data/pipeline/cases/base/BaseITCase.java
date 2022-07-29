@@ -23,7 +23,6 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
@@ -53,11 +52,11 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -351,8 +350,9 @@ public abstract class BaseITCase {
             TimeUnit.SECONDS.timedJoin(increaseTaskThread, 60);
         }
         log.info("jobId: {}", jobId);
-        Map<String, String> actualStatusMap = new HashMap<>(2, 1);
+        Set<String> actualStatus = null;
         for (int i = 0; i < 15; i++) {
+            actualStatus = new HashSet<>();
             List<Map<String, Object>> showScalingStatusResMap = showScalingStatus(jobId);
             log.info("show scaling status result: {}", showScalingStatusResMap);
             boolean finished = true;
@@ -361,8 +361,7 @@ public abstract class BaseITCase {
                 assertThat(status, not(JobStatus.PREPARING_FAILURE.name()));
                 assertThat(status, not(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name()));
                 assertThat(status, not(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name()));
-                String datasourceName = entry.get("data_source").toString();
-                actualStatusMap.put(datasourceName, status);
+                actualStatus.add(status);
                 if (!Objects.equals(status, JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
                     finished = false;
                     break;
@@ -374,7 +373,7 @@ public abstract class BaseITCase {
             assertBeforeApplyScalingMetadataCorrectly();
             ThreadUtil.sleep(4, TimeUnit.SECONDS);
         }
-        assertThat(actualStatusMap.values().stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet()), is(Collections.singleton(JobStatus.EXECUTE_INCREMENTAL_TASK.name())));
+        assertThat(actualStatus, is(Collections.singleton(JobStatus.EXECUTE_INCREMENTAL_TASK.name())));
     }
     
     protected List<Map<String, Object>> showScalingStatus(final String jobId) {
