@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.merge.engine;
 
 import org.apache.shardingsphere.infra.merge.fixture.ResultProcessEngineFixture;
-import org.apache.shardingsphere.infra.merge.fixture.rule.ResultProcessRuleFixture;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.test.fixture.rule.MockedRule;
 import org.junit.Test;
 
 import java.util.Collections;
@@ -30,14 +30,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasValue;
 import static org.junit.Assert.assertThat;
-import static org.mockito.Mockito.mock;
 
 public final class ResultProcessEngineFactoryTest {
     
     @SuppressWarnings("rawtypes")
     @Test
     public void assertGetInstances() {
-        ResultProcessRuleFixture rule = mock(ResultProcessRuleFixture.class);
+        MockedRule rule = new MockedRule();
         Map<ShardingSphereRule, ResultProcessEngine> instances = ResultProcessEngineFactory.getInstances(Collections.singleton(rule));
         assertThat(instances.size(), is(1));
         assertThat(instances, hasKey(rule));
