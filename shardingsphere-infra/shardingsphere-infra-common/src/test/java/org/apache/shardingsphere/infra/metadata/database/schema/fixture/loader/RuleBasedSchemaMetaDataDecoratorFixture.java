@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Sch
 
 import java.util.Map;
 
-public final class TableContainedFixtureSchemaMetaDataDecorator implements RuleBasedSchemaMetaDataDecorator<TableContainedFixtureRule> {
+public final class RuleBasedSchemaMetaDataDecoratorFixture implements RuleBasedSchemaMetaDataDecorator<TableContainedFixtureRule> {
     
     @Override
     public Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final TableContainedFixtureRule rule, final GenericSchemaBuilderMaterials materials) {
