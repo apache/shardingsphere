@@ -29,7 +29,7 @@ import org.apache.shardingsphere.data.pipeline.core.importer.AbstractImporter;
  */
 public final class PostgreSQLImporter extends AbstractImporter {
     
-    public PostgreSQLImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel, 
+    public PostgreSQLImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel,
                               final JobPersistCallback jobPersistCallback) {
         super(importerConfig, dataSourceManager, channel, jobPersistCallback);
     }

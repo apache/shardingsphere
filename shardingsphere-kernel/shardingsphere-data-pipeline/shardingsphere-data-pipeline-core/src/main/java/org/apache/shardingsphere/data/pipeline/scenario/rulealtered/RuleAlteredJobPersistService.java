@@ -104,7 +104,6 @@ public final class RuleAlteredJobPersistService {
         JOB_PERSIST_MAP.computeIfAbsent(jobId, key -> new ConcurrentHashMap<>()).put(shardingItem, new JobPersistIntervalParameter(jobId, shardingItem));
     }
     
-    
     /**
      * Persist job process, may not be implemented immediately, depending on persist interval.
      *
