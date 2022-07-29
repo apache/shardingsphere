@@ -19,15 +19,15 @@ package org.apache.shardingsphere.infra.metadata.database.schema.fixture.loader;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.GenericSchemaBuilderMaterials;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecorator;
-import org.apache.shardingsphere.infra.metadata.database.schema.fixture.rule.CommonFixtureRule;
+import org.apache.shardingsphere.infra.metadata.database.schema.fixture.rule.TableContainedFixtureRule;
 import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.SchemaMetaData;
 
 import java.util.Map;
 
-public final class CommonFixtureSchemaMetaDataDecorator implements RuleBasedSchemaMetaDataDecorator<CommonFixtureRule> {
+public final class TableContainedFixtureSchemaMetaDataDecorator implements RuleBasedSchemaMetaDataDecorator<TableContainedFixtureRule> {
     
     @Override
-    public Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final CommonFixtureRule rule, final GenericSchemaBuilderMaterials materials) {
+    public Map<String, SchemaMetaData> decorate(final Map<String, SchemaMetaData> schemaMetaDataMap, final TableContainedFixtureRule rule, final GenericSchemaBuilderMaterials materials) {
         return schemaMetaDataMap;
     }
     
@@ -37,7 +37,7 @@ public final class CommonFixtureSchemaMetaDataDecorator implements RuleBasedSche
     }
     
     @Override
-    public Class<CommonFixtureRule> getTypeClass() {
-        return CommonFixtureRule.class;
+    public Class<TableContainedFixtureRule> getTypeClass() {
+        return TableContainedFixtureRule.class;
     }
 }
