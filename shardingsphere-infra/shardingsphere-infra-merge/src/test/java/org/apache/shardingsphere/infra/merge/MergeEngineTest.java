@@ -23,10 +23,10 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.fixture.rule.DecoratorRuleFixture;
-import org.apache.shardingsphere.infra.merge.fixture.rule.IndependentRuleFixture;
 import org.apache.shardingsphere.infra.merge.fixture.rule.MergerRuleFixture;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.test.fixture.rule.MockedRule;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -64,7 +64,7 @@ public final class MergeEngineTest {
     
     @Test
     public void assertMergeWithIndependentRule() throws SQLException {
-        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(new IndependentRuleFixture()));
+        when(database.getRuleMetaData().getRules()).thenReturn(Collections.singleton(new MockedRule()));
         when(queryResult.getValue(1, String.class)).thenReturn("test");
         MergedResult actual = new MergeEngine(database, new ConfigurationProperties(new Properties())).merge(Collections.singletonList(queryResult), sqlStatementContext);
         assertThat(actual.getValue(1, String.class), is("test"));
