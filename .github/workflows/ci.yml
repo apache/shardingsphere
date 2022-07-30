@@ -63,6 +63,11 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v3
+      - name: Cache dependencies of Checkstyle and Apache Rat
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: maven-cache-checkstyle-and-apache-rat-${{ hashFiles('**/pom.xml') }}
       - name: Run Checkstyle and Apache Rat
         run: ./mvnw checkstyle:check apache-rat:check -T1C
   windows:
