@@ -62,8 +62,8 @@ public final class QueryOptimizePlannerFactory {
     public static RelOptPlanner createHepPlanner() {
         HepProgramBuilder builder = new HepProgramBuilder();
         builder.addGroupBegin().addRuleCollection(getSubQueryRules()).addGroupEnd().addMatchOrder(HepMatchOrder.DEPTH_FIRST);
-        builder.addGroupBegin().addRuleCollection(getProjectRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
         builder.addGroupBegin().addRuleCollection(getFilterRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
+        builder.addGroupBegin().addRuleCollection(getProjectRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
         builder.addMatchLimit(DEFAULT_MATCH_LIMIT);
         return new HepPlanner(builder.build());
     }
@@ -91,13 +91,16 @@ public final class QueryOptimizePlannerFactory {
     private static Collection<RelOptRule> getProjectRules() {
         Collection<RelOptRule> result = new LinkedList<>();
         result.add(AggregateExpandDistinctAggregatesRule.Config.DEFAULT.toRule());
-        result.add(CoreRules.AGGREGATE_ANY_PULL_UP_CONSTANTS);
-        result.add(CoreRules.PROJECT_MERGE);
+        result.add(CoreRules.PROJECT_TO_CALC);
+        result.add(CoreRules.FILTER_TO_CALC);
+        result.add(CoreRules.PROJECT_CALC_MERGE);
+        result.add(CoreRules.FILTER_CALC_MERGE);
         result.add(CoreRules.PROJECT_CORRELATE_TRANSPOSE);
         result.add(CoreRules.PROJECT_SET_OP_TRANSPOSE);
         result.add(CoreRules.PROJECT_JOIN_TRANSPOSE);
         result.add(CoreRules.PROJECT_WINDOW_TRANSPOSE);
         result.add(CoreRules.PROJECT_FILTER_TRANSPOSE);
+        result.add(CoreRules.PROJECT_REDUCE_EXPRESSIONS);
         result.add(ProjectRemoveRule.Config.DEFAULT.toRule());
         return result;
     }
@@ -107,19 +110,12 @@ public final class QueryOptimizePlannerFactory {
         result.add(CoreRules.FILTER_INTO_JOIN);
         result.add(CoreRules.JOIN_CONDITION_PUSH);
         result.add(CoreRules.SORT_JOIN_TRANSPOSE);
-        result.add(CoreRules.PROJECT_CORRELATE_TRANSPOSE);
         result.add(CoreRules.FILTER_AGGREGATE_TRANSPOSE);
         result.add(CoreRules.FILTER_PROJECT_TRANSPOSE);
         result.add(CoreRules.FILTER_SET_OP_TRANSPOSE);
-        result.add(CoreRules.FILTER_PROJECT_TRANSPOSE);
         result.add(CoreRules.FILTER_REDUCE_EXPRESSIONS);
-        result.add(CoreRules.PROJECT_REDUCE_EXPRESSIONS);
-        result.add(CoreRules.FILTER_MERGE);
-        result.add(CoreRules.PROJECT_CALC_MERGE);
         result.add(CoreRules.JOIN_PUSH_EXPRESSIONS);
         result.add(CoreRules.JOIN_PUSH_TRANSITIVE_PREDICATES);
-        result.add(CoreRules.FILTER_TO_CALC);
-        result.add(CoreRules.PROJECT_TO_CALC);
         return result;
     }
 }
