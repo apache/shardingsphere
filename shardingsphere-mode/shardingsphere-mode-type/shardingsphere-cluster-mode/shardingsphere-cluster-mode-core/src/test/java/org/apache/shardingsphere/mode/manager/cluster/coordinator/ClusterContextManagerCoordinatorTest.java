@@ -118,7 +118,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.Silent.class)
+@RunWith(MockitoJUnitRunner.class)
 public final class ClusterContextManagerCoordinatorTest {
     
     private ClusterContextManagerCoordinator coordinator;
@@ -193,7 +193,6 @@ public final class ClusterContextManagerCoordinatorTest {
     
     @Test
     public void assertRenewForSchemaAdded() {
-        when(contextManager.getMetaDataContexts().getMetaData().getDatabase("db").getSchema("foo_schema")).thenReturn(null);
         coordinator.renew(new SchemaAddedEvent("db", "foo_schema"));
         verify(contextManager.getMetaDataContexts().getMetaData().getDatabase("db")).putSchema(argThat(argument -> argument.equals("foo_schema")), any(ShardingSphereSchema.class));
     }
