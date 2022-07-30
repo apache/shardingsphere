@@ -82,7 +82,7 @@ public final class YamlProxyConfigurationSwapperTest {
         assertThat(dataSource.getName(), is("readwrite_ds"));
         assertNotNull(dataSource.getStaticStrategy());
         assertThat(dataSource.getStaticStrategy().getWriteDataSourceName(), is("foo_db"));
-        assertThat(dataSource.getStaticStrategy().getReadDataSourceNames(), is(Collections.singleton("foo_db")));
+        assertThat(dataSource.getStaticStrategy().getReadDataSourceNames(), is(Collections.singletonList("foo_db")));
         assertThat(actual.getLoadBalancers().size(), is(1));
         ShardingSphereAlgorithmConfiguration loadBalancer = actual.getLoadBalancers().get("round_robin");
         assertThat(loadBalancer.getProps().size(), is(1));
