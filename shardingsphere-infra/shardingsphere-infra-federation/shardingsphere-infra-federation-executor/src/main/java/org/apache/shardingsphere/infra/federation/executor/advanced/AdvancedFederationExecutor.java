@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.federation.executor.advanced;
 
+import com.google.common.base.Preconditions;
 import org.apache.calcite.adapter.enumerable.EnumerableInterpretable;
 import org.apache.calcite.adapter.enumerable.EnumerableRel;
 import org.apache.calcite.config.CalciteConnectionConfig;
@@ -30,6 +31,8 @@ import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.runtime.Bindable;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
@@ -48,6 +51,7 @@ import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerCon
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
 import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.Connection;
@@ -91,22 +95,29 @@ public final class AdvancedFederationExecutor implements FederationExecutor {
     @Override
     public ResultSet executeQuery(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
                                   final JDBCExecutorCallback<? extends ExecuteResult> callback, final FederationContext federationContext) throws SQLException {
-        SQLStatement sqlStatement = federationContext.getLogicSQL().getSqlStatementContext().getSqlStatement();
-        Enumerator<Object[]> enumerator = execute(sqlStatement, federationContext, prepareEngine, callback).enumerator();
-        resultSet = new FederationResultSet(enumerator, federationContext.getLogicSQL().getSqlStatementContext());
+        SQLStatementContext<?> sqlStatementContext = federationContext.getLogicSQL().getSqlStatementContext();
+        Preconditions.checkArgument(sqlStatementContext instanceof SelectStatementContext, "SQL statement context must be select statement context.");
+        ShardingSphereSchema schema = federationContext.getDatabases().get(databaseName.toLowerCase()).getSchema(schemaName);
+        FilterableSchema filterableSchema = createFilterableSchema(prepareEngine, schema, callback, federationContext);
+        Enumerator<Object[]> enumerator = execute(sqlStatementContext.getSqlStatement(), filterableSchema).enumerator();
+        resultSet = new FederationResultSet(enumerator, schema, filterableSchema, sqlStatementContext);
         return resultSet;
     }
     
-    @SuppressWarnings("unchecked")
-    private Enumerable<Object[]> execute(final SQLStatement sqlStatement, final FederationContext federationContext, final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine,
-                                         final JDBCExecutorCallback<? extends ExecuteResult> callback) {
+    private FilterableSchema createFilterableSchema(final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine, final ShardingSphereSchema schema,
+                                                    final JDBCExecutorCallback<? extends ExecuteResult> callback, final FederationContext federationContext) {
         FilterableTableScanExecutorContext executorContext = new FilterableTableScanExecutorContext(databaseName, schemaName, props, federationContext);
         FilterableTableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, globalRuleMetaData, executorContext, eventBusContext);
+        FederationSchemaMetaData schemaMetaData = new FederationSchemaMetaData(schemaName, schema.getTables());
+        return new FilterableSchema(schemaMetaData, executor);
+    }
+    
+    @SuppressWarnings("unchecked")
+    private Enumerable<Object[]> execute(final SQLStatement sqlStatement, final FilterableSchema filterableSchema) {
+        // TODO remove OptimizerPlannerContextFactory call and use setup executor to handle this logic
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(OptimizerPlannerContextFactory.createConnectionProperties());
         RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
-        FederationSchemaMetaData schemaMetaData = new FederationSchemaMetaData(schemaName, federationContext.getDatabases().get(databaseName).getSchema(schemaName).getTables());
-        // TODO remove OptimizerPlannerContextFactory call and use setup executor to handle this logic
-        CalciteCatalogReader catalogReader = OptimizerPlannerContextFactory.createCatalogReader(schemaName, new FilterableSchema(schemaMetaData, executor), relDataTypeFactory, connectionConfig);
+        CalciteCatalogReader catalogReader = OptimizerPlannerContextFactory.createCatalogReader(schemaName, filterableSchema, relDataTypeFactory, connectionConfig);
         SqlValidator validator = OptimizerPlannerContextFactory.createValidator(catalogReader, relDataTypeFactory, connectionConfig);
         SqlToRelConverter converter = OptimizerPlannerContextFactory.createConverter(catalogReader, validator, relDataTypeFactory);
         RelNode bestPlan = new ShardingSphereOptimizer(optimizerContext, converter).optimize(databaseName, schemaName, sqlStatement);

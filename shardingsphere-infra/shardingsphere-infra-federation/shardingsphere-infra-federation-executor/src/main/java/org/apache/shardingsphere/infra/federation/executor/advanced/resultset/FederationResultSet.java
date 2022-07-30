@@ -17,11 +17,14 @@
 
 package org.apache.shardingsphere.infra.federation.executor.advanced.resultset;
 
+import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.linq4j.Enumerator;
-import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtil;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtil;
+import org.apache.shardingsphere.infra.federation.executor.original.schema.FilterableSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 
 import java.io.InputStream;
 import java.io.Reader;
@@ -61,15 +64,18 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
     
     private final Map<String, Integer> columnLabelAndIndexMap;
     
+    private final FederationResultSetMetaData resultSetMetaData;
+    
     private Object[] currentRows;
     
     private boolean wasNull;
     
     private boolean closed;
     
-    public FederationResultSet(final Enumerator<Object[]> enumerator, final SQLStatementContext<?> sqlStatementContext) {
+    public FederationResultSet(final Enumerator<Object[]> enumerator, final ShardingSphereSchema schema, final FilterableSchema filterableSchema, final SQLStatementContext<?> sqlStatementContext) {
         this.enumerator = enumerator;
         columnLabelAndIndexMap = createColumnLabelAndIndexMap(sqlStatementContext);
+        resultSetMetaData = new FederationResultSetMetaData(schema, filterableSchema, new JavaTypeFactoryImpl(), (SelectStatementContext) sqlStatementContext);
     }
     
     private Map<String, Integer> createColumnLabelAndIndexMap(final SQLStatementContext<?> sqlStatementContext) {
@@ -312,8 +318,7 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
     
     @Override
     public ResultSetMetaData getMetaData() throws SQLException {
-        // TODO implement getMetaData for federation resultset
-        return null;
+        return resultSetMetaData;
     }
     
     @Override
