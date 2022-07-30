@@ -58,7 +58,7 @@ import java.util.Properties;
 
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.Silent.class)
+@RunWith(MockitoJUnitRunner.class)
 public final class ShardingRuleStatementCheckerTest {
     
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
