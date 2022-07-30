@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.yaml.config.swapper;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.fixture.RuleConfigurationFixture;
+import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.fixture.YamlRuleConfigurationSwapperFixture;
 import org.junit.Test;
 
@@ -36,16 +36,16 @@ public final class YamlRuleConfigurationSwapperFactoryTest {
     @SuppressWarnings("rawtypes")
     @Test
     public void assertGetInstanceMapByRuleConfigurations() {
-        RuleConfigurationFixture ruleConfigurationFixture = new RuleConfigurationFixture();
-        Map<RuleConfiguration, YamlRuleConfigurationSwapper> actual = YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurations(Collections.singletonList(ruleConfigurationFixture));
-        assertThat(actual.get(ruleConfigurationFixture), instanceOf(YamlRuleConfigurationSwapperFixture.class));
+        FixtureRuleConfiguration ruleConfig = new FixtureRuleConfiguration();
+        Map<RuleConfiguration, YamlRuleConfigurationSwapper> actual = YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurations(Collections.singletonList(ruleConfig));
+        assertThat(actual.get(ruleConfig), instanceOf(YamlRuleConfigurationSwapperFixture.class));
     }
     
     @SuppressWarnings("rawtypes")
     @Test
     public void assertGetInstanceMapByRuleConfigurationClasses() {
-        Map<Class<?>, YamlRuleConfigurationSwapper> actual = YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurationClasses(Collections.singletonList(RuleConfigurationFixture.class));
-        assertThat(actual.get(RuleConfigurationFixture.class), instanceOf(YamlRuleConfigurationSwapperFixture.class));
+        Map<Class<?>, YamlRuleConfigurationSwapper> actual = YamlRuleConfigurationSwapperFactory.getInstanceMapByRuleConfigurationClasses(Collections.singletonList(FixtureRuleConfiguration.class));
+        assertThat(actual.get(FixtureRuleConfiguration.class), instanceOf(YamlRuleConfigurationSwapperFixture.class));
     }
     
     @SuppressWarnings("rawtypes")

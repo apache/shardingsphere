@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.yaml.config.swapper;
 
 import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.fixture.RuleConfigurationFixture;
 import org.apache.shardingsphere.infra.yaml.config.swapper.fixture.YamlRuleConfigurationFixture;
 import org.junit.Test;
 
@@ -35,9 +35,7 @@ public final class YamlRuleConfigurationSwapperEngineTest {
     
     @Test
     public void assertSwapToYamlConfigurations() {
-        RuleConfigurationFixture ruleConfig = new RuleConfigurationFixture();
-        ruleConfig.setName("test");
-        Collection<YamlRuleConfiguration> actual = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(Collections.singletonList(ruleConfig));
+        Collection<YamlRuleConfiguration> actual = new YamlRuleConfigurationSwapperEngine().swapToYamlRuleConfigurations(Collections.singleton(new FixtureRuleConfiguration("test")));
         assertThat(actual.size(), is(1));
         assertThat(((YamlRuleConfigurationFixture) actual.iterator().next()).getName(), is("test"));
     }
@@ -46,9 +44,9 @@ public final class YamlRuleConfigurationSwapperEngineTest {
     public void assertSwapToRuleConfigurations() {
         YamlRuleConfigurationFixture yamlRuleConfig = new YamlRuleConfigurationFixture();
         yamlRuleConfig.setName("test");
-        Collection<RuleConfiguration> actual = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singletonList(yamlRuleConfig));
+        Collection<RuleConfiguration> actual = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(yamlRuleConfig));
         assertThat(actual.size(), is(1));
-        assertThat(((RuleConfigurationFixture) actual.iterator().next()).getName(), is("test"));
+        assertThat(((FixtureRuleConfiguration) actual.iterator().next()).getName(), is("test"));
     }
     
     @Test

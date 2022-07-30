@@ -20,10 +20,8 @@ name: Transaction Integration Test
 on:
   push:
     branches: [ master, dev ]
-      - '**/pom.xml'
-      - 'shardingsphere-distribution/shardingsphere-proxy-distribution/**'
+    paths:
       - '!*.md'
-
   pull_request:
     branches: [ master ]
     paths:
