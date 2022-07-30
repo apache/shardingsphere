@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.route.fixture.rule;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import static org.mockito.Mockito.mock;

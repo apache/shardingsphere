@@ -15,30 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.checker.fixture;
+package org.apache.shardingsphere.infra.config.rule.checker;
 
-import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
-import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.ordered.OrderedSPI;
 
 import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Map;
 
-public final class RuleConfigurationCheckerFixture implements RuleConfigurationChecker<FixtureRuleConfiguration> {
+/**
+ * Rule configuration checker.
+ * 
+ * @param <T> type of rule configuration
+ */
+@SingletonSPI
+public interface RuleConfigurationChecker<T extends RuleConfiguration> extends OrderedSPI<T> {
     
-    @Override
-    public void check(final String databaseName, final FixtureRuleConfiguration config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
-        
-    }
-    
-    @Override
-    public int getOrder() {
-        return -10;
-    }
-    
-    @Override
-    public Class<FixtureRuleConfiguration> getTypeClass() {
-        return FixtureRuleConfiguration.class;
-    }
+    /**
+     * Check rule configuration.
+     * 
+     * @param databaseName database name to be checked
+     * @param config rule configuration to be checked
+     * @param dataSourceMap data sources to be checked
+     * @param rules rules to be checked
+     */
+    void check(String databaseName, T config, Map<String, DataSource> dataSourceMap, Collection<ShardingSphereRule> rules);
 }

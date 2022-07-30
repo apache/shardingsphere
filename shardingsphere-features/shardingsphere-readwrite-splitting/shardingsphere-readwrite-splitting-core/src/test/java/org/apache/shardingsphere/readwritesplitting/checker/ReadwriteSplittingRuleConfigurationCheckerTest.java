@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.readwritesplitting.checker;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
-import org.apache.shardingsphere.infra.config.checker.RuleConfigurationCheckerFactory;
+import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationCheckerFactory;
 import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -51,7 +51,7 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
         Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
         assertTrue(checker.isPresent());
         assertThat(checker.get(), instanceOf(ReadwriteSplittingRuleConfigurationChecker.class));
-        checker.get().check("test", config, Collections.emptyMap(), Arrays.asList(mock(DynamicDataSourceContainedRule.class)));
+        checker.get().check("test", config, Collections.emptyMap(), Collections.singleton(mock(DynamicDataSourceContainedRule.class)));
     }
     
     private ReadwriteSplittingRuleConfiguration createValidConfiguration() {
@@ -111,8 +111,8 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
     @Test(expected = IllegalStateException.class)
     public void assertCheckWeightLoadBalanceInvalidDataSourceName() {
         ReadwriteSplittingRuleConfiguration config = mock(ReadwriteSplittingRuleConfiguration.class);
-        List<ReadwriteSplittingDataSourceRuleConfiguration> configurations = Arrays.asList(createDataSourceRuleConfig("write_ds_0", Arrays.asList("read_ds_0", "read_ds_1")));
-        when(config.getDataSources()).thenReturn(configurations);
+        List<ReadwriteSplittingDataSourceRuleConfiguration> configs = Collections.singletonList(createDataSourceRuleConfig("write_ds_0", Arrays.asList("read_ds_0", "read_ds_1")));
+        when(config.getDataSources()).thenReturn(configs);
         Properties props = new Properties();
         props.setProperty("read_ds_2", "1");
         props.setProperty("read_ds_1", "2");

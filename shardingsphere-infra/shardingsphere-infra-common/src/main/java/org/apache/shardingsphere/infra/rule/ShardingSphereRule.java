@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.rule;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 
 /**
  * ShardingSphere rule.

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.rule.builder.fixture;
 
-import org.apache.shardingsphere.infra.config.scope.GlobalRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.GlobalRuleConfiguration;
 
 public final class FixtureGlobalRuleConfiguration implements GlobalRuleConfiguration {
 }

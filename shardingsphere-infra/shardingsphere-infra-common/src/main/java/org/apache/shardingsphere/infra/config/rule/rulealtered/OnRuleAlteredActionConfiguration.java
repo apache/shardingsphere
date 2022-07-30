@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.rulealtered;
+package org.apache.shardingsphere.infra.config.rule.rulealtered;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
