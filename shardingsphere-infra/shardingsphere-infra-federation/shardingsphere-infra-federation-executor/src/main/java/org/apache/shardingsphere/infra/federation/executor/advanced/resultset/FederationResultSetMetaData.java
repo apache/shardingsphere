@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * ShardingSphere result set meta data.
+ * Federation result set meta data.
  */
 @RequiredArgsConstructor
 public final class FederationResultSetMetaData extends WrapperAdapter implements ResultSetMetaData {
