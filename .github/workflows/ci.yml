@@ -132,21 +132,14 @@ jobs:
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        java:
-          - {
-            version: 11,
-            maven_args: "-Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true"
-          }
-          - {
-            version: 17,
-            maven_args: "-Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true"
-          }
-          - {
-            version: 18,
-            maven_args: "-Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true"
-          }
+        java_version: [ 11, 17, 18 ]
     steps:
       - uses: actions/checkout@v2
+      - name: Set up JDK ${{ matrix.java_version }}
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.java_version }}
       - name: Maven resolve ranges
         run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - name: Cache Maven Repos
@@ -156,13 +149,8 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - name: Set up JDK ${{ matrix.java.version }}
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'temurin'
-          java-version: ${{ matrix.java.version }}
       - name: Build with Maven
-        run: echo y | ./mvnw -B --no-transfer-progress clean install ${{ matrix.java.maven_args }}
+        run: echo y | ./mvnw -B --no-transfer-progress clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true
       - name: Build examples with Maven
         run: echo y | ./mvnw -B -f examples/pom.xml clean package -DskipTests
   
