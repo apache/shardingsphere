@@ -25,6 +25,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -59,6 +60,7 @@ import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.Show
 import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.UnicastResourceShowExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.UseDatabaseExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.information.SelectInformationSchemataExecutor;
+import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ExpressionProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
@@ -82,8 +84,8 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 // TODO Cover more lines in MySQLAdminExecutorCreator
-@RunWith(MockitoJUnitRunner.class)
-public final class MySQLAdminExecutorCreatorTest {
+@RunWith(MockitoJUnitRunner.Silent.class)
+public final class MySQLAdminExecutorCreatorTest extends ProxyContextRestorer {
     
     @SuppressWarnings("rawtypes")
     @Mock
@@ -255,9 +257,10 @@ public final class MySQLAdminExecutorCreatorTest {
     }
     
     @Test
-    public void assertCreateWithOtherSelectStatementForDatabaseName() {
+    public void assertCreateWithOtherSelectStatementForDatabaseName() throws SQLException {
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(10, 1);
-        ShardingSphereResource resource = new ShardingSphereResource(Collections.singletonMap("ds", new MockedDataSource()));
+        MockedDataSource dataSource = new MockedDataSource();
+        ShardingSphereResource resource = new ShardingSphereResource(Collections.singletonMap("ds", dataSource));
         ShardingSphereDatabase database = new ShardingSphereDatabase("db_0", mock(DatabaseType.class), resource, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
         result.put("db_0", database);
         initProxyContext(result);
