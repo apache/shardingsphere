@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.job.persist.JobPersistIntervalParameter;
+import org.apache.shardingsphere.data.pipeline.api.job.persist.PipelineJobPersistContext;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
@@ -40,7 +40,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Slf4j
 public final class RuleAlteredJobPersistService {
     
-    private static final Map<String, Map<Integer, JobPersistIntervalParameter>> JOB_PERSIST_MAP = new ConcurrentHashMap<>();
+    private static final Map<String, Map<Integer, PipelineJobPersistContext>> JOB_PERSIST_MAP = new ConcurrentHashMap<>();
     
     private static final GovernanceRepositoryAPI REPOSITORY_API = PipelineAPIFactory.getGovernanceRepositoryAPI();
     
@@ -51,7 +51,7 @@ public final class RuleAlteredJobPersistService {
     }
     
     /**
-     * Remove job schedule map by job id.
+     * Remove job schedule parameter by job id.
      *
      * @param jobId job id
      */
@@ -61,14 +61,14 @@ public final class RuleAlteredJobPersistService {
     }
     
     /**
-     * Add job schedule.
+     * Add job schedule parameter.
      *
      * @param jobId job id
      * @param shardingItem sharding item
      */
     public static void addJobPersistParameter(final String jobId, final int shardingItem) {
         log.info("Add job schedule, jobId={}, shardingItem={}", jobId, shardingItem);
-        JOB_PERSIST_MAP.computeIfAbsent(jobId, key -> new ConcurrentHashMap<>()).put(shardingItem, new JobPersistIntervalParameter(jobId, shardingItem));
+        JOB_PERSIST_MAP.computeIfAbsent(jobId, key -> new ConcurrentHashMap<>()).put(shardingItem, new PipelineJobPersistContext(jobId, shardingItem));
     }
     
     /**
@@ -78,8 +78,8 @@ public final class RuleAlteredJobPersistService {
      * @param shardingItem sharding item
      */
     public static void triggerPersist(final String jobId, final int shardingItem) {
-        Map<Integer, JobPersistIntervalParameter> intervalParamMap = JOB_PERSIST_MAP.getOrDefault(jobId, Collections.emptyMap());
-        JobPersistIntervalParameter parameter = intervalParamMap.get(shardingItem);
+        Map<Integer, PipelineJobPersistContext> intervalParamMap = JOB_PERSIST_MAP.getOrDefault(jobId, Collections.emptyMap());
+        PipelineJobPersistContext parameter = intervalParamMap.get(shardingItem);
         if (null == parameter) {
             log.debug("Persist interval parameter is null, jobId={}, shardingItem={}", jobId, shardingItem);
             return;
@@ -87,16 +87,15 @@ public final class RuleAlteredJobPersistService {
         parameter.getAlreadyPersisted().compareAndSet(true, false);
     }
     
-    private static void persist(final String jobId, final int shardingItem, final long persistTimeMillis, final JobPersistIntervalParameter param) {
-        Map<Integer, RuleAlteredJobScheduler> schedulerMap = RuleAlteredJobSchedulerCenter.JOB_SCHEDULER_MAP.computeIfAbsent(jobId, key -> new ConcurrentHashMap<>());
+    private static void persist(final String jobId, final int shardingItem, final long persistTimeMillis, final PipelineJobPersistContext param) {
+        Map<Integer, RuleAlteredJobScheduler> schedulerMap = RuleAlteredJobSchedulerCenter.getJobSchedulerMap(jobId);
         RuleAlteredJobScheduler scheduler = schedulerMap.get(shardingItem);
-        if (scheduler == null) {
+        if (null == scheduler) {
             log.warn("job schedule not exists, job id: {}, sharding item: {}", jobId, shardingItem);
             return;
         }
         log.info("execute persist, job id={}, sharding item={}, persistTimeMillis={}", jobId, shardingItem, persistTimeMillis);
         REPOSITORY_API.persistJobProgress(scheduler.getJobContext());
-        param.getPersistTime().set(persistTimeMillis);
         param.getAlreadyPersisted().set(true);
     }
     
@@ -105,7 +104,7 @@ public final class RuleAlteredJobPersistService {
         @Override
         public void run() {
             long currentTimeMillis = System.currentTimeMillis();
-            for (Entry<String, Map<Integer, JobPersistIntervalParameter>> entry : JOB_PERSIST_MAP.entrySet()) {
+            for (Entry<String, Map<Integer, PipelineJobPersistContext>> entry : JOB_PERSIST_MAP.entrySet()) {
                 entry.getValue().forEach((shardingItem, param) -> {
                     AtomicBoolean alreadyPersisted = param.getAlreadyPersisted();
                     if (alreadyPersisted.get()) {

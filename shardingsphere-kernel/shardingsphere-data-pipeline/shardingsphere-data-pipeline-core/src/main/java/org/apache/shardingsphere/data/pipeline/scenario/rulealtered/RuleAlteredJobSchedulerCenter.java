@@ -34,7 +34,17 @@ import java.util.concurrent.ConcurrentHashMap;
 // TODO extract JobSchedulerCenter
 public final class RuleAlteredJobSchedulerCenter {
     
-    static final Map<String, Map<Integer, RuleAlteredJobScheduler>> JOB_SCHEDULER_MAP = new ConcurrentHashMap<>();
+    private static final Map<String, Map<Integer, RuleAlteredJobScheduler>> JOB_SCHEDULER_MAP = new ConcurrentHashMap<>();
+    
+    /**
+     * Get job scheduler map.
+     *
+     * @param jobId job id
+     * @return job scheduler
+     */
+    public static Map<Integer, RuleAlteredJobScheduler> getJobSchedulerMap(final String jobId) {
+        return JOB_SCHEDULER_MAP.computeIfAbsent(jobId, k -> new ConcurrentHashMap<>());
+    }
     
     /**
      * Start a job.

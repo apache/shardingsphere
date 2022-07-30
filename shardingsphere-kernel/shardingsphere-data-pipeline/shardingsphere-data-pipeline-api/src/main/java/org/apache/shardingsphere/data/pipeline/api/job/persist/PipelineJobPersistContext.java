@@ -21,17 +21,14 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Getter
 @RequiredArgsConstructor
-public final class JobPersistIntervalParameter {
+public final class PipelineJobPersistContext {
     
     private final String jobId;
     
     private final int shardingItem;
-    
-    private final AtomicLong persistTime = new AtomicLong(System.currentTimeMillis());
     
     private final AtomicBoolean alreadyPersisted = new AtomicBoolean(false);
 }
