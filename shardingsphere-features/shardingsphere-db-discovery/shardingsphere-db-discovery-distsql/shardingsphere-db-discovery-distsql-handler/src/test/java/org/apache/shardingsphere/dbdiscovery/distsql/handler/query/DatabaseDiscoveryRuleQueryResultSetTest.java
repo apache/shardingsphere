@@ -61,7 +61,7 @@ public final class DatabaseDiscoveryRuleQueryResultSetTest {
         assertColumns(resultSet.getColumnNames());
         assertRowData(new ArrayList<>(resultSet.getRowData()));
     }
-
+    
     @Test
     public void assertInitWithNullDatabaseDiscoveryRule() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
