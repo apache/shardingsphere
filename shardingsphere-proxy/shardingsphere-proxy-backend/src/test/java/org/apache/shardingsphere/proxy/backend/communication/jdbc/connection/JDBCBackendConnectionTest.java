@@ -389,7 +389,6 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     public void assertCloseExecutionResources() throws BackendConnectionException {
         backendConnection.closeExecutionResources();
         verify(backendConnection).closeHandlers(false);
-        verify(backendConnection).closeFederationExecutor();
         verify(backendConnection).closeHandlers(true);
         verify(backendConnection).closeConnections(false);
     }
@@ -399,6 +398,5 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
         backendConnection.closeAllResources();
         verify(backendConnection).closeHandlers(true);
         verify(backendConnection).closeConnections(true);
-        verify(backendConnection).closeFederationExecutor();
     }
 }
