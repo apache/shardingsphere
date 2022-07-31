@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.config.checker.fixture.RuleConfigurationCheckerFixture
+org.apache.shardingsphere.infra.config.rule.checker.fixture.RuleConfigurationCheckerFixture

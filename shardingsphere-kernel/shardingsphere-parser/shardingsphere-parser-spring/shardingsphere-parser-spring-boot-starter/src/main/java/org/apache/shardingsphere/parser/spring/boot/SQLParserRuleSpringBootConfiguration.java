@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.parser.spring.boot;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.parser.spring.boot.condition.SQLParserSpringBootCondition;
 import org.apache.shardingsphere.parser.spring.boot.rule.YamlSQLParserRuleSpringBootConfiguration;
 import org.apache.shardingsphere.parser.yaml.config.YamlSQLParserRuleConfiguration;

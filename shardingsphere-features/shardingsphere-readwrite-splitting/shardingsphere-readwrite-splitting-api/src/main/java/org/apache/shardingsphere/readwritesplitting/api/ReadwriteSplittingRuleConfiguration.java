@@ -20,8 +20,8 @@ package org.apache.shardingsphere.readwritesplitting.api;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.function.DistributedRuleConfiguration;
-import org.apache.shardingsphere.infra.config.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 
 import java.util.Collection;

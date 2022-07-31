@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.fixture;
 
-import org.apache.shardingsphere.infra.config.function.EnhancedRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
 
 public final class FixtureRuleConfiguration implements EnhancedRuleConfiguration {
 }
