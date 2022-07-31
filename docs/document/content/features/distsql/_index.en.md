@@ -14,7 +14,7 @@ When using 4.x and earlier versions, developers can operate data just like using
 Starting from version 5.x, DistSQL enables users to operate Apache ShardingSphere just like a database, transforming it from a framework and middleware for developers to a database product for DBAs.
 
 ## Related Concepts
-DistSQL is divided into RDL, RQL, and RAL.
+DistSQL is divided into RDL, RQL, RAL and RUL.
 
 ### RDL
 Resource & Rule Definition Language, is responsible for the definition of resources and rules.
@@ -23,7 +23,10 @@ Resource & Rule Definition Language, is responsible for the definition of resour
 Resource & Rule Query Language, is responsible for the query of resources and rules.
 
 ### RAL
-Resource & Rule Administration Language, is responsible for the added-on administrator features of hint, transaction type switch, sharding execute planning, etc.
+Resource & Rule Administration Language, is responsible for hint, circuit breaker, configuration import and export, scaling control and other management functions.
+
+### RUL
+Resource Utility Language, is responsible for SQL parsing, SQL formatting, preview execution plan, etc.
 
 ## Impact on the System
 

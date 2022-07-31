@@ -4,8 +4,7 @@ weight = 3
 chapter = true
 +++
 
-RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管理语言，
-负责强制路由、事务类型切换、弹性伸缩、分片执行计划查询等增量功能的操作。
+RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管理语言，负责强制路由、熔断、配置导入导出、数据迁移控制等管理功能。
 
 ## 强制路由
 
@@ -57,22 +56,21 @@ RAL (Resource & Rule Administration Language) 为 Apache ShardingSphere 的管�
 
 ## 其他
 
-| 语句                                                                       | 说明                                                                                                            | 示例                                               |
-|:------------------------------------------------------------------------- |:--------------------------------------------------------------------------------------------------------------- |:------------------------------------------------ |
-| SHOW INSTANCE MODE                                                        | 查询当前 proxy 的 mode 配置                                                                                       | SHOW INSTANCE MODE                                |
-| COUNT DATABASE RULES [FROM database]                                      | 查询 database 中的规则数量                                                                                         | COUNT DATABASE RULES                             |
-| SET VARIABLE proxy_property_name = xx                                     | proxy_property_name 为 proxy 的[属性配置](/cn/user-manual/shardingsphere-proxy/yaml-config/props/) ，需使用下划线命名 | SET VARIABLE sql_show = true                     |
-| SET VARIABLE transaction_type = xx                                        | 修改当前连接的事务类型, 支持 LOCAL，XA，BASE                                                                          | SET VARIABLE transaction_type = XA               |
-| SET VARIABLE agent_plugins_enabled = [TRUE / FALSE]                       | 设置 agent 插件的启用状态，默认值 false                                                                              | SET VARIABLE agent_plugins_enabled = TRUE        |
-| SHOW ALL VARIABLES                                                        | 查询 proxy 所有的属性配置                                                                                          | SHOW ALL VARIABLES                                |
-| SHOW VARIABLE variable_name                                               | 查询 proxy 属性，需使用下划线命名                                                                                    | SHOW VARIABLE sql_show                            |
-| PREVIEW SQL                                                               | 预览实际 SQL                                                                                                      | PREVIEW SELECT * FROM t_order                     |
-| PARSE SQL                                                                 | 解析 SQL 并输出抽象语法树                                                                                           | PARSE SELECT * FROM t_order                       |
-| REFRESH TABLE METADATA                                                    | 刷新所有表的元数据                                                                                                  | REFRESH TABLE METADATA                            |
-| REFRESH TABLE METADATA [tableName / tableName FROM RESOURCE resourceName] | 刷新指定表的元数据                                                                                                  | REFRESH TABLE METADATA t_order FROM RESOURCE ds_1 |
-| SHOW TABLE METADATA tableName [, tableName] ...                           | 查询表的元数据                                                                                                     | SHOW TABLE METADATA t_order                       |
-| EXPORT DATABASE CONFIG [FROM database_name] [, file="file_path"]          | 查询 / 导出 database 中的资源和规则配置                                                                              | EXPORT DATABASE CONFIG FROM readwrite_splitting_db |
-| SHOW RULES USED RESOURCE resourceName [from database]                     | 查询 database 中使用指定资源的规则                                                                                   | SHOW RULES USED RESOURCE ds_0 FROM databaseName    |
+| 语句                                                                        | 说明                                                                                                            | 示例                                                      |
+|:--------------------------------------------------------------------------|:----------------------------------------------------------------------------------------------------------------|:----------------------------------------------------------|
+| SHOW INSTANCE MODE                                                        | 查询当前 proxy 的 mode 配置                                                                                        | SHOW INSTANCE MODE                                        |
+| COUNT DATABASE RULES [FROM database]                                      | 查询 database 中的规则数量                                                                                          | COUNT DATABASE RULES                                      |
+| SET VARIABLE proxy_property_name = xx                                     | proxy_property_name 为 proxy 的[属性配置](/cn/user-manual/shardingsphere-proxy/yaml-config/props/) ，需使用下划线命名 | SET VARIABLE sql_show = true                              |
+| SET VARIABLE transaction_type = xx                                        | 修改当前连接的事务类型, 支持 LOCAL，XA，BASE                                                                          | SET VARIABLE transaction_type = XA                        |
+| SET VARIABLE agent_plugins_enabled = [TRUE / FALSE]                       | 设置 agent 插件的启用状态，默认值 false                                                                              | SET VARIABLE agent_plugins_enabled = TRUE                 |
+| SHOW ALL VARIABLES                                                        | 查询 proxy 所有的属性配置                                                                                           | SHOW ALL VARIABLES                                        |
+| SHOW VARIABLE variable_name                                               | 查询 proxy 属性，需使用下划线命名                                                                                     | SHOW VARIABLE sql_show                                    |
+| REFRESH TABLE METADATA                                                    | 刷新所有表的元数据                                                                                                  | REFRESH TABLE METADATA                                    |
+| REFRESH TABLE METADATA [tableName / tableName FROM RESOURCE resourceName] | 刷新指定表的元数据                                                                                                  | REFRESH TABLE METADATA t_order FROM RESOURCE ds_1         |
+| SHOW TABLE METADATA tableName [, tableName] ...                           | 查询表的元数据                                                                                                      | SHOW TABLE METADATA t_order                               |
+| EXPORT DATABASE CONFIG [FROM database_name] [, file="file_path"]          | 将 database 中的资源和规则配置导出为 YAML 格式                                                                         | EXPORT DATABASE CONFIG FROM readwrite_splitting_db        |
+| IMPORT DATABASE CONFIG FILE="file_path"                                   | 将 YAML 中的配置导入到 database 中，仅支持对空库进行导入操作                                                             | IMPORT DATABASE CONFIG FILE = "/xxx/config-sharding.yaml" |
+| SHOW RULES USED RESOURCE resourceName [from database]                     | 查询 database 中使用指定资源的规则                                                                                    | SHOW RULES USED RESOURCE ds_0 FROM databaseName           |
 
 ## 注意事项
 
