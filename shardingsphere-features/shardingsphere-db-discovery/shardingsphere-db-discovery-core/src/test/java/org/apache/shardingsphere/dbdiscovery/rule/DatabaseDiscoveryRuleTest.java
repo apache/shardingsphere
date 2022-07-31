@@ -27,7 +27,8 @@ import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.schedule.core.ScheduleContextFactory;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
-import org.junit.Before;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.sql.DataSource;
@@ -49,12 +50,17 @@ import static org.mockito.Mockito.when;
 public final class DatabaseDiscoveryRuleTest {
     
     private final Map<String, DataSource> dataSourceMap = Collections.singletonMap("primary_ds", new MockedDataSource());
-
-    @Before
-    public void init() {
+    
+    @BeforeClass
+    public static void setUp() {
         ScheduleContextFactory.getInstance().init("foo_id", new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class), false));
     }
-
+    
+    @AfterClass
+    public static void tearDown() {
+        ScheduleContextFactory.getInstance().getScheduleStrategy().remove("foo_id");
+    }
+    
     @Test
     public void assertFindDataSourceRule() {
         Optional<DatabaseDiscoveryDataSourceRule> actual = createRule().findDataSourceRule("replica_ds");
