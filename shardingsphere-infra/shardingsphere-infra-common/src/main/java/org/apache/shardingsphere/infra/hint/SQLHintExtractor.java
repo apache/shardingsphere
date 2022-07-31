@@ -36,7 +36,8 @@ public final class SQLHintExtractor {
     private final SQLHintProperties sqlHintProperties;
     
     public SQLHintExtractor(final SQLStatement sqlStatement) {
-        sqlHintProperties = sqlStatement instanceof AbstractSQLStatement && !((AbstractSQLStatement) sqlStatement).getCommentSegments().isEmpty() ? extract((AbstractSQLStatement) sqlStatement)
+        sqlHintProperties = sqlStatement instanceof AbstractSQLStatement && !((AbstractSQLStatement) sqlStatement).getCommentSegments().isEmpty()
+                ? extract((AbstractSQLStatement) sqlStatement)
                 : DEFAULT_SQL_HINT_PROPERTIES;
     }
     
