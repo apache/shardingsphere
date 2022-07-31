@@ -46,11 +46,11 @@ public final class ExecuteProcessEngine {
      * @param props configuration properties
      * @param eventBusContext event bus context             
      */
-    public static void initialize(final LogicSQL logicSQL, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ConfigurationProperties props,
-                                  final EventBusContext eventBusContext) {
+    public static void initialize(final LogicSQL logicSQL,
+                                  final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ConfigurationProperties props, final EventBusContext eventBusContext) {
         SQLStatementContext<?> context = logicSQL.getSqlStatementContext();
         Optional<ExecuteProcessReporter> reporter = ExecuteProcessReporterFactory.getInstance();
-        if (reporter.isPresent() && ExecuteProcessStrategyEvaluator.evaluate(context, executionGroupContext, props)) {
+        if (reporter.isPresent() && ExecuteProcessStrategyEvaluator.evaluate(context, props)) {
             ExecutorDataMap.getValue().put(ExecuteProcessConstants.EXECUTE_ID.name(), executionGroupContext.getExecutionID());
             reporter.get().report(logicSQL, executionGroupContext, ExecuteProcessConstants.EXECUTE_STATUS_START, eventBusContext);
         }
