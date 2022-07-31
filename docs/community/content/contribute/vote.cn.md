@@ -142,7 +142,7 @@ https://shardingsphere.apache.org/community/en/contribute/committer/
 
 **9. 等待 Secretary 通知创建账户。**
 
-**10. PMC 添加新 Committer 到 [roster](https://whimsy.apache.org/roster/committee/shardingsphere)。**
+**10. （如果进行 PMC 选举）PMC 添加新 PMC 到 [roster](https://whimsy.apache.org/roster/committee/shardingsphere)。**
 
 **11. 新 Committer 开通 Github 权限，完成 [Setup](https://gitbox.apache.org/setup/) 内容。**
 
