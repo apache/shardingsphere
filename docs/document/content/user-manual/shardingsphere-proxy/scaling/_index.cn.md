@@ -1,6 +1,6 @@
 +++
 title = "Scaling"
-weight = 5
+weight = 4
 +++
 
 ## 简介

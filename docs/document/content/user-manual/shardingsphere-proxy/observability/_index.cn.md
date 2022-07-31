@@ -1,6 +1,6 @@
 +++
-title = "使用规范" 
-weight = 2
+title = "可观察性"
+weight = 5
 +++
 
 ## 源码编译
@@ -22,23 +22,26 @@ tar -zxvf apache-shardingsphere-${latest.release.version}-shardingsphere-agent-b
 cd agent
 tree 
 .
-├── conf
-│   ├── agent.yaml
-│   └── logback.xml
-├── plugins
-│   ├── shardingsphere-agent-logging-base-${latest.release.version}.jar
-│   ├── shardingsphere-agent-metrics-prometheus-${latest.release.version}.jar
-│   ├── shardingsphere-agent-tracing-jaeger-${latest.release.version}.jar
-│   ├── shardingsphere-agent-tracing-opentelemetry-${latest.release.version}.jar
-│   ├── shardingsphere-agent-tracing-opentracing-${latest.release.version}.jar
-│   └── shardingsphere-agent-tracing-zipkin-${latest.release.version}.jar
-└── shardingsphere-agent.jar
-
+└── apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin
+    ├── LICENSE
+    ├── NOTICE
+    ├── conf
+    │   ├── agent.yaml
+    │   └── logback.xml
+    ├── plugins
+    │   ├── shardingsphere-agent-logging-base-${latest.release.version}.jar
+    │   ├── shardingsphere-agent-metrics-prometheus-${latest.release.version}.jar
+    │   ├── shardingsphere-agent-tracing-jaeger-${latest.release.version}.jar
+    │   ├── shardingsphere-agent-tracing-opentelemetry-${latest.release.version}.jar
+    │   ├── shardingsphere-agent-tracing-opentracing-${latest.release.version}.jar
+    │   └── shardingsphere-agent-tracing-zipkin-${latest.release.version}.jar
+    └── shardingsphere-agent.jar
 ```
 * 配置说明
 
-agent.yaml 是配置文件，插件有 Jaeger、OpenTracing、Zipkin、OpenTelemetry、Logging、Prometheus。
-如果需要开启插件时，只需要注释掉 ignoredPluginNames 中对应的插件即可。
+`conf/agent.yaml` 用于管理 agent 配置。
+内置插件包括 Jaeger、OpenTracing、Zipkin、OpenTelemetry、Logging 及 Prometheus。
+当需要开启插件时，只需要移除 `ignoredPluginNames` 中对应的插件名称即可。
 
 ```yaml
 applicationName: shardingsphere-agent
@@ -98,27 +101,19 @@ plugins:
 | otel.traces.sampler | opentelemetry 采样率类型 | always_on、always_off、traceidratio | always_on |
 | otel.traces.sampler.arg | opentelemetry 采样率参数 | traceidratio：0.0 - 1.0 | 1.0 |
 
-
 ## ShardingSphere-Proxy 中使用
 
-* 启动脚本
+* 编辑启动脚本
 
-  配置 shardingsphere-agent.jar 的绝对路径到 ShardingSphere-Proxy 的 start.sh 启动脚本中，请注意配置自己对应的绝对路径。
+配置 shardingsphere-agent.jar 的绝对路径到 ShardingSphere-Proxy 的 start.sh 启动脚本中，请注意配置自己对应的绝对路径。
 ```shell
 nohup java ${JAVA_OPTS} ${JAVA_MEM_OPTS} \
 -javaagent:/xxxxx/agent/shardingsphere-agent.jar \
 -classpath ${CLASS_PATH} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &
 ```
 
-* 启动插件
-
-通过改造后的 ShardingSphere-Proxy 的启动脚本启动。
+* 启动 ShardingSphere-Proxy
 ```shell
 bin/start.sh
 ```
-正常启动可以在对应的 ShardingSphere-Proxy 日志查看到 plugin 的启动日志，访问 Proxy 后，可以通过配置的地址查看到 Metric 和 Tracing 的数据。
-
-
-
-
-
+正常启动后，可以在 ShardingSphere-Proxy 日志中找到 plugin 的加载信息，访问 Proxy 后，可以通过配置的监控地址查看到 `Metric` 和 `Tracing` 的数据。

@@ -1,6 +1,6 @@
 +++
-title = "Use Norms"
-weight = 2
+title = "Observability"
+weight = 5
 +++
 
 ## Compile source code
@@ -22,24 +22,26 @@ tar -zxvf apache-shardingsphere-${latest.release.version}-shardingsphere-agent-b
 cd agent
 tree 
 .
-├── conf
-│   ├── agent.yaml
-│   └── logback.xml
-├── plugins
-│   ├── shardingsphere-agent-logging-base-${latest.release.version}.jar
-│   ├── shardingsphere-agent-metrics-prometheus-${latest.release.version}.jar
-│   ├── shardingsphere-agent-tracing-jaeger-${latest.release.version}.jar
-│   ├── shardingsphere-agent-tracing-opentelemetry-${latest.release.version}.jar
-│   ├── shardingsphere-agent-tracing-opentracing-${latest.release.version}.jar
-│   └── shardingsphere-agent-tracing-zipkin-${latest.release.version}.jar
-└── shardingsphere-agent.jar
-
+└── apache-shardingsphere-${latest.release.version}-shardingsphere-agent-bin
+    ├── LICENSE
+    ├── NOTICE
+    ├── conf
+    │   ├── agent.yaml
+    │   └── logback.xml
+    ├── plugins
+    │   ├── shardingsphere-agent-logging-base-${latest.release.version}.jar
+    │   ├── shardingsphere-agent-metrics-prometheus-${latest.release.version}.jar
+    │   ├── shardingsphere-agent-tracing-jaeger-${latest.release.version}.jar
+    │   ├── shardingsphere-agent-tracing-opentelemetry-${latest.release.version}.jar
+    │   ├── shardingsphere-agent-tracing-opentracing-${latest.release.version}.jar
+    │   └── shardingsphere-agent-tracing-zipkin-${latest.release.version}.jar
+    └── shardingsphere-agent.jar
 ```
 * Configuration file
 
-agent.yaml is a configuration file. The plug-ins include Jaeger, opentracing, Zipkin, opentelemetry, logging and Prometheus.
-Remove the corresponding plug-in in ignoredpluginnames to start the plug-in.
-
+`conf/agent.yaml` is used to manage agent configuration.
+Built-in plugins include Jaeger, OpenTracing, Zipkin, OpenTelemetry, Logging and Prometheus.
+When a plugin needs to be enabled, just remove the corresponding name in `ignoredPluginNames`.
 
 ```yaml
 applicationName: shardingsphere-agent
@@ -99,10 +101,9 @@ plugins:
 | otel.traces.sampler | Opentelemetry sample rate type | always_on, always_off, traceidratio | always_on |
 | otel.traces.sampler.arg | Opentelemetry sample rate parameter | traceidratio：0.0 - 1.0 | 1.0 |
 
+## Usage in ShardingSphere-Proxy
 
-## Used in ShardingSphere-Proxy
-
-* Startup script
+* Edit the startup script
 
 Configure the absolute path of shardingsphere-agent.jar to the start.sh startup script of shardingsphere proxy. 
 ```shell
@@ -111,16 +112,8 @@ nohup java ${JAVA_OPTS} ${JAVA_MEM_OPTS} \
 -classpath ${CLASS_PATH} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &
 ```
 
-* Launch plugin
-
+* Start ShardingSphere-Proxy
 ```shell
 bin/start.sh
 ```
-
-After normal startup, you can view the startup log of the plugin in the shardingsphere proxy log, and you can view the data at the configured address.
-
-
-
-
-
-
+After startup, you can find the plugin info in the log of ShardingSphere-Proxy, `Metric` and `Tracing` data can be viewed through the configured monitoring address.
