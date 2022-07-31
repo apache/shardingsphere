@@ -33,7 +33,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 @Slf4j
@@ -91,12 +92,24 @@ public abstract class BaseTransactionITCase extends BaseITCase {
         executeWithLog(connection, "CREATE SHARDING BINDING TABLE RULES (t_order, t_order_item)");
     }
     
-    protected void createAccountTable(final Connection connection) throws SQLException {
+    /**
+     * Create account table.
+     * 
+     * @param connection connection 
+     * @throws SQLException SQL exception
+     */
+    public void createAccountTable(final Connection connection) throws SQLException {
         executeWithLog(connection, getCommonSQLCommand().getCreateAccountTable());
     }
     
-    protected void dropAccountTable(final Connection connection) throws SQLException {
-        executeWithLog(connection, "DROP TABLE IF EXISTS account;");
+    /**
+     * Drop account table.
+     *
+     * @param connection connection 
+     * @throws SQLException SQL exception
+     */
+    public void dropAccountTable(final Connection connection) throws SQLException {
+        executeWithLog(connection, "drop table if exists account;");
     }
     
     protected void createOrderItemTable(final Connection connection) throws SQLException {
@@ -128,7 +141,7 @@ public abstract class BaseTransactionITCase extends BaseITCase {
             resultSetCount++;
         }
         statement.close();
-        assertEquals(String.format("Recode num assert error, expect:%s, actual:%s.", rowNum, resultSetCount), resultSetCount, rowNum);
+        assertThat(String.format("Recode num assert error, expect:%s, actual:%s.", rowNum, resultSetCount), resultSetCount, is(rowNum));
     }
     
     protected void alterLocalTransactionRule() throws SQLException {
@@ -141,14 +154,15 @@ public abstract class BaseTransactionITCase extends BaseITCase {
         assertTrue(waitExpectedTransactionRule(TransactionType.LOCAL, "", 5));
     }
     
-    protected void alterXaAtomikosTransactionRule() throws SQLException {
+    protected void alterXaTransactionRule() throws SQLException {
+        String providerType = TransactionTestConstants.ATOMIKOS;
         Connection connection = getProxyConnection();
-        if (isExpectedTransactionRule(connection, TransactionType.XA, "Atomikos")) {
+        if (isExpectedTransactionRule(connection, TransactionType.XA, providerType)) {
             return;
         }
-        String alterXaAtomikosTransactionRule = getCommonSQLCommand().getAlterXaAtomikosTransactionRule();
+        String alterXaAtomikosTransactionRule = getCommonSQLCommand().getAlterXaAtomikosTransactionRule().replace("${providerType}", providerType);
         executeWithLog(connection, alterXaAtomikosTransactionRule);
-        assertTrue(waitExpectedTransactionRule(TransactionType.XA, "Atomikos", 5));
+        assertTrue(waitExpectedTransactionRule(TransactionType.XA, providerType, 5));
     }
     
     private boolean isExpectedTransactionRule(final Connection connection, final TransactionType expectedTransType, final String expectedProviderType) {
@@ -184,5 +198,4 @@ public abstract class BaseTransactionITCase extends BaseITCase {
         statement.close();
         return result;
     }
-    
 }

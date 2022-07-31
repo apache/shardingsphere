@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.rule.builder.fixture;
 
-import org.apache.shardingsphere.infra.config.scope.DatabaseRuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 
 public final class FixtureDatabaseRuleConfiguration implements DatabaseRuleConfiguration {
 }

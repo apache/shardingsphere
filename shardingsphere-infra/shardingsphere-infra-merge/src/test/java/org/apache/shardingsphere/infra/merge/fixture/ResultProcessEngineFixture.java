@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.infra.merge.fixture;
 
 import org.apache.shardingsphere.infra.merge.engine.ResultProcessEngine;
-import org.apache.shardingsphere.infra.merge.fixture.rule.ResultProcessRuleFixture;
+import org.apache.shardingsphere.test.fixture.rule.MockedRule;
 
-public final class ResultProcessEngineFixture implements ResultProcessEngine<ResultProcessRuleFixture> {
+public final class ResultProcessEngineFixture implements ResultProcessEngine<MockedRule> {
     
     @Override
     public int getOrder() {
@@ -28,7 +28,7 @@ public final class ResultProcessEngineFixture implements ResultProcessEngine<Res
     }
     
     @Override
-    public Class<ResultProcessRuleFixture> getTypeClass() {
-        return ResultProcessRuleFixture.class;
+    public Class<MockedRule> getTypeClass() {
+        return MockedRule.class;
     }
 }

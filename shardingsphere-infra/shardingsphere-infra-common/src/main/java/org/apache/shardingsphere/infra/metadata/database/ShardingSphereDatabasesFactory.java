@@ -77,7 +77,7 @@ public final class ShardingSphereDatabasesFactory {
         for (Entry<String, DatabaseConfiguration> entry : databaseConfigMap.entrySet()) {
             String databaseName = entry.getKey();
             if (!entry.getValue().getDataSources().isEmpty() || !protocolType.getSystemSchemas().contains(databaseName)) {
-                result.put(databaseName, ShardingSphereDatabase.create(databaseName, protocolType, storageType, entry.getValue(), props, instanceContext));
+                result.put(databaseName.toLowerCase(), ShardingSphereDatabase.create(databaseName, protocolType, storageType, entry.getValue(), props, instanceContext));
             }
         }
         return result;
@@ -87,7 +87,7 @@ public final class ShardingSphereDatabasesFactory {
         Map<String, ShardingSphereDatabase> result = new HashMap<>(protocolType.getSystemDatabaseSchemaMap().size(), 1);
         for (String each : protocolType.getSystemDatabaseSchemaMap().keySet()) {
             if (!databaseConfigMap.containsKey(each) || databaseConfigMap.get(each).getDataSources().isEmpty()) {
-                result.put(each, ShardingSphereDatabase.create(each, protocolType));
+                result.put(each.toLowerCase(), ShardingSphereDatabase.create(each, protocolType));
             }
         }
         return result;

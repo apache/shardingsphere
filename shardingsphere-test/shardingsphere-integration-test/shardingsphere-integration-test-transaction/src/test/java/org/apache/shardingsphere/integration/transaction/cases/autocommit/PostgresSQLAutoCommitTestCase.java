@@ -21,15 +21,17 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
+import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
-import org.junit.Assert;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.fail;
 
 /**
  * PostgresSQL auto commit transaction integration test.
@@ -38,8 +40,8 @@ import java.util.concurrent.TimeUnit;
 @TransactionTestCase(dbTypes = {TransactionTestConstants.POSTGRESQL})
 public final class PostgresSQLAutoCommitTestCase extends BaseTransactionTestCase {
     
-    public PostgresSQLAutoCommitTestCase(final DataSource dataSource) {
-        super(dataSource);
+    public PostgresSQLAutoCommitTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
+        super(baseTransactionITCase, dataSource);
     }
     
     @Override
@@ -58,14 +60,13 @@ public final class PostgresSQLAutoCommitTestCase extends BaseTransactionTestCase
         executeWithLog(conn1, "insert into account(id, balance, transaction_id) values(1, 100, 1)");
         ResultSet emptyResultSet = executeQueryWithLog(conn2, "select * from account;");
         if (emptyResultSet.next()) {
-            Assert.fail("There should not be result.");
+            fail("There should not be result.");
         }
         executeWithLog(conn1, "commit;");
         ThreadUtil.sleep(1, TimeUnit.SECONDS);
         ResultSet notEmptyResultSet = executeQueryWithLog(conn2, "select * from account");
         if (!notEmptyResultSet.next()) {
-            Assert.fail("There should be result.");
+            fail("There should be result.");
         }
     }
-    
 }

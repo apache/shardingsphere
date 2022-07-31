@@ -20,7 +20,8 @@ name: Transaction Integration Test
 on:
   push:
     branches: [ master, dev ]
-
+    paths:
+      - '!*.md'
   pull_request:
     branches: [ master ]
     paths:
@@ -28,6 +29,7 @@ on:
       - '!shardingsphere-test/**'
       - 'shardingsphere-test/shardingsphere-integration-test/**'
       - '!shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/**'
+      - '!shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/**'
       - '!*.md'
 
 concurrency:

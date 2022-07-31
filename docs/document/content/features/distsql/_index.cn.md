@@ -1,7 +1,7 @@
 +++
-pre = "<b>3.12. </b>"
+pre = "<b>3.11. </b>"
 title = "DistSQL"
-weight = 12
+weight = 11
 +++
 
 ## 定义

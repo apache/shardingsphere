@@ -25,6 +25,7 @@ import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.jdbc.CalciteSchema;
 import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.plan.RelOptCluster;
+import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.RelOptTable.ViewExpander;
 import org.apache.calcite.prepare.CalciteCatalogReader;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
@@ -77,6 +78,7 @@ public final class OptimizerPlannerContextFactory {
     public static OptimizerPlannerContext create(final FederationDatabaseMetaData databaseMetaData) {
         Map<String, SqlValidator> validators = new LinkedHashMap<>();
         Map<String, SqlToRelConverter> converters = new LinkedHashMap<>();
+        Map<String, RelOptPlanner> hepPlanners = new LinkedHashMap<>();
         FederationDatabase federationDatabase = new FederationDatabase(databaseMetaData);
         for (Entry<String, Schema> entry : federationDatabase.getSubSchemaMap().entrySet()) {
             CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(createConnectionProperties());
@@ -86,24 +88,46 @@ public final class OptimizerPlannerContextFactory {
             SqlToRelConverter converter = createConverter(catalogReader, validator, relDataTypeFactory);
             validators.put(entry.getKey(), validator);
             converters.put(entry.getKey(), converter);
+            hepPlanners.put(entry.getKey(), QueryOptimizePlannerFactory.createHepPlanner());
         }
-        return new OptimizerPlannerContext(validators, converters);
+        return new OptimizerPlannerContext(validators, converters, hepPlanners);
     }
     
-    private static Properties createConnectionProperties() {
+    /**
+     * Create connection properties.
+     * 
+     * @return properties
+     */
+    public static Properties createConnectionProperties() {
         Properties result = new Properties();
         result.setProperty(CalciteConnectionProperty.TIME_ZONE.camelName(), "UTC");
         return result;
     }
     
-    private static CalciteCatalogReader createCatalogReader(final String schemaName, final Schema schema,
-                                                            final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig) {
+    /**
+     * Create catalog reader.
+     * 
+     * @param schemaName schema name
+     * @param schema schema
+     * @param relDataTypeFactory rel data type factory
+     * @param connectionConfig connection config
+     * @return calcite catalog reader
+     */
+    public static CalciteCatalogReader createCatalogReader(final String schemaName, final Schema schema, final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig) {
         CalciteSchema rootSchema = CalciteSchema.createRootSchema(true);
         rootSchema.add(schemaName, schema);
         return new CalciteCatalogReader(rootSchema, Collections.singletonList(schemaName), relDataTypeFactory, connectionConfig);
     }
     
-    private static SqlValidator createValidator(final CalciteCatalogReader catalogReader, final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig) {
+    /**
+     * Create validator.
+     * 
+     * @param catalogReader catalog reader
+     * @param relDataTypeFactory rel data type factory
+     * @param connectionConfig connection config
+     * @return sql validator
+     */
+    public static SqlValidator createValidator(final CalciteCatalogReader catalogReader, final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig) {
         SqlValidator.Config validatorConfig = SqlValidator.Config.DEFAULT
                 .withLenientOperatorLookup(connectionConfig.lenientOperatorLookup())
                 .withSqlConformance(connectionConfig.conformance())
@@ -112,10 +136,18 @@ public final class OptimizerPlannerContextFactory {
         return SqlValidatorUtil.newValidator(SqlStdOperatorTable.instance(), catalogReader, relDataTypeFactory, validatorConfig);
     }
     
-    private static SqlToRelConverter createConverter(final CalciteCatalogReader catalogReader, final SqlValidator validator, final RelDataTypeFactory relDataTypeFactory) {
+    /**
+     * Create Converter.
+     * 
+     * @param catalogReader catalog reader
+     * @param validator validator
+     * @param relDataTypeFactory rel data type factory
+     * @return sql to rel converter
+     */
+    public static SqlToRelConverter createConverter(final CalciteCatalogReader catalogReader, final SqlValidator validator, final RelDataTypeFactory relDataTypeFactory) {
         ViewExpander expander = (rowType, queryString, schemaPath, viewPath) -> null;
         Config converterConfig = SqlToRelConverter.config().withTrimUnusedFields(true);
-        RelOptCluster cluster = RelOptCluster.create(QueryOptimizePlannerFactory.newInstance(), new RexBuilder(relDataTypeFactory));
+        RelOptCluster cluster = RelOptCluster.create(QueryOptimizePlannerFactory.createVolcanoPlanner(), new RexBuilder(relDataTypeFactory));
         return new SqlToRelConverter(expander, validator, catalogReader, cluster, StandardConvertletTable.INSTANCE, converterConfig);
     }
 }

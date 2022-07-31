@@ -21,7 +21,6 @@ import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.sharding.spi.KeyGenerateAlgorithm;
 
 import java.math.BigDecimal;
@@ -29,24 +28,12 @@ import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Scaling case helper, some config is different between different database.
  */
 public final class ScalingCaseHelper {
-    
-    /**
-     * Get query properties by database type.
-     *
-     * @return query properties
-     */
-    public static Properties getPostgreSQLQueryProperties() {
-        Properties result = new Properties();
-        result.put("preferQueryMode", "extendedForPrepared");
-        return result;
-    }
     
     /**
      * Generate MySQL insert data, contains full fields.
@@ -98,31 +85,5 @@ public final class ScalingCaseHelper {
     
     private static double generateDouble(final double min, final double max) {
         return ThreadLocalRandom.current().nextDouble(min, max);
-    }
-    
-    /**
-     * Get username by database type.
-     *
-     * @param databaseType database type
-     * @return username
-     */
-    public static String getUsername(final DatabaseType databaseType) {
-        if (databaseType instanceof OpenGaussDatabaseType) {
-            return "gaussdb";
-        }
-        return "root";
-    }
-    
-    /**
-     * Get password by database type.
-     *
-     * @param databaseType database type
-     * @return username
-     */
-    public static String getPassword(final DatabaseType databaseType) {
-        if (databaseType instanceof OpenGaussDatabaseType) {
-            return "Root@123";
-        }
-        return "Root@123";
     }
 }

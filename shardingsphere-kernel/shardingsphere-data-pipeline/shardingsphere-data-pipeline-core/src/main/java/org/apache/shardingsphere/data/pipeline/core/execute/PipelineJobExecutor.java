@@ -90,6 +90,7 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
                 if (RuleAlteredJobCenter.isJobExisting(jobConfigPOJO.getJobName())) {
                     log.info("{} added to executing jobs failed since it already exists", jobConfigPOJO.getJobName());
                 } else {
+                    log.info("{} executing jobs", jobConfigPOJO.getJobName());
                     executor.execute(() -> execute(jobConfigPOJO));
                 }
                 break;
