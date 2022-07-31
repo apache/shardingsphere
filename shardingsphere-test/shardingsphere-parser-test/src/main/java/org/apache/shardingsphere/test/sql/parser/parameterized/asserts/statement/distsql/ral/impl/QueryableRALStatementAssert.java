@@ -23,7 +23,9 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatem
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAllVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAuthorityRuleStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceInfoStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowModeInfoStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetadataStatement;
@@ -35,7 +37,9 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAs
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.queryable.ExportDatabaseConfigurationStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.queryable.ShowAllVariableStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.queryable.ShowAuthorityRuleStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.queryable.ShowInstanceInfoStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.queryable.ShowInstanceStatementAssert;
+import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.queryable.ShowModeInfoStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.queryable.ShowReadwriteSplittingReadResourcesStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.queryable.ShowSQLParserRuleStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.distsql.ral.impl.queryable.ShowSQLTranslatorRuleStatementAssert;
@@ -47,7 +51,9 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ExportDatabaseConfigurationStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowAllVariableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowAuthorityRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowInstanceInfoStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowInstanceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowModeInfoStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowReadwriteSplittingReadResourcesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowSQLParserRuleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowSQLTranslatorRuleStatementTestCase;
@@ -93,6 +99,10 @@ public final class QueryableRALStatementAssert {
             ExportDatabaseConfigurationStatementAssert.assertIs(assertContext, (ExportDatabaseConfigurationStatement) actual, (ExportDatabaseConfigurationStatementTestCase) expected);
         } else if (actual instanceof ShowSQLTranslatorRuleStatement) {
             ShowSQLTranslatorRuleStatementAssert.assertIs(assertContext, (ShowSQLTranslatorRuleStatement) actual, (ShowSQLTranslatorRuleStatementTestCase) expected);
+        } else if (actual instanceof ShowInstanceInfoStatement) {
+            ShowInstanceInfoStatementAssert.assertIs(assertContext, (ShowInstanceInfoStatement) actual, (ShowInstanceInfoStatementTestCase) expected);
+        } else if (actual instanceof ShowModeInfoStatement) {
+            ShowModeInfoStatementAssert.assertIs(assertContext, (ShowModeInfoStatement) actual, (ShowModeInfoStatementTestCase) expected);
         }
     }
 }

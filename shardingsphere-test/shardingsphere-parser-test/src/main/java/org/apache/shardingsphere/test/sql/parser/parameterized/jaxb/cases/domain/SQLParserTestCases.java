@@ -286,7 +286,9 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetVariableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowAllVariableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowAuthorityRuleStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowInstanceInfoStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowInstanceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowModeInfoStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowReadwriteSplittingHintStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowReadwriteSplittingReadResourcesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowSQLParserRuleStatementTestCase;
@@ -1626,6 +1628,12 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "create-foreign-table")
     private final List<CreateForeignTableStatementTestCase> createForeignTableStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-instance-info")
+    private final List<ShowInstanceInfoStatementTestCase> showInstanceInfoStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-mode-info")
+    private final List<ShowModeInfoStatementTestCase> showModeInfoStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.

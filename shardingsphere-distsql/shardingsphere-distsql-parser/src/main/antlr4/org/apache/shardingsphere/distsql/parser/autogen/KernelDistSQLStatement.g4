@@ -32,7 +32,8 @@ execute
     | enableInstance
     | disableInstance
     | showInstance
-    | showInstanceMode
+    | showInstanceInfo
+    | showModeInfo
     | labelInstance
     | unlabelInstance
     | countSingleTableRule
