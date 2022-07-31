@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.metadata.persist.service.config.database;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;

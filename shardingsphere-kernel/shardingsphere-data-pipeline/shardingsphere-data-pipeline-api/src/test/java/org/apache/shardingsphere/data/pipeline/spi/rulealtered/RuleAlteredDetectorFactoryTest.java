@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;

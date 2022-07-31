@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.scope;
+package org.apache.shardingsphere.infra.config.rule.function;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 
 /**
- * Global rule configuration.
+ * Enhanced rule configuration.
  */
-public interface GlobalRuleConfiguration extends RuleConfiguration {
+public interface EnhancedRuleConfiguration extends RuleConfiguration {
 }

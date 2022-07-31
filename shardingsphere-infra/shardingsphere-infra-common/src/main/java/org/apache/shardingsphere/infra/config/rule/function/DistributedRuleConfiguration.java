@@ -15,12 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.scope;
+package org.apache.shardingsphere.infra.config.rule.function;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 
 /**
- * Database rule configuration.
+ * Distributed rule configuration.
  */
-public interface DatabaseRuleConfiguration extends RuleConfiguration {
+public interface DistributedRuleConfiguration extends RuleConfiguration {
 }
