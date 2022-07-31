@@ -21,7 +21,6 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
@@ -29,6 +28,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionU
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessReporter;
 import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessReporterFactory;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.DMLStatement;
 
 import java.util.Optional;
 
@@ -43,14 +44,12 @@ public final class ExecuteProcessEngine {
      *
      * @param logicSQL logic SQL
      * @param executionGroupContext execution group context
-     * @param props configuration properties
      * @param eventBusContext event bus context             
      */
-    public static void initialize(final LogicSQL logicSQL,
-                                  final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final ConfigurationProperties props, final EventBusContext eventBusContext) {
+    public static void initialize(final LogicSQL logicSQL, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext, final EventBusContext eventBusContext) {
         SQLStatementContext<?> context = logicSQL.getSqlStatementContext();
         Optional<ExecuteProcessReporter> reporter = ExecuteProcessReporterFactory.getInstance();
-        if (reporter.isPresent() && ExecuteProcessStrategyEvaluator.evaluate(context, props)) {
+        if (reporter.isPresent() && (context.getSqlStatement() instanceof DDLStatement || context.getSqlStatement() instanceof DMLStatement)) {
             ExecutorDataMap.getValue().put(ExecuteProcessConstants.EXECUTE_ID.name(), executionGroupContext.getExecutionID());
             reporter.get().report(logicSQL, executionGroupContext, ExecuteProcessConstants.EXECUTE_STATUS_START, eventBusContext);
         }
