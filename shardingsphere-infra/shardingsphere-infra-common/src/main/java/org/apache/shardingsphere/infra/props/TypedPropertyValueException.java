@@ -15,18 +15,16 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.properties;
+package org.apache.shardingsphere.infra.props;
 
-import org.apache.shardingsphere.infra.properties.fixture.TestTypedPropertyKey;
-import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class TypedPropertyValueExceptionTest {
+/**
+ * Typed property value exception.
+ */
+public final class TypedPropertyValueException extends Exception {
     
-    @Test
-    public void assertGetMessage() {
-        assertThat(new TypedPropertyValueException(TestTypedPropertyKey.INT_VALUE, "test").getMessage(), is("Value `test` of `int` cannot convert to type `int`."));
+    private static final long serialVersionUID = -2989212435757964906L;
+    
+    public TypedPropertyValueException(final TypedPropertyKey key, final String value) {
+        super(String.format("Value `%s` of `%s` cannot convert to type `%s`.", value, key.getKey(), key.getType().getName()));
     }
 }

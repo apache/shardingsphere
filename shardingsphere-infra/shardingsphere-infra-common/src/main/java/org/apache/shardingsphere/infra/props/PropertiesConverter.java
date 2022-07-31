@@ -15,16 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.properties;
+package org.apache.shardingsphere.infra.props;
+
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
+import java.util.Properties;
+import java.util.stream.Collectors;
 
 /**
- * Typed property value exception.
+ * Properties converter.
  */
-public final class TypedPropertyValueException extends Exception {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class PropertiesConverter {
     
-    private static final long serialVersionUID = -2989212435757964906L;
-    
-    public TypedPropertyValueException(final TypedPropertyKey key, final String value) {
-        super(String.format("Value `%s` of `%s` cannot convert to type `%s`.", value, key.getKey(), key.getType().getName()));
+    /**
+     * Convert properties to string content.
+     * 
+     * @param props properties to be converted
+     * @return converted string content
+     */
+    public static String convert(final Properties props) {
+        return props.entrySet().stream().map(entry -> String.join("=", entry.getKey().toString(), entry.getValue().toString())).collect(Collectors.joining(","));
     }
 }

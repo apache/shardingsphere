@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.hint;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.properties.TypedPropertyKey;
+import org.apache.shardingsphere.infra.props.TypedPropertyKey;
 
 /**
  * Typed property key of SQL Hint.

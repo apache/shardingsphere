@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.properties;
+package org.apache.shardingsphere.infra.props;
 
 import lombok.Getter;
 

@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.properties;
+package org.apache.shardingsphere.infra.props;
 
-import org.apache.shardingsphere.infra.properties.fixture.TestTypedPropertyKey;
+import org.apache.shardingsphere.infra.props.fixture.TestTypedPropertyKey;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;

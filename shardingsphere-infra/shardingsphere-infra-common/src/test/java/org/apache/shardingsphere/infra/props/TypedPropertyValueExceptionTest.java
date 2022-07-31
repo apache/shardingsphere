@@ -15,27 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.properties;
+package org.apache.shardingsphere.infra.props;
 
+import org.apache.shardingsphere.infra.props.fixture.TestTypedPropertyKey;
 import org.junit.Test;
-
-import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class PropertiesConverterTest {
+public final class TypedPropertyValueExceptionTest {
     
     @Test
-    public void assertConvert() {
-        Properties actual = new Properties();
-        actual.setProperty("foo", "foo_value");
-        actual.setProperty("bar", "bar_value");
-        assertThat(PropertiesConverter.convert(actual), is("bar=bar_value,foo=foo_value"));
-    }
-    
-    @Test
-    public void assertConvertEmptyProperties() {
-        assertThat(PropertiesConverter.convert(new Properties()), is(""));
+    public void assertGetMessage() {
+        assertThat(new TypedPropertyValueException(TestTypedPropertyKey.INT_VALUE, "test").getMessage(), is("Value `test` of `int` cannot convert to type `int`."));
     }
 }

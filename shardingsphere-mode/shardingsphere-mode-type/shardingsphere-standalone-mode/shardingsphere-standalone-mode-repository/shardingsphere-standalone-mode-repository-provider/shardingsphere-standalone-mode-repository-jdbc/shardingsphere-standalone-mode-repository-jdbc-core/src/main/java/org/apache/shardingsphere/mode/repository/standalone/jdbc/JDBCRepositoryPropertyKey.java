@@ -19,7 +19,7 @@ package org.apache.shardingsphere.mode.repository.standalone.jdbc;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.properties.TypedPropertyKey;
+import org.apache.shardingsphere.infra.props.TypedPropertyKey;
 
 /**
  * H2 repository property key.
