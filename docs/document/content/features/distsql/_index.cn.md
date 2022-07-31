@@ -14,7 +14,7 @@ DistSQL（Distributed SQL）是 Apache ShardingSphere 特有的操作语言。 �
 从 5.x 版本开始，DistSQL（Distributed SQL）让用户可以像操作数据库一样操作 Apache ShardingSphere，使其从面向开发人员的框架和中间件转变为面向运维人员的数据库产品。
 
 ## 相关概念
-DistSQL 细分为 RDL、RQL 和 RAL 三种类型。
+DistSQL 细分为 RDL、RQL、RAL 和 RUL 四种类型。
 
 ### RDL
 Resource & Rule Definition Language，负责资源和规则的创建、修改和删除。
@@ -23,7 +23,10 @@ Resource & Rule Definition Language，负责资源和规则的创建、修改和
 Resource & Rule Query Language，负责资源和规则的查询和展现。
 
 ### RAL
-Resource & Rule Administration Language，负责 Hint、事务类型切换、分片执行计划查询等管理功能。
+Resource & Rule Administration Language，负责强制路由、熔断、配置导入导出、数据迁移控制等管理功能。
+
+### RUL
+Resource Utility Language，负责 SQL 解析、SQL 格式化、执行计划预览等功能。
 
 ## 对系统的影响
 
