@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.properties;
+package org.apache.shardingsphere.infra.props;
 
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.infra.properties.fixture.TestTypedProperties;
-import org.apache.shardingsphere.infra.properties.fixture.TestTypedPropertyKey;
+import org.apache.shardingsphere.infra.props.fixture.TestTypedProperties;
+import org.apache.shardingsphere.infra.props.fixture.TestTypedPropertyKey;
 import org.junit.Test;
 
 import java.util.Properties;

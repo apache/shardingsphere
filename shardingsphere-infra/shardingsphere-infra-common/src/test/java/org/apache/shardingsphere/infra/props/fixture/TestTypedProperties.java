@@ -15,31 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.properties;
+package org.apache.shardingsphere.infra.props.fixture;
 
-/**
- * Typed property key.
- */
-public interface TypedPropertyKey {
+import org.apache.shardingsphere.infra.props.TypedProperties;
+
+import java.util.Properties;
+
+public final class TestTypedProperties extends TypedProperties<TestTypedPropertyKey> {
     
-    /**
-     * Get property key.
-     * 
-     * @return property key
-     */
-    String getKey();
-    
-    /**
-     * Get default property value.
-     * 
-     * @return default property value
-     */
-    String getDefaultValue();
-    
-    /**
-     * Get property type.
-     * 
-     * @return property type
-     */
-    Class<?> getType();
+    public TestTypedProperties(final Properties props) {
+        super(TestTypedPropertyKey.class, props);
+    }
 }

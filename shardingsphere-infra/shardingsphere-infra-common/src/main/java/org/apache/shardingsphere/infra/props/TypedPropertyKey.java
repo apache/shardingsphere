@@ -15,27 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.properties;
-
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-
-import java.util.Properties;
-import java.util.stream.Collectors;
+package org.apache.shardingsphere.infra.props;
 
 /**
- * Properties converter.
+ * Typed property key.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PropertiesConverter {
+public interface TypedPropertyKey {
     
     /**
-     * Convert properties to string content.
+     * Get property key.
      * 
-     * @param props properties to be converted
-     * @return converted string content
+     * @return property key
      */
-    public static String convert(final Properties props) {
-        return props.entrySet().stream().map(entry -> String.join("=", entry.getKey().toString(), entry.getValue().toString())).collect(Collectors.joining(","));
-    }
+    String getKey();
+    
+    /**
+     * Get default property value.
+     * 
+     * @return default property value
+     */
+    String getDefaultValue();
+    
+    /**
+     * Get property type.
+     * 
+     * @return property type
+     */
+    Class<?> getType();
 }
