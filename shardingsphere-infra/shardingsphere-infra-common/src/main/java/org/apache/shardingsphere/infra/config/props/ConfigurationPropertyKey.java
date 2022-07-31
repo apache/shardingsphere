@@ -58,6 +58,11 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     CHECK_TABLE_METADATA_ENABLED("check-table-metadata-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**
+     * Whether enable SQL federation.
+     */
+    SQL_FEDERATION_ENABLED("sql-federation-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
+    
+    /**
      * Frontend database protocol type for ShardingSphere-Proxy.
      */
     PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE("proxy-frontend-database-protocol-type", "", String.class, false),
@@ -93,11 +98,6 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
      * Less than or equal to 0 means no limitation.
      */
     PROXY_FRONTEND_MAX_CONNECTIONS("proxy-frontend-max-connections", "0", int.class, false),
-    
-    /**
-     * Whether enable SQL federation.
-     */
-    SQL_FEDERATION_ENABLED("sql-federation-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**
      * Proxy backend driver type..
