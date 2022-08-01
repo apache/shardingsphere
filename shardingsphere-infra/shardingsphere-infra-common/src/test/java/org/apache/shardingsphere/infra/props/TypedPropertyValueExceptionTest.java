@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.props;
 
-import org.apache.shardingsphere.infra.props.fixture.TestTypedPropertyKey;
+import org.apache.shardingsphere.infra.props.fixture.TypedPropertyKeyFixture;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -27,6 +27,6 @@ public final class TypedPropertyValueExceptionTest {
     
     @Test
     public void assertGetMessage() {
-        assertThat(new TypedPropertyValueException(TestTypedPropertyKey.INT_VALUE, "test").getMessage(), is("Value `test` of `int` cannot convert to type `int`."));
+        assertThat(new TypedPropertyValueException(TypedPropertyKeyFixture.INT_VALUE, "test").getMessage(), is("Value `test` of `int` cannot convert to type `int`."));
     }
 }
