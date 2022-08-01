@@ -25,6 +25,7 @@ on:
     branches: [ master ]
     paths:
       - '!examples/**'
+      - '.github/workflows/it-transaction.yml'
       - '!shardingsphere-test/**'
       - 'shardingsphere-test/shardingsphere-integration-test/**'
       - '!shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/**'
