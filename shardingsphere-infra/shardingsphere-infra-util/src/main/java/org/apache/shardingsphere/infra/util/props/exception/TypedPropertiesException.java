@@ -26,7 +26,13 @@ public final class TypedPropertiesException extends RuntimeException {
     
     private static final long serialVersionUID = -8301410307117564844L;
     
+    private static final int ERROR_CODE = 1;
+    
     public TypedPropertiesException(final Collection<String> errorMessages) {
-        super(String.join(System.lineSeparator(), errorMessages));
+        super(createErrorMessage(errorMessages));
+    }
+    
+    private static String createErrorMessage(final Collection<String> errorMessages) {
+        return String.format("PROPS-%05d: %s", ERROR_CODE, String.join(System.lineSeparator(), errorMessages));
     }
 }
