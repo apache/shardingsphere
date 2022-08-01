@@ -13,7 +13,7 @@ chapter = true
 
 ## 谁在使用 ShardingSphere?
 
-共计 217 家公司。
+共计 218 家公司。
 
 ### 基础软件
 <ul>
@@ -40,7 +40,7 @@ chapter = true
 
 ### 电信
 <ul>
-    <li><a href="https://www.cucloud.cn/" rel="nofollow">联通云</a></li>：<a href="https://mp.weixin.qq.com/s/b8roYMxVnW_8jbj6KocNGw" rel="nofollow">用户案例</a></li>
+    <li>联通数科：<a href="https://mp.weixin.qq.com/s/b8roYMxVnW_8jbj6KocNGw" rel="nofollow">用户案例</a></li>
     <li><a href="https://jf.10086.cn/" rel="nofollow">中移动金融科技</a></li>
 </ul>
 
@@ -98,6 +98,7 @@ chapter = true
     <li><a href="https://www.danchuangglobal.com/" rel="nofollow">浙江单创品牌管理有限公司</a></li>
     <li><a href="https://jossney.com/" rel="nofollow">Jossney</a></li>
     <li><a href="https://www.belleintl.com/" rel="nofollow">百丽时尚</a></li>
+    <li><a href="https://store.kinnls.com/" rel="nofollow">KINNLS</a></li>
 </ul>
 
 ### 数字化与云服务
