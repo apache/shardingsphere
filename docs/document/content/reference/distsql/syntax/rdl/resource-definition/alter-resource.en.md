@@ -59,8 +59,7 @@ url ::=
 - Alter resource using standard mode
 
 ```sql
-ALTER
-RESOURCE ds_0 (
+ALTER RESOURCE ds_0 (
     HOST=127.0.0.1,
     PORT=3306,
     DB=db_0,
@@ -72,8 +71,7 @@ RESOURCE ds_0 (
 - Alter resource and set connection pool parameters using standard mode
 
 ```sql
-ALTER
-RESOURCE ds_1 (
+ALTER RESOURCE ds_1 (
     HOST=127.0.0.1,
     PORT=3306,
     DB=db_1,
@@ -86,8 +84,7 @@ RESOURCE ds_1 (
 - Alter resource and set connection pool parameters using URL patterns
 
 ```sql
-ALTER
-RESOURCE ds_2 (
+ALTER RESOURCE ds_2 (
     URL="jdbc:mysql://127.0.0.1:3306/db_2?serverTimezone=UTC&useSSL=false",
     USER=root,
     PASSWORD=root,

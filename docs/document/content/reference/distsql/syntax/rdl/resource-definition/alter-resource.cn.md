@@ -55,8 +55,7 @@ url ::=
 - 使用标准模式修改资源
 
 ```sql
-ALTER
-RESOURCE ds_0 (
+ALTER RESOURCE ds_0 (
     HOST=127.0.0.1,
     PORT=3306,
     DB=db_0,
@@ -68,8 +67,7 @@ RESOURCE ds_0 (
 - 使用标准模式修改资源并设置连接池参数
 
 ```sql
-ALTER
-RESOURCE ds_1 (
+ALTER RESOURCE ds_1 (
     HOST=127.0.0.1,
     PORT=3306,
     DB=db_1,
@@ -82,8 +80,7 @@ RESOURCE ds_1 (
 - 使用 URL 模式修改资源并设置连接池参数
 
 ```sql
-ALTER
-RESOURCE ds_2 (
+ALTER RESOURCE ds_2 (
     URL="jdbc:mysql://127.0.0.1:3306/db_2?serverTimezone=UTC&useSSL=false",
     USER=root,
     PASSWORD=root,

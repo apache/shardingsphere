@@ -28,29 +28,25 @@ DropResource ::=
 - Drop a resource
 
 ```sql
-DROP
-RESOURCE ds_0;
+DROP RESOURCE ds_0;
 ```
 
 - Drop multiple resources
 
 ```sql
-DROP
-RESOURCE ds_1, ds_2;
+DROP RESOURCE ds_1, ds_2;
 ```
 
 - Ignore single table rule remove resource
 
 ```sql
-DROP
-RESOURCE ds_1 IGNORE SINGLE TABLES;
+DROP RESOURCE ds_1 IGNORE SINGLE TABLES;
 ```
 
 - Drop the resource if it exists
 
 ```sql
-DROP
-RESOURCE IF EXISTS ds_2;
+DROP RESOURCE IF EXISTS ds_2;
 ```
 
 ### Reserved word

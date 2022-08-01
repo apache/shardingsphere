@@ -25,29 +25,25 @@ DropResource ::=
 - 移除资源
 
 ```sql
-DROP
-RESOURCE ds_0;
+DROP RESOURCE ds_0;
 ```
 
 - 移除多个资源
 
 ```sql
-DROP
-RESOURCE ds_1, ds_2;
+DROP RESOURCE ds_1, ds_2;
 ```
 
 - 忽略单表移除资源
 
 ```sql
-DROP
-RESOURCE ds_3 IGNORE SINGLE TABLES;
+DROP RESOURCE ds_3 IGNORE SINGLE TABLES;
 ```
 
 - 如果资源存在则移除
 
 ```sql
-DROP
-RESOURCE IF EXISTS ds_4;
+DROP RESOURCE IF EXISTS ds_4;
 ```
 
 ### 保留字
