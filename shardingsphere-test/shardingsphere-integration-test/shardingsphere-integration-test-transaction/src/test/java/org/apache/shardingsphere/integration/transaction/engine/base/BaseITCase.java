@@ -390,7 +390,7 @@ public abstract class BaseITCase {
      * 
      * @param connection connection
      */
-    @SneakyThrows(SQLException.class)
+    @SneakyThrows({SQLException.class, InterruptedException.class})
     public void addNewResource(final Connection connection) {
         String addSourceResource = commonSQLCommand.getSourceAddNewResourceTemplate()
                 .replace("${user}", ENV.getActualDataSourceUsername(databaseType))
@@ -398,6 +398,7 @@ public abstract class BaseITCase {
                 .replace("${ds2}", getActualJdbcUrlTemplate(DS_2));
         executeWithLog(connection, addSourceResource);
         int resourceCount = countWithLog("SHOW DATABASE RESOURCES FROM sharding_db");
+        Thread.sleep(5000);
         assertThat(resourceCount, is(3));
     }
     
