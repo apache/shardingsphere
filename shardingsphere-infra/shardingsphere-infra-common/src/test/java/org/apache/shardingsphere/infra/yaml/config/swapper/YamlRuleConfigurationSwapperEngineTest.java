@@ -25,11 +25,9 @@ import org.junit.Test;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class YamlRuleConfigurationSwapperEngineTest {
     
@@ -47,12 +45,5 @@ public final class YamlRuleConfigurationSwapperEngineTest {
         Collection<RuleConfiguration> actual = new YamlRuleConfigurationSwapperEngine().swapToRuleConfigurations(Collections.singleton(yamlRuleConfig));
         assertThat(actual.size(), is(1));
         assertThat(((FixtureRuleConfiguration) actual.iterator().next()).getName(), is("test"));
-    }
-    
-    @Test
-    public void assertGetYamlShortcuts() {
-        Map<String, Class<?>> actual = YamlRuleConfigurationSwapperEngine.getYamlShortcuts();
-        assertThat(actual.size(), is(1));
-        assertTrue(actual.containsKey("!FIXTURE"));
     }
 }

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
  * Pipeline data source configuration for YAML.

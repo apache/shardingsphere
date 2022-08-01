@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml;
 
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.junit.Test;
 
 import java.util.HashMap;
