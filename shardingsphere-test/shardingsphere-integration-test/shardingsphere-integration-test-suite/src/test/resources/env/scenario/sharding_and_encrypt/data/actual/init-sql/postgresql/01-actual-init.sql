@@ -15,29 +15,29 @@
 -- limitations under the License.
 --
 
-CREATE DATABASE encrypt_write_ds_0;
-CREATE DATABASE encrypt_write_ds_1;
-CREATE DATABASE encrypt_write_ds_2;
-CREATE DATABASE encrypt_write_ds_3;
-CREATE DATABASE encrypt_write_ds_4;
-CREATE DATABASE encrypt_write_ds_5;
-CREATE DATABASE encrypt_write_ds_6;
-CREATE DATABASE encrypt_write_ds_7;
-CREATE DATABASE encrypt_write_ds_8;
-CREATE DATABASE encrypt_write_ds_9;
+CREATE DATABASE encrypt_ds_0;
+CREATE DATABASE encrypt_ds_1;
+CREATE DATABASE encrypt_ds_2;
+CREATE DATABASE encrypt_ds_3;
+CREATE DATABASE encrypt_ds_4;
+CREATE DATABASE encrypt_ds_5;
+CREATE DATABASE encrypt_ds_6;
+CREATE DATABASE encrypt_ds_7;
+CREATE DATABASE encrypt_ds_8;
+CREATE DATABASE encrypt_ds_9;
 
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_0 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_1 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_2 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_3 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_4 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_5 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_6 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_7 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_8 TO test_user;
-GRANT ALL PRIVILEGES ON DATABASE encrypt_write_ds_9 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_ds_0 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_ds_1 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_ds_2 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_ds_3 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_ds_4 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_ds_5 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_ds_6 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_ds_7 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_ds_8 TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE encrypt_ds_9 TO test_user;
 
-\c encrypt_write_ds_0
+\c encrypt_ds_0
 
 DROP TABLE IF EXISTS t_user_0;
 DROP TABLE IF EXISTS t_user_item_0;
@@ -95,7 +95,7 @@ CREATE INDEX user_index_t_user_7 ON t_user_7 (user_id);
 CREATE INDEX user_index_t_user_8 ON t_user_8 (user_id);
 CREATE INDEX user_index_t_user_9 ON t_user_9 (user_id);
 
-\c encrypt_write_ds_1
+\c encrypt_ds_1
 
 DROP TABLE IF EXISTS t_user_0;
 DROP TABLE IF EXISTS t_user_item_0;
@@ -167,7 +167,7 @@ CREATE INDEX user_index_t_user_7 ON t_user_7 (user_id);
 CREATE INDEX user_index_t_user_8 ON t_user_8 (user_id);
 CREATE INDEX user_index_t_user_9 ON t_user_9 (user_id);
 
-\c encrypt_write_ds_2
+\c encrypt_ds_2
 
 DROP TABLE IF EXISTS t_user_0;
 DROP TABLE IF EXISTS t_user_item_0;
@@ -221,7 +221,7 @@ CREATE INDEX user_index_t_user_7 ON t_user_7 (user_id);
 CREATE INDEX user_index_t_user_8 ON t_user_8 (user_id);
 CREATE INDEX user_index_t_user_9 ON t_user_9 (user_id);
 
-\c encrypt_write_ds_3
+\c encrypt_ds_3
 
 DROP TABLE IF EXISTS t_user_0;
 DROP TABLE IF EXISTS t_user_item_0;
@@ -275,7 +275,7 @@ CREATE INDEX user_index_t_user_7 ON t_user_7 (user_id);
 CREATE INDEX user_index_t_user_8 ON t_user_8 (user_id);
 CREATE INDEX user_index_t_user_9 ON t_user_9 (user_id);
 
-\c encrypt_write_ds_4
+\c encrypt_ds_4
 
 DROP TABLE IF EXISTS t_user_0;
 DROP TABLE IF EXISTS t_user_item_0;
@@ -329,7 +329,7 @@ CREATE INDEX user_index_t_user_7 ON t_user_7 (user_id);
 CREATE INDEX user_index_t_user_8 ON t_user_8 (user_id);
 CREATE INDEX user_index_t_user_9 ON t_user_9 (user_id);
 
-\c encrypt_write_ds_5
+\c encrypt_ds_5
 
 DROP TABLE IF EXISTS t_user_0;
 DROP TABLE IF EXISTS t_user_item_0;
@@ -383,7 +383,7 @@ CREATE INDEX user_index_t_user_7 ON t_user_7 (user_id);
 CREATE INDEX user_index_t_user_8 ON t_user_8 (user_id);
 CREATE INDEX user_index_t_user_9 ON t_user_9 (user_id);
 
-\c encrypt_write_ds_6
+\c encrypt_ds_6
 
 DROP TABLE IF EXISTS t_user_0;
 DROP TABLE IF EXISTS t_user_item_0;
@@ -437,7 +437,7 @@ CREATE INDEX user_index_t_user_7 ON t_user_7 (user_id);
 CREATE INDEX user_index_t_user_8 ON t_user_8 (user_id);
 CREATE INDEX user_index_t_user_9 ON t_user_9 (user_id);
 
-\c encrypt_write_ds_7
+\c encrypt_ds_7
 
 DROP TABLE IF EXISTS t_user_0;
 DROP TABLE IF EXISTS t_user_item_0;
@@ -491,7 +491,7 @@ CREATE INDEX user_index_t_user_7 ON t_user_7 (user_id);
 CREATE INDEX user_index_t_user_8 ON t_user_8 (user_id);
 CREATE INDEX user_index_t_user_9 ON t_user_9 (user_id);
 
-\c encrypt_write_ds_8
+\c encrypt_ds_8
 
 DROP TABLE IF EXISTS t_user_0;
 DROP TABLE IF EXISTS t_user_item_0;
@@ -545,7 +545,7 @@ CREATE INDEX user_index_t_user_7 ON t_user_7 (user_id);
 CREATE INDEX user_index_t_user_8 ON t_user_8 (user_id);
 CREATE INDEX user_index_t_user_9 ON t_user_9 (user_id);
 
-\c encrypt_write_ds_9
+\c encrypt_ds_9
 
 DROP TABLE IF EXISTS t_user_0;
 DROP TABLE IF EXISTS t_user_item_0;

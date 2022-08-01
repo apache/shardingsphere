@@ -15,12 +15,12 @@
 -- limitations under the License.
 --
 
-DROP DATABASE IF EXISTS write_dataset;
-CREATE DATABASE write_dataset;
+DROP DATABASE IF EXISTS expect_dataset;
+CREATE DATABASE expect_dataset;
 
-GRANT ALL PRIVILEGES ON DATABASE write_dataset TO test_user;
+GRANT ALL PRIVILEGES ON DATABASE expect_dataset TO test_user;
 
-\c write_dataset;
+\c expect_dataset;
 
 DROP TABLE IF EXISTS t_single_table;
 DROP TABLE IF EXISTS t_order_federate;

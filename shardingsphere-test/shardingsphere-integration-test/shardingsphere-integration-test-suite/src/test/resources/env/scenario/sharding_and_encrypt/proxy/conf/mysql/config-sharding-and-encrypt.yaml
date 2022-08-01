@@ -18,8 +18,8 @@
 databaseName: sharding_and_encrypt
 
 dataSources:
-  encrypt_write_ds_0:
-    url: jdbc:mysql://mysql.sharding_and_encrypt.host:3306/encrypt_write_ds_0?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+  encrypt_ds_0:
+    url: jdbc:mysql://mysql.sharding_and_encrypt.host:3306/encrypt_ds_0?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -27,8 +27,8 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 2
     minPoolSize: 2
-  encrypt_write_ds_1:
-    url: jdbc:mysql://mysql.sharding_and_encrypt.host:3306/encrypt_write_ds_1?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+  encrypt_ds_1:
+    url: jdbc:mysql://mysql.sharding_and_encrypt.host:3306/encrypt_ds_1?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -36,8 +36,8 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 2
     minPoolSize: 2
-  encrypt_write_ds_2:
-    url: jdbc:mysql://mysql.sharding_and_encrypt.host:3306/encrypt_write_ds_2?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+  encrypt_ds_2:
+    url: jdbc:mysql://mysql.sharding_and_encrypt.host:3306/encrypt_ds_2?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -45,8 +45,8 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 2
     minPoolSize: 2
-  encrypt_write_ds_3:
-    url: jdbc:mysql://mysql.sharding_and_encrypt.host:3306/encrypt_write_ds_3?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+  encrypt_ds_3:
+    url: jdbc:mysql://mysql.sharding_and_encrypt.host:3306/encrypt_ds_3?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -54,8 +54,8 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 2
     minPoolSize: 2
-  encrypt_write_ds_4:
-    url: jdbc:mysql://mysql.sharding_and_encrypt.host:3306/encrypt_write_ds_4?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+  encrypt_ds_4:
+    url: jdbc:mysql://mysql.sharding_and_encrypt.host:3306/encrypt_ds_4?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -63,8 +63,8 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 2
     minPoolSize: 2
-  encrypt_write_ds_5:
-    url: jdbc:mysql://mysql.sharding_and_encrypt.host:3306/encrypt_write_ds_5?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+  encrypt_ds_5:
+    url: jdbc:mysql://mysql.sharding_and_encrypt.host:3306/encrypt_ds_5?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -72,8 +72,8 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 2
     minPoolSize: 2
-  encrypt_write_ds_6:
-    url: jdbc:mysql://mysql.sharding_and_encrypt.host:3306/encrypt_write_ds_6?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+  encrypt_ds_6:
+    url: jdbc:mysql://mysql.sharding_and_encrypt.host:3306/encrypt_ds_6?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -81,8 +81,8 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 2
     minPoolSize: 2
-  encrypt_write_ds_7:
-    url: jdbc:mysql://mysql.sharding_and_encrypt.host:3306/encrypt_write_ds_7?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+  encrypt_ds_7:
+    url: jdbc:mysql://mysql.sharding_and_encrypt.host:3306/encrypt_ds_7?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -90,8 +90,8 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 2
     minPoolSize: 2
-  encrypt_write_ds_8:
-    url: jdbc:mysql://mysql.sharding_and_encrypt.host:3306/encrypt_write_ds_8?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+  encrypt_ds_8:
+    url: jdbc:mysql://mysql.sharding_and_encrypt.host:3306/encrypt_ds_8?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -99,8 +99,8 @@ dataSources:
     maxLifetimeMilliseconds: 1800000
     maxPoolSize: 2
     minPoolSize: 2
-  encrypt_write_ds_9:
-    url: jdbc:mysql://mysql.sharding_and_encrypt.host:3306/encrypt_write_ds_9?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
+  encrypt_ds_9:
+    url: jdbc:mysql://mysql.sharding_and_encrypt.host:3306/encrypt_ds_9?serverTimezone=UTC&useSSL=false&characterEncoding=utf-8
     username: test_user
     password: Test@123
     connectionTimeoutMilliseconds: 30000
@@ -113,7 +113,7 @@ rules:
 - !SHARDING
   tables:
     t_user_item:
-      actualDataNodes: encrypt_write_ds_${0..9}.t_user_item_${0..9}
+      actualDataNodes: encrypt_ds_${0..9}.t_user_item_${0..9}
       databaseStrategy:
         standard:
           shardingColumn: user_id
@@ -126,7 +126,7 @@ rules:
         column: item_id
         keyGeneratorName: constant
     t_user:
-      actualDataNodes: encrypt_write_ds_${0..9}.t_user_${0..9}
+      actualDataNodes: encrypt_ds_${0..9}.t_user_${0..9}
       databaseStrategy:
         standard:
           shardingColumn: address_id
@@ -139,7 +139,7 @@ rules:
         column: user_id
         keyGeneratorName: constant
     t_user_details:
-      actualDataNodes: encrypt_write_ds_${0..9}.t_user_details_${0..9}
+      actualDataNodes: encrypt_ds_${0..9}.t_user_details_${0..9}
       databaseStrategy:
         standard:
           shardingColumn: address_id
@@ -149,19 +149,19 @@ rules:
           shardingColumn: user_id
           shardingAlgorithmName: it_standard_fixture
     t_order_item_federate_sharding:
-      actualDataNodes: encrypt_write_ds_1.t_order_item_federate_sharding_${0..1}
+      actualDataNodes: encrypt_ds_1.t_order_item_federate_sharding_${0..1}
       tableStrategy:
         standard:
           shardingColumn: item_id
           shardingAlgorithmName: table_inline_item_id
     t_order_federate_sharding:
-      actualDataNodes: encrypt_write_ds_1.t_order_federate_sharding_${0..1}
+      actualDataNodes: encrypt_ds_1.t_order_federate_sharding_${0..1}
       tableStrategy:
         standard:
           shardingColumn: order_id_sharding
           shardingAlgorithmName: table_inline_order_id
     t_user_encrypt_federate_sharding:
-      actualDataNodes: encrypt_write_ds_1.t_user_encrypt_federate_sharding_${0..1}
+      actualDataNodes: encrypt_ds_1.t_user_encrypt_federate_sharding_${0..1}
       tableStrategy:
         standard:
           shardingColumn: user_id
