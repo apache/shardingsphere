@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.database.schema.builder.spi;
 
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.spi.RuleBasedSchemaMetaDataDecoratorFactory;
-import org.apache.shardingsphere.infra.metadata.database.schema.fixture.loader.TableContainedFixtureSchemaMetaDataDecorator;
+import org.apache.shardingsphere.infra.metadata.database.schema.fixture.loader.RuleBasedSchemaMetaDataDecoratorFixture;
 import org.apache.shardingsphere.infra.metadata.database.schema.fixture.rule.TableContainedFixtureRule;
 import org.junit.Test;
 
@@ -32,6 +32,6 @@ public final class RuleBasedSchemaMetaDataDecoratorFactoryTest {
     @Test
     public void assertGetInstances() {
         TableContainedFixtureRule rule = new TableContainedFixtureRule();
-        assertThat(RuleBasedSchemaMetaDataDecoratorFactory.getInstances(Collections.singleton(rule)).get(rule), instanceOf(TableContainedFixtureSchemaMetaDataDecorator.class));
+        assertThat(RuleBasedSchemaMetaDataDecoratorFactory.getInstances(Collections.singleton(rule)).get(rule), instanceOf(RuleBasedSchemaMetaDataDecoratorFixture.class));
     }
 }

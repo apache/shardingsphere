@@ -26,6 +26,7 @@ on:
     paths:
       - '.github/workflows/ci.yml'
       - '**/pom.xml'
+      - 'src/resources/**'
       - '**/src/main/**'
       - '**/src/test/**'
       - '!shardingsphere-distribution/**'
@@ -37,6 +38,7 @@ on:
     paths:
       - '.github/workflows/ci.yml'
       - '**/pom.xml'
+      - 'src/resources/**'
       - '**/src/main/**'
       - '**/src/test/**'
       - '!shardingsphere-distribution/**'
@@ -56,6 +58,18 @@ env:
   MAVEN_OPTS: -Dhttp.keepAlive=false -Dmaven.wagon.http.pool=false -Dmaven.wagon.http.retryHandler.class=standard -Dmaven.wagon.http.retryHandler.count=3
 
 jobs:
+  checkstyle-and-apache-rat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cache dependencies of Checkstyle and Apache Rat
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2/repository
+          key: maven-cache-checkstyle-and-apache-rat-${{ hashFiles('**/pom.xml') }}
+      - name: Run Checkstyle and Apache Rat
+        run: ./mvnw checkstyle:check apache-rat:check -T1C
   windows:
     if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere')
     runs-on: windows-latest
@@ -118,25 +132,19 @@ jobs:
     if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere') || (github.event_name != 'schedule')
     name: JDK ${{ matrix.java.version }} - on ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
+    needs: checkstyle-and-apache-rat
     timeout-minutes: 60
     strategy:
       matrix:
         os: [ ubuntu-latest ]
-        java:
-          - {
-            version: 11,
-            maven_args: "-Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true"
-          }
-          - {
-            version: 17,
-            maven_args: "-Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true"
-          }
-          - {
-            version: 18,
-            maven_args: "-Dmaven.javadoc.skip=true -Drat.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true"
-          }
+        java_version: [ 11, 17, 18 ]
     steps:
       - uses: actions/checkout@v2
+      - name: Set up JDK ${{ matrix.java_version }}
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'temurin'
+          java-version: ${{ matrix.java_version }}
       - name: Maven resolve ranges
         run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - name: Cache Maven Repos
@@ -146,13 +154,8 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: |
             ${{ runner.os }}-maven-
-      - name: Set up JDK ${{ matrix.java.version }}
-        uses: actions/setup-java@v2
-        with:
-          distribution: 'temurin'
-          java-version: ${{ matrix.java.version }}
       - name: Build with Maven
-        run: echo y | ./mvnw -B --no-transfer-progress clean install ${{ matrix.java.maven_args }}
+        run: echo y | ./mvnw -B --no-transfer-progress clean install -Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true -Djacoco.skip=true -Dspotless.apply.skip=true
       - name: Build examples with Maven
         run: echo y | ./mvnw -B -f examples/pom.xml clean package -DskipTests
   
@@ -192,6 +195,7 @@ jobs:
     if: (github.event_name == 'schedule' && github.repository == 'apache/shardingsphere') || (github.event_name != 'schedule')
     name: shardingsphere example generator
     runs-on: ubuntu-latest
+    needs: checkstyle-and-apache-rat
     steps:
       - uses: actions/checkout@v2
       - name: Maven resolve ranges
@@ -216,6 +220,7 @@ jobs:
   test-coverage-report:
     runs-on: ubuntu-latest
     name: shardingsphere test coverage report
+    needs: checkstyle-and-apache-rat
     steps:
       - uses: actions/checkout@v2
       - name: Cache Maven Repos
@@ -231,6 +236,6 @@ jobs:
           distribution: 'temurin'
           java-version: 8
       - name: Test with Maven
-        run: ./mvnw -B --no-transfer-progress clean install cobertura:cobertura -Dmaven.javadoc.skip=true
+        run: ./mvnw -B --no-transfer-progress clean install cobertura:cobertura -Dmaven.javadoc.skip=true -Drat.skip=true -Dcheckstyle.skip=true
       - name: Upload to Codecov
         run: bash <(curl -s https://codecov.io/bash)

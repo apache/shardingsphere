@@ -55,5 +55,6 @@ public final class DatabaseDiscoveryRuleBuilderTest {
         when(instanceContext.getInstance().getCurrentInstanceId()).thenReturn("foo_id");
         assertThat(builder.build(config, "test_schema",
                 Collections.singletonMap("name", new MockedDataSource()), Collections.emptyList(), instanceContext), instanceOf(DatabaseDiscoveryRule.class));
+        ScheduleContextFactory.getInstance().getScheduleStrategy().remove("foo_id");
     }
 }

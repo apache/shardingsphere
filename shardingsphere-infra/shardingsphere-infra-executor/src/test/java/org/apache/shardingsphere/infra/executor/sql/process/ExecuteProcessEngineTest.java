@@ -19,8 +19,6 @@ package org.apache.shardingsphere.infra.executor.sql.process;
 
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
@@ -30,6 +28,7 @@ import org.apache.shardingsphere.infra.executor.sql.process.fixture.ExecuteProce
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
 import org.junit.Before;
 import org.junit.Test;
+
 import java.util.UUID;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -47,7 +46,7 @@ public final class ExecuteProcessEngineTest {
     @Before
     public void setUp() {
         executionGroupContext = createMockedExecutionGroups();
-        ExecuteProcessEngine.initialize(createLogicSQL(), executionGroupContext, createConfigurationProperties(), eventBusContext);
+        ExecuteProcessEngine.initialize(createLogicSQL(), executionGroupContext, eventBusContext);
         assertThat(ExecutorDataMap.getValue().get("EXECUTE_ID"), is(executionGroupContext.getExecutionID()));
         assertThat(ExecuteProcessReporterFixture.ACTIONS.get(0), is("Report the summary of this task."));
     }
@@ -71,13 +70,6 @@ public final class ExecuteProcessEngineTest {
         when(sqlStatementContext.getSqlStatement()).thenReturn(mock(DDLStatement.class));
         LogicSQL result = mock(LogicSQL.class);
         when(result.getSqlStatementContext()).thenReturn(sqlStatementContext);
-        return result;
-    }
-    
-    private ConfigurationProperties createConfigurationProperties() {
-        ConfigurationProperties result = mock(ConfigurationProperties.class);
-        when(result.getValue(ConfigurationPropertyKey.SQL_SHOW)).thenReturn(Boolean.TRUE);
-        when(result.getValue(ConfigurationPropertyKey.SHOW_PROCESS_LIST_ENABLED)).thenReturn(Boolean.TRUE);
         return result;
     }
     
