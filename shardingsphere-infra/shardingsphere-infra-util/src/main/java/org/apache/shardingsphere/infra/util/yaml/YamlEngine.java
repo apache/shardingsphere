@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.engine;
+package org.apache.shardingsphere.infra.util.yaml;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-import org.apache.shardingsphere.infra.yaml.engine.constructor.ShardingSphereYamlConstructor;
-import org.apache.shardingsphere.infra.yaml.engine.representer.ShardingSphereYamlRepresenter;
+import org.apache.shardingsphere.infra.util.yaml.constructor.ShardingSphereYamlConstructor;
+import org.apache.shardingsphere.infra.util.yaml.representer.ShardingSphereYamlRepresenter;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.representer.Representer;

@@ -44,7 +44,7 @@ import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActi
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.event.StartScalingEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 
@@ -62,6 +62,7 @@ import java.util.stream.Collectors;
 /**
  * Rule altered job worker.
  */
+@SuppressWarnings("UnstableApiUsage")
 @Slf4j
 public final class RuleAlteredJobWorker {
     

@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.engine.representer;
+package org.apache.shardingsphere.infra.util.yaml.representer;
 
-import org.apache.shardingsphere.infra.yaml.engine.representer.processor.DefaultYamlTupleProcessor;
-import org.apache.shardingsphere.infra.yaml.engine.representer.processor.ShardingSphereYamlTupleProcessor;
-import org.apache.shardingsphere.infra.yaml.engine.representer.processor.ShardingSphereYamlTupleProcessorFactory;
-import org.apache.shardingsphere.infra.yaml.engine.shortcuts.ShardingSphereYamlShortcuts;
-import org.apache.shardingsphere.infra.yaml.engine.shortcuts.ShardingSphereYamlShortcutsFactory;
+import org.apache.shardingsphere.infra.util.yaml.representer.processor.ShardingSphereYamlTupleProcessorFactory;
+import org.apache.shardingsphere.infra.util.yaml.shortcuts.ShardingSphereYamlShortcutsFactory;
+import org.apache.shardingsphere.infra.util.yaml.representer.processor.DefaultYamlTupleProcessor;
+import org.apache.shardingsphere.infra.util.yaml.representer.processor.ShardingSphereYamlTupleProcessor;
+import org.apache.shardingsphere.infra.util.yaml.shortcuts.ShardingSphereYamlShortcuts;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.introspector.Property;
 import org.yaml.snakeyaml.nodes.Node;

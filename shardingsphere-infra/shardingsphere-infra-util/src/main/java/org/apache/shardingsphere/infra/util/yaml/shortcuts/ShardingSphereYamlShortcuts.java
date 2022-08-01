@@ -15,29 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.engine.representer.processor;
+package org.apache.shardingsphere.infra.util.yaml.shortcuts;
 
-import org.apache.shardingsphere.spi.annotation.SingletonSPI;
-import org.yaml.snakeyaml.nodes.NodeTuple;
+import java.util.Map;
 
 /**
- * ShardingSphere YAML tuple processor.
+ * ShardingSphere YAML shortcuts.
  */
-@SingletonSPI
-public interface ShardingSphereYamlTupleProcessor {
+public interface ShardingSphereYamlShortcuts {
     
     /**
-     * Get tuple name.
+     * Get YAML shortcuts.
      *
-     * @return tuple name
+     * @return YAML shortcuts
      */
-    String getTupleName();
-    
-    /**
-     * Process YAML tuple for representer.
-     *
-     * @param nodeTuple YAML node tuple
-     * @return YAML node tuple after process
-     */
-    NodeTuple process(NodeTuple nodeTuple);
+    Map<String, Class<?>> getYamlShortcuts();
 }

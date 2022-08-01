@@ -15,10 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.engine.constructor;
+package org.apache.shardingsphere.infra.util.yaml.constructor;
 
-import org.apache.shardingsphere.infra.yaml.engine.shortcuts.ShardingSphereYamlShortcuts;
-import org.apache.shardingsphere.infra.yaml.engine.shortcuts.ShardingSphereYamlShortcutsFactory;
+import org.apache.shardingsphere.infra.util.yaml.shortcuts.ShardingSphereYamlShortcutsFactory;
+import org.apache.shardingsphere.infra.util.yaml.shortcuts.ShardingSphereYamlShortcuts;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.constructor.Construct;
 import org.yaml.snakeyaml.constructor.Constructor;

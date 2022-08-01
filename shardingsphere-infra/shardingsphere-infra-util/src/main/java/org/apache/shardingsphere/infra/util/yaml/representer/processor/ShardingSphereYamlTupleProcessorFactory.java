@@ -15,27 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.engine.shortcuts;
+package org.apache.shardingsphere.infra.util.yaml.representer.processor;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
 
 /**
- * ShardingSphere YAML shortcuts factory.
+ * ShardingSphere YAML tuple processor factory.
  */
-public final class ShardingSphereYamlShortcutsFactory {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ShardingSphereYamlTupleProcessorFactory {
     
     static {
-        ShardingSphereServiceLoader.register(ShardingSphereYamlShortcuts.class);
+        ShardingSphereServiceLoader.register(ShardingSphereYamlTupleProcessor.class);
     }
     
     /**
-     * Get all ShardingSphere YAML shortcuts instances.
+     * Get all instances of ShardingSphere YAML tuple processor.
      *
      * @return got instances
      */
-    public static Collection<ShardingSphereYamlShortcuts> getAllInstances() {
-        return ShardingSphereServiceLoader.getServiceInstances(ShardingSphereYamlShortcuts.class);
+    public static Collection<ShardingSphereYamlTupleProcessor> getAllInstances() {
+        return ShardingSphereServiceLoader.getServiceInstances(ShardingSphereYamlTupleProcessor.class);
     }
 }

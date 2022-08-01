@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.engine.constructor;
+package org.apache.shardingsphere.infra.util.yaml.constructor;
 
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.yaml.snakeyaml.constructor.Construct;

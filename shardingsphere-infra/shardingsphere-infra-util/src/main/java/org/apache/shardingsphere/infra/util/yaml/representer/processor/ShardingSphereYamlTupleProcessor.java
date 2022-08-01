@@ -15,30 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.engine.representer.processor;
+package org.apache.shardingsphere.infra.util.yaml.representer.processor;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-
-import java.util.Collection;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.yaml.snakeyaml.nodes.NodeTuple;
 
 /**
- * ShardingSphere YAML tuple processor factory.
+ * ShardingSphere YAML tuple processor.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ShardingSphereYamlTupleProcessorFactory {
-    
-    static {
-        ShardingSphereServiceLoader.register(ShardingSphereYamlTupleProcessor.class);
-    }
+@SingletonSPI
+public interface ShardingSphereYamlTupleProcessor {
     
     /**
-     * Get all instances of ShardingSphere YAML tuple processor.
+     * Get tuple name.
      *
-     * @return got instances
+     * @return tuple name
      */
-    public static Collection<ShardingSphereYamlTupleProcessor> getAllInstances() {
-        return ShardingSphereServiceLoader.getServiceInstances(ShardingSphereYamlTupleProcessor.class);
-    }
+    String getTupleName();
+    
+    /**
+     * Process YAML tuple for representer.
+     *
+     * @param nodeTuple YAML node tuple
+     * @return YAML node tuple after process
+     */
+    NodeTuple process(NodeTuple nodeTuple);
 }

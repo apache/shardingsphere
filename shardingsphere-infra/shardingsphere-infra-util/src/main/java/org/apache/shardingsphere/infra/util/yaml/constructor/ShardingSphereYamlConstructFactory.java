@@ -15,19 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.engine.shortcuts;
+package org.apache.shardingsphere.infra.util.yaml.constructor;
 
-import java.util.Map;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+
+import java.util.Collection;
 
 /**
- * ShardingSphere YAML shortcuts.
+ * ShardingSphere YAML construct factory.
  */
-public interface ShardingSphereYamlShortcuts {
+public final class ShardingSphereYamlConstructFactory {
+    
+    static {
+        ShardingSphereServiceLoader.register(ShardingSphereYamlConstruct.class);
+    }
     
     /**
-     * Get YAML shortcuts.
-     *
-     * @return YAML shortcuts
+     * Get instances of ShardingSphere YAML construct.
+     * 
+     * @return got instances
      */
-    Map<String, Class<?>> getYamlShortcuts();
+    public static Collection<ShardingSphereYamlConstruct> getInstances() {
+        return ShardingSphereServiceLoader.getServiceInstances(ShardingSphereYamlConstruct.class);
+    }
 }

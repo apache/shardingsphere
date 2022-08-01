@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.yaml.engine.constructor;
 
+import org.apache.shardingsphere.infra.util.yaml.constructor.ShardingSphereYamlConstructor;
 import org.apache.shardingsphere.infra.yaml.engine.fixture.ShardingSphereYamlObjectFixture;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.yaml.config.swapper;
 
 import lombok.SneakyThrows;
-import org.apache.shardingsphere.infra.yaml.engine.shortcuts.ShardingSphereYamlShortcuts;
+import org.apache.shardingsphere.infra.util.yaml.shortcuts.ShardingSphereYamlShortcuts;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;

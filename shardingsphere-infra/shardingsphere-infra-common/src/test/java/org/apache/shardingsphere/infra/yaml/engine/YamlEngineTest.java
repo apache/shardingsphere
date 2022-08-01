@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.yaml.engine;
 
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.swapper.fixture.YamlRuleConfigurationFixture;
 import org.junit.Test;
 import org.yaml.snakeyaml.constructor.ConstructorException;
@@ -99,7 +99,7 @@ public final class YamlEngineTest {
                 yamlContent.append(line).append(System.lineSeparator());
             }
         }
-        YamlEngine.unmarshal(yamlContent.toString(), YamlRootConfiguration.class);
+        YamlEngine.unmarshal(yamlContent.toString(), Object.class);
     }
     
     @Test

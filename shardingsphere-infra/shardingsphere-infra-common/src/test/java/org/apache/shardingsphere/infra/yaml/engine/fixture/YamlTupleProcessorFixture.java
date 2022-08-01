@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.yaml.engine.fixture;
 
-import org.apache.shardingsphere.infra.yaml.engine.representer.processor.ShardingSphereYamlTupleProcessor;
+import org.apache.shardingsphere.infra.util.yaml.representer.processor.ShardingSphereYamlTupleProcessor;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.nodes.NodeTuple;
 import org.yaml.snakeyaml.nodes.ScalarNode;

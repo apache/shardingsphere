@@ -19,7 +19,7 @@ package org.apache.shardingsphere.example.proxy.hint.factory;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.example.proxy.hint.config.DataSourceConfiguration;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 
 import javax.sql.DataSource;
 import java.io.File;

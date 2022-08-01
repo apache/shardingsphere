@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.yaml.engine.fixture;
 
-import org.apache.shardingsphere.infra.yaml.engine.constructor.ShardingSphereYamlConstruct;
+import org.apache.shardingsphere.infra.util.yaml.constructor.ShardingSphereYamlConstruct;
 import org.yaml.snakeyaml.nodes.Node;
 
 public final class YamlConstructFixture implements ShardingSphereYamlConstruct {
