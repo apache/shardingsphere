@@ -22,7 +22,7 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.SetVaria
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.util.props.TypedPropertyValue;
-import org.apache.shardingsphere.infra.util.props.TypedPropertyValueException;
+import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyValueException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;

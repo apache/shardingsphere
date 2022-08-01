@@ -15,18 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.props;
+package org.apache.shardingsphere.infra.util.props.exception;
 
-import org.apache.shardingsphere.infra.util.props.fixture.TypedPropertyKeyFixture;
 import org.junit.Test;
+
+import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class TypedPropertyValueExceptionTest {
+public final class TypedPropertiesExceptionTest {
     
     @Test
     public void assertGetMessage() {
-        assertThat(new TypedPropertyValueException(TypedPropertyKeyFixture.INT_VALUE, "test").getMessage(), is("Value `test` of `int` cannot convert to type `int`."));
+        assertThat(new TypedPropertiesException(Arrays.asList("foo_msg", "bar_msg")).getMessage(), is("PROPS-00001: foo_msg" + System.lineSeparator() + "bar_msg"));
     }
 }

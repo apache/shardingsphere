@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.util.props;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyValueException;
 
 /**
  * Typed property value.

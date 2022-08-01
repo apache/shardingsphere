@@ -15,18 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.props;
+package org.apache.shardingsphere.infra.util.props.exception;
 
-import java.util.Collection;
+import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
 
 /**
- * Typed property exception.
+ * Typed property value exception.
  */
-public final class TypedPropertyException extends RuntimeException {
+public final class TypedPropertyValueException extends Exception {
     
-    private static final long serialVersionUID = -8301410307117564844L;
+    private static final long serialVersionUID = -2989212435757964906L;
     
-    public TypedPropertyException(final Collection<String> errorMessages) {
-        super(String.join(System.lineSeparator(), errorMessages));
+    public TypedPropertyValueException(final TypedPropertyKey key, final String value) {
+        super(String.format("Value `%s` of `%s` cannot convert to type `%s`.", value, key.getKey(), key.getType().getName()));
     }
 }
