@@ -28,7 +28,9 @@ import org.apache.calcite.plan.hep.HepPlanner;
 import org.apache.calcite.plan.hep.HepProgramBuilder;
 import org.apache.calcite.plan.volcano.VolcanoPlanner;
 import org.apache.calcite.rel.RelCollationTraitDef;
+import org.apache.calcite.rel.rules.AggregateExpandDistinctAggregatesRule;
 import org.apache.calcite.rel.rules.CoreRules;
+import org.apache.calcite.rel.rules.ProjectRemoveRule;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -61,6 +63,7 @@ public final class QueryOptimizePlannerFactory {
         HepProgramBuilder builder = new HepProgramBuilder();
         builder.addGroupBegin().addRuleCollection(getSubQueryRules()).addGroupEnd().addMatchOrder(HepMatchOrder.DEPTH_FIRST);
         builder.addGroupBegin().addRuleCollection(getFilterRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
+        builder.addGroupBegin().addRuleCollection(getProjectRules()).addGroupEnd().addMatchOrder(HepMatchOrder.BOTTOM_UP);
         builder.addMatchLimit(DEFAULT_MATCH_LIMIT);
         return new HepPlanner(builder.build());
     }
@@ -68,9 +71,6 @@ public final class QueryOptimizePlannerFactory {
     private static void setUpRules(final RelOptPlanner planner) {
         planner.addRelTraitDef(ConventionTraitDef.INSTANCE);
         planner.addRelTraitDef(RelCollationTraitDef.INSTANCE);
-        planner.addRule(CoreRules.FILTER_TO_CALC);
-        planner.addRule(CoreRules.PROJECT_TO_CALC);
-        planner.addRule(CoreRules.FILTER_INTO_JOIN);
         planner.addRule(EnumerableRules.ENUMERABLE_CALC_RULE);
         planner.addRule(EnumerableRules.ENUMERABLE_SORT_RULE);
         planner.addRule(EnumerableRules.ENUMERABLE_JOIN_RULE);
@@ -88,20 +88,32 @@ public final class QueryOptimizePlannerFactory {
         return result;
     }
     
+    private static Collection<RelOptRule> getProjectRules() {
+        Collection<RelOptRule> result = new LinkedList<>();
+        result.add(AggregateExpandDistinctAggregatesRule.Config.DEFAULT.toRule());
+        result.add(CoreRules.PROJECT_TO_CALC);
+        result.add(CoreRules.FILTER_TO_CALC);
+        result.add(CoreRules.PROJECT_CALC_MERGE);
+        result.add(CoreRules.FILTER_CALC_MERGE);
+        result.add(CoreRules.PROJECT_CORRELATE_TRANSPOSE);
+        result.add(CoreRules.PROJECT_SET_OP_TRANSPOSE);
+        result.add(CoreRules.PROJECT_JOIN_TRANSPOSE);
+        result.add(CoreRules.PROJECT_WINDOW_TRANSPOSE);
+        result.add(CoreRules.PROJECT_FILTER_TRANSPOSE);
+        result.add(CoreRules.PROJECT_REDUCE_EXPRESSIONS);
+        result.add(ProjectRemoveRule.Config.DEFAULT.toRule());
+        return result;
+    }
+    
     private static Collection<RelOptRule> getFilterRules() {
         Collection<RelOptRule> result = new LinkedList<>();
         result.add(CoreRules.FILTER_INTO_JOIN);
         result.add(CoreRules.JOIN_CONDITION_PUSH);
         result.add(CoreRules.SORT_JOIN_TRANSPOSE);
-        result.add(CoreRules.PROJECT_CORRELATE_TRANSPOSE);
         result.add(CoreRules.FILTER_AGGREGATE_TRANSPOSE);
         result.add(CoreRules.FILTER_PROJECT_TRANSPOSE);
         result.add(CoreRules.FILTER_SET_OP_TRANSPOSE);
-        result.add(CoreRules.FILTER_PROJECT_TRANSPOSE);
         result.add(CoreRules.FILTER_REDUCE_EXPRESSIONS);
-        result.add(CoreRules.PROJECT_REDUCE_EXPRESSIONS);
-        result.add(CoreRules.FILTER_MERGE);
-        result.add(CoreRules.PROJECT_CALC_MERGE);
         result.add(CoreRules.JOIN_PUSH_EXPRESSIONS);
         result.add(CoreRules.JOIN_PUSH_TRANSITIVE_PREDICATES);
         return result;

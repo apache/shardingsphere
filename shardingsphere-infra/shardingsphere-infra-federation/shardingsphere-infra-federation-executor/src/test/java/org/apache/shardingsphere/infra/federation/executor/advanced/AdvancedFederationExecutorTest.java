@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.infra.federation.executor.advanced;
 
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
+import org.apache.shardingsphere.infra.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -38,6 +41,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -56,7 +60,8 @@ public class AdvancedFederationExecutorTest {
         Map<String, ShardingSphereSchema> schemas = Collections.singletonMap(databaseName, new ShardingSphereSchema(tables));
         ShardingSphereDatabase metaData = new ShardingSphereDatabase(schemaName, new H2DatabaseType(), mockResource(), null, schemas);
         OptimizerContext optimizerContext = OptimizerContextFactory.create(Collections.singletonMap(schemaName, metaData), createGlobalRuleMetaData());
-        executor = new AdvancedFederationExecutor(databaseName, schemaName, optimizerContext);
+        executor = new AdvancedFederationExecutor(databaseName, schemaName, optimizerContext, mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties()),
+                mock(JDBCExecutor.class), mock(EventBusContext.class));
     }
     
     private ShardingSphereRuleMetaData createGlobalRuleMetaData() {

@@ -1,7 +1,7 @@
 +++
-pre = "<b>3.11. </b>"
+pre = "<b>3.12. </b>"
 title = "Observability"
-weight = 11
+weight = 12
 +++
 
 ## Definition

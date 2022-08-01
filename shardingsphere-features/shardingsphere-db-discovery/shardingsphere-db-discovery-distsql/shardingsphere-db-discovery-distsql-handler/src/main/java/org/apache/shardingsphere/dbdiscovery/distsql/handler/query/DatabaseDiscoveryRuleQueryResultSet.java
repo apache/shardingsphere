@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.dbdiscovery.distsql.handler.query;
 
-import com.google.common.base.Preconditions;
 import com.google.gson.Gson;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
@@ -67,7 +66,10 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultS
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
         Optional<DatabaseDiscoveryRule> rule = database.getRuleMetaData().findSingleRule(DatabaseDiscoveryRule.class);
-        Preconditions.checkState(rule.isPresent());
+        if (!rule.isPresent()) {
+            dataSourceRules = Collections.emptyIterator();
+            return;
+        }
         DatabaseDiscoveryRuleConfiguration ruleConfig = (DatabaseDiscoveryRuleConfiguration) rule.get().getConfiguration();
         dataSourceRules = ruleConfig.getDataSources().iterator();
         discoveryTypes = ruleConfig.getDiscoveryTypes();

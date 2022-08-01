@@ -28,7 +28,6 @@ import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.vertx.
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.vertx.VertxExecutorCallback;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.process.ExecuteProcessEngine;
-import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 
 import java.sql.SQLException;
@@ -52,9 +51,8 @@ public final class ProxyReactiveExecutor {
      * @throws SQLException SQL exception
      */
     public Future<List<ExecuteResult>> execute(final LogicSQL logicSQL, final ExecutionGroupContext<VertxExecutionUnit> executionGroupContext) throws SQLException {
-        MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         EventBusContext eventBusContext = ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext();
-        ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, metaDataContexts.getMetaData().getProps(), eventBusContext);
+        ExecuteProcessEngine.initialize(logicSQL, executionGroupContext, eventBusContext);
         List<Future<ExecuteResult>> futures = vertxExecutor.execute(executionGroupContext, new VertxExecutorCallback());
         return CompositeFuture.all(new ArrayList<>(futures)).compose(compositeFuture -> {
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), eventBusContext);

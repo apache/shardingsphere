@@ -20,6 +20,7 @@ package org.apache.shardingsphere.driver.jdbc.core.resultset;
 import org.apache.commons.collections4.map.CaseInsensitiveMap;
 import org.apache.shardingsphere.driver.jdbc.adapter.AbstractResultSetAdapter;
 import org.apache.shardingsphere.driver.jdbc.exception.SQLExceptionErrorCode;
+import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.util.ResultSetUtil;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.DerivedColumn;
 import org.apache.shardingsphere.infra.binder.segment.select.projection.Projection;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -419,10 +420,10 @@ public final class ShardingSphereResultSet extends AbstractResultSetAdapter {
     }
     
     private Integer getIndexFromColumnLabelAndIndexMap(final String columnLabel) throws SQLFeatureNotSupportedException {
-        Integer columnIndex = columnLabelAndIndexMap.get(columnLabel);
-        if (null == columnIndex) {
+        Integer result = columnLabelAndIndexMap.get(columnLabel);
+        if (null == result) {
             throw new SQLFeatureNotSupportedException(String.format("can't get index from columnLabel[%s].", columnLabel));
         }
-        return columnIndex;
+        return result;
     }
 }

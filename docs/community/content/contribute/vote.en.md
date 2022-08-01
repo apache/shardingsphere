@@ -142,7 +142,7 @@ https://shardingsphere.apache.org/community/en/contribute/committer/
 
 **9. New committer waits for secretary to create a new account.**
 
-**10. PMC adds new committer in [roster](https://whimsy.apache.org/roster/committee/shardingsphere).**
+**10. (For PMC nomination) PMC adds new PMC in [roster](https://whimsy.apache.org/roster/committee/shardingsphere).**
 
 **11. New committer could setup an account, refers to [apache setup](https://gitbox.apache.org/setup/).**
 

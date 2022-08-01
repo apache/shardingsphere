@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.merge.engine.decorator.impl;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 /**

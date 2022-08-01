@@ -22,16 +22,14 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCConnectionManager;
-import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
 import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtil;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -50,12 +48,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 public final class JDBCBackendConnection implements BackendConnection<Void>, ExecutorJDBCConnectionManager {
     
     private final ConnectionSession connectionSession;
-    
-    private volatile FederationExecutor federationExecutor;
     
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
@@ -192,7 +187,6 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
         synchronized (this) {
             Collection<Exception> result = new LinkedList<>();
             result.addAll(closeHandlers(false));
-            result.addAll(closeFederationExecutor());
             if (!connectionSession.getTransactionStatus().isInConnectionHeldTransaction()) {
                 result.addAll(closeHandlers(true));
                 result.addAll(closeConnections(false));
@@ -213,7 +207,6 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
             closed.set(true);
             closeHandlers(true);
             closeConnections(true);
-            closeFederationExecutor();
             return null;
         }
     }
@@ -266,23 +259,6 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
         }
         if (!forceRollback) {
             connectionPostProcessors.clear();
-        }
-        return result;
-    }
-    
-    /**
-     * Close federation executor.
-     * 
-     * @return SQL exception when federation executor close
-     */
-    public Collection<SQLException> closeFederationExecutor() {
-        Collection<SQLException> result = new LinkedList<>();
-        if (null != federationExecutor) {
-            try {
-                federationExecutor.close();
-            } catch (final SQLException ex) {
-                result.add(ex);
-            }
         }
         return result;
     }

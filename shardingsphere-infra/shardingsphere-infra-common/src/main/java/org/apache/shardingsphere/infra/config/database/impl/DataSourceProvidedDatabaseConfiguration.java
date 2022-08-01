@@ -19,8 +19,8 @@ package org.apache.shardingsphere.infra.config.database.impl;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 
 import javax.sql.DataSource;
 import java.util.Collection;
