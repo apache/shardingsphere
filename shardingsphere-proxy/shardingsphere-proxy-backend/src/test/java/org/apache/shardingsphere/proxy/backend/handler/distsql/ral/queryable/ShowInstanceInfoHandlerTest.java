@@ -17,11 +17,13 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceModeStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceInfoStatement;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
+import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
+import org.apache.shardingsphere.infra.state.StateContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
+import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.junit.Test;
@@ -36,38 +38,33 @@ import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public final class ShowInstanceModeHandlerTest extends ProxyContextRestorer {
+public final class ShowInstanceInfoHandlerTest extends ProxyContextRestorer {
     
     @Test
     public void assertExecutor() throws SQLException {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         InstanceContext instanceContext = createInstanceContext();
         when(contextManager.getInstanceContext()).thenReturn(instanceContext);
-        ShowInstanceModeHandler handler = new ShowInstanceModeHandler();
-        handler.init(new ShowInstanceModeStatement(), null);
+        ShowInstanceInfoHandler handler = new ShowInstanceInfoHandler();
+        handler.init(new ShowInstanceInfoStatement(), null);
         ProxyContext.init(contextManager);
         handler.execute();
         handler.next();
         List<Object> data = handler.getRowData().getData();
-        assertThat(data.size(), is(5));
+        assertThat(data.size(), is(6));
         assertThat(data.get(0), is("127.0.0.1@3309"));
-        assertThat(data.get(1), is("Cluster"));
-        assertThat(data.get(2), is("ZooKeeper"));
-        assertThat(data.get(3), is("{\"key\":\"value1,value2\"}"));
-        assertThat(data.get(4), is(Boolean.FALSE.toString()));
+        assertThat(data.get(1), is("127.0.0.1"));
+        assertThat(data.get(2), is(3309));
+        assertThat(data.get(3), is("OK"));
+        assertThat(data.get(4), is("Standalone"));
+        assertThat(data.get(5), is(""));
     }
     
     private InstanceContext createInstanceContext() {
         InstanceContext result = mock(InstanceContext.class, RETURNS_DEEP_STUBS);
-        when(result.getInstance().getMetaData().getId()).thenReturn("127.0.0.1@3309");
-        when(result.getModeConfiguration()).thenReturn(new ModeConfiguration("Cluster",
-                new ClusterPersistRepositoryConfiguration("ZooKeeper", "governance_ds", "127.0.0.1:2181", createProperties("key", "value1,value2")), false));
-        return result;
-    }
-    
-    private Properties createProperties(final String key, final String value) {
-        Properties result = new Properties();
-        result.put(key, value);
+        when(result.getInstance().getMetaData()).thenReturn(new ProxyInstanceMetaData("127.0.0.1@3309", "127.0.0.1@3309"));
+        when(result.getInstance().getState()).thenReturn(new StateContext());
+        when(result.getModeConfiguration()).thenReturn(new ModeConfiguration("Standalone", new StandalonePersistRepositoryConfiguration("H2", new Properties()), true));
         return result;
     }
 }

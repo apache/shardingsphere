@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 
 import com.google.gson.Gson;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceModeStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowModeInfoStatement;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.result.impl.local.LocalDataQueryResultRow;
@@ -31,11 +31,9 @@ import java.util.Collection;
 import java.util.Collections;
 
 /**
- * Show instance mode handler.
+ * Show mode info handler.
  */
-public final class ShowInstanceModeHandler extends QueryableRALBackendHandler<ShowInstanceModeStatement> {
-    
-    private static final String INSTANCE_ID = "instance_id";
+public final class ShowModeInfoHandler extends QueryableRALBackendHandler<ShowModeInfoStatement> {
     
     private static final String TYPE = "type";
     
@@ -47,18 +45,17 @@ public final class ShowInstanceModeHandler extends QueryableRALBackendHandler<Sh
     
     @Override
     protected Collection<String> getColumnNames() {
-        return Arrays.asList(INSTANCE_ID, TYPE, REPOSITORY, PROPS, OVERWRITE);
+        return Arrays.asList(TYPE, REPOSITORY, PROPS, OVERWRITE);
     }
     
     @Override
     protected Collection<LocalDataQueryResultRow> getRows(final ContextManager contextManager) {
         InstanceContext instanceContext = ProxyContext.getInstance().getContextManager().getInstanceContext();
         PersistRepositoryConfiguration repositoryConfig = instanceContext.getModeConfiguration().getRepository();
-        String instanceId = instanceContext.getInstance().getMetaData().getId();
         String modeType = instanceContext.getModeConfiguration().getType();
         String repositoryType = null == repositoryConfig ? "" : repositoryConfig.getType();
         String props = null == repositoryConfig || null == repositoryConfig.getProps() ? "" : new Gson().toJson(repositoryConfig.getProps());
         String overwrite = String.valueOf(instanceContext.getModeConfiguration().isOverwrite());
-        return Collections.singleton(new LocalDataQueryResultRow(instanceId, modeType, repositoryType, props, overwrite));
+        return Collections.singleton(new LocalDataQueryResultRow(modeType, repositoryType, props, overwrite));
     }
 }

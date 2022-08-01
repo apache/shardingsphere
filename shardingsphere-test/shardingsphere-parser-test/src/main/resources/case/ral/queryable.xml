@@ -34,6 +34,8 @@
     <show-sql-parser-rule sql-case-id="show-sql-parser-rule" />
     <show-traffic-rules sql-case-id="show-traffic-rules" rule-name="rule_name" />
     <show-sql-translator-rule sql-case-id="show-sql-translator-rule" />
+    <show-instance-info sql-case-id="show-instance-info" />
+    <show-mode-info sql-case-id="show-mode-info" />
     
     <export-database-config sql-case-id="export-database-config">
         <database name="database_name" start-index="28" stop-index="40" />
