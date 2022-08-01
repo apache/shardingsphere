@@ -17,57 +17,42 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl;
 
-import lombok.SneakyThrows;
+import org.apache.shardingsphere.distsql.parser.statement.rdl.RuleDefinitionStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
-import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.AddResourceBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.AlterResourceBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.DropResourceBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.rule.RuleDefinitionBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+
+import java.sql.SQLException;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.mock;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class RDLBackendHandlerFactoryTest {
     
-    @Mock
-    private AddResourceStatement addResourceStatement;
-    
-    @Mock
-    private AlterResourceStatement alterResourceStatement;
-    
-    @Mock
-    private DropResourceStatement dropResourceStatement;
-    
-    @Mock
-    private ConnectionSession connectionSession;
-    
     @Test
-    @SneakyThrows
-    public void assertRDLBackendHandlerReturnAddResourceBackendHandler() {
-        ProxyBackendHandler handler = RDLBackendHandlerFactory.newInstance(addResourceStatement, connectionSession);
-        assertThat(handler, instanceOf(AddResourceBackendHandler.class));
+    public void assertNewInstanceWithAddResourceStatement() throws SQLException {
+        assertThat(RDLBackendHandlerFactory.newInstance(mock(AddResourceStatement.class), mock(ConnectionSession.class)), instanceOf(AddResourceBackendHandler.class));
     }
     
     @Test
-    @SneakyThrows
-    public void assertRDLBackendHandlerReturnAlterResourceStatement() {
-        ProxyBackendHandler handler = RDLBackendHandlerFactory.newInstance(alterResourceStatement, connectionSession);
-        assertThat(handler, instanceOf(AlterResourceBackendHandler.class));
+    public void assertNewInstanceWithAlterResourceStatement() throws SQLException {
+        assertThat(RDLBackendHandlerFactory.newInstance(mock(AlterResourceStatement.class), mock(ConnectionSession.class)), instanceOf(AlterResourceBackendHandler.class));
     }
     
     @Test
-    @SneakyThrows
-    public void assertRDLBackendHandlerReturnDropResourceStatement() {
-        ProxyBackendHandler handler = RDLBackendHandlerFactory.newInstance(dropResourceStatement, connectionSession);
-        assertThat(handler, instanceOf(DropResourceBackendHandler.class));
+    public void assertNewInstanceWithDropResourceStatement() throws SQLException {
+        assertThat(RDLBackendHandlerFactory.newInstance(mock(DropResourceStatement.class), mock(ConnectionSession.class)), instanceOf(DropResourceBackendHandler.class));
     }
     
+    @Test
+    public void assertNewInstanceWithRuleDefinitionStatement() throws SQLException {
+        assertThat(RDLBackendHandlerFactory.newInstance(mock(RuleDefinitionStatement.class), mock(ConnectionSession.class)), instanceOf(RuleDefinitionBackendHandler.class));
+    }
 }
