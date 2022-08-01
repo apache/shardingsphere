@@ -56,6 +56,7 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI {
      * @param jobId job id
      * @return each sharding item progress
      */
+    // TODO now update JobProgress
     Map<Integer, JobProgress> getProgress(String jobId);
     
     /**

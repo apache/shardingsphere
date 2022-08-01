@@ -15,27 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.detect;
-
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
-
-import java.util.Collection;
+package org.apache.shardingsphere.data.pipeline.api.job.progress;
 
 /**
- * Rule altered job almost completed parameter.
+ * Pipeline job progress.
  */
-@RequiredArgsConstructor
-@Getter
-@ToString
-// TODO now rename
-public final class RuleAlteredJobAlmostCompletedParameter {
-    
-    private final int jobShardingCount;
-    
-    @NonNull
-    private final Collection<JobProgress> jobProgresses;
+public interface PipelineJobProgress {
 }
