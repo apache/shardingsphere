@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.api.job.persist;
 /**
  * Job persist callback.
  */
-public interface JobPersistCallback {
+public interface PipelineJobPersistCallback {
     
     /**
      * Get job id.

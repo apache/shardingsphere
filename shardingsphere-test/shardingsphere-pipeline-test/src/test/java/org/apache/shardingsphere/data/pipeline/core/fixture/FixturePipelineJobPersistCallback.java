@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.core.fixture;
 
-import org.apache.shardingsphere.data.pipeline.api.job.persist.JobPersistCallback;
+import org.apache.shardingsphere.data.pipeline.api.job.persist.PipelineJobPersistCallback;
 
-public final class FixtureJobPersistCallback implements JobPersistCallback {
+public final class FixturePipelineJobPersistCallback implements PipelineJobPersistCallback {
     
     @Override
     public String getJobId() {

@@ -18,14 +18,14 @@
 package org.apache.shardingsphere.scaling.core.job.persist;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.job.persist.JobPersistCallback;
+import org.apache.shardingsphere.data.pipeline.api.job.persist.PipelineJobPersistCallback;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobPersistService;
 
 /**
  * Async job process persist callback.
  */
 @RequiredArgsConstructor
-public final class AsyncJobPersistCallback implements JobPersistCallback {
+public final class AsyncPipelineJobPersistCallback implements PipelineJobPersistCallback {
     
     private final String jobId;
     

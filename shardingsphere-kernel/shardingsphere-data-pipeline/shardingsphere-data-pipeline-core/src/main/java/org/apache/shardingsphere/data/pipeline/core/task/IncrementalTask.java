@@ -27,7 +27,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChanne
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.api.job.persist.JobPersistCallback;
+import org.apache.shardingsphere.data.pipeline.api.job.persist.PipelineJobPersistCallback;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
@@ -68,7 +68,7 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
     
     public IncrementalTask(final int concurrency, final DumperConfiguration dumperConfig, final ImporterConfiguration importerConfig,
                            final PipelineChannelCreator pipelineChannelCreator, final PipelineDataSourceManager dataSourceManager,
-                           final PipelineTableMetaDataLoader sourceMetaDataLoader, final ExecuteEngine incrementalDumperExecuteEngine, final JobPersistCallback jobPersistCallback) {
+                           final PipelineTableMetaDataLoader sourceMetaDataLoader, final ExecuteEngine incrementalDumperExecuteEngine, final PipelineJobPersistCallback pipelineJobPersistCallback) {
         this.incrementalDumperExecuteEngine = incrementalDumperExecuteEngine;
         taskId = dumperConfig.getDataSourceName();
         progress = new IncrementalTaskProgress();
@@ -76,7 +76,7 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
         progress.setPosition(position);
         channel = createChannel(concurrency, pipelineChannelCreator, progress);
         dumper = DumperFactory.createIncrementalDumper(dumperConfig, position, channel, sourceMetaDataLoader);
-        importers = createImporters(concurrency, importerConfig, dataSourceManager, channel, jobPersistCallback);
+        importers = createImporters(concurrency, importerConfig, dataSourceManager, channel, pipelineJobPersistCallback);
     }
     
     @Override
@@ -88,10 +88,10 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
     }
     
     private Collection<Importer> createImporters(final int concurrency, final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel,
-                                                 final JobPersistCallback jobPersistCallback) {
+                                                 final PipelineJobPersistCallback pipelineJobPersistCallback) {
         Collection<Importer> result = new LinkedList<>();
         for (int i = 0; i < concurrency; i++) {
-            result.add(ImporterFactory.createImporter(importerConfig, dataSourceManager, channel, jobPersistCallback));
+            result.add(ImporterFactory.createImporter(importerConfig, dataSourceManager, channel, pipelineJobPersistCallback));
         }
         return result;
     }
