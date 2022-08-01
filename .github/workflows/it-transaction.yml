@@ -27,6 +27,7 @@ on:
     paths:
       - '!examples/**'
       - '!shardingsphere-test/**'
+      - 'shardingsphere-test/**/pom.xml'
       - 'shardingsphere-test/shardingsphere-integration-test/**'
       - '!shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/**'
       - '!shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/**'
