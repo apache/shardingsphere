@@ -85,7 +85,7 @@ ALTER RESOURCE ds_2 (
 
 ### 保留字
 
-    ALTER、 RESOURCE、HOST、PORT、DB、USER、PASSWORD、PROPERTIES、URL
+    ALTER、RESOURCE、HOST、PORT、DB、USER、PASSWORD、PROPERTIES、URL
 
  ### 相关链接
 - [保留字](/cn/reference/distsql/syntax/reserved-word/)
