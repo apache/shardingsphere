@@ -15,20 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.schema.pojo;
+package org.apache.shardingsphere.infra.yaml.engine.shortcuts;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
-import java.util.Map;
+import java.util.Collection;
 
 /**
- * ShardingSphere schema for YAML.
+ * ShardingSphere YAML shortcuts factory.
  */
-@Getter
-@Setter
-public final class YamlSchema implements YamlConfiguration {
+public final class ShardingSphereYamlShortcutsFactory {
     
-    private Map<String, YamlTableMetaData> tables;
+    static {
+        ShardingSphereServiceLoader.register(ShardingSphereYamlShortcuts.class);
+    }
+    
+    /**
+     * Get all ShardingSphere YAML shortcuts instances.
+     *
+     * @return got instances
+     */
+    public static Collection<ShardingSphereYamlShortcuts> getAllInstances() {
+        return ShardingSphereServiceLoader.getServiceInstances(ShardingSphereYamlShortcuts.class);
+    }
 }

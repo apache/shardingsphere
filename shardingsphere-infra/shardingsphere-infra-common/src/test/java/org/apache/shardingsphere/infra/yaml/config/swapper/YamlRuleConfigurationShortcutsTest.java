@@ -15,10 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config.pojo;
+package org.apache.shardingsphere.infra.yaml.config.swapper;
 
-/**
- * YAML configuration.
- */
-public interface YamlConfiguration {
+import org.junit.Test;
+
+import java.util.Map;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+public final class YamlRuleConfigurationShortcutsTest {
+    
+    @Test
+    public void assertGetYamlShortcuts() {
+        Map<String, Class<?>> actual = new YamlRuleConfigurationShortcuts().getYamlShortcuts();
+        assertThat(actual.size(), is(1));
+        assertTrue(actual.containsKey("!FIXTURE"));
+    }
 }

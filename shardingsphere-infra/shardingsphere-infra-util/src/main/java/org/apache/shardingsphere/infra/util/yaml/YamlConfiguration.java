@@ -15,20 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.schema.pojo;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-
-import java.util.Map;
+package org.apache.shardingsphere.infra.util.yaml;
 
 /**
- * ShardingSphere schema for YAML.
+ * YAML configuration.
  */
-@Getter
-@Setter
-public final class YamlSchema implements YamlConfiguration {
-    
-    private Map<String, YamlTableMetaData> tables;
+public interface YamlConfiguration {
 }
