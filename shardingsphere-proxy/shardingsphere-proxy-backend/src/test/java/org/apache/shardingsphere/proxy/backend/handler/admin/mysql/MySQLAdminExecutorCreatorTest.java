@@ -17,19 +17,6 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.admin.mysql;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Properties;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -82,7 +69,21 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
-// TODO Cover more lines in MySQLAdminExecutorCreator
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.instanceOf;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 @RunWith(MockitoJUnitRunner.class)
 public final class MySQLAdminExecutorCreatorTest extends ProxyContextRestorer {
     
@@ -130,7 +131,7 @@ public final class MySQLAdminExecutorCreatorTest extends ProxyContextRestorer {
     @Test
     public void assertCreateWithMySQLShowDatabasesStatement() {
         when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLShowDatabasesStatement());
-        Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "use db", "");
+        Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShowDatabasesExecutor.class));
     }
@@ -139,7 +140,7 @@ public final class MySQLAdminExecutorCreatorTest extends ProxyContextRestorer {
     public void assertCreateWithMySQLShowProcessListStatement() {
         ProxyContext.init(mock(ContextManager.class, RETURNS_DEEP_STUBS));
         when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLShowProcessListStatement());
-        Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "use db", "");
+        Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShowProcessListExecutor.class));
     }
@@ -147,7 +148,7 @@ public final class MySQLAdminExecutorCreatorTest extends ProxyContextRestorer {
     @Test
     public void assertCreateWithMySQLShowCreateDatabaseStatement() {
         when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLShowCreateDatabaseStatement());
-        Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "use db", "");
+        Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(ShowCreateDatabaseExecutor.class));
     }
@@ -155,7 +156,7 @@ public final class MySQLAdminExecutorCreatorTest extends ProxyContextRestorer {
     @Test
     public void assertCreateWithSetStatement() {
         when(sqlStatementContext.getSqlStatement()).thenReturn(new MySQLSetStatement());
-        Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "use db", "");
+        Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "", "");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(MySQLSetVariableAdminExecutor.class));
     }
@@ -257,7 +258,7 @@ public final class MySQLAdminExecutorCreatorTest extends ProxyContextRestorer {
     
     @Test
     public void assertCreateWithOtherSelectStatementForDatabaseName() {
-        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(10, 1);
+        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
         ShardingSphereResource resource = new ShardingSphereResource(Collections.singletonMap("ds", new MockedDataSource()));
         ShardingSphereDatabase database = new ShardingSphereDatabase("db_0", mock(DatabaseType.class), resource, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
         result.put("db_0", database);
@@ -269,12 +270,12 @@ public final class MySQLAdminExecutorCreatorTest extends ProxyContextRestorer {
         when(mySQLSelectStatement.getProjections()).thenReturn(projectionsSegment);
         when(sqlStatementContext.getSqlStatement()).thenReturn(mySQLSelectStatement);
         Optional<DatabaseAdminExecutor> actual = new MySQLAdminExecutorCreator().create(sqlStatementContext, "select CURRENT_DATE()", "test_db");
-        assertFalse(actual.isPresent());
+        assertThat(actual, is(Optional.empty()));
     }
     
     @Test
     public void assertCreateWithOtherSelectStatementForNullDatabaseName() {
-        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(10, 1);
+        Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
         ShardingSphereResource resource = new ShardingSphereResource(Collections.singletonMap("ds_0", new MockedDataSource()));
         ShardingSphereDatabase database = new ShardingSphereDatabase("db_0", mock(DatabaseType.class), resource, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
         result.put("db_0", database);
