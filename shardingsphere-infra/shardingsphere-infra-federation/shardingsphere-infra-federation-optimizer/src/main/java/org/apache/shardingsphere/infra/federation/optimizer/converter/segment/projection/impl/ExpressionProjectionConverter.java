@@ -32,6 +32,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.Expressi
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -47,8 +48,8 @@ public final class ExpressionProjectionConverter implements SQLSegmentConverter<
         }
         Optional<SqlNode> result = new ExpressionConverter().convertToSQLNode(segment.getExpr());
         if (result.isPresent() && segment.getAlias().isPresent()) {
-            return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, new SqlNode[]{result.get(),
-                    SqlIdentifier.star(Collections.singletonList(segment.getAlias().get()), SqlParserPos.ZERO, Collections.singletonList(SqlParserPos.ZERO))}, SqlParserPos.ZERO));
+            return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, Arrays.asList(result.get(),
+                    SqlIdentifier.star(Collections.singletonList(segment.getAlias().get()), SqlParserPos.ZERO, Collections.singletonList(SqlParserPos.ZERO))), SqlParserPos.ZERO));
         }
         return result;
     }
