@@ -21,16 +21,10 @@ import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
-import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
-import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Rule altered job scheduler center.
@@ -42,10 +36,14 @@ public final class RuleAlteredJobSchedulerCenter {
     
     private static final Map<String, Map<Integer, RuleAlteredJobScheduler>> JOB_SCHEDULER_MAP = new ConcurrentHashMap<>();
     
-    private static final ScheduledExecutorService JOB_PERSIST_EXECUTOR = Executors.newSingleThreadScheduledExecutor(ExecutorThreadFactoryBuilder.build("scaling-job-persist-%d"));
-    
-    static {
-        JOB_PERSIST_EXECUTOR.scheduleWithFixedDelay(new PersistJobContextRunnable(), 10, 10, TimeUnit.SECONDS);
+    /**
+     * Get job scheduler map.
+     *
+     * @param jobId job id
+     * @return job scheduler
+     */
+    public static Map<Integer, RuleAlteredJobScheduler> getJobSchedulerMap(final String jobId) {
+        return JOB_SCHEDULER_MAP.computeIfAbsent(jobId, k -> new ConcurrentHashMap<>());
     }
     
     /**
@@ -65,6 +63,7 @@ public final class RuleAlteredJobSchedulerCenter {
         RuleAlteredJobScheduler jobScheduler = new RuleAlteredJobScheduler(jobContext);
         jobScheduler.start();
         schedulerMap.put(shardingItem, jobScheduler);
+        RuleAlteredJobPersistService.addJobPersistParameter(jobId, shardingItem);
     }
     
     /**
@@ -83,6 +82,7 @@ public final class RuleAlteredJobSchedulerCenter {
             entry.getValue().stop();
         }
         JOB_SCHEDULER_MAP.remove(jobId);
+        RuleAlteredJobPersistService.removeJobPersistParameter(jobId);
     }
     
     /**
@@ -99,23 +99,6 @@ public final class RuleAlteredJobSchedulerCenter {
         }
         for (Entry<Integer, RuleAlteredJobScheduler> entry : schedulerMap.entrySet()) {
             entry.getValue().getJobContext().setStatus(jobStatus);
-        }
-    }
-    
-    private static final class PersistJobContextRunnable implements Runnable {
-        
-        @Override
-        public void run() {
-            GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-            for (Entry<String, Map<Integer, RuleAlteredJobScheduler>> entry : JOB_SCHEDULER_MAP.entrySet()) {
-                try {
-                    entry.getValue().forEach((shardingItem, jobScheduler) -> repositoryAPI.persistJobProgress(jobScheduler.getJobContext()));
-                    // CHECKSTYLE:OFF
-                } catch (final Exception ex) {
-                    // CHECKSTYLE:ON
-                    log.error("persist job {} context failed.", entry.getKey(), ex);
-                }
-            }
         }
     }
 }

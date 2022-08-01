@@ -28,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.DataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.GroupedDataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
+import org.apache.shardingsphere.data.pipeline.api.job.persist.PipelineJobPersistCallback;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
@@ -62,11 +63,15 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
     
     private final PipelineChannel channel;
     
-    protected AbstractImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
+    private final PipelineJobPersistCallback pipelineJobPersistCallback;
+    
+    protected AbstractImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel,
+                               final PipelineJobPersistCallback pipelineJobPersistCallback) {
         this.importerConfig = importerConfig;
         this.dataSourceManager = dataSourceManager;
         this.channel = channel;
         pipelineSqlBuilder = PipelineSQLBuilderFactory.getInstance(importerConfig.getDataSourceConfig().getDatabaseType().getType());
+        this.pipelineJobPersistCallback = pipelineJobPersistCallback;
     }
     
     @Override
@@ -87,6 +92,7 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
                 rowCount += records.size();
                 flush(dataSourceManager.getDataSource(importerConfig.getDataSourceConfig()), records);
                 channel.ack(records);
+                pipelineJobPersistCallback.pushPersistEvent();
                 if (0 == round % 50) {
                     log.info("importer write, round={}, rowCount={}", round, rowCount);
                 }
