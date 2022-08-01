@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.engine;
+package org.apache.shardingsphere.infra.util.yaml;
 
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.config.swapper.fixture.YamlRuleConfigurationFixture;
+import org.apache.shardingsphere.infra.util.yaml.fixture.YamlShortcutsFixture;
 import org.junit.Test;
 import org.yaml.snakeyaml.constructor.ConstructorException;
 
@@ -40,7 +39,7 @@ public final class YamlEngineTest {
     public void assertUnmarshalWithFile() throws IOException {
         URL url = getClass().getClassLoader().getResource("yaml/fixture-rule.yaml");
         assertNotNull(url);
-        YamlRuleConfigurationFixture actual = YamlEngine.unmarshal(new File(url.getFile()), YamlRuleConfigurationFixture.class);
+        YamlShortcutsFixture actual = YamlEngine.unmarshal(new File(url.getFile()), YamlShortcutsFixture.class);
         assertThat(actual.getName(), is("test"));
     }
     
@@ -57,19 +56,19 @@ public final class YamlEngineTest {
                 yamlContent.append(line).append(System.lineSeparator());
             }
         }
-        YamlRuleConfigurationFixture actual = YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlRuleConfigurationFixture.class);
+        YamlShortcutsFixture actual = YamlEngine.unmarshal(yamlContent.toString().getBytes(), YamlShortcutsFixture.class);
         assertThat(actual.getName(), is("test"));
     }
     
     @Test
     public void assertUnmarshalWithYamlContentClassType() {
-        YamlRuleConfigurationFixture actual = YamlEngine.unmarshal("name: test", YamlRuleConfigurationFixture.class);
+        YamlShortcutsFixture actual = YamlEngine.unmarshal("name: test", YamlShortcutsFixture.class);
         assertThat(actual.getName(), is("test"));
     }
     
     @Test
     public void assertUnmarshalWithYamlContentClassTypeSkipMissingProperties() {
-        YamlRuleConfigurationFixture actual = YamlEngine.unmarshal("name: test\nnotExistsField: test", YamlRuleConfigurationFixture.class, true);
+        YamlShortcutsFixture actual = YamlEngine.unmarshal("name: test\nnotExistsField: test", YamlShortcutsFixture.class, true);
         assertThat(actual.getName(), is("test"));
     }
     
@@ -81,7 +80,7 @@ public final class YamlEngineTest {
     
     @Test
     public void assertMarshal() {
-        YamlRuleConfigurationFixture actual = new YamlRuleConfigurationFixture();
+        YamlShortcutsFixture actual = new YamlShortcutsFixture();
         actual.setName("test");
         assertThat(YamlEngine.marshal(actual), is("name: test" + System.lineSeparator()));
     }
@@ -104,9 +103,9 @@ public final class YamlEngineTest {
     
     @Test
     public void assertMarshalCollection() {
-        YamlRuleConfigurationFixture actual = new YamlRuleConfigurationFixture();
+        YamlShortcutsFixture actual = new YamlShortcutsFixture();
         actual.setName("test");
-        YamlRuleConfigurationFixture actualAnother = new YamlRuleConfigurationFixture();
+        YamlShortcutsFixture actualAnother = new YamlShortcutsFixture();
         actualAnother.setName("test");
         StringBuilder res = new StringBuilder("- !FIXTURE");
         res.append(System.lineSeparator()).append("  name: test").append(System.lineSeparator()).append("- !FIXTURE")

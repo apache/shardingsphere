@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.engine.fixture;
+package org.apache.shardingsphere.infra.util.yaml.fixture;
 
 import org.apache.shardingsphere.infra.util.yaml.representer.processor.ShardingSphereYamlTupleProcessor;
 import org.yaml.snakeyaml.DumperOptions;

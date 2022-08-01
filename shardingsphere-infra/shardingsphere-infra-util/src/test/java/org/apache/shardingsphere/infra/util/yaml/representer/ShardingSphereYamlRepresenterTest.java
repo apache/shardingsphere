@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.engine.representer;
+package org.apache.shardingsphere.infra.util.yaml.representer;
 
-import org.apache.shardingsphere.infra.util.yaml.representer.ShardingSphereYamlRepresenter;
-import org.apache.shardingsphere.infra.yaml.engine.fixture.ShardingSphereYamlObjectFixture;
+import org.apache.shardingsphere.infra.util.yaml.fixture.ShardingSphereYamlObjectFixture;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 

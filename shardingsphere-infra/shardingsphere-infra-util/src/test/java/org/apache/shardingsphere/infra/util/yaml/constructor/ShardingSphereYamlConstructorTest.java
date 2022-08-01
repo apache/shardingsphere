@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.engine.constructor;
+package org.apache.shardingsphere.infra.util.yaml.constructor;
 
-import org.apache.shardingsphere.infra.util.yaml.constructor.ShardingSphereYamlConstructor;
-import org.apache.shardingsphere.infra.yaml.engine.fixture.ShardingSphereYamlObjectFixture;
+import org.apache.shardingsphere.infra.util.yaml.fixture.ShardingSphereYamlObjectFixture;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 
