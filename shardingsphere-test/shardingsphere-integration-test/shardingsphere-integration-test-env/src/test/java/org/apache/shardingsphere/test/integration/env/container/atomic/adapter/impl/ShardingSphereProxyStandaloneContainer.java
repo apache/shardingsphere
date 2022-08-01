@@ -67,6 +67,7 @@ public final class ShardingSphereProxyStandaloneContainer extends DockerITContai
     
     @Override
     protected void configure() {
+        withExposedPorts(3307);
         mapConfigurationFiles();
         setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), scenario), "root", "Root@123")));
     }
