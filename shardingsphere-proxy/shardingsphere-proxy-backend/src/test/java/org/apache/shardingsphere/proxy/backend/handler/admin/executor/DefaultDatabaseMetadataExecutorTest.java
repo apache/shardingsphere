@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor.information;
+package org.apache.shardingsphere.proxy.backend.handler.admin.executor;
 
 import org.apache.shardingsphere.authority.provider.database.model.privilege.DatabasePermittedPrivileges;
 import org.apache.shardingsphere.authority.rule.AuthorityRule;
@@ -30,12 +30,10 @@ import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
-import org.apache.shardingsphere.parser.rule.SQLParserRule;
-import org.apache.shardingsphere.parser.rule.builder.DefaultSQLParserRuleConfigurationBuilder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.AbstractDatabaseMetadataExecutor.DefaultDatabaseMetadataExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,22 +53,16 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class SelectInformationSchemataExecutorTest extends ProxyContextRestorer {
+public final class DefaultDatabaseMetadataExecutorTest extends ProxyContextRestorer {
     
     private final Grantee grantee = new Grantee("root", "127.0.0.1");
-    
-    private final String sql = "SELECT SCHEMA_NAME, DEFAULT_COLLATION_NAME FROM information_schema.SCHEMATA";
-    
-    private SelectStatement statement;
     
     @Mock
     private ConnectionSession connectionSession;
@@ -79,7 +71,6 @@ public final class SelectInformationSchemataExecutorTest extends ProxyContextRes
     public void setUp() {
         ProxyContext.init(mockContextManager());
         when(connectionSession.getGrantee()).thenReturn(grantee);
-        statement = (SelectStatement) new SQLParserRule(new DefaultSQLParserRuleConfigurationBuilder().build()).getSQLParserEngine("MySQL").parse(sql, false);
     }
     
     private ContextManager mockContextManager() {
@@ -94,58 +85,34 @@ public final class SelectInformationSchemataExecutorTest extends ProxyContextRes
     }
     
     @Test
-    public void assertExecuteWithUnauthorizedDatabase() throws SQLException {
-        ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().put("no_auth_db", createDatabase("no_auth_db"));
-        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql);
-        executor.execute(connectionSession);
-        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(0));
-        assertFalse(executor.getMergedResult().next());
-    }
-    
-    @Test
-    public void assertExecuteWithAuthorizedDatabase() throws SQLException {
+    public void assertExecuteWithAlias() throws SQLException {
         Map<String, String> expectedResultSetMap = new HashMap<>(2, 1);
-        expectedResultSetMap.put("SCHEMA_NAME", "foo_ds");
-        expectedResultSetMap.put("DEFAULT_COLLATION_NAME", "utf8mb4");
+        expectedResultSetMap.put("sn", "foo_ds");
+        expectedResultSetMap.put("DEFAULT_CHARACTER_SET_NAME", "utf8mb4");
         ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().put("auth_db", createDatabase(expectedResultSetMap));
-        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql);
+        String sql = "SELECT SCHEMA_NAME AS sn, DEFAULT_CHARACTER_SET_NAME FROM information_schema.SCHEMATA";
+        DefaultDatabaseMetadataExecutor executor = new DefaultDatabaseMetadataExecutor(sql);
         executor.execute(connectionSession);
-        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
-        assertTrue(executor.getMergedResult().next());
-        assertThat(executor.getMergedResult().getValue(1, String.class), is("auth_db"));
-        assertThat(executor.getMergedResult().getValue(2, String.class), is("utf8mb4"));
-        assertFalse(executor.getMergedResult().next());
+        assertThat(executor.getRows().get(0).get("sn"), is("foo_ds"));
+        assertThat(executor.getRows().get(0).get("DEFAULT_CHARACTER_SET_NAME"), is("utf8mb4"));
     }
     
     @Test
-    public void assertExecuteWithAuthorizedDatabaseAndEmptyResource() throws SQLException {
-        ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().put("auth_db", createDatabase("auth_db"));
-        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql);
+    public void assertExecuteWithDefaultValue() throws SQLException {
+        ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases().put("auth_db", createDatabase(Collections.singletonMap("support_ndb", "0")));
+        String sql = "SELECT COUNT(*) AS support_ndb FROM information_schema.ENGINES WHERE Engine = 'ndbcluster'";
+        DefaultDatabaseMetadataExecutor executor = new DefaultDatabaseMetadataExecutor(sql);
         executor.execute(connectionSession);
-        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(2));
-        assertTrue(executor.getMergedResult().next());
-        assertThat(executor.getMergedResult().getValue(1, String.class), is("auth_db"));
-        assertThat(executor.getMergedResult().getValue(2, String.class), is(""));
-        assertFalse(executor.getMergedResult().next());
-    }
-    
-    @Test
-    public void assertExecuteWithoutDatabase() throws SQLException {
-        SelectInformationSchemataExecutor executor = new SelectInformationSchemataExecutor(statement, sql);
-        executor.execute(connectionSession);
-        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(0));
-    }
-    
-    private ShardingSphereDatabase createDatabase(final String databaseName, final ShardingSphereResource resource) {
-        return new ShardingSphereDatabase(databaseName, new MySQLDatabaseType(), resource, mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
-    }
-    
-    private ShardingSphereDatabase createDatabase(final String databaseName) {
-        return createDatabase(databaseName, new ShardingSphereResource(Collections.emptyMap()));
+        assertThat(executor.getQueryResultMetaData().getColumnCount(), is(1));
+        while (executor.getMergedResult().next()) {
+            assertThat(executor.getMergedResult().getValue(1, String.class), is("0"));
+        }
     }
     
     private ShardingSphereDatabase createDatabase(final Map<String, String> expectedResultSetMap) throws SQLException {
-        return createDatabase("auth_db", new ShardingSphereResource(Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(expectedResultSetMap)))));
+        return new ShardingSphereDatabase("auth_db", new MySQLDatabaseType(),
+                new ShardingSphereResource(Collections.singletonMap("foo_ds", new MockedDataSource(mockConnection(expectedResultSetMap)))),
+                mock(ShardingSphereRuleMetaData.class), Collections.emptyMap());
     }
     
     private Connection mockConnection(final Map<String, String> expectedResultSetMap) throws SQLException {
