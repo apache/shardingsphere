@@ -48,7 +48,8 @@ public final class ExistsSubqueryExpressionConverter implements SQLSegmentConver
         if (null == expression) {
             return Optional.empty();
         }
-        SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.EXISTS, Collections.singletonList(new SelectStatementConverter().convertToSQLNode(expression.getSubquery().getSelect())), SqlParserPos.ZERO);
+        SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.EXISTS, 
+                Collections.singletonList(new SelectStatementConverter().convertToSQLNode(expression.getSubquery().getSelect())), SqlParserPos.ZERO);
         return expression.isNot() ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, Collections.singletonList(sqlNode), SqlParserPos.ZERO)) : Optional.of(sqlNode);
     }
     
