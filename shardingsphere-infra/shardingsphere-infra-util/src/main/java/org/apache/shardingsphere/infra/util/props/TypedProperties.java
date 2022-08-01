@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.util.props;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyException;
+import org.apache.shardingsphere.infra.util.props.exception.TypedPropertiesException;
 import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyValueException;
 
 import java.util.Collection;
@@ -56,7 +56,7 @@ public abstract class TypedProperties<E extends Enum<?> & TypedPropertyKey> {
             result.put(each, value);
         }
         if (!errorMessages.isEmpty()) {
-            throw new TypedPropertyException(errorMessages);
+            throw new TypedPropertiesException(errorMessages);
         }
         return result;
     }

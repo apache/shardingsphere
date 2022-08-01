@@ -17,16 +17,17 @@
 
 package org.apache.shardingsphere.infra.util.props.exception;
 
-import java.util.Collection;
+import org.junit.Test;
 
-/**
- * Typed property exception.
- */
-public final class TypedPropertyException extends RuntimeException {
+import java.util.Arrays;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.*;
+
+public final class TypedPropertiesExceptionTest {
     
-    private static final long serialVersionUID = -8301410307117564844L;
-    
-    public TypedPropertyException(final Collection<String> errorMessages) {
-        super(String.join(System.lineSeparator(), errorMessages));
+    @Test
+    public void assertGetMessage() {
+        assertThat(new TypedPropertiesException(Arrays.asList("foo_msg", "bar_msg")).getMessage(), is("foo_msg" + System.lineSeparator() + "bar_msg"));
     }
 }
