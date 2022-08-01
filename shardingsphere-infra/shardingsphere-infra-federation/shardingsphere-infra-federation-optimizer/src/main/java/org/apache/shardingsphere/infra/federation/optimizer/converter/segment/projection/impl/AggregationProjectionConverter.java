@@ -37,6 +37,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegm
 import org.apache.shardingsphere.sql.parser.sql.common.util.SQLUtil;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -76,12 +77,12 @@ public final class AggregationProjectionConverter implements SQLSegmentConverter
             functionQuantifier = SqlLiteral.createSymbol(SqlSelectKeyword.DISTINCT, SqlParserPos.ZERO);
         }
         if (segment.getAlias().isPresent()) {
-            return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, new SqlNode[]{new SqlBasicCall(convertOperator(segment.getType().name()),
-                    new SqlNode[]{createParametersSqlNode(parameters)}, SqlParserPos.ZERO, false, functionQuantifier),
-                    SqlIdentifier.star(Collections.singletonList(segment.getAlias().get()), SqlParserPos.ZERO, Collections.singletonList(SqlParserPos.ZERO))}, SqlParserPos.ZERO));
+            return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, Arrays.asList(new SqlBasicCall(convertOperator(segment.getType().name()),
+                            Collections.singletonList(createParametersSqlNode(parameters)), SqlParserPos.ZERO, functionQuantifier).withExpanded(false),
+                    SqlIdentifier.star(Collections.singletonList(segment.getAlias().get()), SqlParserPos.ZERO, Collections.singletonList(SqlParserPos.ZERO))), SqlParserPos.ZERO));
         }
-        return Optional.of(new SqlBasicCall(convertOperator(segment.getType().name()),
-                new SqlNode[]{createParametersSqlNode(parameters)}, SqlParserPos.ZERO, false, functionQuantifier));
+        return Optional.of((SqlBasicCall) new SqlBasicCall(convertOperator(segment.getType().name()),
+                Collections.singletonList(createParametersSqlNode(parameters)), SqlParserPos.ZERO, functionQuantifier).withExpanded(false));
     }
     
     @Override

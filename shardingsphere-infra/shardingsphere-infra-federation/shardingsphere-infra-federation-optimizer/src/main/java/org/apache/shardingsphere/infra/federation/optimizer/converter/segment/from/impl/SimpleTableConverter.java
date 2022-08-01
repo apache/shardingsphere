@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Tab
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -49,7 +50,7 @@ public final class SimpleTableConverter implements SQLSegmentConverter<SimpleTab
         SqlNode tableNameSQLNode = new SqlIdentifier(names, SqlParserPos.ZERO);
         if (segment.getAlias().isPresent()) {
             SqlNode aliasSQLNode = new SqlIdentifier(segment.getAlias().get(), SqlParserPos.ZERO);
-            return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, new SqlNode[]{tableNameSQLNode, aliasSQLNode}, SqlParserPos.ZERO));
+            return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, Arrays.asList(tableNameSQLNode, aliasSQLNode), SqlParserPos.ZERO));
         }
         return Optional.of(tableNameSQLNode);
     }

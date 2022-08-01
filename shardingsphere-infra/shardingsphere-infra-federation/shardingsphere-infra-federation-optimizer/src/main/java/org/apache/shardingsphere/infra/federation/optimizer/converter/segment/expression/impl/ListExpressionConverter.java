@@ -27,6 +27,7 @@ import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.ex
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ListExpression;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -47,7 +48,7 @@ public final class ListExpressionConverter implements SQLSegmentConverter<ListEx
                 left = sqlNode.get();
                 continue;
             }
-            left = new SqlBasicCall(SqlStdOperatorTable.OR, new SqlNode[]{left, sqlNode.get()}, SqlParserPos.ZERO);
+            left = new SqlBasicCall(SqlStdOperatorTable.OR, Arrays.asList(left, sqlNode.get()), SqlParserPos.ZERO);
         }
         return Optional.ofNullable(left);
     }

@@ -28,6 +28,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExistsSu
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery.SubquerySegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
+import java.util.Collections;
 import java.util.Optional;
 
 /**
@@ -47,8 +48,9 @@ public final class ExistsSubqueryExpressionConverter implements SQLSegmentConver
         if (null == expression) {
             return Optional.empty();
         }
-        SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.EXISTS, new SqlNode[]{new SelectStatementConverter().convertToSQLNode(expression.getSubquery().getSelect())}, SqlParserPos.ZERO);
-        return expression.isNot() ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, new SqlNode[]{sqlNode}, SqlParserPos.ZERO)) : Optional.of(sqlNode);
+        SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.EXISTS, 
+                Collections.singletonList(new SelectStatementConverter().convertToSQLNode(expression.getSubquery().getSelect())), SqlParserPos.ZERO);
+        return expression.isNot() ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, Collections.singletonList(sqlNode), SqlParserPos.ZERO)) : Optional.of(sqlNode);
     }
     
     @Override

@@ -27,7 +27,9 @@ import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.ex
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.BetweenExpression;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -53,8 +55,8 @@ public final class BetweenExpressionConverter implements SQLSegmentConverter<Bet
         expressionConverter.convertToSQLNode(expression.getLeft()).ifPresent(sqlNodes::add);
         expressionConverter.convertToSQLNode(expression.getBetweenExpr()).ifPresent(sqlNodes::add);
         expressionConverter.convertToSQLNode(expression.getAndExpr()).ifPresent(sqlNodes::add);
-        SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.BETWEEN, sqlNodes.toArray(new SqlNode[]{}), SqlParserPos.ZERO);
-        return expression.isNot() ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, new SqlNode[]{sqlNode}, SqlParserPos.ZERO)) : Optional.of(sqlNode);
+        SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.BETWEEN, new ArrayList<>(sqlNodes), SqlParserPos.ZERO);
+        return expression.isNot() ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, Collections.singletonList(sqlNode), SqlParserPos.ZERO)) : Optional.of(sqlNode);
     }
     
     @Override
