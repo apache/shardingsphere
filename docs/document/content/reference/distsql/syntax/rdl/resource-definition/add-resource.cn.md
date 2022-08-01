@@ -9,7 +9,7 @@ weight = 2
 
 ### 语法
 
-```SQL
+```sql
 AddResource ::=
   'ADD' 'RESOURCE' dataSource (',' dataSource)*
 
