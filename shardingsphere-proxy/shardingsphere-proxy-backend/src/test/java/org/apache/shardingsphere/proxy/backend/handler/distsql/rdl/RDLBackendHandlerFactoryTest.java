@@ -15,18 +15,17 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler;
+package org.apache.shardingsphere.proxy.backend.handler.distsql.rdl;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.alter.AlterResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.create.AddResourceStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rdl.drop.DropResourceStatement;
-import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.RDLBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.AddResourceBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.AlterResourceBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rdl.resource.DropResourceBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
@@ -36,7 +35,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
 @RunWith(MockitoJUnitRunner.class)
-public class TextProtocolBackendHandlerFactoryTest extends ProxyContextRestorer {
+public final class RDLBackendHandlerFactoryTest {
     
     @Mock
     private AddResourceStatement addResourceStatement;
@@ -70,4 +69,5 @@ public class TextProtocolBackendHandlerFactoryTest extends ProxyContextRestorer 
         ProxyBackendHandler handler = RDLBackendHandlerFactory.newInstance(dropResourceStatement, connectionSession);
         assertThat(handler, instanceOf(DropResourceBackendHandler.class));
     }
+    
 }
