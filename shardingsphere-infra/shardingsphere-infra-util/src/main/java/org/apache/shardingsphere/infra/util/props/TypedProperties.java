@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.infra.util.props;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyException;
+import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyValueException;
 
 import java.util.Collection;
 import java.util.HashMap;

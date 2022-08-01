@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.infra.util.props;
 
+import org.apache.shardingsphere.infra.util.props.exception.TypedPropertyException;
 import org.apache.shardingsphere.infra.util.props.fixture.TypedPropertiesFixture;
 import org.apache.shardingsphere.infra.util.props.fixture.TypedPropertyKeyFixture;
 import org.junit.Test;

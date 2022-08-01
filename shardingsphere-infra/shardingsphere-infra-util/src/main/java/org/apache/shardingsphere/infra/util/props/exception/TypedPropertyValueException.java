@@ -15,7 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.props;
+package org.apache.shardingsphere.infra.util.props.exception;
+
+import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
 
 /**
  * Typed property value exception.
