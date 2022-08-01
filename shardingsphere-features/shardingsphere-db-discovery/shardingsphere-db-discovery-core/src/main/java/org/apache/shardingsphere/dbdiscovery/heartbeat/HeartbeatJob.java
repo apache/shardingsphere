@@ -22,7 +22,7 @@ import org.apache.shardingsphere.dbdiscovery.algorithm.DatabaseDiscoveryEngine;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
-import org.apache.shardingsphere.infra.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 
 import javax.sql.DataSource;
 import java.util.Collection;

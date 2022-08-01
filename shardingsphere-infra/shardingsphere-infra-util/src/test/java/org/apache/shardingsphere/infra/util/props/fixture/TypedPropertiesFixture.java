@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.props.fixture;
+package org.apache.shardingsphere.infra.util.props.fixture;
 
-import org.apache.shardingsphere.infra.props.TypedProperties;
+import org.apache.shardingsphere.infra.util.props.TypedProperties;
 
 import java.util.Properties;
 

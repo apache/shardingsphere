@@ -15,27 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.props;
+package org.apache.shardingsphere.infra.util.props;
 
-import org.junit.Test;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 
 import java.util.Properties;
+import java.util.stream.Collectors;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class PropertiesConverterTest {
+/**
+ * Properties converter.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class PropertiesConverter {
     
-    @Test
-    public void assertConvert() {
-        Properties actual = new Properties();
-        actual.setProperty("foo", "foo_value");
-        actual.setProperty("bar", "bar_value");
-        assertThat(PropertiesConverter.convert(actual), is("bar=bar_value,foo=foo_value"));
-    }
-    
-    @Test
-    public void assertConvertEmptyProperties() {
-        assertThat(PropertiesConverter.convert(new Properties()), is(""));
+    /**
+     * Convert properties to string content.
+     * 
+     * @param props properties to be converted
+     * @return converted string content
+     */
+    public static String convert(final Properties props) {
+        return props.entrySet().stream().map(entry -> String.join("=", entry.getKey().toString(), entry.getValue().toString())).collect(Collectors.joining(","));
     }
 }

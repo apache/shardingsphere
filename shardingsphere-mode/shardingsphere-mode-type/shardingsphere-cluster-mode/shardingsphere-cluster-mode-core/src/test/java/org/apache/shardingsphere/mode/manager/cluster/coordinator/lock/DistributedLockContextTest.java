@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock;
 
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
-import org.apache.shardingsphere.infra.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
