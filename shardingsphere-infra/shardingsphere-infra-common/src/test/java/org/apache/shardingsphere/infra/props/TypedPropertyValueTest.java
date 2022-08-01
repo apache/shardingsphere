@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.props;
 
-import org.apache.shardingsphere.infra.props.fixture.TestTypedPropertyKey;
+import org.apache.shardingsphere.infra.props.fixture.TypedPropertyKeyFixture;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -29,39 +29,39 @@ public final class TypedPropertyValueTest {
     
     @Test
     public void assertGetBooleanValue() throws TypedPropertyValueException {
-        assertTrue((Boolean) new TypedPropertyValue(TestTypedPropertyKey.BOOLEAN_VALUE, Boolean.TRUE.toString()).getValue());
-        assertTrue((Boolean) new TypedPropertyValue(TestTypedPropertyKey.BOOLEAN_OBJECT_VALUE, Boolean.TRUE.toString()).getValue());
+        assertTrue((Boolean) new TypedPropertyValue(TypedPropertyKeyFixture.BOOLEAN_VALUE, Boolean.TRUE.toString()).getValue());
+        assertTrue((Boolean) new TypedPropertyValue(TypedPropertyKeyFixture.BOOLEAN_OBJECT_VALUE, Boolean.TRUE.toString()).getValue());
     }
     
     @Test
     public void assertGetInvalidBooleanValue() throws TypedPropertyValueException {
-        assertFalse((Boolean) new TypedPropertyValue(TestTypedPropertyKey.BOOLEAN_VALUE, "test").getValue());
+        assertFalse((Boolean) new TypedPropertyValue(TypedPropertyKeyFixture.BOOLEAN_VALUE, "test").getValue());
     }
     
     @Test
     public void assertGetIntValue() throws TypedPropertyValueException {
-        assertThat(new TypedPropertyValue(TestTypedPropertyKey.INT_VALUE, "1000").getValue(), is(1000));
-        assertThat(new TypedPropertyValue(TestTypedPropertyKey.INT_OBJECT_VALUE, "1000").getValue(), is(1000));
+        assertThat(new TypedPropertyValue(TypedPropertyKeyFixture.INT_VALUE, "1000").getValue(), is(1000));
+        assertThat(new TypedPropertyValue(TypedPropertyKeyFixture.INT_OBJECT_VALUE, "1000").getValue(), is(1000));
     }
     
     @Test(expected = TypedPropertyValueException.class)
     public void assertGetInvalidIntValue() throws TypedPropertyValueException {
-        new TypedPropertyValue(TestTypedPropertyKey.INT_VALUE, "test");
+        new TypedPropertyValue(TypedPropertyKeyFixture.INT_VALUE, "test");
     }
     
     @Test
     public void assertGetLongValue() throws TypedPropertyValueException {
-        assertThat(new TypedPropertyValue(TestTypedPropertyKey.LONG_VALUE, "10000").getValue(), is(10000L));
-        assertThat(new TypedPropertyValue(TestTypedPropertyKey.LONG_OBJECT_VALUE, "10000").getValue(), is(10000L));
+        assertThat(new TypedPropertyValue(TypedPropertyKeyFixture.LONG_VALUE, "10000").getValue(), is(10000L));
+        assertThat(new TypedPropertyValue(TypedPropertyKeyFixture.LONG_OBJECT_VALUE, "10000").getValue(), is(10000L));
     }
     
     @Test(expected = TypedPropertyValueException.class)
     public void assertGetInvalidLongValue() throws TypedPropertyValueException {
-        new TypedPropertyValue(TestTypedPropertyKey.LONG_VALUE, "test");
+        new TypedPropertyValue(TypedPropertyKeyFixture.LONG_VALUE, "test");
     }
     
     @Test
     public void assertGetStringValue() throws TypedPropertyValueException {
-        assertThat(new TypedPropertyValue(TestTypedPropertyKey.STRING_VALUE, "new_value").getValue(), is("new_value"));
+        assertThat(new TypedPropertyValue(TypedPropertyKeyFixture.STRING_VALUE, "new_value").getValue(), is("new_value"));
     }
 }

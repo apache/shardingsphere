@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.props;
 
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.infra.props.fixture.TestTypedProperties;
-import org.apache.shardingsphere.infra.props.fixture.TestTypedPropertyKey;
+import org.apache.shardingsphere.infra.props.fixture.TypedPropertiesFixture;
+import org.apache.shardingsphere.infra.props.fixture.TypedPropertyKeyFixture;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -33,48 +33,48 @@ public final class TypedPropertiesTest {
     
     @Test
     public void assertGetValue() {
-        TestTypedProperties actual = new TestTypedProperties(createProperties());
-        assertTrue(actual.getValue(TestTypedPropertyKey.BOOLEAN_VALUE));
-        assertTrue(actual.getValue(TestTypedPropertyKey.BOOLEAN_OBJECT_VALUE));
-        assertThat(actual.getValue(TestTypedPropertyKey.INT_VALUE), is(100));
-        assertThat(actual.getValue(TestTypedPropertyKey.INT_OBJECT_VALUE), is(100));
-        assertThat(actual.getValue(TestTypedPropertyKey.LONG_VALUE), is(10000L));
-        assertThat(actual.getValue(TestTypedPropertyKey.LONG_OBJECT_VALUE), is(10000L));
-        assertThat(actual.getValue(TestTypedPropertyKey.STRING_VALUE), is("new_value"));
+        TypedPropertiesFixture actual = new TypedPropertiesFixture(createProperties());
+        assertTrue(actual.getValue(TypedPropertyKeyFixture.BOOLEAN_VALUE));
+        assertTrue(actual.getValue(TypedPropertyKeyFixture.BOOLEAN_OBJECT_VALUE));
+        assertThat(actual.getValue(TypedPropertyKeyFixture.INT_VALUE), is(100));
+        assertThat(actual.getValue(TypedPropertyKeyFixture.INT_OBJECT_VALUE), is(100));
+        assertThat(actual.getValue(TypedPropertyKeyFixture.LONG_VALUE), is(10000L));
+        assertThat(actual.getValue(TypedPropertyKeyFixture.LONG_OBJECT_VALUE), is(10000L));
+        assertThat(actual.getValue(TypedPropertyKeyFixture.STRING_VALUE), is("new_value"));
     }
     
     private Properties createProperties() {
         Properties result = new Properties();
-        result.setProperty(TestTypedPropertyKey.BOOLEAN_VALUE.getKey(), Boolean.TRUE.toString());
-        result.setProperty(TestTypedPropertyKey.BOOLEAN_OBJECT_VALUE.getKey(), Boolean.TRUE.toString());
-        result.setProperty(TestTypedPropertyKey.INT_VALUE.getKey(), "100");
-        result.setProperty(TestTypedPropertyKey.INT_OBJECT_VALUE.getKey(), "100");
-        result.setProperty(TestTypedPropertyKey.LONG_VALUE.getKey(), "10000");
-        result.setProperty(TestTypedPropertyKey.LONG_OBJECT_VALUE.getKey(), "10000");
-        result.setProperty(TestTypedPropertyKey.STRING_VALUE.getKey(), "new_value");
+        result.setProperty(TypedPropertyKeyFixture.BOOLEAN_VALUE.getKey(), Boolean.TRUE.toString());
+        result.setProperty(TypedPropertyKeyFixture.BOOLEAN_OBJECT_VALUE.getKey(), Boolean.TRUE.toString());
+        result.setProperty(TypedPropertyKeyFixture.INT_VALUE.getKey(), "100");
+        result.setProperty(TypedPropertyKeyFixture.INT_OBJECT_VALUE.getKey(), "100");
+        result.setProperty(TypedPropertyKeyFixture.LONG_VALUE.getKey(), "10000");
+        result.setProperty(TypedPropertyKeyFixture.LONG_OBJECT_VALUE.getKey(), "10000");
+        result.setProperty(TypedPropertyKeyFixture.STRING_VALUE.getKey(), "new_value");
         return result;
     }
     
     @Test
     public void assertGetDefaultValue() {
-        TestTypedProperties actual = new TestTypedProperties(new Properties());
-        assertFalse(actual.getValue(TestTypedPropertyKey.BOOLEAN_VALUE));
-        assertFalse(actual.getValue(TestTypedPropertyKey.BOOLEAN_OBJECT_VALUE));
-        assertThat(actual.getValue(TestTypedPropertyKey.INT_VALUE), is(10));
-        assertThat(actual.getValue(TestTypedPropertyKey.INT_OBJECT_VALUE), is(10));
-        assertThat(actual.getValue(TestTypedPropertyKey.LONG_VALUE), is(1000L));
-        assertThat(actual.getValue(TestTypedPropertyKey.LONG_OBJECT_VALUE), is(1000L));
-        assertThat(actual.getValue(TestTypedPropertyKey.STRING_VALUE), is("value"));
+        TypedPropertiesFixture actual = new TypedPropertiesFixture(new Properties());
+        assertFalse(actual.getValue(TypedPropertyKeyFixture.BOOLEAN_VALUE));
+        assertFalse(actual.getValue(TypedPropertyKeyFixture.BOOLEAN_OBJECT_VALUE));
+        assertThat(actual.getValue(TypedPropertyKeyFixture.INT_VALUE), is(10));
+        assertThat(actual.getValue(TypedPropertyKeyFixture.INT_OBJECT_VALUE), is(10));
+        assertThat(actual.getValue(TypedPropertyKeyFixture.LONG_VALUE), is(1000L));
+        assertThat(actual.getValue(TypedPropertyKeyFixture.LONG_OBJECT_VALUE), is(1000L));
+        assertThat(actual.getValue(TypedPropertyKeyFixture.STRING_VALUE), is("value"));
     }
     
     @Test(expected = ShardingSphereConfigurationException.class)
     public void assertGetInvalidValue() {
         Properties props = new Properties();
-        props.setProperty(TestTypedPropertyKey.BOOLEAN_VALUE.getKey(), "test");
-        props.setProperty(TestTypedPropertyKey.BOOLEAN_OBJECT_VALUE.getKey(), "test");
-        props.setProperty(TestTypedPropertyKey.INT_VALUE.getKey(), "test");
-        props.setProperty(TestTypedPropertyKey.INT_OBJECT_VALUE.getKey(), "test");
-        props.setProperty(TestTypedPropertyKey.LONG_VALUE.getKey(), "test");
-        new TestTypedProperties(props);
+        props.setProperty(TypedPropertyKeyFixture.BOOLEAN_VALUE.getKey(), "test");
+        props.setProperty(TypedPropertyKeyFixture.BOOLEAN_OBJECT_VALUE.getKey(), "test");
+        props.setProperty(TypedPropertyKeyFixture.INT_VALUE.getKey(), "test");
+        props.setProperty(TypedPropertyKeyFixture.INT_OBJECT_VALUE.getKey(), "test");
+        props.setProperty(TypedPropertyKeyFixture.LONG_VALUE.getKey(), "test");
+        new TypedPropertiesFixture(props);
     }
 }
