@@ -15,16 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.fixture;
+package org.apache.shardingsphere.test.fixture.rule;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
 
+/**
+ * Mocked rule configuration.
+ */
 @RequiredArgsConstructor
 @Getter
-public final class RuleConfigurationFixture implements RuleConfiguration, EnhancedRuleConfiguration {
+public final class MockedRuleConfiguration implements RuleConfiguration {
     
     private final String name;
 }
