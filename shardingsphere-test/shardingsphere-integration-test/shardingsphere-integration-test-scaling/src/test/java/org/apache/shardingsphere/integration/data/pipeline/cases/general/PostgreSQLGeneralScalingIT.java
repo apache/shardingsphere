@@ -92,11 +92,11 @@ public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
         executeWithLog(getCommonSQLCommand().getAlterOrderWithItemAutoTableRule());
         String jobId = getScalingJobId();
         waitScalingFinished(jobId);
-        assertGreaterThanInitTableInitRows(TABLE_INIT_ROW_COUNT, "test");
         stopScaling(jobId);
         executeWithLog(String.format("INSERT INTO test.t_order (id,order_id,user_id,status) VALUES (%s, %s, %s, '%s')", keyGenerateAlgorithm.generateKey(), 1, 1, "afterStopScaling"));
         startScaling(jobId);
         assertCheckScalingSuccess(jobId);
+        assertGreaterThanInitTableInitRows(TABLE_INIT_ROW_COUNT, "test");
         applyScaling(jobId);
         assertPreviewTableSuccess("t_order", Arrays.asList("ds_2", "ds_3", "ds_4"));
         assertPreviewTableSuccess("t_order_item", Arrays.asList("ds_2", "ds_3", "ds_4"));

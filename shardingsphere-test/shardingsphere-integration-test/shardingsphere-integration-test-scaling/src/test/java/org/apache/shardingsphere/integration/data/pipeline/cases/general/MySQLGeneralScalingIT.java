@@ -88,11 +88,11 @@ public final class MySQLGeneralScalingIT extends BaseExtraSQLITCase {
         executeWithLog(getCommonSQLCommand().getAlterOrderWithItemAutoTableRule());
         String jobId = getScalingJobId();
         waitScalingFinished(jobId);
-        assertGreaterThanInitTableInitRows(TABLE_INIT_ROW_COUNT, "");
         stopScaling(jobId);
         getJdbcTemplate().update("INSERT INTO t_order (id,order_id,user_id,status,t_json) VALUES (?, ?, ?, ?, ?)", keyGenerateAlgorithm.generateKey(), 1, 1, "afterStopScaling", "{}");
         startScaling(jobId);
         assertCheckScalingSuccess(jobId);
+        assertGreaterThanInitTableInitRows(TABLE_INIT_ROW_COUNT, "");
         applyScaling(jobId);
         assertPreviewTableSuccess("t_order", Arrays.asList("ds_2", "ds_3", "ds_4"));
         assertPreviewTableSuccess("t_order_item", Arrays.asList("ds_2", "ds_3", "ds_4"));
