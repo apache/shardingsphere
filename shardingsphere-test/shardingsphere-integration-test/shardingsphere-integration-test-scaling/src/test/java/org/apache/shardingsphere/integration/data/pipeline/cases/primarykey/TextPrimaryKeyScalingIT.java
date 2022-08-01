@@ -78,7 +78,7 @@ public class TextPrimaryKeyScalingIT extends BaseExtraSQLITCase {
         addTargetResource();
         executeWithLog(getCommonSQLCommand().getAlterOrderAutoTableRule());
         String jobId = getScalingJobId();
-        waitScalingFinished(jobId, "");
+        waitScalingFinished(jobId);
         assertCheckScalingSuccess(jobId);
         applyScaling(jobId);
         assertPreviewTableSuccess("t_order", Arrays.asList("ds_2", "ds_3", "ds_4"));
@@ -87,8 +87,8 @@ public class TextPrimaryKeyScalingIT extends BaseExtraSQLITCase {
     
     private void batchInsertOrder() {
         UUIDKeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
-        List<Object[]> orderData = new ArrayList<>(INIT_TABLE_ROW_COUNT);
-        for (int i = 0; i < INIT_TABLE_ROW_COUNT; i++) {
+        List<Object[]> orderData = new ArrayList<>(TABLE_INIT_ROW_COUNT);
+        for (int i = 0; i < TABLE_INIT_ROW_COUNT; i++) {
             orderData.add(new Object[]{keyGenerateAlgorithm.generateKey(), ThreadLocalRandom.current().nextInt(0, 6), ThreadLocalRandom.current().nextInt(0, 6), "OK"});
         }
         getJdbcTemplate().batchUpdate("INSERT INTO t_order (id,order_id,user_id,status) VALUES (?,?,?,?)", orderData);

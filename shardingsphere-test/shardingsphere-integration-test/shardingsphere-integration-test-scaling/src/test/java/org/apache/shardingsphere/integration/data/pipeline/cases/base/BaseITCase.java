@@ -88,7 +88,7 @@ public abstract class BaseITCase {
     
     protected static final Executor SCALING_EXECUTOR = Executors.newFixedThreadPool(5);
     
-    protected static final int INIT_TABLE_ROW_COUNT = 3000;
+    protected static final int TABLE_INIT_ROW_COUNT = 3000;
     
     @Rule
     @Getter(AccessLevel.NONE)
@@ -348,7 +348,7 @@ public abstract class BaseITCase {
         return jobId;
     }
     
-    protected void waitScalingFinished(final String jobId, final String schema) throws InterruptedException {
+    protected void waitScalingFinished(final String jobId) throws InterruptedException {
         if (null != increaseTaskThread) {
             TimeUnit.SECONDS.timedJoin(increaseTaskThread, 60);
         }
@@ -376,10 +376,13 @@ public abstract class BaseITCase {
             assertBeforeApplyScalingMetadataCorrectly();
             ThreadUtil.sleep(4, TimeUnit.SECONDS);
         }
+        assertThat(actualStatus, is(Collections.singleton(JobStatus.EXECUTE_INCREMENTAL_TASK.name())));
+    }
+    
+    protected void assertGreaterThanInitTableInitRows(final int tableInitRows, final String schema) {
         String countSQL = StringUtils.isBlank(schema) ? "SELECT COUNT(*) as count FROM t_order" : String.format("SELECT COUNT(*) as count FROM %s.t_order", schema);
         Map<String, Object> actual = jdbcTemplate.queryForMap(countSQL);
-        assertTrue(Integer.parseInt(actual.get("count").toString()) > INIT_TABLE_ROW_COUNT);
-        assertThat(actualStatus, is(Collections.singleton(JobStatus.EXECUTE_INCREMENTAL_TASK.name())));
+        assertTrue("actual count " + actual.get("count"), Integer.parseInt(actual.get("count").toString()) > TABLE_INIT_ROW_COUNT);
     }
     
     protected List<Map<String, Object>> showScalingStatus(final String jobId) {
