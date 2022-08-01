@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.config.props;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.properties.TypedPropertyKey;
+import org.apache.shardingsphere.infra.props.TypedPropertyKey;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -58,6 +58,11 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
     CHECK_TABLE_METADATA_ENABLED("check-table-metadata-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**
+     * Whether enable SQL federation.
+     */
+    SQL_FEDERATION_ENABLED("sql-federation-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
+    
+    /**
      * Frontend database protocol type for ShardingSphere-Proxy.
      */
     PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE("proxy-frontend-database-protocol-type", "", String.class, false),
@@ -71,11 +76,6 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
      * Whether enable hint for ShardingSphere-Proxy.
      */
     PROXY_HINT_ENABLED("proxy-hint-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
-    
-    /**
-     * Whether enable show process list.
-     */
-    SHOW_PROCESS_LIST_ENABLED("show-process-list-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**
      * Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
@@ -98,11 +98,6 @@ public enum ConfigurationPropertyKey implements TypedPropertyKey {
      * Less than or equal to 0 means no limitation.
      */
     PROXY_FRONTEND_MAX_CONNECTIONS("proxy-frontend-max-connections", "0", int.class, false),
-    
-    /**
-     * Whether enable SQL federation.
-     */
-    SQL_FEDERATION_ENABLED("sql-federation-enabled", String.valueOf(Boolean.FALSE), boolean.class, false),
     
     /**
      * Proxy backend driver type..

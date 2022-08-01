@@ -15,6 +15,6 @@
 -- limitations under the License.
 --
 
-CREATE USER test_user WITH ENCRYPTED PASSWORD 'Root@123';
-ALTER ROLE test_user CREATEDB REPLICATION;
+CREATE USER test_user WITH ENCRYPTED PASSWORD 'Test@123';
+ALTER ROLE test_user Superuser;
 CREATE DATABASE test_user;

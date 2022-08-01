@@ -22,12 +22,14 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 
 import java.sql.SQLException;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -111,15 +113,15 @@ public final class ShardingSphereMetaData {
      * @param databaseName database name
      */
     public void dropDatabase(final String databaseName) {
-        closeResources(databases.remove(databaseName.toLowerCase()));
+        ShardingSphereDatabase toBeRemovedDatabase = databases.remove(databaseName.toLowerCase());
+        closeResources(toBeRemovedDatabase);
     }
     
     private void closeResources(final ShardingSphereDatabase database) {
-        if (null != database.getResource()) {
-            database.getResource().getDataSources().values().forEach(each -> database.getResource().close(each));
-        }
         String databaseName = database.getName();
         globalRuleMetaData.findRules(ResourceHeldRule.class).forEach(each -> each.closeStaleResource(databaseName));
         database.getRuleMetaData().findRules(ResourceHeldRule.class).forEach(each -> each.closeStaleResource(databaseName));
+        database.getRuleMetaData().findSingleRule(DynamicDataSourceContainedRule.class).ifPresent(DynamicDataSourceContainedRule::closeHeartBeatJob);
+        Optional.ofNullable(database.getResource()).ifPresent(optional -> optional.getDataSources().values().forEach(each -> database.getResource().close(each)));
     }
 }

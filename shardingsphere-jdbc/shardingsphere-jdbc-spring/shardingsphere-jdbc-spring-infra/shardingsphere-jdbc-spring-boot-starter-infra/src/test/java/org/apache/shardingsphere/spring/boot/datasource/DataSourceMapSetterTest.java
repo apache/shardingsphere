@@ -49,7 +49,7 @@ public final class DataSourceMapSetterTest {
         standardEnvironment.merge(mockEnvironment);
         Map<String, DataSource> dataSourceMap = DataSourceMapSetter.getDataSourceMap(standardEnvironment);
         assertThat(dataSourceMap.size(), is(2));
-        assertThat(dataSourceMap.get("ds0").getConnection().getMetaData().getUserName(), is("sa"));
-        assertThat(dataSourceMap.get("ds1").getConnection().getMetaData().getUserName(), is("sa"));
+        assertThat(dataSourceMap.get("ds0").getConnection().getMetaData().getURL(), is("jdbc:mock://127.0.0.1/ds_0"));
+        assertThat(dataSourceMap.get("ds1").getConnection().getMetaData().getURL(), is("jdbc:mock://127.0.0.1/ds_1"));
     }
 }

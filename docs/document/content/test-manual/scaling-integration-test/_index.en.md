@@ -4,92 +4,93 @@ title = "Scaling Integration Test"
 weight = 4
 +++
 
-## Objective
+## Objectives
 
-Verify the correctness of Scaling's own functionality and dependent modules.
+Verify the functional correctness of data migration and dependency modules. 
 
-## Environment
+## Test environment
 
-There are two types of environment preparation: Native and Docker
+Currently, Native and Docker environments are supported.
+1. The Native environment runs directly in the test environment provided by the developer, and users need to start ShardingSphere-Proxy and the corresponding database instance by themselves, which is suitable for debugging scenarios.
+2. The Docker environment is run by Maven, which is suitable for cloud compilation environment and ShardingSphere-Proxy testing scenarios, such as GitHub Action.
 
-- Native Environment: For local debugging, you can use the IDE's debug mode for debugging
-- Docker Environment: Environment run by Maven for cloud compiled environments and testing ShardingSphere-Proxy scenarios, e.g. GitHub Action
+Currently, you can use MySQL, PostgreSQL and openGuass databases.
 
-The current default Docker environment, involving ShardingSphere-Proxy, Zookeeper, database instances (MySQL, PostgreSQL), are automatically started via Docker.
+## User guide
 
-Database type currently supports MySQL, PostgreSQL, openGauss
+Module path: `shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling`.
 
-## Guide
+### Environment setup
 
-Module path: `shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling`
+`${DOCKER-IMAGE}` refers to the name of a Docker mirror, such as `mysql:8`. `${DATABASE-TYPE}` refers to database types.
+Directory: `src/test/resources/env`
+- `it-env.properties`: the startup parameters of integration testing.
+- `${DATABASE-TYPE}/server.yaml`: ShardingSphere-Proxy configuration file corresponding to the database.
+- `${DATABASE-TYPE}/initdb.sql`: The database initializes SQL.
+- `${DATABASE-TYPE}/*.cnf,*.conf`: Files ending with cnf or conf are database configuration files for Docker mount.
+- `common/command.xml`: The DistSQL used in the test.
+- `scenario/`: Store SQL in the test scenarios.
 
-The Class distribution of the test is as follows.
+### Test case
 
-Core Case：
-- MySQLGeneralScalingIT: Covered the most test scenarios, including part of the table migration, most variety of table fields, etc.
-- PostgreSQLGeneralScalingIT: Similar, except that the database type is PostgreSQL/openGauss and includes custom schema migration scenarios.
+Currently, all the test cases are directly inherited from `BaseExtraSQLITCase` and indirectly inherited from `BaseITCase`.
+- `BaseITCase`: Provide generic methods for sub-class.
+- `BaseExtraSQLITCase`: Provide table creation and CRUD statement execution methods.
 
-Primary Key Case：
+Test case example: MySQLGeneralScalingIT.
+Functions included:
+- Database-level migration (all tables).
+- Table-level migration (any number).
+- Verify migration data consistency.
+- Stop writing is supported during data migration.
+- Support restart during data migration.
+- Support integer primary keys during data migration.
+- Support string primary keys during data migration.
+- A non-administrator account can be used to migrate data.
 
-- TextPrimaryKeyScalingIT: Support migration of tables with primary key of text type(e.g. UUID).
+### Running the test case
 
-### Configuration File
+All property values of `it-env.properties` can be introduced by the Maven command line `-D`, and its priority is higher than that of the configuration file.
 
-Catalog：`resources/env/`
-- /common: The Dist SQL used in the Scaling process.
-- /{SQL-TYPE}: database-level configuration files.
-- /scenario: The configuration file for the test scenario, mainly SQL, may be written differently for different databases.
-- it-env.properties: Stores the corresponding configuration information.
+#### Native environment setup
 
-### Run Test Cases
+The user starts ShardingSphere-Proxy locally in advance, along with dependent configuration centers (such as ZooKeeper) and databases.
+The port required for ShardingSphere-Proxy is 3307.
+Take MySQL as an example, `it-env.properties` can be configured as follows: 
+```
+scaling.it.env.type=NATIVE
+scaling.it.native.database=mysql
+scaling.it.native.mysql.username=root
+scaling.it.native.mysql.password=root
+scaling.it.native.mysql.port=3306
+```
 
-All property values can be dynamically injected by means of the Maven command line `-D`.
+Find the appropriate test case and start it with Junit under the IDE.
 
-`${image-name}` Indicates a legal docker image name, e.g., mysql:5.7, separated by commas if multiple.
-`-Dscaling.it.docker.postgresql.version=${image-name}` Indicates the version of PostgreSQL that needs to be tested.
-`-Dscaling.it.docker.mysql.version=${image-name}` Indicates the version of MySQL that needs to be tested.
+#### Docker environment setup
 
-#### Native Environment Startup
-
-Native environments require that ShardingSphere-Proxy (and its own dependent Cluster, such as Zookeeper) and the database be started locally, and that ShardingSphere-Proxy's port be 3307, modify the properties in the it-env.properties file ` scaling.it.env.type=native`
-The database port can be configured in it-env.properties, or not if it is the default port.
-
-The startup method is as follows: Find the Case you need to test, such as MySQLGeneralScalingIT, and configure the corresponding VM Option before startup, add the following configuration.
+Step 1: Package mirror.
 
 ```
--Dscaling.it.env.type=native -Dscaling.it.docker.mysql.version=${image-name}
-```
-
-Just start it under the IDE using the Junit.
-
-#### Docker Environment Startup
-
-Step 1: Packaging Image
-
-```bash
 ./mvnw -B clean install -am -pl shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling -Pit.env.docker -DskipTests
 ```
 
-Running the above command will build a Docker image `apache/shardingsphere-proxy-test:latest` for integration testing.
-If you have only modified the test code, you can reuse the existing test image without rebuilding it.
+Running the above command will build a Docker mirror apache/shardingsphere-proxy-test:latest used for integration testing. 
+The mirror sets the port for remote debugging and the default port is 3308. If only the test code is modified, you can reuse the existing test mirror without rebuilding it. 
 
-**Docker environment configuration provides remote debugging port for ShardingSphere-Proxy, the default is 3308.**
-You can change it yourself in ShardingSphereProxyDockerContainer.
+If you need to adjust Docker mirror startup parameters, you can modify the configuration of the ShardingSphereProxyDockerContainer file.
 
-#### Running Case
+The output log of ShardingSphere-Proxy has the prefix Scaling-Proxy.
 
-As with Native, only one parameter needs to be changed.
+Use Maven to run the test cases. Take MySQL as an example:
 
 ```
--Dscaling.it.env.type=docker
-```
-
-You can run the use case using the same IDE as Native, or you can run it using maven.
-
-```shell
 ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/pom.xml -Dscaling.it.env.type=DOCKER -Dscaling.it.docker.mysql.version=${image-name}
 ```
 
-#### Attentions
+You can also use IDE to run test cases. `it-env.properties` can be configured as follows: 
 
-The commands in the Scaling integration test are basically executed in the ShardingSphere-Proxy, so if they fail, most of them require a debug of the ShardingSphere-Proxy, and the logs prefixed with `:Scaling-Proxy` are output from the ShardingSphere-Proxy container.
+```
+scaling.it.env.type=DOCKER
+scaling.it.docker.mysql.version=mysql:5.7
+```

@@ -66,12 +66,6 @@ public final class MockedDataSource implements DataSource, AutoCloseable {
     @Setter(AccessLevel.NONE)
     private boolean closed;
     
-    public MockedDataSource(final String url, final String username, final String password) {
-        this.url = url;
-        this.username = username;
-        this.password = password;
-    }
-    
     public MockedDataSource(final Connection connection) {
         this.connection = connection;
     }
@@ -84,7 +78,6 @@ public final class MockedDataSource implements DataSource, AutoCloseable {
         }
         Connection result = mock(Connection.class, RETURNS_DEEP_STUBS);
         when(result.getMetaData().getURL()).thenReturn(url);
-        when(result.getMetaData().getUserName()).thenReturn(username);
         when(result.createStatement(anyInt(), anyInt(), anyInt()).getConnection()).thenReturn(result);
         return result;
     }

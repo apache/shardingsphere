@@ -22,6 +22,7 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
+import org.apache.shardingsphere.data.pipeline.api.job.persist.PipelineJobPersistCallback;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
@@ -41,13 +42,16 @@ public final class ImporterFactory {
      * @param importerConfig importer configuration
      * @param dataSourceManager data source manager
      * @param channel channel
+     * @param pipelineJobPersistCallback job persist callback
      * @return importer
      */
     @SneakyThrows(ReflectiveOperationException.class)
-    public static Importer createImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
+    public static Importer createImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel,
+                                          final PipelineJobPersistCallback pipelineJobPersistCallback) {
         String databaseType = importerConfig.getDataSourceConfig().getDatabaseType().getType();
         ScalingEntry scalingEntry = ScalingEntryFactory.getInstance(databaseType);
-        Constructor<? extends Importer> constructor = scalingEntry.getImporterClass().getConstructor(ImporterConfiguration.class, PipelineDataSourceManager.class, PipelineChannel.class);
-        return constructor.newInstance(importerConfig, dataSourceManager, channel);
+        Constructor<? extends Importer> constructor = scalingEntry.getImporterClass().getConstructor(ImporterConfiguration.class, PipelineDataSourceManager.class, PipelineChannel.class,
+                PipelineJobPersistCallback.class);
+        return constructor.newInstance(importerConfig, dataSourceManager, channel, pipelineJobPersistCallback);
     }
 }

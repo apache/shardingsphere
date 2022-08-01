@@ -30,7 +30,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import static org.junit.Assert.assertEquals;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Base transaction test case.
@@ -84,7 +85,7 @@ public abstract class BaseTransactionTestCase {
             resultSetCount++;
         }
         statement.close();
-        assertEquals(String.format("Recode num assert error, expect: %s, actual: %s.", rowNum, resultSetCount), resultSetCount, rowNum);
+        assertThat(String.format("Recode num assert error, expect: %s, actual: %s.", rowNum, resultSetCount), resultSetCount, is(rowNum));
     }
     
     @SneakyThrows(SQLException.class)

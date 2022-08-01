@@ -43,7 +43,6 @@ props:
   proxy-hint-enabled: false
   sql-show: true
   check-table-metadata-enabled: false
-  show-process-list-enabled: false
   proxy-backend-query-fetch-size: -1
   proxy-backend-executor-suitable: OLAP
   proxy-frontend-max-connections: 0 # Less than or equal to 0 means no limitation.

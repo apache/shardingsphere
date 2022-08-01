@@ -125,7 +125,7 @@ public final class FilterableTableScanExecutor {
         try {
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = prepareEngine.prepare(context.getRouteContext(), context.getExecutionUnits());
             setParameters(executionGroupContext.getInputGroups());
-            ExecuteProcessEngine.initialize(context.getLogicSQL(), executionGroupContext, executorContext.getProps(), eventBusContext);
+            ExecuteProcessEngine.initialize(context.getLogicSQL(), executionGroupContext, eventBusContext);
             List<QueryResult> queryResults = execute(executionGroupContext, databaseType);
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), eventBusContext);
             MergeEngine mergeEngine = new MergeEngine(database, executorContext.getProps());

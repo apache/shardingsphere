@@ -67,6 +67,7 @@ public final class ShardingSphereProxyStandaloneContainer extends DockerITContai
     
     @Override
     protected void configure() {
+        withExposedPorts(3307);
         mapConfigurationFiles();
         setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), scenario), "root", "Root@123")));
     }
@@ -90,8 +91,8 @@ public final class ShardingSphereProxyStandaloneContainer extends DockerITContai
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(databaseType));
         result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), scenario));
-        result.setUsername("root");
-        result.setPassword("Root@123");
+        result.setUsername("proxy");
+        result.setPassword("Proxy@123");
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;

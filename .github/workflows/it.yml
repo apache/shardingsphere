@@ -30,6 +30,7 @@ on:
       - '!shardingsphere-distribution/shardingsphere-proxy-distribution/src/main/release-docs/**'
       - '!shardingsphere-kernel/shardingsphere-data-pipeline/**'
       - '!shardingsphere-test/**'
+      - 'shardingsphere-test/**/pom.xml'
       - 'shardingsphere-test/shardingsphere-integration-test/**'
       - '!shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/**'
       - 'shardingsphere-test/shardingsphere-integration-agent-test/**'
@@ -46,6 +47,7 @@ on:
       - '!shardingsphere-distribution/shardingsphere-proxy-distribution/src/main/release-docs/**'
       - '!shardingsphere-kernel/shardingsphere-data-pipeline/**'
       - '!shardingsphere-test/**'
+      - 'shardingsphere-test/**/pom.xml'
       - 'shardingsphere-test/shardingsphere-integration-test/**'
       - '!shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/**'
       - 'shardingsphere-test/shardingsphere-integration-agent-test/**'
@@ -272,7 +274,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Maven resolve ranges
+      - name: Maven Resolve Ranges
         run: ./mvnw versions:resolve-ranges -ntp -Dincludes='org.springframework:*,org.springframework.boot:*'
       - name: Cache Maven Repos
         uses: actions/cache@v2

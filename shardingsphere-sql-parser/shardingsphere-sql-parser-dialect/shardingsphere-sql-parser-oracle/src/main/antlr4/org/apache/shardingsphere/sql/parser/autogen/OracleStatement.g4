@@ -121,5 +121,6 @@ execute
     | alterFunction
     | alterHierarchy
     | alterLockdownProfile
+    | alterPluggableDatabase
     ) SEMI_?
     ;

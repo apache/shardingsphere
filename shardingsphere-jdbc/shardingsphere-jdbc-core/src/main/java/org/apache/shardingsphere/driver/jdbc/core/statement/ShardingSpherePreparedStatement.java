@@ -524,6 +524,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     private void clearPrevious() {
         statements.clear();
         parameterSets.clear();
+        generatedValues.clear();
     }
     
     private Optional<GeneratedKeyContext> findGeneratedKey(final ExecutionContext executionContext) {

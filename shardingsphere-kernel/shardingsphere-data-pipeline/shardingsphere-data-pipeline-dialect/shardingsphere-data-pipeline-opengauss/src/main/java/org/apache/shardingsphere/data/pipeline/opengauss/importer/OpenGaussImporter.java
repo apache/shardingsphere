@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.opengauss.importer;
 
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
+import org.apache.shardingsphere.data.pipeline.api.job.persist.PipelineJobPersistCallback;
 import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.importer.AbstractImporter;
@@ -28,8 +29,9 @@ import org.apache.shardingsphere.data.pipeline.core.importer.AbstractImporter;
  */
 public final class OpenGaussImporter extends AbstractImporter {
     
-    public OpenGaussImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel) {
-        super(importerConfig, dataSourceManager, channel);
+    public OpenGaussImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel,
+                             final PipelineJobPersistCallback pipelineJobPersistCallback) {
+        super(importerConfig, dataSourceManager, channel, pipelineJobPersistCallback);
     }
     
     @Override

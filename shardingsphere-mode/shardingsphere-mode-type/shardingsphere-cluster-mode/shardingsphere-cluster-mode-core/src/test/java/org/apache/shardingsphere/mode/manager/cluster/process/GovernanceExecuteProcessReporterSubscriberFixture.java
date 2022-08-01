@@ -19,9 +19,9 @@ package org.apache.shardingsphere.mode.manager.cluster.process;
 
 import com.google.common.eventbus.Subscribe;
 import lombok.Getter;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessReportEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessSummaryReportEvent;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.event.ExecuteProcessUnitReportEvent;
+import org.apache.shardingsphere.mode.process.event.ExecuteProcessReportEvent;
+import org.apache.shardingsphere.mode.process.event.ExecuteProcessSummaryReportEvent;
+import org.apache.shardingsphere.mode.process.event.ExecuteProcessUnitReportEvent;
 
 @Getter
 public final class GovernanceExecuteProcessReporterSubscriberFixture {

@@ -23,7 +23,6 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.integration.transaction.cases.base.BaseTransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
-import org.junit.Assert;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -32,6 +31,9 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
 /**
  * Classic transfer transaction integration test.
@@ -59,11 +61,11 @@ public final class ClassicTransferTestCase extends BaseTransactionTestCase {
             updateThread.start();
             tasks.add(updateThread);
             int sum = getBalanceSum();
-            Assert.assertEquals(String.format("Balance sum is %s, should be 100.", sum), 100, sum);
+            assertThat(String.format("Balance sum is %s, should be 100.", sum), sum, is(100));
         }
         Thread.sleep(3000);
         int sum = getBalanceSum();
-        Assert.assertEquals(String.format("Balance sum is %s, should be 100.", sum), 100, sum);
+        assertThat(String.format("Balance sum is %s, should be 100.", sum), sum, is(100));
         for (Thread task : tasks) {
             task.join();
         }

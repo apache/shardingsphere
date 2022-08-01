@@ -22,16 +22,14 @@ import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Multimap;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.Setter;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.ExecutorJDBCConnectionManager;
-import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
 import org.apache.shardingsphere.proxy.backend.communication.BackendConnection;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction.JDBCBackendTransactionManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
+import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.text.TextProtocolBackendHandler;
 import org.apache.shardingsphere.proxy.backend.util.TransactionUtil;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -50,18 +48,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @RequiredArgsConstructor
 @Getter
-@Setter
 public final class JDBCBackendConnection implements BackendConnection<Void>, ExecutorJDBCConnectionManager {
     
     private final ConnectionSession connectionSession;
     
-    private volatile FederationExecutor federationExecutor;
-    
     private final Multimap<String, Connection> cachedConnections = LinkedHashMultimap.create();
     
-    private final Collection<TextProtocolBackendHandler> handlers = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
+    private final Collection<ProxyBackendHandler> backendHandlers = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
     
-    private final Collection<TextProtocolBackendHandler> inUseHandlers = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
+    private final Collection<ProxyBackendHandler> inUseBackendHandlers = Collections.newSetFromMap(new ConcurrentHashMap<>(64));
     
     private final Collection<ConnectionPostProcessor<Connection>> connectionPostProcessors = new LinkedList<>();
     
@@ -151,8 +146,8 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
      *
      * @param handler handler to be added
      */
-    public void add(final TextProtocolBackendHandler handler) {
-        handlers.add(handler);
+    public void add(final ProxyBackendHandler handler) {
+        backendHandlers.add(handler);
     }
     
     /**
@@ -160,8 +155,8 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
      *
      * @param handler handler to be marked
      */
-    public void markResourceInUse(final TextProtocolBackendHandler handler) {
-        inUseHandlers.add(handler);
+    public void markResourceInUse(final ProxyBackendHandler handler) {
+        inUseBackendHandlers.add(handler);
     }
     
     /**
@@ -169,8 +164,8 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
      *
      * @param handler proxy backend handler to be added
      */
-    public void unmarkResourceInUse(final TextProtocolBackendHandler handler) {
-        inUseHandlers.remove(handler);
+    public void unmarkResourceInUse(final ProxyBackendHandler handler) {
+        inUseBackendHandlers.remove(handler);
     }
     
     @Override
@@ -192,7 +187,6 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
         synchronized (this) {
             Collection<Exception> result = new LinkedList<>();
             result.addAll(closeHandlers(false));
-            result.addAll(closeFederationExecutor());
             if (!connectionSession.getTransactionStatus().isInConnectionHeldTransaction()) {
                 result.addAll(closeHandlers(true));
                 result.addAll(closeConnections(false));
@@ -213,7 +207,6 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
             closed.set(true);
             closeHandlers(true);
             closeConnections(true);
-            closeFederationExecutor();
             return null;
         }
     }
@@ -226,8 +219,8 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
      */
     public Collection<SQLException> closeHandlers(final boolean includeInUse) {
         Collection<SQLException> result = new LinkedList<>();
-        for (TextProtocolBackendHandler each : handlers) {
-            if (!includeInUse && inUseHandlers.contains(each)) {
+        for (ProxyBackendHandler each : backendHandlers) {
+            if (!includeInUse && inUseBackendHandlers.contains(each)) {
                 continue;
             }
             try {
@@ -237,9 +230,9 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
             }
         }
         if (includeInUse) {
-            inUseHandlers.clear();
+            inUseBackendHandlers.clear();
         }
-        handlers.retainAll(inUseHandlers);
+        backendHandlers.retainAll(inUseBackendHandlers);
         return result;
     }
     
@@ -266,23 +259,6 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
         }
         if (!forceRollback) {
             connectionPostProcessors.clear();
-        }
-        return result;
-    }
-    
-    /**
-     * Close federation executor.
-     * 
-     * @return SQL exception when federation executor close
-     */
-    public Collection<SQLException> closeFederationExecutor() {
-        Collection<SQLException> result = new LinkedList<>();
-        if (null != federationExecutor) {
-            try {
-                federationExecutor.close();
-            } catch (final SQLException ex) {
-                result.add(ex);
-            }
         }
         return result;
     }

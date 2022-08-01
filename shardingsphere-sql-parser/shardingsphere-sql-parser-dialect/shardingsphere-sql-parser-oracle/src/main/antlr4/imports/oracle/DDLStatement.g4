@@ -3288,3 +3288,193 @@ optionValues
     | MAXVALUE EQ_ optionValue
     ;
 
+alterPluggableDatabase
+    : ALTER databaseClause (pdbUnplugClause
+    | pdbSettingsClauses
+    | pdbDatafileClause
+    | pdbRecoveryClauses
+    | pdbChangeState
+    | pdbChangeStateFromRoot
+    | applicationClauses
+    | snapshotClauses
+    | prepareClause
+    | dropMirrorCopy
+    | lostWriteProtection)
+    ;
+
+databaseClause
+    : DATABASE dbName?
+    | PLUGGABLE DATABASE pdbName?
+    ;
+
+pdbUnplugClause
+    : pdbName UNPLUG INTO fileName pdbUnplugEncrypt?
+    ;
+
+pdbUnplugEncrypt
+    : ENCRYPT USING transportSecret
+    ;
+
+pdbSettingsClauses
+    : pdbName? pdbSettingClause
+    | CONTAINERS containersClause
+    ;
+
+pdbSettingClause
+    : DEFAULT EDITION EQ_ editionName
+    | SET DEFAULT (BIGFILE | SMALLFILE) TABLESPACE
+    | DEFAULT TABLESPACE tablespaceName
+    | DEFAULT TEMPORARY TABLESPACE (tablespaceName | tablespaceGroupName)
+    | RENAME GLOBAL_NAME TO databaseName (DOT_ domain)+
+    | setTimeZoneClause
+    | databaseFileClauses
+    | supplementalDbLogging
+    | pdbStorageClause
+    | pdbLoggingClauses
+    | pdbRefreshModeClause
+    | REFRESH pdbRefreshSwitchoverClause?
+    | SET CONTAINER_MAP EQ_ mapObject
+    ;
+
+containersClause
+    : DEFAULT TARGET EQ_ ((LP_ containerName RP_) | NONE)
+    | HOST EQ_ hostName
+    | PORT EQ_ NUMBER_
+    ;
+
+pdbStorageClause
+    : STORAGE ((LP_ storageMaxSizeClauses+ RP_) | UNLIMITED)
+    ;
+
+storageMaxSizeClauses
+    : (MAXSIZE | MAX_AUDIT_SIZE | MAX_DIAG_SIZE) (UNLIMITED | sizeClause)
+    ;
+
+pdbLoggingClauses
+    : loggingClause | pdbForceLoggingClause
+    ;
+
+pdbForceLoggingClause
+    : (ENABLE | DISABLE) FORCE (LOGGING | NOLOGGING)
+    | SET STANDBY NOLOGGING FOR ((DATA AVAILABILITY) | (LOAD PERFORMANCE))
+    ;
+
+pdbRefreshModeClause
+    : REFRESH MODE (MANUAL | (EVERY refreshInterval (MINUTES | HOURS)) | NONE )
+    ;
+
+pdbRefreshSwitchoverClause
+    : FROM sourcePdbName AT_ dbLink SWITCHOVER
+    ;
+
+pdbDatafileClause
+    : pdbName? DATAFILE (fileNameAndNumber | ALL)  (ONLINE | OFFLINE)
+    ;
+
+fileNameAndNumber
+    : (fileName | fileNumber) (COMMA_ (fileName | fileNumber))*
+    ;
+
+pdbRecoveryClauses
+    : pdbName? (pdbGeneralRecovery
+    | BEGIN BACKUP
+    | END BACKUP
+    | ENABLE RECOVERY
+    | DISABLE RECOVERY)
+    ;
+
+pdbGeneralRecovery
+    : RECOVER AUTOMATIC? (FROM locationName)? (DATABASE
+    | TABLESPACE tablespaceName (COMMA_ tablespaceName)*
+    | DATAFILE fileNameAndNumber
+    | LOGFILE fileName
+    | CONTINUE DEFAULT?)?
+    ;
+
+pdbChangeState
+    : pdbName? (pdbOpen | pdbClose | pdbSaveOrDiscardState)
+    ;
+
+pdbOpen
+    : OPEN (((READ WRITE) | (READ ONLY))? RESTRICTED? FORCE?
+    | (READ WRITE)? UPGRADE RESTRICTED?
+    | RESETLOGS) instancesClause?
+    ;
+
+instancesClause
+    : INSTANCES EQ_ (instanceNameClause | (ALL (EXCEPT instanceName)?))
+    ;
+
+instanceNameClause
+    : LP_ instanceName (COMMA_ instanceName )* RP_
+    ;
+
+pdbClose
+    : CLOSE ((IMMEDIATE? (instancesClause | relocateClause)?) | (ABORT? instancesClause?))
+    ;
+
+relocateClause
+    : RELOCATE (TO instanceName)?
+    | NORELOCATE
+    ;
+
+pdbSaveOrDiscardState
+    : (SAVE | DISCARD) STATE instancesClause?
+    ;
+
+pdbChangeStateFromRoot
+    : (pdbNameClause | (ALL (EXCEPT pdbNameClause)?)) (pdbOpen | pdbClose | pdbSaveOrDiscardState)
+    ;
+
+pdbNameClause
+    : pdbName (COMMA_ pdbName)*
+    ;
+
+applicationClauses
+    : APPLICATION ((appName appClause) | (ALL SYNC))
+    ;
+
+appClause
+    : BEGIN INSTALL SQ_ appVersion SQ_ (COMMENT SQ_ commentValue SQ_)?
+    | END INSTALL (SQ_ appVersion SQ_)?
+    | BEGIN PATCH NUMBER_ (MINIMUM VERSION SQ_ appVersion SQ_)? (COMMENT SQ_ commentValue SQ_)?
+    | END PATCH NUMBER_?
+    | BEGIN UPGRADE (SQ_ startAppVersion SQ_)? TO SQ_ endAppVersion SQ_ (COMMENT SQ_ commentValue SQ_)?
+    | END UPGRADE (TO SQ_ endAppVersion SQ_)?
+    | BEGIN UNINSTALL
+    | END UNINSTALL
+    | SET PATCH NUMBER_
+    | SET VERSION SQ_ appVersion SQ_
+    | SET COMPATIBILITY VERSION ((SQ_ appVersion SQ_) | CURRENT)
+    | SYNC TO ((SQ_ appVersion SQ_) | (PATCH patchNumber))
+    | SYNC
+    ;
+
+snapshotClauses
+    : pdbSnapshotClause
+    | materializeClause
+    | createSnapshotClause
+    | dropSnapshotClause
+    | setMaxPdbSnapshotsClause
+    ;
+
+pdbSnapshotClause
+    : SNAPSHOT (MANUAL | (EVERY snapshotInterval (HOURS | MINUTES)) | NONE)
+    ;
+
+materializeClause
+    : MATERIALIZE
+    ;
+
+createSnapshotClause
+    : SNAPSHOT snapshotName
+    ;
+
+dropSnapshotClause
+    : DROP SNAPSHOT snapshotName
+    ;
+
+setMaxPdbSnapshotsClause
+    : SET maxPdbSnapshots EQ_ maxNumberOfSnapshots
+    ;
+

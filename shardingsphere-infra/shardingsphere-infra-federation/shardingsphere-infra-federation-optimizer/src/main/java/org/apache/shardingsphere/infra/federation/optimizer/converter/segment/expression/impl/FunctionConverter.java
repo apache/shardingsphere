@@ -101,7 +101,7 @@ public final class FunctionConverter implements SQLSegmentConverter<FunctionSegm
         return result;
     }
     
-    private SqlNode[] getSqlNodes(final Collection<ExpressionSegment> sqlSegments) {
+    private List<SqlNode> getSqlNodes(final Collection<ExpressionSegment> sqlSegments) {
         List<SqlNode> sqlNodes = new ArrayList<>();
         sqlSegments.forEach(each -> {
             if (each instanceof LiteralExpressionSegment) {
@@ -114,6 +114,6 @@ public final class FunctionConverter implements SQLSegmentConverter<FunctionSegm
                 sqlNodes.add(new SqlDynamicParam(((ParameterMarkerExpressionSegment) each).getParameterMarkerIndex(), SqlParserPos.ZERO));
             }
         });
-        return sqlNodes.toArray(new SqlNode[0]);
+        return new ArrayList<>(sqlNodes);
     }
 }

@@ -22,12 +22,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.transaction.engine.base.BaseTransactionITCase;
 import org.apache.shardingsphere.integration.transaction.engine.base.TransactionTestCase;
 import org.apache.shardingsphere.integration.transaction.engine.constants.TransactionTestConstants;
-import org.junit.Assert;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import static org.junit.Assert.fail;
 
 /**
  * MySQL set read only transaction integration test.
@@ -58,10 +59,9 @@ public final class MySQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
             String updateSql = "update account set balance=100 where id=2;";
             log.info("Connection execute update: {}.", updateSql);
             updateStatement.execute(updateSql);
-            Assert.fail("Update ran successfully, should failed.");
+            fail("Update ran successfully, should failed.");
         } catch (SQLException e) {
             log.info("Update failed for expect.");
         }
     }
-    
 }

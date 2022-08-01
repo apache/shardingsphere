@@ -17,10 +17,10 @@
 
 package org.apache.shardingsphere.mode.manager;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.junit.Test;
 
 import java.util.Collections;

@@ -17,20 +17,20 @@
 
 package org.apache.shardingsphere.infra.config.props;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertNotNull;
+import org.junit.Test;
 
 import java.util.Collection;
 
-import org.junit.Test;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThat;
 
 public final class ConfigurationPropertyKeyTest {
     
     @Test
     public void assertKeyNames() {
-        Collection<String> configurationPropertyKeyNames = ConfigurationPropertyKey.getKeyNames();
-        assertThat(configurationPropertyKeyNames.size(), is(ConfigurationPropertyKey.values().length));
-        configurationPropertyKeyNames.forEach(keyName -> assertNotNull(ConfigurationPropertyKey.valueOf(keyName)));
+        Collection<String> keyNames = ConfigurationPropertyKey.getKeyNames();
+        assertThat(keyNames.size(), is(ConfigurationPropertyKey.values().length));
+        keyNames.forEach(each -> assertNotNull(ConfigurationPropertyKey.valueOf(each)));
     }
 }
