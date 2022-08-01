@@ -23,6 +23,7 @@ import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguratio
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
 
+import javax.sql.DataSource;
 import java.util.Map;
 
 /**
@@ -31,15 +32,14 @@ import java.util.Map;
 public final class AlgorithmProvidedShadowRuleConfigurationChecker extends AbstractShadowRuleConfigurationChecker<AlgorithmProvidedShadowRuleConfiguration> {
     
     @Override
-    protected void checkShadowRuleConfiguration(final AlgorithmProvidedShadowRuleConfiguration config) {
+    protected void checkShadowRuleConfiguration(final AlgorithmProvidedShadowRuleConfiguration config, final Map<String, DataSource> dataSourceMap) {
         Map<String, ShadowDataSourceConfiguration> dataSources = config.getDataSources();
+        checkDataSources(dataSources, dataSourceMap);
         Map<String, ShadowTableConfiguration> shadowTables = config.getTables();
-        Map<String, ShadowAlgorithm> shadowAlgorithms = config.getShadowAlgorithms();
-        String defaultShadowAlgorithmName = config.getDefaultShadowAlgorithmName();
-        sizeCheck(dataSources, shadowTables, defaultShadowAlgorithmName);
-        shadowAlgorithmsSizeCheck(shadowAlgorithms);
         shadowTableDataSourcesAutoReferences(shadowTables, dataSources);
         shadowTableDataSourcesReferencesCheck(shadowTables, dataSources);
+        Map<String, ShadowAlgorithm> shadowAlgorithms = config.getShadowAlgorithms();
+        String defaultShadowAlgorithmName = config.getDefaultShadowAlgorithmName();
         defaultShadowAlgorithmCheck(defaultShadowAlgorithmName, shadowAlgorithms);
         shadowTableAlgorithmsAutoReferences(shadowTables, shadowAlgorithms.keySet(), defaultShadowAlgorithmName);
         shadowTableAlgorithmsReferencesCheck(shadowTables);
