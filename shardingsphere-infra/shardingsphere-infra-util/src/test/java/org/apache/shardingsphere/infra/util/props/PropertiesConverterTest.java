@@ -15,39 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.eventbus;
+package org.apache.shardingsphere.infra.util.props;
 
-import com.google.common.eventbus.EventBus;
-import org.slf4j.bridge.SLF4JBridgeHandler;
+import org.junit.Test;
 
-/**
- * Event bus context.
- */
-@SuppressWarnings("UnstableApiUsage")
-public final class EventBusContext {
+import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class PropertiesConverterTest {
     
-    private final EventBus eventBus = new EventBus();
-    
-    static {
-        SLF4JBridgeHandler.removeHandlersForRootLogger();
-        SLF4JBridgeHandler.install();
+    @Test
+    public void assertConvert() {
+        Properties actual = new Properties();
+        actual.setProperty("foo", "foo_value");
+        actual.setProperty("bar", "bar_value");
+        assertThat(PropertiesConverter.convert(actual), is("bar=bar_value,foo=foo_value"));
     }
     
-    /**
-     * Register object.
-     * 
-     * @param object object
-     */
-    public void register(final Object object) {
-        eventBus.register(object);
-    }
-    
-    /**
-     * Post event.
-     * 
-     * @param event event
-     */
-    public void post(final Object event) {
-        eventBus.post(event);
+    @Test
+    public void assertConvertEmptyProperties() {
+        assertThat(PropertiesConverter.convert(new Properties()), is(""));
     }
 }

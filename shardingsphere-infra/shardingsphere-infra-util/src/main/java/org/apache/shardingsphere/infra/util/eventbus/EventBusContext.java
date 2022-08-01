@@ -15,31 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.props;
+package org.apache.shardingsphere.infra.util.eventbus;
+
+import com.google.common.eventbus.EventBus;
+import org.slf4j.bridge.SLF4JBridgeHandler;
 
 /**
- * Typed property key.
+ * Event bus context.
  */
-public interface TypedPropertyKey {
+@SuppressWarnings("UnstableApiUsage")
+public final class EventBusContext {
+    
+    private final EventBus eventBus = new EventBus();
+    
+    static {
+        SLF4JBridgeHandler.removeHandlersForRootLogger();
+        SLF4JBridgeHandler.install();
+    }
     
     /**
-     * Get property key.
+     * Register object.
      * 
-     * @return property key
+     * @param object object
      */
-    String getKey();
+    public void register(final Object object) {
+        eventBus.register(object);
+    }
     
     /**
-     * Get default property value.
+     * Post event.
      * 
-     * @return default property value
+     * @param event event
      */
-    String getDefaultValue();
-    
-    /**
-     * Get property type.
-     * 
-     * @return property type
-     */
-    Class<?> getType();
+    public void post(final Object event) {
+        eventBus.post(event);
+    }
 }

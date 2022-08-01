@@ -15,27 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.props;
+package org.apache.shardingsphere.infra.util.props;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.util.props.fixture.TypedPropertyKeyFixture;
+import org.junit.Test;
 
-import java.util.Properties;
-import java.util.stream.Collectors;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-/**
- * Properties converter.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PropertiesConverter {
+public final class TypedPropertyValueExceptionTest {
     
-    /**
-     * Convert properties to string content.
-     * 
-     * @param props properties to be converted
-     * @return converted string content
-     */
-    public static String convert(final Properties props) {
-        return props.entrySet().stream().map(entry -> String.join("=", entry.getKey().toString(), entry.getValue().toString())).collect(Collectors.joining(","));
+    @Test
+    public void assertGetMessage() {
+        assertThat(new TypedPropertyValueException(TypedPropertyKeyFixture.INT_VALUE, "test").getMessage(), is("Value `test` of `int` cannot convert to type `int`."));
     }
 }

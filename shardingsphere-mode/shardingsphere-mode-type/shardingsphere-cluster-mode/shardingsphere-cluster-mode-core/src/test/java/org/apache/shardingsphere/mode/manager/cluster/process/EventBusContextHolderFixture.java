@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.process;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 
 public final class EventBusContextHolderFixture {
     

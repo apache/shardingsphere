@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.props;
+package org.apache.shardingsphere.infra.util.props;
 
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
-import org.apache.shardingsphere.infra.props.fixture.TypedPropertiesFixture;
-import org.apache.shardingsphere.infra.props.fixture.TypedPropertyKeyFixture;
+import org.apache.shardingsphere.infra.util.props.fixture.TypedPropertiesFixture;
+import org.apache.shardingsphere.infra.util.props.fixture.TypedPropertyKeyFixture;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -67,7 +66,7 @@ public final class TypedPropertiesTest {
         assertThat(actual.getValue(TypedPropertyKeyFixture.STRING_VALUE), is("value"));
     }
     
-    @Test(expected = ShardingSphereConfigurationException.class)
+    @Test(expected = TypedPropertyException.class)
     public void assertGetInvalidValue() {
         Properties props = new Properties();
         props.setProperty(TypedPropertyKeyFixture.BOOLEAN_VALUE.getKey(), "test");

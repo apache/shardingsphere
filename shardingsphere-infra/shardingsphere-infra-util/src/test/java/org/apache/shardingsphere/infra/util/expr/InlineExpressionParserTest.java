@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.expr;
+package org.apache.shardingsphere.infra.util.expr;
 
 import org.junit.Test;
 

@@ -15,10 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.props;
+package org.apache.shardingsphere.infra.util.props;
 
 import lombok.Getter;
-import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -55,7 +54,7 @@ public abstract class TypedProperties<E extends Enum<?> & TypedPropertyKey> {
             result.put(each, value);
         }
         if (!errorMessages.isEmpty()) {
-            throw new ShardingSphereConfigurationException(String.join(System.lineSeparator(), errorMessages));
+            throw new TypedPropertyException(errorMessages);
         }
         return result;
     }
