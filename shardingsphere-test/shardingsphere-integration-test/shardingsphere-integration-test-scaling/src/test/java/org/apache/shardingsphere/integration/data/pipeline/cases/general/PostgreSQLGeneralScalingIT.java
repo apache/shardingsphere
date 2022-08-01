@@ -84,14 +84,14 @@ public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
         // createTableIndexList("test");
         executeWithLog("COMMENT ON COLUMN test.t_order.user_id IS 'user id';");
         SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
-        Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(keyGenerateAlgorithm, parameterized.getDatabaseType(), 3000);
+        Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(keyGenerateAlgorithm, parameterized.getDatabaseType(), INIT_TABLE_ROW_COUNT);
         getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
         getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         addTargetResource();
         startIncrementTask(new PostgreSQLIncrementTask(getJdbcTemplate(), new SnowflakeKeyGenerateAlgorithm(), "test", true, 20));
         executeWithLog(getCommonSQLCommand().getAlterOrderWithItemAutoTableRule());
         String jobId = getScalingJobId();
-        waitScalingFinished(jobId);
+        waitScalingFinished(jobId, "test");
         stopScaling(jobId);
         executeWithLog(String.format("INSERT INTO test.t_order (id,order_id,user_id,status) VALUES (%s, %s, %s, '%s')", keyGenerateAlgorithm.generateKey(), 1, 1, "afterStopScaling"));
         startScaling(jobId);
