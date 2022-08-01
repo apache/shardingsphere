@@ -35,9 +35,11 @@ public final class ConfigurationPropertiesTest {
         assertTrue(actual.getValue(ConfigurationPropertyKey.SQL_SIMPLE));
         assertThat(actual.getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE), is(20));
         assertThat(actual.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), is(20));
+        assertTrue(actual.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED));
+        assertTrue(actual.getValue(ConfigurationPropertyKey.SQL_FEDERATION_ENABLED));
+        assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE), is("PostgreSQL"));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(20));
         assertTrue(actual.getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED));
-        assertTrue(actual.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED));
     }
     
     private Properties createProperties() {
@@ -46,9 +48,11 @@ public final class ConfigurationPropertiesTest {
         result.setProperty(ConfigurationPropertyKey.SQL_SIMPLE.getKey(), Boolean.TRUE.toString());
         result.setProperty(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE.getKey(), "20");
         result.setProperty(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY.getKey(), "20");
+        result.setProperty(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED.getKey(), Boolean.TRUE.toString());
+        result.setProperty(ConfigurationPropertyKey.SQL_FEDERATION_ENABLED.getKey(), Boolean.TRUE.toString());
+        result.setProperty(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE.getKey(), "PostgreSQL");
         result.setProperty(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD.getKey(), "20");
         result.setProperty(ConfigurationPropertyKey.PROXY_HINT_ENABLED.getKey(), Boolean.TRUE.toString());
-        result.setProperty(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED.getKey(), Boolean.TRUE.toString());
         return result;
     }
     
@@ -59,8 +63,10 @@ public final class ConfigurationPropertiesTest {
         assertFalse(actual.getValue(ConfigurationPropertyKey.SQL_SIMPLE));
         assertThat(actual.getValue(ConfigurationPropertyKey.KERNEL_EXECUTOR_SIZE), is(0));
         assertThat(actual.getValue(ConfigurationPropertyKey.MAX_CONNECTIONS_SIZE_PER_QUERY), is(1));
+        assertFalse(actual.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED));
+        assertFalse(actual.getValue(ConfigurationPropertyKey.SQL_FEDERATION_ENABLED));
+        assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_DATABASE_PROTOCOL_TYPE), is(""));
         assertThat(actual.getValue(ConfigurationPropertyKey.PROXY_FRONTEND_FLUSH_THRESHOLD), is(128));
         assertFalse(actual.getValue(ConfigurationPropertyKey.PROXY_HINT_ENABLED));
-        assertFalse(actual.getValue(ConfigurationPropertyKey.CHECK_TABLE_METADATA_ENABLED));
     }
 }
