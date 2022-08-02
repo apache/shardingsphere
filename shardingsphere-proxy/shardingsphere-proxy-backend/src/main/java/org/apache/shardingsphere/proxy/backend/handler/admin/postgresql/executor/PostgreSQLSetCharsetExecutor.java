@@ -19,11 +19,9 @@ package org.apache.shardingsphere.proxy.backend.handler.admin.postgresql.executo
 
 import org.apache.shardingsphere.db.protocol.CommonConstants;
 import org.apache.shardingsphere.proxy.backend.exception.InvalidParameterValueException;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.admin.postgresql.PostgreSQLCharacterSets;
 import org.apache.shardingsphere.proxy.backend.handler.admin.postgresql.PostgreSQLSessionVariableHandler;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -35,9 +33,8 @@ import java.util.Locale;
 public final class PostgreSQLSetCharsetExecutor implements PostgreSQLSessionVariableHandler {
     
     @Override
-    public void handle(final ConnectionSession connectionSession, final SetStatement setStatement) {
-        VariableAssignSegment segment = setStatement.getVariableAssigns().iterator().next();
-        String value = formatValue(segment.getAssignValue().trim());
+    public void handle(final ConnectionSession connectionSession, final String variableName, final String assignValue) {
+        String value = formatValue(assignValue.trim());
         connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(parseCharset(value));
     }
     

@@ -18,27 +18,20 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.check.datasource;
 
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
-import javax.sql.DataSource;
-import java.util.Collection;
 import java.util.Collections;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class PostgreSQLDataSourceCheckerTest {
-    
-    private final Collection<DataSource> dataSources = Collections.emptyList();
     
     @Test
     public void assertCheckPrivilege() {
         PostgreSQLDataSourceChecker dataSourceChecker = new PostgreSQLDataSourceChecker();
-        dataSourceChecker.checkPrivilege(dataSources);
+        dataSourceChecker.checkPrivilege(Collections.emptyList());
     }
     
     @Test
     public void assertCheckVariable() {
         PostgreSQLDataSourceChecker dataSourceChecker = new PostgreSQLDataSourceChecker();
-        dataSourceChecker.checkVariable(dataSources);
+        dataSourceChecker.checkVariable(Collections.emptyList());
     }
 }

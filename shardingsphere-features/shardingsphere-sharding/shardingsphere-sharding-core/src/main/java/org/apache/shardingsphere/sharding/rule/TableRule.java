@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
+import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
@@ -53,7 +53,7 @@ import java.util.stream.Collectors;
  * Table rule.
  */
 @Getter
-@ToString(exclude = {"dataNodeIndexMap", "actualTables", "actualTablePrefix", "actualDataSourceNames", "datasourceToTablesMap", "dataSourceDataNode", "tableDataNode"})
+@ToString(exclude = {"dataNodeIndexMap", "actualTables", "actualTablePrefix", "actualDataSourceNames", "dataSourceDataNode", "tableDataNode"})
 public final class TableRule {
     
     private static final Pattern DATA_NODE_SUFFIX_PATTERN = Pattern.compile("\\d+$");

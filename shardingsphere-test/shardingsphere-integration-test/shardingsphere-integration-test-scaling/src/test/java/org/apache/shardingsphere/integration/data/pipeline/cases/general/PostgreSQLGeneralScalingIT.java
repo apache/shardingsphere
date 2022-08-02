@@ -84,7 +84,7 @@ public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
         // createTableIndexList("test");
         executeWithLog("COMMENT ON COLUMN test.t_order.user_id IS 'user id';");
         SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
-        Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(keyGenerateAlgorithm, parameterized.getDatabaseType(), 3000);
+        Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(keyGenerateAlgorithm, parameterized.getDatabaseType(), TABLE_INIT_ROW_COUNT);
         getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
         getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
         addTargetResource();
@@ -96,6 +96,7 @@ public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
         executeWithLog(String.format("INSERT INTO test.t_order (id,order_id,user_id,status) VALUES (%s, %s, %s, '%s')", keyGenerateAlgorithm.generateKey(), 1, 1, "afterStopScaling"));
         startScaling(jobId);
         assertCheckScalingSuccess(jobId);
+        assertGreaterThanInitTableInitRows(TABLE_INIT_ROW_COUNT, "test");
         applyScaling(jobId);
         assertPreviewTableSuccess("t_order", Arrays.asList("ds_2", "ds_3", "ds_4"));
         assertPreviewTableSuccess("t_order_item", Arrays.asList("ds_2", "ds_3", "ds_4"));

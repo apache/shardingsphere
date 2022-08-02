@@ -29,8 +29,9 @@ import org.apache.shardingsphere.infra.federation.optimizer.converter.segment.ex
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.ExpressionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.InExpression;
 
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -56,13 +57,13 @@ public final class InExpressionConverter implements SQLSegmentConverter<InExpres
         expressionConverter.convertToSQLNode(expression.getLeft()).ifPresent(sqlNodes::add);
         expressionConverter.convertToSQLNode(expression.getRight()).ifPresent(optional -> {
             if (optional instanceof SqlBasicCall) {
-                sqlNodes.add(new SqlNodeList(Arrays.asList(((SqlBasicCall) optional).getOperands().clone()), SqlParserPos.ZERO));
+                sqlNodes.add(new SqlNodeList(((SqlBasicCall) optional).getOperandList(), SqlParserPos.ZERO));
             } else {
                 sqlNodes.add(optional);
             }
         });
-        SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.IN, sqlNodes.toArray(new SqlNode[]{}), SqlParserPos.ZERO);
-        return expression.isNot() ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, new SqlNode[]{sqlNode}, SqlParserPos.ZERO)) : Optional.of(sqlNode);
+        SqlBasicCall sqlNode = new SqlBasicCall(SqlStdOperatorTable.IN, new ArrayList<>(sqlNodes), SqlParserPos.ZERO);
+        return expression.isNot() ? Optional.of(new SqlBasicCall(SqlStdOperatorTable.NOT, Collections.singletonList(sqlNode), SqlParserPos.ZERO)) : Optional.of(sqlNode);
     }
     
     @Override

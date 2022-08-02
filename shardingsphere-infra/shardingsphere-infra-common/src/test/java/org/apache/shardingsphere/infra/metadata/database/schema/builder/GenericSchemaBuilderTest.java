@@ -29,9 +29,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.loader.model.Tab
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.mockito.MockedStatic;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -50,7 +48,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class GenericSchemaBuilderTest {
     
     private GenericSchemaBuilderMaterials materials;

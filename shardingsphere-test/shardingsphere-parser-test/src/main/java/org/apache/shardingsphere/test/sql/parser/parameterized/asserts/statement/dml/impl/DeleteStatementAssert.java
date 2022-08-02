@@ -81,20 +81,20 @@ public final class DeleteStatementAssert {
     
     private static void assertTable(final SQLCaseAssertContext assertContext, final DeleteStatement actual, final DeleteStatementTestCase expected) {
         if (null != expected.getTables() && !expected.getTables().isEmpty()) {
-            assertNotNull(assertContext.getText("Actual table segment should exist."), actual.getTableSegment());
+            assertNotNull(assertContext.getText("Actual table segment should exist."), actual.getTable());
             List<SimpleTableSegment> actualTableSegments = new LinkedList<>();
-            if (actual.getTableSegment() instanceof SimpleTableSegment) {
-                actualTableSegments.add((SimpleTableSegment) actual.getTableSegment());
-            } else if (actual.getTableSegment() instanceof DeleteMultiTableSegment) {
-                DeleteMultiTableSegment deleteMultiTableSegment = (DeleteMultiTableSegment) actual.getTableSegment();
+            if (actual.getTable() instanceof SimpleTableSegment) {
+                actualTableSegments.add((SimpleTableSegment) actual.getTable());
+            } else if (actual.getTable() instanceof DeleteMultiTableSegment) {
+                DeleteMultiTableSegment deleteMultiTableSegment = (DeleteMultiTableSegment) actual.getTable();
                 actualTableSegments.addAll(deleteMultiTableSegment.getActualDeleteTables());
             }
             TableAssert.assertIs(assertContext, actualTableSegments, expected.getTables());
         } else if (null != expected.getSubqueryTable()) {
-            assertNotNull(assertContext.getText("Actual subquery table segment should exist."), actual.getTableSegment());
-            TableAssert.assertIs(assertContext, (SubqueryTableSegment) actual.getTableSegment(), expected.getSubqueryTable());
+            assertNotNull(assertContext.getText("Actual subquery table segment should exist."), actual.getTable());
+            TableAssert.assertIs(assertContext, (SubqueryTableSegment) actual.getTable(), expected.getSubqueryTable());
         } else {
-            assertNull(assertContext.getText("Actual table should not exist."), actual.getTableSegment());
+            assertNull(assertContext.getText("Actual table should not exist."), actual.getTable());
         }
     }
     
