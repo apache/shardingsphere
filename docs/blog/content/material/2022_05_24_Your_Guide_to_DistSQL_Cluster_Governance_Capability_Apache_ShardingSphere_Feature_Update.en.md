@@ -33,17 +33,17 @@ Take a standalone simulation of three Proxy compute nodes as an example. To use 
 
 ```
 mode:
-type: Cluster
-repository:
-type: ZooKeeper
-props:
-namespace: governance_ds
-server-lists: localhost:2181
-retryIntervalMilliseconds: 500
-timeToLiveSeconds: 60
-maxRetries: 3
-operationTimeoutMilliseconds: 500
-overwrite: false
+  type: Cluster
+  repository:
+    type: ZooKeeper
+    props:
+      namespace: governance_ds
+      server-lists: localhost:2181
+      retryIntervalMilliseconds: 500
+      timeToLiveSeconds: 60
+      maxRetries: 3
+      operationTimeoutMilliseconds: 500
+  overwrite: false
 ```
 Execute the bootup command separately:
 
@@ -60,8 +60,11 @@ Use the client to connect to any compute node, such as 3307:
 
 ```
 mysql -h 127.0.0.1 -P 3307 -u root -p
+```
+
 View the list of instances:
 
+```
 mysql> SHOW INSTANCE LIST;
 +----------------+-----------+------+---------+
 | instance_id    | host      | port | status  |
@@ -97,9 +100,10 @@ Example:
 ```
 mysql> DISABLE INSTANCE 10.7.5.35@3308;
 Query OK, 0 rows affected (0.02 sec)
+
 mysql> SHOW INSTANCE LIST;
 +----------------+-----------+------+----------+
-| instance_id    | host      | port | status   |
+| instance_id    | host      | port | status   | 
 +----------------+-----------+------+----------+
 | 10.7.5.35@3309 | 10.7.5.35 | 3309 | enabled  |
 | 10.7.5.35@3308 | 10.7.5.35 | 3308 | disabled |
@@ -128,23 +132,26 @@ Example:
 ```
 mysql> SHOW INSTANCE LIST;
 +----------------+-----------+------+----------+
-| instance_id    | host      | port | status   |
+| instance_id    | host      | port | status   | 
 +----------------+-----------+------+----------+
 | 10.7.5.35@3309 | 10.7.5.35 | 3309 | enabled  |
 | 10.7.5.35@3308 | 10.7.5.35 | 3308 | disabled |
 | 10.7.5.35@3307 | 10.7.5.35 | 3307 | enabled  |
 +----------------+-----------+------+----------+
+
 mysql> ENABLE INSTANCE 10.7.5.35@3308;
 Query OK, 0 rows affected (0.01 sec)
+
 mysql> SHOW INSTANCE LIST;
 +----------------+-----------+------+----------+
-| instance_id    | host      | port | status   |
+| instance_id    | host      | port | status   | 
 +----------------+-----------+------+----------+
 | 10.7.5.35@3309 | 10.7.5.35 | 3309 | enabled  |
 | 10.7.5.35@3308 | 10.7.5.35 | 3308 | enabled  |
 | 10.7.5.35@3307 | 10.7.5.35 | 3307 | enabled  |
 +----------------+-----------+------+----------+
 ```
+
 After executing the `ENABLE INSTANCE` statement, you can query again and view that the instance state of Port 3308 has been restored to `enabled`.
 
 ## How to Manage Compute Node Parameters
@@ -165,26 +172,26 @@ First, let’s review how to configure props:
 
 ```
 props:
-max-connections-size-per-query: 1
-kernel-executor-size: 16  # Infinite by default.
-proxy-frontend-flush-threshold: 128  # The default value is 128.
-proxy-opentracing-enabled: false
-proxy-hint-enabled: false
-sql-show: false
-check-table-metadata-enabled: false
-show-process-list-enabled: false
-# Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
-# The default value is -1, which means set the minimum value for different JDBC drivers.
-proxy-backend-query-fetch-size: -1
-check-duplicate-table-enabled: false
-proxy-frontend-executor-size: 0 # Proxy frontend executor size. The default value is 0, which means let Netty decide.
-# Available options of proxy backend executor suitable: OLAP(default), OLTP. The OLTP option may reduce time cost of writing packets to client, but it may increase the latency of SQL execution
-# and block other clients if client connections are more than `proxy-frontend-executor-size`, especially executing slow SQL.
-proxy-backend-executor-suitable: OLAP
-proxy-frontend-max-connections: 0 # Less than or equal to 0 means no limitation.
-sql-federation-enabled: false
-# Available proxy backend driver type: JDBC (default), ExperimentalVertx
-proxy-backend-driver-type: JDBC
+  max-connections-size-per-query: 1
+  kernel-executor-size: 16  # Infinite by default.
+  proxy-frontend-flush-threshold: 128  # The default value is 128.
+  proxy-opentracing-enabled: false
+  proxy-hint-enabled: false
+  sql-show: false
+  check-table-metadata-enabled: false
+  show-process-list-enabled: false
+    # Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
+    # The default value is -1, which means set the minimum value for different JDBC drivers.
+  proxy-backend-query-fetch-size: -1
+  check-duplicate-table-enabled: false
+  proxy-frontend-executor-size: 0 # Proxy frontend executor size. The default value is 0, which means let Netty decide.
+    # Available options of proxy backend executor suitable: OLAP(default), OLTP. The OLTP option may reduce time cost of writing packets to client, but it may increase the latency of SQL execution
+    # and block other clients if client connections are more than `proxy-frontend-executor-size`, especially executing slow SQL.
+  proxy-backend-executor-suitable: OLAP
+  proxy-frontend-max-connections: 0 # Less than or equal to 0 means no limitation.
+  sql-federation-enabled: false
+    # Available proxy backend driver type: JDBC (default), ExperimentalVertx
+  proxy-backend-driver-type: JDBC
 ```
 Now, you can perform interactive queries by using the following syntax:
 
@@ -200,6 +207,7 @@ mysql> SHOW VARIABLE MAX_CONNECTIONS_SIZE_PER_QUERY;
 | 1                              |
 +--------------------------------+
 1 row in set (0.00 sec)
+
 mysql> SHOW VARIABLE SQL_SHOW;
 +----------+
 | sql_show |
@@ -207,6 +215,7 @@ mysql> SHOW VARIABLE SQL_SHOW;
 | false    |
 +----------+
 1 row in set (0.00 sec)
+……
 ```
 ……
 💡Note:
@@ -245,6 +254,7 @@ mysql> SHOW ALL VARIABLES;
 +---------------------------------------+----------------+
 21 rows in set (0.01 sec)
 ```
+
 `SET VARIABLE`
 
 Dynamic management of resources and rules is a special advantage of DistSQL. Now you can also dynamically update props parameters by using the `SET VARIABLE` statement. For example:
@@ -299,37 +309,37 @@ Specify `HOST`, `PORT`, `DB`
 
 ```
 ADD RESOURCE resource_0 (
-HOST=127.0.0.1,
-PORT=3306,
-DB=db0,
-USER=root,
-PASSWORD=root
+    HOST=127.0.0.1,
+    PORT=3306,
+    DB=db0,
+    USER=root,
+    PASSWORD=root
 );
 ```
 Specify `URL`
 
 ```
 ADD RESOURCE resource_1 (
-URL="jdbc:mysql://127.0.0.1:3306/db1?serverTimezone=UTC&useSSL=false",
-USER=root,
-PASSWORD=root
+    URL="jdbc:mysql://127.0.0.1:3306/db1?serverTimezone=UTC&useSSL=false",
+    USER=root,
+    PASSWORD=root
 );
 ```
 The above two syntax forms support the extension parameter PROPERTIES that is used to specify the attribute configuration of the connection pool between the Proxy and the storage node, such as:
 
 ```
 ADD RESOURCE resource_2 (
-HOST=127.0.0.1,
-PORT=3306,
-DB=db2,
-USER=root,
-PASSWORD=root,
-PROPERTIES("maximumPoolSize"=10)
+    HOST=127.0.0.1,
+    PORT=3306,
+    DB=db2,
+    USER=root,
+    PASSWORD=root,
+    PROPERTIES("maximumPoolSize"=10)
 ),resource_3 (
-URL="jdbc:mysql://127.0.0.1:3306/db3?serverTimezone=UTC&useSSL=false",
-USER=root,
-PASSWORD=root,
-PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
+    URL="jdbc:mysql://127.0.0.1:3306/db3?serverTimezone=UTC&useSSL=false",
+    USER=root,
+    PASSWORD=root,
+    PROPERTIES("maximumPoolSize"=10,"idleTimeout"="30000")
 );
 ```
 💡 Note: Specifying JDBC connection parameters, such as `useSSL`, is supported only with URL form.
@@ -342,16 +352,16 @@ Syntactically, `ALTER RESOURCE` is identical to `ADD RESOURCE`.
 
 ```
 ALTER RESOURCE resource_2 (
-HOST=127.0.0.1,
-PORT=3306,
-DB=db2,
-USER=root,
-PROPERTIES("maximumPoolSize"=50)
+    HOST=127.0.0.1,
+    PORT=3306,
+    DB=db2,
+    USER=root,
+    PROPERTIES("maximumPoolSize"=50)
 ),resource_3 (
-URL="jdbc:mysql://127.0.0.1:3306/db3?serverTimezone=GMT&useSSL=false",
-USER=root,
-PASSWORD=root,
-PROPERTIES("maximumPoolSize"=50,"idleTimeout"="30000")
+    URL="jdbc:mysql://127.0.0.1:3306/db3?serverTimezone=GMT&useSSL=false",
+    USER=root,
+    PASSWORD=root,
+    PROPERTIES("maximumPoolSize"=50,"idleTimeout"="30000")
 );
 ```
 💡 Note: Since modifying the storage node may cause metadata changes or application data exceptions, `ALTER RESOURCE` cannot used to modify the target database of the connection. Only the following values can be modified:
