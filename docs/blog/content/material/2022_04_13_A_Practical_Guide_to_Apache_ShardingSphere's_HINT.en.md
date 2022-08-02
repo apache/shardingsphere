@@ -335,7 +335,7 @@ public final class SetReadwriteSplittingHintExecutor extends AbstractHintUpdateE
 }
 ```
 
-```
+```java
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HintManagerHolder {
 
