@@ -1,17 +1,17 @@
 +++
-title = "ADD RESOURCE"
-weight = 2
+title = "ALTER RESOURCE"
+weight = 4
 +++
 
 ### 描述
 
-`ADD RESOURCE` 语法用于为当前所选逻辑库（DATABASE）添加资源。
+`ALTER RESOURCE` 语法用于修改当前所选逻辑库（DATABASE）的资源。
 
 ### 语法
 
 ```sql
-AddResource ::=
-  'ADD' 'RESOURCE' dataSource (',' dataSource)*
+AlterResource ::=
+  'ALTER' 'RESOURCE' dataSource (',' dataSource)*
 
 dataSource ::=
   dataSourceName '(' ( 'HOST' '=' hostName ',' 'PORT' '=' port ',' 'DB' '=' dbName  |  'URL' '=' url  ) ',' 'USER' '=' user (',' 'PASSWORD' '=' password )?  (',' 'PROPERTIES'  '(' ( key  '=' value ) ( ',' key  '=' value )* ')'  )?')'
@@ -36,12 +36,13 @@ user ::=
 
 url ::=
   identifier | string
-
 ```
 
-### 特别说明
+### 补充说明
 
-- 添加资源前请确认已经在 Proxy 中创建逻辑数据库，并执行 `use` 命令成功选择一个逻辑数据库；
+- 修改资源前请确认已经在 Proxy 中创建逻辑数据库，并执行 `use` 命令成功选择一个逻辑数据库；
+- `ALTER RESOURCE`不允许改变该资源关联的真实数据源；
+- `ALTER RESOURCE`会发生连接池的切换，这个操作可能对进行中的业务造成影响，请谨慎使用；
 - 确认添加的资源是可以正常连接的， 否则将不能添加成功；
 - `dataSourceName` 区分大小写；
 - `dataSourceName` 在当前逻辑库中需要唯一；
@@ -51,10 +52,10 @@ url ::=
 
 ### 示例
 
-- 使用标准模式添加资源
+- 使用标准模式修改资源
 
 ```sql
-ADD RESOURCE ds_0 (
+ALTER RESOURCE ds_0 (
     HOST=127.0.0.1,
     PORT=3306,
     DB=db_0,
@@ -63,10 +64,10 @@ ADD RESOURCE ds_0 (
 );
 ```
 
-- 使用标准模式添加资源并设置连接池参数
+- 使用标准模式修改资源并设置连接池参数
 
 ```sql
-ADD RESOURCE ds_1 (
+ALTER RESOURCE ds_1 (
     HOST=127.0.0.1,
     PORT=3306,
     DB=db_1,
@@ -76,10 +77,10 @@ ADD RESOURCE ds_1 (
 );
 ```
 
-- 使用 URL 模式添加资源并设置连接池参数
+- 使用 URL 模式修改资源并设置连接池参数
 
 ```sql
-ADD RESOURCE ds_2 (
+ALTER RESOURCE ds_2 (
     URL="jdbc:mysql://127.0.0.1:3306/db_2?serverTimezone=UTC&useSSL=false",
     USER=root,
     PASSWORD=root,
@@ -89,7 +90,7 @@ ADD RESOURCE ds_2 (
 
 ### 保留字
 
-`ADD`、`RESOURCE`、`HOST`、`PORT`、`DB`、`USER`、`PASSWORD`、`PROPERTIES`、`URL`
+`ALTER`、`RESOURCE`、`HOST`、`PORT`、`DB`、`USER`、`PASSWORD`、`PROPERTIES`、`URL`
 
 ### 相关链接
 
