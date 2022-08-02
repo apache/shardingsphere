@@ -12,7 +12,7 @@ Our team has made numerous performance optimizations to the ShardingSphere Kerne
 
 java.util.Optional, introduced by Java 8, it makes the code cleaner. For example, it can avoid methods returningnull values. Optionalis commonly used in two situations:
 
-```
+```java
 public T orElse(T other) {
     return value != null ? value : other;
 }
@@ -23,14 +23,14 @@ public T orElseGet(Supplier<? extends T> other) {
 ```
 In ShardingSphere item `org.apache.shardingsphere.infra.binder.segment.select.orderby.engine.OrderByContextEngine`, an Optional code is used as:
 
-```
+```java
 Optional<OrderByContext> result = // Omit codes...
 return result.orElse(getDefaultOrderByContextWithoutOrderBy(groupByContext));
 
 ```
 In the `orElse` statement above, the `orElse` methods will be called even if the result isn’t null. If the `orElse` method involves modification operations, accidents might occur. In the case of method calls, the statement should be adjusted accordingly:
 
-```
+```java
 Optional<OrderByContext> result = // Omit codes...
 return result.orElseGet(() -> getDefaultOrderByContextWithoutOrderBy(groupByContext));
 ```
@@ -50,7 +50,7 @@ However, in the Java 8 implementation even if the key exists, the method `comput
 This problem has been solved in Java 9. However, to avoid this problem and ensure concurrent performance in Java 8, we have adjusted the syntax in ShardingSphere’s code.
 Taking a frequently called ShardingSphere class `org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine` as an example:
 
-```
+```java
  // Omit some code...
     private static final Map<String, SQLExecutionUnitBuilder> TYPE_TO_BUILDER_MAP = new ConcurrentHashMap<>(8, 1);
     // Omit some code...
@@ -66,7 +66,7 @@ Taking a frequently called ShardingSphere class `org.apache.shardingsphere.infra
 
 In the code above, only two `type` will be passed into `computeIfAbsent`, and most SQL execution must adopt this code. As a result, there will be frequent concurrent calls of `computeIfAbsent` by the same key, hindering concurrent performance. The following method is adopted to avoid this problem:
 
-```
+```java
 SQLExecutionUnitBuilder result;
 if (null == (result = TYPE_TO_BUILDER_MAP.get(type))) {
     result = TYPE_TO_BUILDER_MAP.computeIfAbsent(type, key -> TypedSPIRegistry.getRegisteredService(SQLExecutionUnitBuilder.class, key, new Properties()));
@@ -94,7 +94,7 @@ This affects concurrent performance. Modification operations only exist at the i
 **Replace unnecessary String.format with string concatenation**
 There ShardingSphere item `org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter` has the following logic:
 
-```
+```java
   public String wrap(final String value) {
         return String.format("%s%s%s", startDelimiter, value, endDelimiter);
     }
@@ -102,7 +102,7 @@ There ShardingSphere item `org.apache.shardingsphere.sql.parser.sql.common.const
 
 The logic above is obviously a string concatenation, but the use of `String.format` means it costs more than direct string concatenation. It's adjusted as follows:
 
-```
+```java
 public String wrap(final String value) {
         return startDelimiter + value + endDelimiter;
     }
@@ -147,7 +147,7 @@ There are many cases of avoiding unnecessary logic repetitive calls:
 - hashCode calculation
 The ShardingSphere class `org.apache.shardingsphere.sharding.route.engine.condition.Column` implements the `equals` and `hashCode` methods:
 
-```
+```java
 @RequiredArgsConstructor
 @Getter
 @ToString
@@ -171,7 +171,7 @@ Obviously, the class above is unchangeable, but it calculates `hashCode` every t
 
 After adjustment:
 
-```
+```java
 @Getter
 @ToString
 public final class Column {
@@ -208,7 +208,7 @@ In ShardingSphere’s source code, the following scenarios require you to log me
 
 Take the following code as an example. Before reconstruction, it uses reflection to log method calls and replay. The reflection calls approach requires some overheads, and the code lacks readability.
 
-```
+```java
 @Override
 public void begin() {
     recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{false});
@@ -217,7 +217,7 @@ public void begin() {
 
 After reconstruction, the overheads of the reflection calls method are avoided:
 
-```
+```java
 @Override
 public void begin() {
     connection.getConnectionPostProcessors().add(target -> {
@@ -264,7 +264,7 @@ PostgreSQL JDBC Parameters
 - defaultRowFetchSize=50
 - reWriteBatchedInserts=true
 
-ShardingSphere-Proxy JVM Partial Parameters
+ShardingSphere-Proxy JVM Partial options
 
 - -Xmx16g
 - -Xms16g
