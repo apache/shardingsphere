@@ -1,7 +1,7 @@
 +++
-pre = "<b>7.6. </b>"
+pre = "<b>7.10. </b>"
 title = "Shadow"
-weight = 6
+weight = 10
 +++
 
 ## How it works

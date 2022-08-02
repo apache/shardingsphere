@@ -56,20 +56,20 @@ import java.util.function.BiPredicate;
 public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
     
     @Override
-    public boolean check(final String databaseName, final Grantee grantee, final AuthorityRule authorityRule) {
+    public boolean check(final String databaseName, final Grantee grantee, final AuthorityRule rule) {
         if (null == grantee) {
             return true;
         }
-        return authorityRule.findPrivileges(grantee).map(optional -> optional.hasPrivileges(databaseName)).orElse(false);
+        return rule.findPrivileges(grantee).map(optional -> optional.hasPrivileges(databaseName)).orElse(false);
     }
     
     @Override
     public SQLCheckResult check(final SQLStatementContext<?> sqlStatementContext, final List<Object> parameters, final Grantee grantee,
-                                final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final AuthorityRule authorityRule) {
+                                final String currentDatabase, final Map<String, ShardingSphereDatabase> databases, final AuthorityRule rule) {
         if (null == grantee) {
             return new SQLCheckResult(true, "");
         }
-        Optional<ShardingSpherePrivileges> privileges = authorityRule.findPrivileges(grantee);
+        Optional<ShardingSpherePrivileges> privileges = rule.findPrivileges(grantee);
         if (!privileges.isPresent()) {
             return new SQLCheckResult(false, String.format("Access denied for user '%s'@'%s'", grantee.getUsername(), grantee.getHostname()));
         }
@@ -85,13 +85,13 @@ public final class AuthorityChecker implements SQLChecker<AuthorityRule> {
     }
     
     @Override
-    public boolean check(final Grantee grantee, final AuthorityRule authorityRule) {
-        return authorityRule.findUser(grantee).isPresent();
+    public boolean check(final Grantee grantee, final AuthorityRule rule) {
+        return rule.findUser(grantee).isPresent();
     }
     
     @Override
-    public boolean check(final Grantee grantee, final BiPredicate<Object, Object> validator, final Object cipher, final AuthorityRule authorityRule) {
-        Optional<ShardingSphereUser> user = authorityRule.findUser(grantee);
+    public boolean check(final Grantee grantee, final BiPredicate<Object, Object> validator, final Object cipher, final AuthorityRule rule) {
+        Optional<ShardingSphereUser> user = rule.findUser(grantee);
         return user.filter(each -> validator.test(each, cipher)).isPresent();
     }
     

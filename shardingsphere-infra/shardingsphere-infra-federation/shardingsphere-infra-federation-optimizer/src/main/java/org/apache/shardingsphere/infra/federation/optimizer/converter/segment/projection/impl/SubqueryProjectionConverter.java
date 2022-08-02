@@ -31,6 +31,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.expr.subquery
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.SubqueryProjectionSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
@@ -53,7 +54,7 @@ public final class SubqueryProjectionConverter implements SQLSegmentConverter<Su
         Collection<SqlNode> sqlNodes = new LinkedList<>();
         sqlNodes.add(sqlNode);
         sqlNodes.add(new SqlIdentifier(alias, SqlParserPos.ZERO));
-        return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, sqlNodes.toArray(new SqlNode[]{}), SqlParserPos.ZERO));
+        return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, new ArrayList<>(sqlNodes), SqlParserPos.ZERO));
     }
     
     @Override

@@ -751,7 +751,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
     public ASTNode visitUpdate(final UpdateContext ctx) {
         PostgreSQLUpdateStatement result = new PostgreSQLUpdateStatement();
         SimpleTableSegment tableSegment = (SimpleTableSegment) visit(ctx.relationExprOptAlias());
-        result.setTableSegment(tableSegment);
+        result.setTable(tableSegment);
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setClauseList()));
         if (null != ctx.whereOrCurrentClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereOrCurrentClause()));
@@ -771,7 +771,7 @@ public abstract class PostgreSQLStatementSQLVisitor extends PostgreSQLStatementP
     public ASTNode visitDelete(final DeleteContext ctx) {
         PostgreSQLDeleteStatement result = new PostgreSQLDeleteStatement();
         SimpleTableSegment tableSegment = (SimpleTableSegment) visit(ctx.relationExprOptAlias());
-        result.setTableSegment(tableSegment);
+        result.setTable(tableSegment);
         if (null != ctx.whereOrCurrentClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereOrCurrentClause()));
         }

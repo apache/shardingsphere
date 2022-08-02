@@ -26,7 +26,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.JobProgressYamlSwapper;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobProgress;
 import org.apache.shardingsphere.data.pipeline.core.util.ConfigurationFileUtil;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.junit.Test;
 
 import java.util.Optional;

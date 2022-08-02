@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.order.item.Co
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.OwnerSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.Collections;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -42,7 +43,7 @@ public final class ColumnOrderByItemConverter implements SQLSegmentConverter<Col
     public Optional<SqlNode> convertToSQLNode(final ColumnOrderByItemSegment segment) {
         Optional<SqlNode> result = new ColumnConverter().convertToSQLNode(segment.getColumn()).map(optional -> optional);
         if (result.isPresent() && Objects.equals(OrderDirection.DESC, segment.getOrderDirection())) {
-            result = Optional.of(new SqlBasicCall(SqlStdOperatorTable.DESC, new SqlNode[]{result.get()}, SqlParserPos.ZERO));
+            result = Optional.of(new SqlBasicCall(SqlStdOperatorTable.DESC, Collections.singletonList(result.get()), SqlParserPos.ZERO));
         }
         return result;
     }

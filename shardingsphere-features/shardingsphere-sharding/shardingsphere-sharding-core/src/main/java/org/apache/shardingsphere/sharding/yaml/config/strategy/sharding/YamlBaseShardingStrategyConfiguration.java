@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.yaml.config.strategy.sharding;
 
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
  * Sharding base strategy configuration for YAML.

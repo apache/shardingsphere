@@ -194,7 +194,7 @@ public final class RuleAlteredJobPreparer {
         taskConfig.getDumperConfig().setPosition(getIncrementalPosition(jobContext, taskConfig, dataSourceManager));
         PipelineTableMetaDataLoader sourceMetaDataLoader = jobContext.getSourceMetaDataLoader();
         AsyncPipelineJobPersistCallback persistCallback = new AsyncPipelineJobPersistCallback(jobContext.getJobId(), jobContext.getShardingItem());
-        IncrementalTask incrementalTask = new IncrementalTask(taskConfig.getJobConfig().getConcurrency(),
+        IncrementalTask incrementalTask = new IncrementalTask(taskConfig.getImporterConfig().getConcurrency(),
                 taskConfig.getDumperConfig(), taskConfig.getImporterConfig(), pipelineChannelCreator, dataSourceManager, sourceMetaDataLoader, incrementalDumperExecuteEngine, persistCallback);
         jobContext.getIncrementalTasks().add(incrementalTask);
     }
@@ -207,7 +207,7 @@ public final class RuleAlteredJobPreparer {
                 return position.get();
             }
         }
-        String databaseType = taskConfig.getJobConfig().getSourceDatabaseType();
+        String databaseType = taskConfig.getDumperConfig().getDataSourceConfig().getDatabaseType().getType();
         DataSource dataSource = dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig());
         return PositionInitializerFactory.getInstance(databaseType).init(dataSource);
     }

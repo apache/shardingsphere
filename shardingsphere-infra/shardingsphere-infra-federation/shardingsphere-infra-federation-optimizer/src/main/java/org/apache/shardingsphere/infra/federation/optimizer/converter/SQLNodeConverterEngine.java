@@ -32,6 +32,8 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.combine.Combi
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
+import java.util.Arrays;
+
 /**
  * SQL node converter engine.
  */
@@ -49,7 +51,7 @@ public final class SQLNodeConverterEngine {
             SqlNode sqlNode = new SelectStatementConverter().convertToSQLNode((SelectStatement) statement);
             for (CombineSegment each : ((SelectStatement) statement).getCombines()) {
                 SqlNode combineSqlNode = convertToSQLNode(each.getSelectStatement());
-                return new SqlBasicCall(CombineOperatorConverter.convert(each.getCombineType()), new SqlNode[]{sqlNode, combineSqlNode}, SqlParserPos.ZERO);
+                return new SqlBasicCall(CombineOperatorConverter.convert(each.getCombineType()), Arrays.asList(sqlNode, combineSqlNode), SqlParserPos.ZERO);
             }
             return sqlNode;
         }
