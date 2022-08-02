@@ -15,19 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.dal;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal;
 
-import lombok.ToString;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResetParameterStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
+
+import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * OpenGauss reset parameter statement.
+ * Reset parameter statement test case for PostgreSQL/openGauss.
  */
-@ToString(callSuper = true)
-public final class OpenGaussResetParameterStatement extends ResetParameterStatement implements OpenGaussStatement {
+@Getter
+@Setter
+public final class ResetParameterStatementTestCase extends SQLParserTestCase {
     
-    public OpenGaussResetParameterStatement(final String configurationParameter) {
-        super(configurationParameter);
-    }
+    @XmlAttribute(name = "configuration-parameter")
+    private String configurationParameter;
 }
