@@ -40,6 +40,6 @@ public final class ResetParameterStatementAssert {
      * @param expected expected reset parameter statement test case
      */
     public static void assertIs(final SQLCaseAssertContext assertContext, final ResetParameterStatement actual, final ResetParameterStatementTestCase expected) {
-        assertThat(assertContext.getText("variableAssign size assertion error: "), actual.getConfigurationParameter(), is(expected.getConfigurationParameter()));
+        assertThat(assertContext.getText("Configuration parameter assertion error: "), actual.getConfigurationParameter(), is(expected.getConfigurationParameter()));
     }
 }
