@@ -95,7 +95,7 @@ Download the `driver mysql-connector-java-5.1.47.jar` ([Click the link to downlo
 **2. Modify the `conf/server.yaml` configuration file**
 For `server.yaml` the default operation mode is `Cluster Mode`. Below is how to configure the standalone operation mode.
 
-```
+```yaml
 mode:
  type: Standalone #Standalone mode
  repository:
@@ -169,7 +169,7 @@ Based on actual prouction scenarios, we’d like to show you how you can utilize
 
 **1. Initialize the database & table**
 
-```
+```sql
 # CREATE DATABASE
 CREATE DATABASE user_sharding_0;
 
@@ -208,7 +208,7 @@ CREATE TABLE `t_user_1` (
 ```
 **2. Initialize sharding configuration in Proxy**
 
-```
+```yaml
 schemaName: sharding_db
 
 dataSources:
@@ -385,10 +385,4 @@ https://shardingsphere.apache.org/document/current/en/downloads/
 [4] Apache ShardingSphere official website: https://shardingsphere.apache.org/
 
 [5] Build a Distributed Database Solution based on PostgreSQL/openGauss: https://shardingsphere.apache.org/blog/en/material/jan_28_blog_pg_create_a_distributed_database_solution_based_on_postgresql__opengauss/
-
-
-
-
-
-
 
