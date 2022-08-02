@@ -15,7 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.yaml.fixture;
+package org.apache.shardingsphere.infra.util.yaml.fixture.pojo;
 
-public final class CustomizedClassFixture {
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+
+import java.util.Collection;
+import java.util.Map;
+
+@Getter
+@Setter
+public final class YamlConfigurationFixture implements YamlConfiguration {
+    
+    private String value;
+    
+    private Collection<String> collection;
+    
+    private Map<String, String> map;
+    
+    private Map<String, Map<String, String>> embeddedMap;
+    
+    private CustomizedClassFixture customizedClass;
+    
+    private String customizedTag;
 }
