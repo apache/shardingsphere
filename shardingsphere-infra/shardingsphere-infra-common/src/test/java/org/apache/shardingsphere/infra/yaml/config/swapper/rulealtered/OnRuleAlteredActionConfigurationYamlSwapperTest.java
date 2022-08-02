@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.yaml.config.swapper.rulealtered;
 
 import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActionConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlOnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlOnRuleAlteredActionConfiguration.YamlInputConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlOnRuleAlteredActionConfiguration.YamlOutputConfiguration;
@@ -43,19 +43,19 @@ public final class OnRuleAlteredActionConfigurationYamlSwapperTest {
         rateLimiterProps.setProperty("qps", "50");
         YamlInputConfiguration yamlInputConfig = YamlInputConfiguration.buildWithDefaultValue();
         yamlConfig.setInput(yamlInputConfig);
-        yamlInputConfig.setRateLimiter(new YamlShardingSphereAlgorithmConfiguration("INPUT", rateLimiterProps));
+        yamlInputConfig.setRateLimiter(new YamlAlgorithmConfiguration("INPUT", rateLimiterProps));
         YamlOutputConfiguration yamlOutputConfig = YamlOutputConfiguration.buildWithDefaultValue();
-        yamlOutputConfig.setRateLimiter(new YamlShardingSphereAlgorithmConfiguration("OUTPUT", rateLimiterProps));
+        yamlOutputConfig.setRateLimiter(new YamlAlgorithmConfiguration("OUTPUT", rateLimiterProps));
         yamlConfig.setOutput(yamlOutputConfig);
         Properties streamChannelProps = new Properties();
         streamChannelProps.setProperty("block-queue-size", "10000");
-        yamlConfig.setStreamChannel(new YamlShardingSphereAlgorithmConfiguration("MEMORY", streamChannelProps));
+        yamlConfig.setStreamChannel(new YamlAlgorithmConfiguration("MEMORY", streamChannelProps));
         Properties completionDetectorProps = new Properties();
         completionDetectorProps.setProperty("incremental-task-idle-seconds-threshold", "1800");
-        yamlConfig.setCompletionDetector(new YamlShardingSphereAlgorithmConfiguration("IDLE", completionDetectorProps));
+        yamlConfig.setCompletionDetector(new YamlAlgorithmConfiguration("IDLE", completionDetectorProps));
         Properties dataConsistencyCheckerProps = new Properties();
         dataConsistencyCheckerProps.setProperty("chunk-size", "1000");
-        yamlConfig.setDataConsistencyChecker(new YamlShardingSphereAlgorithmConfiguration("DATA_MATCH", dataConsistencyCheckerProps));
+        yamlConfig.setDataConsistencyChecker(new YamlAlgorithmConfiguration("DATA_MATCH", dataConsistencyCheckerProps));
         OnRuleAlteredActionConfigurationYamlSwapper yamlSwapper = new OnRuleAlteredActionConfigurationYamlSwapper();
         OnRuleAlteredActionConfiguration actualConfig = yamlSwapper.swapToObject(yamlConfig);
         YamlOnRuleAlteredActionConfiguration actualYamlConfig = yamlSwapper.swapToYamlConfiguration(actualConfig);

@@ -29,7 +29,7 @@
     },
     {
       "name": "spring.shardingsphere.rules.readwrite-splitting.load-balancers",
-      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration>",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration>",
       "sourceType": "org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration"
     }
   ],
@@ -41,7 +41,7 @@
     },
     {
       "name": "spring.shardingsphere.rules.readwrite-splitting.load-balancers",
-      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration>",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration>",
       "sourceType": "org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration"
     }
   ],
@@ -65,7 +65,7 @@
         {
           "name": "handle-as",
           "parameters": {
-            "target": "org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration"
+            "target": "org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration"
           }
         }
       ]

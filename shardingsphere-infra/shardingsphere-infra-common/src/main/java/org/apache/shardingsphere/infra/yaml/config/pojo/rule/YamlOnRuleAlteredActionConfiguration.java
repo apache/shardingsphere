@@ -22,7 +22,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 
 /**
  * YAML on rule altered action configuration.
@@ -36,11 +36,11 @@ public final class YamlOnRuleAlteredActionConfiguration implements YamlConfigura
     
     private YamlOutputConfiguration output;
     
-    private YamlShardingSphereAlgorithmConfiguration streamChannel;
+    private YamlAlgorithmConfiguration streamChannel;
     
-    private YamlShardingSphereAlgorithmConfiguration completionDetector;
+    private YamlAlgorithmConfiguration completionDetector;
     
-    private YamlShardingSphereAlgorithmConfiguration dataConsistencyChecker;
+    private YamlAlgorithmConfiguration dataConsistencyChecker;
     
     @Data
     public static final class YamlInputConfiguration implements YamlConfiguration {
@@ -57,7 +57,7 @@ public final class YamlOnRuleAlteredActionConfiguration implements YamlConfigura
         
         private Integer shardingSize = DEFAULT_SHARDING_SIZE;
         
-        private YamlShardingSphereAlgorithmConfiguration rateLimiter;
+        private YamlAlgorithmConfiguration rateLimiter;
         
         /**
          * Build with default value.
@@ -95,7 +95,7 @@ public final class YamlOnRuleAlteredActionConfiguration implements YamlConfigura
         
         private Integer batchSize = DEFAULT_BATCH_SIZE;
         
-        private YamlShardingSphereAlgorithmConfiguration rateLimiter;
+        private YamlAlgorithmConfiguration rateLimiter;
         
         /**
          * Build with default value.

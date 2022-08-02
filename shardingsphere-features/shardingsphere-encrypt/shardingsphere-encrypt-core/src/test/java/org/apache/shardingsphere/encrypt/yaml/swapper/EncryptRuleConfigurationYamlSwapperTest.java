@@ -22,7 +22,7 @@ import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfigu
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperFactory;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.junit.Test;
@@ -67,7 +67,7 @@ public final class EncryptRuleConfigurationYamlSwapperTest {
         YamlEncryptTableRuleConfiguration tableRuleConfig = new YamlEncryptTableRuleConfiguration();
         tableRuleConfig.setName("t_encrypt");
         result.getTables().put("t_encrypt", tableRuleConfig);
-        YamlShardingSphereAlgorithmConfiguration algorithmConfig = new YamlShardingSphereAlgorithmConfiguration();
+        YamlAlgorithmConfiguration algorithmConfig = new YamlAlgorithmConfiguration();
         algorithmConfig.setType("CORE.FIXTURE");
         result.getEncryptors().put("fixture_encryptor", algorithmConfig);
         return result;
