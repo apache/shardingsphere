@@ -51,7 +51,7 @@ DROP RESOURCE IF EXISTS ds_2;
 
 ### Reserved word
 
-`DROP`、 `RESOURCE`、 `IF`、 `EXISTS`、 `IGNORE`、 `SINGLE`、 `TABLES`
+`DROP`, `RESOURCE`, `IF`, `EXISTS`, `IGNORE`, `SINGLE`, `TABLES`
 
 ### Related links
 

@@ -9,7 +9,7 @@ The `CREATE SHARDING ALGORITHM` syntax is used to create a sharding algorithm fo
 
 ### Syntax
 
-```SQL
+```sql
 CreateShardingAlgorithm ::=
   'CREATE' 'SHARDING' 'ALGORITHM' shardingAlgorithmName '(' algorithmDefinition ')'
 
@@ -48,8 +48,7 @@ CREATE SHARDING ALGORITHM interval_algorithm (
 
 ### Reserved word
 
-    CREATE、SHARDING、ALGORITHM、TYPE、NAME、PROPERTIES
+`CREATE`, `SHARDING`, `ALGORITHM`, `TYPE`, `NAME`, `PROPERTIES`
 
 ### Related links
 - [Reserved word](/cn/reference/distsql/syntax/reserved-word/)
-

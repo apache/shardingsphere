@@ -9,7 +9,7 @@ weight = 3
 
 ### 语法定义
 
-```SQL
+```sql
 CreateDefaultShardingStrategy ::=
   'CREATE' 'DEFAULT' 'SHARDING' ('DATABASE' | 'TABLE') 'STRATEGY' '(' shardingStrategy ')'
 
@@ -34,9 +34,8 @@ algorithmType ::=
 
 ### 补充说明
 
-- 当使用复合分片算法时，需要通过 `SHARDING_COLUMNS` 指定多个分片键 
+- 当使用复合分片算法时，需要通过 `SHARDING_COLUMNS` 指定多个分片键
 - `algorithmType` 为分片算法类型，详细的分片算法类型信息请参考[分片算法](/cn/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/)
-
 
 ### 示例
 
@@ -64,4 +63,5 @@ CREATE DEFAULT SHARDING TABLE STRATEGY (
 ```
 
 ### 相关链接
+
 - [CREATE SHARDING ALGORITHM](/cn/reference/distsql/syntax/rdl/rule-definition/create-sharding-algorithm/)
