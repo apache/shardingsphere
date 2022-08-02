@@ -36,7 +36,7 @@ I’d like to explain its basic implementation principle first to help you gain 
 - **The Implementation of HintManager**
 The code snippet below can help you quickly understand the principle of `HintManager`.
 
-```
+```java
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HintManager implements AutoCloseable {
 
@@ -55,7 +55,7 @@ To use the `Hint Sharding Algorithm`, users are required to implement the interf
 
 > **The configuration is as follows:**
 
-```
+```yaml
 rules:
 - !SHARDING
   tables:
@@ -79,7 +79,7 @@ props:
 
 > **Get the HintManager instance:**
 
-```
+```java
 HintManager hintManager = HintManager.getInstance();
 ```
 
@@ -96,7 +96,7 @@ Note: In the case of database sharding without table sharding, when using HINT t
 
 > **The complete code snippet example is as follows:**
 
-```
+```java
 String sql = "SELECT * FROM t_order";
 try (HintManager hintManager = HintManager.getInstance();
      Connection conn = dataSource.getConnection();
@@ -139,7 +139,7 @@ It is the same as HINT-based Data Sharding described above.
 
 > The complete code snippet example is as follows:
 
-```
+```java
 String sql = "SELECT * FROM t_order";
 try (HintManager hintManager = HintManager.getInstance();
      Connection conn = dataSource.getConnection();
@@ -165,7 +165,7 @@ Use `hintManager.setWriteRouteOnly` to set database name.
 
 > The complete code snippet example is as follows:
 
-```
+```java
 String sql = "SELECT * FROM t_order";
 try (HintManager hintManager = HintManager.getInstance();
      Connection conn = dataSource.getConnection();
@@ -193,7 +193,7 @@ DistSQL HINT provided by Apache ShardingSphere is composed of two functions: one
 `SQL HINT` is a HINT method to implement forced routing by adding annotations to SQL statements, reducing the cost of code modification for users. This means that it is not subjected to the limitations of Java API, and is available in both ShardingSphere-JDBC and ShardingSphere-Proxy.
 
 Take the following SQL statement as an example. Even if the user configures the relevant sharding algorithm for t_order, the SQL statement will be directly executed on the database ds_0 and the execution result will be returned.
-```
+```sql
 /* ShardingSphere hint: dataSourceName=ds_0 */
 SELECT * FROM t_order;
 ```
@@ -224,7 +224,7 @@ INLINE_COMMENT: (('-- ' | '#') ~[\r\n]* ('\r'? '\n' | EOF) | '--' ('\r'? '\n' | 
 
 - Access the syntax tree and add the extraction of the annotation
 
-```
+```java
 public <T> T visit(final ParseContext parseContext) {
     ParseTreeVisitor<T> visitor = SQLVisitorFactory.newInstance(databaseType, visitorType, SQLVisitorRule.valueOf(parseContext.getParseTree().getClass()), props);
     T result = parseContext.getParseTree().accept(visitor);
@@ -245,7 +245,7 @@ After extracting the SQL annotation information, we need to perform related mand
 
 We have made some modifications for HINT on the Router engine.
 
-```
+```java
 public RouteContext route(final LogicSQL logicSQL, final ShardingSphereMetaData metaData) {
     RouteContext result = new RouteContext();
     Optional<String> dataSourceName = findDataSourceByHint(logicSQL.getSqlStatementContext(), metaData.getResource().getDataSources());
@@ -282,14 +282,14 @@ Step 2: Add SQL comments. Currently `SQL HINT` supports specifying data source r
 
 - Data source-specified Routing: currently only supports routing to one data source. The comment format only supports `/* */` for the time being and starts with `ShardingSphere hint`: with the attribute name `dataSourceName`.
 
-```
+```sql
 /* ShardingSphere hint: dataSourceName=ds_0 */
 SELECT * FROM t_order;
 ```
 
 - Primary Database Routing: The comment format only supports /* */ for the time being. The content needs to start `ShardingSphere hint`: and the attribute name is `writeRouteOnly`.
 
-```
+```sql
 /* ShardingSphere hint: writeRouteOnly=true */
 SELECT * FROM t_order;
 ```
@@ -311,7 +311,7 @@ Taking the read/write splitting HINT as an example. When a user executes the fol
 set readwrite_splitting hint source = write
 ```
 
-```
+```java
 @RequiredArgsConstructor
 public final class SetReadwriteSplittingHintExecutor extends AbstractHintUpdateExecutor<SetReadwriteSplittingHintStatement> {
 
