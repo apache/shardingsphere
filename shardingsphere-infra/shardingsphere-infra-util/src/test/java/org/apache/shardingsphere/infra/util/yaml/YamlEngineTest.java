@@ -37,7 +37,7 @@ public final class YamlEngineTest {
     
     @Test
     public void assertUnmarshalWithFile() throws IOException {
-        URL url = getClass().getClassLoader().getResource("yaml/fixture-rule.yaml");
+        URL url = getClass().getClassLoader().getResource("yaml/shortcuts-fixture.yaml");
         assertNotNull(url);
         YamlShortcutsConfigurationFixture actual = YamlEngine.unmarshal(new File(url.getFile()), YamlShortcutsConfigurationFixture.class);
         assertThat(actual.getName(), is("test"));
@@ -45,7 +45,7 @@ public final class YamlEngineTest {
     
     @Test
     public void assertUnmarshalWithYamlBytes() throws IOException {
-        URL url = getClass().getClassLoader().getResource("yaml/fixture-rule.yaml");
+        URL url = getClass().getClassLoader().getResource("yaml/shortcuts-fixture.yaml");
         assertNotNull(url);
         StringBuilder yamlContent = new StringBuilder();
         try (
