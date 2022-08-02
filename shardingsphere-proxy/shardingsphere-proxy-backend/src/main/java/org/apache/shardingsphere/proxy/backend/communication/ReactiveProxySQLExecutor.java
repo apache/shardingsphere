@@ -90,10 +90,14 @@ public final class ReactiveProxySQLExecutor {
     }
 
     private boolean isUnsupportedDDLStatement(final SQLStatement sqlStatement) {
-        if (sqlStatement instanceof TruncateStatement) {
+        if (isPostgreSQLOrOpenGaussStatement(sqlStatement) && sqlStatement instanceof TruncateStatement) {
             return false;
         }
         return sqlStatement instanceof DDLStatement;
+    }
+    
+    private boolean isPostgreSQLOrOpenGaussStatement(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof PostgreSQLStatement || sqlStatement instanceof OpenGaussStatement;
     }
     
     /**
