@@ -55,6 +55,8 @@ public final class IntegrationTestEnvironment {
     
     private final List<String> allowTransactionTypes;
     
+    private final List<String> allowXAProviders;
+    
     private final Map<String, TransactionTestCaseRegistry> transactionTestCaseRegistryMap;
     
     private IntegrationTestEnvironment() {
@@ -65,6 +67,8 @@ public final class IntegrationTestEnvironment {
         openGaussVersions = splitProperty("transaction.it.docker.opengauss.version");
         needToRunTestCases = splitProperty("transaction.it.env.cases");
         allowTransactionTypes = splitProperty("transaction.it.env.transtypes");
+        allowXAProviders = splitProperty("transaction.it.env.xa.providers");
+        log.info("Loaded properties, allowTransactionTypes:{}, allowXAProviders:{}", allowTransactionTypes, allowXAProviders);
         transactionTestCaseRegistryMap = initTransactionTestCaseRegistryMap();
     }
     

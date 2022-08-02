@@ -62,8 +62,8 @@ public final class CommonSQLCommand {
     @XmlElement(name = "alter-local-transaction-rule")
     private String alterLocalTransactionRule;
     
-    @XmlElement(name = "alter-xa-atomikos-transaction-rule")
-    private String alterXaAtomikosTransactionRule;
+    @XmlElement(name = "alter-xa-transaction-rule")
+    private String alterXATransactionRule;
     
     @XmlElement(name = "source-add-resource-template")
     private String sourceAddResourceTemplate;
