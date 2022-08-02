@@ -37,7 +37,8 @@ import java.util.stream.Collectors;
  */
 @Getter
 @Setter
-public final class JobProgress {
+// TODO now rename
+public final class JobProgress implements PipelineJobProgress {
     
     private JobStatus status = JobStatus.RUNNING;
     

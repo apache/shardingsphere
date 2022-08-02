@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.util.yaml.fixture.constructor;
 
 import org.apache.shardingsphere.infra.util.yaml.constructor.ShardingSphereYamlConstruct;
-import org.apache.shardingsphere.infra.util.yaml.fixture.CustomizedClassFixture;
+import org.apache.shardingsphere.infra.util.yaml.fixture.pojo.CustomizedClassFixture;
 import org.yaml.snakeyaml.nodes.Node;
 
 public final class ShardingSphereYamlConstructFixture implements ShardingSphereYamlConstruct {

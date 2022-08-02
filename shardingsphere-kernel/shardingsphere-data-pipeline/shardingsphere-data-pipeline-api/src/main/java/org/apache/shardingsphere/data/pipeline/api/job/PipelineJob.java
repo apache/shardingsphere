@@ -15,7 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.yaml.fixture;
+package org.apache.shardingsphere.data.pipeline.api.job;
 
-public final class CustomizedClassFixture {
+/**
+ * Pipeline job.
+ */
+public interface PipelineJob {
 }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.util.yaml.representer;
 
-import org.apache.shardingsphere.infra.util.yaml.fixture.YamlConfigurationFixture;
+import org.apache.shardingsphere.infra.util.yaml.fixture.pojo.YamlConfigurationFixture;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 

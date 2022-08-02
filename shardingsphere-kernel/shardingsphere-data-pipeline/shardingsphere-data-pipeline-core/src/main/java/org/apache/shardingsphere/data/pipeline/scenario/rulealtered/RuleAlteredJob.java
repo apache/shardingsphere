@@ -20,6 +20,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.RuleAlteredJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
@@ -31,7 +32,7 @@ import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
  * Rule altered job.
  */
 @Slf4j
-public final class RuleAlteredJob implements SimpleJob {
+public final class RuleAlteredJob implements SimpleJob, PipelineJob {
     
     private final GovernanceRepositoryAPI governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
     

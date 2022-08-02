@@ -15,27 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.detect;
+package org.apache.shardingsphere.infra.util.yaml.fixture.pojo;
 
 import lombok.Getter;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
-import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 import java.util.Collection;
+import java.util.Map;
 
-/**
- * Rule altered job almost completed parameter.
- */
-@RequiredArgsConstructor
 @Getter
-@ToString
-// TODO now rename
-public final class RuleAlteredJobAlmostCompletedParameter {
+@Setter
+public final class YamlConfigurationFixture implements YamlConfiguration {
     
-    private final int jobShardingCount;
+    private String value;
     
-    @NonNull
-    private final Collection<JobProgress> jobProgresses;
+    private Collection<String> collection;
+    
+    private Map<String, String> map;
+    
+    private Map<String, Map<String, String>> embeddedMap;
+    
+    private CustomizedClassFixture customizedClass;
+    
+    private String customizedTag;
 }
