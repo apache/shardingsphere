@@ -297,7 +297,7 @@ public final class MySQLClient {
         @Override
         public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
             running = false;
-            if (lastBinlogEvent != null) {
+            if (null != lastBinlogEvent) {
                 log.error("MySQLBinlogEventHandler protocol resolution error, file name:{}, position:{}", lastBinlogEvent.getFileName(), lastBinlogEvent.getPosition(), cause);
             }
         }
