@@ -218,20 +218,12 @@ mysql> SELECT id, mobile, idcard FROM t_user WHERE id = 10001;
 View the ShardingSphere-Proxy log and see if the route node is `ds_2`.
 
 ```
-<<<<<<< Updated upstream
-[INFO ] 2022-02-28 15:40:26.784 [ShardingSphere-Command-6] ShardingSphere-SQL - Logic SQL: INSERT INTO t_user(id, mobile, idcard) value (10001, '13521207777', '110xxxxx')
-[INFO ] 2022-02-28 15:40:26.784 [ShardingSphere-Command-6] ShardingSphere-SQL - SQLStatement: MySQLInsertStatement(setAssignment=Optional.empty, onDuplicateKeyColumns=Optional.empty)
-[INFO ] 2022-02-28 15:40:26.784 [ShardingSphere-Command-6] ShardingSphere-SQL - Actual SQL: ds_1 ::: INSERT INTO t_user(id, mobile, idcard) value (10001, '13521207777', '110xxxxx')
-> **Release the secondary databases*
-![Image description](https://blog.devgenius.io/create-a-distributed-database-with-high-availability-with-apache-shardingsphere-b73bf776592)
-=======
 [INFO ] 2022-02-28 15:42:00.651 [ShardingSphere-Command-7] ShardingSphere-SQL - Logic SQL: SELECT id, mobile, idcard FROM t_user WHERE id = 10001
 [INFO ] 2022-02-28 15:42:00.651 [ShardingSphere-Command-7] ShardingSphere-SQL - SQLStatement: MySQLSelectStatement(table=Optional.empty, limit=Optional.empty, lock=Optional.empty, window=Optional.empty)
 [INFO ] 2022-02-28 15:42:00.651 [ShardingSphere-Command-7] ShardingSphere-SQL - Actual SQL: ds_2 ::: SELECT id, mobile, idcard FROM t_user WHERE id = 10001
 [INFO ] 2022-02-28 15:42:02.148 [ShardingSphere-Command-7] ShardingSphere-SQL - Logic SQL: SELECT id, mobile, idcard FROM t_user WHERE id = 10001
 [INFO ] 2022-02-28 15:42:02.149 [ShardingSphere-Command-7] ShardingSphere-SQL - SQLStatement: MySQLSelectStatement(table=Optional.empty, limit=Optional.empty, lock=Optional.empty, window=Optional.empty)
 [INFO ] 2022-02-28 15:42:02.149 [ShardingSphere-Command-7] ShardingSphere-SQL - Actual SQL: ds_2 ::: SELECT id, mobile, idcard FROM t_user WHERE id = 10001
->>>>>>> Stashed changes
 ```
 
 
@@ -245,10 +237,7 @@ mysql> SHOW READWRITE_SPLITTING RULES;
 | replication_ds | mgr_replication_ds          | ds_1                   | ds_0,ds_2              | NULL               |                     |
 +----------------+-----------------------------+------------------------+------------------------+--------------------+---------------------+
 1 row in set (0.01 sec)
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
 mysql> SHOW READWRITE_SPLITTING READ RESOURCES;
 +----------+---------+
 | resource | status  |
@@ -258,7 +247,6 @@ mysql> SHOW READWRITE_SPLITTING READ RESOURCES;
 +----------+---------+
 2 rows in set (0.00 sec)
 ```
-
 
 Based on the above-mentioned example, you now know more about ShardingSphere's high availability and dynamic read/write splitting.
 
