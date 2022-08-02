@@ -143,7 +143,8 @@ SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "FORMAT", new Pro
 String result = visitorEngine.visit(parseContext);
 ```
 Apache ShardingSphere’s `SQLVisitorEngine` also abstracts and encapsulates various dialect visitors. The core method is shown below:
-```
+
+```java
 public <T> T visit(final ParseContext parseContext) {
     ParseTreeVisitor<T> visitor = SQLVisitorFactory.newInstance(databaseType, visitorType, SQLVisitorRule.valueOf(parseContext.getParseTree().getClass()), props);
     T result = parseContext.getParseTree().accept(visitor);
