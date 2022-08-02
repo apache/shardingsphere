@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.yaml.swapper;
 
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.ShardingSphereAlgorithmConfigurationYamlSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.AlgorithmConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rulealtered.OnRuleAlteredActionConfigurationYamlSwapper;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.constant.ShardingOrder;
@@ -45,7 +45,7 @@ public final class ShardingRuleConfigurationYamlSwapper implements YamlRuleConfi
     
     private final KeyGenerateStrategyConfigurationYamlSwapper keyGenerateStrategyYamlSwapper = new KeyGenerateStrategyConfigurationYamlSwapper();
     
-    private final ShardingSphereAlgorithmConfigurationYamlSwapper algorithmSwapper = new ShardingSphereAlgorithmConfigurationYamlSwapper();
+    private final AlgorithmConfigurationYamlSwapper algorithmSwapper = new AlgorithmConfigurationYamlSwapper();
     
     private final OnRuleAlteredActionConfigurationYamlSwapper onRuleAlteredActionYamlSwapper = new OnRuleAlteredActionConfigurationYamlSwapper();
     

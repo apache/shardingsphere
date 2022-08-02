@@ -24,14 +24,14 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlOnRuleAlteredAc
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlOnRuleAlteredActionConfiguration.YamlInputConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlOnRuleAlteredActionConfiguration.YamlOutputConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.ShardingSphereAlgorithmConfigurationYamlSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.AlgorithmConfigurationYamlSwapper;
 
 /**
  * On rule altered action configuration YAML swapper.
  */
 public final class OnRuleAlteredActionConfigurationYamlSwapper implements YamlConfigurationSwapper<YamlOnRuleAlteredActionConfiguration, OnRuleAlteredActionConfiguration> {
     
-    private static final ShardingSphereAlgorithmConfigurationYamlSwapper ALGORITHM_CONFIG_YAML_SWAPPER = new ShardingSphereAlgorithmConfigurationYamlSwapper();
+    private static final AlgorithmConfigurationYamlSwapper ALGORITHM_CONFIG_YAML_SWAPPER = new AlgorithmConfigurationYamlSwapper();
     
     private static final InputConfigurationSwapper INPUT_CONFIG_SWAPPER = new InputConfigurationSwapper();
     
