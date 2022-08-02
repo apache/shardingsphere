@@ -124,6 +124,7 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
         when(database.containsDataSource()).thenReturn(true);
         when(database.isComplete()).thenReturn(true);
         when(database.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
+        when(database.getProtocolType()).thenReturn(new H2DatabaseType());
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
         result.put("db", database);
