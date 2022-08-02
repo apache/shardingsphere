@@ -52,10 +52,11 @@ In order to solve the conflict between execution performance and resource contro
 
 ```
 /**
-* Connection Mode.
-*/
+ * Connection Mode.
+ */
 public enum ConnectionMode {
-MEMORY_STRICTLY, CONNECTION_STRICTLY
+
+    MEMORY_STRICTLY, CONNECTION_STRICTLY
 }
 ```
 Based on the member names in the `Connection Mode` enumeration class, we can see that the SQL Executor Engine divides database connection into two modes: `MEMORY_STRICTLY` and `CONNECTION_STRICTLY`.
@@ -130,23 +131,23 @@ Here is the latest logic behind the RouteSQLRewriteEngine Rewriter Engine. In Ap
 
 ```
 /**
-* Rewrite SQL and parameters.
-*
-* @param sqlRewriteContext SQL rewrite context
-* @param routeContext route context
-* @return SQL rewrite result
-*/
+ * Rewrite SQL and parameters.
+ *
+ * @param sqlRewriteContext SQL rewrite context
+ * @param routeContext route context
+ * @return SQL rewrite result
+ */
 public RouteSQLRewriteResult rewrite(final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
-Map<RouteUnit, SQLRewriteUnit> result = new LinkedHashMap<>(routeContext.getRouteUnits().size(), 1);
-for (Entry<String, Collection<RouteUnit>> entry : aggregateRouteUnitGroups(routeContext.getRouteUnits()).entrySet()) {
-Collection<RouteUnit> routeUnits = entry.getValue();
-if (isNeedAggregateRewrite(sqlRewriteContext.getSqlStatementContext(), routeUnits)) {
-result.put(routeUnits.iterator().next(), createSQLRewriteUnit(sqlRewriteContext, routeContext, routeUnits));
-} else {
-result.putAll(createSQLRewriteUnits(sqlRewriteContext, routeContext, routeUnits));
-}
-}
-return new RouteSQLRewriteResult(result);
+    Map<RouteUnit, SQLRewriteUnit> result = new LinkedHashMap<>(routeContext.getRouteUnits().size(), 1);
+    for (Entry<String, Collection<RouteUnit>> entry : aggregateRouteUnitGroups(routeContext.getRouteUnits()).entrySet()) {
+        Collection<RouteUnit> routeUnits = entry.getValue();
+        if (isNeedAggregateRewrite(sqlRewriteContext.getSqlStatementContext(), routeUnits)) {
+            result.put(routeUnits.iterator().next(), createSQLRewriteUnit(sqlRewriteContext, routeContext, routeUnits));
+        } else {
+            result.putAll(createSQLRewriteUnits(sqlRewriteContext, routeContext, routeUnits));
+        }
+    }
+    return new RouteSQLRewriteResult(result);
 }
 ```
 
@@ -155,14 +156,14 @@ Due to the `UNION ALL` rewriting function, the judgment logic for `queryResults`
 ```
 @Override
 public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext, final ShardingSphereSchema schema) throws SQLException {
-if (1 == queryResults.size() && !isNeedAggregateRewrite(sqlStatementContext)) {
-return new IteratorStreamMergedResult(queryResults);
-}
-Map<String, Integer> columnLabelIndexMap = getColumnLabelIndexMap(queryResults.get(0));
-SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
-selectStatementContext.setIndexes(columnLabelIndexMap);
-MergedResult mergedResult = build(queryResults, selectStatementContext, columnLabelIndexMap, schema);
-return decorate(queryResults, selectStatementContext, mergedResult);
+    if (1 == queryResults.size() && !isNeedAggregateRewrite(sqlStatementContext)) {
+        return new IteratorStreamMergedResult(queryResults);
+    }
+    Map<String, Integer> columnLabelIndexMap = getColumnLabelIndexMap(queryResults.get(0));
+    SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
+    selectStatementContext.setIndexes(columnLabelIndexMap);
+    MergedResult mergedResult = build(queryResults, selectStatementContext, columnLabelIndexMap, schema);
+    return decorate(queryResults, selectStatementContext, mergedResult);
 }
 ```
 
@@ -171,26 +172,27 @@ In order to make it easier for you to understand the optimization, we use the fo
 ```
 rules:
 - !SHARDING
-tables:
-t_order:
-actualDataNodes: ds_${0..1}.t_order_${0..1}
-tableStrategy:
-standard:
-shardingColumn: order_id
-shardingAlgorithmName: t_order_inline
-databaseStrategy:
-standard:
-shardingColumn: user_id
-shardingAlgorithmName: database_inline
-shardingAlgorithms:
-database_inline:
-type: INLINE
-props:
-algorithm-expression: ds_${user_id % 2}
-t_order_inline:
-type: INLINE
-props:
-algorithm-expression: t_order_${order_id % 2}
+  tables:
+    t_order:
+      actualDataNodes: ds_${0..1}.t_order_${0..1}
+      tableStrategy:
+        standard:
+          shardingColumn: order_id
+          shardingAlgorithmName: t_order_inline
+      databaseStrategy:
+        standard:
+          shardingColumn: user_id
+          shardingAlgorithmName: database_inline
+
+  shardingAlgorithms:
+    database_inline:
+      type: INLINE
+      props:
+        algorithm-expression: ds_${user_id % 2}
+    t_order_inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_order_${order_id % 2}
 ```
 
 In Apache ShardingSphere Version 5.0.0, after we execute the `SELECT * FROM t_order` statement, we can get the following routing result: there are two data sources, `ds_0` and `ds_1`, and each of them contains two routing results. Since `max-connections-size-per -query` is set to 1, it is impossible for each real SQL statement to have a database connection, so the connection limit mode is chosen.
@@ -200,7 +202,7 @@ Since the connection limit mode is used at the same time, the result set is load
 
 ```
 private QueryResult createQueryResult(final ResultSet resultSet, final ConnectionMode connectionMode) throws SQLException {
-return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new JDBCStreamQueryResult(resultSet) : new JDBCMemoryQueryResult(resultSet);
+    return ConnectionMode.MEMORY_STRICTLY == connectionMode ? new JDBCStreamQueryResult(resultSet) : new JDBCMemoryQueryResult(resultSet);
 }
 ```
 
@@ -223,232 +225,244 @@ The `config-sharding.yaml configuration` file is as follows.
 ```
 schemaName: sbtest_sharding
 dataSources:
-ds_0:
-url: jdbc:mysql://127.0.0.1:3306/sbtest?useSSL=false&useServerPrepStmts=true&cachePrepStmts=true&prepStmtCacheSize=8192&prepStmtCacheSqlLimit=1024
-username: root
-password: 123456
-connectionTimeoutMilliseconds: 10000
-idleTimeoutMilliseconds: 60000
-maxLifetimeMilliseconds: 1800000
-maxPoolSize: 50
-minPoolSize: 1
-ds_1:
-url: jdbc:mysql://127.0.0.1:3306/sbtest?useSSL=false&useServerPrepStmts=true&cachePrepStmts=true&prepStmtCacheSize=8192&prepStmtCacheSqlLimit=1024
-username: root
-password: 123456
-connectionTimeoutMilliseconds: 10000
-idleTimeoutMilliseconds: 60000
-maxLifetimeMilliseconds: 1800000
-maxPoolSize: 50
-minPoolSize: 1
-ds_2:
-url: jdbc:mysql://127.0.0.1:3306/sbtest?useSSL=false&useServerPrepStmts=true&cachePrepStmts=true&prepStmtCacheSize=8192&prepStmtCacheSqlLimit=1024
-username: root
-password: 123456
-connectionTimeoutMilliseconds: 10000
-idleTimeoutMilliseconds: 60000
-maxLifetimeMilliseconds: 1800000
-maxPoolSize: 50
-minPoolSize: 1
-ds_3:
-url: jdbc:mysql://127.0.0.1:3306/sbtest?useSSL=false&useServerPrepStmts=true&cachePrepStmts=true&prepStmtCacheSize=8192&prepStmtCacheSqlLimit=1024
-username: root
-password: 123456
-connectionTimeoutMilliseconds: 10000
-idleTimeoutMilliseconds: 60000
-maxLifetimeMilliseconds: 1800000
-maxPoolSize: 50
-minPoolSize: 1
-ds_4:
-url: jdbc:mysql://127.0.0.1:3306/sbtest?useSSL=false&useServerPrepStmts=true&cachePrepStmts=true&prepStmtCacheSize=8192&prepStmtCacheSqlLimit=1024
-username: root
-password: 123456
-connectionTimeoutMilliseconds: 10000
-idleTimeoutMilliseconds: 60000
-maxLifetimeMilliseconds: 1800000
-maxPoolSize: 50
-minPoolSize: 1
+  ds_0:
+    url: jdbc:mysql://127.0.0.1:3306/sbtest?useSSL=false&useServerPrepStmts=true&cachePrepStmts=true&prepStmtCacheSize=8192&prepStmtCacheSqlLimit=1024
+    username: root
+    password: 123456
+    connectionTimeoutMilliseconds: 10000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+  ds_1:
+    url: jdbc:mysql://127.0.0.1:3306/sbtest?useSSL=false&useServerPrepStmts=true&cachePrepStmts=true&prepStmtCacheSize=8192&prepStmtCacheSqlLimit=1024
+    username: root
+    password: 123456
+    connectionTimeoutMilliseconds: 10000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+  ds_2:
+    url: jdbc:mysql://127.0.0.1:3306/sbtest?useSSL=false&useServerPrepStmts=true&cachePrepStmts=true&prepStmtCacheSize=8192&prepStmtCacheSqlLimit=1024
+    username: root
+    password: 123456
+    connectionTimeoutMilliseconds: 10000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+  ds_3:
+    url: jdbc:mysql://127.0.0.1:3306/sbtest?useSSL=false&useServerPrepStmts=true&cachePrepStmts=true&prepStmtCacheSize=8192&prepStmtCacheSqlLimit=1024
+    username: root
+    password: 123456
+    connectionTimeoutMilliseconds: 10000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+  ds_4:
+    url: jdbc:mysql://127.0.0.1:3306/sbtest?useSSL=false&useServerPrepStmts=true&cachePrepStmts=true&prepStmtCacheSize=8192&prepStmtCacheSqlLimit=1024
+    username: root
+    password: 123456
+    connectionTimeoutMilliseconds: 10000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+
 rules:
 - !SHARDING
-tables:
-sbtest1:
-actualDataNodes: ds_${0..4}.sbtest1_${0..9}
-tableStrategy:
-standard:
-shardingColumn: id
-shardingAlgorithmName: table_inline_1
-keyGenerateStrategy:
-column: id
-keyGeneratorName: snowflake
-sbtest2:
-actualDataNodes: ds_${0..4}.sbtest2_${0..9}
-tableStrategy:
-standard:
-shardingColumn: id
-shardingAlgorithmName: table_inline_2
-keyGenerateStrategy:
-column: id
-keyGeneratorName: snowflake
-sbtest3:
-actualDataNodes: ds_${0..4}.sbtest3_${0..9}
-tableStrategy:
-standard:
-shardingColumn: id
-shardingAlgorithmName: table_inline_3
-keyGenerateStrategy:
-column: id
-keyGeneratorName: snowflake
-sbtest4:
-actualDataNodes: ds_${0..4}.sbtest4_${0..9}
-tableStrategy:
-standard:
-shardingColumn: id
-shardingAlgorithmName: table_inline_4
-keyGenerateStrategy:
-column: id
-keyGeneratorName: snowflake
-sbtest5:
-actualDataNodes: ds_${0..4}.sbtest5_${0..9}
-tableStrategy:
-standard:
-shardingColumn: id
-shardingAlgorithmName: table_inline_5
-keyGenerateStrategy:
-column: id
-keyGeneratorName: snowflake
-sbtest6:
-actualDataNodes: ds_${0..4}.sbtest6_${0..9}
-tableStrategy:
-standard:
-shardingColumn: id
-shardingAlgorithmName: table_inline_6
-keyGenerateStrategy:
-column: id
-keyGeneratorName: snowflake
-sbtest7:
-actualDataNodes: ds_${0..4}.sbtest7_${0..9}
-tableStrategy:
-standard:
-shardingColumn: id
-shardingAlgorithmName: table_inline_7
-keyGenerateStrategy:
-column: id
-keyGeneratorName: snowflake
-sbtest8:
-actualDataNodes: ds_${0..4}.sbtest8_${0..9}
-tableStrategy:
-standard:
-shardingColumn: id
-shardingAlgorithmName: table_inline_8
-keyGenerateStrategy:
-column: id
-keyGeneratorName: snowflake
-sbtest9:
-actualDataNodes: ds_${0..4}.sbtest9_${0..9}
-tableStrategy:
-standard:
-shardingColumn: id
-shardingAlgorithmName: table_inline_9
-keyGenerateStrategy:
-column: id
-keyGeneratorName: snowflake
-sbtest10:
-actualDataNodes: ds_${0..4}.sbtest10_${0..9}
-tableStrategy:
-standard:
-shardingColumn: id
-shardingAlgorithmName: table_inline_10
-keyGenerateStrategy:
-column: id
-keyGeneratorName: snowflake
-defaultDatabaseStrategy:
-standard:
-shardingColumn: id
-shardingAlgorithmName: database_inline
-shardingAlgorithms:
-database_inline:
-type: INLINE
-props:
-algorithm-expression: ds_${id % 5}
-allow-range-query-with-inline-sharding: true
-table_inline_1:
-type: INLINE
-props:
-algorithm-expression: sbtest1_${id % 10}
-allow-range-query-with-inline-sharding: true
-table_inline_2:
-type: INLINE
-props:
-algorithm-expression: sbtest2_${id % 10}
-allow-range-query-with-inline-sharding: true
-table_inline_3:
-type: INLINE
-props:
-algorithm-expression: sbtest3_${id % 10}
-allow-range-query-with-inline-sharding: true
-table_inline_4:
-type: INLINE
-props:
-algorithm-expression: sbtest4_${id % 10}
-allow-range-query-with-inline-sharding: true
-table_inline_5:
-type: INLINE
-props:
-algorithm-expression: sbtest5_${id % 10}
-allow-range-query-with-inline-sharding: true
-table_inline_6:
-type: INLINE
-props:
-algorithm-expression: sbtest6_${id % 10}
-allow-range-query-with-inline-sharding: true
-table_inline_7:
-type: INLINE
-props:
-algorithm-expression: sbtest7_${id % 10}
-allow-range-query-with-inline-sharding: true
-table_inline_8:
-type: INLINE
-props:
-algorithm-expression: sbtest8_${id % 10}
-allow-range-query-with-inline-sharding: true
-table_inline_9:
-type: INLINE
-props:
-algorithm-expression: sbtest9_${id % 10}
-allow-range-query-with-inline-sharding: true
-table_inline_10:
-type: INLINE
-props:
-algorithm-expression: sbtest10_${id % 10}
-allow-range-query-with-inline-sharding: true
-keyGenerators:
-snowflake:
-type: SNOWFLAKE
-props:
-worker-id: 123
+  tables:
+    sbtest1:
+      actualDataNodes: ds_${0..4}.sbtest1_${0..9}
+      tableStrategy:
+        standard:
+          shardingColumn: id
+          shardingAlgorithmName: table_inline_1
+      keyGenerateStrategy:
+        column: id
+        keyGeneratorName: snowflake
+    sbtest2:
+      actualDataNodes: ds_${0..4}.sbtest2_${0..9}
+      tableStrategy:
+        standard:
+          shardingColumn: id
+          shardingAlgorithmName: table_inline_2
+      keyGenerateStrategy:
+        column: id
+        keyGeneratorName: snowflake
+    sbtest3:
+      actualDataNodes: ds_${0..4}.sbtest3_${0..9}
+      tableStrategy:
+        standard:
+          shardingColumn: id
+          shardingAlgorithmName: table_inline_3
+      keyGenerateStrategy:
+        column: id
+        keyGeneratorName: snowflake
+    sbtest4:
+      actualDataNodes: ds_${0..4}.sbtest4_${0..9}
+      tableStrategy:
+        standard:
+          shardingColumn: id
+          shardingAlgorithmName: table_inline_4
+      keyGenerateStrategy:
+        column: id
+        keyGeneratorName: snowflake
+    sbtest5:
+      actualDataNodes: ds_${0..4}.sbtest5_${0..9}
+      tableStrategy:
+        standard:
+          shardingColumn: id
+          shardingAlgorithmName: table_inline_5
+      keyGenerateStrategy:
+        column: id
+        keyGeneratorName: snowflake
+    sbtest6:
+      actualDataNodes: ds_${0..4}.sbtest6_${0..9}
+      tableStrategy:
+        standard:
+          shardingColumn: id
+          shardingAlgorithmName: table_inline_6
+      keyGenerateStrategy:
+        column: id
+        keyGeneratorName: snowflake
+    sbtest7:
+      actualDataNodes: ds_${0..4}.sbtest7_${0..9}
+      tableStrategy:
+        standard:
+          shardingColumn: id
+          shardingAlgorithmName: table_inline_7
+      keyGenerateStrategy:
+        column: id
+        keyGeneratorName: snowflake
+    sbtest8:
+      actualDataNodes: ds_${0..4}.sbtest8_${0..9}
+      tableStrategy:
+        standard:
+          shardingColumn: id
+          shardingAlgorithmName: table_inline_8
+      keyGenerateStrategy:
+        column: id
+        keyGeneratorName: snowflake
+    sbtest9:
+      actualDataNodes: ds_${0..4}.sbtest9_${0..9}
+      tableStrategy:
+        standard:
+          shardingColumn: id
+          shardingAlgorithmName: table_inline_9
+      keyGenerateStrategy:
+        column: id
+        keyGeneratorName: snowflake
+    sbtest10:
+      actualDataNodes: ds_${0..4}.sbtest10_${0..9}
+      tableStrategy:
+        standard:
+          shardingColumn: id
+          shardingAlgorithmName: table_inline_10
+      keyGenerateStrategy:
+        column: id
+        keyGeneratorName: snowflake
+
+  defaultDatabaseStrategy:
+    standard:
+      shardingColumn: id
+      shardingAlgorithmName: database_inline
+
+  shardingAlgorithms:
+    database_inline:
+      type: INLINE
+      props:
+        algorithm-expression: ds_${id % 5}
+        allow-range-query-with-inline-sharding: true
+    table_inline_1:
+      type: INLINE
+      props:
+        algorithm-expression: sbtest1_${id % 10}
+        allow-range-query-with-inline-sharding: true
+    table_inline_2:
+      type: INLINE
+      props:
+        algorithm-expression: sbtest2_${id % 10}
+        allow-range-query-with-inline-sharding: true
+    table_inline_3:
+      type: INLINE
+      props:
+        algorithm-expression: sbtest3_${id % 10}
+        allow-range-query-with-inline-sharding: true
+    table_inline_4:
+      type: INLINE
+      props:
+        algorithm-expression: sbtest4_${id % 10}
+        allow-range-query-with-inline-sharding: true
+    table_inline_5:
+      type: INLINE
+      props:
+        algorithm-expression: sbtest5_${id % 10}
+        allow-range-query-with-inline-sharding: true
+    table_inline_6:
+      type: INLINE
+      props:
+        algorithm-expression: sbtest6_${id % 10}
+        allow-range-query-with-inline-sharding: true
+    table_inline_7:
+      type: INLINE
+      props:
+        algorithm-expression: sbtest7_${id % 10}
+        allow-range-query-with-inline-sharding: true
+    table_inline_8:
+      type: INLINE
+      props:
+        algorithm-expression: sbtest8_${id % 10}
+        allow-range-query-with-inline-sharding: true
+    table_inline_9:
+      type: INLINE
+      props:
+        algorithm-expression: sbtest9_${id % 10}
+        allow-range-query-with-inline-sharding: true
+    table_inline_10:
+      type: INLINE
+      props:
+        algorithm-expression: sbtest10_${id % 10}
+        allow-range-query-with-inline-sharding: true
+  keyGenerators:
+    snowflake:
+      type: SNOWFLAKE
+      props:
+        worker-id: 123
+```
+
 We use the JMH test program to test different CASEs:
+
+```
 @State(Scope.Thread)
 public class QueryOptimizationTest {
-private PreparedStatement unionAllForCaseOneStatement;
-private PreparedStatement unionAllForCaseTwoStatement;
-@Setup(Level.Trial)
-public void setup() throws Exception {
-Connection connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3307/sharding_db?useSSL=false", "root", "123456");
-// CASE 1
-unionAllForCaseOneStatement = connection.prepareStatement("SELECT COUNT(k) AS countK FROM sbtest1 WHERE id < ?;");
-// CASE 2
-unionAllForCaseTwoStatement = connection.prepareStatement("SELECT SUM(k) AS sumK FROM sbtest1 WHERE id < ?;");
-}
-@Benchmark
-public void testUnionAllForCaseOne() throws SQLException {
-unionAllForCaseOneStatement.setInt(1, 200);
-unionAllForCaseOneStatement.executeQuery();
-}
-@Benchmark
-public void testUnionAllForCaseTwo() throws SQLException {
-unionAllForCaseTwoStatement.setInt(1, 200);
-unionAllForCaseTwoStatement.executeQuery();
-}
+
+    private PreparedStatement unionAllForCaseOneStatement;
+
+    private PreparedStatement unionAllForCaseTwoStatement;
+
+    @Setup(Level.Trial)
+    public void setup() throws Exception {
+        Connection connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:3307/sharding_db?useSSL=false", "root", "123456");
+        // CASE 1
+        unionAllForCaseOneStatement = connection.prepareStatement("SELECT COUNT(k) AS countK FROM sbtest1 WHERE id < ?;");
+        // CASE 2
+        unionAllForCaseTwoStatement = connection.prepareStatement("SELECT SUM(k) AS sumK FROM sbtest1 WHERE id < ?;");
+    }
+
+    @Benchmark
+    public void testUnionAllForCaseOne() throws SQLException {
+        unionAllForCaseOneStatement.setInt(1, 200);
+        unionAllForCaseOneStatement.executeQuery();
+    }
+
+    @Benchmark
+    public void testUnionAllForCaseTwo() throws SQLException {
+        unionAllForCaseTwoStatement.setInt(1, 200);
+        unionAllForCaseTwoStatement.executeQuery();
+    }
 }
 ```
 
@@ -484,6 +498,3 @@ Duan has been contributing to Apache ShardingSphere since 2018, and previously w
 
 He loves open source and sharing his tech stories and experiences with fellow developers. He now devotes himself to developing the Apache ShardingSphere kernel module.
 ![Image description](https://miro.medium.com/max/1400/1*xudljhxw_4mQgVnBAAyefg.png)
-
-
-
