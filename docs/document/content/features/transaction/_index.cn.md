@@ -124,4 +124,4 @@ Apache ShardingSphere 集成了 SEATA 作为柔性事务的使用方案。
 | 适合场景  | 业务方处理不一致 | 短事务 & 低并发   | 长事务 & 高并发 |
 
 ## 相关参考
-- [分布式事务的YAML配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/transaction/)
+- [分布式事务的 YAML 配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/transaction/)
