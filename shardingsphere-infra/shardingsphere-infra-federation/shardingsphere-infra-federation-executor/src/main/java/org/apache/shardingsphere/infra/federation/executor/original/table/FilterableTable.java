@@ -24,14 +24,10 @@ import org.apache.calcite.linq4j.Enumerable;
 import org.apache.calcite.rel.type.RelDataType;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rel.type.RelDataTypeFactory.Builder;
-import org.apache.calcite.rel.type.RelDataTypeImpl;
-import org.apache.calcite.rel.type.RelDataTypeSystem;
-import org.apache.calcite.rel.type.RelProtoDataType;
 import org.apache.calcite.rex.RexNode;
 import org.apache.calcite.schema.ProjectableFilterableTable;
 import org.apache.calcite.schema.Statistic;
 import org.apache.calcite.schema.impl.AbstractTable;
-import org.apache.calcite.sql.type.SqlTypeFactoryImpl;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 
@@ -43,8 +39,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public final class FilterableTable extends AbstractTable implements ProjectableFilterableTable {
     
-    private static final RelDataTypeFactory REL_DATA_TYPE_FACTORY = new SqlTypeFactoryImpl(RelDataTypeSystem.DEFAULT);
-    
     private final ShardingSphereTable table;
     
     private final FilterableTableScanExecutor executor;
@@ -53,7 +47,7 @@ public final class FilterableTable extends AbstractTable implements ProjectableF
     
     @Override
     public RelDataType getRowType(final RelDataTypeFactory typeFactory) {
-        return createRelProtoDataType(table).apply(typeFactory);
+        return createRelDataType(table, typeFactory);
     }
     
     @Override
@@ -66,17 +60,17 @@ public final class FilterableTable extends AbstractTable implements ProjectableF
         return statistic;
     }
     
-    private RelProtoDataType createRelProtoDataType(final ShardingSphereTable table) {
-        Builder fieldInfoBuilder = REL_DATA_TYPE_FACTORY.builder();
+    private RelDataType createRelDataType(final ShardingSphereTable table, final RelDataTypeFactory typeFactory) {
+        Builder fieldInfoBuilder = typeFactory.builder();
         for (ShardingSphereColumn each : table.getColumns().values()) {
-            fieldInfoBuilder.add(each.getName(), getRelDataType(each));
+            fieldInfoBuilder.add(each.getName(), getRelDataType(each, typeFactory));
         }
-        return RelDataTypeImpl.proto(fieldInfoBuilder.build());
+        return fieldInfoBuilder.build();
     }
     
-    private RelDataType getRelDataType(final ShardingSphereColumn column) {
+    private RelDataType getRelDataType(final ShardingSphereColumn column, final RelDataTypeFactory typeFactory) {
         Class<?> sqlTypeClass = SqlType.valueOf(column.getDataType()).clazz;
-        RelDataType javaType = REL_DATA_TYPE_FACTORY.createJavaType(sqlTypeClass);
-        return REL_DATA_TYPE_FACTORY.createTypeWithNullability(javaType, true);
+        RelDataType javaType = typeFactory.createJavaType(sqlTypeClass);
+        return typeFactory.createTypeWithNullability(javaType, true);
     }
 }
