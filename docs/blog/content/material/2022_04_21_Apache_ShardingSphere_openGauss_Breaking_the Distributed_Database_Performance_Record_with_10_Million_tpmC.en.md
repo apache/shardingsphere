@@ -1,5 +1,6 @@
 +++ 
 title = "Apache ShardingSphere & openGauss: Breaking the Distributed Database Performance Record with 10 Million tpmC"
+weight = 50
 chapter = true 
 +++
 

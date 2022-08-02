@@ -1,5 +1,6 @@
 +++ 
 title = "A Holistic Pluggable Platform for Data Sharding — ICDE 2022 & Understanding Apache ShardingSphere"
+weight = 48
 chapter = true 
 +++
 

@@ -1,5 +1,6 @@
 +++ 
 title = "Apache ShardingSphere Enterprise Applications: Zhuanzhuan’s Transaction System with 100s of Millions of Records"
+weight = 52
 chapter = true 
 +++
 

@@ -1,6 +1,6 @@
 +++ 
-title = "A Practical Guide to 
-Apache ShardingSphere’s HINT"
+title = "A Practical Guide to Apache ShardingSphere’s HINT"
+weight = 49
 chapter = true 
 +++
 

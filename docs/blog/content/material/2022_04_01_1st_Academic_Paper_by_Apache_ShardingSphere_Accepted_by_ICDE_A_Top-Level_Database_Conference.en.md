@@ -1,7 +1,6 @@
 +++ 
-title = "1st Academic Paper by 
-Apache ShardingSphere
- Accepted by ICDE, A Top-Level Database Conference"
+title = "1st Academic Paper by Apache ShardingSphere Accepted by ICDE, A Top-Level Database Conference"
+weight = 47
 chapter = true 
 +++
 
