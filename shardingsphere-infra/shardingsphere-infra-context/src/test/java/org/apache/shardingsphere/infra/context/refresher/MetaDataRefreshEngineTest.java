@@ -21,10 +21,9 @@ import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.context.refresher.fixture.MetaDataRefresherSQLStatementFixture;
 import org.apache.shardingsphere.infra.context.refresher.fixture.MetaDataRefresherFixture;
+import org.apache.shardingsphere.infra.context.refresher.fixture.MetaDataRefresherSQLStatementFixture;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.junit.Test;
@@ -38,14 +37,13 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 
 public final class MetaDataRefreshEngineTest {
     
-    private final MetaDataRefreshEngine engine = new MetaDataRefreshEngine(
-            mock(ShardingSphereDatabase.class), mock(FederationDatabaseMetaData.class), Collections.emptyMap(), new ConfigurationProperties(new Properties()));
+    private final MetaDataRefreshEngine engine = new MetaDataRefreshEngine(mock(ShardingSphereDatabase.class), new ConfigurationProperties(new Properties()));
     
     @SuppressWarnings("rawtypes")
     @Test
