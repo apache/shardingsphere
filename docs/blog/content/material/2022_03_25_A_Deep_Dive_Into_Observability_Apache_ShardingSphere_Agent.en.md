@@ -83,41 +83,42 @@ Then, initiate Prometheus and Zipkin plugins and change the Prometheus port data
 ```
 applicationName: shardingsphere-agent
 ignoredPluginNames:
-- Jaeger
-- OpenTracing
-- OpenTelemetry
-- Logging
+  - Jaeger  
+  - OpenTracing  
+  - OpenTelemetry  
+  - Logging  
+
 plugins:
-Prometheus:
-host:  "localhost"
-port: 9000
-props:
-JVM_INFORMATION_COLLECTOR_ENABLED : "true"
-Jaeger:
-host: "localhost"
-port: 5775
-props:
-SERVICE_NAME: "shardingsphere-agent"
-JAEGER_SAMPLER_TYPE: "const"
-JAEGER_SAMPLER_PARAM: "1"
-Zipkin:
-host: "localhost"
-port: 9411
-props:
-SERVICE_NAME: "shardingsphere-agent"
-URL_VERSION: "/api/v2/spans"
-SAMPLER_TYPE: "const"
-SAMPLER_PARAM: "1"
-OpenTracing:
-props:
-OPENTRACING_TRACER_CLASS_NAME: "org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer"
-OpenTelemetry:
-props:
-otel.resource.attributes: "service.name=shardingsphere-agent"
-otel.traces.exporter: "zipkin"
-Logging:
-props:
-LEVEL: "INFO"
+  Prometheus:
+    host:  "localhost"
+    port: 9000
+    props:
+      JVM_INFORMATION_COLLECTOR_ENABLED : "true"
+  Jaeger:
+    host: "localhost"
+    port: 5775
+    props:
+      SERVICE_NAME: "shardingsphere-agent"
+      JAEGER_SAMPLER_TYPE: "const"
+      JAEGER_SAMPLER_PARAM: "1"
+  Zipkin:
+    host: "localhost"
+    port: 9411
+    props:
+      SERVICE_NAME: "shardingsphere-agent"
+      URL_VERSION: "/api/v2/spans"
+      SAMPLER_TYPE: "const"
+      SAMPLER_PARAM: "1"
+  OpenTracing:
+    props:
+      OPENTRACING_TRACER_CLASS_NAME: "org.apache.skywalking.apm.toolkit.opentracing.SkywalkingTracer"
+  OpenTelemetry:
+    props:
+      otel.resource.attributes: "service.name=shardingsphere-agent"
+      otel.traces.exporter: "zipkin"
+  Logging:
+    props:
+      LEVEL: "INFO"
 ```
 
 **Add to Start Command**
@@ -203,13 +204,13 @@ For scenarios with a high volume of requests, we suggest you to choose the bound
 
 ```
 Zipkin:
-host: "localhost"
-port: 9411
-props:
-SERVICE_NAME: "shardingsphere-agent"
-URL_VERSION: "/api/v2/spans"
-SAMPLER_TYPE: "boundary"
-SAMPLER_PARAM: "0.001"
+    host: "localhost"
+    port: 9411
+    props:
+      SERVICE_NAME: "shardingsphere-agent"
+      URL_VERSION: "/api/v2/spans"
+      SAMPLER_TYPE: "boundary"
+      SAMPLER_PARAM: "0.001"
 ```
 
 ## Summary
@@ -238,11 +239,3 @@ An open source technology enthusiast, Pingchuan devotes himself to developing Sp
 
 Maolin JIANG
 _SphereEx Senior Middleware Engineer & Apache ShardingSphere Contributor._
-
-
-
-
-
-
-
-
