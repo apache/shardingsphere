@@ -332,6 +332,7 @@ public abstract class BaseITCase {
     }
     
     protected void applyScaling(final String jobId) {
+        assertBeforeApplyScalingMetadataCorrectly();
         executeWithLog(String.format("APPLY SCALING %s", jobId));
     }
     
@@ -356,11 +357,11 @@ public abstract class BaseITCase {
         Set<String> actualStatus = null;
         for (int i = 0; i < 15; i++) {
             actualStatus = new HashSet<>();
-            List<Map<String, Object>> showScalingStatusResMap = showScalingStatus(jobId);
-            log.info("show scaling status result: {}", showScalingStatusResMap);
+            List<Map<String, Object>> showScalingStatusResult = showScalingStatus(jobId);
+            log.info("show scaling status result: {}", showScalingStatusResult);
             boolean finished = true;
-            for (Map<String, Object> entry : showScalingStatusResMap) {
-                String status = entry.get("status").toString();
+            for (Map<String, Object> each : showScalingStatusResult) {
+                String status = each.get("status").toString();
                 assertThat(status, not(JobStatus.PREPARING_FAILURE.name()));
                 assertThat(status, not(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name()));
                 assertThat(status, not(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name()));
@@ -373,7 +374,6 @@ public abstract class BaseITCase {
             if (finished) {
                 break;
             }
-            assertBeforeApplyScalingMetadataCorrectly();
             ThreadUtil.sleep(4, TimeUnit.SECONDS);
         }
         assertThat(actualStatus, is(Collections.singleton(JobStatus.EXECUTE_INCREMENTAL_TASK.name())));
