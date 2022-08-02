@@ -118,7 +118,7 @@ public final class PipelineContextUtil {
         tables.put("t_order", new ShardingSphereTable("t_order", Arrays.asList(new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false),
                 new ShardingSphereColumn("user_id", Types.VARCHAR, false, false, false)), Collections.emptyList(), Collections.emptyList()));
         old.getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME).getSchema(DefaultDatabase.LOGIC_NAME).putAll(tables);
-        return new MetaDataContexts(persistService, old.getMetaData(), old.getOptimizerContext());
+        return new MetaDataContexts(persistService, old.getMetaData());
     }
     
     /**
