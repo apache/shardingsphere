@@ -29,8 +29,8 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Rule altered job persist service.
@@ -45,8 +45,10 @@ public final class RuleAlteredJobPersistService {
     
     private static final ScheduledExecutorService JOB_PERSIST_EXECUTOR = Executors.newSingleThreadScheduledExecutor(ExecutorThreadFactoryBuilder.build("scaling-job-schedule-%d"));
     
+    private static final long DELAY_SECONDS = 1;
+    
     static {
-        JOB_PERSIST_EXECUTOR.scheduleWithFixedDelay(new PersistJobContextRunnable(), 5, 1, TimeUnit.SECONDS);
+        JOB_PERSIST_EXECUTOR.scheduleWithFixedDelay(new PersistJobContextRunnable(), 5, DELAY_SECONDS, TimeUnit.SECONDS);
     }
     
     /**
@@ -83,34 +85,40 @@ public final class RuleAlteredJobPersistService {
             log.debug("Persist interval parameter is null, jobId={}, shardingItem={}", jobId, shardingItem);
             return;
         }
-        parameter.getAlreadyPersisted().compareAndSet(true, false);
+        parameter.getHasNewEvents().set(true);
     }
     
-    private static void persist(final String jobId, final int shardingItem, final long persistTimeMillis, final PipelineJobPersistContext param) {
+    private static void persist(final String jobId, final int shardingItem, final PipelineJobPersistContext persistContext) {
+        Long beforePersistingProgressMillis = persistContext.getBeforePersistingProgressMillis().get();
+        if ((null == beforePersistingProgressMillis || System.currentTimeMillis() - beforePersistingProgressMillis < TimeUnit.SECONDS.toMillis(DELAY_SECONDS))
+                && !persistContext.getHasNewEvents().get()) {
+            return;
+        }
         Map<Integer, RuleAlteredJobScheduler> schedulerMap = RuleAlteredJobSchedulerCenter.getJobSchedulerMap(jobId);
         RuleAlteredJobScheduler scheduler = schedulerMap.get(shardingItem);
         if (null == scheduler) {
-            log.warn("job schedule not exists, job id: {}, sharding item: {}", jobId, shardingItem);
+            log.warn("persist, job schedule not exists, jobId={}, shardingItem={}", jobId, shardingItem);
             return;
         }
-        log.info("execute persist, job id={}, sharding item={}, persistTimeMillis={}", jobId, shardingItem, persistTimeMillis);
+        if (null == beforePersistingProgressMillis) {
+            persistContext.getBeforePersistingProgressMillis().set(System.currentTimeMillis());
+        }
+        persistContext.getHasNewEvents().set(false);
+        long startTimeMillis = System.currentTimeMillis();
         REPOSITORY_API.persistJobProgress(scheduler.getJobContext());
-        param.getAlreadyPersisted().set(true);
+        persistContext.getBeforePersistingProgressMillis().set(null);
+        if (6 == ThreadLocalRandom.current().nextInt(100)) {
+            log.info("persist, jobId={}, shardingItem={}, cost time: {} ms", jobId, shardingItem, System.currentTimeMillis() - startTimeMillis);
+        }
     }
     
     private static final class PersistJobContextRunnable implements Runnable {
         
         @Override
         public void run() {
-            long currentTimeMillis = System.currentTimeMillis();
             for (Entry<String, Map<Integer, PipelineJobPersistContext>> entry : JOB_PERSIST_MAP.entrySet()) {
-                entry.getValue().forEach((shardingItem, param) -> {
-                    AtomicBoolean alreadyPersisted = param.getAlreadyPersisted();
-                    if (alreadyPersisted.get()) {
-                        return;
-                    }
-                    persist(entry.getKey(), shardingItem, currentTimeMillis, param);
-                    alreadyPersisted.set(true);
+                entry.getValue().forEach((shardingItem, persistContext) -> {
+                    persist(entry.getKey(), shardingItem, persistContext);
                 });
             }
         }
