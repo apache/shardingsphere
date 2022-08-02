@@ -114,8 +114,8 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
     public ResponseHeader execute() throws SQLException {
         LogicSQL logicSQL = getLogicSQL();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        ExecutionContext executionContext = getKernelProcessor().generateExecutionContext(
-                logicSQL, getDatabase(), metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps());
+        ExecutionContext executionContext = getKernelProcessor().generateExecutionContext(logicSQL, getDatabase(), metaDataContexts.getMetaData().getGlobalRuleMetaData(),
+                metaDataContexts.getMetaData().getProps(), backendConnection.getConnectionSession().getSessionContext());
         // TODO move federation route logic to binder
         SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(backendConnection.getConnectionSession().getDatabaseName());
