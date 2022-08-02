@@ -30,10 +30,13 @@ import java.sql.SQLException;
 @RequiredArgsConstructor
 public final class PostgreSQLResetVariableAdminExecutor implements DatabaseAdminExecutor {
     
+    private static final String DEFAULT = "DEFAULT";
+    
     private final ResetParameterStatement resetParameterStatement;
     
     @Override
     public void execute(final ConnectionSession connectionSession) throws SQLException {
-        // TODO Do reset
+        String variableName = resetParameterStatement.getConfigurationParameter();
+        PostgreSQLSessionVariableHandlerFactory.getHandler(variableName).handle(connectionSession, variableName, DEFAULT);
     }
 }

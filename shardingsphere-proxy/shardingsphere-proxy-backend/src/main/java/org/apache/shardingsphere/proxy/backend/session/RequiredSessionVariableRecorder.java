@@ -45,21 +45,12 @@ public final class RequiredSessionVariableRecorder {
     }
     
     /**
-     * Reset variable.
+     * Return true if no session variable was set.
      *
-     * @param variableName variable name
+     * @return true if no session variable was set
      */
-    public void resetVariable(final String variableName) {
-        sessionVariables.put(variableName, DEFAULT);
-    }
-    
-    /**
-     * Whether session variable is set.
-     *
-     * @return Whether session variable is set
-     */
-    public boolean isSessionVariableSet() {
-        return !sessionVariables.isEmpty();
+    public boolean isEmpty() {
+        return sessionVariables.isEmpty();
     }
     
     /**

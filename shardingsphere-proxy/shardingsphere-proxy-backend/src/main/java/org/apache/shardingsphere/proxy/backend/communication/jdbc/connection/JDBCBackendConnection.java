@@ -107,7 +107,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     }
     
     private void setSessionVariablesIfNecessary(final List<Connection> result) throws SQLException {
-        if (result.isEmpty() || !connectionSession.getRequiredSessionVariableRecorder().isSessionVariableSet()) {
+        if (result.isEmpty() || connectionSession.getRequiredSessionVariableRecorder().isEmpty()) {
             return;
         }
         String databaseType = result.iterator().next().getMetaData().getDatabaseProductName();
@@ -297,7 +297,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     }
     
     private void resetSessionVariablesIfNecessary(final Collection<Connection> values, final Collection<SQLException> exceptions) {
-        if (values.isEmpty() || !connectionSession.getRequiredSessionVariableRecorder().isSessionVariableSet()) {
+        if (values.isEmpty() || connectionSession.getRequiredSessionVariableRecorder().isEmpty()) {
             return;
         }
         String databaseType;
