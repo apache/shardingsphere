@@ -106,6 +106,6 @@ private static Map<String, DatabaseDiscoveryHeartBeatConfiguration> createDiscov
 ## 相关参考
 
 - [高可用核心特性](/cn/features/ha/)
-- [YAML配置：高可用配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/ha/)
+- [YAML 配置：高可用配置](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/ha/)
 - [Spring Boot Starter：高可用配置](/cn/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/ha/)
 - [Spring 命名空间：高可用配置](/cn/user-manual/shardingsphere-jdbc/spring-namespace/rules/ha/)

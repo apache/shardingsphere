@@ -9,7 +9,7 @@ chapter = true
 
 Database Plus 是 Apache ShardingSphere 的产品定位，旨在构建异构数据库上层的标准和生态。 它关注如何充分合理地利用数据库的计算和存储能力，而并非实现一个全新的数据库。ShardingSphere 站在数据库的上层视角，关注他们之间的协作多于数据库自身。 
 
-连接、增量 和 可插拔是 Database Plus的核心概念：
+连接、增量 和 可插拔是 Database Plus 的核心概念：
 
 ### 连接
 
