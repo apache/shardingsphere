@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.util.yaml.fixture.ShardingSphereYamlShortcutsFixture
+org.apache.shardingsphere.infra.util.yaml.fixture.shortcuts.ShardingSphereYamlShortcutsFixture

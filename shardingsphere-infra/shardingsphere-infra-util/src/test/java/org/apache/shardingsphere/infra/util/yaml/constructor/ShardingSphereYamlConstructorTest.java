@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.util.yaml.constructor;
 
-import org.apache.shardingsphere.infra.util.yaml.fixture.ShardingSphereYamlObjectFixture;
+import org.apache.shardingsphere.infra.util.yaml.fixture.YamlConfigurationFixture;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
 
@@ -34,12 +34,12 @@ public final class ShardingSphereYamlConstructorTest {
     @Test
     public void assertToObject() throws IOException {
         try (InputStream inputStream = ShardingSphereYamlConstructorTest.class.getClassLoader().getResourceAsStream("yaml/customized-obj.yaml")) {
-            ShardingSphereYamlObjectFixture actual = new Yaml(new ShardingSphereYamlConstructor(ShardingSphereYamlObjectFixture.class)).loadAs(inputStream, ShardingSphereYamlObjectFixture.class);
+            YamlConfigurationFixture actual = new Yaml(new ShardingSphereYamlConstructor(YamlConfigurationFixture.class)).loadAs(inputStream, YamlConfigurationFixture.class);
             assertYamlObject(actual);
         }
     }
     
-    private void assertYamlObject(final ShardingSphereYamlObjectFixture actual) {
+    private void assertYamlObject(final YamlConfigurationFixture actual) {
         assertThat(actual.getValue(), is("value"));
         assertThat(actual.getCollection().size(), is(2));
         assertThat(actual.getCollection(), is(Arrays.asList("value1", "value2")));

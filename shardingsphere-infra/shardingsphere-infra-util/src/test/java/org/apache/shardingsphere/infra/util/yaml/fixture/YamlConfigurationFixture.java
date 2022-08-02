@@ -17,22 +17,26 @@
 
 package org.apache.shardingsphere.infra.util.yaml.fixture;
 
-import org.apache.shardingsphere.infra.util.yaml.constructor.ShardingSphereYamlConstruct;
-import org.yaml.snakeyaml.nodes.Node;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
-public final class YamlConstructFixture implements ShardingSphereYamlConstruct {
+import java.util.Collection;
+import java.util.Map;
+
+@Getter
+@Setter
+public final class YamlConfigurationFixture implements YamlConfiguration {
     
-    @Override
-    public Object construct(final Node node) {
-        return new CustomizedClassFixture();
-    }
+    private String value;
     
-    @Override
-    public void construct2ndStep(final Node node, final Object newInstance) {
-    }
+    private Collection<String> collection;
     
-    @Override
-    public Class<?> getType() {
-        return CustomizedClassFixture.class;
-    }
+    private Map<String, String> map;
+    
+    private Map<String, Map<String, String>> embeddedMap;
+    
+    private CustomizedClassFixture customizedClass;
+    
+    private String customizedTag;
 }

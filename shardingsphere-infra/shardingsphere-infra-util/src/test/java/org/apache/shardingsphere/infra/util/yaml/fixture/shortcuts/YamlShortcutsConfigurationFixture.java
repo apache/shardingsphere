@@ -15,27 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.yaml.fixture;
+package org.apache.shardingsphere.infra.util.yaml.fixture.shortcuts;
 
 import lombok.Getter;
 import lombok.Setter;
-
-import java.util.Collection;
-import java.util.Map;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 @Getter
 @Setter
-public final class ShardingSphereYamlObjectFixture {
+public final class YamlShortcutsConfigurationFixture implements YamlConfiguration {
     
-    private String value;
-    
-    private Collection<String> collection;
-    
-    private Map<String, String> map;
-    
-    private Map<String, Map<String, String>> embeddedMap;
-    
-    private CustomizedClassFixture customizedClass;
-    
-    private String customizedTag;
+    private String name;
 }

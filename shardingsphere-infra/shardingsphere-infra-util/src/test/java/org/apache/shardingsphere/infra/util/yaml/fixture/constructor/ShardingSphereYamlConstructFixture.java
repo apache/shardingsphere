@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.yaml.fixture;
+package org.apache.shardingsphere.infra.util.yaml.fixture.constructor;
 
-import org.apache.shardingsphere.infra.util.yaml.representer.processor.ShardingSphereYamlTupleProcessor;
-import org.yaml.snakeyaml.DumperOptions;
-import org.yaml.snakeyaml.nodes.NodeTuple;
-import org.yaml.snakeyaml.nodes.ScalarNode;
-import org.yaml.snakeyaml.nodes.Tag;
+import org.apache.shardingsphere.infra.util.yaml.constructor.ShardingSphereYamlConstruct;
+import org.apache.shardingsphere.infra.util.yaml.fixture.CustomizedClassFixture;
+import org.yaml.snakeyaml.nodes.Node;
 
-public final class YamlTupleProcessorFixture implements ShardingSphereYamlTupleProcessor {
+public final class ShardingSphereYamlConstructFixture implements ShardingSphereYamlConstruct {
     
     @Override
-    public String getTupleName() {
-        return "customizedTag";
+    public Object construct(final Node node) {
+        return new CustomizedClassFixture();
     }
     
-    @SuppressWarnings("ReturnOfNull")
     @Override
-    public NodeTuple process(final NodeTuple nodeTuple) {
-        String value = ((ScalarNode) nodeTuple.getValueNode()).getValue();
-        return "null".equals(value) ? null : new NodeTuple(nodeTuple.getKeyNode(), new ScalarNode(Tag.STR, String.join("_", "converted", value), null, null, DumperOptions.ScalarStyle.PLAIN));
+    public void construct2ndStep(final Node node, final Object newInstance) {
+    }
+    
+    @Override
+    public Class<?> getType() {
+        return CustomizedClassFixture.class;
     }
 }
