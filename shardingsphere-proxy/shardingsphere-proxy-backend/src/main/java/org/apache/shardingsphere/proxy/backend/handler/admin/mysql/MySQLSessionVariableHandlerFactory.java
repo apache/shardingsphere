@@ -20,9 +20,6 @@ package org.apache.shardingsphere.proxy.backend.handler.admin.mysql;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Factory for {@link MySQLSessionVariableHandler}.
  */
@@ -33,16 +30,12 @@ public final class MySQLSessionVariableHandlerFactory {
     }
     
     /**
-     * Get list of {@link MySQLSessionVariableHandler} for variables.
+     * Get instance of {@link MySQLSessionVariableHandler} for variable.
      *
-     * @param variableNames variable names
-     * @return {@link MySQLSessionVariableHandler} for variables
+     * @param variableName variable name
+     * @return {@link MySQLSessionVariableHandler} for variable
      */
-    public static List<MySQLSessionVariableHandler> getHandlers(final List<String> variableNames) {
-        List<MySQLSessionVariableHandler> result = new ArrayList<>(variableNames.size());
-        for (String each : variableNames) {
-            result.add(TypedSPIRegistry.findRegisteredService(MySQLSessionVariableHandler.class, each).orElseGet(DefaultMySQLSessionVariableHandler::new));
-        }
-        return result;
+    public static MySQLSessionVariableHandler getHandler(final String variableName) {
+        return TypedSPIRegistry.findRegisteredService(MySQLSessionVariableHandler.class, variableName).orElseGet(DefaultMySQLSessionVariableHandler::new);
     }
 }

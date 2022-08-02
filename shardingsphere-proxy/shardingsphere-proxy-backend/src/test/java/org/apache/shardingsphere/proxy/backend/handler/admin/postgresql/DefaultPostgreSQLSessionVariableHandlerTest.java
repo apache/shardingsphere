@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.proxy.backend.handler.admin.postgresql;
 
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLSetStatement;
 import org.junit.Test;
 
 import static org.mockito.Mockito.mock;
@@ -29,7 +28,7 @@ public final class DefaultPostgreSQLSessionVariableHandlerTest {
     @Test
     public void assertHandle() {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        new DefaultPostgreSQLSessionVariableHandler().handle(connectionSession, new PostgreSQLSetStatement());
+        new DefaultPostgreSQLSessionVariableHandler().handle(connectionSession, "", "");
         verifyNoInteractions(connectionSession);
     }
 }
