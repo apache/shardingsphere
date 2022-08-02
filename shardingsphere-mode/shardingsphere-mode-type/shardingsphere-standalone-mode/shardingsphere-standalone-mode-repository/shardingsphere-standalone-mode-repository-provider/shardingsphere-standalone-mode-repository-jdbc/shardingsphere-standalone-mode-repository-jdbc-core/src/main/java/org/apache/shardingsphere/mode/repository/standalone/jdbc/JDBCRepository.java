@@ -50,13 +50,13 @@ public abstract class JDBCRepository implements StandalonePersistRepository {
         connection = DriverManager.getConnection(jdbcUrl, user, password);
         try (Statement statement = connection.createStatement()) {
             statement.execute("DROP TABLE IF EXISTS repository");
-            statement.execute("CREATE TABLE repository(id varchar(36) PRIMARY KEY, key TEXT, value TEXT, parent TEXT)");
+            statement.execute("CREATE TABLE repository(id varchar(36) PRIMARY KEY, `key` TEXT, `value` TEXT, parent TEXT)");
         }
     }
     
     @Override
     public String get(final String key) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT value FROM repository WHERE key = ?")) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT `value` FROM repository WHERE `key` = ?")) {
             preparedStatement.setString(1, key);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
@@ -71,7 +71,7 @@ public abstract class JDBCRepository implements StandalonePersistRepository {
     
     @Override
     public List<String> getChildrenKeys(final String key) {
-        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT key FROM repository WHERE parent = ?")) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT `key` FROM repository WHERE parent = ?")) {
             preparedStatement.setString(1, key);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 List<String> resultChildren = new LinkedList<>();

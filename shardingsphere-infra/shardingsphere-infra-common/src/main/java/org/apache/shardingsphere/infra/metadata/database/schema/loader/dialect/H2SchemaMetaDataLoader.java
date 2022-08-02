@@ -68,7 +68,10 @@ public final class H2SchemaMetaDataLoader implements DialectSchemaMetaDataLoader
     public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
         Collection<TableMetaData> tableMetaDataList = new LinkedList<>();
         try (Connection connection = dataSource.getConnection()) {
-            Map<String, Collection<ColumnMetaData>> columnMetaDataMap = loadColumnMetaDataMap(connection, tables);
+            Map<String, Collection<ColumnMetaData>> columnMetaDataMap = new HashMap<>();
+            if (connection.getMetaData().getDriverMajorVersion() == 1) {
+                columnMetaDataMap = loadColumnMetaDataMap(connection, tables);
+            }
             Map<String, Collection<IndexMetaData>> indexMetaDataMap = columnMetaDataMap.isEmpty() ? Collections.emptyMap() : loadIndexMetaData(connection, columnMetaDataMap.keySet());
             for (Entry<String, Collection<ColumnMetaData>> entry : columnMetaDataMap.entrySet()) {
                 Collection<IndexMetaData> indexMetaDataList = indexMetaDataMap.getOrDefault(entry.getKey(), Collections.emptyList());
