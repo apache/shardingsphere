@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.database.impl;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import com.zaxxer.hikari.HikariDataSource;
 import java.util.Collections;
@@ -56,11 +55,11 @@ public final class DataSourceGeneratedDatabaseConfigurationTest {
         assertThat(((HikariDataSource) dataSource).getJdbcUrl(), is(url));
         FixtureRuleConfiguration next =
                 (FixtureRuleConfiguration) databaseConfiguration.getRuleConfigurations().iterator().next();
-        assertEquals(next.getName(), "rule0");
+        assertThat(next.getName(), is("rule0"));
         DataSourceProperties properties = databaseConfiguration.getDataSourceProperties().get("dsc");
         assertThat(properties.getPoolPropertySynonyms().getStandardPropertyKeys().size(), is(6));
-        assertEquals(url, properties.getConnectionPropertySynonyms().getStandardProperties().get("url"));
-        assertEquals(username, properties.getConnectionPropertySynonyms().getStandardProperties().get("username"));
-        assertEquals(password, properties.getConnectionPropertySynonyms().getStandardProperties().get("password"));
+        assertThat(properties.getConnectionPropertySynonyms().getStandardProperties().get("url"), is(url));
+        assertThat(properties.getConnectionPropertySynonyms().getStandardProperties().get("username"), is(username));
+        assertThat(properties.getConnectionPropertySynonyms().getStandardProperties().get("password"), is(password));
     }
 }
