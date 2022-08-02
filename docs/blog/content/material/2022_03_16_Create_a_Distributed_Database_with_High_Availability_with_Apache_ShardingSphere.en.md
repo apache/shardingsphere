@@ -35,63 +35,8 @@ Here, we take HA+read/write splitting configuration with ShardingSphere DistSQL 
 
 > **Configuration**
 
-```
+```yaml
 schemaName: database_discovery_db
-<<<<<<< Updated upstream
-dataSources:
-ds_0:
-url: jdbc:mysql://127.0.0.1:1231/demo_primary_ds?serverTimezone=UTC&useSSL=false
-username: root
-password: 123456
-connectionTimeoutMilliseconds: 3000
-idleTimeoutMilliseconds: 60000
-maxLifetimeMilliseconds: 1800000
-maxPoolSize: 50
-minPoolSize: 1
-ds_1:
-url: jdbc:mysql://127.0.0.1:1232/demo_primary_ds?serverTimezone=UTC&useSSL=false
-username: root
-password: 123456
-connectionTimeoutMilliseconds: 3000
-idleTimeoutMilliseconds: 60000
-maxLifetimeMilliseconds: 1800000
-maxPoolSize: 50
-minPoolSize: 1
-ds_2:
-url: jdbc:mysql://127.0.0.1:1233/demo_primary_ds?serverTimezone=UTC&useSSL=false
-username: root
-password: 123456
-connectionTimeoutMilliseconds: 3000
-idleTimeoutMilliseconds: 50000
-maxLifetimeMilliseconds: 1300000
-maxPoolSize: 50
-minPoolSize: 1
-rules:
-- !READWRITE_SPLITTING
-dataSources:
-replication_ds:
-type: Dynamic
-props:
-auto-aware-data-source-name: mgr_replication_ds
-- !DB_DISCOVERY
-dataSources:
-mgr_replication_ds:
-dataSourceNames:
-- ds_0
-- ds_1
-- ds_2
-discoveryHeartbeatName: mgr-heartbeat
-discoveryTypeName: mgr
-discoveryHeartbeats:
-mgr-heartbeat:
-props:
-keep-alive-cron: '0/5 * * * * ?'
-discoveryTypes:
-mgr:
-type: MGR
-props:
-group-name: b13df29e-90b6-11e8-8d1b-525400fc3996
-=======
 
 dataSources:
   ds_0:
@@ -147,7 +92,6 @@ rules:
         type: MGR
         props:
           group-name: b13df29e-90b6-11e8-8d1b-525400fc3996
->>>>>>> Stashed changes
 ```
 
 > **Requirements**
@@ -158,19 +102,12 @@ rules:
 
 > **SQL script**
 
-```
+```sql
 CREATE TABLE `t_user` (
-<<<<<<< Updated upstream
-`id` int(8) NOT NULL,
-`mobile` char(20) NOT NULL,
-`idcard` varchar(18) NOT NULL,
-PRIMARY KEY (`id`)
-=======
   `id` int(8) NOT NULL,
   `mobile` char(20) NOT NULL,
   `idcard` varchar(18) NOT NULL,
   PRIMARY KEY (`id`)
->>>>>>> Stashed changes
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
 
@@ -203,12 +140,8 @@ We can learn from the results shown above that, currently, the primary database 
 Let’s test `INSERT`:
 
 ```
-<<<<<<< Updated upstream
-mysql> INSERT INTO t_user(id, mobile, idcard) value (10000, '13718687777', '141121xxxxx');Query OK, 1 row affected (0.10 sec)
-=======
 mysql> INSERT INTO t_user(id, mobile, idcard) value (10000, '13718687777', '141121xxxxx');
 Query OK, 1 row affected (0.10 sec)
->>>>>>> Stashed changes
 ```
 
 View the ShardingSphere-Proxy log and see if the route node is the primary database `ds_0`.
@@ -217,10 +150,6 @@ View the ShardingSphere-Proxy log and see if the route node is the primary datab
 [INFO ] 2022-02-28 15:28:21.495 [ShardingSphere-Command-2] ShardingSphere-SQL - Logic SQL: INSERT INTO t_user(id, mobile, idcard) value (10000, '13718687777', '141121xxxxx')
 [INFO ] 2022-02-28 15:28:21.495 [ShardingSphere-Command-2] ShardingSphere-SQL - SQLStatement: MySQLInsertStatement(setAssignment=Optional.empty, onDuplicateKeyColumns=Optional.empty)
 [INFO ] 2022-02-28 15:28:21.495 [ShardingSphere-Command-2] ShardingSphere-SQL - Actual SQL: ds_0 ::: INSERT INTO t_user(id, mobile, idcard) value (10000, '13718687777', '141121xxxxx')
-<<<<<<< Updated upstream
-=======
-test one SELECT data (execute twice)：
->>>>>>> Stashed changes
 ```
 
 Let’s test `SELECT` (repeat it twice):
@@ -254,10 +183,7 @@ mysql> SHOW READWRITE_SPLITTING RULES;
 | replication_ds | mgr_replication_ds          | ds_1                   | ds_2                   | NULL               |                     |
 +----------------+-----------------------------+------------------------+------------------------+--------------------+---------------------+
 1 row in set (0.01 sec)
-<<<<<<< Updated upstream
-=======
 
->>>>>>> Stashed changes
 mysql> SHOW READWRITE_SPLITTING READ RESOURCES;
 +----------+----------+
 | resource | status   |
@@ -271,12 +197,8 @@ mysql> SHOW READWRITE_SPLITTING READ RESOURCES;
 Now, let’s INSERT another line of data:
 
 ```
-<<<<<<< Updated upstream
-mysql> INSERT INTO t_user(id, mobile, idcard) value (10001, '13521207777', '110xxxxx');Query OK, 1 row affected (0.04 sec)
-=======
 mysql> INSERT INTO t_user(id, mobile, idcard) value (10001, '13521207777', '110xxxxx');
 Query OK, 1 row affected (0.04 sec)
->>>>>>> Stashed changes
 ```
 
 View the ShardingSphere-Proxy log and see if the route node is the primary database `ds_1`.
@@ -353,7 +275,7 @@ ShardingSphere checks if the underlying MySQL cluster environment is ready by ex
 
 - Check if MGR is installed:
 
-```
+```sql
 SELECT * FROM information_schema.PLUGINS WHERE PLUGIN_NAME='group_replication'
 ```
 
@@ -361,7 +283,7 @@ SELECT * FROM information_schema.PLUGINS WHERE PLUGIN_NAME='group_replication'
 - View the MGR group member number:
 The underlying MGR cluster should consist of at least three nodes:
 
-```
+```sql
 SELECT count(*) FROM performance_schema.replication_group_members
 ```
 
@@ -369,7 +291,7 @@ SELECT count(*) FROM performance_schema.replication_group_members
 - Check whether the MGR cluster’s group name is consistent with that in the configuration:
 group name is the marker of a MGR group, and each group of a MGR cluster only has one group name.
 
-```
+```sql
 SELECT * FROM performance_schema.global_variables WHERE VARIABLE_NAME='group_replication_group_name'
 ```
 
@@ -378,14 +300,14 @@ SELECT * FROM performance_schema.global_variables WHERE VARIABLE_NAME='group_rep
 
 Currently, ShardingSphere does not support dual-write or multi-write scenarios. It only supports single-write mode:
 
-```
+```sql
 SELECT * FROM performance_schema.global_variables WHERE VARIABLE_NAME='group_replication_single_primary_mode'
 ```
 
 
 - Query all the node hosts, ports, and states in the MGR group cluster to check if the data source we configured is correct:
 
-```
+```sql
 SELECT MEMBER_HOST, MEMBER_PORT, MEMBER_STATE FROM performance_schema.replication_group_members
 ```
 
@@ -394,25 +316,8 @@ SELECT MEMBER_HOST, MEMBER_PORT, MEMBER_STATE FROM performance_schema.replicatio
 
 - ShardingSphere finds the primary database URL according to the query master database SQL command provided by MySQL.
 
-```
+```java
 private String findPrimaryDataSourceURL(final Map<String, DataSource> dataSourceMap) {
-<<<<<<< Updated upstream
-String result = "";
-String sql = "SELECT MEMBER_HOST, MEMBER_PORT FROM performance_schema.replication_group_members WHERE MEMBER_ID = "
-+ "(SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME = 'group_replication_primary_member')";
-for (DataSource each : dataSourceMap.values()) {
-try (Connection connection = each.getConnection();
-Statement statement = connection.createStatement();
-ResultSet resultSet = statement.executeQuery(sql)) {
-if (resultSet.next()) {
-return String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT"));
-}
-} catch (final SQLException ex) {
-log.error("An exception occurred while find primary data source url", ex);
-}
-}
-return result;
-=======
     String result = "";
     String sql = "SELECT MEMBER_HOST, MEMBER_PORT FROM performance_schema.replication_group_members WHERE MEMBER_ID = "
             + "(SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME = 'group_replication_primary_member')";
@@ -428,7 +333,6 @@ return result;
         }
     }
     return result;
->>>>>>> Stashed changes
 }
 ```
 
@@ -441,38 +345,15 @@ return result;
 There are two types of secondary database states in ShardingSpherez: enable and disable. The secondary database state will be synchronized to the ShardingSphere memory to ensure that read traffic can be routed correctly.
 
 - Get all the nodes in the MGR group:
-```
+```sql
 SELECT MEMBER_HOST, MEMBER_PORT, MEMBER_STATE FROM performance_schema.replication_group_members
 ```
 
 
 - Disable secondary databases:
 
-```
+```java
 private void determineDisabledDataSource(final String schemaName, final Map<String, DataSource> activeDataSourceMap,
-<<<<<<< Updated upstream
-final List<String> memberDataSourceURLs, final Map<String, String> dataSourceURLs) {
-for (Entry<String, DataSource> entry : activeDataSourceMap.entrySet()) {
-boolean disable = true;
-String url = null;
-try (Connection connection = entry.getValue().getConnection()) {
-url = connection.getMetaData().getURL();
-for (String each : memberDataSourceURLs) {
-if (null != url && url.contains(each)) {
-disable = false;
-break;
-}
-}
-} catch (final SQLException ex) {
-log.error("An exception occurred while find data source urls", ex);
-}
-if (disable) {
-ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, entry.getKey(), true));
-} else if (!url.isEmpty()) {
-dataSourceURLs.put(entry.getKey(), url);
-}
-}
-=======
                                          final List<String> memberDataSourceURLs, final Map<String, String> dataSourceURLs) {
     for (Entry<String, DataSource> entry : activeDataSourceMap.entrySet()) {
         boolean disable = true;
@@ -494,7 +375,6 @@ dataSourceURLs.put(entry.getKey(), url);
             dataSourceURLs.put(entry.getKey(), url);
         }
     }
->>>>>>> Stashed changes
 }
 ```
 
@@ -508,31 +388,7 @@ If `Connection` cannot be obtained or the verification fails, ShardingSphere wil
 
 - Enable secondary databases:
 
-```
-<<<<<<< Updated upstream
-private void determineDisabledDataSource(final String schemaName, final Map<String, DataSource> activeDataSourceMap,
-final List<String> memberDataSourceURLs, final Map<String, String> dataSourceURLs) {
-for (Entry<String, DataSource> entry : activeDataSourceMap.entrySet()) {
-boolean disable = true;
-String url = null;
-try (Connection connection = entry.getValue().getConnection()) {
-url = connection.getMetaData().getURL();
-for (String each : memberDataSourceURLs) {
-if (null != url && url.contains(each)) {
-disable = false;
-break;
-}
-}
-} catch (final SQLException ex) {
-log.error("An exception occurred while find data source urls", ex);
-}
-if (disable) {
-ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, entry.getKey(), true));
-} else if (!url.isEmpty()) {
-dataSourceURLs.put(entry.getKey(), url);
-}
-}
-=======
+```java
 private void determineEnabledDataSource(final Map<String, DataSource> dataSourceMap, final String schemaName,
                                         final List<String> memberDataSourceURLs, final Map<String, String> dataSourceURLs) {
     for (String each : memberDataSourceURLs) {
@@ -559,7 +415,6 @@ private void determineEnabledDataSource(final Map<String, DataSource> dataSource
             }
         }
     }
->>>>>>> Stashed changes
 }
 ```
 
@@ -574,48 +429,19 @@ By integrating the ShardingSphere sub-project ElasticJob, the above processes ar
 
 Even if developers need to extend the HA function, they do not need to care about how jobs are developed and operated.
 
-```
-<<<<<<< Updated upstream
+```java
 private void initHeartBeatJobs(final String schemaName, final Map<String, DataSource> dataSourceMap) {
-Optional<ModeScheduleContext> modeScheduleContext = ModeScheduleContextFactory.getInstance().get();
-if (modeScheduleContext.isPresent()) {
-for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
-Map<String, DataSource> dataSources = dataSourceMap.entrySet().stream().filter(dataSource -> !entry.getValue().getDisabledDataSourceNames().contains(dataSource.getKey()))
-.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
-CronJob job = new CronJob(entry.getValue().getDatabaseDiscoveryType().getType() + "-" + entry.getValue().getGroupName(),
-each -> new HeartbeatJob(schemaName, dataSources, entry.getValue().getGroupName(), entry.getValue().getDatabaseDiscoveryType(), entry.getValue().getDisabledDataSourceNames())
-.execute(null), entry.getValue().getHeartbeatProps().getProperty("keep-alive-cron"));
-modeScheduleContext.get().startCronJob(job);
-}
-}
-=======
-private void determineEnabledDataSource(final Map<String, DataSource> dataSourceMap, final String schemaName,
-                                        final List<String> memberDataSourceURLs, final Map<String, String> dataSourceURLs) {
-    for (String each : memberDataSourceURLs) {
-        boolean enable = true;
-        for (Entry<String, String> entry : dataSourceURLs.entrySet()) {
-            if (entry.getValue().contains(each)) {
-                enable = false;
-                break;
-            }
-        }
-        if (!enable) {
-            continue;
-        }
-        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
-            String url;
-            try (Connection connection = entry.getValue().getConnection()) {
-                url = connection.getMetaData().getURL();
-                if (null != url && url.contains(each)) {
-                    ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, entry.getKey(), false));
-                    break;
-                }
-            } catch (final SQLException ex) {
-                log.error("An exception occurred while find enable data source urls", ex);
-            }
+    Optional<ModeScheduleContext> modeScheduleContext = ModeScheduleContextFactory.getInstance().get();
+    if (modeScheduleContext.isPresent()) {
+        for (Entry<String, DatabaseDiscoveryDataSourceRule> entry : dataSourceRules.entrySet()) {
+            Map<String, DataSource> dataSources = dataSourceMap.entrySet().stream().filter(dataSource -> !entry.getValue().getDisabledDataSourceNames().contains(dataSource.getKey()))
+                    .collect(Collectors.toMap(Entry::getKey, Entry::getValue));
+            CronJob job = new CronJob(entry.getValue().getDatabaseDiscoveryType().getType() + "-" + entry.getValue().getGroupName(),
+                each -> new HeartbeatJob(schemaName, dataSources, entry.getValue().getGroupName(), entry.getValue().getDatabaseDiscoveryType(), entry.getValue().getDisabledDataSourceNames())
+                            .execute(null), entry.getValue().getHeartbeatProps().getProperty("keep-alive-cron"));
+            modeScheduleContext.get().startCronJob(job);
         }
     }
->>>>>>> Stashed changes
 }
 ```
 
