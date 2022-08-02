@@ -1,5 +1,6 @@
 +++ 
 title = "Apache ShardingSphere -Proxy Performance with PostgreSQL is Improved 26.8% with Version 5.1.0"
+weight = 44
 chapter = true 
 +++
 

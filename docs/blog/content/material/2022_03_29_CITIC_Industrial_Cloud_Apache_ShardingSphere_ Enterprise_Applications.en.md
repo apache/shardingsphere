@@ -1,5 +1,6 @@
 +++ 
 title = "CITIC Industrial Cloud — Apache ShardingSphere Enterprise Applications"
+weight = 46
 chapter = true 
 +++
 

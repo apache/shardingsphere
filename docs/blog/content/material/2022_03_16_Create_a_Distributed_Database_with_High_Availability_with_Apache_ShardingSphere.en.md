@@ -1,5 +1,6 @@
 +++ 
 title = "Create a Distributed Database with High Availability with Apache ShardingSphere"
+weight = 42
 chapter = true 
 +++
 
