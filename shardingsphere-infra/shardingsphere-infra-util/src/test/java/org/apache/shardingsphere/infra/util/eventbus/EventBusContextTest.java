@@ -20,11 +20,13 @@ package org.apache.shardingsphere.infra.util.eventbus;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
+import com.google.common.eventbus.Subscribe;
+import java.util.ArrayList;
 import java.util.List;
 import org.junit.Test;
 
-public class EventBusContextTest {
-
+public final class EventBusContextTest {
+    
     @Test
     public void assertEventBusContextTest() {
         StringEvent stringEvent = new StringEvent();
@@ -37,4 +39,17 @@ public class EventBusContextTest {
         assertEquals(event, events.get(0));
     }
 
+    final class StringEvent {
+
+        private List<String> events = new ArrayList<>();
+
+        @Subscribe
+        public void lister(final String ev) {
+            events.add(ev);
+        }
+
+        public List<String> getEvents() {
+            return events;
+        }
+    }
 }
