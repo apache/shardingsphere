@@ -18,4 +18,3 @@
 props:
   normal: normal
   url: !!java.net.URLClassLoader [[!!java.net.URL ["http://localhost"]]]
-
