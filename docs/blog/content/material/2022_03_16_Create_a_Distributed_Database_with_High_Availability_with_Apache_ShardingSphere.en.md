@@ -37,6 +37,7 @@ Here, we take HA+read/write splitting configuration with ShardingSphere DistSQL 
 
 ```
 schemaName: database_discovery_db
+<<<<<<< Updated upstream
 dataSources:
 ds_0:
 url: jdbc:mysql://127.0.0.1:1231/demo_primary_ds?serverTimezone=UTC&useSSL=false
@@ -90,6 +91,63 @@ mgr:
 type: MGR
 props:
 group-name: b13df29e-90b6-11e8-8d1b-525400fc3996
+=======
+
+dataSources:
+  ds_0:
+    url: jdbc:mysql://127.0.0.1:1231/demo_primary_ds?serverTimezone=UTC&useSSL=false
+    username: root
+    password: 123456
+    connectionTimeoutMilliseconds: 3000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+  ds_1:
+    url: jdbc:mysql://127.0.0.1:1232/demo_primary_ds?serverTimezone=UTC&useSSL=false
+    username: root
+    password: 123456
+    connectionTimeoutMilliseconds: 3000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+  ds_2:
+    url: jdbc:mysql://127.0.0.1:1233/demo_primary_ds?serverTimezone=UTC&useSSL=false
+    username: root
+    password: 123456
+    connectionTimeoutMilliseconds: 3000
+    idleTimeoutMilliseconds: 50000
+    maxLifetimeMilliseconds: 1300000
+    maxPoolSize: 50
+    minPoolSize: 1
+
+rules:
+  - !READWRITE_SPLITTING
+    dataSources:
+      replication_ds:
+        type: Dynamic
+        props:
+          auto-aware-data-source-name: mgr_replication_ds
+  - !DB_DISCOVERY
+    dataSources:
+      mgr_replication_ds:
+        dataSourceNames:
+          - ds_0
+          - ds_1
+          - ds_2
+        discoveryHeartbeatName: mgr-heartbeat
+        discoveryTypeName: mgr
+    discoveryHeartbeats:
+      mgr-heartbeat:
+        props:
+          keep-alive-cron: '0/5 * * * * ?'
+    discoveryTypes:
+      mgr:
+        type: MGR
+        props:
+          group-name: b13df29e-90b6-11e8-8d1b-525400fc3996
+>>>>>>> Stashed changes
 ```
 
 > **Requirements**
@@ -102,10 +160,17 @@ group-name: b13df29e-90b6-11e8-8d1b-525400fc3996
 
 ```
 CREATE TABLE `t_user` (
+<<<<<<< Updated upstream
 `id` int(8) NOT NULL,
 `mobile` char(20) NOT NULL,
 `idcard` varchar(18) NOT NULL,
 PRIMARY KEY (`id`)
+=======
+  `id` int(8) NOT NULL,
+  `mobile` char(20) NOT NULL,
+  `idcard` varchar(18) NOT NULL,
+  PRIMARY KEY (`id`)
+>>>>>>> Stashed changes
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 ```
 
@@ -138,7 +203,12 @@ We can learn from the results shown above that, currently, the primary database 
 Let’s test `INSERT`:
 
 ```
+<<<<<<< Updated upstream
 mysql> INSERT INTO t_user(id, mobile, idcard) value (10000, '13718687777', '141121xxxxx');Query OK, 1 row affected (0.10 sec)
+=======
+mysql> INSERT INTO t_user(id, mobile, idcard) value (10000, '13718687777', '141121xxxxx');
+Query OK, 1 row affected (0.10 sec)
+>>>>>>> Stashed changes
 ```
 
 View the ShardingSphere-Proxy log and see if the route node is the primary database `ds_0`.
@@ -147,6 +217,10 @@ View the ShardingSphere-Proxy log and see if the route node is the primary datab
 [INFO ] 2022-02-28 15:28:21.495 [ShardingSphere-Command-2] ShardingSphere-SQL - Logic SQL: INSERT INTO t_user(id, mobile, idcard) value (10000, '13718687777', '141121xxxxx')
 [INFO ] 2022-02-28 15:28:21.495 [ShardingSphere-Command-2] ShardingSphere-SQL - SQLStatement: MySQLInsertStatement(setAssignment=Optional.empty, onDuplicateKeyColumns=Optional.empty)
 [INFO ] 2022-02-28 15:28:21.495 [ShardingSphere-Command-2] ShardingSphere-SQL - Actual SQL: ds_0 ::: INSERT INTO t_user(id, mobile, idcard) value (10000, '13718687777', '141121xxxxx')
+<<<<<<< Updated upstream
+=======
+test one SELECT data (execute twice)：
+>>>>>>> Stashed changes
 ```
 
 Let’s test `SELECT` (repeat it twice):
@@ -180,6 +254,10 @@ mysql> SHOW READWRITE_SPLITTING RULES;
 | replication_ds | mgr_replication_ds          | ds_1                   | ds_2                   | NULL               |                     |
 +----------------+-----------------------------+------------------------+------------------------+--------------------+---------------------+
 1 row in set (0.01 sec)
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 mysql> SHOW READWRITE_SPLITTING READ RESOURCES;
 +----------+----------+
 | resource | status   |
@@ -193,7 +271,12 @@ mysql> SHOW READWRITE_SPLITTING READ RESOURCES;
 Now, let’s INSERT another line of data:
 
 ```
+<<<<<<< Updated upstream
 mysql> INSERT INTO t_user(id, mobile, idcard) value (10001, '13521207777', '110xxxxx');Query OK, 1 row affected (0.04 sec)
+=======
+mysql> INSERT INTO t_user(id, mobile, idcard) value (10001, '13521207777', '110xxxxx');
+Query OK, 1 row affected (0.04 sec)
+>>>>>>> Stashed changes
 ```
 
 View the ShardingSphere-Proxy log and see if the route node is the primary database `ds_1`.
@@ -213,11 +296,20 @@ mysql> SELECT id, mobile, idcard FROM t_user WHERE id = 10001;
 View the ShardingSphere-Proxy log and see if the route node is `ds_2`.
 
 ```
+<<<<<<< Updated upstream
 [INFO ] 2022-02-28 15:40:26.784 [ShardingSphere-Command-6] ShardingSphere-SQL - Logic SQL: INSERT INTO t_user(id, mobile, idcard) value (10001, '13521207777', '110xxxxx')
 [INFO ] 2022-02-28 15:40:26.784 [ShardingSphere-Command-6] ShardingSphere-SQL - SQLStatement: MySQLInsertStatement(setAssignment=Optional.empty, onDuplicateKeyColumns=Optional.empty)
 [INFO ] 2022-02-28 15:40:26.784 [ShardingSphere-Command-6] ShardingSphere-SQL - Actual SQL: ds_1 ::: INSERT INTO t_user(id, mobile, idcard) value (10001, '13521207777', '110xxxxx')
 > **Release the secondary databases*
 ![Image description](https://blog.devgenius.io/create-a-distributed-database-with-high-availability-with-apache-shardingsphere-b73bf776592)
+=======
+[INFO ] 2022-02-28 15:42:00.651 [ShardingSphere-Command-7] ShardingSphere-SQL - Logic SQL: SELECT id, mobile, idcard FROM t_user WHERE id = 10001
+[INFO ] 2022-02-28 15:42:00.651 [ShardingSphere-Command-7] ShardingSphere-SQL - SQLStatement: MySQLSelectStatement(table=Optional.empty, limit=Optional.empty, lock=Optional.empty, window=Optional.empty)
+[INFO ] 2022-02-28 15:42:00.651 [ShardingSphere-Command-7] ShardingSphere-SQL - Actual SQL: ds_2 ::: SELECT id, mobile, idcard FROM t_user WHERE id = 10001
+[INFO ] 2022-02-28 15:42:02.148 [ShardingSphere-Command-7] ShardingSphere-SQL - Logic SQL: SELECT id, mobile, idcard FROM t_user WHERE id = 10001
+[INFO ] 2022-02-28 15:42:02.149 [ShardingSphere-Command-7] ShardingSphere-SQL - SQLStatement: MySQLSelectStatement(table=Optional.empty, limit=Optional.empty, lock=Optional.empty, window=Optional.empty)
+[INFO ] 2022-02-28 15:42:02.149 [ShardingSphere-Command-7] ShardingSphere-SQL - Actual SQL: ds_2 ::: SELECT id, mobile, idcard FROM t_user WHERE id = 10001
+>>>>>>> Stashed changes
 ```
 
 
@@ -231,6 +323,10 @@ mysql> SHOW READWRITE_SPLITTING RULES;
 | replication_ds | mgr_replication_ds          | ds_1                   | ds_0,ds_2              | NULL               |                     |
 +----------------+-----------------------------+------------------------+------------------------+--------------------+---------------------+
 1 row in set (0.01 sec)
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 mysql> SHOW READWRITE_SPLITTING READ RESOURCES;
 +----------+---------+
 | resource | status  |
@@ -300,6 +396,7 @@ SELECT MEMBER_HOST, MEMBER_PORT, MEMBER_STATE FROM performance_schema.replicatio
 
 ```
 private String findPrimaryDataSourceURL(final Map<String, DataSource> dataSourceMap) {
+<<<<<<< Updated upstream
 String result = "";
 String sql = "SELECT MEMBER_HOST, MEMBER_PORT FROM performance_schema.replication_group_members WHERE MEMBER_ID = "
 + "(SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME = 'group_replication_primary_member')";
@@ -315,6 +412,23 @@ log.error("An exception occurred while find primary data source url", ex);
 }
 }
 return result;
+=======
+    String result = "";
+    String sql = "SELECT MEMBER_HOST, MEMBER_PORT FROM performance_schema.replication_group_members WHERE MEMBER_ID = "
+            + "(SELECT VARIABLE_VALUE FROM performance_schema.global_status WHERE VARIABLE_NAME = 'group_replication_primary_member')";
+    for (DataSource each : dataSourceMap.values()) {
+        try (Connection connection = each.getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet resultSet = statement.executeQuery(sql)) {
+            if (resultSet.next()) {
+                return String.format("%s:%s", resultSet.getString("MEMBER_HOST"), resultSet.getString("MEMBER_PORT"));
+            }
+        } catch (final SQLException ex) {
+            log.error("An exception occurred while find primary data source url", ex);
+        }
+    }
+    return result;
+>>>>>>> Stashed changes
 }
 ```
 
@@ -336,6 +450,7 @@ SELECT MEMBER_HOST, MEMBER_PORT, MEMBER_STATE FROM performance_schema.replicatio
 
 ```
 private void determineDisabledDataSource(final String schemaName, final Map<String, DataSource> activeDataSourceMap,
+<<<<<<< Updated upstream
 final List<String> memberDataSourceURLs, final Map<String, String> dataSourceURLs) {
 for (Entry<String, DataSource> entry : activeDataSourceMap.entrySet()) {
 boolean disable = true;
@@ -357,6 +472,29 @@ ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName
 dataSourceURLs.put(entry.getKey(), url);
 }
 }
+=======
+                                         final List<String> memberDataSourceURLs, final Map<String, String> dataSourceURLs) {
+    for (Entry<String, DataSource> entry : activeDataSourceMap.entrySet()) {
+        boolean disable = true;
+        String url = null;
+        try (Connection connection = entry.getValue().getConnection()) {
+            url = connection.getMetaData().getURL();
+            for (String each : memberDataSourceURLs) {
+                if (null != url && url.contains(each)) {
+                    disable = false;
+                    break;
+                }
+            }
+        } catch (final SQLException ex) {
+            log.error("An exception occurred while find data source urls", ex);
+        }
+        if (disable) {
+            ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, entry.getKey(), true));
+        } else if (!url.isEmpty()) {
+            dataSourceURLs.put(entry.getKey(), url);
+        }
+    }
+>>>>>>> Stashed changes
 }
 ```
 
@@ -371,6 +509,7 @@ If `Connection` cannot be obtained or the verification fails, ShardingSphere wil
 - Enable secondary databases:
 
 ```
+<<<<<<< Updated upstream
 private void determineDisabledDataSource(final String schemaName, final Map<String, DataSource> activeDataSourceMap,
 final List<String> memberDataSourceURLs, final Map<String, String> dataSourceURLs) {
 for (Entry<String, DataSource> entry : activeDataSourceMap.entrySet()) {
@@ -393,6 +532,34 @@ ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName
 dataSourceURLs.put(entry.getKey(), url);
 }
 }
+=======
+private void determineEnabledDataSource(final Map<String, DataSource> dataSourceMap, final String schemaName,
+                                        final List<String> memberDataSourceURLs, final Map<String, String> dataSourceURLs) {
+    for (String each : memberDataSourceURLs) {
+        boolean enable = true;
+        for (Entry<String, String> entry : dataSourceURLs.entrySet()) {
+            if (entry.getValue().contains(each)) {
+                enable = false;
+                break;
+            }
+        }
+        if (!enable) {
+            continue;
+        }
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            String url;
+            try (Connection connection = entry.getValue().getConnection()) {
+                url = connection.getMetaData().getURL();
+                if (null != url && url.contains(each)) {
+                    ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, entry.getKey(), false));
+                    break;
+                }
+            } catch (final SQLException ex) {
+                log.error("An exception occurred while find enable data source urls", ex);
+            }
+        }
+    }
+>>>>>>> Stashed changes
 }
 ```
 
@@ -408,6 +575,7 @@ By integrating the ShardingSphere sub-project ElasticJob, the above processes ar
 Even if developers need to extend the HA function, they do not need to care about how jobs are developed and operated.
 
 ```
+<<<<<<< Updated upstream
 private void initHeartBeatJobs(final String schemaName, final Map<String, DataSource> dataSourceMap) {
 Optional<ModeScheduleContext> modeScheduleContext = ModeScheduleContextFactory.getInstance().get();
 if (modeScheduleContext.isPresent()) {
@@ -420,6 +588,34 @@ each -> new HeartbeatJob(schemaName, dataSources, entry.getValue().getGroupName(
 modeScheduleContext.get().startCronJob(job);
 }
 }
+=======
+private void determineEnabledDataSource(final Map<String, DataSource> dataSourceMap, final String schemaName,
+                                        final List<String> memberDataSourceURLs, final Map<String, String> dataSourceURLs) {
+    for (String each : memberDataSourceURLs) {
+        boolean enable = true;
+        for (Entry<String, String> entry : dataSourceURLs.entrySet()) {
+            if (entry.getValue().contains(each)) {
+                enable = false;
+                break;
+            }
+        }
+        if (!enable) {
+            continue;
+        }
+        for (Entry<String, DataSource> entry : dataSourceMap.entrySet()) {
+            String url;
+            try (Connection connection = entry.getValue().getConnection()) {
+                url = connection.getMetaData().getURL();
+                if (null != url && url.contains(each)) {
+                    ShardingSphereEventBus.getInstance().post(new DataSourceDisabledEvent(schemaName, entry.getKey(), false));
+                    break;
+                }
+            } catch (final SQLException ex) {
+                log.error("An exception occurred while find enable data source urls", ex);
+            }
+        }
+    }
+>>>>>>> Stashed changes
 }
 ```
 
