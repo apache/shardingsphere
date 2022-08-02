@@ -14,10 +14,11 @@ java.util.Optional, introduced by Java 8, it makes the code cleaner. For example
 
 ```
 public T orElse(T other) {
-return value != null ? value : other;
+    return value != null ? value : other;
 }
+
 public T orElseGet(Supplier<? extends T> other) {
-return value != null ? value : other.get();
+    return value != null ? value : other.get();
 }
 ```
 In ShardingSphere item `org.apache.shardingsphere.infra.binder.segment.select.orderby.engine.OrderByContextEngine`, an Optional code is used as:
@@ -50,17 +51,17 @@ This problem has been solved in Java 9. However, to avoid this problem and ensur
 Taking a frequently called ShardingSphere class `org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecutionPrepareEngine` as an example:
 
 ```
-// Omit some codes...
-private static final Map<String, SQLExecutionUnitBuilder> TYPE_TO_BUILDER_MAP = new ConcurrentHashMap<>(8, 1);
-// Omit some codes...
-public DriverExecutionPrepareEngine(final String type, final int maxConnectionsSizePerQuery, final ExecutorDriverManager<C, ?, ?> executorDriverManager,
-final StorageResourceOption option, final Collection<ShardingSphereRule> rules) {
-super(maxConnectionsSizePerQuery, rules);
-this.executorDriverManager = executorDriverManager;
-this.option = option;
-sqlExecutionUnitBuilder = TYPE_TO_BUILDER_MAP.computeIfAbsent(type,
-key -> TypedSPIRegistry.getRegisteredService(SQLExecutionUnitBuilder.class, key, new Properties()));
-}
+ // Omit some code...
+    private static final Map<String, SQLExecutionUnitBuilder> TYPE_TO_BUILDER_MAP = new ConcurrentHashMap<>(8, 1);
+    // Omit some code...
+    public DriverExecutionPrepareEngine(final String type, final int maxConnectionsSizePerQuery, final ExecutorDriverManager<C, ?, ?> executorDriverManager, 
+                                        final StorageResourceOption option, final Collection<ShardingSphereRule> rules) {
+        super(maxConnectionsSizePerQuery, rules);
+        this.executorDriverManager = executorDriverManager;
+        this.option = option;
+        sqlExecutionUnitBuilder = TYPE_TO_BUILDER_MAP.computeIfAbsent(type, 
+                key -> TypedSPIRegistry.getRegisteredService(SQLExecutionUnitBuilder.class, key, new Properties()));
+    }
 ```
 
 In the code above, only two `type` will be passed into `computeIfAbsent`, and most SQL execution must adopt this code. As a result, there will be frequent concurrent calls of `computeIfAbsent` by the same key, hindering concurrent performance. The following method is adopted to avoid this problem:
@@ -68,7 +69,7 @@ In the code above, only two `type` will be passed into `computeIfAbsent`, and mo
 ```
 SQLExecutionUnitBuilder result;
 if (null == (result = TYPE_TO_BUILDER_MAP.get(type))) {
-result = TYPE_TO_BUILDER_MAP.computeIfAbsent(type, key -> TypedSPIRegistry.getRegisteredService(SQLExecutionUnitBuilder.class, key, new Properties()));
+    result = TYPE_TO_BUILDER_MAP.computeIfAbsent(type, key -> TypedSPIRegistry.getRegisteredService(SQLExecutionUnitBuilder.class, key, new Properties()));
 }
 return result;
 ```
@@ -94,17 +95,17 @@ This affects concurrent performance. Modification operations only exist at the i
 There ShardingSphere item `org.apache.shardingsphere.sql.parser.sql.common.constant.QuoteCharacter` has the following logic:
 
 ```
-public String wrap(final String value) {
-return String.format("%s%s%s", startDelimiter, value, endDelimiter);
-}
+  public String wrap(final String value) {
+        return String.format("%s%s%s", startDelimiter, value, endDelimiter);
+    }
 ```
 
 The logic above is obviously a string concatenation, but the use of `String.format` means it costs more than direct string concatenation. It's adjusted as follows:
 
 ```
 public String wrap(final String value) {
-return startDelimiter + value + endDelimiter;
-}
+        return startDelimiter + value + endDelimiter;
+    }
 ```
 
 We use JMH to do a simple test. Here are the testing results:
@@ -151,14 +152,18 @@ The ShardingSphere class `org.apache.shardingsphere.sharding.route.engine.condit
 @Getter
 @ToString
 public final class Column {
-private final String name;
-private final String tableName;
-@Override
-public boolean equals(final Object obj) {...}
-@Override
-public int hashCode() {
-return Objects.hashCode(name.toUpperCase(), tableName.toUpperCase());
-}
+
+    private final String name;
+
+    private final String tableName;
+
+    @Override
+    public boolean equals(final Object obj) {...}
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(name.toUpperCase(), tableName.toUpperCase()); 
+    } 
 }
 ```
 
@@ -170,20 +175,26 @@ After adjustment:
 @Getter
 @ToString
 public final class Column {
-private final String name;
-private final String tableName;
-private final int hashCode;
-public Column(final String name, final String tableName) {
-this.name = name;
-this.tableName = tableName;
-hashCode = Objects.hash(name.toUpperCase(), tableName.toUpperCase());
-}
-@Override
-public boolean equals(final Object obj) {...}
-@Override
-public int hashCode() {
-return hashCode;
-}
+
+    private final String name;
+
+    private final String tableName;
+
+    private final int hashCode;
+
+    public Column(final String name, final String tableName) {
+        this.name = name;
+        this.tableName = tableName;
+        hashCode = Objects.hash(name.toUpperCase(), tableName.toUpperCase());
+    }
+
+    @Override
+    public boolean equals(final Object obj) {...}
+
+    @Override
+    public int hashCode() {
+        return hashCode;
+    } 
 }
 ```
 
@@ -200,7 +211,7 @@ Take the following code as an example. Before reconstruction, it uses reflection
 ```
 @Override
 public void begin() {
-recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{false});
+    recordMethodInvocation(Connection.class, "setAutoCommit", new Class[]{boolean.class}, new Object[]{false});
 }
 ```
 
@@ -209,13 +220,13 @@ After reconstruction, the overheads of the reflection calls method are avoided:
 ```
 @Override
 public void begin() {
-connection.getConnectionPostProcessors().add(target -> {
-try {
-target.setAutoCommit(false);
-} catch (final SQLException ex) {
-throw new RuntimeException(ex);
-}
-});
+    connection.getConnectionPostProcessors().add(target -> {
+        try {
+            target.setAutoCommit(false);
+        } catch (final SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    });
 }
 ```
 
