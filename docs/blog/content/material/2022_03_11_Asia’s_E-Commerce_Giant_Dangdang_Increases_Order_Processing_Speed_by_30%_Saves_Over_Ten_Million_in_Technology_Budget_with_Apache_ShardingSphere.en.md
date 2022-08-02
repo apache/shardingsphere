@@ -1,5 +1,6 @@
 +++ 
 title = "Asia’s E-Commerce Giant Dangdang Increases Order Processing Speed by 30% — Saves Over Ten Million in Technology Budget with Apache ShardingSphere"
+weight = 41
 chapter = true 
 +++
 

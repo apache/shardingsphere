@@ -1,18 +1,18 @@
 +++ 
-title = "SQL Parse Format Function — A Technical Deep Dive by Apache ShardingSphere
-"
+title = "SQL Parse Format Function — A Technical Deep Dive by Apache ShardingSphere"
+weight = 40
 chapter = true 
 +++
 
 Complicted SQL statements are some of the most common problems that data scientists and engineers encounter. For example, can you comprehend at first glance the complex SQL statement below?
 
-```
+```sql
 select a.order_id,a.status,sum(b.money) as money from t_order a inner join (select c.order_id as order_id, c.number * d.price as money from t_order_detail c inner join t_order_price d on c.s_id = d.s_id) b on a.order_id = b.order_id where b.money > 100 group by a.order_id
 ```
 
 How about formatting it? Is it easier to understand the formatted formatted version below?
 
-```
+```sql
 SELECT a . order_id , a . status , SUM(b . money) AS money
 FROM t_order a INNER JOIN
 (
@@ -55,7 +55,7 @@ SQL Parse Format is used to format SQL statements. Additionally, SQL Parse Forma
 
 For instance, each part of the following SQL formatted by SQL Parse Format becomes clearer with wrapping and keywords in all caps:
 
-```
+```sql
 select age as b, name as n from table1 join table2 where id = 1 and name = 'lu';
 -- After Formatting
 SELECT age AS b, name AS n
@@ -71,7 +71,7 @@ So far, we have covered the basics of the SQL Parse Format.
 
 How a SQL statement is formatted in Apache ShardingSphere? Take the following SQL as an example:
 
-```
+```sql
 select order_id from t_order where status = 'OK'
 ```
 
@@ -98,7 +98,7 @@ For example, in the image above, we get the keywords `SELECT`, `FROM`, `WHERE`, 
 3. Then ANTLR4 converts the output of the parser engine into the syntax tree as shown in the image above.
 
 Based on the source code of Apache ShardingSphere, the above-mentioned process is reproduced as follows.
-```
+```java
 String sql = "select order_id from t_order where status = 'OK'";
 CacheOption cacheOption = new CacheOption(128, 1024L, 4);
 SQLParserEngine parserEngine = new SQLParserEngine("MySQL", cacheOption, false);
@@ -106,7 +106,7 @@ ParseContext parseContext = parserEngine.parse(sql, false);
 ```
 
 4. The SQL Parser Engine of Apache ShardingSphere encapsulates and abstracts the ANTLR4 parser: it loads the SQL dialect parser through an SPI. Users can also extend data dialects through extension points of SPI. In addition, ShardingSphere adds a cache mechanism internally to improve performance. Take a look at the relevant code for parsing as follows:
-```
+```java
 public ParseContext parse(final String sql) {
     ParseASTNode result = twoPhaseParse(sql);
     if (result.getRootNode() instanceof ErrorNode) {
@@ -138,7 +138,7 @@ private ParseASTNode twoPhaseParse(final String sql) {
 So how does Apache ShardingSphere get the formatted SQL statement from the parse tree?
 
 In fact, ShardingSphere uses the `Visitor` method. ANTLR4 provides two ways to access syntax trees: Listener and `Visitor`. ShardingSphere chooses the latter to access syntax trees. The code below shows how to get formatted SQL from the syntax tree:
-```
+```java
 SQLVisitorEngine visitorEngine = new SQLVisitorEngine("MySQL", "FORMAT", new Properties());
 String result = visitorEngine.visit(parseContext);
 ```
@@ -163,7 +163,8 @@ The following code can help us better understand how `Visitor` can format SQL.
 When the `Visitor` traverses to `select`, the `Visitor` will format it first, and then visit `projection`. The internal formatting of `projection` will be further implemented through the `visitProjections` method.
 
 Empty lines are handled before accessing `from`. The object instantiated by the `Visitor` maintains a `StringBuilder` to store the formatted result. Since the parser and visitor of each SQL are newly-created instantiated objects, there are no thread issues. After the final traversal, Apache ShardingSphere outputs the result in `StringBuilder`, and then we get formatted SQL.
-```
+
+```java
 public String visitQuerySpecification(final QuerySpecificationContext ctx) {
     formatPrint("SELECT ");
     int selectSpecCount = ctx.selectSpecification().size();
@@ -205,7 +206,7 @@ As for Java applications, users only need to add dependencies and call the API.
 
 - Add the Dependency
 
-```
+```xml
 <dependency>
     <groupId>org.apache.shardingsphere</groupId>
     <artifactId>shardingsphere-sql-parser-engine</artifactId>
@@ -220,7 +221,7 @@ As for Java applications, users only need to add dependencies and call the API.
 ```
 
 - Call the API
-```
+```java
 public static void main(String[] args) {
     String sql = "select order_id from t_order where status = 'OK'";
     CacheOption cacheOption = new CacheOption(128, 1024L, 4);
