@@ -29,10 +29,19 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardS
 import org.apache.shardingsphere.sharding.factory.ShardingAlgorithmFactory;
 import org.junit.Test;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -204,7 +213,7 @@ public final class TableRuleTest {
     @Test
     public void assertDatNodeSuffixPattern() {
         String regex = "(\\d+[\\-_]){0,}(\\d+$)";
-        Pattern DATA_NODE_SUFFIX_PATTERN = Pattern.compile(regex);
+        Pattern dataNodeSuffixPattern = Pattern.compile(regex);
         Set<String> set = new LinkedHashSet<>();
         set.add("t_order_1");
         set.add("t_order_2_0");
@@ -216,9 +225,9 @@ public final class TableRuleTest {
         set.add("t_order_8_0_0-0_0_0-0_0");
         set.add("t_order_9_0_0-0_0_0-0_0-0");
         set.add("t_order_10_0_0-0_0_0-0-0-0_0");
-        set.forEach(s->{
-            assertTrue("t_order_".equals(DATA_NODE_SUFFIX_PATTERN.matcher(s).replaceAll("")));
-        });
+        set.forEach( s -> {
+            assertEquals("t_order_",dataNodeSuffixPattern.matcher(s).replaceAll(""));
+        } );
     }
 
     private ModShardingAlgorithm createModShardingAlgorithm() {
