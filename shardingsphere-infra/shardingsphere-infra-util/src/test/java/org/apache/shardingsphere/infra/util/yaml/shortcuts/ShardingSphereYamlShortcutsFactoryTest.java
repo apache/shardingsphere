@@ -17,30 +17,21 @@
 
 package org.apache.shardingsphere.infra.util.yaml.shortcuts;
 
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.yaml.fixture.YamlShortcutsFixture;
+import org.junit.Test;
 
-import java.util.HashMap;
 import java.util.Map;
 
-/**
- * ShardingSphere YAML shortcuts factory.
- */
-public final class ShardingSphereYamlShortcutsFactory {
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class ShardingSphereYamlShortcutsFactoryTest {
     
-    static {
-        ShardingSphereServiceLoader.register(ShardingSphereYamlShortcuts.class);
-    }
-    
-    /**
-     * Get all ShardingSphere YAML shortcuts.
-     *
-     * @return got YAML shortcuts
-     */
-    public static Map<String, Class<?>> getAllYamlShortcuts() {
-        Map<String, Class<?>> result = new HashMap<>();
-        for (ShardingSphereYamlShortcuts each : ShardingSphereServiceLoader.getServiceInstances(ShardingSphereYamlShortcuts.class)) {
-            result.putAll(each.getYamlShortcuts());
-        }
-        return result;
+    @Test
+    public void assertGetAllYamlShortcuts() {
+        Map<String, Class<?>> actual = ShardingSphereYamlShortcutsFactory.getAllYamlShortcuts();
+        assertThat(actual.size(), is(1));
+        assertThat(actual.get("!FIXTURE"), equalTo(YamlShortcutsFixture.class));
     }
 }

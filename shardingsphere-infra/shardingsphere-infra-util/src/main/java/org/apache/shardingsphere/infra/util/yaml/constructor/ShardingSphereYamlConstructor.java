@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.util.yaml.constructor;
 
 import org.apache.shardingsphere.infra.util.yaml.shortcuts.ShardingSphereYamlShortcutsFactory;
-import org.apache.shardingsphere.infra.util.yaml.shortcuts.ShardingSphereYamlShortcuts;
 import org.yaml.snakeyaml.TypeDescription;
 import org.yaml.snakeyaml.constructor.Construct;
 import org.yaml.snakeyaml.constructor.Constructor;
@@ -39,9 +38,7 @@ public class ShardingSphereYamlConstructor extends Constructor {
     public ShardingSphereYamlConstructor(final Class<?> rootClass) {
         super(rootClass);
         ShardingSphereYamlConstructFactory.getInstances().forEach(each -> typeConstructs.put(each.getType(), each));
-        for (ShardingSphereYamlShortcuts each : ShardingSphereYamlShortcutsFactory.getAllInstances()) {
-            each.getYamlShortcuts().forEach((key, value) -> addTypeDescription(new TypeDescription(value, key)));
-        }
+        ShardingSphereYamlShortcutsFactory.getAllYamlShortcuts().forEach((key, value) -> addTypeDescription(new TypeDescription(value, key)));
         this.rootClass = rootClass;
     }
     
