@@ -299,9 +299,10 @@ public final class MySQLClient {
             running = false;
             log.error("MySQLBinlogEventHandler: protocol resolution error", cause);
         }
-        
+    
         private void reconnect() {
-            log.info("reconnect mysql client, retryTimes={}", reconnectTimes.incrementAndGet());
+            int retryTimes = reconnectTimes.incrementAndGet();
+            log.info("reconnect MySQL client, retry times={}", retryTimes);
             closeChannel();
             connect();
             subscribe(lastBinlogEvent.getFileName(), lastBinlogEvent.getPosition());
