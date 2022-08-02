@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.admin.executor;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
@@ -176,15 +177,11 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
     /**
      * Default database metadata executor, execute sql directly in the database to obtain the result source data.
      */
+    @RequiredArgsConstructor
     @Slf4j
     public static class DefaultDatabaseMetadataExecutor extends AbstractDatabaseMetadataExecutor {
         
-        @Getter
         private final String sql;
-        
-        public DefaultDatabaseMetadataExecutor(final String sql) {
-            this.sql = sql;
-        }
         
         @Override
         protected void initDatabaseData(final String databaseName) {
@@ -199,7 +196,7 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
         protected List<String> getDatabaseNames(final ConnectionSession connectionSession) {
             Optional<String> database = ProxyContext.getInstance().getAllDatabaseNames().stream().filter(each -> hasAuthority(each, connectionSession.getGrantee()))
                     .filter(AbstractDatabaseMetadataExecutor::hasDataSource).findFirst();
-            return database.isPresent() ? Collections.singletonList(database.get()) : Collections.emptyList();
+            return database.map(Collections::singletonList).orElse(Collections.emptyList());
         }
         
         /**
@@ -214,9 +211,9 @@ public abstract class AbstractDatabaseMetadataExecutor implements DatabaseAdminQ
             Optional<Entry<String, DataSource>> dataSourceEntry = resource.getDataSources().entrySet().stream().findFirst();
             log.info("Actual SQL: {} ::: {}", dataSourceEntry.orElseThrow(ResourceNotExistedException::new).getKey(), sql);
             try (
-                    Connection conn = dataSourceEntry.get().getValue().getConnection();
-                    PreparedStatement ps = conn.prepareStatement(sql);
-                    ResultSet resultSet = ps.executeQuery()) {
+                    Connection connection = dataSourceEntry.get().getValue().getConnection();
+                    PreparedStatement preparedStatement = connection.prepareStatement(sql);
+                    ResultSet resultSet = preparedStatement.executeQuery()) {
                 callback.apply(resultSet);
             }
         }

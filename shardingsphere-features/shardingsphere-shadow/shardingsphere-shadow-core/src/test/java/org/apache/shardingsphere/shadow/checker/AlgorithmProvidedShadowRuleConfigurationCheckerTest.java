@@ -24,15 +24,27 @@ import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguratio
 import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
 import org.junit.Test;
 
+import javax.sql.DataSource;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.Map;
 import java.util.Properties;
 import java.util.Collections;
+
+import static org.mockito.Mockito.mock;
 
 public final class AlgorithmProvidedShadowRuleConfigurationCheckerTest {
     
     @Test
     public void assertCheck() {
-        new AlgorithmProvidedShadowRuleConfigurationChecker().check("", createAlgorithmProvidedShadowRuleConfiguration(), Collections.emptyMap(), Collections.emptyList());
+        new AlgorithmProvidedShadowRuleConfigurationChecker().check("", createAlgorithmProvidedShadowRuleConfiguration(), createDataSourceMap(), Collections.emptyList());
+    }
+    
+    private Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
+        result.put("ds", mock(DataSource.class));
+        result.put("ds_shadow", mock(DataSource.class));
+        return result;
     }
     
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {

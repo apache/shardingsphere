@@ -36,12 +36,14 @@ public final class TransactionParameterized {
     
     private final TransactionType transactionType;
     
+    private final String provider;
+    
     private final String dockerImageName;
     
     private final Class<? extends BaseTransactionTestCase> transactionTestCaseClass;
     
     @Override
     public String toString() {
-        return String.format("%s -> %s -> %s -> %s -> %s", databaseType.getType(), adapter, transactionType, dockerImageName, transactionTestCaseClass.getSimpleName());
+        return String.format("%s -> %s -> %s -> %s -> %s -> %s", databaseType.getType(), adapter, transactionType, provider, dockerImageName, transactionTestCaseClass.getSimpleName());
     }
 }

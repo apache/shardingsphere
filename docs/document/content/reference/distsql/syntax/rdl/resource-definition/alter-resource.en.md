@@ -3,15 +3,13 @@ title = "ALTER RESOURCE"
 weight = 3
 +++
 
-
 ### Description
 
 The `ALTER RESOURCE` syntax is used to alter resources for the currently selected database.
 
-
-
 ### Syntax
-```SQL
+
+```sql
 AlterResource ::=
   'ALTER' 'RESOURCE' dataSource (',' dataSource)*
 
@@ -41,17 +39,26 @@ url ::=
 
 ```
 
- ### Supplement
-- Before altering the resources, please confirm that a database exists in Proxy, and execute the `use` command to successfully select a database
+### Supplement
+
+- Before altering the resources, please confirm that a database exists in Proxy, and execute the `use` command to
+  successfully select a database
+- `ALTER RESOURCE` is not allowed to change the real data source associated with this resource
+- `ALTER RESOURCE` will switch the connection pool. This operation may affect the ongoing business, please use it with
+  caution
 - `dataSourceName` is case-sensitive
 - `dataSourceName` needs to be unique within the current database
 - `dataSourceName` name only allows letters, numbers and `_`, and must start with a letter
-- `poolProperty` is used to customize connection pool parameters, `key` must be the same as the connection pool parameter name, `value` supports int and String types
-- When `password` contains special characters, it is recommended to use the string form; for example, the string form of `password@123` is `"password@123"`
+- `poolProperty` is used to customize connection pool parameters, `key` must be the same as the connection pool
+  parameter name, `value` supports int and String types
+- When `password` contains special characters, it is recommended to use the string form; for example, the string form
+  of `password@123` is `"password@123"`
 
- ### Example
+### Example
+
 - Alter resource using standard mode
-```SQL
+
+```sql
 ALTER RESOURCE ds_0 (
     HOST=127.0.0.1,
     PORT=3306,
@@ -62,7 +69,8 @@ ALTER RESOURCE ds_0 (
 ```
 
 - Alter resource and set connection pool parameters using standard mode
-```SQL
+
+```sql
 ALTER RESOURCE ds_1 (
     HOST=127.0.0.1,
     PORT=3306,
@@ -74,7 +82,8 @@ ALTER RESOURCE ds_1 (
 ```
 
 - Alter resource and set connection pool parameters using URL patterns
-```SQL
+
+```sql
 ALTER RESOURCE ds_2 (
     URL="jdbc:mysql://127.0.0.1:3306/db_2?serverTimezone=UTC&useSSL=false",
     USER=root,
@@ -85,7 +94,8 @@ ALTER RESOURCE ds_2 (
 
 ### Reserved word
 
-    ALTER, RESOURCE, HOST, PORT, DB, USER, PASSWORD, PROPERTIES, URL
+`ALTER`、`RESOURCE`、`HOST`、`PORT`、`DB`、`USER`、`PASSWORD`、`PROPERTIES`、`URL`
 
- ### Related links
+### Related links
+
 - [Reserved word](/en/reference/distsql/syntax/reserved-word/)

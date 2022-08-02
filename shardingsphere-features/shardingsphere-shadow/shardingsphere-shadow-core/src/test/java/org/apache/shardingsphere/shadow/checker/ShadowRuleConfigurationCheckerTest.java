@@ -23,6 +23,7 @@ import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceCo
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.junit.Test;
 
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -30,11 +31,20 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Collections;
 
+import static org.mockito.Mockito.mock;
+
 public final class ShadowRuleConfigurationCheckerTest {
     
     @Test
     public void assertCheck() {
-        new ShadowRuleConfigurationChecker().check("", createShadowRuleConfiguration(), Collections.emptyMap(), Collections.emptyList());
+        new ShadowRuleConfigurationChecker().check("", createShadowRuleConfiguration(), createDataSourceMap(), Collections.emptyList());
+    }
+    
+    private Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
+        result.put("ds", mock(DataSource.class));
+        result.put("ds_shadow", mock(DataSource.class));
+        return result;
     }
     
     private ShadowRuleConfiguration createShadowRuleConfiguration() {

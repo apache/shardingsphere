@@ -93,13 +93,13 @@
         ALTER TRANSACTION RULE ( DEFAULT=LOCAL )
     </alter-local-transaction-rule>
 
-    <alter-xa-atomikos-transaction-rule>
+    <alter-xa-transaction-rule>
         ALTER TRANSACTION RULE
         (
         DEFAULT=XA,
         TYPE(NAME=${providerType})
         )
-    </alter-xa-atomikos-transaction-rule>
+    </alter-xa-transaction-rule>
 
     <source-add-resource-template>
         ADD RESOURCE ds_0 (

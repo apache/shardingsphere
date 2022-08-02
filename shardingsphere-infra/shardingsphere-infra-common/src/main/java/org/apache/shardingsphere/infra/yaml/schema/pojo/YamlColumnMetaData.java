@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.yaml.schema.pojo;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
  * Column meta data for YAML.

@@ -87,8 +87,8 @@ public class TextPrimaryKeyScalingIT extends BaseExtraSQLITCase {
     
     private void batchInsertOrder() {
         UUIDKeyGenerateAlgorithm keyGenerateAlgorithm = new UUIDKeyGenerateAlgorithm();
-        List<Object[]> orderData = new ArrayList<>(3000);
-        for (int i = 1; i <= 3000; i++) {
+        List<Object[]> orderData = new ArrayList<>(TABLE_INIT_ROW_COUNT);
+        for (int i = 0; i < TABLE_INIT_ROW_COUNT; i++) {
             orderData.add(new Object[]{keyGenerateAlgorithm.generateKey(), ThreadLocalRandom.current().nextInt(0, 6), ThreadLocalRandom.current().nextInt(0, 6), "OK"});
         }
         getJdbcTemplate().batchUpdate("INSERT INTO t_order (id,order_id,user_id,status) VALUES (?,?,?,?)", orderData);
