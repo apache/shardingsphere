@@ -38,7 +38,7 @@ import org.junit.Test;
 public class DataSourceGeneratedDatabaseConfigurationTest {
 
     @Test
-    public void assertDataSources() {
+    public void assertDataSourceGeneratedDatabaseConfiguration() {
         String url = "jdbc:mysql://192.168.0.1:3306/foo_ds";
         String username = "root";
         String password = "root";
