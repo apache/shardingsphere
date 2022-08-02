@@ -17,26 +17,23 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.admin.postgresql;
 
-import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.proxy.backend.handler.admin.executor.ReplayRequiredSessionVariablesLoader;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResetParameterStatement;
 
-import java.util.Collection;
+import java.sql.SQLException;
 
 /**
- * Default session variable handler for PostgreSQL.
+ * Reset variable admin executor for PostgreSQL.
  */
-@Slf4j
-public final class DefaultPostgreSQLSessionVariableHandler implements PostgreSQLSessionVariableHandler {
+@RequiredArgsConstructor
+public final class PostgreSQLResetVariableAdminExecutor implements DatabaseAdminExecutor {
     
-    private final Collection<String> replayRequiredSessionVariables = ReplayRequiredSessionVariablesLoader.getVariables("PostgreSQL");
+    private final ResetParameterStatement resetParameterStatement;
     
     @Override
-    public void handle(final ConnectionSession connectionSession, final String variableName, final String assignValue) {
-        if (!replayRequiredSessionVariables.contains(variableName)) {
-            log.debug("Set statement {} = {} was discarded.", variableName, assignValue);
-        } else {
-            connectionSession.getRequiredSessionVariableRecorder().setVariable(variableName, assignValue);
-        }
+    public void execute(final ConnectionSession connectionSession) throws SQLException {
+        // TODO Do reset
     }
 }

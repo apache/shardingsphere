@@ -59,7 +59,7 @@ public final class RequiredSessionVariableRecorder {
      * @return Whether session variable is set
      */
     public boolean isSessionVariableSet() {
-        return sessionVariables.isEmpty();
+        return !sessionVariables.isEmpty();
     }
     
     /**

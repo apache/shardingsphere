@@ -317,5 +317,6 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
                 exceptions.add(ex);
             }
         }
+        connectionSession.getRequiredSessionVariableRecorder().removeVariablesWithDefaultValue();
     }
 }
