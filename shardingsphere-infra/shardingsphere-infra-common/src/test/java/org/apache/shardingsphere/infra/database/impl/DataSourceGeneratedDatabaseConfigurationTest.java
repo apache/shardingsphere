@@ -35,7 +35,7 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.junit.Test;
 
-public class DataSourceGeneratedDatabaseConfigurationTest {
+public final class DataSourceGeneratedDatabaseConfigurationTest {
 
     @Test
     public void assertDataSourceGeneratedDatabaseConfiguration() {
@@ -51,9 +51,9 @@ public class DataSourceGeneratedDatabaseConfigurationTest {
                 Collections.singletonList(new FixtureRuleConfiguration("rule0")));
         DataSource dataSource = databaseConfiguration.getDataSources().get("dsc");
         assertThat(dataSource, instanceOf(HikariDataSource.class));
-        assertEquals(username, ((HikariDataSource) dataSource).getUsername());
-        assertEquals(password, ((HikariDataSource) dataSource).getPassword());
-        assertEquals(url, ((HikariDataSource) dataSource).getJdbcUrl());
+        assertThat(((HikariDataSource) dataSource).getUsername(), is(username));
+        assertThat(((HikariDataSource) dataSource).getPassword(), is(password));
+        assertThat(((HikariDataSource) dataSource).getJdbcUrl(), is(url));
         FixtureRuleConfiguration next =
                 (FixtureRuleConfiguration) databaseConfiguration.getRuleConfigurations().iterator().next();
         assertEquals(next.getName(), "rule0");
