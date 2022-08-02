@@ -293,11 +293,11 @@ public final class MySQLClient {
             }
             reconnect();
         }
-        
+    
         @Override
         public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
             running = false;
-            log.error("MySQLBinlogEventHandler: protocol resolution error", cause);
+            log.error("MySQLBinlogEventHandler: protocol resolution error, lastBinlogEvent={}", lastBinlogEvent, cause);
         }
     
         private void reconnect() {
