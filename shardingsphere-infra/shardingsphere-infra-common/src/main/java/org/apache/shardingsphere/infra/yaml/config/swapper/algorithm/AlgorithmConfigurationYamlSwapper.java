@@ -17,17 +17,17 @@
 
 package org.apache.shardingsphere.infra.yaml.config.swapper.algorithm;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
 
 /**
  * Algorithm configuration YAML swapper.
  */
-public final class AlgorithmConfigurationYamlSwapper implements YamlConfigurationSwapper<YamlAlgorithmConfiguration, ShardingSphereAlgorithmConfiguration> {
+public final class AlgorithmConfigurationYamlSwapper implements YamlConfigurationSwapper<YamlAlgorithmConfiguration, AlgorithmConfiguration> {
     
     @Override
-    public YamlAlgorithmConfiguration swapToYamlConfiguration(final ShardingSphereAlgorithmConfiguration data) {
+    public YamlAlgorithmConfiguration swapToYamlConfiguration(final AlgorithmConfiguration data) {
         if (null == data) {
             return null;
         }
@@ -38,10 +38,10 @@ public final class AlgorithmConfigurationYamlSwapper implements YamlConfiguratio
     }
     
     @Override
-    public ShardingSphereAlgorithmConfiguration swapToObject(final YamlAlgorithmConfiguration yamlConfig) {
+    public AlgorithmConfiguration swapToObject(final YamlAlgorithmConfiguration yamlConfig) {
         if (null == yamlConfig) {
             return null;
         }
-        return new ShardingSphereAlgorithmConfiguration(yamlConfig.getType(), yamlConfig.getProps());
+        return new AlgorithmConfiguration(yamlConfig.getType(), yamlConfig.getProps());
     }
 }

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
@@ -72,7 +72,7 @@ public final class AlterShadowAlgorithmStatementUpdaterTest {
     public void assertExecuteAlgorithmNotInMetaData() throws DistSQLException {
         Properties prop = new Properties();
         prop.setProperty("type", "value");
-        when(currentConfig.getShadowAlgorithms()).thenReturn(Collections.singletonMap("simpleHintAlgorithm", new ShardingSphereAlgorithmConfiguration("type", prop)));
+        when(currentConfig.getShadowAlgorithms()).thenReturn(Collections.singletonMap("simpleHintAlgorithm", new AlgorithmConfiguration("type", prop)));
         AlterShadowAlgorithmStatement sqlStatement = createSQLStatement(new ShadowAlgorithmSegment("simpleHintAlgorithm1", new AlgorithmSegment("SIMPLE_HINT", prop)));
         updater.checkSQLStatement(database, sqlStatement, currentConfig);
     }

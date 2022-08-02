@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.core.check.consistency;
 
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
@@ -42,7 +42,7 @@ public final class DataConsistencyCalculateAlgorithmFactory {
      * @return created instance
      */
     public static DataConsistencyCalculateAlgorithm newInstance(final String type, final Properties props) {
-        return ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration(type, props), DataConsistencyCalculateAlgorithm.class);
+        return ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration(type, props), DataConsistencyCalculateAlgorithm.class);
     }
     
     /**

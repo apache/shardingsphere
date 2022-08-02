@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.algorithm.shadow.column;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.algorithm.shadow.ShadowAlgorithmException;
 import org.apache.shardingsphere.shadow.factory.ShadowAlgorithmFactory;
 import org.junit.Test;
@@ -43,7 +43,7 @@ public final class ColumnRegexMatchShadowAlgorithmTest extends AbstractColumnSha
     }
     
     private ColumnRegexMatchShadowAlgorithm createShadowAlgorithm() {
-        return (ColumnRegexMatchShadowAlgorithm) ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("REGEX_MATCH", createProperties()));
+        return (ColumnRegexMatchShadowAlgorithm) ShadowAlgorithmFactory.newInstance(new AlgorithmConfiguration("REGEX_MATCH", createProperties()));
     }
     
     private Properties createProperties() {

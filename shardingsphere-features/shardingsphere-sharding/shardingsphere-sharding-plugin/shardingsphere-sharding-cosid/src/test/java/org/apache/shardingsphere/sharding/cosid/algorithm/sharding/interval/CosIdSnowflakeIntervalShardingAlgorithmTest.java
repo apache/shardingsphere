@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval;
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
 import me.ahoo.cosid.snowflake.MillisecondSnowflakeId;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.sharding.cosid.algorithm.keygen.CosIdSnowflakeKeyGenerateAlgorithm;
@@ -76,7 +76,7 @@ public final class CosIdSnowflakeIntervalShardingAlgorithmTest {
         @Test
         public void assertDoSharding() {
             CosIdSnowflakeIntervalShardingAlgorithm algorithm = (CosIdSnowflakeIntervalShardingAlgorithm) ShardingAlgorithmFactory.newInstance(
-                    new ShardingSphereAlgorithmConfiguration("COSID_INTERVAL_SNOWFLAKE", createProperties()));
+                    new AlgorithmConfiguration("COSID_INTERVAL_SNOWFLAKE", createProperties()));
             PreciseShardingValue shardingValue = new PreciseShardingValue<>(IntervalShardingAlgorithmDataFixture.LOGIC_NAME,
                     IntervalShardingAlgorithmDataFixture.COLUMN_NAME, new DataNodeInfo(IntervalShardingAlgorithmDataFixture.LOGIC_NAME_PREFIX, 6, '0'), snowflakeId);
             String actual = algorithm.doSharding(IntervalShardingAlgorithmDataFixture.ALL_NODES, shardingValue);
@@ -100,7 +100,7 @@ public final class CosIdSnowflakeIntervalShardingAlgorithmTest {
         @Test
         public void assertDoSharding() {
             CosIdSnowflakeIntervalShardingAlgorithm algorithm = (CosIdSnowflakeIntervalShardingAlgorithm) ShardingAlgorithmFactory.newInstance(
-                    new ShardingSphereAlgorithmConfiguration("COSID_INTERVAL_SNOWFLAKE", createProperties()));
+                    new AlgorithmConfiguration("COSID_INTERVAL_SNOWFLAKE", createProperties()));
             RangeShardingValue shardingValue = new RangeShardingValue<>(IntervalShardingAlgorithmDataFixture.LOGIC_NAME,
                     IntervalShardingAlgorithmDataFixture.COLUMN_NAME, new DataNodeInfo(IntervalShardingAlgorithmDataFixture.LOGIC_NAME_PREFIX, 6, '0'), rangeValue);
             assertThat(algorithm.doSharding(IntervalShardingAlgorithmDataFixture.ALL_NODES, shardingValue), is(expected));

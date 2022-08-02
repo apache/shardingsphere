@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.conve
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
 import org.apache.shardingsphere.distsql.parser.segment.TrafficRuleSegment;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
 
@@ -46,8 +46,8 @@ public final class TrafficRuleConverter {
     }
     
     private static void setConfigurationData(final TrafficRuleConfiguration trafficRuleConfig, final TrafficRuleSegment segment) {
-        ShardingSphereAlgorithmConfiguration trafficAlgorithm = createAlgorithmConfiguration(segment.getAlgorithm());
-        ShardingSphereAlgorithmConfiguration loadBalancer = createAlgorithmConfiguration(segment.getLoadBalancer());
+        AlgorithmConfiguration trafficAlgorithm = createAlgorithmConfiguration(segment.getAlgorithm());
+        AlgorithmConfiguration loadBalancer = createAlgorithmConfiguration(segment.getLoadBalancer());
         String trafficAlgorithmName = createAlgorithmName(segment.getName(), trafficAlgorithm);
         String loadBalancerName = createAlgorithmName(segment.getName(), loadBalancer);
         TrafficStrategyConfiguration trafficStrategy = createTrafficStrategy(segment, trafficAlgorithmName, loadBalancerName);
@@ -56,11 +56,11 @@ public final class TrafficRuleConverter {
         Optional.ofNullable(loadBalancerName).ifPresent(optional -> trafficRuleConfig.getLoadBalancers().put(loadBalancerName, loadBalancer));
     }
     
-    private static ShardingSphereAlgorithmConfiguration createAlgorithmConfiguration(final AlgorithmSegment segment) {
-        return null == segment ? null : new ShardingSphereAlgorithmConfiguration(segment.getName(), segment.getProps());
+    private static AlgorithmConfiguration createAlgorithmConfiguration(final AlgorithmSegment segment) {
+        return null == segment ? null : new AlgorithmConfiguration(segment.getName(), segment.getProps());
     }
     
-    private static String createAlgorithmName(final String ruleName, final ShardingSphereAlgorithmConfiguration algorithm) {
+    private static String createAlgorithmName(final String ruleName, final AlgorithmConfiguration algorithm) {
         return null == algorithm ? null : String.format("%s_%s", ruleName, algorithm.getType()).toLowerCase();
     }
     

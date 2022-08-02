@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.checker;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -72,9 +72,9 @@ public abstract class AbstractShadowRuleConfigurationChecker<T extends RuleConfi
         });
     }
     
-    protected void defaultShadowAlgorithmConfigurationCheck(final String defaultShadowAlgorithmName, final Map<String, ShardingSphereAlgorithmConfiguration> shadowAlgorithmConfigs) {
+    protected void defaultShadowAlgorithmConfigurationCheck(final String defaultShadowAlgorithmName, final Map<String, AlgorithmConfiguration> shadowAlgorithmConfigs) {
         if (null != defaultShadowAlgorithmName) {
-            ShardingSphereAlgorithmConfiguration algorithmConfig = shadowAlgorithmConfigs.get(defaultShadowAlgorithmName);
+            AlgorithmConfiguration algorithmConfig = shadowAlgorithmConfigs.get(defaultShadowAlgorithmName);
             boolean state = null != algorithmConfig && "SIMPLE_HINT".equals(algorithmConfig.getType());
             Preconditions.checkState(state, "Default shadow algorithm class should be implement HintShadowAlgorithm.");
         }

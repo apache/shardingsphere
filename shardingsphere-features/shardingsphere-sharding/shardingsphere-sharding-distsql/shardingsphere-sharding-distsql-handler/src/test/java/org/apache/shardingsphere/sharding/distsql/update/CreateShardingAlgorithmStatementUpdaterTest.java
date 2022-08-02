@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
@@ -66,7 +66,7 @@ public final class CreateShardingAlgorithmStatementUpdaterTest {
         props.put("inputKey", "inputValue");
         ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("existAlgorithmName", new AlgorithmSegment("inputAlgorithmName", props));
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        ruleConfig.getShardingAlgorithms().put("existAlgorithmName", new ShardingSphereAlgorithmConfiguration("hash_mod", props));
+        ruleConfig.getShardingAlgorithms().put("existAlgorithmName", new AlgorithmConfiguration("hash_mod", props));
         updater.checkSQLStatement(database, createSQLStatement(algorithmSegment), ruleConfig);
     }
     
@@ -84,7 +84,7 @@ public final class CreateShardingAlgorithmStatementUpdaterTest {
         props.put("inputKey", "inputValue");
         ShardingAlgorithmSegment algorithmSegment = new ShardingAlgorithmSegment("inputAlgorithmName", new AlgorithmSegment("inputAlgorithmName", props));
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        ruleConfig.getShardingAlgorithms().put("existAlgorithmName", new ShardingSphereAlgorithmConfiguration("InvalidAlgorithm", props));
+        ruleConfig.getShardingAlgorithms().put("existAlgorithmName", new AlgorithmConfiguration("InvalidAlgorithm", props));
         updater.checkSQLStatement(database, createSQLStatement(algorithmSegment), ruleConfig);
     }
     

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.traffic.factory;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
@@ -41,7 +41,7 @@ public final class TrafficLoadBalanceAlgorithmFactory {
      * @param trafficLoadBalanceAlgorithmConfig traffic load balance algorithm configuration
      * @return created instance
      */
-    public static TrafficLoadBalanceAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration trafficLoadBalanceAlgorithmConfig) {
+    public static TrafficLoadBalanceAlgorithm newInstance(final AlgorithmConfiguration trafficLoadBalanceAlgorithmConfig) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(trafficLoadBalanceAlgorithmConfig, TrafficLoadBalanceAlgorithm.class);
     }
     

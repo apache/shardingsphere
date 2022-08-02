@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
@@ -46,7 +46,7 @@ import java.util.Properties;
  */
 public final class UnusedShardingAlgorithmsQueryResultSet implements DistSQLResultSet {
     
-    private Iterator<Entry<String, ShardingSphereAlgorithmConfiguration>> data = Collections.emptyIterator();
+    private Iterator<Entry<String, AlgorithmConfiguration>> data = Collections.emptyIterator();
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
@@ -56,8 +56,8 @@ public final class UnusedShardingAlgorithmsQueryResultSet implements DistSQLResu
     
     private void getUnusedShardingAlgorithms(final ShardingRuleConfiguration shardingRuleConfig) {
         Collection<String> inUsedAlgorithms = getUsedShardingAlgorithms(shardingRuleConfig);
-        Map<String, ShardingSphereAlgorithmConfiguration> map = new HashMap<>();
-        for (Entry<String, ShardingSphereAlgorithmConfiguration> each : shardingRuleConfig.getShardingAlgorithms().entrySet()) {
+        Map<String, AlgorithmConfiguration> map = new HashMap<>();
+        for (Entry<String, AlgorithmConfiguration> each : shardingRuleConfig.getShardingAlgorithms().entrySet()) {
             if (!inUsedAlgorithms.contains(each.getKey())) {
                 map.put(each.getKey(), each.getValue());
             }
@@ -102,7 +102,7 @@ public final class UnusedShardingAlgorithmsQueryResultSet implements DistSQLResu
         return buildTableRowData(data.next());
     }
     
-    private Collection<Object> buildTableRowData(final Entry<String, ShardingSphereAlgorithmConfiguration> data) {
+    private Collection<Object> buildTableRowData(final Entry<String, AlgorithmConfiguration> data) {
         Collection<Object> result = new LinkedList<>();
         result.add(data.getKey());
         result.add(data.getValue().getType());

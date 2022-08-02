@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.traffic.yaml.swapper;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.api.config.TrafficStrategyConfiguration;
@@ -54,14 +54,14 @@ public final class TrafficRuleConfigurationYamlSwapperTest {
         return result;
     }
     
-    private ShardingSphereAlgorithmConfiguration createTrafficAlgorithm() {
-        ShardingSphereAlgorithmConfiguration result = mock(ShardingSphereAlgorithmConfiguration.class);
+    private AlgorithmConfiguration createTrafficAlgorithm() {
+        AlgorithmConfiguration result = mock(AlgorithmConfiguration.class);
         when(result.getType()).thenReturn("SIMPLE");
         return result;
     }
     
-    private ShardingSphereAlgorithmConfiguration createLoadBalancer() {
-        ShardingSphereAlgorithmConfiguration result = mock(ShardingSphereAlgorithmConfiguration.class);
+    private AlgorithmConfiguration createLoadBalancer() {
+        AlgorithmConfiguration result = mock(AlgorithmConfiguration.class);
         when(result.getType()).thenReturn("RANDOM");
         return result;
     }
