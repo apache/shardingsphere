@@ -293,13 +293,13 @@ public final class MySQLClient {
             }
             reconnect();
         }
-        
+    
         @Override
         public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
             running = false;
-            if (null != lastBinlogEvent) {
-                log.error("MySQLBinlogEventHandler protocol resolution error, file name:{}, position:{}", lastBinlogEvent.getFileName(), lastBinlogEvent.getPosition(), cause);
-            }
+            String fileName = null == lastBinlogEvent ? null : lastBinlogEvent.getFileName();
+            Long position = null == lastBinlogEvent ? null : lastBinlogEvent.getPosition();
+            log.error("MySQLBinlogEventHandler protocol resolution error, file name:{}, position:{}", fileName, position, cause);
         }
         
         private void reconnect() {
