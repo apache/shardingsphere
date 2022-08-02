@@ -112,7 +112,7 @@ public final class PostgreSQLDALStatementSQLVisitor extends PostgreSQLStatementS
     
     @Override
     public ASTNode visitResetParameter(final ResetParameterContext ctx) {
-        return new PostgreSQLResetParameterStatement();
+        return new PostgreSQLResetParameterStatement(null != ctx.ALL() ? "ALL" : ctx.identifier().getText());
     }
     
     @SuppressWarnings("unchecked")
