@@ -52,6 +52,8 @@ public final class ImporterConfiguration {
     
     private final int retryTimes;
     
+    private final int concurrency;
+    
     /**
      * Get logic table names.
      *

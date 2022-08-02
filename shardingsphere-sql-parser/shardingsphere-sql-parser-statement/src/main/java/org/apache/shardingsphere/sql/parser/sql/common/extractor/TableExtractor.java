@@ -203,7 +203,7 @@ public final class TableExtractor {
      * @param deleteStatement delete statement
      */
     public void extractTablesFromDelete(final DeleteStatement deleteStatement) {
-        extractTablesFromTableSegment(deleteStatement.getTableSegment());
+        extractTablesFromTableSegment(deleteStatement.getTable());
         if (deleteStatement.getWhere().isPresent()) {
             extractTablesFromExpression(deleteStatement.getWhere().get().getExpr());
         }
@@ -248,7 +248,7 @@ public final class TableExtractor {
      * @param updateStatement update statement.
      */
     public void extractTablesFromUpdate(final UpdateStatement updateStatement) {
-        extractTablesFromTableSegment(updateStatement.getTableSegment());
+        extractTablesFromTableSegment(updateStatement.getTable());
         updateStatement.getSetAssignment().getAssignments().forEach(each -> extractTablesFromExpression(each.getColumns().get(0)));
         if (updateStatement.getWhere().isPresent()) {
             extractTablesFromExpression(updateStatement.getWhere().get().getExpr());

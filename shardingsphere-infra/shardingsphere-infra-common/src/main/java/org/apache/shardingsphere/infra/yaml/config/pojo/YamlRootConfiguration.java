@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.yaml.config.pojo;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
 
 import java.util.Collection;

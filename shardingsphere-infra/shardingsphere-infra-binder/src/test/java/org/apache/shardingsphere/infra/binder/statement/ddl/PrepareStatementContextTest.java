@@ -87,7 +87,7 @@ public final class PrepareStatementContextTest {
     
     private UpdateStatement getUpdate() {
         UpdateStatement update = new PostgreSQLUpdateStatement();
-        update.setTableSegment(table);
+        update.setTable(table);
         SetAssignmentSegment setAssignmentSegment = new SetAssignmentSegment(0, 0, Collections.singletonList(new ColumnAssignmentSegment(0, 0, Collections.singletonList(column), column)));
         update.setSetAssignment(setAssignmentSegment);
         return update;
@@ -95,7 +95,7 @@ public final class PrepareStatementContextTest {
     
     private DeleteStatement getDelete() {
         DeleteStatement delete = new PostgreSQLDeleteStatement();
-        delete.setTableSegment(table);
+        delete.setTable(table);
         return delete;
     }
 }

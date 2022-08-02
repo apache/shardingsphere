@@ -146,7 +146,7 @@ public final class SQL92DMLStatementSQLVisitor extends SQL92StatementSQLVisitor 
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
         SQL92UpdateStatement result = new SQL92UpdateStatement();
-        result.setTableSegment((TableSegment) visit(ctx.tableReferences()));
+        result.setTable((TableSegment) visit(ctx.tableReferences()));
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
@@ -197,7 +197,7 @@ public final class SQL92DMLStatementSQLVisitor extends SQL92StatementSQLVisitor 
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
         SQL92DeleteStatement result = new SQL92DeleteStatement();
-        result.setTableSegment((TableSegment) visit(ctx.singleTableClause()));
+        result.setTable((TableSegment) visit(ctx.singleTableClause()));
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
         }

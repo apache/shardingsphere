@@ -88,7 +88,7 @@ public abstract class EncryptGeneratorBaseTest {
     
     protected static UpdateStatementContext createUpdatesStatementContext() {
         MySQLUpdateStatement mySQLUpdateStatement = new MySQLUpdateStatement();
-        mySQLUpdateStatement.setTableSegment(createTableSegment(TABLE_NAME));
+        mySQLUpdateStatement.setTable(createTableSegment(TABLE_NAME));
         mySQLUpdateStatement.setWhere(createWhereSegment());
         mySQLUpdateStatement.setSetAssignment(createSetAssignmentSegment());
         return new UpdateStatementContext(mySQLUpdateStatement);
