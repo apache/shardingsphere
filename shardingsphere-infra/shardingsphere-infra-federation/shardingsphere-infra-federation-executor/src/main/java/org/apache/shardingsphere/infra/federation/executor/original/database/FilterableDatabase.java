@@ -22,11 +22,12 @@ import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.shardingsphere.infra.federation.executor.original.schema.FilterableSchema;
 import org.apache.shardingsphere.infra.federation.executor.original.table.FilterableTableScanExecutor;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Filterable database.
@@ -38,15 +39,15 @@ public final class FilterableDatabase extends AbstractSchema {
     
     private final Map<String, Schema> subSchemaMap;
     
-    public FilterableDatabase(final FederationDatabaseMetaData databaseMetaData, final FilterableTableScanExecutor executor) {
-        name = databaseMetaData.getName();
-        subSchemaMap = createSubSchemaMap(databaseMetaData, executor);
+    public FilterableDatabase(final ShardingSphereDatabase database, final FilterableTableScanExecutor executor) {
+        name = database.getName();
+        subSchemaMap = createSubSchemaMap(database, executor);
     }
     
-    private Map<String, Schema> createSubSchemaMap(final FederationDatabaseMetaData databaseMetaData, final FilterableTableScanExecutor executor) {
-        Map<String, Schema> result = new LinkedHashMap<>(databaseMetaData.getSchemas().size(), 1);
-        for (FederationSchemaMetaData each : databaseMetaData.getSchemas().values()) {
-            result.put(each.getName(), new FilterableSchema(each, executor));
+    private Map<String, Schema> createSubSchemaMap(final ShardingSphereDatabase database, final FilterableTableScanExecutor executor) {
+        Map<String, Schema> result = new LinkedHashMap<>(database.getSchemas().size(), 1);
+        for (Entry<String, ShardingSphereSchema> entry : database.getSchemas().entrySet()) {
+            result.put(entry.getKey(), new FilterableSchema(entry.getKey(), entry.getValue(), executor));
         }
         return result;
     }
