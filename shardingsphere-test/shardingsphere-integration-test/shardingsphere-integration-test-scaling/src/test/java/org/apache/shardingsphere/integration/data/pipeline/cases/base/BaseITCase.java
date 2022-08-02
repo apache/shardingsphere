@@ -23,6 +23,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
@@ -86,6 +87,8 @@ public abstract class BaseITCase {
     protected static final String DS_4 = "scaling_it_4";
     
     protected static final Executor SCALING_EXECUTOR = Executors.newFixedThreadPool(5);
+    
+    protected static final int TABLE_INIT_ROW_COUNT = 3000;
     
     @Rule
     @Getter(AccessLevel.NONE)
@@ -374,6 +377,12 @@ public abstract class BaseITCase {
             ThreadUtil.sleep(4, TimeUnit.SECONDS);
         }
         assertThat(actualStatus, is(Collections.singleton(JobStatus.EXECUTE_INCREMENTAL_TASK.name())));
+    }
+    
+    protected void assertGreaterThanInitTableInitRows(final int tableInitRows, final String schema) {
+        String countSQL = StringUtils.isBlank(schema) ? "SELECT COUNT(*) as count FROM t_order" : String.format("SELECT COUNT(*) as count FROM %s.t_order", schema);
+        Map<String, Object> actual = jdbcTemplate.queryForMap(countSQL);
+        assertTrue("actual count " + actual.get("count"), Integer.parseInt(actual.get("count").toString()) > TABLE_INIT_ROW_COUNT);
     }
     
     protected List<Map<String, Object>> showScalingStatus(final String jobId) {
