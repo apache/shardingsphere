@@ -40,6 +40,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.LoadIndexInfoStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.OptimizeTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.RepairTableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ResetParameterStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ResetPersistStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ResetStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.SetParameterStatementTestCase;
@@ -1208,6 +1209,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "reset-persist")
     private final List<ResetPersistStatementTestCase> resetPersistTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "reset-parameter")
+    private final List<ResetParameterStatementTestCase> resetParameterTestCases = new LinkedList<>();
     
     @XmlElement(name = "cache-index")
     private final List<CacheIndexStatementTestCase> cacheIndexTestCases = new LinkedList<>();
