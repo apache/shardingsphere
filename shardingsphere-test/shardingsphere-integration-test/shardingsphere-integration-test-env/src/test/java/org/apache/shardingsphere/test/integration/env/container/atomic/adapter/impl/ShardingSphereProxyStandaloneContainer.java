@@ -92,7 +92,6 @@ public final class ShardingSphereProxyStandaloneContainer extends DockerITContai
         result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), scenario));
         result.setUsername("proxy");
         result.setPassword("Proxy@123");
-        result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
     }
