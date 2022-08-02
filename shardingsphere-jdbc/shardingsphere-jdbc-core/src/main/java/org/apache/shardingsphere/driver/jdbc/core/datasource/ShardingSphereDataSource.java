@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaDataBuilder
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderFactory;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
+import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -69,8 +70,9 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
                                                 final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         InstanceMetaData instanceMetaData = InstanceMetaDataBuilderFactory.create("JDBC", -1);
         Collection<RuleConfiguration> globalRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof GlobalRuleConfiguration).collect(Collectors.toList());
+        Collection<RuleConfiguration> realRuleConfigs = ruleConfigs.stream().filter(each -> !(each instanceof SQLParserRuleConfiguration)).collect(Collectors.toList());
         ContextManagerBuilderParameter parameter = new ContextManagerBuilderParameter(modeConfig, Collections.singletonMap(databaseName,
-                new DataSourceProvidedDatabaseConfiguration(dataSourceMap, ruleConfigs)), globalRuleConfigs, props, Collections.emptyList(), instanceMetaData);
+                new DataSourceProvidedDatabaseConfiguration(dataSourceMap, realRuleConfigs)), globalRuleConfigs, props, Collections.emptyList(), instanceMetaData);
         return ContextManagerBuilderFactory.getInstance(modeConfig).build(parameter);
     }
     
