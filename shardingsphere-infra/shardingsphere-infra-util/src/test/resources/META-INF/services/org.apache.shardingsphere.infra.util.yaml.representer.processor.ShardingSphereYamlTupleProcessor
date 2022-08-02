@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.util.yaml.fixture.YamlTupleProcessorFixture
+org.apache.shardingsphere.infra.util.yaml.fixture.representer.YamlTupleProcessorFixture

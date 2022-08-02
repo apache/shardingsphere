@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.util.yaml.shortcuts;
 
-import org.apache.shardingsphere.infra.util.yaml.fixture.YamlShortcutsFixture;
+import org.apache.shardingsphere.infra.util.yaml.fixture.shortcuts.YamlShortcutsConfigurationFixture;
 import org.junit.Test;
 
 import java.util.Map;
@@ -32,6 +32,6 @@ public final class ShardingSphereYamlShortcutsFactoryTest {
     public void assertGetAllYamlShortcuts() {
         Map<String, Class<?>> actual = ShardingSphereYamlShortcutsFactory.getAllYamlShortcuts();
         assertThat(actual.size(), is(1));
-        assertThat(actual.get("!FIXTURE"), equalTo(YamlShortcutsFixture.class));
+        assertThat(actual.get("!FIXTURE"), equalTo(YamlShortcutsConfigurationFixture.class));
     }
 }
