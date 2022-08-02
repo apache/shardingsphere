@@ -36,7 +36,7 @@ import java.util.Optional;
 public final class DropViewStatementSchemaRefresher implements MetaDataRefresher<DropViewStatement> {
     
     @Override
-    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames, 
+    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                                                     final String schemaName, final DropViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);
         sqlStatement.getViews().forEach(each -> {

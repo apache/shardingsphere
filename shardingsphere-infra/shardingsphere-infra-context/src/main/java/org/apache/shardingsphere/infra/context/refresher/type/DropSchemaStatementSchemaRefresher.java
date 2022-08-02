@@ -39,7 +39,7 @@ import java.util.Optional;
 public final class DropSchemaStatementSchemaRefresher implements MetaDataRefresher<DropSchemaStatement> {
     
     @Override
-    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames, 
+    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                                                     final String schemaName, final DropSchemaStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         Collection<String> tobeRemovedTables = new LinkedHashSet<>();
         Collection<String> tobeRemovedSchemas = new LinkedHashSet<>();

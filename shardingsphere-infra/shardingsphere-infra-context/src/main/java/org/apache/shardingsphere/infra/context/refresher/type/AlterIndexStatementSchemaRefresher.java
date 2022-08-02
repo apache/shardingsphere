@@ -40,7 +40,7 @@ import java.util.Optional;
 public final class AlterIndexStatementSchemaRefresher implements MetaDataRefresher<AlterIndexStatement> {
     
     @Override
-    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames, 
+    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                                                     final String schemaName, final AlterIndexStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         Optional<IndexSegment> renameIndex = AlterIndexStatementHandler.getRenameIndexSegment(sqlStatement);
         if (!sqlStatement.getIndex().isPresent() || !renameIndex.isPresent()) {

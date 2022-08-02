@@ -39,7 +39,7 @@ import java.util.Optional;
 public final class AlterSchemaStatementSchemaRefresher implements MetaDataRefresher<AlterSchemaStatement> {
     
     @Override
-    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames, 
+    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                                                     final String schemaName, final AlterSchemaStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         Optional<IdentifierValue> renameSchemaName = AlterSchemaStatementHandler.getRenameSchema(sqlStatement);
         if (!renameSchemaName.isPresent()) {

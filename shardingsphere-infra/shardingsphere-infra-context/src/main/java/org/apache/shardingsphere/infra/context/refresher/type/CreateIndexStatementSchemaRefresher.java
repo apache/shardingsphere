@@ -37,7 +37,7 @@ import java.util.Optional;
 public final class CreateIndexStatementSchemaRefresher implements MetaDataRefresher<CreateIndexStatement> {
     
     @Override
-    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames, 
+    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                                                     final String schemaName, final CreateIndexStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String indexName = null != sqlStatement.getIndex() ? sqlStatement.getIndex().getIndexName().getIdentifier().getValue()
                 : IndexMetaDataUtil.getGeneratedLogicIndexName(sqlStatement.getColumns());

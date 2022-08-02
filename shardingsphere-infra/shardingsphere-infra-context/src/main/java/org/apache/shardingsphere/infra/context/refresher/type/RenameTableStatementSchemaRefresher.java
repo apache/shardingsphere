@@ -43,7 +43,7 @@ import java.util.Optional;
 public final class RenameTableStatementSchemaRefresher implements MetaDataRefresher<RenameTableStatement> {
     
     @Override
-    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames, 
+    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                                                     final String schemaName, final RenameTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);
         for (RenameTableDefinitionSegment each : sqlStatement.getRenameTables()) {
@@ -62,7 +62,8 @@ public final class RenameTableStatementSchemaRefresher implements MetaDataRefres
         database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.remove(schemaName, tableName));
     }
     
-    private void putTableMetaData(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames, final String schemaName, final String tableName, final ConfigurationProperties props) throws SQLException {
+    private void putTableMetaData(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames, final String schemaName, final String tableName,
+                                  final ConfigurationProperties props) throws SQLException {
         if (!containsInImmutableDataNodeContainedRule(tableName, database)) {
             database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, tableName));
         }

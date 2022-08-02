@@ -42,7 +42,7 @@ import java.util.Optional;
 public final class CreateTableStatementSchemaRefresher implements MetaDataRefresher<CreateTableStatement> {
     
     @Override
-    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames, 
+    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                                                     final String schemaName, final CreateTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         if (!containsInImmutableDataNodeContainedRule(tableName, database)) {

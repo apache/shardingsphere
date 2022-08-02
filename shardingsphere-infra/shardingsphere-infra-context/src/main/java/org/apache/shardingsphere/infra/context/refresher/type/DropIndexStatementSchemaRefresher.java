@@ -42,7 +42,7 @@ import java.util.Optional;
 public final class DropIndexStatementSchemaRefresher implements MetaDataRefresher<DropIndexStatement> {
     
     @Override
-    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames, 
+    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                                                     final String schemaName, final DropIndexStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         DropIndexEvent event = new DropIndexEvent();
         for (IndexSegment each : sqlStatement.getIndexes()) {

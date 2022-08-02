@@ -42,7 +42,7 @@ import java.util.Optional;
 public final class AlterTableStatementSchemaRefresher implements MetaDataRefresher<AlterTableStatement> {
     
     @Override
-    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames, 
+    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                                                     final String schemaName, final AlterTableStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         String tableName = sqlStatement.getTable().getTableName().getIdentifier().getValue();
         SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);
@@ -64,7 +64,7 @@ public final class AlterTableStatementSchemaRefresher implements MetaDataRefresh
         database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.remove(schemaName, tableName));
     }
     
-    private void putTableMetaData(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames, 
+    private void putTableMetaData(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
                                   final String schemaName, final String tableName, final ConfigurationProperties props) throws SQLException {
         if (!containsInImmutableDataNodeContainedRule(tableName, database)) {
             database.getRuleMetaData().findRules(MutableDataNodeRule.class).forEach(each -> each.put(logicDataSourceNames.iterator().next(), schemaName, tableName));
