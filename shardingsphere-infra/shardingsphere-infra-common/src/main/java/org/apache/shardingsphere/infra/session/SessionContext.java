@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.context.kernel;
+package org.apache.shardingsphere.infra.session;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
