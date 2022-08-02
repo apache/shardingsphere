@@ -23,8 +23,8 @@ import org.apache.calcite.schema.impl.AbstractSchema;
 import org.apache.shardingsphere.infra.federation.executor.original.table.FederationTableStatistic;
 import org.apache.shardingsphere.infra.federation.executor.original.table.FilterableTable;
 import org.apache.shardingsphere.infra.federation.executor.original.table.FilterableTableScanExecutor;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationTableMetaData;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -39,14 +39,14 @@ public final class FilterableSchema extends AbstractSchema {
     
     private final Map<String, Table> tableMap;
     
-    public FilterableSchema(final FederationSchemaMetaData schemaMetaData, final FilterableTableScanExecutor executor) {
-        name = schemaMetaData.getName();
-        tableMap = createTableMap(schemaMetaData, executor);
+    public FilterableSchema(final String schemaName, final ShardingSphereSchema schema, final FilterableTableScanExecutor executor) {
+        name = schemaName;
+        tableMap = createTableMap(schema, executor);
     }
     
-    private Map<String, Table> createTableMap(final FederationSchemaMetaData schemaMetaData, final FilterableTableScanExecutor executor) {
-        Map<String, Table> result = new LinkedHashMap<>(schemaMetaData.getTables().size(), 1);
-        for (FederationTableMetaData each : schemaMetaData.getTables().values()) {
+    private Map<String, Table> createTableMap(final ShardingSphereSchema schema, final FilterableTableScanExecutor executor) {
+        Map<String, Table> result = new LinkedHashMap<>(schema.getTables().size(), 1);
+        for (ShardingSphereTable each : schema.getTables().values()) {
             // TODO implement table statistic logic after using custom operators
             result.put(each.getName(), new FilterableTable(each, executor, new FederationTableStatistic()));
         }
