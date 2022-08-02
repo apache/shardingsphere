@@ -1210,7 +1210,7 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     public ASTNode visitUpdate(final UpdateContext ctx) {
         MySQLUpdateStatement result = new MySQLUpdateStatement();
         TableSegment tableSegment = (TableSegment) visit(ctx.tableReferences());
-        result.setTableSegment(tableSegment);
+        result.setTable(tableSegment);
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
@@ -1276,9 +1276,9 @@ public abstract class MySQLStatementSQLVisitor extends MySQLStatementBaseVisitor
     public ASTNode visitDelete(final DeleteContext ctx) {
         MySQLDeleteStatement result = new MySQLDeleteStatement();
         if (null != ctx.multipleTablesClause()) {
-            result.setTableSegment((TableSegment) visit(ctx.multipleTablesClause()));
+            result.setTable((TableSegment) visit(ctx.multipleTablesClause()));
         } else {
-            result.setTableSegment((TableSegment) visit(ctx.singleTableClause()));
+            result.setTable((TableSegment) visit(ctx.singleTableClause()));
         }
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));

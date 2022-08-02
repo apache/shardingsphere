@@ -19,20 +19,13 @@ package org.apache.shardingsphere.proxy.backend.handler.admin.mysql;
 
 import org.junit.Test;
 
-import java.util.Arrays;
-import java.util.List;
-
 import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
 public final class MySQLSessionVariableHandlerFactoryTest {
     
     @Test
     public void assertGetHandlers() {
-        List<MySQLSessionVariableHandler> actual = MySQLSessionVariableHandlerFactory.getHandlers(Arrays.asList("test_fixture", "test_fixture"));
-        assertThat(actual.size(), is(2));
-        assertThat(actual.get(0), instanceOf(TestFixtureSessionVariableHandler.class));
-        assertThat(actual.get(1), instanceOf(TestFixtureSessionVariableHandler.class));
+        assertThat(MySQLSessionVariableHandlerFactory.getHandler("test_fixture"), instanceOf(TestFixtureSessionVariableHandler.class));
     }
 }

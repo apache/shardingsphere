@@ -48,8 +48,8 @@ public final class MySQLSetCharsetExecutor implements MySQLSessionVariableHandle
     }
     
     @Override
-    public void handle(final ConnectionSession connectionSession, final SetStatement setStatement) {
-        String value = formatValue(getCharacterSetValue(setStatement));
+    public void handle(final ConnectionSession connectionSession, final String variableName, final String assignValue) {
+        String value = formatValue(assignValue);
         connectionSession.getAttributeMap().attr(CommonConstants.CHARSET_ATTRIBUTE_KEY).set(parseCharset(value));
     }
     

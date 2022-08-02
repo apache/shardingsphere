@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.admin.postgresql;
 
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
+import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableSegment;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLSetStatement;
 import org.junit.Test;
 import org.mockito.MockedStatic;
@@ -31,13 +33,19 @@ public final class PostgreSQLSetVariableAdminExecutorTest {
     
     @Test
     public void assertExecute() throws SQLException {
+        VariableAssignSegment variableAssignSegment = new VariableAssignSegment();
+        VariableSegment variable = new VariableSegment();
+        variable.setVariable("key");
+        variableAssignSegment.setVariable(variable);
+        variableAssignSegment.setAssignValue("value");
         PostgreSQLSetStatement setStatement = new PostgreSQLSetStatement();
+        setStatement.getVariableAssigns().add(variableAssignSegment);
         PostgreSQLSetVariableAdminExecutor executor = new PostgreSQLSetVariableAdminExecutor(setStatement);
         try (MockedStatic<PostgreSQLSessionVariableHandlerFactory> mockStatic = mockStatic(PostgreSQLSessionVariableHandlerFactory.class)) {
             PostgreSQLSessionVariableHandler mockHandler = mock(PostgreSQLSessionVariableHandler.class);
-            mockStatic.when(() -> PostgreSQLSessionVariableHandlerFactory.getHandler("")).thenReturn(mockHandler);
+            mockStatic.when(() -> PostgreSQLSessionVariableHandlerFactory.getHandler("key")).thenReturn(mockHandler);
             executor.execute(null);
-            verify(mockHandler).handle(null, setStatement);
+            verify(mockHandler).handle(null, "key", "value");
         }
     }
 }

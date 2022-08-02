@@ -170,8 +170,8 @@ public class SpringBootStarterTest {
     
     private void assertShadowDataSourceMappings(final Map<String, ShadowDataSourceRule> actual) {
         assertThat(actual.size(), is(1));
-        assertThat(actual.get("shadow-data-source").getSourceDataSource(), is("ds"));
-        assertThat(actual.get("shadow-data-source").getShadowDataSource(), is("ds-shadow"));
+        assertThat(actual.get("shadow-data-source").getSourceDataSource(), is("ds0"));
+        assertThat(actual.get("shadow-data-source").getShadowDataSource(), is("ds1"));
     }
     
     private void assertShadowAlgorithms(final Map<String, ShadowAlgorithm> actual) {

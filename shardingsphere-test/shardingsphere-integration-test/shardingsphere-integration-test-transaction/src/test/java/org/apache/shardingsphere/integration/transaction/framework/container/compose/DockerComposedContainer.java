@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.integration.transaction.framework.container.compose;
 
+import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -67,10 +68,18 @@ public final class DockerComposedContainer extends BaseComposedContainer {
     }
     
     private String getShardingSphereConfigResource(final TransactionParameterized parameterized) {
-        String result = String.format("env/%s/%s/config-sharding-%s.yaml", parameterized.getAdapter().toLowerCase(),
-                parameterized.getDatabaseType().getType().toLowerCase(), parameterized.getTransactionType().toString().toLowerCase());
+        String result = String.format("env/%s/%s/config-sharding-%s%s.yaml", parameterized.getAdapter().toLowerCase(),
+                parameterized.getDatabaseType().getType().toLowerCase(), parameterized.getTransactionType().toString().toLowerCase(), getTransactionProvider(parameterized.getProvider()));
         log.info("Transaction IT tests use the configuration file: {}", result);
         return result;
+    }
+    
+    private String getTransactionProvider(final String providerType) {
+        if (Strings.isNullOrEmpty(providerType)) {
+            return "";
+        } else {
+            return "-" + providerType.toLowerCase();
+        }
     }
     
     @Override

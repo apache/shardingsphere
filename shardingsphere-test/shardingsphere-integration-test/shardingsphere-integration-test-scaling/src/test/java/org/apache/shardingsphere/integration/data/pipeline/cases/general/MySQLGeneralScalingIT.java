@@ -78,7 +78,7 @@ public final class MySQLGeneralScalingIT extends BaseExtraSQLITCase {
         createOrderTable();
         createOrderItemTable();
         SnowflakeKeyGenerateAlgorithm keyGenerateAlgorithm = new SnowflakeKeyGenerateAlgorithm();
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < TABLE_INIT_ROW_COUNT / 1000; i++) {
             Pair<List<Object[]>, List<Object[]>> dataPair = ScalingCaseHelper.generateFullInsertData(keyGenerateAlgorithm, parameterized.getDatabaseType(), 1000);
             getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrder(), dataPair.getLeft());
             getJdbcTemplate().batchUpdate(getExtraSQLCommand().getFullInsertOrderItem(), dataPair.getRight());
@@ -89,10 +89,10 @@ public final class MySQLGeneralScalingIT extends BaseExtraSQLITCase {
         String jobId = getScalingJobId();
         waitScalingFinished(jobId);
         stopScaling(jobId);
-        // TODO need netty leak fixed
-        getJdbcTemplate().update("INSERT INTO t_order (id,order_id,user_id,status) VALUES (?, ?, ?, ?)", keyGenerateAlgorithm.generateKey(), 1, 1, "afterStopScaling");
+        getJdbcTemplate().update("INSERT INTO t_order (id,order_id,user_id,status,t_json) VALUES (?, ?, ?, ?, ?)", keyGenerateAlgorithm.generateKey(), 1, 1, "afterStopScaling", "{}");
         startScaling(jobId);
         assertCheckScalingSuccess(jobId);
+        assertGreaterThanInitTableInitRows(TABLE_INIT_ROW_COUNT, "");
         applyScaling(jobId);
         assertPreviewTableSuccess("t_order", Arrays.asList("ds_2", "ds_3", "ds_4"));
         assertPreviewTableSuccess("t_order_item", Arrays.asList("ds_2", "ds_3", "ds_4"));

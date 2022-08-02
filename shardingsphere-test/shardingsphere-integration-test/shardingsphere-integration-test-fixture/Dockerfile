@@ -29,7 +29,6 @@ WORKDIR /opt/shardingsphere-proxy
 
 RUN cat bin/start.sh | tr -d '\r' > _start.sh && mv _start.sh bin/start.sh
 RUN cat bin/stop.sh | tr -d '\r' > _stop.sh && mv _stop.sh bin/stop.sh
-RUN cat conf/logback.xml | tr -d '\r' > _logback.xml && mkdir conf && mv _logback.xml conf/logback.xml
 RUN chmod +x -R ./bin
 
 CMD /opt/shardingsphere-proxy/bin/start.sh && tail -f /opt/shardingsphere-proxy/logs/stdout.log

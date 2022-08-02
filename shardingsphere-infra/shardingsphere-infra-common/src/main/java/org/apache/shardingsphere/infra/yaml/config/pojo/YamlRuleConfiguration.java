@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.infra.yaml.config.pojo;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
  * YAML rule configuration.

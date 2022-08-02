@@ -19,7 +19,6 @@ package org.apache.shardingsphere.proxy.backend.handler.admin.executor;
 
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.spi.type.typed.TypedSPI;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 
 /**
  * Session variable handler.
@@ -27,10 +26,11 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatemen
 public interface SessionVariableHandler extends TypedSPI {
     
     /**
-     * Handle set statement for specific connection session.
+     * Handle session variable for specific connection session.
      *
      * @param connectionSession connection session
-     * @param setStatement set statement
+     * @param variableName variable name
+     * @param assignValue assign value
      */
-    void handle(ConnectionSession connectionSession, SetStatement setStatement);
+    void handle(ConnectionSession connectionSession, String variableName, String assignValue);
 }
