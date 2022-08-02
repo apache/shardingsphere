@@ -35,6 +35,8 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.jdbc.Statemen
 import org.apache.shardingsphere.infra.federation.executor.FederationContext;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutorFactory;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
+import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtil;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
@@ -143,7 +145,8 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
         String databaseName = backendConnection.getConnectionSession().getDatabaseName();
         DatabaseType databaseType = getLogicSQL().getSqlStatementContext().getDatabaseType();
         String schemaName = getLogicSQL().getSqlStatementContext().getTablesContext().getSchemaName().orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(databaseType, databaseName));
-        federationExecutor = FederationExecutorFactory.newInstance(databaseName, schemaName, metaDataContexts.getOptimizerContext(), metaDataContexts.getMetaData().getGlobalRuleMetaData(),
+        OptimizerContext optimizerContext = OptimizerContextFactory.create(metaDataContexts.getMetaData().getDatabases(), metaDataContexts.getMetaData().getGlobalRuleMetaData());
+        federationExecutor = FederationExecutorFactory.newInstance(databaseName, schemaName, optimizerContext, metaDataContexts.getMetaData().getGlobalRuleMetaData(),
                 metaDataContexts.getMetaData().getProps(), new JDBCExecutor(BackendExecutorContext.getInstance().getExecutorEngine(), backendConnection.isSerialExecute()),
                 ProxyContext.getInstance().getContextManager().getInstanceContext().getEventBusContext());
     }

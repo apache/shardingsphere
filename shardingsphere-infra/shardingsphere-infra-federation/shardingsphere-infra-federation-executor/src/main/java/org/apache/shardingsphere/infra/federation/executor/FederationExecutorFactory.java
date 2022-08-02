@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.federation.executor;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.federation.executor.advanced.AdvancedFederationExecutor;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.federation.executor.original.OriginalFederationExecutor;
@@ -48,6 +49,6 @@ public final class FederationExecutorFactory {
                                                  final ShardingSphereRuleMetaData globalRuleMetaData, final ConfigurationProperties props, final JDBCExecutor jdbcExecutor,
                                                  final EventBusContext eventBusContext) {
         // TODO Consider about AdvancedFederationExecutor
-        return new OriginalFederationExecutor(databaseName, schemaName, optimizerContext, globalRuleMetaData, props, jdbcExecutor, eventBusContext);
+        return new AdvancedFederationExecutor(databaseName, schemaName, optimizerContext, globalRuleMetaData, props, jdbcExecutor, eventBusContext);
     }
 }

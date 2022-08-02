@@ -20,12 +20,9 @@ package org.apache.shardingsphere.infra.federation.optimizer.context.planner;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.calcite.config.CalciteConnectionConfig;
-import org.apache.calcite.config.CalciteConnectionConfigImpl;
 import org.apache.calcite.config.CalciteConnectionProperty;
 import org.apache.calcite.jdbc.CalciteSchema;
-import org.apache.calcite.jdbc.JavaTypeFactoryImpl;
 import org.apache.calcite.plan.RelOptCluster;
-import org.apache.calcite.plan.RelOptPlanner;
 import org.apache.calcite.plan.RelOptTable.ViewExpander;
 import org.apache.calcite.prepare.CalciteCatalogReader;
 import org.apache.calcite.rel.type.RelDataTypeFactory;
@@ -37,13 +34,10 @@ import org.apache.calcite.sql.validate.SqlValidatorUtil;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.calcite.sql2rel.SqlToRelConverter.Config;
 import org.apache.calcite.sql2rel.StandardConvertletTable;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationMetaData;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.calcite.FederationDatabase;
 import org.apache.shardingsphere.infra.federation.optimizer.planner.QueryOptimizePlannerFactory;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Properties;
@@ -58,39 +52,15 @@ public final class OptimizerPlannerContextFactory {
     /**
      * Create optimizer planner context map.
      *
-     * @param metaData federation meta data
+     * @param databases databases
      * @return created optimizer planner context map
      */
-    public static Map<String, OptimizerPlannerContext> create(final FederationMetaData metaData) {
-        Map<String, OptimizerPlannerContext> result = new ConcurrentHashMap<>(metaData.getDatabases().size(), 1);
-        for (Entry<String, FederationDatabaseMetaData> entry : metaData.getDatabases().entrySet()) {
-            result.put(entry.getKey(), create(entry.getValue()));
+    public static Map<String, OptimizerPlannerContext> create(final Map<String, ShardingSphereDatabase> databases) {
+        Map<String, OptimizerPlannerContext> result = new ConcurrentHashMap<>(databases.size(), 1);
+        for (Entry<String, ShardingSphereDatabase> entry : databases.entrySet()) {
+            result.put(entry.getKey(), new OptimizerPlannerContext(QueryOptimizePlannerFactory.createHepPlanner()));
         }
         return result;
-    }
-    
-    /**
-     * Create optimizer planner context.
-     *
-     * @param databaseMetaData federation database meta data
-     * @return created optimizer planner context
-     */
-    public static OptimizerPlannerContext create(final FederationDatabaseMetaData databaseMetaData) {
-        Map<String, SqlValidator> validators = new LinkedHashMap<>();
-        Map<String, SqlToRelConverter> converters = new LinkedHashMap<>();
-        Map<String, RelOptPlanner> hepPlanners = new LinkedHashMap<>();
-        FederationDatabase federationDatabase = new FederationDatabase(databaseMetaData);
-        for (Entry<String, Schema> entry : federationDatabase.getSubSchemaMap().entrySet()) {
-            CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(createConnectionProperties());
-            RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
-            CalciteCatalogReader catalogReader = createCatalogReader(entry.getKey(), entry.getValue(), relDataTypeFactory, connectionConfig);
-            SqlValidator validator = createValidator(catalogReader, relDataTypeFactory, connectionConfig);
-            SqlToRelConverter converter = createConverter(catalogReader, validator, relDataTypeFactory);
-            validators.put(entry.getKey(), validator);
-            converters.put(entry.getKey(), converter);
-            hepPlanners.put(entry.getKey(), QueryOptimizePlannerFactory.createHepPlanner());
-        }
-        return new OptimizerPlannerContext(validators, converters, hepPlanners);
     }
     
     /**
