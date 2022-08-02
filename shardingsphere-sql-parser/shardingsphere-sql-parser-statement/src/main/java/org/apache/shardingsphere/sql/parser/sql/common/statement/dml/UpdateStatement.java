@@ -35,7 +35,7 @@ import java.util.Optional;
 @ToString(callSuper = true)
 public abstract class UpdateStatement extends AbstractSQLStatement implements DMLStatement {
     
-    private TableSegment tableSegment;
+    private TableSegment table;
     
     private SetAssignmentSegment setAssignment;
     
