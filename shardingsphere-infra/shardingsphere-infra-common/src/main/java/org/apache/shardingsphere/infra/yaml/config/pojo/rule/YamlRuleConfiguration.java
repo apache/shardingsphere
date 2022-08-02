@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config.pojo;
+package org.apache.shardingsphere.infra.yaml.config.pojo.rule;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
