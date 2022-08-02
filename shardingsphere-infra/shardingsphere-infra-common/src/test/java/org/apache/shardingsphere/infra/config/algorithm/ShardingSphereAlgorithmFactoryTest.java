@@ -39,7 +39,7 @@ public final class ShardingSphereAlgorithmFactoryTest {
     public void assertCreateAlgorithm() {
         Properties props = new Properties();
         props.setProperty("key", "value");
-        ShardingSphereAlgorithm actual = ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration("FIXTURE", props), ShardingSphereAlgorithm.class);
+        ShardingSphereAlgorithm actual = ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration("FIXTURE", props), ShardingSphereAlgorithm.class);
         assertThat(actual, instanceOf(ShardingSphereAlgorithmFixture.class));
         assertThat(((ShardingSphereAlgorithmFixture) actual).getTestValue(), is("value"));
     }

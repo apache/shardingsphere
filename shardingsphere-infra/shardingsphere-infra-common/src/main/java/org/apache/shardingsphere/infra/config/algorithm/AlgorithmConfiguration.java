@@ -24,16 +24,16 @@ import lombok.Getter;
 import java.util.Properties;
 
 /**
- * ShardingSphere algorithm configuration.
+ * Algorithm configuration.
  */
 @Getter
-public final class ShardingSphereAlgorithmConfiguration {
+public final class AlgorithmConfiguration {
     
     private final String type;
     
     private final Properties props;
     
-    public ShardingSphereAlgorithmConfiguration(final String type, final Properties props) {
+    public AlgorithmConfiguration(final String type, final Properties props) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "Type is required.");
         this.type = type;
         this.props = null == props ? new Properties() : props;

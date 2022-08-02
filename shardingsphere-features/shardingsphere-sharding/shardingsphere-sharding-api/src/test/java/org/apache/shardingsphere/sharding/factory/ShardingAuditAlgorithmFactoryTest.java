@@ -21,7 +21,7 @@ import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.fixture.ShardingAuditAlgorithmFixture;
 import org.junit.Test;
 
@@ -31,7 +31,7 @@ public final class ShardingAuditAlgorithmFactoryTest {
     
     @Test
     public void assertNewInstance() {
-        ShardingSphereAlgorithmConfiguration configuration = new ShardingSphereAlgorithmConfiguration("FIXTURE", new Properties());
+        AlgorithmConfiguration configuration = new AlgorithmConfiguration("FIXTURE", new Properties());
         assertThat(ShardingAuditAlgorithmFactory.newInstance(configuration), instanceOf(ShardingAuditAlgorithmFixture.class));
     }
     

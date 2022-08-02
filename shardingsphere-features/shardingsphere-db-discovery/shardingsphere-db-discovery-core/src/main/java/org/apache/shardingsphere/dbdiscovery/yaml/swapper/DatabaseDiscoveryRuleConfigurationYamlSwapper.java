@@ -23,7 +23,7 @@ import org.apache.shardingsphere.dbdiscovery.yaml.config.rule.YamlDatabaseDiscov
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.rule.YamlDatabaseDiscoveryHeartBeatConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.AlgorithmConfigurationYamlSwapper;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
@@ -83,7 +83,7 @@ public final class DatabaseDiscoveryRuleConfigurationYamlSwapper
         if (null != yamlConfig.getDiscoveryHeartbeats()) {
             yamlConfig.getDiscoveryHeartbeats().forEach((key, value) -> heartBeats.put(key, swapToObject(value)));
         }
-        Map<String, ShardingSphereAlgorithmConfiguration> haTypes = new LinkedHashMap<>(yamlConfig.getDiscoveryTypes().entrySet().size(), 1);
+        Map<String, AlgorithmConfiguration> haTypes = new LinkedHashMap<>(yamlConfig.getDiscoveryTypes().entrySet().size(), 1);
         if (null != yamlConfig.getDiscoveryTypes()) {
             yamlConfig.getDiscoveryTypes().forEach((key, value) -> haTypes.put(key, algorithmSwapper.swapToObject(value)));
         }

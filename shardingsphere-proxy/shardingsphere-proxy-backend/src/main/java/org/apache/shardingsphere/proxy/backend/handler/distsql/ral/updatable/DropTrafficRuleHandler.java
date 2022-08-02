@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.DropTrafficRuleStatement;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredRuleMissedException;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
@@ -88,8 +88,8 @@ public final class DropTrafficRuleHandler extends UpdatableRALBackendHandler<Dro
         return config.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getAlgorithmName).collect(Collectors.toSet());
     }
     
-    private Map<String, ShardingSphereAlgorithmConfiguration> createToBeAlteredTrafficAlgorithm(final TrafficRuleConfiguration currentConfig, final Collection<String> inUsedTrafficAlgorithm) {
-        Map<String, ShardingSphereAlgorithmConfiguration> result = new LinkedHashMap<>(currentConfig.getTrafficAlgorithms());
+    private Map<String, AlgorithmConfiguration> createToBeAlteredTrafficAlgorithm(final TrafficRuleConfiguration currentConfig, final Collection<String> inUsedTrafficAlgorithm) {
+        Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>(currentConfig.getTrafficAlgorithms());
         for (String each : result.keySet().stream().filter(each -> !inUsedTrafficAlgorithm.contains(each)).collect(Collectors.toSet())) {
             result.remove(each);
         }
@@ -100,8 +100,8 @@ public final class DropTrafficRuleHandler extends UpdatableRALBackendHandler<Dro
         return config.getTrafficStrategies().stream().map(TrafficStrategyConfiguration::getLoadBalancerName).collect(Collectors.toSet());
     }
     
-    private Map<String, ShardingSphereAlgorithmConfiguration> createToBeAlteredLoadBalancers(final TrafficRuleConfiguration currentConfig, final Collection<String> inUsedLoadBalancer) {
-        Map<String, ShardingSphereAlgorithmConfiguration> result = new LinkedHashMap<>(currentConfig.getLoadBalancers());
+    private Map<String, AlgorithmConfiguration> createToBeAlteredLoadBalancers(final TrafficRuleConfiguration currentConfig, final Collection<String> inUsedLoadBalancer) {
+        Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>(currentConfig.getLoadBalancers());
         for (String each : result.keySet().stream().filter(each -> !inUsedLoadBalancer.contains(each)).collect(Collectors.toSet())) {
             result.remove(each);
         }

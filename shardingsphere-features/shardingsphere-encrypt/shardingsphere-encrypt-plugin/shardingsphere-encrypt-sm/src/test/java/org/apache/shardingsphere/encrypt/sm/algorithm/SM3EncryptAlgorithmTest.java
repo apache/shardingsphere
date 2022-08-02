@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.sm.algorithm;
 import org.apache.shardingsphere.encrypt.factory.EncryptAlgorithmFactory;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
 import org.apache.shardingsphere.encrypt.spi.context.EncryptContext;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -37,7 +37,7 @@ public final class SM3EncryptAlgorithmTest {
     
     @Before
     public void setUp() {
-        encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SM3", createProperties()));
+        encryptAlgorithm = EncryptAlgorithmFactory.newInstance(new AlgorithmConfiguration("SM3", createProperties()));
     }
     
     private Properties createProperties() {
