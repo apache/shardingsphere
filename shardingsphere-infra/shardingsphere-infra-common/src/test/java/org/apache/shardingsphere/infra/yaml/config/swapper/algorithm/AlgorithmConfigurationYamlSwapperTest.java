@@ -26,11 +26,11 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ShardingSphereAlgorithmConfigurationYamlSwapperTest {
+public final class AlgorithmConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYaml() {
-        YamlAlgorithmConfiguration actual = new ShardingSphereAlgorithmConfigurationYamlSwapper().swapToYamlConfiguration(
+        YamlAlgorithmConfiguration actual = new AlgorithmConfigurationYamlSwapper().swapToYamlConfiguration(
                 new ShardingSphereAlgorithmConfiguration("TEST", createProps()));
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProps().getProperty("key"), is("value"));
@@ -39,7 +39,7 @@ public final class ShardingSphereAlgorithmConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToObject() {
         YamlAlgorithmConfiguration yamlConfig = new YamlAlgorithmConfiguration("TEST", createProps());
-        ShardingSphereAlgorithmConfiguration actual = new ShardingSphereAlgorithmConfigurationYamlSwapper().swapToObject(yamlConfig);
+        ShardingSphereAlgorithmConfiguration actual = new AlgorithmConfigurationYamlSwapper().swapToObject(yamlConfig);
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProps().getProperty("key"), is("value"));
     }

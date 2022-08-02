@@ -25,7 +25,7 @@ import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRu
 import org.apache.shardingsphere.dbdiscovery.yaml.config.rule.YamlDatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.ShardingSphereAlgorithmConfigurationYamlSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.AlgorithmConfigurationYamlSwapper;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 
 import java.util.Collection;
@@ -43,7 +43,7 @@ public final class DatabaseDiscoveryRuleConfigurationYamlSwapper
         implements
             YamlRuleConfigurationSwapper<YamlDatabaseDiscoveryRuleConfiguration, DatabaseDiscoveryRuleConfiguration> {
     
-    private final ShardingSphereAlgorithmConfigurationYamlSwapper algorithmSwapper = new ShardingSphereAlgorithmConfigurationYamlSwapper();
+    private final AlgorithmConfigurationYamlSwapper algorithmSwapper = new AlgorithmConfigurationYamlSwapper();
     
     @Override
     public YamlDatabaseDiscoveryRuleConfiguration swapToYamlConfiguration(final DatabaseDiscoveryRuleConfiguration data) {
