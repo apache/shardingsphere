@@ -260,7 +260,7 @@ public final class MySQLClient {
         public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
             if (null != responseCallback) {
                 responseCallback.setFailure(cause);
-                log.error("MySQLCommandResponseHandler: protocol resolution error", cause);
+                log.error("MySQLCommandResponseHandler protocol resolution error", cause);
             }
         }
     }
@@ -287,19 +287,21 @@ public final class MySQLClient {
                 return;
             }
             if (reconnectTimes.get() > 3) {
-                log.warn("exceeds the maximum number of retry times, lastBinlogEvent={}", lastBinlogEvent);
+                log.warn("exceeds the maximum number of retry times, last binlog event:{}", lastBinlogEvent);
                 running = false;
                 return;
             }
             reconnect();
         }
-    
+        
         @Override
         public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
             running = false;
-            log.error("MySQLBinlogEventHandler: protocol resolution error, lastBinlogEvent={}", lastBinlogEvent, cause);
+            if (lastBinlogEvent != null) {
+                log.error("MySQLBinlogEventHandler protocol resolution error, file name:{}, position:{}", lastBinlogEvent.getFileName(), lastBinlogEvent.getPosition(), cause);
+            }
         }
-    
+        
         private void reconnect() {
             int retryTimes = reconnectTimes.incrementAndGet();
             log.info("reconnect MySQL client, retry times={}", retryTimes);
