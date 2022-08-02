@@ -84,8 +84,8 @@ The file directory looks like this:
 ├── LICENSE
 ├── NOTICE
 ├── README.txt
-0009 ─ ─ bin #Start/stop script
-0009 ─ ─ conf #service configuration, data sharding, read/write splitting, data encryption, and other function configuration files
+├── bin #Start/stop script
+├── conf #service configuration, data sharding, read/write splitting, data encryption, and other function configuration files
 ├── lib # Jar package
 └── licenses
 ```
@@ -97,53 +97,56 @@ For `server.yaml` the default operation mode is `Cluster Mode`. Below is how to 
 
 ```
 mode:
-Type: Standalone #Standalone mode
-repository:
-type: File
-props:
-Path: /Users/xxx/software/apache-shardingsphere-5.1.0-shardingsphere-proxy/file #persistent file paths such as metadata configuration
-Overwrite: false #Overwrite the existing metadata？
-Rules: #Verification Info
-- !AUTHORITY
-Users: #Init user
-- root@%:root
-- sharding@:sharding
-provider:
-type: ALL_PRIVILEGES_PERMITTED
-- !TRANSACTION
-defaultType: XA
-provider Type: Atomikos
-- !SQL_PARSER
-sqlCommentParseEnabled: true
-sqlStatementCache:
-initialCapacity: 2000
-maximum Size: 65535
-concurrencyLevel: 4
-parseTreeCache:
-initialCapacity: 128
-maximum Size: 1024
-concurrencyLevel: 4
-Props: #public configuration
-max-connections-size-per-query: 1
-kernel-executor-size: 16  # Infinite by default.
-proxy-frontend-flush-threshold: 128  # The default value is 128.
-proxy-opentracing-enabled: false
-proxy-hint-enabled: false
-sql-show: false
-check-table-metadata-enabled: false
-show-process-list-enabled: false
-# Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
-# The default value is -1, which means set the minimum value for different JDBC drivers.
-proxy-backend-query-fetch-size: -1
-check-duplicate-table-enabled: false
-proxy-frontend-executor-size: 0 # Proxy frontend executor size. The default value is 0, which means let Netty decide.
-# Available options of proxy backend executor suitable: OLAP(default), OLTP. The OLTP option may reduce time cost of writing packets to client, but it may increase the latency of SQL execution
-# and block other clients if client connections are more than `proxy-frontend-executor-size`, especially executing slow SQL.
-proxy-backend-executor-suitable: OLAP
-proxy-frontend-max-connections: 0 # Less than or equal to 0 means no limitation.
-sql-federation-enabled: false
-# Available proxy backend driver type: JDBC (default), ExperimentalVertx
-proxy-backend-driver-type: JDBC
+ type: Standalone #Standalone mode
+ repository:
+   type: File
+   props:
+     path: /Users/xxx/software/apache-shardingsphere-5.1.0-shardingsphere-proxy/file #persistent file paths such as metadata configuration
+ overwrite: false #Overwrite the existing metadata？
+
+rules: #Verification Info
+ - !AUTHORITY
+   users: #Init user
+     - root@%:root
+     - sharding@:sharding
+   provider:
+     type: ALL_PRIVILEGES_PERMITTED
+ - !TRANSACTION
+   defaultType: XA
+   providerType: Atomikos
+ - !SQL_PARSER
+   sqlCommentParseEnabled: true
+   sqlStatementCache:
+     initialCapacity: 2000
+     maximumSize: 65535
+     concurrencyLevel: 4
+   parseTreeCache:
+     initialCapacity: 128
+     maximumSize: 1024
+     concurrencyLevel: 4
+
+props: #public configuration
+ max-connections-size-per-query: 1
+ kernel-executor-size: 16  # Infinite by default.
+ proxy-frontend-flush-threshold: 128  # The default value is 128.
+ proxy-opentracing-enabled: false
+ proxy-hint-enabled: false
+ sql-show: false
+ check-table-metadata-enabled: false
+ show-process-list-enabled: false
+   # Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
+   # The default value is -1, which means set the minimum value for different JDBC drivers.
+ proxy-backend-query-fetch-size: -1
+ check-duplicate-table-enabled: false
+ proxy-frontend-executor-size: 0 # Proxy frontend executor size. The default value is 0, which means let Netty decide.
+   # Available options of proxy backend executor suitable: OLAP(default), OLTP. The OLTP option may reduce time cost of writing packets to client, but it may increase the latency of SQL execution
+   # and block other clients if client connections are more than `proxy-frontend-executor-size`, especially executing slow SQL.
+ proxy-backend-executor-suitable: OLAP
+ proxy-frontend-max-connections: 0 # Less than or equal to 0 means no limitation.
+ sql-federation-enabled: false
+   # Available proxy backend driver type: JDBC (default), ExperimentalVertx
+ proxy-backend-driver-type: JDBC
+
 ```
 
 > Note: if you start a standalone ShardingSphere-Proxy and later need to change Proxy configurations, you need to set `mode.overwrite` to `true`. By doing so, ShardingSphere-Proxy will reload the metadata after startup.
@@ -169,86 +172,99 @@ Based on actual prouction scenarios, we’d like to show you how you can utilize
 ```
 # CREATE DATABASE
 CREATE DATABASE user_sharding_0;
+
 CREATE DATABASE user_sharding_1;
+
 # CREATE TABLE
 use user_sharding_0;
+
 CREATE TABLE `t_user_0` (
-`id` bigint (20) NOT NULL,
-`user_id` bigint (20) NOT NULL,
-`create_date` datetime DEFAULT NULL,
-PRIMARY KEY (`id`)) ENGINE = InnoDB DEFAULT CHARSET = latin1;
+ `id` bigint (20) NOT NULL,
+ `user_id` bigint (20) NOT NULL,
+ `create_date` datetime DEFAULT NULL,
+ PRIMARY KEY (`id`)) ENGINE = InnoDB DEFAULT CHARSET = latin1;
+
 CREATE TABLE `t_user_1` (
-`id` bigint (20) NOT NULL,
-`user_id` bigint (20) NOT NULL,
-`create_date` datetime DEFAULT NULL,
-PRIMARY KEY (`id`)) ENGINE = InnoDB DEFAULT CHARSET = latin1;
+ `id` bigint (20) NOT NULL,
+ `user_id` bigint (20) NOT NULL,
+ `create_date` datetime DEFAULT NULL,
+ PRIMARY KEY (`id`)) ENGINE = InnoDB DEFAULT CHARSET = latin1;
+
+
 use user_sharding_1;
+
 CREATE TABLE `t_user_0` (
-`id` bigint (20) NOT NULL,
-`user_id` bigint (20) NOT NULL,
-`create_date` datetime DEFAULT NULL,
-PRIMARY KEY (`id`)) ENGINE = InnoDB DEFAULT CHARSET = latin1;
+ `id` bigint (20) NOT NULL,
+ `user_id` bigint (20) NOT NULL,
+ `create_date` datetime DEFAULT NULL,
+ PRIMARY KEY (`id`)) ENGINE = InnoDB DEFAULT CHARSET = latin1;
+
+
 CREATE TABLE `t_user_1` (
-`id` bigint (20) NOT NULL,
-`user_id` bigint (20) NOT NULL,
-`create_date` datetime DEFAULT NULL,
-PRIMARY KEY (`id`)) ENGINE = InnoDB DEFAULT CHARSET = latin1;
+ `id` bigint (20) NOT NULL,
+ `user_id` bigint (20) NOT NULL,
+ `create_date` datetime DEFAULT NULL,
+ PRIMARY KEY (`id`)) ENGINE = InnoDB DEFAULT CHARSET = latin1;
 ```
 **2. Initialize sharding configuration in Proxy**
 
 ```
 schemaName: sharding_db
+
 dataSources:
-ds_0:
-url: jdbc:mysql://127.0.0.1:3306/user_sharding_0?serverTimezone=UTC&useSSL=false
-username: root
-password: root
-connectionTimeoutMilliseconds: 30000
-idleTimeoutMilliseconds: 60000
-maxLifetimeMilliseconds: 1800000
-maxPoolSize: 50
-minPoolSize: 1
-ds_1:
-url: jdbc:mysql://127.0.0.1:3306/user_sharding_1?serverTimezone=UTC&useSSL=false
-username: root
-password: root
-connectionTimeoutMilliseconds: 30000
-idleTimeoutMilliseconds: 60000
-maxLifetimeMilliseconds: 1800000
-maxPoolSize: 50
-minPoolSize: 1
+  ds_0:
+    url: jdbc:mysql://127.0.0.1:3306/user_sharding_0?serverTimezone=UTC&useSSL=false
+    username: root
+    password: root
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+  ds_1:
+    url: jdbc:mysql://127.0.0.1:3306/user_sharding_1?serverTimezone=UTC&useSSL=false
+    username: root
+    password: root
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 50
+    minPoolSize: 1
+
 rules:
 - !SHARDING
-tables:
-t_user:
-actualDataNodes: ds_${0..1}.t_user_${0..1}
-tableStrategy:
-standard:
-shardingColumn: user_id
-shardingAlgorithmName: t_user_inline
-keyGenerateStrategy:
-column: user_id
-keyGeneratorName: snowflake
-bindingTables:
-- t_user
-defaultDatabaseStrategy:
-standard:
-shardingColumn: user_id
-shardingAlgorithmName: database_inline
-defaultTableStrategy:
-none:
-shardingAlgorithms:
-database_inline:
-type: INLINE
-props:
-algorithm-expression: ds_${user_id % 2}
-t_user_inline:
-type: INLINE
-props:
-algorithm-expression: t_user_${user_id % 2}
-KeyGenerators:
-snowflake:
-type: SNOWFLAKE
+  tables:
+    t_user:
+      actualDataNodes: ds_${0..1}.t_user_${0..1}
+      tableStrategy:
+        standard:
+          shardingColumn: user_id
+          shardingAlgorithmName: t_user_inline
+      keyGenerateStrategy:
+        column: user_id
+        keyGeneratorName: snowflake
+  bindingTables:
+    - t_user
+  defaultDatabaseStrategy:
+    standard:
+      shardingColumn: user_id
+      shardingAlgorithmName: database_inline
+  defaultTableStrategy:
+    none:
+
+  shardingAlgorithms:
+    database_inline:
+      type: INLINE
+      props:
+        algorithm-expression: ds_${user_id % 2}
+    t_user_inline:
+      type: INLINE
+      props:
+        algorithm-expression: t_user_${user_id % 2}
+
+  keyGenerators:
+    snowflake:
+      type: SNOWFLAKE
 ```
 **3. Test sharding configuration**
 
@@ -274,14 +290,16 @@ mysql> show databases;
 +-------------+
 | sharding_db |
 +-------------+
-```
 1 row in set (0.02 sec)
+```
+
 Execute the new `t_user` statement, insert 6 pieces of user data (3 pieces for 2021, and 3 pieces for 2022).
 
 ```
 mysql> use sharding_db;
 mysql> INSERT INTO t_user (id, user_id, create_date) values(1, 1, '2021-01-01 00:00:00'), (2, 2, '2021-01-01 00:00:00'), (3, 3, '2021-01-01 00:00:00'), (4, 4, '2022-01-01 00:00:00'), (5, 5, '2022-02-01 00:00:00'), (6, 6, '2022-03-01 00:00:00');
 Query OK, 6 rows affected (0.16 sec)
+
 mysql> select * from t_user;
 +----+---------+---------------------+
 | id | user_id | create_date         |
@@ -294,6 +312,7 @@ mysql> select * from t_user;
 |  5 |       5 | 2022-02-01 00:00:00 |
 +----+---------+---------------------+
 ```
+
 At this time, the data is in the `user_sharding_0` and 
 `user_sharding_1` databases respectively.
 
@@ -321,6 +340,7 @@ mysql> select count(*) from t_user where create_date > '2022-00-00 00:00:00';
 |        3 |
 +----------+
 1 row in set (0.10 sec)
+
 mysql> select * from t_user where create_date > '2022-00-00 00:00:00';
 +----+---------+---------------------+
 | id | user_id | create_date         |

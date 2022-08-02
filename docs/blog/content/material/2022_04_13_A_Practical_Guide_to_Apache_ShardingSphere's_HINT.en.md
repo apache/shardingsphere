@@ -309,46 +309,56 @@ Taking the read/write splitting HINT as an example. When a user executes the fol
 
 ```
 set readwrite_splitting hint source = write
-set readwrite_splitting hint source = write
+```
+
+```
 @RequiredArgsConstructor
 public final class SetReadwriteSplittingHintExecutor extends AbstractHintUpdateExecutor<SetReadwriteSplittingHintStatement> {
-private final SetReadwriteSplittingHintStatement sqlStatement;
-@Override
-public ResponseHeader execute() {
-HintSourceType sourceType = HintSourceType.typeOf(sqlStatement.getSource());
-switch (sourceType) {
-case AUTO:
-HintManagerHolder.get().setReadwriteSplittingAuto();
-break;
-case WRITE:
-HintManagerHolder.get().setWriteRouteOnly();
-break;
-default:
-break;
+
+    private final SetReadwriteSplittingHintStatement sqlStatement;
+
+    @Override
+    public ResponseHeader execute() {
+        HintSourceType sourceType = HintSourceType.typeOf(sqlStatement.getSource());
+        switch (sourceType) {
+            case AUTO:
+                HintManagerHolder.get().setReadwriteSplittingAuto();
+                break;
+            case WRITE:
+                HintManagerHolder.get().setWriteRouteOnly();
+                break;
+            default:
+                break;
+        }
+        return new UpdateResponseHeader(new EmptyStatement());
+    }
 }
-return new UpdateResponseHeader(new EmptyStatement());
-}
-}
+```
+
+```
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class HintManagerHolder {
-private static final ThreadLocal<HintManager> HINT_MANAGER_HOLDER = new ThreadLocal<>();
-/**
-* Get an instance for {@code HintManager} from {@code ThreadLocal},if not exist,then create new one.
-*
-* @return hint manager
-*/
-public static HintManager get() {
-if (HINT_MANAGER_HOLDER.get() == null) {
-HINT_MANAGER_HOLDER.set(HintManager.getInstance());
-}
-return HINT_MANAGER_HOLDER.get();
-}
-/**
-* remove {@code HintManager} from {@code ThreadLocal}.
-*/
-public static void remove() {
-HINT_MANAGER_HOLDER.remove();
-}
+
+    private static final ThreadLocal<HintManager> HINT_MANAGER_HOLDER = new ThreadLocal<>();
+
+    /**
+     * Get an instance for {@code HintManager} from {@code ThreadLocal},if not exist,then create new one.
+     *
+     * @return hint manager
+     */
+    public static HintManager get() {
+        if (HINT_MANAGER_HOLDER.get() == null) {
+            HINT_MANAGER_HOLDER.set(HintManager.getInstance());
+        }
+        return HINT_MANAGER_HOLDER.get();
+    }
+
+    /**
+     * remove {@code HintManager} from {@code ThreadLocal}.
+     */
+    public static void remove() {
+        HINT_MANAGER_HOLDER.remove();
+    }
 }
 ```
 
