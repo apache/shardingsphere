@@ -26,13 +26,13 @@ import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 import java.util.Properties;
 
 /**
- * ShardingSphere algorithm configuration for YAML.
+ * Algorithm configuration for YAML.
  */
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public final class YamlShardingSphereAlgorithmConfiguration implements YamlConfiguration {
+public final class YamlAlgorithmConfiguration implements YamlConfiguration {
     
     private String type;
     

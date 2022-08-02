@@ -25,7 +25,7 @@ import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleCo
 import org.apache.shardingsphere.encrypt.yaml.swapper.rule.EncryptTableRuleConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActionConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.ShardingSphereAlgorithmConfigurationYamlSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rulealtered.OnRuleAlteredActionConfigurationYamlSwapper;
@@ -78,7 +78,7 @@ public final class EncryptRuleConfigurationYamlSwapper implements YamlRuleConfig
     
     private Map<String, ShardingSphereAlgorithmConfiguration> swapEncryptAlgorithm(final YamlEncryptRuleConfiguration yamlConfig) {
         Map<String, ShardingSphereAlgorithmConfiguration> result = new LinkedHashMap<>(yamlConfig.getEncryptors().size(), 1);
-        for (Entry<String, YamlShardingSphereAlgorithmConfiguration> entry : yamlConfig.getEncryptors().entrySet()) {
+        for (Entry<String, YamlAlgorithmConfiguration> entry : yamlConfig.getEncryptors().entrySet()) {
             result.put(entry.getKey(), algorithmSwapper.swapToObject(entry.getValue()));
         }
         return result;

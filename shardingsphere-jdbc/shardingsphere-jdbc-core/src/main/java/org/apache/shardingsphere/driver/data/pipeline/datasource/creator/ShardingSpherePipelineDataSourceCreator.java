@@ -23,7 +23,7 @@ import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.pool.destroyer.DataSourcePoolDestroyer;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
@@ -58,7 +58,7 @@ public final class ShardingSpherePipelineDataSourceCreator implements PipelineDa
     }
     
     private void enableRangeQueryForInline(final YamlShardingRuleConfiguration shardingRuleConfig) {
-        for (YamlShardingSphereAlgorithmConfiguration each : shardingRuleConfig.getShardingAlgorithms().values()) {
+        for (YamlAlgorithmConfiguration each : shardingRuleConfig.getShardingAlgorithms().values()) {
             if ("INLINE".equalsIgnoreCase(each.getType())) {
                 each.getProps().put("allow-range-query-with-inline-sharding", Boolean.TRUE.toString());
             }
