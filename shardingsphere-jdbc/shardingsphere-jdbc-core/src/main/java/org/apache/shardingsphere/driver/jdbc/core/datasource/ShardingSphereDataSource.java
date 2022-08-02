@@ -69,10 +69,10 @@ public final class ShardingSphereDataSource extends AbstractDataSourceAdapter im
                                                 final Collection<RuleConfiguration> ruleConfigs, final Properties props) throws SQLException {
         InstanceMetaData instanceMetaData = InstanceMetaDataBuilderFactory.create("JDBC", -1);
         Collection<RuleConfiguration> globalRuleConfigs = ruleConfigs.stream().filter(each -> each instanceof GlobalRuleConfiguration).collect(Collectors.toList());
-        Collection<RuleConfiguration> realRuleConfigs = new LinkedList<>(ruleConfigs);
-        realRuleConfigs.removeAll(globalRuleConfigs);
+        Collection<RuleConfiguration> databaseRuleConfigs = new LinkedList<>(ruleConfigs);
+        databaseRuleConfigs.removeAll(globalRuleConfigs);
         ContextManagerBuilderParameter parameter = new ContextManagerBuilderParameter(modeConfig, Collections.singletonMap(databaseName,
-                new DataSourceProvidedDatabaseConfiguration(dataSourceMap, realRuleConfigs)), globalRuleConfigs, props, Collections.emptyList(), instanceMetaData);
+                new DataSourceProvidedDatabaseConfiguration(dataSourceMap, databaseRuleConfigs)), globalRuleConfigs, props, Collections.emptyList(), instanceMetaData);
         return ContextManagerBuilderFactory.getInstance(modeConfig).build(parameter);
     }
     
