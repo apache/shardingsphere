@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.infra.config.props;
 
-import org.checkerframework.checker.units.qual.C;
 import org.junit.Test;
 
 import java.util.Properties;
