@@ -77,6 +77,8 @@ public final class ConnectionSession {
     
     private final PreparedStatementRegistry preparedStatementRegistry = new PreparedStatementRegistry();
     
+    private final RequiredSessionVariableRecorder requiredSessionVariableRecorder = new RequiredSessionVariableRecorder();
+    
     public ConnectionSession(final DatabaseType databaseType, final TransactionType initialTransactionType, final AttributeMap attributeMap) {
         this.databaseType = databaseType;
         transactionStatus = new TransactionStatus(initialTransactionType);
