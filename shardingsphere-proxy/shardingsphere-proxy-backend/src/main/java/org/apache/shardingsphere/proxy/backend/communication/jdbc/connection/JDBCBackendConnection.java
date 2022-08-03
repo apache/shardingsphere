@@ -106,14 +106,14 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
         return result;
     }
     
-    private void setSessionVariablesIfNecessary(final List<Connection> result) throws SQLException {
-        if (result.isEmpty() || connectionSession.getRequiredSessionVariableRecorder().isEmpty()) {
+    private void setSessionVariablesIfNecessary(final List<Connection> connections) throws SQLException {
+        if (connectionSession.getRequiredSessionVariableRecorder().isEmpty() || connections.isEmpty()) {
             return;
         }
-        String databaseType = result.iterator().next().getMetaData().getDatabaseProductName();
+        String databaseType = connections.iterator().next().getMetaData().getDatabaseProductName();
         List<String> setSQLs = connectionSession.getRequiredSessionVariableRecorder().toSetSQLs(databaseType);
         SQLException sqlException = null;
-        for (Connection each : result) {
+        for (Connection each : connections) {
             try (Statement statement = each.createStatement()) {
                 for (String eachSetSQL : setSQLs) {
                     statement.execute(eachSetSQL);
@@ -126,7 +126,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
         if (null == sqlException) {
             return;
         }
-        for (Connection each : result) {
+        for (Connection each : connections) {
             try {
                 each.close();
             } catch (final SQLException ex) {
@@ -297,7 +297,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     }
     
     private void resetSessionVariablesIfNecessary(final Collection<Connection> values, final Collection<SQLException> exceptions) {
-        if (values.isEmpty() || connectionSession.getRequiredSessionVariableRecorder().isEmpty()) {
+        if (connectionSession.getRequiredSessionVariableRecorder().isEmpty() || values.isEmpty()) {
             return;
         }
         String databaseType;
