@@ -46,6 +46,6 @@ public final class PersistRepositoryConfigurationYamlSwapperEngine {
      */
     @SuppressWarnings("unchecked")
     public PersistRepositoryConfiguration swapToObject(final String type, final YamlPersistRepositoryConfiguration yamlConfig) {
-        return PersistRepositoryConfigurationYamlSwapperFactory.findInstance(type).map(optional -> (PersistRepositoryConfiguration) optional.swapToObject(yamlConfig)).orElse(null);
+        return (PersistRepositoryConfiguration) PersistRepositoryConfigurationYamlSwapperFactory.getInstance(type).swapToObject(yamlConfig);
     }
 }

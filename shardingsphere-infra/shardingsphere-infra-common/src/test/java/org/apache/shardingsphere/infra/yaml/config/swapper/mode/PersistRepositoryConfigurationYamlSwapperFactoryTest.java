@@ -20,24 +20,13 @@ package org.apache.shardingsphere.infra.yaml.config.swapper.mode;
 import org.apache.shardingsphere.infra.yaml.config.swapper.fixture.PersistRepositoryConfigurationYamlSwapperFixture;
 import org.junit.Test;
 
-import java.util.Optional;
-
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
 
 public final class PersistRepositoryConfigurationYamlSwapperFactoryTest {
     
     @Test
     public void assertGetInstance() {
         assertThat(PersistRepositoryConfigurationYamlSwapperFactory.getInstance("Fixture"), instanceOf(PersistRepositoryConfigurationYamlSwapperFixture.class));
-    }
-    
-    @SuppressWarnings("rawtypes")
-    @Test
-    public void assertFindInstance() {
-        Optional<PersistRepositoryConfigurationYamlSwapper> actual = PersistRepositoryConfigurationYamlSwapperFactory.findInstance("Fixture");
-        assertTrue(actual.isPresent());
-        assertThat(actual.get(), instanceOf(PersistRepositoryConfigurationYamlSwapperFixture.class));
     }
 }

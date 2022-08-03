@@ -22,8 +22,6 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
-import java.util.Optional;
-
 /**
  * Persist repository configuration YAML swapper factory.
  */
@@ -43,15 +41,5 @@ public final class PersistRepositoryConfigurationYamlSwapperFactory {
      */
     public static PersistRepositoryConfigurationYamlSwapper getInstance(final String type) {
         return TypedSPIRegistry.getRegisteredService(PersistRepositoryConfigurationYamlSwapper.class, type);
-    }
-    
-    /**
-     * Find instance of persist repository configuration YAML swapper.
-     *
-     * @param type swapper type
-     * @return found instance
-     */
-    public static Optional<PersistRepositoryConfigurationYamlSwapper> findInstance(final String type) {
-        return TypedSPIRegistry.findRegisteredService(PersistRepositoryConfigurationYamlSwapper.class, type);
     }
 }
