@@ -31,7 +31,7 @@ Source code: https://github.com/apache/shardingsphere/tree/master/shardingsphere
 
 ### Standalone mode
 
-It can achieve data persistence in terms of metadata information such as data sources and rules, but it is not able to synchronize metadata to multiple Apache ShardingSphere instances or be aware of each other in a cluster environment. Updating metadata through one instance causes inconsistencies in other instances because they cannot get the latest metadata. It is ideal for engineers to build a ShardingSphere environment locally.
+Initial configuration or metadata changes caused by SQL execution take effect only in the current process. It is ideal for engineers to build a ShardingSphere environment locally without cleaning the running traces. This is the default mode of Apache ShardingSphere.
 
 ### Cluster mode
 

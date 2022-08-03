@@ -30,7 +30,7 @@ Apache ShardingSphere 是一套完善的产品，使用场景非常广泛。 除
 
 ### 单机模式
 
-能够将数据源和规则等元数据信息持久化，但无法将元数据同步至多个 Apache ShardingSphere 实例，无法在集群环境中相互感知。 通过某一实例更新元数据之后，会导致其他实例由于获取不到最新的元数据而产生不一致的错误。 适用于工程师在本地搭建 Apache ShardingSphere 环境。
+初始化配置或执行 SQL 等造成的元数据结果变更的操作，仅在当前进程中生效。 方便开发人员在本地搭建 Apache ShardingSphere 而无需清理运行痕迹。 它是 Apache ShardingSphere 的默认模式。
 
 ### 集群模式
 
