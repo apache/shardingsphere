@@ -20,6 +20,7 @@ package org.apache.shardingsphere.sharding.rule;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.algorithm.sharding.mod.ModShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -37,11 +38,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
-import java.util.regex.Pattern;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -183,7 +181,7 @@ public final class TableRuleTest {
     }
     
     @Test
-    public void assertDatNodeGroupsWhenShardingTableConfigActualTablePrefix() {
+    public void assertGetDatNodeGroupsWhenShardingTableConfigActualTablePrefix() {
         ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..1}");
         shardingTableRuleConfig.setActualTablePrefix("tmp_");
         TableRule tableRule = new TableRule(shardingTableRuleConfig, Arrays.asList("ds_0", "ds_1"), "order_id");
@@ -196,7 +194,7 @@ public final class TableRuleTest {
     }
     
     @Test
-    public void assertDatNodeGroupsWhenShardingAutoTableConfigActualTablePrefix() {
+    public void assertGetDatNodeGroupsWhenShardingAutoTableConfigActualTablePrefix() {
         ShardingAutoTableRuleConfiguration shardingTableRuleConfig = new ShardingAutoTableRuleConfiguration("t_order", "ds_${0..1}");
         shardingTableRuleConfig.setActualTablePrefix("tmp_");
         shardingTableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "mod"));
@@ -209,27 +207,27 @@ public final class TableRuleTest {
         assertTrue(actual.get("ds_1").contains(new DataNode("ds_1", "tmp_t_order_1")));
         assertTrue(actual.get("ds_1").contains(new DataNode("ds_1", "tmp_t_order_3")));
     }
-
+    
     @Test
-    public void assertDatNodeSuffixPattern() {
-        String regex = "(\\d+[\\-_]){0,}(\\d+$)";
-        Pattern dataNodeSuffixPattern = Pattern.compile(regex);
-        Set<String> set = new LinkedHashSet<>();
-        set.add("t_order_1");
-        set.add("t_order_2_0");
-        set.add("t_order_3-0_0");
-        set.add("t_order_4-0_0-0");
-        set.add("t_order_5_0-0-0_0");
-        set.add("t_order_6_0_0-0_0-0");
-        set.add("t_order_7_0_0-0_0_0-0");
-        set.add("t_order_8_0_0-0_0_0-0_0");
-        set.add("t_order_9_0_0-0_0_0-0_0-0");
-        set.add("t_order_10_0_0-0_0_0-0-0-0_0");
-        set.forEach(s -> {
-            assertEquals("t_order_", dataNodeSuffixPattern.matcher(s).replaceAll(""));
-        });
+    public void assertGetTableDataNode() {
+        ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds_0.t_order_0_0,ds_0.t_order_0_1,ds_1.t_order_1_0,ds_1.t_order_1_1");
+        TableRule tableRule = new TableRule(shardingTableRuleConfig, Arrays.asList("ds_0", "ds_1"), "order_id");
+        DataNodeInfo actual = tableRule.getTableDataNode();
+        assertThat(actual.getPrefix(), is("t_order_"));
+        assertThat(actual.getPaddingChar(), is('0'));
+        assertThat(actual.getSuffixMinLength(), is(3));
     }
-
+    
+    @Test
+    public void assertGetDataSourceDataNode() {
+        ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds_0.t_order,ds_1.t_order");
+        TableRule tableRule = new TableRule(shardingTableRuleConfig, Arrays.asList("ds_0", "ds_1"), "order_id");
+        DataNodeInfo actual = tableRule.getDataSourceDataNode();
+        assertThat(actual.getPrefix(), is("ds_"));
+        assertThat(actual.getPaddingChar(), is('0'));
+        assertThat(actual.getSuffixMinLength(), is(1));
+    }
+    
     private ModShardingAlgorithm createModShardingAlgorithm() {
         ModShardingAlgorithm result = new ModShardingAlgorithm();
         Properties props = new Properties();

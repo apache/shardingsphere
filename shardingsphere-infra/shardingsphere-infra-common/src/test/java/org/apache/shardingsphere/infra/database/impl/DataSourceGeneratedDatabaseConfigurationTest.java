@@ -35,7 +35,7 @@ import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.junit.Test;
 
 public final class DataSourceGeneratedDatabaseConfigurationTest {
-
+    
     @Test
     public void assertDataSourceGeneratedDatabaseConfiguration() {
         String url = "jdbc:mysql://192.168.0.1:3306/foo_ds";

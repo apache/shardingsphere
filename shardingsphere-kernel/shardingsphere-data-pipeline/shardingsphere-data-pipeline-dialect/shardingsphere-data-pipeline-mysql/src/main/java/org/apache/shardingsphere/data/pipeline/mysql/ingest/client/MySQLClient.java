@@ -293,7 +293,7 @@ public final class MySQLClient {
             }
             reconnect();
         }
-    
+        
         @Override
         public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
             running = false;
