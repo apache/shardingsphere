@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public final class PostgreSQLShowVariableExecutor implements DatabaseAdminQueryExecutor {
     
-    private static final Map<String, VariableRowDataGenerator> VARIABLE_ROW_DATA_GENERATORS = new LinkedHashMap<>(6, 1);
+    private static final Map<String, VariableRowDataGenerator> VARIABLE_ROW_DATA_GENERATORS = new LinkedHashMap<>(7, 1);
     
     static {
         VARIABLE_ROW_DATA_GENERATORS.put("application_name", connectionSession -> new String[]{"application_name", "PostgreSQL", "Sets the application name to be reported in statistics and logs."});
