@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.eventbus;
+package org.apache.shardingsphere.infra.util.eventbus.fixture;
 
-import org.apache.shardingsphere.infra.util.eventbus.fixture.EventListenerFixture;
-import org.junit.Test;
+import com.google.common.eventbus.Subscribe;
+import lombok.Getter;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
+import java.util.LinkedList;
+import java.util.List;
 
-public final class EventBusContextTest {
+@SuppressWarnings("UnstableApiUsage")
+@Getter
+public final class EventListenerFixture {
     
-    @Test
-    public void assertEventBusContextTest() {
-        EventBusContext eventBusContext = new EventBusContext();
-        EventListenerFixture listener = new EventListenerFixture();
-        eventBusContext.register(listener);
-        eventBusContext.post("foo_event");
-        assertThat(listener.getEvents().size(), is(1));
-        assertThat(listener.getEvents().get(0), is("foo_event"));
+    private final List<String> events = new LinkedList<>();
+    
+    @Subscribe
+    public void listen(final String event) {
+        events.add(event);
     }
 }
