@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Tab
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 
 import java.util.ArrayList;
@@ -57,6 +58,10 @@ public final class PostgreSQLAdminExecutorCreator implements DatabaseAdminExecut
     
     @Override
     public Optional<DatabaseAdminExecutor> create(final SQLStatementContext<?> sqlStatementContext) {
+        SQLStatement sqlStatement = sqlStatementContext.getSqlStatement();
+        if (sqlStatement instanceof ShowStatement) {
+            return Optional.of(new PostgreSQLShowVariableExecutor((ShowStatement) sqlStatement));
+        }
         return Optional.empty();
     }
     
