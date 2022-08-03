@@ -29,6 +29,11 @@ public final class EventListenerFixture {
     
     private final List<String> events = new LinkedList<>();
     
+    /**
+     * Listen.
+     * 
+     * @param event event
+     */
     @Subscribe
     public void listen(final String event) {
         events.add(event);
