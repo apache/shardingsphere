@@ -225,9 +225,9 @@ public final class TableRuleTest {
         set.add("t_order_8_0_0-0_0_0-0_0");
         set.add("t_order_9_0_0-0_0_0-0_0-0");
         set.add("t_order_10_0_0-0_0_0-0-0-0_0");
-        set.forEach( s -> {
-            assertEquals("t_order_",dataNodeSuffixPattern.matcher(s).replaceAll(""));
-        } );
+        set.forEach(s -> {
+            assertEquals("t_order_", dataNodeSuffixPattern.matcher(s).replaceAll(""));
+        });
     }
 
     private ModShardingAlgorithm createModShardingAlgorithm() {
