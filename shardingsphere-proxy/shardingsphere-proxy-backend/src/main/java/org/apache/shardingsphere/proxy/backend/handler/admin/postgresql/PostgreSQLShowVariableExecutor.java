@@ -30,7 +30,6 @@ import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAd
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStatement;
 
-import java.sql.SQLException;
 import java.sql.Types;
 import java.util.Arrays;
 import java.util.Collections;
@@ -70,7 +69,7 @@ public final class PostgreSQLShowVariableExecutor implements DatabaseAdminQueryE
     private MergedResult mergedResult;
     
     @Override
-    public void execute(final ConnectionSession connectionSession) throws SQLException {
+    public void execute(final ConnectionSession connectionSession) {
         String name = showStatement.getName().toLowerCase(Locale.ROOT);
         if ("ALL".equalsIgnoreCase(name)) {
             executeShowAll(connectionSession);
