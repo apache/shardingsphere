@@ -37,7 +37,6 @@
     <sql-case id="create_server" value="CREATE SERVER alt_fserv1 FOREIGN DATA WRAPPER alt_fdw1;" db-types="PostgreSQL" />
     <sql-case id="create_operator" value="CREATE OPERATOR @-@ ( leftarg = int4, rightarg = int4, procedure = int4mi )" db-types="PostgreSQL" />
     <sql-case id="create_statistics" value="CREATE STATISTICS alt_stat1 ON a, b FROM alt_regress_1" db-types="PostgreSQL" />
-    <sql-case id="alter_statistics" value="ALTER STATISTICS alt_stat1 RENAME TO alt_stat2" db-types="PostgreSQL" />
     <sql-case id="create_table_no_valid" value="create table nv_parent (d date, check (false) no inherit not valid)" db-types="PostgreSQL" />
     <sql-case id="create_as_select" value="create table attest1 as select * from atacc1" db-types="PostgreSQL" />
     <sql-case id="create_temp_table" value="create temp table old_oids as select relname, oid as oldoid, relfilenode as oldfilenode from pg_class where relname like 'at_partitioned%'" db-types="PostgreSQL" />
@@ -3318,21 +3317,6 @@
     <sql-case id="alter_by_postgresql_source_test_case214" value="ALTER OPERATOR FAMILY alt_opf7 USING btree DROP OPERATOR 1 (int4, int2, int8);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case215" value="ALTER OPERATOR FAMILY alt_opf8 USING btree ADD OPERATOR 1 &lt; (int4, int4);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case216" value="ALTER OPERATOR FAMILY alt_opf9 USING gist ADD OPERATOR 1 &lt; (int4, int4) FOR ORDER BY float_ops;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case312" value="ALTER STATISTICS IF EXISTS ab1_a_b_stats SET STATISTICS 0;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case313" value="ALTER STATISTICS ab1_a_b_stats RENAME TO ab1_a_b_stats_new;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case314" value="ALTER STATISTICS ab1_a_b_stats SET STATISTICS -1;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case315" value="ALTER STATISTICS ab1_a_b_stats SET STATISTICS 0;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case316" value="ALTER STATISTICS ab1_a_b_stats SET STATISTICS 0;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case317" value="ALTER STATISTICS alt_stat1 RENAME TO alt_stat2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case318" value="ALTER STATISTICS alt_stat1 RENAME TO alt_stat3;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case319" value="ALTER STATISTICS alt_stat1 RENAME TO alt_stat4;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case320" value="ALTER STATISTICS alt_stat2 OWNER TO regress_alter_generic_user2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case321" value="ALTER STATISTICS alt_stat2 OWNER TO regress_alter_generic_user3;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case322" value="ALTER STATISTICS alt_stat2 OWNER TO regress_alter_generic_user3;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case323" value="ALTER STATISTICS alt_stat2 SET SCHEMA alt_nsp2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case324" value="ALTER STATISTICS alt_stat3 OWNER TO regress_alter_generic_user2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case325" value="ALTER STATISTICS alt_stat3 RENAME TO alt_stat4;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case326" value="ALTER STATISTICS alt_stat3 SET SCHEMA alt_nsp2;		-- failed (not owner) ALTER STATISTICS alt_stat2 SET SCHEMA alt_nsp2;		-- failed (name conflict) RESET SESSION AUTHORIZATION;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case327" value="ALTER SUBSCRIPTION regress_doesnotexist CONNECTION &apos;dbname=regress_doesnotexist2&apos;;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case328" value="ALTER SUBSCRIPTION regress_testsub ADD PUBLICATION testpub WITH (refresh = false);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case329" value="ALTER SUBSCRIPTION regress_testsub ADD PUBLICATION testpub1, testpub1 WITH (refresh = false);" db-types="PostgreSQL" />

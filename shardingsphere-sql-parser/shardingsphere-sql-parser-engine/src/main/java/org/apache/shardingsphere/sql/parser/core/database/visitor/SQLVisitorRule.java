@@ -170,6 +170,8 @@ public enum SQLVisitorRule {
     
     ALTER_SERVER("AlterServer", SQLStatementType.DDL),
     
+    ALTER_STATISTICS("AlterStatistics", SQLStatementType.DDL),
+    
     ALTER_SESSION("AlterSession", SQLStatementType.DDL),
     
     ALTER_SYSTEM("AlterSystem", SQLStatementType.DDL),
