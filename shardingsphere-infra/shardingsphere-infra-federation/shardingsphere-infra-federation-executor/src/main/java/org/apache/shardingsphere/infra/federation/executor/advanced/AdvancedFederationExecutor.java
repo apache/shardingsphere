@@ -43,7 +43,7 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecuti
 import org.apache.shardingsphere.infra.federation.executor.FederationContext;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
 import org.apache.shardingsphere.infra.federation.executor.advanced.resultset.FederationResultSet;
-import org.apache.shardingsphere.infra.federation.executor.original.schema.FilterableSchema;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.filter.FilterableSchema;
 import org.apache.shardingsphere.infra.federation.executor.original.table.FilterableTableScanExecutor;
 import org.apache.shardingsphere.infra.federation.executor.original.table.FilterableTableScanExecutorContext;
 import org.apache.shardingsphere.infra.federation.optimizer.ShardingSphereOptimizer;

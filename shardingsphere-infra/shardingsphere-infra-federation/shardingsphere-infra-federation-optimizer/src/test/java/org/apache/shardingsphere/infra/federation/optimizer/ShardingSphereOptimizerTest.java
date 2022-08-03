@@ -27,8 +27,7 @@ import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.calcite.FederationSchema;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.filter.FilterableSchema;
 import org.apache.shardingsphere.infra.federation.optimizer.planner.QueryOptimizePlannerFactory;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
@@ -107,7 +106,7 @@ public final class ShardingSphereOptimizerTest {
     private static SqlToRelConverter createSqlToRelConverter(final ShardingSphereSchema schema) {
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(OptimizerPlannerContextFactory.createConnectionProperties());
         RelDataTypeFactory relDataTypeFactory = new JavaTypeFactoryImpl();
-        FederationSchema federationSchema = new FederationSchema(new FederationSchemaMetaData(SCHEMA_NAME, schema.getTables()));
+        FilterableSchema federationSchema = new FilterableSchema(SCHEMA_NAME, schema, null);
         CalciteCatalogReader catalogReader = OptimizerPlannerContextFactory.createCatalogReader(SCHEMA_NAME, federationSchema, relDataTypeFactory, connectionConfig);
         SqlValidator validator = OptimizerPlannerContextFactory.createValidator(catalogReader, relDataTypeFactory, connectionConfig);
         return OptimizerPlannerContextFactory.createConverter(catalogReader, validator, relDataTypeFactory);
