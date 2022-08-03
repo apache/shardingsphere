@@ -99,6 +99,7 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
         result.setJdbcUrl(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(getPort()), dataSourceName));
         result.setUsername(getUsername());
         result.setPassword(getUnifiedPassword());
+        result.setMaximumPoolSize(4);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
     }
