@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.swapper;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperFactory;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -47,7 +47,7 @@ public final class ReadwriteSplittingRuleConfigurationYamlSwapperTest {
                 new ReadwriteSplittingDataSourceRuleConfiguration("ds",
                         new StaticReadwriteSplittingStrategyConfiguration("write", Arrays.asList("read")), null, "roundRobin");
         YamlReadwriteSplittingRuleConfiguration actual = getReadwriteSplittingRuleConfigurationYamlSwapper().swapToYamlConfiguration(new ReadwriteSplittingRuleConfiguration(
-                Collections.singleton(dataSourceConfig), Collections.singletonMap("roundRobin", new ShardingSphereAlgorithmConfiguration("ROUND_ROBIN", new Properties()))));
+                Collections.singleton(dataSourceConfig), Collections.singletonMap("roundRobin", new AlgorithmConfiguration("ROUND_ROBIN", new Properties()))));
         assertNotNull(actual.getDataSources().get("ds").getStaticStrategy());
         assertThat((actual.getDataSources().get("ds").getStaticStrategy()).getWriteDataSourceName(), is("write"));
         assertThat((actual.getDataSources().get("ds").getStaticStrategy()).getReadDataSourceNames(), is(Arrays.asList("read")));

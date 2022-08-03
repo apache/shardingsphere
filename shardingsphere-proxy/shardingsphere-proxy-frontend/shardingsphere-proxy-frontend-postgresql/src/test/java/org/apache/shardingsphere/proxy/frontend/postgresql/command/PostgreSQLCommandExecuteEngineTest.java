@@ -22,7 +22,6 @@ import io.netty.channel.ChannelHandlerContext;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.PostgreSQLPacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLCommandCompletePacket;
 import org.apache.shardingsphere.db.protocol.postgresql.packet.generic.PostgreSQLReadyForQueryPacket;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.mode.manager.ContextManager;
@@ -69,7 +68,7 @@ public final class PostgreSQLCommandExecuteEngineTest extends ProxyContextRestor
     
     @Before
     public void setUp() {
-        ProxyContext.init(new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(), mock(OptimizerContext.class)), mock(InstanceContext.class)));
+        ProxyContext.init(new ContextManager(new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData()), mock(InstanceContext.class)));
         when(channelHandlerContext.channel()).thenReturn(channel);
         when(connectionSession.getTransactionStatus()).thenReturn(new TransactionStatus(TransactionType.LOCAL));
     }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.infra.config.rule.rulealtered;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 
 /**
  * On rule altered action configuration.
@@ -34,11 +34,11 @@ public final class OnRuleAlteredActionConfiguration {
     
     private final OutputConfiguration output;
     
-    private final ShardingSphereAlgorithmConfiguration streamChannel;
+    private final AlgorithmConfiguration streamChannel;
     
-    private final ShardingSphereAlgorithmConfiguration completionDetector;
+    private final AlgorithmConfiguration completionDetector;
     
-    private final ShardingSphereAlgorithmConfiguration dataConsistencyCalculator;
+    private final AlgorithmConfiguration dataConsistencyCalculator;
     
     @RequiredArgsConstructor
     @Getter
@@ -51,7 +51,7 @@ public final class OnRuleAlteredActionConfiguration {
         
         private final Integer shardingSize;
         
-        private final ShardingSphereAlgorithmConfiguration rateLimiter;
+        private final AlgorithmConfiguration rateLimiter;
     }
     
     @RequiredArgsConstructor
@@ -63,6 +63,6 @@ public final class OnRuleAlteredActionConfiguration {
         
         private final Integer batchSize;
         
-        private final ShardingSphereAlgorithmConfiguration rateLimiter;
+        private final AlgorithmConfiguration rateLimiter;
     }
 }

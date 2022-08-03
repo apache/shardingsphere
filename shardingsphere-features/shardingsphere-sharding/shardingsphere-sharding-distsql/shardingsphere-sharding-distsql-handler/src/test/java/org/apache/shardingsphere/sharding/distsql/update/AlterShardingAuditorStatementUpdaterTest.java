@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
@@ -67,7 +67,7 @@ public final class AlterShardingAuditorStatementUpdaterTest {
         Properties props = createProperties();
         ShardingAuditorSegment auditorSegment = new ShardingAuditorSegment("not_exist_auditor_name", new AlgorithmSegment("DML_SHARDING_CONDITIONS", props));
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        ruleConfig.getAuditors().put("exist_auditor_name", new ShardingSphereAlgorithmConfiguration("DML_SHARDING_CONDITIONS", props));
+        ruleConfig.getAuditors().put("exist_auditor_name", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", props));
         updater.checkSQLStatement(database, new AlterShardingAuditorStatement(Collections.singletonList(auditorSegment)), ruleConfig);
     }
     
@@ -76,7 +76,7 @@ public final class AlterShardingAuditorStatementUpdaterTest {
         Properties props = createProperties();
         ShardingAuditorSegment auditorSegment = new ShardingAuditorSegment("exist_auditor_name", new AlgorithmSegment("INVALID_TYPE", props));
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        ruleConfig.getAuditors().put("exist_auditor_name", new ShardingSphereAlgorithmConfiguration("DML_SHARDING_CONDITIONS", props));
+        ruleConfig.getAuditors().put("exist_auditor_name", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", props));
         updater.checkSQLStatement(database, new AlterShardingAuditorStatement(Collections.singletonList(auditorSegment)), ruleConfig);
     }
     
@@ -84,7 +84,7 @@ public final class AlterShardingAuditorStatementUpdaterTest {
     public void assertUpdate() {
         ShardingAuditorSegment auditorSegment = new ShardingAuditorSegment("exist_auditor_name", new AlgorithmSegment("DML_SHARDING_CONDITIONS", createProperties()));
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
-        currentRuleConfig.getAuditors().put("exist_auditor_name", new ShardingSphereAlgorithmConfiguration("DML_SHARDING_CONDITIONS", createProperties()));
+        currentRuleConfig.getAuditors().put("exist_auditor_name", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", createProperties()));
         AlterShardingAuditorStatement statement = new AlterShardingAuditorStatement(Collections.singletonList(auditorSegment));
         ShardingRuleConfiguration toBeAlteredRuleConfiguration = updater.buildToBeAlteredRuleConfiguration(statement);
         updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfiguration);

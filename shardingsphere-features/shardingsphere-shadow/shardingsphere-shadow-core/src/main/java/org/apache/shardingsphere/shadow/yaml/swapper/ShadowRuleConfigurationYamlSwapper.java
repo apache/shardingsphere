@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.shadow.yaml.swapper;
 
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.ShardingSphereAlgorithmConfigurationYamlSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.AlgorithmConfigurationYamlSwapper;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
@@ -34,7 +34,7 @@ public final class ShadowRuleConfigurationYamlSwapper implements YamlRuleConfigu
     
     private final ShadowTableConfigurationYamlSwapper tableConfigurationYamlSwapper = new ShadowTableConfigurationYamlSwapper();
     
-    private final ShardingSphereAlgorithmConfigurationYamlSwapper algorithmSwapper = new ShardingSphereAlgorithmConfigurationYamlSwapper();
+    private final AlgorithmConfigurationYamlSwapper algorithmSwapper = new AlgorithmConfigurationYamlSwapper();
     
     @Override
     public YamlShadowRuleConfiguration swapToYamlConfiguration(final ShadowRuleConfiguration data) {

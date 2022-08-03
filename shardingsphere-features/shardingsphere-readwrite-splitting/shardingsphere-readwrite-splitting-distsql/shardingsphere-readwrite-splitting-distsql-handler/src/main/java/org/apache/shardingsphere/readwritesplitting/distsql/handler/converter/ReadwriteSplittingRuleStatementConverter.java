@@ -19,7 +19,7 @@ package org.apache.shardingsphere.readwritesplitting.distsql.handler.converter;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.api.strategy.DynamicReadwriteSplittingStrategyConfiguration;
@@ -46,7 +46,7 @@ public final class ReadwriteSplittingRuleStatementConverter {
      */
     public static ReadwriteSplittingRuleConfiguration convert(final Collection<ReadwriteSplittingRuleSegment> ruleSegments) {
         Collection<ReadwriteSplittingDataSourceRuleConfiguration> dataSources = new LinkedList<>();
-        Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers = new HashMap<>(ruleSegments.size(), 1);
+        Map<String, AlgorithmConfiguration> loadBalancers = new HashMap<>(ruleSegments.size(), 1);
         for (ReadwriteSplittingRuleSegment each : ruleSegments) {
             if (null != each.getLoadBalancer()) {
                 String loadBalancerName = getLoadBalancerName(each.getName(), each.getLoadBalancer());
@@ -67,8 +67,8 @@ public final class ReadwriteSplittingRuleStatementConverter {
                         new StaticReadwriteSplittingStrategyConfiguration(segment.getWriteDataSource(), new ArrayList<>(segment.getReadDataSources())), null, loadBalancerName);
     }
     
-    private static ShardingSphereAlgorithmConfiguration createLoadBalancer(final ReadwriteSplittingRuleSegment ruleSegment) {
-        return new ShardingSphereAlgorithmConfiguration(ruleSegment.getLoadBalancer(), ruleSegment.getProps());
+    private static AlgorithmConfiguration createLoadBalancer(final ReadwriteSplittingRuleSegment ruleSegment) {
+        return new AlgorithmConfiguration(ruleSegment.getLoadBalancer(), ruleSegment.getProps());
     }
     
     private static String getLoadBalancerName(final String ruleName, final String type) {

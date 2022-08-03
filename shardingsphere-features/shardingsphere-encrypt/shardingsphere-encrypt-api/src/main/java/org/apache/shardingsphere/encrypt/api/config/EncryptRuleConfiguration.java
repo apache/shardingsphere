@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.api.config;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.encrypt.api.config.rule.EncryptTableRuleConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.function.EnhancedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
@@ -38,7 +38,7 @@ public final class EncryptRuleConfiguration implements DatabaseRuleConfiguration
     
     private final Collection<EncryptTableRuleConfiguration> tables;
     
-    private final Map<String, ShardingSphereAlgorithmConfiguration> encryptors;
+    private final Map<String, AlgorithmConfiguration> encryptors;
     
     private final boolean queryWithCipherColumn;
     
@@ -46,11 +46,11 @@ public final class EncryptRuleConfiguration implements DatabaseRuleConfiguration
     
     private final Map<String, OnRuleAlteredActionConfiguration> dataConverters;
     
-    public EncryptRuleConfiguration(final Collection<EncryptTableRuleConfiguration> tables, final Map<String, ShardingSphereAlgorithmConfiguration> encryptors) {
+    public EncryptRuleConfiguration(final Collection<EncryptTableRuleConfiguration> tables, final Map<String, AlgorithmConfiguration> encryptors) {
         this(tables, encryptors, true);
     }
     
-    public EncryptRuleConfiguration(final Collection<EncryptTableRuleConfiguration> tables, final Map<String, ShardingSphereAlgorithmConfiguration> encryptors, final boolean queryWithCipherColumn) {
+    public EncryptRuleConfiguration(final Collection<EncryptTableRuleConfiguration> tables, final Map<String, AlgorithmConfiguration> encryptors, final boolean queryWithCipherColumn) {
         this(tables, encryptors, queryWithCipherColumn, null, Collections.emptyMap());
     }
 }

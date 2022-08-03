@@ -15,18 +15,18 @@ Class name: org.apache.shardingsphere.sharding.api.config.ShardingRuleConfigurat
 
 Attributes:
 
-| *Name*                              | *DataType*                                          | *Description*                             | *Default Value* |
-| ----------------------------------- | --------------------------------------------------- | ----------------------------------------- | --------------- |
-| tables (+)                          | Collection\<ShardingTableRuleConfiguration\>        | Sharding table rules                      | -               |
-| autoTables (+)                      | Collection\<ShardingAutoTableRuleConfiguration\>    | Sharding auto table rules                 | -               |
-| bindingTableGroups (*)              | Collection\<String\>                                | Binding table rules                       | Empty           |
-| broadcastTables (*)                 | Collection\<String\>                                | Broadcast table rules                     | Empty           |
-| defaultDatabaseShardingStrategy (?) | ShardingStrategyConfiguration                       | Default database sharding strategy        | Not sharding    |
-| defaultTableShardingStrategy (?)    | ShardingStrategyConfiguration                       | Default table sharding strategy           | Not sharding    |
-| defaultKeyGenerateStrategy (?)      | KeyGeneratorConfiguration                           | Default key generator                     | Snowflake       |
-| defaultShardingColumn (?)           | String                                              | Default sharding column name              | None            |
-| shardingAlgorithms (+)              | Map\<String, ShardingSphereAlgorithmConfiguration\> | Sharding algorithm name and configurations | None            |
-| keyGenerators (?)                   | Map\<String, ShardingSphereAlgorithmConfiguration\> | Key generate algorithm name and configurations | None            |
+| *Name*                              | *DataType*                                       | *Description*                             | *Default Value* |
+| ----------------------------------- | ------------------------------------------------ | ----------------------------------------- | --------------- |
+| tables (+)                          | Collection\<ShardingTableRuleConfiguration\>     | Sharding table rules                      | -               |
+| autoTables (+)                      | Collection\<ShardingAutoTableRuleConfiguration\> | Sharding auto table rules                 | -               |
+| bindingTableGroups (*)              | Collection\<String\>                             | Binding table rules                       | Empty           |
+| broadcastTables (*)                 | Collection\<String\>                             | Broadcast table rules                     | Empty           |
+| defaultDatabaseShardingStrategy (?) | ShardingStrategyConfiguration                    | Default database sharding strategy        | Not sharding    |
+| defaultTableShardingStrategy (?)    | ShardingStrategyConfiguration                    | Default table sharding strategy           | Not sharding    |
+| defaultKeyGenerateStrategy (?)      | KeyGeneratorConfiguration                        | Default key generator                     | Snowflake       |
+| defaultShardingColumn (?)           | String                                           | Default sharding column name              | None            |
+| shardingAlgorithms (+)              | Map\<String, AlgorithmConfiguration\>            | Sharding algorithm name and configurations | None            |
+| keyGenerators (?)                   | Map\<String, AlgorithmConfiguration\>            | Key generate algorithm name and configurations | None            |
 
 ### Sharding Table Configuration
 
@@ -113,8 +113,8 @@ Please refer to [Built-in Key Generate Algorithm List](/en/user-manual/shardings
 ## Procedure
 
 1. Create an authentic data source mapping relationship, with key as the logical name of the data source and value as the DataSource object.
-2. Create the sharding rule object ShardingRuleConfiguration, and initialize the sharding table objects—ShardingTableRuleConfiguration, the set of bound tables, the set of broadcast tables, and parameters like library sharding strategy and the database sharding strategy, on which the data sharding depends.
-3. Using the ShardingSphereDataSource method of calling the ShardingSphereDataSourceFactory subject to create the ShardingSphereDataSource.
+1. Create the sharding rule object ShardingRuleConfiguration, and initialize the sharding table objects—ShardingTableRuleConfiguration, the set of bound tables, the set of broadcast tables, and parameters like library sharding strategy and the database sharding strategy, on which the data sharding depends.
+1. Using the ShardingSphereDataSource method of calling the ShardingSphereDataSourceFactory subject to create the ShardingSphereDataSource.
 
 ## Sample
 
@@ -136,9 +136,9 @@ public final class ShardingDatabasesAndTablesConfigurationPrecise implements Exa
         result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "standard_test_tbl"));
         Properties props = new Properties();
         props.setProperty("algorithm-expression", "demo_ds_${user_id % 2}");
-        result.getShardingAlgorithms().put("inline", new ShardingSphereAlgorithmConfiguration("INLINE", props));
-        result.getShardingAlgorithms().put("standard_test_tbl", new ShardingSphereAlgorithmConfiguration("STANDARD_TEST_TBL", new Properties()));
-        result.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", new Properties()));
+        result.getShardingAlgorithms().put("inline", new AlgorithmConfiguration("INLINE", props));
+        result.getShardingAlgorithms().put("standard_test_tbl", new AlgorithmConfiguration("STANDARD_TEST_TBL", new Properties()));
+        result.getKeyGenerators().put("snowflake", new AlgorithmConfiguration("SNOWFLAKE", new Properties()));
         return result;
     }
     

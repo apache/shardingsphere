@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.check
 
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.factory.DatabaseDiscoveryProviderAlgorithmFactory;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
@@ -61,7 +61,7 @@ public final class DatabaseDiscoveryRuleConfigurationImportChecker {
     }
     
     private void checkDiscoverTypeAndHeartbeat(final String databaseName, final DatabaseDiscoveryRuleConfiguration currentRuleConfig) throws DistSQLException {
-        Collection<String> invalidInput = currentRuleConfig.getDiscoveryTypes().values().stream().map(ShardingSphereAlgorithmConfiguration::getType)
+        Collection<String> invalidInput = currentRuleConfig.getDiscoveryTypes().values().stream().map(AlgorithmConfiguration::getType)
                 .filter(each -> !DatabaseDiscoveryProviderAlgorithmFactory.contains(each)).collect(Collectors.toList());
         DistSQLException.predictionThrow(invalidInput.isEmpty(), () -> new InvalidAlgorithmConfigurationException(DB_DISCOVERY.toLowerCase(), invalidInput));
         currentRuleConfig.getDataSources().forEach(each -> {

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.readwritesplitting.factory.ReadQueryLoadBalanceAlgorithmFactory;
 import org.apache.shardingsphere.transaction.TransactionHolder;
 import org.junit.After;
@@ -101,6 +101,6 @@ public final class FixedReplicaWeightReadQueryLoadBalanceAlgorithmTest {
     }
     
     private FixedReplicaWeightReadQueryLoadBalanceAlgorithm createReadQueryLoadBalanceAlgorithm(final Properties props) {
-        return (FixedReplicaWeightReadQueryLoadBalanceAlgorithm) ReadQueryLoadBalanceAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("FIXED_REPLICA_WEIGHT", props));
+        return (FixedReplicaWeightReadQueryLoadBalanceAlgorithm) ReadQueryLoadBalanceAlgorithmFactory.newInstance(new AlgorithmConfiguration("FIXED_REPLICA_WEIGHT", props));
     }
 }

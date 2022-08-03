@@ -15,27 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.config.algorithm;
+package org.apache.shardingsphere.proxy.backend.handler.admin.executor;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
-import lombok.Getter;
+import org.junit.Test;
 
-import java.util.Properties;
+import java.util.Collections;
 
-/**
- * ShardingSphere algorithm configuration.
- */
-@Getter
-public final class ShardingSphereAlgorithmConfiguration {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+public final class ReplayRequiredSessionVariablesLoaderTest {
     
-    private final String type;
+    @Test
+    public void assertGetVariablesForUnknownDatabaseType() {
+        assertTrue(ReplayRequiredSessionVariablesLoader.getVariables("unknown").isEmpty());
+    }
     
-    private final Properties props;
-    
-    public ShardingSphereAlgorithmConfiguration(final String type, final Properties props) {
-        Preconditions.checkArgument(!Strings.isNullOrEmpty(type), "Type is required.");
-        this.type = type;
-        this.props = null == props ? new Properties() : props;
+    @Test
+    public void assertGetVariablesForExistType() {
+        assertThat(ReplayRequiredSessionVariablesLoader.getVariables("fixture"), is(Collections.singleton("fixture_variable")));
     }
 }

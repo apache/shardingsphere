@@ -58,6 +58,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
@@ -80,9 +81,6 @@ public final class ContextManagerTest {
         ShardingSphereDatabase database = mockDatabase();
         when(metaDataContexts.getMetaData().containsDatabase("foo_db")).thenReturn(true);
         when(metaDataContexts.getMetaData().getDatabase("foo_db")).thenReturn(database);
-        when(metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabases()).thenReturn(new LinkedHashMap<>());
-        when(metaDataContexts.getOptimizerContext().getParserContexts()).thenReturn(new LinkedHashMap<>());
-        when(metaDataContexts.getOptimizerContext().getPlannerContexts()).thenReturn(new LinkedHashMap<>());
         contextManager = new ContextManager(metaDataContexts, mock(InstanceContext.class));
     }
     
@@ -116,7 +114,6 @@ public final class ContextManagerTest {
     public void assertAddDatabase() throws SQLException {
         contextManager.addDatabase("new_db");
         verify(metaDataContexts.getMetaData()).addDatabase(eq("new_db"), any(DatabaseType.class));
-        verify(metaDataContexts.getOptimizerContext()).addDatabase(eq("new_db"), any(DatabaseType.class));
     }
     
     @Test
@@ -124,7 +121,6 @@ public final class ContextManagerTest {
         when(metaDataContexts.getMetaData().containsDatabase("foo_db")).thenReturn(true);
         contextManager.addDatabase("foo_db");
         verify(metaDataContexts.getMetaData(), times(0)).addDatabase(eq("foo_db"), any(DatabaseType.class));
-        verify(metaDataContexts.getOptimizerContext(), times(0)).addDatabase(eq("foo_db"), any(DatabaseType.class));
     }
     
     @Test
@@ -133,27 +129,25 @@ public final class ContextManagerTest {
         when(metaDataContexts.getMetaData().containsDatabase("foo_db")).thenReturn(true);
         contextManager.dropDatabase("foo_db");
         verify(metaDataContexts.getMetaData()).dropDatabase("foo_db");
-        verify(metaDataContexts.getOptimizerContext()).dropDatabase("foo_db");
     }
     
     @Test
     public void assertDropNotExistedDatabase() {
         contextManager.dropDatabase("not_existed_db");
         verify(metaDataContexts.getMetaData(), times(0)).dropDatabase("not_existed_db");
-        verify(metaDataContexts.getOptimizerContext(), times(0)).dropDatabase("not_existed_db");
     }
     
     @Test
     public void assertAddSchema() {
         contextManager.addSchema("foo_db", "bar_schema");
-        verify(metaDataContexts.getOptimizerContext()).addSchema("foo_db", "bar_schema");
+        verify(metaDataContexts.getMetaData().getDatabase("foo_db")).putSchema(anyString(), any(ShardingSphereSchema.class));
     }
     
     @Test
     public void assertAddExistedSchema() {
         when(contextManager.getMetaDataContexts().getMetaData().getDatabase("foo_db").containsSchema("foo_schema")).thenReturn(true);
         contextManager.addSchema("foo_db", "foo_schema");
-        verify(metaDataContexts.getOptimizerContext(), times(0)).addSchema("foo_db", "foo_schema");
+        verify(metaDataContexts.getMetaData().getDatabase("foo_db"), times(0)).putSchema(anyString(), any(ShardingSphereSchema.class));
     }
     
     @Test

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.encrypt.factory;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.encrypt.spi.EncryptAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
@@ -43,7 +43,7 @@ public final class EncryptAlgorithmFactory {
      * @param <O> type of to be decrypted data
      * @return created instance
      */
-    public static <I, O> EncryptAlgorithm<I, O> newInstance(final ShardingSphereAlgorithmConfiguration encryptAlgorithmConfig) {
+    public static <I, O> EncryptAlgorithm<I, O> newInstance(final AlgorithmConfiguration encryptAlgorithmConfig) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(encryptAlgorithmConfig, EncryptAlgorithm.class);
     }
     

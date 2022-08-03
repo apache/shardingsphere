@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.dml;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.UpdateStatementContext;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -134,7 +134,7 @@ public final class ShardingUpdateStatementValidatorTest {
     }
     
     private Map<String, ShardingAlgorithm> createShardingAlgorithmMap() {
-        return Collections.singletonMap("database_inline", ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("INLINE", createProperties())));
+        return Collections.singletonMap("database_inline", ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("INLINE", createProperties())));
     }
     
     private Properties createProperties() {

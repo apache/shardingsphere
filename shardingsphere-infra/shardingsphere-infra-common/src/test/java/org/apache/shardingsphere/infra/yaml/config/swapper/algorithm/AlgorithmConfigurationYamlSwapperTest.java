@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.yaml.config.swapper.algorithm;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.junit.Test;
 
@@ -26,12 +26,12 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class ShardingSphereAlgorithmConfigurationYamlSwapperTest {
+public final class AlgorithmConfigurationYamlSwapperTest {
     
     @Test
     public void assertSwapToYaml() {
-        YamlAlgorithmConfiguration actual = new ShardingSphereAlgorithmConfigurationYamlSwapper().swapToYamlConfiguration(
-                new ShardingSphereAlgorithmConfiguration("TEST", createProps()));
+        YamlAlgorithmConfiguration actual = new AlgorithmConfigurationYamlSwapper().swapToYamlConfiguration(
+                new AlgorithmConfiguration("TEST", createProps()));
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProps().getProperty("key"), is("value"));
     }
@@ -39,7 +39,7 @@ public final class ShardingSphereAlgorithmConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToObject() {
         YamlAlgorithmConfiguration yamlConfig = new YamlAlgorithmConfiguration("TEST", createProps());
-        ShardingSphereAlgorithmConfiguration actual = new ShardingSphereAlgorithmConfigurationYamlSwapper().swapToObject(yamlConfig);
+        AlgorithmConfiguration actual = new AlgorithmConfigurationYamlSwapper().swapToObject(yamlConfig);
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProps().getProperty("key"), is("value"));
     }

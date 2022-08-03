@@ -23,7 +23,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -57,7 +57,7 @@ public final class DatabaseDiscoveryRuleQueryResultSet implements DistSQLResultS
     
     private Iterator<DatabaseDiscoveryDataSourceRuleConfiguration> dataSourceRules;
     
-    private Map<String, ShardingSphereAlgorithmConfiguration> discoveryTypes;
+    private Map<String, AlgorithmConfiguration> discoveryTypes;
     
     private Map<String, DatabaseDiscoveryHeartBeatConfiguration> discoveryHeartbeats;
     

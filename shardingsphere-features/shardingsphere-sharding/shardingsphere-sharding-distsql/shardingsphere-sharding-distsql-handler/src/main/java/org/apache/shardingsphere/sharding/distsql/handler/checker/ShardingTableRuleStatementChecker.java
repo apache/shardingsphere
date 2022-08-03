@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.distsql.handler.checker;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
@@ -263,7 +263,7 @@ public final class ShardingTableRuleStatementChecker {
         Collection<String> invalidShardingAlgorithms = rules.stream().map(each -> each.getShardingAlgorithmSegment().getName()).distinct()
                 .filter(each -> !ShardingAlgorithmFactory.contains(each)).collect(Collectors.toList());
         DistSQLException.predictionThrow(invalidShardingAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException("sharding", invalidShardingAlgorithms));
-        invalidShardingAlgorithms.addAll(rules.stream().map(AutoTableRuleSegment::getShardingAlgorithmSegment).map(each -> new ShardingSphereAlgorithmConfiguration(each.getName(), each.getProps()))
+        invalidShardingAlgorithms.addAll(rules.stream().map(AutoTableRuleSegment::getShardingAlgorithmSegment).map(each -> new AlgorithmConfiguration(each.getName(), each.getProps()))
                 .map(ShardingAlgorithmFactory::newInstance).filter(each -> !(each instanceof ShardingAutoTableAlgorithm)).map(TypedSPI::getType).collect(Collectors.toList()));
         DistSQLException.predictionThrow(invalidShardingAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException("sharding", invalidShardingAlgorithms));
     }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.query;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -68,16 +68,16 @@ public final class UnusedShardingAlgorithmsQueryResultSetTest {
         return result;
     }
     
-    private ShardingSphereAlgorithmConfiguration createShardingInlineAlgorithmConfiguration() {
+    private AlgorithmConfiguration createShardingInlineAlgorithmConfiguration() {
         Properties props = new Properties();
         props.put("algorithm-expression", "ds_${user_id % 2}");
-        return new ShardingSphereAlgorithmConfiguration("INLINE", props);
+        return new AlgorithmConfiguration("INLINE", props);
     }
     
-    private ShardingSphereAlgorithmConfiguration createShardingHashModAlgorithmConfiguration() {
+    private AlgorithmConfiguration createShardingHashModAlgorithmConfiguration() {
         Properties props = new Properties();
         props.put("sharding-count", 4);
-        return new ShardingSphereAlgorithmConfiguration("hash_mod", props);
+        return new AlgorithmConfiguration("hash_mod", props);
     }
     
     private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {

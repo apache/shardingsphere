@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.authority.rule;
 
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.junit.Test;
@@ -70,6 +70,6 @@ public final class AuthorityRuleTest {
         Collection<ShardingSphereUser> users = new LinkedList<>();
         users.add(new ShardingSphereUser("root", "root", "localhost"));
         users.add(new ShardingSphereUser("admin", "123456", "localhost"));
-        return new AuthorityRule(new AuthorityRuleConfiguration(users, new ShardingSphereAlgorithmConfiguration("ALL_PERMITTED", new Properties())), Collections.emptyMap());
+        return new AuthorityRule(new AuthorityRuleConfiguration(users, new AlgorithmConfiguration("ALL_PERMITTED", new Properties())), Collections.emptyMap());
     }
 }

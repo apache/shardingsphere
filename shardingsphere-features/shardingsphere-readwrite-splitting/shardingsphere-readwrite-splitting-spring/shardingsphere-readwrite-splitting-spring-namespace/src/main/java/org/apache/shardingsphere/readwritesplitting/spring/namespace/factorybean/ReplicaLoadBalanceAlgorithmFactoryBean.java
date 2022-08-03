@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.spring.namespace.factorybean;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.readwritesplitting.factory.ReadQueryLoadBalanceAlgorithmFactory;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.spring.namespace.factorybean.ShardingSphereAlgorithmFactoryBean;
@@ -35,6 +35,6 @@ public final class ReplicaLoadBalanceAlgorithmFactoryBean extends ShardingSphere
     
     @Override
     public ReadQueryLoadBalanceAlgorithm getObject() {
-        return ReadQueryLoadBalanceAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration(getType(), getProps()));
+        return ReadQueryLoadBalanceAlgorithmFactory.newInstance(new AlgorithmConfiguration(getType(), getProps()));
     }
 }
