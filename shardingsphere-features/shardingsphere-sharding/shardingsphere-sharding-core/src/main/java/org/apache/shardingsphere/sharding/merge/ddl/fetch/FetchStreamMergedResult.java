@@ -20,6 +20,8 @@ package org.apache.shardingsphere.sharding.merge.ddl.fetch;
 import org.apache.shardingsphere.infra.binder.segment.select.orderby.OrderByItem;
 import org.apache.shardingsphere.infra.binder.statement.ddl.FetchStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.session.SessionContext;
+import org.apache.shardingsphere.infra.session.cursor.FetchGroup;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -53,16 +55,17 @@ public final class FetchStreamMergedResult extends StreamMergedResult {
     
     private boolean isFirstNext;
     
-    public FetchStreamMergedResult(final List<QueryResult> queryResults, final FetchStatementContext fetchStatementContext, final ShardingSphereSchema schema) throws SQLException {
+    public FetchStreamMergedResult(final List<QueryResult> queryResults, final FetchStatementContext fetchStatementContext,
+                                   final ShardingSphereSchema schema, final SessionContext sessionContext) throws SQLException {
         orderByValuesQueue = new PriorityQueue<>(queryResults.size());
         directionType = fetchStatementContext.getSqlStatement().getDirection().flatMap(DirectionSegment::getDirectionType).orElse(DirectionType.NEXT);
         fetchCount = fetchStatementContext.getSqlStatement().getDirection().flatMap(DirectionSegment::getCount).orElse(1L);
         SelectStatementContext selectStatementContext = fetchStatementContext.getCursorStatementContext().getSelectStatementContext();
         String cursorName = fetchStatementContext.getCursorName().map(optional -> optional.getIdentifier().getValue().toLowerCase())
                 .orElseThrow(() -> new ShardingSphereException("Can not get cursorName from fetchStatementContext."));
-        List<FetchOrderByValueGroup> fetchOrderByValueGroups = getFetchOrderByValueGroups(queryResults, selectStatementContext, schema, cursorName);
+        List<FetchOrderByValueGroup> fetchOrderByValueGroups = getFetchOrderByValueGroups(queryResults, selectStatementContext, schema, cursorName, sessionContext);
         addOrderedResultSetsToQueue(fetchOrderByValueGroups, queryResults);
-        setMinResultSetRowCount(cursorName);
+        setMinResultSetRowCount(cursorName, sessionContext);
         isFirstNext = true;
     }
     
@@ -88,9 +91,13 @@ public final class FetchStreamMergedResult extends StreamMergedResult {
     }
     
     private List<FetchOrderByValueGroup> getFetchOrderByValueGroups(final List<QueryResult> queryResults, final SelectStatementContext selectStatementContext,
-                                                                    final ShardingSphereSchema schema, final String cursorName) throws SQLException {
-        long actualFetchCount = Math.max(fetchCount - FetchOrderByValueGroupsHolder.getMinGroupRowCounts().getOrDefault(cursorName, 0L), 0);
-        List<FetchOrderByValueGroup> result = FetchOrderByValueGroupsHolder.getOrderByValueGroups().computeIfAbsent(cursorName, key -> createFetchOrderByValueGroups(queryResults.size()));
+                                                                    final ShardingSphereSchema schema, final String cursorName, final SessionContext sessionContext) throws SQLException {
+        long actualFetchCount = Math.max(fetchCount - sessionContext.getCursorSessionContext().getMinGroupRowCounts().getOrDefault(cursorName, 0L), 0);
+        List<FetchGroup> fetchGroups = sessionContext.getCursorSessionContext().getOrderByValueGroups().computeIfAbsent(cursorName, key -> createFetchOrderByValueGroups(queryResults.size()));
+        List<FetchOrderByValueGroup> result = new ArrayList<>(fetchGroups.size());
+        for (FetchGroup each : fetchGroups) {
+            result.add((FetchOrderByValueGroup) each);
+        }
         result.forEach(each -> each.getOrderByValues().removeIf(this::isEmptyOrderByValue));
         if (actualFetchCount <= 0 && !DirectionType.isAllDirectionType(directionType)) {
             return result;
@@ -108,8 +115,8 @@ public final class FetchStreamMergedResult extends StreamMergedResult {
         return result;
     }
     
-    private List<FetchOrderByValueGroup> createFetchOrderByValueGroups(final int queryResultSize) {
-        List<FetchOrderByValueGroup> result = new ArrayList<>();
+    private List<FetchGroup> createFetchOrderByValueGroups(final int queryResultSize) {
+        List<FetchGroup> result = new ArrayList<>();
         for (int index = 0; index < queryResultSize; index++) {
             result.add(new FetchOrderByValueGroup());
         }
@@ -137,14 +144,14 @@ public final class FetchStreamMergedResult extends StreamMergedResult {
         return queryResult;
     }
     
-    private void setMinResultSetRowCount(final String cursorName) {
+    private void setMinResultSetRowCount(final String cursorName, final SessionContext sessionContext) {
         Collection<Long> rowCounts = new LinkedList<>();
-        List<FetchOrderByValueGroup> fetchOrderByValueGroups = FetchOrderByValueGroupsHolder.getOrderByValueGroups().getOrDefault(cursorName, new LinkedList<>());
-        for (FetchOrderByValueGroup each : fetchOrderByValueGroups) {
-            rowCounts.add(getGroupRowCount(each));
+        List<FetchGroup> fetchOrderByValueGroups = sessionContext.getCursorSessionContext().getOrderByValueGroups().getOrDefault(cursorName, new LinkedList<>());
+        for (FetchGroup each : fetchOrderByValueGroups) {
+            rowCounts.add(getGroupRowCount((FetchOrderByValueGroup) each));
         }
         long minResultSetRowCount = DirectionType.isAllDirectionType(directionType) ? 0 : Collections.min(rowCounts) - fetchCount;
-        FetchOrderByValueGroupsHolder.getMinGroupRowCounts().put(cursorName, Math.max(minResultSetRowCount, 0L));
+        sessionContext.getCursorSessionContext().getMinGroupRowCounts().put(cursorName, Math.max(minResultSetRowCount, 0L));
     }
     
     private long getGroupRowCount(final FetchOrderByValueGroup fetchOrderByValueGroup) {

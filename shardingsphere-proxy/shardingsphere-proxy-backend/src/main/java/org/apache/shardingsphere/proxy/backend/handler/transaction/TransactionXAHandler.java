@@ -26,7 +26,6 @@ import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
-import org.apache.shardingsphere.sharding.merge.ddl.fetch.FetchOrderByValueGroupsHolder;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.TCLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.tcl.XAStatement;
 import org.apache.shardingsphere.transaction.TransactionHolder;
@@ -89,7 +88,7 @@ public final class TransactionXAHandler implements ProxyBackendHandler {
                     return backendHandler.execute();
                 } finally {
                     TransactionHolder.clear();
-                    FetchOrderByValueGroupsHolder.remove();
+                    connectionSession.getSessionContext().getCursorSessionContext().clear();
                 }
             default:
                 throw new SQLException("unrecognized XA statement " + tclStatement.getOp());

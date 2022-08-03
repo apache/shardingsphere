@@ -15,17 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.session;
+package org.apache.shardingsphere.infra.session.cursor;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.session.cursor.CursorSessionContext;
-import org.apache.shardingsphere.infra.session.cursor.CursorSessionContextFactory;
+import org.apache.shardingsphere.spi.type.required.RequiredSPI;
+
+import java.util.List;
+import java.util.Map;
 
 /**
- * Session context.
+ * Cursor session context.
  */
-@Getter
-public final class SessionContext {
+public interface CursorSessionContext extends RequiredSPI {
     
-    private final CursorSessionContext cursorSessionContext = CursorSessionContextFactory.getInstance();
+    /**
+     * Get order by value groups.
+     * 
+     * @return groups
+     */
+    Map<String, List<FetchGroup>> getOrderByValueGroups();
+    
+    /**
+     * Get min group row counts.
+     * 
+     * @return min group row counts
+     */
+    Map<String, Long> getMinGroupRowCounts();
+    
+    /**
+     * Clear.
+     */
+    void clear();
 }

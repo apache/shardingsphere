@@ -55,7 +55,6 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryRespon
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandler;
-import org.apache.shardingsphere.sharding.merge.ddl.fetch.FetchOrderByValueGroupsHolder;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -124,7 +123,7 @@ public abstract class DatabaseCommunicationEngine implements DatabaseBackendHand
             prepareCursorStatementContext(statementContext, connectionSession, cursorName);
         }
         if (statementContext instanceof CloseStatementContext && ((CloseStatementContext) statementContext).getSqlStatement().isCloseAll()) {
-            FetchOrderByValueGroupsHolder.remove();
+            connectionSession.getSessionContext().getCursorSessionContext().clear();
             connectionSession.getCursorDefinitions().clear();
         }
     }
@@ -139,8 +138,8 @@ public abstract class DatabaseCommunicationEngine implements DatabaseBackendHand
             ((CursorDefinitionAware) statementContext).setUpCursorDefinition(cursorStatementContext);
         }
         if (statementContext instanceof CloseStatementContext) {
-            FetchOrderByValueGroupsHolder.getOrderByValueGroups().remove(cursorName);
-            FetchOrderByValueGroupsHolder.getMinGroupRowCounts().remove(cursorName);
+            connectionSession.getSessionContext().getCursorSessionContext().getOrderByValueGroups().remove(cursorName);
+            connectionSession.getSessionContext().getCursorSessionContext().getMinGroupRowCounts().remove(cursorName);
             connectionSession.getCursorDefinitions().remove(cursorName);
         }
     }

@@ -15,17 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.session;
+package org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.session.cursor.CursorSessionContext;
-import org.apache.shardingsphere.infra.session.cursor.CursorSessionContextFactory;
+import org.apache.shardingsphere.infra.session.SessionContext;
 
 /**
- * Session context.
+ * Session context aware.
  */
-@Getter
-public final class SessionContext {
+public interface SessionContextAware {
     
-    private final CursorSessionContext cursorSessionContext = CursorSessionContextFactory.getInstance();
+    /**
+     * Set session context.
+     *
+     * @param sessionContext session context
+     */
+    void setSessionContext(SessionContext sessionContext);
 }

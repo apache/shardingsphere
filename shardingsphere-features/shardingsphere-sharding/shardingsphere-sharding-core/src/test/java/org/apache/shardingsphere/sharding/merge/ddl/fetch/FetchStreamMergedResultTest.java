@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.session.SessionContext;
 import org.apache.shardingsphere.sharding.merge.ddl.ShardingDDLResultMerger;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.DirectionType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
@@ -58,6 +59,8 @@ public final class FetchStreamMergedResultTest {
     
     private ShardingSphereDatabase database;
     
+    private SessionContext sessionContext;
+    
     @Before
     public void setUp() {
         fetchCountStatementContext = new FetchStatementContext(createFetchStatement(false));
@@ -67,7 +70,8 @@ public final class FetchStreamMergedResultTest {
         resultMerger = new ShardingDDLResultMerger();
         database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
-        FetchOrderByValueGroupsHolder.remove();
+        sessionContext = mock(SessionContext.class);
+        when(sessionContext.getCursorSessionContext()).thenReturn(new ShardingCursorSessionContext());
     }
     
     private OpenGaussFetchStatement createFetchStatement(final boolean containsAllDirectionType) {
@@ -99,14 +103,14 @@ public final class FetchStreamMergedResultTest {
     @Test
     public void assertNextForResultSetsAllEmpty() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS));
-        MergedResult actual = resultMerger.merge(queryResults, fetchCountStatementContext, database);
+        MergedResult actual = resultMerger.merge(queryResults, fetchCountStatementContext, database, sessionContext);
         assertFalse(actual.next());
     }
     
     @Test
     public void assertNextForResultSetsAllEmptyWhenConfigAllDirectionType() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS));
-        MergedResult actual = resultMerger.merge(queryResults, fetchAllStatementContext, database);
+        MergedResult actual = resultMerger.merge(queryResults, fetchAllStatementContext, database, sessionContext);
         assertFalse(actual.next());
     }
     
@@ -116,7 +120,7 @@ public final class FetchStreamMergedResultTest {
         for (QueryResult each : queryResults) {
             when(each.next()).thenReturn(true, false);
         }
-        MergedResult actual = resultMerger.merge(queryResults, fetchCountStatementContext, database);
+        MergedResult actual = resultMerger.merge(queryResults, fetchCountStatementContext, database, sessionContext);
         assertTrue(actual.next());
         assertFalse(actual.next());
         assertFalse(actual.next());
@@ -129,7 +133,7 @@ public final class FetchStreamMergedResultTest {
         for (QueryResult each : queryResults) {
             when(each.next()).thenReturn(true, false);
         }
-        MergedResult actual = resultMerger.merge(queryResults, fetchAllStatementContext, database);
+        MergedResult actual = resultMerger.merge(queryResults, fetchAllStatementContext, database, sessionContext);
         assertTrue(actual.next());
         assertTrue(actual.next());
         assertTrue(actual.next());
@@ -140,7 +144,7 @@ public final class FetchStreamMergedResultTest {
     public void assertNextForFirstResultSetsNotEmptyOnly() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS));
         when(queryResults.get(0).next()).thenReturn(true, false);
-        MergedResult actual = resultMerger.merge(queryResults, fetchCountStatementContext, database);
+        MergedResult actual = resultMerger.merge(queryResults, fetchCountStatementContext, database, sessionContext);
         assertTrue(actual.next());
         assertFalse(actual.next());
     }
@@ -149,7 +153,7 @@ public final class FetchStreamMergedResultTest {
     public void assertNextForFirstResultSetsNotEmptyOnlyWhenConfigAllDirectionType() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS));
         when(queryResults.get(0).next()).thenReturn(true, false);
-        MergedResult actual = resultMerger.merge(queryResults, fetchAllStatementContext, database);
+        MergedResult actual = resultMerger.merge(queryResults, fetchAllStatementContext, database, sessionContext);
         assertTrue(actual.next());
         assertFalse(actual.next());
     }
@@ -158,7 +162,7 @@ public final class FetchStreamMergedResultTest {
     public void assertNextForMiddleResultSetsNotEmpty() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS));
         when(queryResults.get(1).next()).thenReturn(true, false);
-        MergedResult actual = resultMerger.merge(queryResults, fetchCountStatementContext, database);
+        MergedResult actual = resultMerger.merge(queryResults, fetchCountStatementContext, database, sessionContext);
         assertTrue(actual.next());
         assertFalse(actual.next());
     }
@@ -167,7 +171,7 @@ public final class FetchStreamMergedResultTest {
     public void assertNextForMiddleResultSetsNotEmptyWhenConfigAllDirectionType() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS));
         when(queryResults.get(1).next()).thenReturn(true, false);
-        MergedResult actual = resultMerger.merge(queryResults, fetchAllStatementContext, database);
+        MergedResult actual = resultMerger.merge(queryResults, fetchAllStatementContext, database, sessionContext);
         assertTrue(actual.next());
         assertFalse(actual.next());
     }
@@ -176,7 +180,7 @@ public final class FetchStreamMergedResultTest {
     public void assertNextForLastResultSetsNotEmptyOnly() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS));
         when(queryResults.get(2).next()).thenReturn(true, false);
-        MergedResult actual = resultMerger.merge(queryResults, fetchCountStatementContext, database);
+        MergedResult actual = resultMerger.merge(queryResults, fetchCountStatementContext, database, sessionContext);
         assertTrue(actual.next());
         assertFalse(actual.next());
     }
@@ -185,7 +189,7 @@ public final class FetchStreamMergedResultTest {
     public void assertNextForLastResultSetsNotEmptyOnlyWhenConfigAllDirectionType() throws SQLException {
         List<QueryResult> queryResults = Arrays.asList(mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS), mock(QueryResult.class, RETURNS_DEEP_STUBS));
         when(queryResults.get(2).next()).thenReturn(true, false);
-        MergedResult actual = resultMerger.merge(queryResults, fetchAllStatementContext, database);
+        MergedResult actual = resultMerger.merge(queryResults, fetchAllStatementContext, database, sessionContext);
         assertTrue(actual.next());
         assertFalse(actual.next());
     }

@@ -15,17 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.session;
+package org.apache.shardingsphere.infra.session.cursor;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.session.cursor.CursorSessionContext;
-import org.apache.shardingsphere.infra.session.cursor.CursorSessionContextFactory;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 
 /**
- * Session context.
+ * Cursor session context factory.
  */
-@Getter
-public final class SessionContext {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class CursorSessionContextFactory {
     
-    private final CursorSessionContext cursorSessionContext = CursorSessionContextFactory.getInstance();
+    static {
+        ShardingSphereServiceLoader.register(CursorSessionContext.class);
+    }
+    
+    /**
+     * Get instance of cursor session context.
+     *
+     * @return found instance
+     */
+    public static CursorSessionContext getInstance() {
+        return RequiredSPIRegistry.getRegisteredService(CursorSessionContext.class);
+    }
 }

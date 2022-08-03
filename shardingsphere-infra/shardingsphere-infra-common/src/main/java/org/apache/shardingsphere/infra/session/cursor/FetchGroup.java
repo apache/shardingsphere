@@ -15,17 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.session;
-
-import lombok.Getter;
-import org.apache.shardingsphere.infra.session.cursor.CursorSessionContext;
-import org.apache.shardingsphere.infra.session.cursor.CursorSessionContextFactory;
+package org.apache.shardingsphere.infra.session.cursor;
 
 /**
- * Session context.
+ * Fetch group.
  */
-@Getter
-public final class SessionContext {
-    
-    private final CursorSessionContext cursorSessionContext = CursorSessionContextFactory.getInstance();
+public interface FetchGroup {
 }

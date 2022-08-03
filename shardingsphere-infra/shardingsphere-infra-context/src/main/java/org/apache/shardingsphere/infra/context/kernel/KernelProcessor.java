@@ -49,7 +49,7 @@ public final class KernelProcessor {
     public ExecutionContext generateExecutionContext(final LogicSQL logicSQL, final ShardingSphereDatabase database, final ShardingSphereRuleMetaData globalRuleMetaData,
                                                      final ConfigurationProperties props, final SessionContext sessionContext) {
         RouteContext routeContext = route(logicSQL, database, props);
-        SQLRewriteResult rewriteResult = rewrite(logicSQL, database, globalRuleMetaData, props, routeContext);
+        SQLRewriteResult rewriteResult = rewrite(logicSQL, database, globalRuleMetaData, props, routeContext, sessionContext);
         ExecutionContext result = createExecutionContext(logicSQL, database, routeContext, rewriteResult);
         logSQL(logicSQL, props, result);
         return result;
@@ -59,10 +59,10 @@ public final class KernelProcessor {
         return new SQLRouteEngine(database.getRuleMetaData().getRules(), props).route(logicSQL, database);
     }
     
-    private SQLRewriteResult rewrite(final LogicSQL logicSQL, final ShardingSphereDatabase database,
-                                     final ShardingSphereRuleMetaData globalRuleMetaData, final ConfigurationProperties props, final RouteContext routeContext) {
+    private SQLRewriteResult rewrite(final LogicSQL logicSQL, final ShardingSphereDatabase database, final ShardingSphereRuleMetaData globalRuleMetaData,
+                                     final ConfigurationProperties props, final RouteContext routeContext, final SessionContext sessionContext) {
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(database, globalRuleMetaData, props);
-        return sqlRewriteEntry.rewrite(logicSQL.getSql(), logicSQL.getParameters(), logicSQL.getSqlStatementContext(), routeContext);
+        return sqlRewriteEntry.rewrite(logicSQL.getSql(), logicSQL.getParameters(), logicSQL.getSqlStatementContext(), routeContext, sessionContext);
     }
     
     private ExecutionContext createExecutionContext(final LogicSQL logicSQL, final ShardingSphereDatabase database, final RouteContext routeContext, final SQLRewriteResult rewriteResult) {

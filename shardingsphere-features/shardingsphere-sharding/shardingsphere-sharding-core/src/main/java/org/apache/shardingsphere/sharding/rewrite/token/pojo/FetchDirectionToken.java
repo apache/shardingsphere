@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.rewrite.token.pojo;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.Substitutable;
-import org.apache.shardingsphere.sharding.merge.ddl.fetch.FetchOrderByValueGroupsHolder;
+import org.apache.shardingsphere.infra.session.SessionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.DirectionType;
 
 /**
@@ -37,17 +37,20 @@ public final class FetchDirectionToken extends SQLToken implements Substitutable
     
     private final String cursorName;
     
-    public FetchDirectionToken(final int startIndex, final int stopIndex, final DirectionType directionType, final long fetchCount, final String cursorName) {
+    private SessionContext sessionContext;
+    
+    public FetchDirectionToken(final int startIndex, final int stopIndex, final DirectionType directionType, final long fetchCount, final String cursorName, final SessionContext sessionContext) {
         super(startIndex);
         this.stopIndex = stopIndex;
         this.directionType = directionType;
         this.fetchCount = fetchCount;
         this.cursorName = cursorName;
+        this.sessionContext = sessionContext;
     }
     
     @Override
     public String toString() {
-        long actualFetchCount = Math.max(fetchCount - FetchOrderByValueGroupsHolder.getMinGroupRowCounts().getOrDefault(cursorName, 0L), 0);
+        long actualFetchCount = Math.max(fetchCount - sessionContext.getCursorSessionContext().getMinGroupRowCounts().getOrDefault(cursorName, 0L), 0);
         if (DirectionType.isForwardCountDirectionType(directionType)) {
             return " FORWARD " + actualFetchCount + " ";
         }

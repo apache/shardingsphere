@@ -15,17 +15,34 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.session;
+package org.apache.shardingsphere.sharding.merge.ddl.fetch;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.session.cursor.CursorSessionContext;
-import org.apache.shardingsphere.infra.session.cursor.CursorSessionContextFactory;
+import org.apache.shardingsphere.infra.session.cursor.FetchGroup;
+
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Session context.
+ * Sharding cursor session context.
  */
 @Getter
-public final class SessionContext {
+public final class ShardingCursorSessionContext implements CursorSessionContext {
     
-    private final CursorSessionContext cursorSessionContext = CursorSessionContextFactory.getInstance();
+    private final Map<String, List<FetchGroup>> orderByValueGroups = new ConcurrentHashMap<>();
+    
+    private final Map<String, Long> minGroupRowCounts = new ConcurrentHashMap<>();
+    
+    @Override
+    public void clear() {
+        orderByValueGroups.clear();
+        minGroupRowCounts.clear();
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
+    }
 }
