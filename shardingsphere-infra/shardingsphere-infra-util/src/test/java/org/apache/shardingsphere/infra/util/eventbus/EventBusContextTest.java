@@ -36,7 +36,7 @@ public final class EventBusContextTest {
         eventBusContext.post(event);
         List<String> events = stringEvent.getEvents();
         assertThat(events.size(), is(1));
-        assertEquals(event, events.get(0));
+        assertThat(events.get(0), is(event));
     }
 
     final class StringEvent {
@@ -44,8 +44,8 @@ public final class EventBusContextTest {
         private List<String> events = new ArrayList<>();
 
         @Subscribe
-        public void lister(final String ev) {
-            events.add(ev);
+        public void lister(final String event) {
+            events.add(event);
         }
 
         public List<String> getEvents() {
