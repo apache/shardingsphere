@@ -22,7 +22,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.segment.DatabaseDiscoveryProviderAlgorithmSegment;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.AlterDatabaseDiscoveryTypeStatement;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
@@ -70,7 +70,7 @@ public final class AlterDatabaseDiscoveryProviderAlgorithmStatementUpdaterTest {
                 Collections.singletonList(new DatabaseDiscoveryProviderAlgorithmSegment("discovery_type_1", new AlgorithmSegment("DISTSQL.FIXTURE", new Properties())));
         updater.checkSQLStatement(database, new AlterDatabaseDiscoveryTypeStatement(algorithmSegments),
                 new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(),
-                        Collections.singletonMap("discovery_type", new ShardingSphereAlgorithmConfiguration("DISTSQL.FIXTURE", new Properties()))));
+                        Collections.singletonMap("discovery_type", new AlgorithmConfiguration("DISTSQL.FIXTURE", new Properties()))));
     }
     
     @Test(expected = InvalidAlgorithmConfigurationException.class)
@@ -79,7 +79,7 @@ public final class AlterDatabaseDiscoveryProviderAlgorithmStatementUpdaterTest {
                 new DatabaseDiscoveryProviderAlgorithmSegment("discovery_type", new AlgorithmSegment("INVALID_TYPE", new Properties())));
         updater.checkSQLStatement(database, new AlterDatabaseDiscoveryTypeStatement(algorithmSegments),
                 new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(),
-                        Collections.singletonMap("discovery_type", new ShardingSphereAlgorithmConfiguration("DISTSQL.FIXTURE", new Properties()))));
+                        Collections.singletonMap("discovery_type", new AlgorithmConfiguration("DISTSQL.FIXTURE", new Properties()))));
     }
     
     @Test
@@ -87,7 +87,7 @@ public final class AlterDatabaseDiscoveryProviderAlgorithmStatementUpdaterTest {
         Properties currentProps = new Properties();
         currentProps.put("key", "value");
         DatabaseDiscoveryRuleConfiguration currentRuleConfig = new DatabaseDiscoveryRuleConfiguration(Collections.emptyList(), Collections.emptyMap(),
-                Collections.singletonMap("discovery_type", new ShardingSphereAlgorithmConfiguration("DISTSQL.FIXTURE", currentProps)));
+                Collections.singletonMap("discovery_type", new AlgorithmConfiguration("DISTSQL.FIXTURE", currentProps)));
         Properties props = new Properties();
         props.put("key", "value_1");
         Set<DatabaseDiscoveryProviderAlgorithmSegment> algorithmSegments = Collections.singleton(

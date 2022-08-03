@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.infra.util.yaml.constructor;
 
-import org.apache.shardingsphere.infra.util.yaml.fixture.ShardingSphereYamlObjectFixture;
+import org.apache.shardingsphere.infra.util.yaml.fixture.pojo.YamlConfigurationFixture;
 import org.junit.Test;
 import org.yaml.snakeyaml.Yaml;
+import org.yaml.snakeyaml.constructor.ConstructorException;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -34,12 +35,11 @@ public final class ShardingSphereYamlConstructorTest {
     @Test
     public void assertToObject() throws IOException {
         try (InputStream inputStream = ShardingSphereYamlConstructorTest.class.getClassLoader().getResourceAsStream("yaml/customized-obj.yaml")) {
-            ShardingSphereYamlObjectFixture actual = new Yaml(new ShardingSphereYamlConstructor(ShardingSphereYamlObjectFixture.class)).loadAs(inputStream, ShardingSphereYamlObjectFixture.class);
-            assertYamlObject(actual);
+            assertYamlObject(new Yaml(new ShardingSphereYamlConstructor(YamlConfigurationFixture.class)).loadAs(inputStream, YamlConfigurationFixture.class));
         }
     }
     
-    private void assertYamlObject(final ShardingSphereYamlObjectFixture actual) {
+    private void assertYamlObject(final YamlConfigurationFixture actual) {
         assertThat(actual.getValue(), is("value"));
         assertThat(actual.getCollection().size(), is(2));
         assertThat(actual.getCollection(), is(Arrays.asList("value1", "value2")));
@@ -47,5 +47,12 @@ public final class ShardingSphereYamlConstructorTest {
         assertThat(actual.getMap().get("key1"), is("value1"));
         assertThat(actual.getMap().get("key2"), is("value2"));
         assertNotNull(actual.getCustomizedClass());
+    }
+    
+    @Test(expected = ConstructorException.class)
+    public void assertToObjectWithNotAcceptClass() throws IOException {
+        try (InputStream inputStream = ShardingSphereYamlConstructorTest.class.getClassLoader().getResourceAsStream("yaml/accepted-class.yaml")) {
+            new Yaml(new ShardingSphereYamlConstructor(Object.class)).loadAs(inputStream, Object.class);
+        }
     }
 }

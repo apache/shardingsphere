@@ -17,11 +17,10 @@
 
 package org.apache.shardingsphere.infra.util.yaml.representer;
 
-import org.apache.shardingsphere.infra.util.yaml.representer.processor.ShardingSphereYamlTupleProcessorFactory;
-import org.apache.shardingsphere.infra.util.yaml.shortcuts.ShardingSphereYamlShortcutsFactory;
 import org.apache.shardingsphere.infra.util.yaml.representer.processor.DefaultYamlTupleProcessor;
 import org.apache.shardingsphere.infra.util.yaml.representer.processor.ShardingSphereYamlTupleProcessor;
-import org.apache.shardingsphere.infra.util.yaml.shortcuts.ShardingSphereYamlShortcuts;
+import org.apache.shardingsphere.infra.util.yaml.representer.processor.ShardingSphereYamlTupleProcessorFactory;
+import org.apache.shardingsphere.infra.util.yaml.shortcuts.ShardingSphereYamlShortcutsFactory;
 import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.introspector.Property;
 import org.yaml.snakeyaml.nodes.Node;
@@ -40,9 +39,7 @@ import java.util.Map.Entry;
 public final class ShardingSphereYamlRepresenter extends Representer {
     
     public ShardingSphereYamlRepresenter() {
-        for (ShardingSphereYamlShortcuts each : ShardingSphereYamlShortcutsFactory.getAllInstances()) {
-            each.getYamlShortcuts().forEach((key, value) -> addClassTag(value, new Tag(key)));
-        }
+        ShardingSphereYamlShortcutsFactory.getAllYamlShortcuts().forEach((key, value) -> addClassTag(value, new Tag(key)));
     }
     
     @Override

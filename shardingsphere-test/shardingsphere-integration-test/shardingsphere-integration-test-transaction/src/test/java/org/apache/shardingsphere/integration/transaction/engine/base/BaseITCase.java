@@ -87,6 +87,8 @@ public abstract class BaseITCase {
     
     protected static final Collection<String> ALL_DS = Arrays.asList(DS_0, DS_1, DS_2);
     
+    protected static final Collection<String> ALL_XA_PROVIDERS = Arrays.asList(TransactionTestConstants.ATOMIKOS, TransactionTestConstants.BITRONIX, TransactionTestConstants.NARAYANA);
+    
     protected static final String SHARDING_DB = "sharding_db";
     
     private static final List<Class<? extends BaseTransactionTestCase>> TEST_CASES;
@@ -210,9 +212,31 @@ public abstract class BaseITCase {
                 log.info("Collect transaction test case, need to run transaction types don't contain this, skip: {}-{}.", caseClass.getName(), each);
                 continue;
             }
-            result.add(new TransactionParameterized(getSqlDatabaseType(currentTestCaseInfo.getDbType()), currentTestCaseInfo.getRunningAdaptor(), each,
-                    getDockerImageName(currentTestCaseInfo.getDbType(), version), caseClass));
+            addParametersByTransactionProviders(result, version, currentTestCaseInfo, caseClass, each);
         }
+    }
+    
+    private static void addParametersByTransactionProviders(final Collection<TransactionParameterized> result, final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
+                                                            final Class<? extends BaseTransactionTestCase> caseClass, final TransactionType each) {
+        if (TransactionType.LOCAL.equals(each)) {
+            result.add(createTransactionParameter(version, currentTestCaseInfo, caseClass, each, ""));
+        } else if (TransactionType.XA.equals(each)) {
+            if (ENV.getAllowXAProviders().isEmpty()) {
+                for (String provider : ALL_XA_PROVIDERS) {
+                    result.add(createTransactionParameter(version, currentTestCaseInfo, caseClass, each, provider));
+                }
+            } else {
+                for (String provider : ENV.getAllowXAProviders()) {
+                    result.add(createTransactionParameter(version, currentTestCaseInfo, caseClass, each, provider));
+                }
+            }
+        }
+    }
+    
+    private static TransactionParameterized createTransactionParameter(final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
+                                                                       final Class<? extends BaseTransactionTestCase> caseClass, final TransactionType transactionType, final String provider) {
+        return new TransactionParameterized(getSqlDatabaseType(currentTestCaseInfo.getDbType()), currentTestCaseInfo.getRunningAdaptor(), transactionType, provider,
+                getDockerImageName(currentTestCaseInfo.getDbType(), version), caseClass);
     }
     
     private static DatabaseType getSqlDatabaseType(final String databaseType) {

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.yaml.swapper;
 
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.algorithm.shadow.column.ColumnRegexMatchShadowAlgorithm;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
@@ -93,7 +93,7 @@ public final class ShadowRuleAlgorithmProviderConfigurationYamlSwapperTest {
         YamlShadowTableConfiguration yamlShadowTableConfig = new YamlShadowTableConfiguration();
         yamlShadowTableConfig.setShadowAlgorithmNames(Arrays.asList("user-id-match-algorithm", "note-algorithm"));
         result.getTables().put("t_order", yamlShadowTableConfig);
-        YamlShardingSphereAlgorithmConfiguration yamlAlgorithmConfig = new YamlShardingSphereAlgorithmConfiguration();
+        YamlAlgorithmConfiguration yamlAlgorithmConfig = new YamlAlgorithmConfiguration();
         yamlAlgorithmConfig.setType("COLUMN-REGULAR-MATCH");
         result.getShadowAlgorithms().put("user-id-match-algorithm", yamlAlgorithmConfig);
         return result;

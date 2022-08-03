@@ -18,15 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.handler.admin.mysql;
 
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 
 public final class TestFixtureSessionVariableHandler implements MySQLSessionVariableHandler {
     
     @Override
-    public void handle(final ConnectionSession connectionSession, final SetStatement setStatement) {
-        connectionSession.setCurrentDatabase(setStatement.getVariableAssigns().stream()
-                .filter(each -> getType().equals(each.getVariable().getVariable())).map(VariableAssignSegment::getAssignValue).findFirst().orElseThrow(IllegalArgumentException::new));
+    public void handle(final ConnectionSession connectionSession, final String variableName, final String assignValue) {
+        connectionSession.setCurrentDatabase(assignValue);
     }
     
     @Override

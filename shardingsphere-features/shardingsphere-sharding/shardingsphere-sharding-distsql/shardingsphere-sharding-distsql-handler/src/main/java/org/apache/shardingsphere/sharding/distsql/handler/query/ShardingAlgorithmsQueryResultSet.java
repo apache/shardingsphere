@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
@@ -41,7 +41,7 @@ import java.util.Properties;
  */
 public final class ShardingAlgorithmsQueryResultSet implements DistSQLResultSet {
     
-    private Iterator<Entry<String, ShardingSphereAlgorithmConfiguration>> data;
+    private Iterator<Entry<String, AlgorithmConfiguration>> data;
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
@@ -64,7 +64,7 @@ public final class ShardingAlgorithmsQueryResultSet implements DistSQLResultSet 
         return buildTableRowData(data.next());
     }
     
-    private Collection<Object> buildTableRowData(final Entry<String, ShardingSphereAlgorithmConfiguration> data) {
+    private Collection<Object> buildTableRowData(final Entry<String, AlgorithmConfiguration> data) {
         Collection<Object> result = new LinkedList<>();
         result.add(data.getKey());
         result.add(data.getValue().getType());

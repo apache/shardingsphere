@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.traffic.yaml.swapper;
 
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.ShardingSphereAlgorithmConfigurationYamlSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.AlgorithmConfigurationYamlSwapper;
 import org.apache.shardingsphere.traffic.api.config.TrafficRuleConfiguration;
 import org.apache.shardingsphere.traffic.constant.TrafficOrder;
 import org.apache.shardingsphere.traffic.yaml.config.YamlTrafficRuleConfiguration;
@@ -33,7 +33,7 @@ public final class TrafficRuleConfigurationYamlSwapper implements YamlRuleConfig
     
     private final TrafficStrategyConfigurationYamlSwapper strategySwapper = new TrafficStrategyConfigurationYamlSwapper();
     
-    private final ShardingSphereAlgorithmConfigurationYamlSwapper algorithmSwapper = new ShardingSphereAlgorithmConfigurationYamlSwapper();
+    private final AlgorithmConfigurationYamlSwapper algorithmSwapper = new AlgorithmConfigurationYamlSwapper();
     
     @Override
     public YamlTrafficRuleConfiguration swapToYamlConfiguration(final TrafficRuleConfiguration data) {

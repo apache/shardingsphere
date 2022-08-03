@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.yaml.swapper;
 
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
@@ -45,7 +45,7 @@ public final class ShadowRuleAlgorithmProviderConfigurationYamlSwapper implement
     }
     
     private void parseShadowAlgorithms(final AlgorithmProvidedShadowRuleConfiguration data, final YamlShadowRuleConfiguration yamlConfig) {
-        data.getShadowAlgorithms().forEach((key, value) -> yamlConfig.getShadowAlgorithms().put(key, new YamlShardingSphereAlgorithmConfiguration(value.getType(), value.getProps())));
+        data.getShadowAlgorithms().forEach((key, value) -> yamlConfig.getShadowAlgorithms().put(key, new YamlAlgorithmConfiguration(value.getType(), value.getProps())));
     }
     
     private void parseShadowTables(final AlgorithmProvidedShadowRuleConfiguration data, final YamlShadowRuleConfiguration yamlConfig) {

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.yaml.swapper.rule;
 
 import com.google.common.base.Preconditions;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
@@ -49,7 +49,7 @@ public final class ShardingAutoTableRuleConfigurationYamlSwapper implements Yaml
     private final Map<String, ShardingAlgorithm> shardingAlgorithms;
     
     // TODO remove after refactoring auto table actual data node.
-    private final Map<String, ShardingSphereAlgorithmConfiguration> shardingAlgorithmConfigs;
+    private final Map<String, AlgorithmConfiguration> shardingAlgorithmConfigs;
     
     @Override
     public YamlShardingAutoTableRuleConfiguration swapToYamlConfiguration(final ShardingAutoTableRuleConfiguration data) {
@@ -103,7 +103,7 @@ public final class ShardingAutoTableRuleConfigurationYamlSwapper implements Yaml
         return Optional.empty();
     }
     
-    private Optional<Integer> getShardingCountWithAlgorithmConfig(final ShardingAutoTableRuleConfiguration configuration, final Map<String, ShardingSphereAlgorithmConfiguration> shardingAlgorithms) {
+    private Optional<Integer> getShardingCountWithAlgorithmConfig(final ShardingAutoTableRuleConfiguration configuration, final Map<String, AlgorithmConfiguration> shardingAlgorithms) {
         if (null != configuration.getShardingStrategy() && shardingAlgorithms.containsKey(configuration.getShardingStrategy().getShardingAlgorithmName())) {
             ShardingAlgorithm algorithm = ShardingAlgorithmFactory.newInstance(shardingAlgorithms.get(configuration.getShardingStrategy().getShardingAlgorithmName()));
             if (algorithm instanceof ShardingAutoTableAlgorithm) {

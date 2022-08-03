@@ -19,8 +19,6 @@ package org.apache.shardingsphere.integration.transaction.framework.container.pr
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.integration.transaction.env.IntegrationTestEnvironment;
-import org.apache.shardingsphere.integration.transaction.env.enums.TransactionITEnvTypeEnum;
 import org.apache.shardingsphere.integration.transaction.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.env.container.wait.JDBCConnectionWaitStrategy;
@@ -56,10 +54,6 @@ public final class ShardingSphereProxyDockerContainer extends DockerITContainer 
     private void mapConfigurationFiles() {
         withClasspathResourceMapping(String.format("/env/%s/server.yaml", databaseType.getType().toLowerCase()), "/opt/shardingsphere-proxy/conf/server.yaml", BindMode.READ_ONLY);
         withClasspathResourceMapping("/logback-test.xml", "/opt/shardingsphere-proxy/conf/logback-test.xml", BindMode.READ_ONLY);
-        if (TransactionITEnvTypeEnum.NATIVE == IntegrationTestEnvironment.getInstance().getItEnvType()) {
-            addFixedExposedPort(3307, 3307);
-            addFixedExposedPort(5005, 3308);
-        }
     }
     
     @Override

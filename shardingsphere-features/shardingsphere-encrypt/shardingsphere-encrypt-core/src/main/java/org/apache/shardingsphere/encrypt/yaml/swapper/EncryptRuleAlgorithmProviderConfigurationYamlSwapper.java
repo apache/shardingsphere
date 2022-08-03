@@ -23,7 +23,7 @@ import org.apache.shardingsphere.encrypt.constant.EncryptOrder;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.rule.YamlEncryptTableRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.swapper.rule.EncryptTableRuleConfigurationYamlSwapper;
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
 
 import java.util.Collection;
@@ -41,7 +41,7 @@ public final class EncryptRuleAlgorithmProviderConfigurationYamlSwapper implemen
     public YamlEncryptRuleConfiguration swapToYamlConfiguration(final AlgorithmProvidedEncryptRuleConfiguration data) {
         YamlEncryptRuleConfiguration result = new YamlEncryptRuleConfiguration();
         data.getTables().forEach(each -> result.getTables().put(each.getName(), tableYamlSwapper.swapToYamlConfiguration(each)));
-        data.getEncryptors().forEach((key, value) -> result.getEncryptors().put(key, new YamlShardingSphereAlgorithmConfiguration(value.getType(), value.getProps())));
+        data.getEncryptors().forEach((key, value) -> result.getEncryptors().put(key, new YamlAlgorithmConfiguration(value.getType(), value.getProps())));
         result.setQueryWithCipherColumn(data.isQueryWithCipherColumn());
         return result;
     }

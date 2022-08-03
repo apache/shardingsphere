@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.route.engine.determiner;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.api.shadow.ShadowOperationType;
 import org.apache.shardingsphere.shadow.api.shadow.column.ColumnShadowAlgorithm;
 import org.apache.shardingsphere.shadow.condition.ShadowColumnCondition;
@@ -39,7 +39,7 @@ public final class ColumnShadowAlgorithmDeterminerTest {
     
     @SuppressWarnings("unchecked")
     private ColumnShadowAlgorithm<Comparable<?>> createColumnShadowAlgorithms() {
-        return (ColumnShadowAlgorithm<Comparable<?>>) ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("REGEX_MATCH", createProperties()));
+        return (ColumnShadowAlgorithm<Comparable<?>>) ShadowAlgorithmFactory.newInstance(new AlgorithmConfiguration("REGEX_MATCH", createProperties()));
     }
     
     private Properties createProperties() {

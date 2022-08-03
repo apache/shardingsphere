@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.checker;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -38,7 +38,7 @@ public final class ShadowRuleConfigurationChecker extends AbstractShadowRuleConf
         Map<String, ShadowTableConfiguration> shadowTables = config.getTables();
         shadowTableDataSourcesAutoReferences(shadowTables, dataSources);
         shadowTableDataSourcesReferencesCheck(shadowTables, dataSources);
-        Map<String, ShardingSphereAlgorithmConfiguration> shadowAlgorithmConfigs = config.getShadowAlgorithms();
+        Map<String, AlgorithmConfiguration> shadowAlgorithmConfigs = config.getShadowAlgorithms();
         String defaultShadowAlgorithmName = config.getDefaultShadowAlgorithmName();
         defaultShadowAlgorithmConfigurationCheck(defaultShadowAlgorithmName, shadowAlgorithmConfigs);
         shadowTableAlgorithmsAutoReferences(shadowTables, shadowAlgorithmConfigs.keySet(), defaultShadowAlgorithmName);

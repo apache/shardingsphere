@@ -103,7 +103,7 @@ public final class OpenGaussDALStatementSQLVisitor extends OpenGaussStatementSQL
     
     @Override
     public ASTNode visitResetParameter(final ResetParameterContext ctx) {
-        return new OpenGaussResetParameterStatement();
+        return new OpenGaussResetParameterStatement(null != ctx.ALL() ? "ALL" : ctx.identifier().getText());
     }
     
     @SuppressWarnings("unchecked")

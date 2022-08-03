@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.checker;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationCheckerFactory;
 import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
@@ -116,7 +116,7 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
         Properties props = new Properties();
         props.setProperty("read_ds_2", "1");
         props.setProperty("read_ds_1", "2");
-        ShardingSphereAlgorithmConfiguration algorithm = new ShardingSphereAlgorithmConfiguration("WEIGHT", props);
+        AlgorithmConfiguration algorithm = new AlgorithmConfiguration("WEIGHT", props);
         when(config.getLoadBalancers()).thenReturn(Collections.singletonMap("weight_ds", algorithm));
         Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
         assertTrue(checker.isPresent());

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
@@ -155,7 +155,7 @@ public final class ShardingTableRuleQueryResultSet implements DistSQLResultSet {
                 : Optional.ofNullable(shardingTableRuleConfig.getDatabaseShardingStrategy());
     }
     
-    private ShardingSphereAlgorithmConfiguration getAlgorithmConfiguration(final String algorithmName) {
+    private AlgorithmConfiguration getAlgorithmConfiguration(final String algorithmName) {
         return shardingRuleConfig.getShardingAlgorithms().get(algorithmName);
     }
     

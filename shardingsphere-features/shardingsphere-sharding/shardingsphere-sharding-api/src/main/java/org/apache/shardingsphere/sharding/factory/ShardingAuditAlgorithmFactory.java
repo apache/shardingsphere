@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.factory;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.sharding.spi.ShardingAuditAlgorithm;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
@@ -41,7 +41,7 @@ public final class ShardingAuditAlgorithmFactory {
      * @param shardingAuditAlgorithmConfig sharding audit algorithm configuration
      * @return created instance
      */
-    public static ShardingAuditAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration shardingAuditAlgorithmConfig) {
+    public static ShardingAuditAlgorithm newInstance(final AlgorithmConfiguration shardingAuditAlgorithmConfig) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(shardingAuditAlgorithmConfig, ShardingAuditAlgorithm.class);
     }
     

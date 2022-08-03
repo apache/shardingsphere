@@ -19,7 +19,8 @@ package org.apache.shardingsphere.infra.util.yaml.shortcuts;
 
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * ShardingSphere YAML shortcuts factory.
@@ -31,11 +32,15 @@ public final class ShardingSphereYamlShortcutsFactory {
     }
     
     /**
-     * Get all ShardingSphere YAML shortcuts instances.
+     * Get all ShardingSphere YAML shortcuts.
      *
-     * @return got instances
+     * @return got YAML shortcuts
      */
-    public static Collection<ShardingSphereYamlShortcuts> getAllInstances() {
-        return ShardingSphereServiceLoader.getServiceInstances(ShardingSphereYamlShortcuts.class);
+    public static Map<String, Class<?>> getAllYamlShortcuts() {
+        Map<String, Class<?>> result = new HashMap<>();
+        for (ShardingSphereYamlShortcuts each : ShardingSphereServiceLoader.getServiceInstances(ShardingSphereYamlShortcuts.class)) {
+            result.putAll(each.getYamlShortcuts());
+        }
+        return result;
     }
 }

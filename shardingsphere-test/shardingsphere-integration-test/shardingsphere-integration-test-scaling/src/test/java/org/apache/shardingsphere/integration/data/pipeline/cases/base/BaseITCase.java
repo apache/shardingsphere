@@ -23,6 +23,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.infra.database.metadata.url.JdbcUrlAppender;
@@ -86,6 +87,8 @@ public abstract class BaseITCase {
     protected static final String DS_4 = "scaling_it_4";
     
     protected static final Executor SCALING_EXECUTOR = Executors.newFixedThreadPool(5);
+    
+    protected static final int TABLE_INIT_ROW_COUNT = 3000;
     
     @Rule
     @Getter(AccessLevel.NONE)
@@ -329,6 +332,7 @@ public abstract class BaseITCase {
     }
     
     protected void applyScaling(final String jobId) {
+        assertBeforeApplyScalingMetadataCorrectly();
         executeWithLog(String.format("APPLY SCALING %s", jobId));
     }
     
@@ -353,16 +357,17 @@ public abstract class BaseITCase {
         Set<String> actualStatus = null;
         for (int i = 0; i < 15; i++) {
             actualStatus = new HashSet<>();
-            List<Map<String, Object>> showScalingStatusResMap = showScalingStatus(jobId);
-            log.info("show scaling status result: {}", showScalingStatusResMap);
+            List<Map<String, Object>> showScalingStatusResult = showScalingStatus(jobId);
+            log.info("show scaling status result: {}", showScalingStatusResult);
             boolean finished = true;
-            for (Map<String, Object> entry : showScalingStatusResMap) {
-                String status = entry.get("status").toString();
+            for (Map<String, Object> each : showScalingStatusResult) {
+                String status = each.get("status").toString();
                 assertThat(status, not(JobStatus.PREPARING_FAILURE.name()));
                 assertThat(status, not(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name()));
                 assertThat(status, not(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name()));
                 actualStatus.add(status);
                 if (!Objects.equals(status, JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
+                    log.info("scaling status before increment, status: {}", status);
                     finished = false;
                     break;
                 }
@@ -370,10 +375,15 @@ public abstract class BaseITCase {
             if (finished) {
                 break;
             }
-            assertBeforeApplyScalingMetadataCorrectly();
-            ThreadUtil.sleep(4, TimeUnit.SECONDS);
+            ThreadUtil.sleep(2, TimeUnit.SECONDS);
         }
         assertThat(actualStatus, is(Collections.singleton(JobStatus.EXECUTE_INCREMENTAL_TASK.name())));
+    }
+    
+    protected void assertGreaterThanInitTableInitRows(final int tableInitRows, final String schema) {
+        String countSQL = StringUtils.isBlank(schema) ? "SELECT COUNT(*) as count FROM t_order" : String.format("SELECT COUNT(*) as count FROM %s.t_order", schema);
+        Map<String, Object> actual = jdbcTemplate.queryForMap(countSQL);
+        assertTrue("actual count " + actual.get("count"), Integer.parseInt(actual.get("count").toString()) > tableInitRows);
     }
     
     protected List<Map<String, Object>> showScalingStatus(final String jobId) {
@@ -385,7 +395,7 @@ public abstract class BaseITCase {
             if (checkJobIncrementTaskFinished(jobId)) {
                 break;
             }
-            ThreadUtil.sleep(10, TimeUnit.SECONDS);
+            ThreadUtil.sleep(3, TimeUnit.SECONDS);
         }
         boolean secondCheckJobResult = checkJobIncrementTaskFinished(jobId);
         log.info("second check job result: {}", secondCheckJobResult);
@@ -406,7 +416,7 @@ public abstract class BaseITCase {
                 return false;
             }
             int incrementalIdleSeconds = Integer.parseInt(entry.get("incremental_idle_seconds").toString());
-            if (incrementalIdleSeconds <= 10) {
+            if (incrementalIdleSeconds <= 3) {
                 return false;
             }
         }
