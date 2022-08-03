@@ -63,7 +63,7 @@ public final class RequiredSessionVariableRecorder {
         if (sessionVariables.isEmpty()) {
             return Collections.emptyList();
         }
-        // TODO Refactor the following switch by SPI
+        // TODO Refactor the following switch by SPI if we support more database in future
         switch (databaseType) {
             case "MySQL":
                 return Collections.singletonList(aggregateToMySQLSetSQL());
@@ -101,7 +101,7 @@ public final class RequiredSessionVariableRecorder {
         if (sessionVariables.isEmpty()) {
             return Collections.emptyList();
         }
-        // TODO Refactor the following switch by SPI
+        // TODO Refactor the following switch by SPI if we support more database in future
         switch (databaseType) {
             case "MySQL":
                 return Collections.singletonList(aggregateToMySQLSetDefaultSQLs());
