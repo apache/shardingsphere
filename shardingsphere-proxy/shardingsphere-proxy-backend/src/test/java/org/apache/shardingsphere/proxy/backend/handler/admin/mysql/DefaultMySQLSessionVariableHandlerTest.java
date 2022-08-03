@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.handler.admin.postgresql;
+package org.apache.shardingsphere.proxy.backend.handler.admin.mysql;
 
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.ReplayRequiredSessionVariablesLoader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -31,12 +31,12 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
-public final class DefaultPostgreSQLSessionVariableHandlerTest {
+public final class DefaultMySQLSessionVariableHandlerTest {
     
     @Test
     public void assertHandleDiscard() {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
-        new DefaultPostgreSQLSessionVariableHandler().handle(connectionSession, "", "");
+        new DefaultMySQLSessionVariableHandler().handle(connectionSession, "", "");
         verifyNoInteractions(connectionSession);
     }
     
@@ -45,9 +45,9 @@ public final class DefaultPostgreSQLSessionVariableHandlerTest {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(mock(RequiredSessionVariableRecorder.class));
         try (MockedStatic<ReplayRequiredSessionVariablesLoader> mockedStatic = mockStatic(ReplayRequiredSessionVariablesLoader.class)) {
-            mockedStatic.when(() -> ReplayRequiredSessionVariablesLoader.getVariables("PostgreSQL")).thenReturn(Collections.singleton("datestyle"));
-            new DefaultPostgreSQLSessionVariableHandler().handle(connectionSession, "datestyle", "postgres");
-            verify(connectionSession.getRequiredSessionVariableRecorder()).setVariable("datestyle", "postgres");
+            mockedStatic.when(() -> ReplayRequiredSessionVariablesLoader.getVariables("MySQL")).thenReturn(Collections.singleton("sql_mode"));
+            new DefaultMySQLSessionVariableHandler().handle(connectionSession, "sql_mode", "''");
+            verify(connectionSession.getRequiredSessionVariableRecorder()).setVariable("sql_mode", "''");
         }
     }
 }
