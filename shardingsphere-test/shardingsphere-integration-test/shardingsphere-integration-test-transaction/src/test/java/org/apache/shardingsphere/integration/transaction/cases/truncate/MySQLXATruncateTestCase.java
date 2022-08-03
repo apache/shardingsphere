@@ -38,17 +38,17 @@ import static org.junit.Assert.fail;
 @Slf4j
 @TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL}, transactionTypes = {TransactionType.XA})
 public final class MySQLXATruncateTestCase extends BaseTransactionTestCase {
-
+    
     public MySQLXATruncateTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
         super(baseTransactionITCase, dataSource);
     }
-
+    
     @Override
     @SneakyThrows(SQLException.class)
     public void executeTest() {
         assertTruncateInMySQLXATransaction();
     }
-
+    
     private void assertTruncateInMySQLXATransaction() throws SQLException {
         prepare();
         Connection conn = getDataSource().getConnection();
@@ -62,10 +62,11 @@ public final class MySQLXATruncateTestCase extends BaseTransactionTestCase {
         } catch (SQLException ex) {
             log.info("Exception for expected in JDBC: {}", ex.getMessage());
         } finally {
+            conn.rollback();
             conn.close();
         }
     }
-
+    
     private void prepare() throws SQLException {
         Connection conn = getDataSource().getConnection();
         executeWithLog(conn, "delete from account;");
