@@ -37,8 +37,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
+import java.util.regex.Pattern;
 
 import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
@@ -206,7 +209,27 @@ public final class TableRuleTest {
         assertTrue(actual.get("ds_1").contains(new DataNode("ds_1", "tmp_t_order_1")));
         assertTrue(actual.get("ds_1").contains(new DataNode("ds_1", "tmp_t_order_3")));
     }
-    
+
+    @Test
+    public void assertDatNodeSuffixPattern() {
+        String regex = "(\\d+[\\-_]){0,}(\\d+$)";
+        Pattern dataNodeSuffixPattern = Pattern.compile(regex);
+        Set<String> set = new LinkedHashSet<>();
+        set.add("t_order_1");
+        set.add("t_order_2_0");
+        set.add("t_order_3-0_0");
+        set.add("t_order_4-0_0-0");
+        set.add("t_order_5_0-0-0_0");
+        set.add("t_order_6_0_0-0_0-0");
+        set.add("t_order_7_0_0-0_0_0-0");
+        set.add("t_order_8_0_0-0_0_0-0_0");
+        set.add("t_order_9_0_0-0_0_0-0_0-0");
+        set.add("t_order_10_0_0-0_0_0-0-0-0_0");
+        set.forEach(s -> {
+            assertEquals("t_order_", dataNodeSuffixPattern.matcher(s).replaceAll(""));
+        });
+    }
+
     private ModShardingAlgorithm createModShardingAlgorithm() {
         ModShardingAlgorithm result = new ModShardingAlgorithm();
         Properties props = new Properties();

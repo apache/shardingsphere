@@ -56,7 +56,7 @@ import java.util.stream.Collectors;
 @ToString(exclude = {"dataNodeIndexMap", "actualTables", "actualTablePrefix", "actualDataSourceNames", "dataSourceDataNode", "tableDataNode"})
 public final class TableRule {
     
-    private static final Pattern DATA_NODE_SUFFIX_PATTERN = Pattern.compile("\\d+$");
+    private static final Pattern DATA_NODE_SUFFIX_PATTERN = Pattern.compile("(\\d+[\\-_]){0,}(\\d+$)");
     
     private static final char DEFAULT_PADDING_CHAR = '0';
     
