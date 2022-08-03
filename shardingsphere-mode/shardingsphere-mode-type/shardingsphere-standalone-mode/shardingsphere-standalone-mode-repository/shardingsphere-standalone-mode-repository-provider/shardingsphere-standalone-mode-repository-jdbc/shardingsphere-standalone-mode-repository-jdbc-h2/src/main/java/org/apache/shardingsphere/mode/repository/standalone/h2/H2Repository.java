@@ -44,7 +44,7 @@ public final class H2Repository extends JDBCRepository {
         String jdbcUrl = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(JDBCRepositoryPropertyKey.JDBC_URL))).orElse(DEFAULT_JDBC_URL);
         String user = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(JDBCRepositoryPropertyKey.USER))).orElse(DEFAULT_USER);
         String password = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(JDBCRepositoryPropertyKey.PASSWORD))).orElse(DEFAULT_PASSWORD);
-        initTable(jdbcUrl, user, password);
+        initProviderAndTable(jdbcUrl, user, password);
     }
     
     @Override
