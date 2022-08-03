@@ -17,18 +17,37 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.admin.postgresql;
 
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.ReplayRequiredSessionVariablesLoader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.RequiredSessionVariableRecorder;
 import org.junit.Test;
+import org.mockito.MockedStatic;
+
+import java.util.Collections;
 
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
 
 public final class DefaultPostgreSQLSessionVariableHandlerTest {
     
     @Test
-    public void assertHandle() {
+    public void assertHandleDiscard() {
         ConnectionSession connectionSession = mock(ConnectionSession.class);
         new DefaultPostgreSQLSessionVariableHandler().handle(connectionSession, "", "");
         verifyNoInteractions(connectionSession);
+    }
+    
+    @Test
+    public void assertHandleRecord() {
+        ConnectionSession connectionSession = mock(ConnectionSession.class);
+        when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(mock(RequiredSessionVariableRecorder.class));
+        try (MockedStatic<ReplayRequiredSessionVariablesLoader> mockedStatic = mockStatic(ReplayRequiredSessionVariablesLoader.class)) {
+            mockedStatic.when(() -> ReplayRequiredSessionVariablesLoader.getVariables("PostgreSQL")).thenReturn(Collections.singleton("datestyle"));
+            new DefaultPostgreSQLSessionVariableHandler().handle(connectionSession, "datestyle", "postgres");
+            verify(connectionSession.getRequiredSessionVariableRecorder()).setVariable("datestyle", "postgres");
+        }
     }
 }

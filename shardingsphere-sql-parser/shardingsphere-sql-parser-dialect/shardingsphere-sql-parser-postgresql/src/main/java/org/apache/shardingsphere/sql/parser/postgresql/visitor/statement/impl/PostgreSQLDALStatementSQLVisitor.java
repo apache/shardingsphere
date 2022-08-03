@@ -64,7 +64,19 @@ public final class PostgreSQLDALStatementSQLVisitor extends PostgreSQLStatementS
     
     @Override
     public ASTNode visitShow(final ShowContext ctx) {
-        return new PostgreSQLShowStatement();
+        if (null != ctx.varName()) {
+            return new PostgreSQLShowStatement(ctx.varName().getText());
+        }
+        if (null != ctx.ZONE()) {
+            return new PostgreSQLShowStatement("timezone");
+        }
+        if (null != ctx.ISOLATION()) {
+            return new PostgreSQLShowStatement("transaction_isolation");
+        }
+        if (null != ctx.AUTHORIZATION()) {
+            return new PostgreSQLShowStatement("session_authorization");
+        }
+        return new PostgreSQLShowStatement("ALL");
     }
     
     @Override

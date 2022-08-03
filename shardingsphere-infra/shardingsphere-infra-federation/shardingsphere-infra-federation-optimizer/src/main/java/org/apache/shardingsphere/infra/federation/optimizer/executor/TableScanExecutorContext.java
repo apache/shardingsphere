@@ -15,35 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.optimizer.metadata.calcite;
+package org.apache.shardingsphere.infra.federation.optimizer.executor;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.calcite.DataContext;
-import org.apache.calcite.linq4j.Enumerable;
-import org.apache.calcite.rel.type.RelDataType;
-import org.apache.calcite.rel.type.RelDataTypeFactory;
 import org.apache.calcite.rex.RexNode;
-import org.apache.calcite.schema.ProjectableFilterableTable;
-import org.apache.calcite.schema.impl.AbstractTable;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationTableMetaData;
 
 import java.util.List;
 
 /**
- * Federation table.
+ * Table scan executor context.
  */
 @RequiredArgsConstructor
-public final class FederationTable extends AbstractTable implements ProjectableFilterableTable {
+@Getter
+public final class TableScanExecutorContext {
     
-    private final FederationTableMetaData metaData;
+    private final DataContext root;
     
-    @Override
-    public RelDataType getRowType(final RelDataTypeFactory typeFactory) {
-        return metaData.getRelProtoDataType().apply(typeFactory);
-    }
+    private final List<RexNode> filters;
     
-    @Override
-    public Enumerable<Object[]> scan(final DataContext root, final List<RexNode> filters, final int[] projects) {
-        return null;
-    }
+    private final int[] projects;
 }

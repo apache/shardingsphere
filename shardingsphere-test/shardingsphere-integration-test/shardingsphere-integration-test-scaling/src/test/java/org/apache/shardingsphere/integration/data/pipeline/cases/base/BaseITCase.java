@@ -367,6 +367,7 @@ public abstract class BaseITCase {
                 assertThat(status, not(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name()));
                 actualStatus.add(status);
                 if (!Objects.equals(status, JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
+                    log.info("scaling status before increment, status: {}", status);
                     finished = false;
                     break;
                 }
@@ -374,7 +375,7 @@ public abstract class BaseITCase {
             if (finished) {
                 break;
             }
-            ThreadUtil.sleep(4, TimeUnit.SECONDS);
+            ThreadUtil.sleep(2, TimeUnit.SECONDS);
         }
         assertThat(actualStatus, is(Collections.singleton(JobStatus.EXECUTE_INCREMENTAL_TASK.name())));
     }
@@ -382,7 +383,7 @@ public abstract class BaseITCase {
     protected void assertGreaterThanInitTableInitRows(final int tableInitRows, final String schema) {
         String countSQL = StringUtils.isBlank(schema) ? "SELECT COUNT(*) as count FROM t_order" : String.format("SELECT COUNT(*) as count FROM %s.t_order", schema);
         Map<String, Object> actual = jdbcTemplate.queryForMap(countSQL);
-        assertTrue("actual count " + actual.get("count"), Integer.parseInt(actual.get("count").toString()) > TABLE_INIT_ROW_COUNT);
+        assertTrue("actual count " + actual.get("count"), Integer.parseInt(actual.get("count").toString()) > tableInitRows);
     }
     
     protected List<Map<String, Object>> showScalingStatus(final String jobId) {
@@ -394,7 +395,7 @@ public abstract class BaseITCase {
             if (checkJobIncrementTaskFinished(jobId)) {
                 break;
             }
-            ThreadUtil.sleep(10, TimeUnit.SECONDS);
+            ThreadUtil.sleep(3, TimeUnit.SECONDS);
         }
         boolean secondCheckJobResult = checkJobIncrementTaskFinished(jobId);
         log.info("second check job result: {}", secondCheckJobResult);
@@ -415,7 +416,7 @@ public abstract class BaseITCase {
                 return false;
             }
             int incrementalIdleSeconds = Integer.parseInt(entry.get("incremental_idle_seconds").toString());
-            if (incrementalIdleSeconds <= 10) {
+            if (incrementalIdleSeconds <= 3) {
                 return false;
             }
         }

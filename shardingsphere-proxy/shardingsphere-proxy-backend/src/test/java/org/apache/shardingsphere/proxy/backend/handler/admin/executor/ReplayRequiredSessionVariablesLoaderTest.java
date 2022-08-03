@@ -15,25 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.executor.original.table;
+package org.apache.shardingsphere.proxy.backend.handler.admin.executor;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.calcite.DataContext;
-import org.apache.calcite.rex.RexNode;
+import org.junit.Test;
 
-import java.util.List;
+import java.util.Collections;
 
-/**
- * Filterable table scan context.
- */
-@RequiredArgsConstructor
-@Getter
-public final class FilterableTableScanContext {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+
+public final class ReplayRequiredSessionVariablesLoaderTest {
     
-    private final DataContext root;
+    @Test
+    public void assertGetVariablesForUnknownDatabaseType() {
+        assertTrue(ReplayRequiredSessionVariablesLoader.getVariables("unknown").isEmpty());
+    }
     
-    private final List<RexNode> filters;
-    
-    private final int[] projects;
+    @Test
+    public void assertGetVariablesForExistType() {
+        assertThat(ReplayRequiredSessionVariablesLoader.getVariables("fixture"), is(Collections.singleton("fixture_variable")));
+    }
 }
