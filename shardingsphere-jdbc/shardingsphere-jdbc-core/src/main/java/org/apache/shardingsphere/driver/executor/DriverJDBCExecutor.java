@@ -21,7 +21,6 @@ import org.apache.shardingsphere.driver.executor.callback.ExecuteQueryCallback;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefreshEngine;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
@@ -32,6 +31,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRe
 import org.apache.shardingsphere.infra.route.context.RouteUnit;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 
@@ -63,9 +63,7 @@ public final class DriverJDBCExecutor {
         this.jdbcExecutor = jdbcExecutor;
         metaDataContexts = contextManager.getMetaDataContexts();
         eventBusContext = contextManager.getInstanceContext().getEventBusContext();
-        metadataRefreshEngine = new MetaDataRefreshEngine(metaDataContexts.getMetaData().getDatabase(databaseName),
-                metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabase(databaseName),
-                metaDataContexts.getOptimizerContext().getPlannerContexts(), metaDataContexts.getMetaData().getProps());
+        metadataRefreshEngine = new MetaDataRefreshEngine(metaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getProps());
     }
     
     /**

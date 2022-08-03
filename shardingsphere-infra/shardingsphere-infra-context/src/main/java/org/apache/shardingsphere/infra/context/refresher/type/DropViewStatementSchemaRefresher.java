@@ -19,8 +19,6 @@ package org.apache.shardingsphere.infra.context.refresher.type;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.refresher.MetaDataRefresher;
-import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContext;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationDatabaseMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.SchemaAlteredEvent;
@@ -30,7 +28,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DropViewSta
 
 import java.sql.SQLException;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -39,10 +36,8 @@ import java.util.Optional;
 public final class DropViewStatementSchemaRefresher implements MetaDataRefresher<DropViewStatement> {
     
     @Override
-    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final FederationDatabaseMetaData federationDatabaseMetaData,
-                                                    final Map<String, OptimizerPlannerContext> optimizerPlanners,
-                                                    final Collection<String> logicDataSourceNames, final String schemaName, final DropViewStatement sqlStatement,
-                                                    final ConfigurationProperties props) throws SQLException {
+    public Optional<MetaDataRefreshedEvent> refresh(final ShardingSphereDatabase database, final Collection<String> logicDataSourceNames,
+                                                    final String schemaName, final DropViewStatement sqlStatement, final ConfigurationProperties props) throws SQLException {
         SchemaAlteredEvent event = new SchemaAlteredEvent(database.getName(), schemaName);
         sqlStatement.getViews().forEach(each -> {
             database.getSchema(schemaName).remove(each.getTableName().getIdentifier().getValue());

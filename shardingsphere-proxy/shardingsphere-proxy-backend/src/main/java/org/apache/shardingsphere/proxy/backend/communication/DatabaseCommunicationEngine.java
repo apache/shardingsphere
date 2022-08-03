@@ -47,6 +47,7 @@ import org.apache.shardingsphere.mode.manager.lock.LockJudgeEngineFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedUpdateOperationException;
+import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
@@ -54,7 +55,6 @@ import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.update.UpdateResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandler;
 import org.apache.shardingsphere.sharding.merge.ddl.fetch.FetchOrderByValueGroupsHolder;
 
 import java.sql.SQLException;
@@ -95,11 +95,7 @@ public abstract class DatabaseCommunicationEngine implements DatabaseBackendHand
         this.database = database;
         this.logicSQL = logicSQL;
         this.backendConnection = backendConnection;
-        String databaseName = backendConnection.getConnectionSession().getDatabaseName();
-        metadataRefreshEngine = new MetaDataRefreshEngine(database,
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getFederationMetaData().getDatabase(databaseName),
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getOptimizerContext().getPlannerContexts(),
-                ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps());
+        metadataRefreshEngine = new MetaDataRefreshEngine(database, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps());
         lockJudgeEngine = LockJudgeEngineFactory.getInstance();
         if (sqlStatementContext instanceof CursorAvailable) {
             prepareCursorStatementContext((CursorAvailable) sqlStatementContext, backendConnection.getConnectionSession());
