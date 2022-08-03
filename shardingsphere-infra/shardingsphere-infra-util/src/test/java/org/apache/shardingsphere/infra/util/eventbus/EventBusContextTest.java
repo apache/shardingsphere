@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.infra.util.eventbus;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 import com.google.common.eventbus.Subscribe;
 import java.util.ArrayList;
