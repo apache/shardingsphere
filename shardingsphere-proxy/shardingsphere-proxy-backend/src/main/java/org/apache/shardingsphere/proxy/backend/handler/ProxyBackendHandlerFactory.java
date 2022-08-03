@@ -115,16 +115,6 @@ public final class ProxyBackendHandlerFactory {
         return newInstance(databaseType, new LogicSQL(sqlStatementContext, sql, Collections.emptyList()), connectionSession, false);
     }
 
-    private static void checkUnsupportedDistSQLStatementInTransaction(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
-        if (connectionSession.getTransactionStatus().isInTransaction() && !isSupportedDistSQLStatement(sqlStatement)) {
-            throw new UnsupportedOperationException("Non-query dist sql is not supported within a transaction");
-        }
-    }
-
-    private static boolean isSupportedDistSQLStatement(final SQLStatement sqlStatement) {
-        return sqlStatement instanceof RQLStatement || sqlStatement instanceof QueryableRALStatement || sqlStatement instanceof RULStatement;
-    }
-
     /**
      * Create new instance of backend handler.
      *
@@ -168,6 +158,16 @@ public final class ProxyBackendHandlerFactory {
                 getRules(databaseName), databaseName, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(), connectionSession.getGrantee());
         backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession);
         return backendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(logicSQL, connectionSession, preferPreparedStatement));
+    }
+
+    private static void checkUnsupportedDistSQLStatementInTransaction(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
+        if (connectionSession.getTransactionStatus().isInTransaction() && !isSupportedDistSQLStatement(sqlStatement)) {
+            throw new UnsupportedOperationException("Non-query dist sql is not supported within a transaction");
+        }
+    }
+
+    private static boolean isSupportedDistSQLStatement(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof RQLStatement || sqlStatement instanceof QueryableRALStatement || sqlStatement instanceof RULStatement;
     }
     
     private static DatabaseType getProtocolType(final DatabaseType defaultDatabaseType, final ConnectionSession connectionSession) {
