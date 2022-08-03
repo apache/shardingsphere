@@ -15,25 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.executor.original.table;
+package org.apache.shardingsphere.infra.federation.optimizer.executor;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.calcite.DataContext;
-import org.apache.calcite.rex.RexNode;
-
-import java.util.List;
+import org.apache.calcite.linq4j.Enumerable;
+import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 
 /**
- * Filterable table scan context.
+ * Table scan executor.
  */
-@RequiredArgsConstructor
-@Getter
-public final class FilterableTableScanContext {
+public interface TableScanExecutor {
     
-    private final DataContext root;
-    
-    private final List<RexNode> filters;
-    
-    private final int[] projects;
+    /**
+     * Execute.
+     *
+     * @param table table meta data
+     * @param scanContext filterable table scan context
+     * @return query results
+     */
+    Enumerable<Object[]> execute(ShardingSphereTable table, TableScanExecutorContext scanContext);
 }

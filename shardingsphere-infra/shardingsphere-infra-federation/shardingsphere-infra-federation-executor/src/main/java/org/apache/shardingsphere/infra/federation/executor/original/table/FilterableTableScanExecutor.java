@@ -59,9 +59,11 @@ import org.apache.shardingsphere.infra.federation.executor.FederationContext;
 import org.apache.shardingsphere.infra.federation.executor.original.SQLDialectFactory;
 import org.apache.shardingsphere.infra.federation.executor.original.row.EmptyRowEnumerator;
 import org.apache.shardingsphere.infra.federation.executor.original.row.FilterableRowEnumerator;
-import org.apache.shardingsphere.infra.federation.executor.original.schema.FilterableSchema;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
+import org.apache.shardingsphere.infra.federation.optimizer.executor.TableScanExecutorContext;
+import org.apache.shardingsphere.infra.federation.optimizer.executor.TableScanExecutor;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.filter.FilterableSchema;
 import org.apache.shardingsphere.infra.federation.optimizer.planner.QueryOptimizePlannerFactory;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
@@ -89,7 +91,7 @@ import java.util.stream.Collectors;
  * Filterable table scan executor.
  */
 @RequiredArgsConstructor
-public final class FilterableTableScanExecutor {
+public final class FilterableTableScanExecutor implements TableScanExecutor {
     
     private final DriverExecutionPrepareEngine<JDBCExecutionUnit, Connection> prepareEngine;
     
@@ -105,14 +107,8 @@ public final class FilterableTableScanExecutor {
     
     private final EventBusContext eventBusContext;
     
-    /**
-     * Execute.
-     *
-     * @param table table meta data
-     * @param scanContext filterable table scan context
-     * @return query results
-     */
-    public Enumerable<Object[]> execute(final ShardingSphereTable table, final FilterableTableScanContext scanContext) {
+    @Override
+    public Enumerable<Object[]> execute(final ShardingSphereTable table, final TableScanExecutorContext scanContext) {
         String databaseName = executorContext.getDatabaseName();
         String schemaName = executorContext.getSchemaName();
         DatabaseType databaseType = DatabaseTypeEngine.getTrunkDatabaseType(optimizerContext.getParserContexts().get(databaseName).getDatabaseType().getType());
@@ -169,7 +165,7 @@ public final class FilterableTableScanExecutor {
         return result;
     }
     
-    private SqlString createSQLString(final ShardingSphereTable table, final FilterableTableScanContext scanContext, final SqlDialect sqlDialect) {
+    private SqlString createSQLString(final ShardingSphereTable table, final TableScanExecutorContext scanContext, final SqlDialect sqlDialect) {
         return new RelToSqlConverter(sqlDialect).visitRoot(createRelNode(table, scanContext)).asStatement().toSqlString(sqlDialect);
     }
     
@@ -192,7 +188,7 @@ public final class FilterableTableScanExecutor {
         }
     }
     
-    private RelNode createRelNode(final ShardingSphereTable table, final FilterableTableScanContext scanContext) {
+    private RelNode createRelNode(final ShardingSphereTable table, final TableScanExecutorContext scanContext) {
         String databaseName = executorContext.getDatabaseName();
         String schemaName = executorContext.getSchemaName();
         CalciteConnectionConfig connectionConfig = new CalciteConnectionConfigImpl(OptimizerPlannerContextFactory.createConnectionProperties());

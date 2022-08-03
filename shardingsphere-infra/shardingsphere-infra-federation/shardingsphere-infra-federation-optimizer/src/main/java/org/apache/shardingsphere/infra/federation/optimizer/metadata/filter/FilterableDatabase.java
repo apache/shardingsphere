@@ -15,13 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.federation.executor.original.database;
+package org.apache.shardingsphere.infra.federation.optimizer.metadata.filter;
 
 import lombok.Getter;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.impl.AbstractSchema;
-import org.apache.shardingsphere.infra.federation.executor.original.schema.FilterableSchema;
-import org.apache.shardingsphere.infra.federation.executor.original.table.FilterableTableScanExecutor;
+import org.apache.shardingsphere.infra.federation.optimizer.executor.TableScanExecutor;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 
@@ -39,12 +38,12 @@ public final class FilterableDatabase extends AbstractSchema {
     
     private final Map<String, Schema> subSchemaMap;
     
-    public FilterableDatabase(final ShardingSphereDatabase database, final FilterableTableScanExecutor executor) {
+    public FilterableDatabase(final ShardingSphereDatabase database, final TableScanExecutor executor) {
         name = database.getName();
         subSchemaMap = createSubSchemaMap(database, executor);
     }
     
-    private Map<String, Schema> createSubSchemaMap(final ShardingSphereDatabase database, final FilterableTableScanExecutor executor) {
+    private Map<String, Schema> createSubSchemaMap(final ShardingSphereDatabase database, final TableScanExecutor executor) {
         Map<String, Schema> result = new LinkedHashMap<>(database.getSchemas().size(), 1);
         for (Entry<String, ShardingSphereSchema> entry : database.getSchemas().entrySet()) {
             result.put(entry.getKey(), new FilterableSchema(entry.getKey(), entry.getValue(), executor));
