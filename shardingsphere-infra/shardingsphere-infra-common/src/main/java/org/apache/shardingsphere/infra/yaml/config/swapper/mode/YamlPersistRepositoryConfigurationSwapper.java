@@ -17,30 +17,17 @@
 
 package org.apache.shardingsphere.infra.yaml.config.swapper.mode;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 /**
- * Persist repository configuration YAML swapper factory.
+ * YAML persist repository configuration swapper.
+ * 
+ * @param <T> type of persist repository configuration
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class PersistRepositoryConfigurationYamlSwapperFactory {
-    
-    static {
-        ShardingSphereServiceLoader.register(PersistRepositoryConfigurationYamlSwapper.class);
-    }
-    
-    /**
-     * Get instance of persist repository configuration YAML swapper.
-     * 
-     * @param type swapper type
-     * @return got instance
-     */
-    @SuppressWarnings("unchecked")
-    public static PersistRepositoryConfigurationYamlSwapper<PersistRepositoryConfiguration> getInstance(final String type) {
-        return TypedSPIRegistry.getRegisteredService(PersistRepositoryConfigurationYamlSwapper.class, type);
-    }
+@SingletonSPI
+public interface YamlPersistRepositoryConfigurationSwapper<T extends PersistRepositoryConfiguration> extends YamlConfigurationSwapper<YamlPersistRepositoryConfiguration, T>, TypedSPI {
 }

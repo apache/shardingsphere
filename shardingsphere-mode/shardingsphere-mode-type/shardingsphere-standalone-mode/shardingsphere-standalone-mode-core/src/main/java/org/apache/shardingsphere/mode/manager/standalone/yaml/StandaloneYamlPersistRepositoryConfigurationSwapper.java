@@ -15,15 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config.swapper.fixture;
+package org.apache.shardingsphere.mode.manager.standalone.yaml;
 
+import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.mode.PersistRepositoryConfigurationYamlSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlPersistRepositoryConfigurationSwapper;
 
-public final class PersistRepositoryConfigurationYamlSwapperFixture implements PersistRepositoryConfigurationYamlSwapper<PersistRepositoryConfigurationFixture> {
+/**
+ * Standalone YAML persist repository configuration swapper.
+ */
+public final class StandaloneYamlPersistRepositoryConfigurationSwapper implements YamlPersistRepositoryConfigurationSwapper<StandalonePersistRepositoryConfiguration> {
     
     @Override
-    public YamlPersistRepositoryConfiguration swapToYamlConfiguration(final PersistRepositoryConfigurationFixture data) {
+    public YamlPersistRepositoryConfiguration swapToYamlConfiguration(final StandalonePersistRepositoryConfiguration data) {
         YamlPersistRepositoryConfiguration result = new YamlPersistRepositoryConfiguration();
         result.setType(data.getType());
         result.setProps(data.getProps());
@@ -31,12 +35,12 @@ public final class PersistRepositoryConfigurationYamlSwapperFixture implements P
     }
     
     @Override
-    public PersistRepositoryConfigurationFixture swapToObject(final YamlPersistRepositoryConfiguration yamlConfig) {
-        return new PersistRepositoryConfigurationFixture();
+    public StandalonePersistRepositoryConfiguration swapToObject(final YamlPersistRepositoryConfiguration yamlConfig) {
+        return new StandalonePersistRepositoryConfiguration(yamlConfig.getType(), yamlConfig.getProps());
     }
     
     @Override
     public String getType() {
-        return "Fixture";
+        return "Standalone";
     }
 }

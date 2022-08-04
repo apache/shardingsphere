@@ -19,12 +19,12 @@ package org.apache.shardingsphere.mode.manager.cluster.yaml;
 
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlPersistRepositoryConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.mode.PersistRepositoryConfigurationYamlSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlPersistRepositoryConfigurationSwapper;
 
 /**
- * Cluster persist repository configuration YAML swapper.
+ * Cluster YAML persist repository configuration swapper.
  */
-public final class ClusterPersistRepositoryConfigurationYamlSwapper implements PersistRepositoryConfigurationYamlSwapper<ClusterPersistRepositoryConfiguration> {
+public final class ClusterYamlPersistRepositoryConfigurationSwapper implements YamlPersistRepositoryConfigurationSwapper<ClusterPersistRepositoryConfiguration> {
     
     @Override
     public YamlPersistRepositoryConfiguration swapToYamlConfiguration(final ClusterPersistRepositoryConfiguration data) {

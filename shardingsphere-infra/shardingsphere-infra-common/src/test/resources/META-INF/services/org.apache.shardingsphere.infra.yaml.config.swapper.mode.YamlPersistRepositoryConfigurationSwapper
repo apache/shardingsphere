@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.infra.yaml.config.swapper.fixture.PersistRepositoryConfigurationYamlSwapperFixture
+org.apache.shardingsphere.infra.yaml.config.swapper.fixture.YamlPersistRepositoryConfigurationSwapperFixture
