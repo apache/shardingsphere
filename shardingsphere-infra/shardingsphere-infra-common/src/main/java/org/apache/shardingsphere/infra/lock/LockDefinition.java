@@ -23,9 +23,9 @@ package org.apache.shardingsphere.infra.lock;
 public interface LockDefinition {
     
     /**
-     * Get lock name definition.
+     * Get lock key.
      *
-     * @return lock name definition
+     * @return lockKey
      */
-    LockNameDefinition getLockNameDefinition();
+    String getLockKey();
 }

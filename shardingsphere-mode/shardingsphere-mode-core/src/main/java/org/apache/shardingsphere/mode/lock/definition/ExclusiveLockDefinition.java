@@ -15,32 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util;
+package org.apache.shardingsphere.mode.lock.definition;
 
-import lombok.SneakyThrows;
-
-import java.util.concurrent.TimeUnit;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.lock.LockDefinition;
+import org.apache.shardingsphere.mode.lock.util.LockKeyUtil;
 
 /**
- * Timeout milliseconds.
+ * Exclusive lock definition.
  */
-public final class TimeoutMilliseconds {
+@RequiredArgsConstructor
+@Getter
+public final class ExclusiveLockDefinition implements LockDefinition {
     
-    public static final long MAX_TRY_LOCK = 3 * 60 * 1000L;
+    private final String lockKey;
     
-    public static final long MIN_TRY_LOCK = 200L;
+    private final String lockName;
     
-    public static final long DEFAULT_REGISTRY = 50L;
-    
-    public static final long MAX_ACK_EXPEND = 100L;
-    
-    /**
-     * Sleep interval.
-     *
-     * @param timeMilliseconds time milliseconds
-     */
-    @SneakyThrows(InterruptedException.class)
-    public static void sleepInterval(final long timeMilliseconds) {
-        TimeUnit.MILLISECONDS.sleep(timeMilliseconds);
+    public ExclusiveLockDefinition(final String lockName) {
+        this.lockName = lockName;
+        lockKey = LockKeyUtil.generateExclusiveLockKey(lockName);
     }
 }

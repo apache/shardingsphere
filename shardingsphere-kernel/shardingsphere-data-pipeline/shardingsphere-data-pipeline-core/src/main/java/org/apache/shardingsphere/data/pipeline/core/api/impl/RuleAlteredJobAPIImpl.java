@@ -49,7 +49,7 @@ import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
-import org.apache.shardingsphere.mode.manager.lock.definition.LockDefinitionFactory;
+import org.apache.shardingsphere.mode.lock.definition.LockDefinitionFactory;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -203,8 +203,8 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         LockDefinition lockDefinition = LockDefinitionFactory.newDatabaseLockDefinition(databaseName);
         if (lockContext.isLocked(lockDefinition)) {
-            log.info("restoreClusterWriteDB, before releaseLock, databaseName={}, jobId={}", databaseName, jobConfig.getJobId());
-            lockContext.releaseLock(lockDefinition);
+            log.info("restoreClusterWriteDB, before unLock, databaseName={}, jobId={}", databaseName, jobConfig.getJobId());
+            lockContext.unLock(lockDefinition);
             return;
         }
         log.info("restoreClusterWriteDB, isLocked false, databaseName={}", databaseName);

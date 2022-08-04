@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mode.manager.lock.ShardingSphereLockJudgeEngine
+org.apache.shardingsphere.mode.lock.engine.ShardingSphereLockJudgeEngine

@@ -15,26 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.lock;
+package org.apache.shardingsphere.mode.lock.definition;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.spi.type.required.RequiredSPI;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.lock.LockDefinition;
 
 /**
- * Lock judge engine.
+ * Lock definition factory.
  */
-@SingletonSPI
-public interface LockJudgeEngine extends RequiredSPI {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class LockDefinitionFactory {
     
     /**
-     * Is locked.
+     * New exclusive lock definition.
      *
-     * @param lockContext lock context
-     * @param databaseName database name
-     * @param sqlStatementContext sql statement context
-     * @return is locked or not
+     * @param lockName lock name
+     * @return database lock definition
      */
-    boolean isLocked(LockContext lockContext, String databaseName, SQLStatementContext<?> sqlStatementContext);
+    public static LockDefinition newExclusiveLockDefinition(final String lockName) {
+        return new ExclusiveLockDefinition(lockName);
+    }
+    
+    /**
+     * New database lock definition.
+     *
+     * @param databaseName database name
+     * @return database lock definition
+     */
+    public static LockDefinition newDatabaseLockDefinition(final String databaseName) {
+        return new DatabaseLockDefinition(databaseName);
+    }
 }

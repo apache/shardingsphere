@@ -15,24 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.lock;
+package org.apache.shardingsphere.mode.lock.definition;
+
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.lock.LockDefinition;
+import org.apache.shardingsphere.mode.lock.util.LockKeyUtil;
 
 /**
- * Lock name definition.
+ * Database lock definition.
  */
-public interface LockNameDefinition {
+@RequiredArgsConstructor
+@Getter
+public final class DatabaseLockDefinition implements LockDefinition {
     
-    /**
-     * Get lock name.
-     *
-     * @return lock name
-     */
-    String getLockName();
+    private final String lockKey;
     
-    /**
-     * Get database name.
-     *
-     * @return database name
-     */
-    String getDatabaseName();
+    private final String databaseName;
+    
+    public DatabaseLockDefinition(final String databaseName) {
+        this.databaseName = databaseName;
+        lockKey = LockKeyUtil.generateDatabaseLockKey(databaseName);
+    }
 }

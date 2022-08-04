@@ -19,8 +19,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.
 
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.MutexLockRegistryService;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.ClusterLockPersistService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -43,13 +42,13 @@ public final class ShardingSphereInternalLockHolder {
     
     private final Collection<ComputeNodeInstance> computeNodeInstances;
     
-    private final LockRegistryService mutexLockRegistryService;
+    private final ClusterLockPersistService clusterLockPersistService;
     
     public ShardingSphereInternalLockHolder(final ClusterPersistRepository repository, final ComputeNodeInstance instance, final Collection<ComputeNodeInstance> nodeInstances) {
         clusterRepository = repository;
         currentInstance = instance;
         computeNodeInstances = nodeInstances;
-        mutexLockRegistryService = new MutexLockRegistryService(clusterRepository);
+        clusterLockPersistService = new ClusterLockPersistService(clusterRepository);
     }
     
     /**
@@ -69,7 +68,7 @@ public final class ShardingSphereInternalLockHolder {
     
     private ExclusiveInternalLock createInterMutexLock(final String locksName) {
         ReentrantInternalLock reentrantExclusiveLock = createInterReentrantMutexLock(LockNodeUtil.generateLockSequenceNodePath(locksName));
-        return new ExclusiveInternalLock(locksName, reentrantExclusiveLock, mutexLockRegistryService, currentInstance, computeNodeInstances);
+        return new ExclusiveInternalLock(locksName, reentrantExclusiveLock, clusterLockPersistService, currentInstance, computeNodeInstances);
     }
     
     private ReentrantInternalLock createInterReentrantMutexLock(final String lockNodePath) {
@@ -87,34 +86,6 @@ public final class ShardingSphereInternalLockHolder {
             return Optional.empty();
         }
         return Optional.ofNullable((ExclusiveInternalLock) internalLocks.get(locksName));
-    }
-    
-    /**
-     * Get or create inter reentrant mutex lock.
-     *
-     * @param locksName locks name
-     * @return inter reentrant mutex lock
-     */
-    public synchronized ReentrantInternalLock getOrCreateInterReentrantMutexLock(final String locksName) {
-        InternalLock result = internalLocks.get(locksName);
-        if (null == result) {
-            result = createInterReentrantMutexLock(locksName);
-            internalLocks.put(locksName, result);
-        }
-        return (ReentrantInternalLock) result;
-    }
-    
-    /**
-     * Get inter reentrant mutex Lock.
-     *
-     * @param locksName locks name
-     * @return inter mutex lock
-     */
-    public Optional<ReentrantInternalLock> getInterReentrantMutexLock(final String locksName) {
-        if (internalLocks.isEmpty()) {
-            return Optional.empty();
-        }
-        return Optional.ofNullable((ReentrantInternalLock) internalLocks.get(locksName));
     }
     
     /**
