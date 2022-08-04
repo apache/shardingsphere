@@ -42,7 +42,7 @@ public final class YamlDatabaseDiscoveryRuleConfigurationSwapperTest {
                 new DatabaseDiscoveryDataSourceRuleConfiguration("ds", Collections.singletonList("dataSourceName"), "ha_heartbeat", "discoveryTypeName");
         YamlDatabaseDiscoveryRuleConfiguration actual = getYamlDatabaseDiscoveryRuleConfigurationSwapper().swapToYamlConfiguration(
                 new DatabaseDiscoveryRuleConfiguration(Collections.singleton(dataSourceConfig),
-                Collections.emptyMap(), Collections.singletonMap("mgr", new AlgorithmConfiguration("MySQL.MGR", new Properties()))));
+                        Collections.emptyMap(), Collections.singletonMap("mgr", new AlgorithmConfiguration("MySQL.MGR", new Properties()))));
         assertThat(actual.getDataSources().keySet(), is(Collections.singleton("ds")));
         assertThat(actual.getDataSources().get("ds").getDataSourceNames(), is(Collections.singletonList("dataSourceName")));
     }

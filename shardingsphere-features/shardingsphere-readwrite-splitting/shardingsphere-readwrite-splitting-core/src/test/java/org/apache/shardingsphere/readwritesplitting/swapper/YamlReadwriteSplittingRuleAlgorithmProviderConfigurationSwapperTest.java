@@ -42,7 +42,7 @@ public final class YamlReadwriteSplittingRuleAlgorithmProviderConfigurationSwapp
         assertThat(actual.getDataSources().keySet(), is(Collections.singleton("name")));
         assertNotNull(actual.getDataSources().get("name").getStaticStrategy());
         assertThat(actual.getDataSources().get("name").getStaticStrategy().getWriteDataSourceName(), is("writeDataSourceName"));
-        assertThat(actual.getDataSources().get("name").getStaticStrategy().getReadDataSourceNames(), is(Collections.singleton("readDataSourceName")));
+        assertThat(actual.getDataSources().get("name").getStaticStrategy().getReadDataSourceNames(), is(Collections.singletonList("readDataSourceName")));
         assertThat(actual.getDataSources().get("name").getLoadBalancerName(), is("loadBalancerName"));
         assertThat(actual.getLoadBalancers().keySet(), is(Collections.singleton("name")));
         assertThat(actual.getLoadBalancers().get("name").getType(), is("RANDOM"));
@@ -56,7 +56,7 @@ public final class YamlReadwriteSplittingRuleAlgorithmProviderConfigurationSwapp
         assertThat(ruleConfig.getName(), is("name"));
         assertNotNull(ruleConfig.getStaticStrategy());
         assertThat(ruleConfig.getStaticStrategy().getWriteDataSourceName(), is("writeDataSourceName"));
-        assertThat(ruleConfig.getStaticStrategy().getReadDataSourceNames(), is(Collections.singleton("readDataSourceName")));
+        assertThat(ruleConfig.getStaticStrategy().getReadDataSourceNames(), is(Collections.singletonList("readDataSourceName")));
         assertThat(ruleConfig.getLoadBalancerName(), is("loadBalancerName"));
         assertThat(actual.getLoadBalanceAlgorithms(), is(Collections.emptyMap()));
     }

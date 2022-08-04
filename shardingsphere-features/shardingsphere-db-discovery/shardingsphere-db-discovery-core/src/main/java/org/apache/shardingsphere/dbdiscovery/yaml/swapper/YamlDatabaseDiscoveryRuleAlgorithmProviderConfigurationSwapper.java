@@ -38,7 +38,8 @@ import java.util.stream.Collectors;
  * YAML database discovery rule configuration swapper.
  */
 public final class YamlDatabaseDiscoveryRuleAlgorithmProviderConfigurationSwapper
-        implements YamlRuleConfigurationSwapper<YamlDatabaseDiscoveryRuleConfiguration, AlgorithmProvidedDatabaseDiscoveryRuleConfiguration> {
+        implements
+            YamlRuleConfigurationSwapper<YamlDatabaseDiscoveryRuleConfiguration, AlgorithmProvidedDatabaseDiscoveryRuleConfiguration> {
     
     @Override
     public YamlDatabaseDiscoveryRuleConfiguration swapToYamlConfiguration(final AlgorithmProvidedDatabaseDiscoveryRuleConfiguration data) {
