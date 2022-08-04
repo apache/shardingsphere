@@ -62,9 +62,9 @@ public final class ShardingAutoTableRuleConfigurationYamlSwapperTest {
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        setSwapper("shardingStrategyYamlSwapper", shardingStrategyYamlSwapper);
+        setSwapper("shardingStrategySwapper", shardingStrategyYamlSwapper);
         when(shardingStrategyYamlSwapper.swapToYamlConfiguration(ArgumentMatchers.any())).thenReturn(mock(YamlShardingStrategyConfiguration.class));
-        setSwapper("keyGenerateStrategyYamlSwapper", keyGenerateStrategyYamlSwapper);
+        setSwapper("keyGenerateStrategySwapper", keyGenerateStrategyYamlSwapper);
         when(keyGenerateStrategyYamlSwapper.swapToYamlConfiguration(ArgumentMatchers.any())).thenReturn(mock(YamlKeyGenerateStrategyConfiguration.class));
     }
     

@@ -73,16 +73,16 @@ public final class ShardingRuleConfigurationYamlSwapperTest {
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        setSwapper("tableYamlSwapper", tableRuleConfigurationYamlSwapper);
+        setSwapper("tableSwapper", tableRuleConfigurationYamlSwapper);
         when(tableRuleConfigurationYamlSwapper.swapToYamlConfiguration(ArgumentMatchers.any())).thenReturn(mock(YamlTableRuleConfiguration.class));
         when(tableRuleConfigurationYamlSwapper.swapToObject(ArgumentMatchers.any())).thenReturn(mock(ShardingTableRuleConfiguration.class));
-        setSwapper("shardingStrategyYamlSwapper", shardingStrategyConfigurationYamlSwapper);
+        setSwapper("shardingStrategySwapper", shardingStrategyConfigurationYamlSwapper);
         when(shardingStrategyConfigurationYamlSwapper.swapToYamlConfiguration(ArgumentMatchers.any())).thenReturn(mock(YamlShardingStrategyConfiguration.class));
         when(shardingStrategyConfigurationYamlSwapper.swapToObject(ArgumentMatchers.any())).thenReturn(mock(ShardingStrategyConfiguration.class));
-        setSwapper("keyGenerateStrategyYamlSwapper", keyGenerateStrategyConfigurationYamlSwapper);
+        setSwapper("keyGenerateStrategySwapper", keyGenerateStrategyConfigurationYamlSwapper);
         when(keyGenerateStrategyConfigurationYamlSwapper.swapToYamlConfiguration(ArgumentMatchers.any())).thenReturn(mock(YamlKeyGenerateStrategyConfiguration.class));
         when(keyGenerateStrategyConfigurationYamlSwapper.swapToObject(ArgumentMatchers.any())).thenReturn(mock(KeyGenerateStrategyConfiguration.class));
-        setSwapper("auditStrategyYamlSwapper", shardingAuditStrategyConfigurationYamlSwapper);
+        setSwapper("auditStrategySwapper", shardingAuditStrategyConfigurationYamlSwapper);
         when(shardingAuditStrategyConfigurationYamlSwapper.swapToYamlConfiguration(ArgumentMatchers.any())).thenReturn(mock(YamlShardingAuditStrategyConfiguration.class));
         when(shardingAuditStrategyConfigurationYamlSwapper.swapToObject(ArgumentMatchers.any())).thenReturn(mock(ShardingAuditStrategyConfiguration.class));
     }
