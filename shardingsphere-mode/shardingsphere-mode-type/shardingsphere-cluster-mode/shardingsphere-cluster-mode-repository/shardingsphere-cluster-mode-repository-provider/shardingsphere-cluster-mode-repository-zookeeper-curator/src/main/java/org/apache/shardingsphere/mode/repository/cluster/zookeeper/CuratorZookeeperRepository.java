@@ -201,19 +201,6 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     }
     
     @Override
-    public String getSequentialId(final String key, final String value) {
-        try {
-            String path = client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL_SEQUENTIAL).forPath(key, value.getBytes(StandardCharsets.UTF_8));
-            return path.substring(key.length());
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
-        }
-        return null;
-    }
-    
-    @Override
     public void delete(final String key) {
         try {
             if (isExisted(key)) {
