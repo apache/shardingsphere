@@ -62,7 +62,7 @@ import static org.mockito.Mockito.mock;
 
 public final class GovernanceRepositoryAPIImplTest {
     
-    private static final JobProgressYamlSwapper JOB_PROGRESS_YAML_SWAPPER = new JobProgressYamlSwapper();
+    private static final JobProgressYamlSwapper SWAPPER = new JobProgressYamlSwapper();
     
     private static GovernanceRepositoryAPI governanceRepositoryAPI;
     
@@ -77,7 +77,7 @@ public final class GovernanceRepositoryAPIImplTest {
         RuleAlteredJobContext jobContext = mockJobContext();
         governanceRepositoryAPI.persistJobProgress(jobContext);
         JobProgress actual = governanceRepositoryAPI.getJobProgress(jobContext.getJobId(), jobContext.getShardingItem());
-        assertThat(YamlEngine.marshal(JOB_PROGRESS_YAML_SWAPPER.swapToYaml(actual)), is(ConfigurationFileUtil.readFileAndIgnoreComments("governance-repository.yaml")));
+        assertThat(YamlEngine.marshal(SWAPPER.swapToYaml(actual)), is(ConfigurationFileUtil.readFileAndIgnoreComments("governance-repository.yaml")));
     }
     
     @Test

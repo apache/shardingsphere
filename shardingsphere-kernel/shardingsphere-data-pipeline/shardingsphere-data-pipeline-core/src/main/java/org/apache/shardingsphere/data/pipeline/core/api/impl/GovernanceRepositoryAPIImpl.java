@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAPI {
     
-    private static final JobProgressYamlSwapper JOB_PROGRESS_YAML_SWAPPER = new JobProgressYamlSwapper();
+    private static final JobProgressYamlSwapper SWAPPER = new JobProgressYamlSwapper();
     
     private final ClusterPersistRepository repository;
     
@@ -64,7 +64,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
         jobProgress.setSourceDatabaseType(jobContext.getJobConfig().getSourceDatabaseType());
         jobProgress.setIncrementalTaskProgressMap(getIncrementalTaskProgressMap(jobContext));
         jobProgress.setInventoryTaskProgressMap(getInventoryTaskProgressMap(jobContext));
-        String value = YamlEngine.marshal(JOB_PROGRESS_YAML_SWAPPER.swapToYaml(jobProgress));
+        String value = YamlEngine.marshal(SWAPPER.swapToYaml(jobProgress));
         repository.persist(PipelineMetaDataNode.getScalingJobOffsetPath(jobContext.getJobId(), jobContext.getShardingItem()), value);
     }
     
@@ -90,7 +90,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
         if (Strings.isNullOrEmpty(data)) {
             return null;
         }
-        return JOB_PROGRESS_YAML_SWAPPER.swapToObject(YamlEngine.unmarshal(data, YamlJobProgress.class));
+        return SWAPPER.swapToObject(YamlEngine.unmarshal(data, YamlJobProgress.class));
     }
     
     @Override
@@ -141,6 +141,6 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
             return;
         }
         jobProgress.setStatus(status);
-        persist(PipelineMetaDataNode.getScalingJobOffsetPath(jobId, shardingItem), YamlEngine.marshal(JOB_PROGRESS_YAML_SWAPPER.swapToYaml(jobProgress)));
+        persist(PipelineMetaDataNode.getScalingJobOffsetPath(jobId, shardingItem), YamlEngine.marshal(SWAPPER.swapToYaml(jobProgress)));
     }
 }

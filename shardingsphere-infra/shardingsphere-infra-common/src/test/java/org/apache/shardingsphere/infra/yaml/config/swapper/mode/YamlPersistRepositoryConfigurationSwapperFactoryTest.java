@@ -17,16 +17,16 @@
 
 package org.apache.shardingsphere.infra.yaml.config.swapper.mode;
 
-import org.apache.shardingsphere.infra.yaml.config.swapper.fixture.PersistRepositoryConfigurationYamlSwapperFixture;
+import org.apache.shardingsphere.infra.yaml.config.swapper.fixture.YamlPersistRepositoryConfigurationSwapperFixture;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
-public final class PersistRepositoryConfigurationYamlSwapperFactoryTest {
+public final class YamlPersistRepositoryConfigurationSwapperFactoryTest {
     
     @Test
     public void assertGetInstance() {
-        assertThat(PersistRepositoryConfigurationYamlSwapperFactory.getInstance("Fixture"), instanceOf(PersistRepositoryConfigurationYamlSwapperFixture.class));
+        assertThat(YamlPersistRepositoryConfigurationSwapperFactory.getInstance("Fixture"), instanceOf(YamlPersistRepositoryConfigurationSwapperFixture.class));
     }
 }

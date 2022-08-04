@@ -38,7 +38,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmC
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlOnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlOnRuleAlteredActionConfiguration.YamlInputConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlOnRuleAlteredActionConfiguration.YamlOutputConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.rulealtered.OnRuleAlteredActionConfigurationYamlSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.rulealtered.YamlOnRuleAlteredActionConfigurationSwapper;
 
 import java.util.Properties;
 
@@ -56,7 +56,7 @@ public final class RuleAlteredContext {
     
     private static final String IMPORTER_THREAD_PREFIX = "Importer-";
     
-    private static final OnRuleAlteredActionConfigurationYamlSwapper SWAPPER = new OnRuleAlteredActionConfigurationYamlSwapper();
+    private static final YamlOnRuleAlteredActionConfigurationSwapper SWAPPER = new YamlOnRuleAlteredActionConfigurationSwapper();
     
     private final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig;
     

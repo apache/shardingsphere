@@ -23,16 +23,16 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfigurati
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
 
 /**
- * Mode rule configuration YAML swapper.
+ * YAML mode configuration swapper.
  */
-public final class ModeConfigurationYamlSwapper implements YamlConfigurationSwapper<YamlModeConfiguration, ModeConfiguration> {
+public final class YamlModeConfigurationSwapper implements YamlConfigurationSwapper<YamlModeConfiguration, ModeConfiguration> {
     
     @Override
     public YamlModeConfiguration swapToYamlConfiguration(final ModeConfiguration data) {
         YamlModeConfiguration result = new YamlModeConfiguration();
         result.setType(data.getType());
         if (null != data.getRepository()) {
-            PersistRepositoryConfigurationYamlSwapper<PersistRepositoryConfiguration> swapper = PersistRepositoryConfigurationYamlSwapperFactory.getInstance(data.getType());
+            YamlPersistRepositoryConfigurationSwapper<PersistRepositoryConfiguration> swapper = YamlPersistRepositoryConfigurationSwapperFactory.getInstance(data.getType());
             result.setRepository(swapper.swapToYamlConfiguration(data.getRepository()));
         }
         result.setOverwrite(data.isOverwrite());
@@ -44,7 +44,7 @@ public final class ModeConfigurationYamlSwapper implements YamlConfigurationSwap
         if (null == yamlConfig.getRepository()) {
             return new ModeConfiguration(yamlConfig.getType(), null, yamlConfig.isOverwrite());
         }
-        PersistRepositoryConfigurationYamlSwapper<PersistRepositoryConfiguration> swapper = PersistRepositoryConfigurationYamlSwapperFactory.getInstance(yamlConfig.getType());
+        YamlPersistRepositoryConfigurationSwapper<PersistRepositoryConfiguration> swapper = YamlPersistRepositoryConfigurationSwapperFactory.getInstance(yamlConfig.getType());
         return new ModeConfiguration(yamlConfig.getType(), swapper.swapToObject(yamlConfig.getRepository()), yamlConfig.isOverwrite());
     }
 }

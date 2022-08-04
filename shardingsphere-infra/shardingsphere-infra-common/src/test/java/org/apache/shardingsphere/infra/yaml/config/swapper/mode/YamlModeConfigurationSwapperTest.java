@@ -26,11 +26,11 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class ModeConfigurationYamlSwapperTest {
+public final class YamlModeConfigurationSwapperTest {
     
     private static final String TEST_TYPE = "TEST_TYPE";
     
-    private final ModeConfigurationYamlSwapper swapper = new ModeConfigurationYamlSwapper();
+    private final YamlModeConfigurationSwapper swapper = new YamlModeConfigurationSwapper();
     
     @Test
     public void swapToYamlConfiguration() {

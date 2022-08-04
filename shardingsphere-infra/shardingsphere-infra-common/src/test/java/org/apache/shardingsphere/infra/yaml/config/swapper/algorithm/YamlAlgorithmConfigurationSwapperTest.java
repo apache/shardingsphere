@@ -26,11 +26,11 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class AlgorithmConfigurationYamlSwapperTest {
+public final class YamlAlgorithmConfigurationSwapperTest {
     
     @Test
     public void assertSwapToYaml() {
-        YamlAlgorithmConfiguration actual = new AlgorithmConfigurationYamlSwapper().swapToYamlConfiguration(
+        YamlAlgorithmConfiguration actual = new YamlAlgorithmConfigurationSwapper().swapToYamlConfiguration(
                 new AlgorithmConfiguration("TEST", createProps()));
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProps().getProperty("key"), is("value"));
@@ -39,7 +39,7 @@ public final class AlgorithmConfigurationYamlSwapperTest {
     @Test
     public void assertSwapToObject() {
         YamlAlgorithmConfiguration yamlConfig = new YamlAlgorithmConfiguration("TEST", createProps());
-        AlgorithmConfiguration actual = new AlgorithmConfigurationYamlSwapper().swapToObject(yamlConfig);
+        AlgorithmConfiguration actual = new YamlAlgorithmConfigurationSwapper().swapToObject(yamlConfig);
         assertThat(actual.getType(), is("TEST"));
         assertThat(actual.getProps().getProperty("key"), is("value"));
     }

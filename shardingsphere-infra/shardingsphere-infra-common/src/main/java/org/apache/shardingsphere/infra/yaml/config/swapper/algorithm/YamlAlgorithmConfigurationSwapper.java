@@ -22,9 +22,9 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmC
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
 
 /**
- * Algorithm configuration YAML swapper.
+ * YAML algorithm configuration swapper.
  */
-public final class AlgorithmConfigurationYamlSwapper implements YamlConfigurationSwapper<YamlAlgorithmConfiguration, AlgorithmConfiguration> {
+public final class YamlAlgorithmConfigurationSwapper implements YamlConfigurationSwapper<YamlAlgorithmConfiguration, AlgorithmConfiguration> {
     
     @Override
     public YamlAlgorithmConfiguration swapToYamlConfiguration(final AlgorithmConfiguration data) {
