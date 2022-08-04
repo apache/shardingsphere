@@ -55,7 +55,7 @@ Let’s take the `DialectTableMetaDataLoader` interface implementation class as 
 
 `DialectTableMetaDataLoader.class`
 
-```
+```java
 public interface DialectTableMetaDataLoader extends StatelessTypedSPI {
     /**
      * Load table meta data.
@@ -97,7 +97,7 @@ For every interface that needs to be extended and created by SPI, there usually 
 
 `DialectTableMetaDataLoaderFactory`
 
-```
+```java
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class DialectTableMetaDataLoaderFactory {
     static {
@@ -123,7 +123,7 @@ So we just have to pay attention to `ShardingSphereServiceLoader.register` and `
 
 **`ShardingSphereServiceLoader`**
 
-```
+```java
 @NoArgsConstructor(access =AccessLevel.PRIVATE)
 public final class ShardingSphereServiceLoader {
     private static final Map<Class<?>, Collection<object>> SERVICES = new ConcurrentHashMap<>();
@@ -192,13 +192,14 @@ public final class ShardingSphereServiceLoader {
 ```
 We can see that all SPI classes are placed in this `SERVICES`property.
 
-```
+```java
 private static final Map<Class<?>, Collection<Object>> SERVICES = new ConcurrentHashMap<>();
 ```
 
-```
+
 And registering is pretty simple too, just use the SPI api embedded in java.
 
+```java
 public static void register(final Class<?> serviceInterface) {
         if (!SERVICES.containsKey(serviceInterface)) {
             SERVICES.put(serviceInterface, load(serviceInterface));
@@ -216,7 +217,7 @@ private static <T> Collection<Object> load(final Class<T> serviceInterface) {
 
 The `findRegisteredService` method in `TypedSPIRegistry` is essentially a call to the `getSingletonServiceInstancesmethod` of the `ShardingSphereServiceLoader`.
 
-```
+```java
 public static <T extends StatelessTypedSPI> Optional<T> findRegisteredService(final Class<T> spiClass, final String type) {
         for (T each : ShardingSphereServiceLoader.getSingletonServiceInstances(spiClass)) {
             if (matchesType(type, each)) {
@@ -233,7 +234,7 @@ Here you can see that the class extension is using `getType` or `getTypeAliases`
 
 Now let’s see the `newServiceInstances` method in `ShardingSphereServiceLoader`
 
-```
+```java
 public static <T> Collection<T> newServiceInstances(final Class<T> service) {
         if (!SERVICES.containsKey(service)) {
             return Collections.emptyList();
