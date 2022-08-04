@@ -195,8 +195,8 @@ public final class OrderByStreamMergedResultTest {
     }
     
     private ShardingSphereDatabase createDatabase() {
-        ShardingSphereColumn column1 = new ShardingSphereColumn("col1", 0, false, false, true);
-        ShardingSphereColumn column2 = new ShardingSphereColumn("col2", 0, false, false, false);
+        ShardingSphereColumn column1 = new ShardingSphereColumn("col1", 0, false, false, true, true);
+        ShardingSphereColumn column2 = new ShardingSphereColumn("col2", 0, false, false, false, true);
         ShardingSphereTable table = new ShardingSphereTable("tbl", Arrays.asList(column1, column2), Collections.emptyList(), Collections.emptyList());
         ShardingSphereSchema schema = new ShardingSphereSchema(Collections.singletonMap("tbl", table));
         return new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME,
