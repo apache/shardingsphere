@@ -52,14 +52,14 @@ In Apache ShardingSphere 5.1.2, ShardingSphere-JDBC implements the standardized 
 
 Users can obtain `Connection` directly through `DriverManager`:
 
-```
+```java
 Class.forName("org.apache.shardingsphere.driver.ShardingSphereDriver");
 Connection conn = DriverManager.getConnection("jdbc:shardingsphere:classpath:config.yaml");
 ```
 
 Or use `Datasource` to obtain `Connection`:
 
-```
+```java
 // Take HikariCP as an example
 HikariDataSource dataSource = new HikariDataSource();
 dataSource.setDriverClassName("org.apache.shardingsphere.driver.ShardingSphereDriver");
