@@ -200,7 +200,7 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
     
     private ShardingSphereDatabase createDatabaseMetaData() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        ShardingSphereColumn column = new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false);
+        ShardingSphereColumn column = new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true);
         when(result.getSchema(DefaultDatabase.LOGIC_NAME).get("t_logic_order")).thenReturn(
                 new ShardingSphereTable("t_logic_order", Collections.singletonList(column), Collections.singletonList(new ShardingSphereIndex("order_id")), Collections.emptyList()));
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(mock(ShardingRule.class)));

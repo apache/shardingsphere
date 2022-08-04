@@ -70,9 +70,9 @@ public final class EncryptSchemaMetaDataDecoratorTest {
     }
     
     private TableMetaData createTableMetaData() {
-        Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", 1, true, true, true),
-                new ColumnMetaData("pwd_cipher", 2, false, false, true),
-                new ColumnMetaData("pwd_plain", 2, false, false, true));
+        Collection<ColumnMetaData> columns = Arrays.asList(new ColumnMetaData("id", 1, true, true, true, true),
+                new ColumnMetaData("pwd_cipher", 2, false, false, true, true),
+                new ColumnMetaData("pwd_plain", 2, false, false, true, true));
         return new TableMetaData(TABLE_NAME, columns, Collections.emptyList(), Collections.emptyList());
     }
     
