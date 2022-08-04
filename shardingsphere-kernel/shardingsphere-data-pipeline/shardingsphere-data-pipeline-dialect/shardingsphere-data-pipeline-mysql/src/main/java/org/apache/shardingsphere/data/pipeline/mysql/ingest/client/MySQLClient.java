@@ -32,6 +32,7 @@ import io.netty.util.concurrent.Promise;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
+import org.apache.shardingsphere.data.pipeline.mysql.ingest.GlobalTableMapEventMapping;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.binlog.event.AbstractBinlogEvent;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.netty.MySQLBinlogEventPacketDecoder;
 import org.apache.shardingsphere.data.pipeline.mysql.ingest.client.netty.MySQLCommandPacketDecoder;
@@ -192,7 +193,8 @@ public final class MySQLClient {
         responseCallback = null;
         channel.pipeline().remove(MySQLCommandPacketDecoder.class);
         channel.pipeline().remove(MySQLCommandResponseHandler.class);
-        channel.pipeline().addLast(new MySQLBinlogEventPacketDecoder(checksumLength));
+        String tableKey = String.join(":", connectInfo.getHost(), String.valueOf(connectInfo.getPort()));
+        channel.pipeline().addLast(new MySQLBinlogEventPacketDecoder(checksumLength, GlobalTableMapEventMapping.getTableMapEventMap(tableKey)));
         channel.pipeline().addLast(new MySQLBinlogEventHandler());
         channel.writeAndFlush(new MySQLComBinlogDumpCommandPacket((int) binlogPosition, connectInfo.getServerId(), binlogFileName));
     }

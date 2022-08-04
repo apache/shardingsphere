@@ -39,6 +39,7 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.binlog.row.MySQLBinlog
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 /**
@@ -49,8 +50,8 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     
     private final BinlogContext binlogContext;
     
-    public MySQLBinlogEventPacketDecoder(final int checksumLength) {
-        binlogContext = new BinlogContext();
+    public MySQLBinlogEventPacketDecoder(final int checksumLength, final Map<Long, MySQLBinlogTableMapEventPacket> tableMap) {
+        binlogContext = new BinlogContext(tableMap);
         binlogContext.setChecksumLength(checksumLength);
     }
     
