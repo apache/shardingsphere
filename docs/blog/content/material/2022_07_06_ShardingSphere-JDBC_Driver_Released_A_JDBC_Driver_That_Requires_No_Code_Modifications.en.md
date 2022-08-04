@@ -52,7 +52,7 @@ If there’s no prefix, the configuration file is loaded from an absolute path (
 ## Procedure
 **Using native drivers**
 
-```
+```java
 Class.forName("org.apache.shardingsphere.driver.ShardingSphereDriver");
 String jdbcUrl = "jdbc:shardingsphere:classpath:config.yaml";
 
@@ -70,7 +70,7 @@ try (
 ```
 **Using the database connection pool**
 
-```
+```java
 String driverClassName = "org.apache.shardingsphere.driver.ShardingSphereDriver";
 String jdbcUrl = "jdbc:shardingsphere:classpath:config.yaml";// take HikariCP as an example HikariDataSource dataSource = new HikariDataSource();
 dataSource.setDriverClassName(driverClassName);
