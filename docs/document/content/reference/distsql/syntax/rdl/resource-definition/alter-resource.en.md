@@ -94,7 +94,7 @@ ALTER RESOURCE ds_2 (
 
 ### Reserved word
 
-`ALTER`、`RESOURCE`、`HOST`、`PORT`、`DB`、`USER`、`PASSWORD`、`PROPERTIES`、`URL`
+`ALTER`, `RESOURCE`, `HOST`, `PORT`, `DB`, `USER`, `PASSWORD`, `PROPERTIES`, `URL`
 
 ### Related links
 

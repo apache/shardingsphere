@@ -9,7 +9,7 @@ weight = 2
 
 ### 语法定义
 
-```SQL
+```sql
 CreateShardingAlgorithm ::=
   'CREATE' 'SHARDING' 'ALGORITHM' shardingAlgorithmName '(' algorithmDefinition ')'
 
@@ -48,8 +48,8 @@ CREATE SHARDING ALGORITHM interval_algorithm (
 
 ### 保留字
 
-    CREATE、SHARDING、ALGORITHM、TYPE、NAME、PROPERTIES
+`CREATE`、`SHARDING`、`ALGORITHM`、`TYPE`、`NAME`、`PROPERTIES`
 
 ### 相关链接
-- [保留字](/cn/reference/distsql/syntax/reserved-word/)
 
+- [保留字](/cn/reference/distsql/syntax/reserved-word/)

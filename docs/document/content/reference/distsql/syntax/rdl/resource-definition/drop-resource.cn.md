@@ -12,6 +12,9 @@ weight = 4
 ```sql
 DropResource ::=
   'DROP' 'RESOURCE' ( 'IF' 'EXISTS' )? dataSourceName  ( ',' dataSourceName )* ( 'IGNORE' 'SINGLE' 'TABLES' )?
+    
+dataSourceName ::=
+  identifier
 ```
 
 ### 补充说明
@@ -48,7 +51,7 @@ DROP RESOURCE IF EXISTS ds_4;
 
 ### 保留字
 
-`DROP`、 `RESOURCE`、 `IF`、 `EXISTS`、 `IGNORE`、 `SINGLE`、 `TABLES`
+`DROP`、`RESOURCE`、`IF`、`EXISTS`、`IGNORE`、`SINGLE`、`TABLES`
 
 ### 相关链接
 
