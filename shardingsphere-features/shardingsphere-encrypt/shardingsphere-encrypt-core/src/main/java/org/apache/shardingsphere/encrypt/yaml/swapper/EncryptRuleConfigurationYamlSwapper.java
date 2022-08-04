@@ -26,9 +26,9 @@ import org.apache.shardingsphere.encrypt.yaml.swapper.rule.EncryptTableRuleConfi
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.AlgorithmConfigurationYamlSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rulealtered.OnRuleAlteredActionConfigurationYamlSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.rulealtered.OnRuleAlteredActionConfigurationYamlSwapper;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
