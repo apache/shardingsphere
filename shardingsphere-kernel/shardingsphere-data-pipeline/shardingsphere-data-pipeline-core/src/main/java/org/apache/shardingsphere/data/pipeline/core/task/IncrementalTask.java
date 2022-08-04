@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.task;
 
+import java.util.HashMap;
+import java.util.Map;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +31,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPo
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.job.persist.PipelineJobPersistCallback;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
+import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgressItem;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
@@ -71,17 +74,24 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
                            final PipelineTableMetaDataLoader sourceMetaDataLoader, final ExecuteEngine incrementalDumperExecuteEngine, final PipelineJobPersistCallback pipelineJobPersistCallback) {
         this.incrementalDumperExecuteEngine = incrementalDumperExecuteEngine;
         taskId = dumperConfig.getDataSourceName();
-        progress = new IncrementalTaskProgress();
         IngestPosition<?> position = dumperConfig.getPosition();
-        progress.setPosition(position);
+        progress = createIncrementalTaskProgress(position);
         channel = createChannel(concurrency, pipelineChannelCreator, progress);
         dumper = DumperFactory.createIncrementalDumper(dumperConfig, position, channel, sourceMetaDataLoader);
         importers = createImporters(concurrency, importerConfig, dataSourceManager, channel, pipelineJobPersistCallback);
     }
     
+    private IncrementalTaskProgress createIncrementalTaskProgress(IngestPosition<?> position) {
+        Map<String, IncrementalTaskProgressItem> itemMap = new HashMap<>();
+        IncrementalTaskProgressItem incrementalTaskProgressItem = new IncrementalTaskProgressItem();
+        incrementalTaskProgressItem.setPosition(position);
+        itemMap.put(taskId, incrementalTaskProgressItem);
+        return new IncrementalTaskProgress(itemMap);
+    }
+    
     @Override
     protected void doStart() {
-        progress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
+        progress.getIncrementalTaskProgressItemMap().get(taskId).getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
         Future<?> future = incrementalDumperExecuteEngine.submitAll(importers, getExecuteCallback());
         dumper.start();
         waitForResult(future);
@@ -100,10 +110,10 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
         return pipelineChannelCreator.createPipelineChannel(concurrency, records -> {
             Record lastHandledRecord = records.get(records.size() - 1);
             if (!(lastHandledRecord.getPosition() instanceof PlaceholderPosition)) {
-                progress.setPosition(lastHandledRecord.getPosition());
-                progress.getIncrementalTaskDelay().setLastEventTimestamps(lastHandledRecord.getCommitTime());
+                progress.getIncrementalTaskProgressItemMap().get(taskId).setPosition(lastHandledRecord.getPosition());
+                progress.getIncrementalTaskProgressItemMap().get(taskId).getIncrementalTaskDelay().setLastEventTimestamps(lastHandledRecord.getCommitTime());
             }
-            progress.getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
+            progress.getIncrementalTaskProgressItemMap().get(taskId).getIncrementalTaskDelay().setLatestActiveTimeMillis(System.currentTimeMillis());
         });
     }
     

@@ -17,24 +17,53 @@
 
 package org.apache.shardingsphere.data.pipeline.api.task.progress;
 
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 
 /**
  * Incremental task progress.
  */
-@NoArgsConstructor
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Getter
 @Setter
 @ToString
 public final class IncrementalTaskProgress implements TaskProgress {
     
-    private volatile IngestPosition<?> position;
+    private final Map<String, IncrementalTaskProgressItem> incrementalTaskProgressItemMap;
     
-    private IncrementalTaskDelay incrementalTaskDelay = new IncrementalTaskDelay();
+    /**
+     * Get incremental position.
+     *
+     * @return incremental position
+     */
+    public Optional<IngestPosition<?>> getIncrementalPosition(final String dataSourceName) {
+        Optional<IncrementalTaskProgressItem> incrementalTaskProgressItem = incrementalTaskProgressItemMap.entrySet().stream()
+                .filter(entry -> dataSourceName.equals(entry.getKey()))
+                .map(Map.Entry::getValue)
+                .findAny();
+        return incrementalTaskProgressItem.map(IncrementalTaskProgressItem::getPosition);
+    }
+    
+    /**
+     * Get incremental latest active time milliseconds.
+     *
+     * @return latest active time, <code>0</code> is there is no activity
+     */
+    public long getIncrementalLatestActiveTimeMillis() {
+        List<Long> delays = incrementalTaskProgressItemMap.values().stream()
+                .map(each -> each.getIncrementalTaskDelay().getLatestActiveTimeMillis())
+                .collect(Collectors.toList());
+        return delays.stream().reduce(Long::max).orElse(0L);
+    }
 }

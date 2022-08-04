@@ -17,9 +17,13 @@
 
 package org.apache.shardingsphere.data.pipeline.api.task.progress;
 
+import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 
 /**
@@ -30,5 +34,30 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPositio
 @ToString
 public final class InventoryTaskProgress implements TaskProgress {
     
-    private final IngestPosition<?> position;
+    private final Map<String, InventoryTaskProgressItem> inventoryTaskProgressItemMap;
+    
+    /**
+     * Get inventory position.
+     *
+     * @param tableName table name
+     * @return inventory position
+     */
+    public Map<String, IngestPosition<?>> getInventoryPosition(final String tableName) {
+        Pattern pattern = Pattern.compile(String.format("%s(#\\d+)?", tableName));
+        return inventoryTaskProgressItemMap.entrySet().stream()
+                .filter(entry -> pattern.matcher(entry.getKey()).find())
+                .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getPosition()));
+    }
+    
+    /**
+     * Get inventory finished percentage.
+     *
+     * @return finished percentage
+     */
+    public int getInventoryFinishedPercentage() {
+        long finished = inventoryTaskProgressItemMap.values().stream()
+                .filter(each -> each.getPosition() instanceof FinishedPosition)
+                .count();
+        return inventoryTaskProgressItemMap.isEmpty() ? 0 : (int) (finished * 100 / inventoryTaskProgressItemMap.size());
+    }
 }

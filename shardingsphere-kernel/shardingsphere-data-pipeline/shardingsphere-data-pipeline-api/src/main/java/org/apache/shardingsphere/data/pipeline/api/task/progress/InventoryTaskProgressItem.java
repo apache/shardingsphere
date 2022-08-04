@@ -15,24 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
+package org.apache.shardingsphere.data.pipeline.api.task.progress;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 
-/**
- * Yaml job progress.
- */
+@RequiredArgsConstructor
 @Getter
-@Setter
-public final class YamlJobProgress {
+public final class InventoryTaskProgressItem {
     
-    private String status;
-    
-    private String sourceDatabaseType;
-    
-    private YamlInventoryTaskProgress inventory;
-    
-    private YamlIncrementalTaskProgress incremental;
-    
+    private final IngestPosition<?> position;
 }

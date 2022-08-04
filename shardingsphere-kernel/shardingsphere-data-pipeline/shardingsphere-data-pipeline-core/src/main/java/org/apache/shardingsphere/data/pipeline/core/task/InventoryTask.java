@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.core.task;
 
+import java.util.HashMap;
+import java.util.Map;
 import lombok.Getter;
 import lombok.ToString;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +31,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPo
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.job.persist.PipelineJobPersistCallback;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
+import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgressItem;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
@@ -139,7 +142,9 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     
     @Override
     public InventoryTaskProgress getProgress() {
-        return new InventoryTaskProgress(position);
+        Map<String, InventoryTaskProgressItem> inventoryTaskProgressItemMap = new HashMap<>();
+        inventoryTaskProgressItemMap.put(taskId, new InventoryTaskProgressItem(position));
+        return new InventoryTaskProgress(inventoryTaskProgressItemMap);
     }
     
     @Override
