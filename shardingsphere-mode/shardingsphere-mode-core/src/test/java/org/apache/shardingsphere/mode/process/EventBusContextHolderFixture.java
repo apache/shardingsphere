@@ -15,18 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.process.event;
+package org.apache.shardingsphere.mode.process;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 
-/**
- * Execute process summary report event.
- */
-@RequiredArgsConstructor
-@Getter
-public final class ExecuteProcessSummaryReportEvent {
+public final class EventBusContextHolderFixture {
     
-    private final ExecuteProcessContext executeProcessContext;
+    @Getter
+    public static final EventBusContext EVENT_BUS_CONTEXT = new EventBusContext();
 }

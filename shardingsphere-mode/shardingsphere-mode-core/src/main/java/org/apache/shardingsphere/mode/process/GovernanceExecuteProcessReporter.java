@@ -15,20 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.process;
+package org.apache.shardingsphere.mode.process;
 
 import org.apache.shardingsphere.infra.binder.LogicSQL;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroupContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
 import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
+import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
+import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessUnit;
 import org.apache.shardingsphere.infra.executor.sql.process.spi.ExecuteProcessReporter;
-import org.apache.shardingsphere.mode.process.ShowProcessListManager;
-import org.apache.shardingsphere.mode.process.event.ExecuteProcessReportEvent;
-import org.apache.shardingsphere.mode.process.event.ExecuteProcessSummaryReportEvent;
-import org.apache.shardingsphere.mode.process.event.ExecuteProcessUnitReportEvent;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 
 /**
  * Governance execute process reporter.
@@ -39,18 +37,29 @@ public final class GovernanceExecuteProcessReporter implements ExecuteProcessRep
     public void report(final LogicSQL logicSQL, final ExecutionGroupContext<? extends SQLExecutionUnit> executionGroupContext,
                        final ExecuteProcessConstants constants, final EventBusContext eventBusContext) {
         ExecuteProcessContext executeProcessContext = new ExecuteProcessContext(logicSQL.getSql(), executionGroupContext, constants);
-        eventBusContext.post(new ExecuteProcessSummaryReportEvent(executeProcessContext));
+        ShowProcessListManager.getInstance().putProcessContext(executeProcessContext.getExecutionID(), new YamlExecuteProcessContext(executeProcessContext));
     }
     
     @Override
     public void report(final String executionID, final SQLExecutionUnit executionUnit, final ExecuteProcessConstants constants, final EventBusContext eventBusContext) {
         ExecuteProcessUnit executeProcessUnit = new ExecuteProcessUnit(executionUnit.getExecutionUnit(), constants);
-        eventBusContext.post(new ExecuteProcessUnitReportEvent(executionID, executeProcessUnit));
+        YamlExecuteProcessContext yamlExecuteProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
+        for (YamlExecuteProcessUnit each : yamlExecuteProcessContext.getUnitStatuses()) {
+            if (each.getUnitID().equals(executeProcessUnit.getUnitID())) {
+                each.setStatus(executeProcessUnit.getStatus());
+            }
+        }
     }
     
     @Override
     public void report(final String executionID, final ExecuteProcessConstants constants, final EventBusContext eventBusContext) {
-        eventBusContext.post(new ExecuteProcessReportEvent(executionID));
+        YamlExecuteProcessContext yamlExecuteProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
+        for (YamlExecuteProcessUnit each : yamlExecuteProcessContext.getUnitStatuses()) {
+            if (each.getStatus() != ExecuteProcessConstants.EXECUTE_STATUS_DONE) {
+                return;
+            }
+        }
+        ShowProcessListManager.getInstance().removeProcessContext(executionID);
     }
     
     @Override

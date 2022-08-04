@@ -15,33 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.process.subscriber;
+package org.apache.shardingsphere.mode.manager.cluster.process.subscriber;
 
-import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessConstants;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessContext;
-import org.apache.shardingsphere.infra.executor.sql.process.model.ExecuteProcessUnit;
-import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.BatchYamlExecuteProcessContext;
-import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessContext;
-import org.apache.shardingsphere.infra.executor.sql.process.model.yaml.YamlExecuteProcessUnit;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.process.ShowProcessListManager;
-import org.apache.shardingsphere.mode.process.event.ExecuteProcessReportEvent;
-import org.apache.shardingsphere.mode.process.event.ExecuteProcessSummaryReportEvent;
-import org.apache.shardingsphere.mode.process.event.ExecuteProcessUnitReportEvent;
 import org.apache.shardingsphere.mode.process.event.ShowProcessListRequestEvent;
 import org.apache.shardingsphere.mode.process.event.ShowProcessListResponseEvent;
 import org.apache.shardingsphere.mode.process.lock.ShowProcessListSimpleLock;
 import org.apache.shardingsphere.mode.process.node.ProcessNode;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -65,12 +52,6 @@ public final class ProcessRegistrySubscriber {
         eventBusContext.register(this);
     }
     
-    public ProcessRegistrySubscriber(final EventBusContext eventBusContext) {
-        this.eventBusContext = eventBusContext;
-        repository = null;
-        eventBusContext.register(this);
-    }
-    
     /**
      * Load show process list data.
      *
@@ -78,22 +59,6 @@ public final class ProcessRegistrySubscriber {
      */
     @Subscribe
     public void loadShowProcessListData(final ShowProcessListRequestEvent event) {
-        if (null != repository) {
-            loadClusterShowProcessListData();
-        } else {
-            loadStandaloneShowProcessListData();
-        }
-    }
-    
-    private void loadStandaloneShowProcessListData() {
-        BatchYamlExecuteProcessContext batchYamlExecuteProcessContext = new BatchYamlExecuteProcessContext(new ArrayList<>(
-                ShowProcessListManager.getInstance().getProcessContextMap().values()));
-        eventBusContext.post(new ShowProcessListResponseEvent(batchYamlExecuteProcessContext.getContexts().isEmpty()
-                ? Collections.emptyList()
-                : Collections.singletonList(YamlEngine.marshal(batchYamlExecuteProcessContext))));
-    }
-    
-    private void loadClusterShowProcessListData() {
         String showProcessListId = new UUID(ThreadLocalRandom.current().nextLong(), ThreadLocalRandom.current().nextLong()).toString();
         boolean triggerIsComplete = false;
         Collection<String> triggerPaths = getTriggerPaths(showProcessListId);
@@ -144,52 +109,5 @@ public final class ProcessRegistrySubscriber {
             batchProcessContexts.add(repository.get(ProcessNode.getShowProcessListInstancePath(showProcessListId, each)));
         }
         eventBusContext.post(new ShowProcessListResponseEvent(batchProcessContexts));
-    }
-    
-    /**
-     * Report execute process summary.
-     *
-     * @param event execute process summary report event.
-     */
-    @Subscribe
-    @AllowConcurrentEvents
-    public void reportExecuteProcessSummary(final ExecuteProcessSummaryReportEvent event) {
-        ExecuteProcessContext executeProcessContext = event.getExecuteProcessContext();
-        ShowProcessListManager.getInstance().putProcessContext(executeProcessContext.getExecutionID(), new YamlExecuteProcessContext(executeProcessContext));
-    }
-    
-    /**
-     * Report execute process unit.
-     *
-     * @param event execute process unit report event.
-     */
-    @Subscribe
-    @AllowConcurrentEvents
-    public void reportExecuteProcessUnit(final ExecuteProcessUnitReportEvent event) {
-        String executionID = event.getExecutionID();
-        YamlExecuteProcessContext yamlExecuteProcessContext = ShowProcessListManager.getInstance().getProcessContext(executionID);
-        ExecuteProcessUnit executeProcessUnit = event.getExecuteProcessUnit();
-        for (YamlExecuteProcessUnit each : yamlExecuteProcessContext.getUnitStatuses()) {
-            if (each.getUnitID().equals(executeProcessUnit.getUnitID())) {
-                each.setStatus(executeProcessUnit.getStatus());
-            }
-        }
-    }
-    
-    /**
-     * Report execute process.
-     *
-     * @param event execute process report event.
-     */
-    @Subscribe
-    @AllowConcurrentEvents
-    public void reportExecuteProcess(final ExecuteProcessReportEvent event) {
-        YamlExecuteProcessContext yamlExecuteProcessContext = ShowProcessListManager.getInstance().getProcessContext(event.getExecutionID());
-        for (YamlExecuteProcessUnit each : yamlExecuteProcessContext.getUnitStatuses()) {
-            if (each.getStatus() != ExecuteProcessConstants.EXECUTE_STATUS_DONE) {
-                return;
-            }
-        }
-        ShowProcessListManager.getInstance().removeProcessContext(event.getExecutionID());
     }
 }
