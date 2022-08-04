@@ -27,7 +27,6 @@ import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlHint
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlNoneShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfiguration;
-import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlShardingStrategyConfigurationSwapper;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.instanceOf;
