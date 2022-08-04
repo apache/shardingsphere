@@ -23,9 +23,9 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfigurati
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
 
 /**
- * Mode rule configuration YAML swapper.
+ * YAML mode configuration swapper.
  */
-public final class ModeConfigurationYamlSwapper implements YamlConfigurationSwapper<YamlModeConfiguration, ModeConfiguration> {
+public final class YamlModeConfigurationSwapper implements YamlConfigurationSwapper<YamlModeConfiguration, ModeConfiguration> {
     
     @Override
     public YamlModeConfiguration swapToYamlConfiguration(final ModeConfiguration data) {
