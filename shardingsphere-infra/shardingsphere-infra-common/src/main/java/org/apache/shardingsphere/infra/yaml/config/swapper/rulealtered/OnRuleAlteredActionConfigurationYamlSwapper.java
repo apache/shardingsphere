@@ -81,10 +81,9 @@ public final class OnRuleAlteredActionConfigurationYamlSwapper implements YamlCo
         
         @Override
         public InputConfiguration swapToObject(final YamlInputConfiguration yamlConfig) {
-            if (null == yamlConfig) {
-                return null;
-            }
-            return new InputConfiguration(yamlConfig.getWorkerThread(), yamlConfig.getBatchSize(), yamlConfig.getShardingSize(),
+            return null == yamlConfig
+                    ? null
+                    : new InputConfiguration(yamlConfig.getWorkerThread(), yamlConfig.getBatchSize(), yamlConfig.getShardingSize(),
                     ALGORITHM_CONFIG_YAML_SWAPPER.swapToObject(yamlConfig.getRateLimiter()));
         }
     }
@@ -105,10 +104,9 @@ public final class OnRuleAlteredActionConfigurationYamlSwapper implements YamlCo
         
         @Override
         public OutputConfiguration swapToObject(final YamlOutputConfiguration yamlConfig) {
-            if (null == yamlConfig) {
-                return null;
-            }
-            return new OutputConfiguration(yamlConfig.getWorkerThread(), yamlConfig.getBatchSize(), ALGORITHM_CONFIG_YAML_SWAPPER.swapToObject(yamlConfig.getRateLimiter()));
+            return null == yamlConfig
+                    ? null
+                    : new OutputConfiguration(yamlConfig.getWorkerThread(), yamlConfig.getBatchSize(), ALGORITHM_CONFIG_YAML_SWAPPER.swapToObject(yamlConfig.getRateLimiter()));
         }
     }
 }
