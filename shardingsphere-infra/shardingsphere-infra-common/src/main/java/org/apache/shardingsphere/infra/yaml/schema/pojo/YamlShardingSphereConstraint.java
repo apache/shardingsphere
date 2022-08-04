@@ -21,20 +21,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
-import java.util.Map;
-
 /**
- * Table meta data for YAML.
+ * ShardingSphere constraint metadata for YAML.
  */
 @Getter
 @Setter
-public final class YamlTableMetaData implements YamlConfiguration {
+public final class YamlShardingSphereConstraint implements YamlConfiguration {
     
     private String name;
     
-    private Map<String, YamlColumnMetaData> columns;
-    
-    private Map<String, YamlIndexMetaData> indexes;
-    
-    private Map<String, YamlConstraintMetaData> constraints;
+    private String referencedTableName;
 }

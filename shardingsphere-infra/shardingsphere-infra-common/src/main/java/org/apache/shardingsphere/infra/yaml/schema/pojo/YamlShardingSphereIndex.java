@@ -22,11 +22,11 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * Index meta data for YAML.
+ * ShardingSphere index meta data for YAML.
  */
 @Getter
 @Setter
-public final class YamlIndexMetaData implements YamlConfiguration {
+public final class YamlShardingSphereIndex implements YamlConfiguration {
     
     private String name;
 }

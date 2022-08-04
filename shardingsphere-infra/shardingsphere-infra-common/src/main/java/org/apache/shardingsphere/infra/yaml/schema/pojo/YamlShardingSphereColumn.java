@@ -22,11 +22,11 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * Column meta data for YAML.
+ * ShardingSphere column metadata for YAML.
  */
 @Getter
 @Setter
-public final class YamlColumnMetaData implements YamlConfiguration {
+public final class YamlShardingSphereColumn implements YamlConfiguration {
     
     private String name;
     
