@@ -44,7 +44,7 @@ As shown in the figure below:
 
 3.Configure `server.yaml` in the `Proxy conf` directory as follows:
 
-```
+```yaml
 mode:
   type: Cluster
   repository:
@@ -64,12 +64,12 @@ rules:
 ```
 4.Start ShardingSphere-Proxy and connect it to Proxy using a client, for example:
 
-```
+```bash
 mysql -h 127.0.0.1 -P 3307 -u root -p
 ```
 **Creating a distributed database**
 
-```
+```sql
 CREATE DATABASE sharding_db;
 USE sharding_db;
 ```
