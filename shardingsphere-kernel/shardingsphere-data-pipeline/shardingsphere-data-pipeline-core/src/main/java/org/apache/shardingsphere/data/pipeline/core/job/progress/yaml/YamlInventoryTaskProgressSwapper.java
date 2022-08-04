@@ -29,7 +29,10 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPos
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgressItem;
 
-public final class InventoryTaskProgressSwapper {
+/**
+ * YAML InventoryTask progress swapper.
+ */
+public final class YamlInventoryTaskProgressSwapper {
     
     /**
      * Swap to YAML.
@@ -39,8 +42,10 @@ public final class InventoryTaskProgressSwapper {
      */
     public YamlInventoryTaskProgress swapToYaml(final InventoryTaskProgress inventory) {
         YamlInventoryTaskProgress result = new YamlInventoryTaskProgress();
-        result.setFinished(getFinished(inventory));
-        result.setUnfinished(getUnfinished(inventory));
+        if (inventory != null) {
+            result.setFinished(getFinished(inventory));
+            result.setUnfinished(getUnfinished(inventory));
+        }
         return result;
     }
     
@@ -64,6 +69,9 @@ public final class InventoryTaskProgressSwapper {
      * @return inventoryTask progress
      */
     public InventoryTaskProgress swapToObject(final YamlInventoryTaskProgress inventory) {
+        if (inventory == null) {
+            return null;
+        }
         Map<String, InventoryTaskProgressItem> inventoryTaskProgressItemMap = new HashMap<>();
         inventoryTaskProgressItemMap.putAll(Arrays.stream(inventory.getFinished())
                 .collect(Collectors.toMap(key -> key, value -> new InventoryTaskProgressItem(new FinishedPosition()))));

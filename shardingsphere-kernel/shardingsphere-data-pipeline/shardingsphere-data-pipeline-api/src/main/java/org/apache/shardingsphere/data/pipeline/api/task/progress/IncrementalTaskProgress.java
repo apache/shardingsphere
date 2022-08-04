@@ -20,15 +20,11 @@ package org.apache.shardingsphere.data.pipeline.api.task.progress;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 
 /**
@@ -44,7 +40,7 @@ public final class IncrementalTaskProgress implements TaskProgress {
     
     /**
      * Get incremental position.
-     *
+     * @param dataSourceName dataSource
      * @return incremental position
      */
     public Optional<IngestPosition<?>> getIncrementalPosition(final String dataSourceName) {

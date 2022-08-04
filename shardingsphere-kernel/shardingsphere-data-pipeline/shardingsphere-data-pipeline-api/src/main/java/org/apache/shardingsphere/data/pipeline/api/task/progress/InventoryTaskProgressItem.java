@@ -21,6 +21,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 
+/**
+ * InventoryTask Progress Item.
+ */
 @RequiredArgsConstructor
 @Getter
 public final class InventoryTaskProgressItem {

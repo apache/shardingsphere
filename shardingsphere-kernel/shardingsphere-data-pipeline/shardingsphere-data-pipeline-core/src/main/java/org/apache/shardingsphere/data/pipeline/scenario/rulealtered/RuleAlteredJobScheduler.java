@@ -107,7 +107,7 @@ public final class RuleAlteredJobScheduler implements Runnable {
         jobContext.setStatus(JobStatus.EXECUTE_INVENTORY_TASK);
         ExecuteCallback inventoryTaskCallback = createInventoryTaskCallback();
         for (InventoryTask each : jobContext.getInventoryTasks()) {
-            if (each.getProgress().getPosition() instanceof FinishedPosition) {
+            if (each.getProgress().getInventoryTaskProgressItemMap().get(each.getTaskId()).getPosition() instanceof FinishedPosition) {
                 continue;
             }
             jobContext.getRuleAlteredContext().getInventoryDumperExecuteEngine().submit(each, inventoryTaskCallback);
@@ -144,7 +144,7 @@ public final class RuleAlteredJobScheduler implements Runnable {
         jobContext.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK);
         ExecuteCallback incrementalTaskCallback = createIncrementalTaskCallback();
         for (IncrementalTask each : jobContext.getIncrementalTasks()) {
-            if (each.getProgress().getPosition() instanceof FinishedPosition) {
+            if (each.getProgress().getIncrementalTaskProgressItemMap().get(each.getTaskId()).getPosition() instanceof FinishedPosition) {
                 continue;
             }
             jobContext.getRuleAlteredContext().getIncrementalDumperExecuteEngine().submit(each, incrementalTaskCallback);

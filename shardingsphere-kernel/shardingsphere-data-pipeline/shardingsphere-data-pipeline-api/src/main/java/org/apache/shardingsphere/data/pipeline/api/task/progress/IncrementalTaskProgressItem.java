@@ -21,6 +21,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 
+/**
+ * IncrementalTask Progress Item.
+ */
 @Getter
 @Setter
 public final class IncrementalTaskProgressItem {

@@ -22,6 +22,9 @@ import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * Yaml InventoryTaskProgress.
+ */
 @Getter
 @Setter
 public final class YamlInventoryTaskProgress {

@@ -48,9 +48,9 @@ public final class YamlJobProgressSwapperTest {
         assertThat(actual.getInventory().getUnfinished().size(), is(2));
         assertThat(actual.getInventory().getUnfinished().get("ds1.t_2"), is("i,1,2"));
         assertThat(actual.getInventory().getUnfinished().get("ds1.t_1"), is(""));
-        assertThat(actual.getIncremental().getYamlIncrementalTaskProgressItemMap().size(), is(1));
-        assertTrue(actual.getIncremental().getYamlIncrementalTaskProgressItemMap().containsKey("ds0"));
-        assertNull(actual.getIncremental().getYamlIncrementalTaskProgressItemMap().get("ds_0").getPosition());
+        assertThat(actual.getIncremental().getDataSources().size(), is(1));
+        assertTrue(actual.getIncremental().getDataSources().containsKey("ds0"));
+        assertThat(actual.getIncremental().getDataSources().get("ds0").getPosition().length(), is(0));
     }
     
     @Test

@@ -46,8 +46,8 @@ public final class JobProgress implements PipelineJobProgress {
     private IncrementalTaskProgress incremental;
     
     /**
-     * Get incremental position.
-     *
+     * get incremental position.
+     * @param dataSourceName dataSource
      * @return incremental position
      */
     public Optional<IngestPosition<?>> getIncrementalPosition(final String dataSourceName) {
@@ -88,6 +88,6 @@ public final class JobProgress implements PipelineJobProgress {
      * @return latest active time, <code>0</code> is there is no activity
      */
     public long getIncrementalLatestActiveTimeMillis() {
-        return incremental.getIncrementalLatestActiveTimeMillis();
+        return incremental == null ? 0L : incremental.getIncrementalLatestActiveTimeMillis();
     }
 }

@@ -22,11 +22,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskDelay;
 
+/**
+ * Yaml IncrementalTaskProgress.
+ */
 @Getter
 @Setter
 public final class YamlIncrementalTaskProgress {
     
-    private Map<String, YamlIncrementalTaskProgressItem> yamlIncrementalTaskProgressItemMap;
+    private Map<String, YamlIncrementalTaskProgressItem> dataSources;
     
     @Getter
     @Setter

@@ -81,7 +81,7 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
         importers = createImporters(concurrency, importerConfig, dataSourceManager, channel, pipelineJobPersistCallback);
     }
     
-    private IncrementalTaskProgress createIncrementalTaskProgress(IngestPosition<?> position) {
+    private IncrementalTaskProgress createIncrementalTaskProgress(final IngestPosition<?> position) {
         Map<String, IncrementalTaskProgressItem> itemMap = new HashMap<>();
         IncrementalTaskProgressItem incrementalTaskProgressItem = new IncrementalTaskProgressItem();
         incrementalTaskProgressItem.setPosition(position);

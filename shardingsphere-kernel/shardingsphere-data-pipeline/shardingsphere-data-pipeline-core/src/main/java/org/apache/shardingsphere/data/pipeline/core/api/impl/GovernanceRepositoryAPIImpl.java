@@ -35,9 +35,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -62,26 +60,25 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
         JobProgress jobProgress = new JobProgress();
         jobProgress.setStatus(jobContext.getStatus());
         jobProgress.setSourceDatabaseType(jobContext.getJobConfig().getSourceDatabaseType());
-        jobProgress.setIncrementalTaskProgressMap(getIncrementalTaskProgressMap(jobContext));
-        jobProgress.setInventoryTaskProgressMap(getInventoryTaskProgressMap(jobContext));
+        jobProgress.setIncremental(getIncrementalTaskProgress(jobContext));
+        jobProgress.setInventory(getInventoryTaskProgress(jobContext));
         String value = YamlEngine.marshal(SWAPPER.swapToYaml(jobProgress));
         repository.persist(PipelineMetaDataNode.getScalingJobOffsetPath(jobContext.getJobId(), jobContext.getShardingItem()), value);
     }
     
-    private Map<String, IncrementalTaskProgress> getIncrementalTaskProgressMap(final RuleAlteredJobContext jobContext) {
-        Map<String, IncrementalTaskProgress> result = new HashMap<>(jobContext.getIncrementalTasks().size(), 1);
-        for (IncrementalTask each : jobContext.getIncrementalTasks()) {
-            result.put(each.getTaskId(), each.getProgress());
-        }
-        return result;
+    private IncrementalTaskProgress getIncrementalTaskProgress(final RuleAlteredJobContext jobContext) {
+        return new IncrementalTaskProgress(
+                jobContext.getIncrementalTasks()
+                .stream().collect(Collectors.toMap(IncrementalTask::getTaskId, each -> each.getProgress().getIncrementalTaskProgressItemMap().get(each.getTaskId())))
+        );
     }
     
-    private Map<String, InventoryTaskProgress> getInventoryTaskProgressMap(final RuleAlteredJobContext jobContext) {
-        Map<String, InventoryTaskProgress> result = new HashMap<>(jobContext.getInventoryTasks().size(), 1);
-        for (InventoryTask each : jobContext.getInventoryTasks()) {
-            result.put(each.getTaskId(), each.getProgress());
-        }
-        return result;
+    private InventoryTaskProgress getInventoryTaskProgress(final RuleAlteredJobContext jobContext) {
+        return new InventoryTaskProgress(
+                jobContext.getInventoryTasks()
+                        .stream()
+                        .collect(Collectors.toMap(InventoryTask::getTaskId, each -> each.getProgress().getInventoryTaskProgressItemMap().get(each.getTaskId())))
+        );
     }
     
     @Override

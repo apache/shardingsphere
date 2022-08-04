@@ -23,7 +23,10 @@ import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTask
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgressItem;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializerFactory;
 
-public final class IncrementalTaskProgressSwapper {
+/**
+ * YAML IncrementalTask progress swapper.
+ */
+public final class YamlIncrementalTaskProgressSwapper {
     
     /**
      * Swap to YAML.
@@ -31,8 +34,11 @@ public final class IncrementalTaskProgressSwapper {
      * @return IncrementalTaskProgress
      */
     public YamlIncrementalTaskProgress swapToYaml(final IncrementalTaskProgress incremental) {
+        if (incremental == null) {
+            return null;
+        }
         YamlIncrementalTaskProgress yamlIncrementalTaskProgress = new YamlIncrementalTaskProgress();
-        yamlIncrementalTaskProgress.setYamlIncrementalTaskProgressItemMap(incremental.getIncrementalTaskProgressItemMap()
+        yamlIncrementalTaskProgress.setDataSources(incremental.getIncrementalTaskProgressItemMap()
                 .entrySet()
                 .stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> {
@@ -46,12 +52,15 @@ public final class IncrementalTaskProgressSwapper {
     
     /**
      * Swap to object.
-     *
+     * @param databaseType databaseType
      * @param incremental yaml incrementalTask progress
      * @return incrementalTask progress
      */
     public IncrementalTaskProgress swapToObject(final String databaseType, final YamlIncrementalTaskProgress incremental) {
-        return new IncrementalTaskProgress(incremental.getYamlIncrementalTaskProgressItemMap().entrySet()
+        if (incremental == null) {
+            return null;
+        }
+        return new IncrementalTaskProgress(incremental.getDataSources().entrySet()
                 .stream()
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> {
                     IncrementalTaskProgressItem result = new IncrementalTaskProgressItem();

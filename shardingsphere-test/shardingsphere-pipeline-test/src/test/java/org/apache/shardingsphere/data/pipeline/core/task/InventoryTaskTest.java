@@ -90,7 +90,7 @@ public final class InventoryTaskTest {
                         PipelineContextUtil.getPipelineChannelCreator(),
                         new PipelineDataSourceManager(), dataSource, metaDataLoader, PipelineContextUtil.getExecuteEngine(), new FixturePipelineJobPersistCallback())) {
             inventoryTask.start();
-            assertThat(inventoryTask.getProgress().getPosition(), instanceOf(IntegerPrimaryKeyPosition.class));
+            assertThat(inventoryTask.getProgress().getInventoryTaskProgressItemMap().get(inventoryTask.getTaskId()).getPosition(), instanceOf(IntegerPrimaryKeyPosition.class));
         }
     }
     

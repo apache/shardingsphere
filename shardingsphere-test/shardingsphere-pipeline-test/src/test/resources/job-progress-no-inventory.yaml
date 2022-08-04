@@ -16,10 +16,11 @@
 #
 #
  incremental:
-   ds0:
-     delay:
-       lastEventTimestamps: 0
-       latestActiveTimeMillis: 0
-     position: ''
+   dataSources:
+     ds0:
+       delay:
+         lastEventTimestamps: 0
+         latestActiveTimeMillis: 0
+       position: ''
  sourceDatabaseType: H2
  status: RUNNING
