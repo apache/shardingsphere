@@ -33,7 +33,7 @@ import static org.junit.Assert.assertThat;
 
 public final class YamlOnRuleAlteredActionConfigurationSwapperTest {
     
-    private static final YamlOnRuleAlteredActionConfigurationSwapper CONFIG_YAML_SWAPPER = new YamlOnRuleAlteredActionConfigurationSwapper();
+    private static final YamlOnRuleAlteredActionConfigurationSwapper SWAPPER = new YamlOnRuleAlteredActionConfigurationSwapper();
     
     @Test
     public void assertSwap() {
@@ -64,11 +64,11 @@ public final class YamlOnRuleAlteredActionConfigurationSwapperTest {
     
     @Test
     public void assertYamlConfigNull() {
-        assertNull(CONFIG_YAML_SWAPPER.swapToYamlConfiguration(null));
+        assertNull(SWAPPER.swapToYamlConfiguration(null));
     }
     
     @Test
     public void assertConfigNull() {
-        assertNull(CONFIG_YAML_SWAPPER.swapToObject(null));
+        assertNull(SWAPPER.swapToObject(null));
     }
 }

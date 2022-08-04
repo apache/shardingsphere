@@ -38,7 +38,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class JobProgressTest {
     
-    private static final JobProgressYamlSwapper JOB_PROGRESS_YAML_SWAPPER = new JobProgressYamlSwapper();
+    private static final JobProgressYamlSwapper SWAPPER = new JobProgressYamlSwapper();
     
     @Test
     public void assertInit() {
@@ -98,6 +98,6 @@ public final class JobProgressTest {
     }
     
     private JobProgress getJobProgress(final String data) {
-        return JOB_PROGRESS_YAML_SWAPPER.swapToObject(YamlEngine.unmarshal(data, YamlJobProgress.class));
+        return SWAPPER.swapToObject(YamlEngine.unmarshal(data, YamlJobProgress.class));
     }
 }
