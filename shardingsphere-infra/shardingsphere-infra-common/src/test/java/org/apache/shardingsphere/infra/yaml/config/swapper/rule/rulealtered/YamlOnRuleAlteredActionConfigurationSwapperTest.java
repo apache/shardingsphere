@@ -56,9 +56,9 @@ public final class YamlOnRuleAlteredActionConfigurationSwapperTest {
         Properties dataConsistencyCheckerProps = new Properties();
         dataConsistencyCheckerProps.setProperty("chunk-size", "1000");
         yamlConfig.setDataConsistencyChecker(new YamlAlgorithmConfiguration("DATA_MATCH", dataConsistencyCheckerProps));
-        YamlOnRuleAlteredActionConfigurationSwapper yamlSwapper = new YamlOnRuleAlteredActionConfigurationSwapper();
-        OnRuleAlteredActionConfiguration actualConfig = yamlSwapper.swapToObject(yamlConfig);
-        YamlOnRuleAlteredActionConfiguration actualYamlConfig = yamlSwapper.swapToYamlConfiguration(actualConfig);
+        YamlOnRuleAlteredActionConfigurationSwapper onRuleAlteredActionConfigSwapper = new YamlOnRuleAlteredActionConfigurationSwapper();
+        OnRuleAlteredActionConfiguration actualConfig = onRuleAlteredActionConfigSwapper.swapToObject(yamlConfig);
+        YamlOnRuleAlteredActionConfiguration actualYamlConfig = onRuleAlteredActionConfigSwapper.swapToYamlConfiguration(actualConfig);
         assertThat(YamlEngine.marshal(actualYamlConfig), is(YamlEngine.marshal(yamlConfig)));
     }
     

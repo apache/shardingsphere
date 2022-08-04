@@ -31,7 +31,7 @@ import org.apache.shardingsphere.sharding.rule.TableRule;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlTableRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.sharding.yaml.swapper.YamlShardingRuleConfigurationSwapper;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,7 +47,7 @@ import java.util.stream.Collectors;
  */
 public final class ShardingRuleAlteredDetector implements RuleAlteredDetector {
     
-    private static final ShardingRuleConfigurationYamlSwapper SHARDING_RULE_CONFIG_SWAPPER = new ShardingRuleConfigurationYamlSwapper();
+    private static final YamlShardingRuleConfigurationSwapper SHARDING_RULE_CONFIG_SWAPPER = new YamlShardingRuleConfigurationSwapper();
     
     private static final YamlOnRuleAlteredActionConfigurationSwapper RULE_ALTERED_ACTION_CONFIG_SWAPPER = new YamlOnRuleAlteredActionConfigurationSwapper();
     

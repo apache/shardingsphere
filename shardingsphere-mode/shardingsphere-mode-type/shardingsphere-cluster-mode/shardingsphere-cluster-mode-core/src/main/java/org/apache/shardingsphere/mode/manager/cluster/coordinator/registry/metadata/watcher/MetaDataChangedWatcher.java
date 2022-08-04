@@ -27,7 +27,7 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSour
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
-import org.apache.shardingsphere.infra.yaml.schema.swapper.ShardingSphereTableYamlSwapper;
+import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlTableSwapper;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceChangedEvent;
@@ -174,6 +174,6 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     private SchemaChangedEvent createSchemaChangedEvent(final DataChangedEvent event, final String databaseName, final String schemaName, final String tableName) {
         return Type.DELETED == event.getType()
                 ? new SchemaChangedEvent(databaseName, schemaName, null, tableName)
-                : new SchemaChangedEvent(databaseName, schemaName, new ShardingSphereTableYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlShardingSphereTable.class)), null);
+                : new SchemaChangedEvent(databaseName, schemaName, new YamlTableSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlShardingSphereTable.class)), null);
     }
 }

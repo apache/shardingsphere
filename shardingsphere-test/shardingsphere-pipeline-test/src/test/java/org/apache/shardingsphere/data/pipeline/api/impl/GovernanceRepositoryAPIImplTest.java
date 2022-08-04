@@ -29,7 +29,7 @@ import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.fixture.FixturePipelineJobPersistCallback;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.JobProgressYamlSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
@@ -62,7 +62,7 @@ import static org.mockito.Mockito.mock;
 
 public final class GovernanceRepositoryAPIImplTest {
     
-    private static final JobProgressYamlSwapper SWAPPER = new JobProgressYamlSwapper();
+    private static final YamlJobProgressSwapper SWAPPER = new YamlJobProgressSwapper();
     
     private static GovernanceRepositoryAPI governanceRepositoryAPI;
     

@@ -43,7 +43,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingS
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.sharding.yaml.swapper.YamlShardingRuleConfigurationSwapper;
 
 import java.io.File;
 import java.io.IOException;
@@ -153,7 +153,7 @@ public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<
             return;
         }
         for (YamlRuleConfiguration rule : rules) {
-            ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfigurationYamlSwapper().swapToObject((YamlShardingRuleConfiguration) rule);
+            ShardingRuleConfiguration shardingRuleConfig = new YamlShardingRuleConfigurationSwapper().swapToObject((YamlShardingRuleConfiguration) rule);
             appendShardingAlgorithms(shardingRuleConfig, stringBuilder);
             appendKeyGenerators(shardingRuleConfig, stringBuilder);
             appendShardingTableRules(shardingRuleConfig, stringBuilder);

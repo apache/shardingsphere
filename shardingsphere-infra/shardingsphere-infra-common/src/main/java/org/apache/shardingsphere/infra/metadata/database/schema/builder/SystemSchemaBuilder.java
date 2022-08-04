@@ -25,7 +25,7 @@ import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseT
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
-import org.apache.shardingsphere.infra.yaml.schema.swapper.ShardingSphereTableYamlSwapper;
+import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlTableSwapper;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
@@ -50,7 +50,7 @@ public final class SystemSchemaBuilder {
      */
     public static Map<String, ShardingSphereSchema> build(final String databaseName, final DatabaseType databaseType) {
         Map<String, ShardingSphereSchema> result = new LinkedHashMap<>(databaseType.getSystemSchemas().size(), 1);
-        ShardingSphereTableYamlSwapper swapper = new ShardingSphereTableYamlSwapper();
+        YamlTableSwapper swapper = new YamlTableSwapper();
         for (String each : getSystemSchemas(databaseName, databaseType)) {
             result.put(each.toLowerCase(), createSchema(getSchemaStreams(each, databaseType), swapper));
         }
@@ -71,7 +71,7 @@ public final class SystemSchemaBuilder {
         return result;
     }
     
-    private static ShardingSphereSchema createSchema(final Collection<InputStream> schemaStreams, final ShardingSphereTableYamlSwapper swapper) {
+    private static ShardingSphereSchema createSchema(final Collection<InputStream> schemaStreams, final YamlTableSwapper swapper) {
         Map<String, ShardingSphereTable> tables = new LinkedHashMap<>(schemaStreams.size(), 1);
         for (InputStream each : schemaStreams) {
             YamlShardingSphereTable metaData = new Yaml().loadAs(each, YamlShardingSphereTable.class);

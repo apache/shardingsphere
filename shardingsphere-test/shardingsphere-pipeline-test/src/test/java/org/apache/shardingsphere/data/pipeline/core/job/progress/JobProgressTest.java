@@ -23,7 +23,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPo
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IntegerPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.JobProgressYamlSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobProgress;
 import org.apache.shardingsphere.data.pipeline.core.util.ConfigurationFileUtil;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -38,7 +38,7 @@ import static org.junit.Assert.assertTrue;
 
 public final class JobProgressTest {
     
-    private static final JobProgressYamlSwapper SWAPPER = new JobProgressYamlSwapper();
+    private static final YamlJobProgressSwapper SWAPPER = new YamlJobProgressSwapper();
     
     @Test
     public void assertInit() {
