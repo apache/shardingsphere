@@ -36,7 +36,7 @@ CREATE SHARDING BROADCAST TABLE RULES (t_province, t_city);
 
 ### Reserved word
 
-`CREATE`, `SHARDING`, `BROADCAST`, `TABLE`, `RULE`
+`CREATE`, `SHARDING`, `BROADCAST`, `TABLE`, `RULES`
 
 ### Related links
 
