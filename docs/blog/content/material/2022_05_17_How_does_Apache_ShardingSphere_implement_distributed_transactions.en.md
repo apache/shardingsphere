@@ -149,7 +149,7 @@ rules:
 ```
 Modify `conf/conf-sharding.yaml`
 
-```
+```yaml
 dataSources:
   ds_0:
     url: jdbc:mysql://127.0.0.1:3306/test?serverTimezone=UTC&allowPublicKeyRetrieval=true&useSSL=false
@@ -208,7 +208,7 @@ rules:
 **Start ShardingSphere-Proxy**
 Start the Proxy by running the following command:
 
-```
+```bash
 cd ${ShardingSphere}
 ./bin/start.sh
 ```
