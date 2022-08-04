@@ -47,6 +47,8 @@ public final class YamlProxyDataSourceConfiguration implements YamlConfiguration
     private Integer minPoolSize;
     
     private Boolean readOnly;
+
+    private Boolean registerMbeans;
     
     private Properties customPoolProps;
 }
