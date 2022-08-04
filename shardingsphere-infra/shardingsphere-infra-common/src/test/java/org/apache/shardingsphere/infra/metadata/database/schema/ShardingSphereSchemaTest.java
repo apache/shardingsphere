@@ -91,4 +91,18 @@ public final class ShardingSphereSchemaTest {
         ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.emptyList(), Collections.singletonList(new ShardingSphereIndex("col_idx")), Collections.emptyList());
         assertTrue(new ShardingSphereSchema(Collections.singletonMap("tbl", table)).containsIndex("tbl", "col_idx"));
     }
+    
+    @Test
+    public void assertGetVisibleColumnNamesWhenContainsKey() {
+        ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singletonList(
+                new ShardingSphereColumn("col", 0, false, false, false, true)), Collections.emptyList(), Collections.emptyList());
+        assertThat(new ShardingSphereSchema(Collections.singletonMap("tbl", table)).getVisibleColumnNames("tbl"), is(Collections.singletonList("col")));
+    }
+    
+    @Test
+    public void assertGetVisibleColumnNamesWhenNotContainsKey() {
+        ShardingSphereTable table = new ShardingSphereTable("tbl", Collections.singletonList(
+                new ShardingSphereColumn("col", 0, false, false, false, false)), Collections.emptyList(), Collections.emptyList());
+        assertThat(new ShardingSphereSchema(Collections.singletonMap("tbl", table)).getVisibleColumnNames("tbl"), is(Collections.emptyList()));
+    }
 }
