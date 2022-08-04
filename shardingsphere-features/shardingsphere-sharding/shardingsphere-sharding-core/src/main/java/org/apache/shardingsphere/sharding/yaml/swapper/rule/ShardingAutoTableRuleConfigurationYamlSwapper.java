@@ -41,9 +41,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public final class ShardingAutoTableRuleConfigurationYamlSwapper implements YamlConfigurationSwapper<YamlShardingAutoTableRuleConfiguration, ShardingAutoTableRuleConfiguration> {
     
-    private final ShardingStrategyConfigurationYamlSwapper shardingStrategyYamlSwapper = new ShardingStrategyConfigurationYamlSwapper();
+    private final ShardingStrategyConfigurationYamlSwapper shardingStrategySwapper = new ShardingStrategyConfigurationYamlSwapper();
     
-    private final KeyGenerateStrategyConfigurationYamlSwapper keyGenerateStrategyYamlSwapper = new KeyGenerateStrategyConfigurationYamlSwapper();
+    private final KeyGenerateStrategyConfigurationYamlSwapper keyGenerateStrategySwapper = new KeyGenerateStrategyConfigurationYamlSwapper();
     
     // TODO remove after refactoring auto table actual data node.
     private final Map<String, ShardingAlgorithm> shardingAlgorithms;
@@ -58,10 +58,10 @@ public final class ShardingAutoTableRuleConfigurationYamlSwapper implements Yaml
         result.setActualDataSources(data.getActualDataSources());
         result.setActualTablePrefix(data.getActualTablePrefix());
         if (null != data.getShardingStrategy()) {
-            result.setShardingStrategy(shardingStrategyYamlSwapper.swapToYamlConfiguration(data.getShardingStrategy()));
+            result.setShardingStrategy(shardingStrategySwapper.swapToYamlConfiguration(data.getShardingStrategy()));
         }
         if (null != data.getKeyGenerateStrategy()) {
-            result.setKeyGenerateStrategy(keyGenerateStrategyYamlSwapper.swapToYamlConfiguration(data.getKeyGenerateStrategy()));
+            result.setKeyGenerateStrategy(keyGenerateStrategySwapper.swapToYamlConfiguration(data.getKeyGenerateStrategy()));
         }
         if (null != data.getActualDataNodes() && !data.getActualDataNodes().isEmpty()) {
             result.setActualDataNodes(data.getActualDataNodes());
@@ -78,10 +78,10 @@ public final class ShardingAutoTableRuleConfigurationYamlSwapper implements Yaml
         result.setActualTablePrefix(yamlConfig.getActualTablePrefix());
         result.setActualDataNodes(yamlConfig.getActualDataNodes());
         if (null != yamlConfig.getShardingStrategy()) {
-            result.setShardingStrategy(shardingStrategyYamlSwapper.swapToObject(yamlConfig.getShardingStrategy()));
+            result.setShardingStrategy(shardingStrategySwapper.swapToObject(yamlConfig.getShardingStrategy()));
         }
         if (null != yamlConfig.getKeyGenerateStrategy()) {
-            result.setKeyGenerateStrategy(keyGenerateStrategyYamlSwapper.swapToObject(yamlConfig.getKeyGenerateStrategy()));
+            result.setKeyGenerateStrategy(keyGenerateStrategySwapper.swapToObject(yamlConfig.getKeyGenerateStrategy()));
         }
         return result;
     }
