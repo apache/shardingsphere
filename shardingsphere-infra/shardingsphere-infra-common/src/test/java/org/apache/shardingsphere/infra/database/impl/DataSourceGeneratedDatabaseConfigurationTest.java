@@ -17,15 +17,7 @@
 
 package org.apache.shardingsphere.infra.database.impl;
 
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import com.zaxxer.hikari.HikariDataSource;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-import javax.sql.DataSource;
 import org.apache.shardingsphere.infra.config.database.impl.DataSourceGeneratedDatabaseConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.ConnectionConfiguration;
 import org.apache.shardingsphere.infra.datasource.config.DataSourceConfiguration;
@@ -34,32 +26,60 @@ import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.junit.Test;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
 public final class DataSourceGeneratedDatabaseConfigurationTest {
     
     @Test
-    public void assertDataSourceGeneratedDatabaseConfiguration() {
-        String url = "jdbc:mysql://192.168.0.1:3306/foo_ds";
-        String username = "root";
-        String password = "root";
-        ConnectionConfiguration configuration = new ConnectionConfiguration(url, username, password);
-        PoolConfiguration poolConfiguration = new PoolConfiguration(2000L, 1000L, 1000L, 6, 2, false, new Properties());
-        DataSourceConfiguration dataSourceConfiguration = new DataSourceConfiguration(configuration, poolConfiguration);
-        Map<String, DataSourceConfiguration> dataSources = new HashMap<>(1);
-        dataSources.put("dsc", dataSourceConfiguration);
-        DataSourceGeneratedDatabaseConfiguration databaseConfiguration = new DataSourceGeneratedDatabaseConfiguration(dataSources,
-                Collections.singletonList(new FixtureRuleConfiguration("rule0")));
-        DataSource dataSource = databaseConfiguration.getDataSources().get("dsc");
-        assertThat(dataSource, instanceOf(HikariDataSource.class));
-        assertThat(((HikariDataSource) dataSource).getUsername(), is(username));
-        assertThat(((HikariDataSource) dataSource).getPassword(), is(password));
-        assertThat(((HikariDataSource) dataSource).getJdbcUrl(), is(url));
-        FixtureRuleConfiguration next =
-                (FixtureRuleConfiguration) databaseConfiguration.getRuleConfigurations().iterator().next();
-        assertThat(next.getName(), is("rule0"));
-        DataSourceProperties properties = databaseConfiguration.getDataSourceProperties().get("dsc");
-        assertThat(properties.getPoolPropertySynonyms().getStandardPropertyKeys().size(), is(6));
-        assertThat(properties.getConnectionPropertySynonyms().getStandardProperties().get("url"), is(url));
-        assertThat(properties.getConnectionPropertySynonyms().getStandardProperties().get("username"), is(username));
-        assertThat(properties.getConnectionPropertySynonyms().getStandardProperties().get("password"), is(password));
+    public void assertGetDataSources() {
+        DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
+        HikariDataSource hikariDataSource = (HikariDataSource) databaseConfig.getDataSources().get("normal_db");
+        assertThat(hikariDataSource.getJdbcUrl(), is("jdbc:mock://127.0.0.1/normal_db"));
+        assertThat(hikariDataSource.getUsername(), is("root"));
+        assertThat(hikariDataSource.getPassword(), is(""));
+    }
+    
+    @Test
+    public void assertGetRuleConfigurations() {
+        DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
+        FixtureRuleConfiguration ruleConfig = (FixtureRuleConfiguration) databaseConfig.getRuleConfigurations().iterator().next();
+        assertThat(ruleConfig.getName(), is("test_rule"));
+    }
+    
+    @Test
+    public void assertGetDataSourceProperties() {
+        DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
+        DataSourceProperties props = databaseConfig.getDataSourceProperties().get("normal_db");
+        Map<String, Object> poolStandardProps = props.getPoolPropertySynonyms().getStandardProperties();
+        assertThat(poolStandardProps.size(), is(6));
+        assertThat(poolStandardProps.get("connectionTimeoutMilliseconds"), is(2000L));
+        assertThat(poolStandardProps.get("idleTimeoutMilliseconds"), is(1000L));
+        assertThat(poolStandardProps.get("maxLifetimeMilliseconds"), is(1000L));
+        assertThat(poolStandardProps.get("maxPoolSize"), is(2));
+        assertThat(poolStandardProps.get("minPoolSize"), is(1));
+        assertThat(poolStandardProps.get("readOnly"), is(false));
+        Map<String, Object> connStandardProps = props.getConnectionPropertySynonyms().getStandardProperties();
+        assertThat(connStandardProps.size(), is(3));
+        assertThat(connStandardProps.get("url"), is("jdbc:mock://127.0.0.1/normal_db"));
+        assertThat(connStandardProps.get("username"), is("root"));
+        assertThat(connStandardProps.get("password"), is(""));
+    }
+    
+    private DataSourceGeneratedDatabaseConfiguration createDataSourceGeneratedDatabaseConfiguration() {
+        return new DataSourceGeneratedDatabaseConfiguration(createDataSources(), Collections.singletonList(new FixtureRuleConfiguration("test_rule")));
+    }
+    
+    private Map<String, DataSourceConfiguration> createDataSources() {
+        PoolConfiguration poolConfig = new PoolConfiguration(2000L, 1000L, 1000L, 2, 1, false, new Properties());
+        DataSourceConfiguration dataSourceConfig = new DataSourceConfiguration(new ConnectionConfiguration("jdbc:mock://127.0.0.1/normal_db", "root", ""), poolConfig);
+        Map<String, DataSourceConfiguration> result = new HashMap<>(1, 1);
+        result.put("normal_db", dataSourceConfig);
+        return result;
     }
 }
