@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
  */
 public final class H2SchemaMetaDataLoader implements DialectSchemaMetaDataLoader {
     
-    private static final String TABLE_META_DATA_NO_ORDER = "SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME, DATA_TYPE, TYPE_NAME, ORDINAL_POSITION FROM INFORMATION_SCHEMA.COLUMNS "
+    private static final String TABLE_META_DATA_NO_ORDER = "SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME, DATA_TYPE, ORDINAL_POSITION FROM INFORMATION_SCHEMA.COLUMNS "
             + "WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=?";
     
     private static final String ORDER_BY_ORDINAL_POSITION = " ORDER BY ORDINAL_POSITION";
@@ -104,11 +104,11 @@ public final class H2SchemaMetaDataLoader implements DialectSchemaMetaDataLoader
     private ColumnMetaData loadColumnMetaData(final Map<String, Integer> dataTypeMap, final ResultSet resultSet, final Collection<String> primaryKeys,
                                               final Map<String, Boolean> tableGenerated) throws SQLException {
         String columnName = resultSet.getString("COLUMN_NAME");
-        String typeName = resultSet.getString("TYPE_NAME");
+        String dataType = resultSet.getString("DATA_TYPE");
         boolean primaryKey = primaryKeys.contains(columnName);
         boolean generated = tableGenerated.getOrDefault(columnName, Boolean.FALSE);
         // H2 database case sensitive is always true
-        return new ColumnMetaData(columnName, dataTypeMap.get(typeName), primaryKey, generated, true, true);
+        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, true, true);
     }
     
     private String getTableMetaDataSQL(final Collection<String> tables) {

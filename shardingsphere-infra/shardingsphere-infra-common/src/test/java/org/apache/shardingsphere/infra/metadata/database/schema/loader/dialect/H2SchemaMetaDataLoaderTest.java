@@ -48,7 +48,7 @@ public final class H2SchemaMetaDataLoaderTest {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME, DATA_TYPE, TYPE_NAME, ORDINAL_POSITION FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? "
+                "SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME, DATA_TYPE, ORDINAL_POSITION FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? "
                         + "ORDER BY ORDINAL_POSITION")
                 .executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
@@ -72,7 +72,7 @@ public final class H2SchemaMetaDataLoaderTest {
         DataSource dataSource = mockDataSource();
         ResultSet resultSet = mockTableMetaDataResultSet();
         when(dataSource.getConnection().prepareStatement(
-                "SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME, DATA_TYPE, TYPE_NAME, ORDINAL_POSITION FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? "
+                "SELECT TABLE_CATALOG, TABLE_NAME, COLUMN_NAME, DATA_TYPE, ORDINAL_POSITION FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_CATALOG=? AND TABLE_SCHEMA=? "
                         + "AND TABLE_NAME IN ('tbl') ORDER BY ORDINAL_POSITION")
                 .executeQuery()).thenReturn(resultSet);
         ResultSet indexResultSet = mockIndexMetaDataResultSet();
@@ -113,7 +113,7 @@ public final class H2SchemaMetaDataLoaderTest {
         when(result.next()).thenReturn(true, true, false);
         when(result.getString("TABLE_NAME")).thenReturn("tbl");
         when(result.getString("COLUMN_NAME")).thenReturn("id", "name");
-        when(result.getString("TYPE_NAME")).thenReturn("int", "varchar");
+        when(result.getString("DATA_TYPE")).thenReturn("int", "varchar");
         when(result.getString("COLUMN_KEY")).thenReturn("PRI", "");
         when(result.getString("EXTRA")).thenReturn("auto_increment", "");
         when(result.getString("COLLATION_NAME")).thenReturn("utf8_general_ci", "utf8");
