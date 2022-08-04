@@ -24,7 +24,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDa
 import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.rule.YamlDatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.AlgorithmConfigurationYamlSwapper;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 

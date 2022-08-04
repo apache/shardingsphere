@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config.swapper.rulealtered;
+package org.apache.shardingsphere.infra.yaml.config.swapper.rule.rulealtered;
 
 import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActionConfiguration.InputConfiguration;
@@ -84,7 +84,7 @@ public final class OnRuleAlteredActionConfigurationYamlSwapper implements YamlCo
             return null == yamlConfig
                     ? null
                     : new InputConfiguration(yamlConfig.getWorkerThread(), yamlConfig.getBatchSize(), yamlConfig.getShardingSize(),
-                    ALGORITHM_CONFIG_YAML_SWAPPER.swapToObject(yamlConfig.getRateLimiter()));
+                            ALGORITHM_CONFIG_YAML_SWAPPER.swapToObject(yamlConfig.getRateLimiter()));
         }
     }
     

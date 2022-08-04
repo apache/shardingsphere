@@ -25,7 +25,7 @@ import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRu
 import org.apache.shardingsphere.dbdiscovery.yaml.config.rule.YamlDatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.rule.YamlDatabaseDiscoveryHeartBeatConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;

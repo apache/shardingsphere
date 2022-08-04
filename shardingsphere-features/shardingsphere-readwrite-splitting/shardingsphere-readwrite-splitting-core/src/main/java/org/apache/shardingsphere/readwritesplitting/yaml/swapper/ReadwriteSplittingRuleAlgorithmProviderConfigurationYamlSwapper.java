@@ -22,7 +22,7 @@ import org.apache.shardingsphere.readwritesplitting.constant.ReadwriteSplittingO
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.rule.YamlReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.swapper.strategy.DynamicReadwriteSplittingStrategyConfigurationYamlSwapper;
 import org.apache.shardingsphere.readwritesplitting.yaml.swapper.strategy.StaticReadwriteSplittingStrategyConfigurationYamlSwapper;

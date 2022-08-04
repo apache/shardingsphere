@@ -24,7 +24,7 @@ import org.apache.shardingsphere.authority.yaml.config.YamlAuthorityRuleConfigur
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUsersConfigurationConverter;
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.AlgorithmConfigurationYamlSwapper;
 
 import java.util.Collection;

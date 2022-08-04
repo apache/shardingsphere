@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config.swapper;
+package org.apache.shardingsphere.infra.yaml.config.swapper.rule;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config.swapper;
+package org.apache.shardingsphere.infra.yaml.config.shortcut;
 
 import org.junit.Test;
 

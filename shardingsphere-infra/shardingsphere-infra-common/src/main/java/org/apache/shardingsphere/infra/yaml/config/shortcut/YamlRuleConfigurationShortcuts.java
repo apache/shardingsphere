@@ -15,10 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config.swapper;
+package org.apache.shardingsphere.infra.yaml.config.shortcut;
 
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.util.yaml.shortcuts.ShardingSphereYamlShortcuts;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperFactory;
 
 import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
