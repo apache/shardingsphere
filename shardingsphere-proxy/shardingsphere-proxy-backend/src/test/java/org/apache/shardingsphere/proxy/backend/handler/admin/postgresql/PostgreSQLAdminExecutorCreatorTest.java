@@ -29,8 +29,11 @@ import org.apache.shardingsphere.proxy.backend.handler.admin.postgresql.executor
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLSetStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLShowStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLDeleteStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLInsertStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dml.PostgreSQLSelectStatement;
 import org.junit.Test;
 
@@ -63,8 +66,15 @@ public final class PostgreSQLAdminExecutorCreatorTest {
     private static final String SELECT_PG_CATALOG_WITH_SUBQUERY = "select * from (select * from pg_catalog.pg_namespace) t;";
     
     @Test
-    public void assertCreateWithSQLStatementContextOnly() {
-        assertThat(new PostgreSQLAdminExecutorCreator().create(null), is(Optional.empty()));
+    public void assertCreateWithOtherSQLStatementContextOnly() {
+        assertThat(new PostgreSQLAdminExecutorCreator().create(new CommonSQLStatementContext<>(new PostgreSQLInsertStatement())), is(Optional.empty()));
+    }
+    
+    @Test
+    public void assertCreateWithShowSQLStatement() {
+        Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(new CommonSQLStatementContext<>(new PostgreSQLShowStatement("client_encoding")));
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), instanceOf(PostgreSQLShowVariableExecutor.class));
     }
     
     @Test
@@ -117,6 +127,14 @@ public final class PostgreSQLAdminExecutorCreatorTest {
         Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator().create(sqlStatementContext, "SET client_encoding = utf8", "");
         assertTrue(actual.isPresent());
         assertThat(actual.get(), instanceOf(PostgreSQLSetVariableAdminExecutor.class));
+    }
+    
+    @Test
+    public void assertCreateWithResetStatement() {
+        Optional<DatabaseAdminExecutor> actual = new PostgreSQLAdminExecutorCreator()
+                .create(new CommonSQLStatementContext<>(new PostgreSQLResetParameterStatement("client_encoding")), "RESET client_encoding", "");
+        assertTrue(actual.isPresent());
+        assertThat(actual.get(), instanceOf(PostgreSQLResetVariableAdminExecutor.class));
     }
     
     @Test

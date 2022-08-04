@@ -12,6 +12,9 @@ The `DROP RESOURCE` syntax is used to drop resources from the current database
 ```sql
 DropResource ::=
   'DROP' 'RESOURCE' ( 'IF' 'EXISTS' )? dataSourceName  ( ',' dataSourceName )* ( 'IGNORE' 'SINGLE' 'TABLES' )?
+    
+dataSourceName ::=
+  identifier
 ```
 
 ### Supplement
@@ -51,7 +54,7 @@ DROP RESOURCE IF EXISTS ds_2;
 
 ### Reserved word
 
-`DROP`、 `RESOURCE`、 `IF`、 `EXISTS`、 `IGNORE`、 `SINGLE`、 `TABLES`
+`DROP`, `RESOURCE`, `IF`, `EXISTS`, `IGNORE`, `SINGLE`, `TABLES`
 
 ### Related links
 

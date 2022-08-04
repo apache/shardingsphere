@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.update;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.rule.AlgorithmInUsedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RequiredAlgorithmMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.RuleDefinitionViolationException;
@@ -118,9 +118,9 @@ public final class DropShardingAlgorithmStatementUpdaterTest {
         tableRuleConfig.setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("column", "t_order_db_inline"));
         tableRuleConfig.setTableShardingStrategy(new StandardShardingStrategyConfiguration("column", "t_order_tb_inline"));
         result.getTables().add(tableRuleConfig);
-        result.getShardingAlgorithms().put("t_order_db_inline", new ShardingSphereAlgorithmConfiguration("standard", new Properties()));
-        result.getShardingAlgorithms().put("t_order_tb_inline", new ShardingSphereAlgorithmConfiguration("standard", new Properties()));
-        result.getShardingAlgorithms().put("t_test", new ShardingSphereAlgorithmConfiguration("standard", new Properties()));
+        result.getShardingAlgorithms().put("t_order_db_inline", new AlgorithmConfiguration("standard", new Properties()));
+        result.getShardingAlgorithms().put("t_order_tb_inline", new AlgorithmConfiguration("standard", new Properties()));
+        result.getShardingAlgorithms().put("t_test", new AlgorithmConfiguration("standard", new Properties()));
         return result;
     }
 }

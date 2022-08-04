@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.factory;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.fixture.KeyGenerateAlgorithmFixture;
 import org.junit.Test;
 
@@ -35,8 +35,8 @@ public final class KeyGenerateAlgorithmFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceWithShardingSphereAlgorithmConfiguration() {
-        ShardingSphereAlgorithmConfiguration configuration = new ShardingSphereAlgorithmConfiguration("FIXTURE", new Properties());
+    public void assertNewInstanceWithAlgorithmConfiguration() {
+        AlgorithmConfiguration configuration = new AlgorithmConfiguration("FIXTURE", new Properties());
         assertThat(KeyGenerateAlgorithmFactory.newInstance(configuration), instanceOf(KeyGenerateAlgorithmFixture.class));
     }
     

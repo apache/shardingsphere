@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager;
 
-import org.apache.shardingsphere.infra.lock.LockMode;
-import org.apache.shardingsphere.infra.lock.LockScope;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.ShardingSphereDistributedDatabaseLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.ShardingSphereDistributedGlobalLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.state.ShardingSphereLockStateContext;
@@ -59,26 +57,21 @@ public final class ShardingSphereDistributedGlobalLockManagerTest {
     
     @Test
     public void assertGetDistributedLock() {
-        assertNotNull(shardingSphereDistributedLockManager.getDistributedLock(LockScope.GLOBAL));
+        assertNotNull(shardingSphereDistributedLockManager.getDistributedLock());
     }
     
     @Test
     public void assertTryReadLock() {
-        assertTrue(shardingSphereDistributedLockManager.tryLock(new DatabaseLockDefinition(LockMode.READ, new DatabaseLockNameDefinition("databaseName")), 3000L));
-    }
-    
-    @Test(expected = UnsupportedOperationException.class)
-    public void assertTryWriteLock() {
-        shardingSphereDistributedLockManager.tryLock(new DatabaseLockDefinition(LockMode.WRITE, new DatabaseLockNameDefinition("databaseName")), 3000L);
+        assertTrue(shardingSphereDistributedLockManager.tryLock(new DatabaseLockDefinition(new DatabaseLockNameDefinition("databaseName")), 3000L));
     }
     
     @Test
     public void assertReleaseLock() {
-        shardingSphereDistributedLockManager.releaseLock(new DatabaseLockDefinition(LockMode.READ, new DatabaseLockNameDefinition("databaseName")));
+        shardingSphereDistributedLockManager.releaseLock(new DatabaseLockDefinition(new DatabaseLockNameDefinition("databaseName")));
     }
     
     @Test
     public void assertIsLocked() {
-        assertFalse(shardingSphereDistributedLockManager.isLocked(new DatabaseLockDefinition(LockMode.READ, new DatabaseLockNameDefinition("databaseName"))));
+        assertFalse(shardingSphereDistributedLockManager.isLocked(new DatabaseLockDefinition(new DatabaseLockNameDefinition("databaseName"))));
     }
 }

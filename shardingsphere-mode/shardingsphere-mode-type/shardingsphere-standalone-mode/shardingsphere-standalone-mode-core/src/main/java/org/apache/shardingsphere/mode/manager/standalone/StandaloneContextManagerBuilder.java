@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilder;
 import org.apache.shardingsphere.mode.manager.ContextManagerBuilderParameter;
-import org.apache.shardingsphere.mode.process.subscriber.ProcessRegistrySubscriber;
 import org.apache.shardingsphere.mode.manager.standalone.lock.StandaloneLockContext;
+import org.apache.shardingsphere.mode.manager.standalone.subscriber.ProcessStandaloneSubscriber;
 import org.apache.shardingsphere.mode.manager.standalone.workerid.generator.StandaloneWorkerIdGenerator;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.MetaDataContextsFactory;
@@ -47,7 +47,7 @@ public final class StandaloneContextManagerBuilder implements ContextManagerBuil
         MetaDataPersistService persistService = new MetaDataPersistService(repository);
         persistConfigurations(persistService, parameter);
         InstanceContext instanceContext = buildInstanceContext(parameter);
-        new ProcessRegistrySubscriber(instanceContext.getEventBusContext());
+        new ProcessStandaloneSubscriber(instanceContext.getEventBusContext());
         MetaDataContexts metaDataContexts = MetaDataContextsFactory.create(persistService, parameter.getDatabaseConfigs(), instanceContext);
         return new ContextManager(metaDataContexts, instanceContext);
     }

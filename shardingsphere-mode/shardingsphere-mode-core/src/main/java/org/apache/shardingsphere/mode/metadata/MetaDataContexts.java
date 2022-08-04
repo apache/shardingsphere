@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.metadata;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.rule.identifier.type.ResourceHeldRule;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -34,8 +33,6 @@ public final class MetaDataContexts implements AutoCloseable {
     private final MetaDataPersistService persistService;
     
     private final ShardingSphereMetaData metaData;
-    
-    private final OptimizerContext optimizerContext;
     
     @Override
     public void close() throws Exception {

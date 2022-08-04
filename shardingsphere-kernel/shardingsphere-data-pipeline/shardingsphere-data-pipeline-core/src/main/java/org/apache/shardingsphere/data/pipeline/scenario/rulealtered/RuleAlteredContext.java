@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChanne
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreatorFactory;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithmFactory;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActionConfiguration.InputConfiguration;
 import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActionConfiguration.OutputConfiguration;
@@ -38,7 +38,7 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmC
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlOnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlOnRuleAlteredActionConfiguration.YamlInputConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlOnRuleAlteredActionConfiguration.YamlOutputConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rulealtered.OnRuleAlteredActionConfigurationYamlSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.rulealtered.YamlOnRuleAlteredActionConfigurationSwapper;
 
 import java.util.Properties;
 
@@ -56,7 +56,7 @@ public final class RuleAlteredContext {
     
     private static final String IMPORTER_THREAD_PREFIX = "Importer-";
     
-    private static final OnRuleAlteredActionConfigurationYamlSwapper SWAPPER = new OnRuleAlteredActionConfigurationYamlSwapper();
+    private static final YamlOnRuleAlteredActionConfigurationSwapper SWAPPER = new YamlOnRuleAlteredActionConfigurationSwapper();
     
     private final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig;
     
@@ -81,16 +81,16 @@ public final class RuleAlteredContext {
         OnRuleAlteredActionConfiguration onRuleAlteredActionConfig = convertActionConfig(actionConfig);
         this.onRuleAlteredActionConfig = onRuleAlteredActionConfig;
         InputConfiguration inputConfig = onRuleAlteredActionConfig.getInput();
-        ShardingSphereAlgorithmConfiguration inputRateLimiter = inputConfig.getRateLimiter();
+        AlgorithmConfiguration inputRateLimiter = inputConfig.getRateLimiter();
         inputRateLimitAlgorithm = null != inputRateLimiter ? JobRateLimitAlgorithmFactory.newInstance(inputRateLimiter) : null;
         OutputConfiguration outputConfig = onRuleAlteredActionConfig.getOutput();
-        ShardingSphereAlgorithmConfiguration outputRateLimiter = outputConfig.getRateLimiter();
+        AlgorithmConfiguration outputRateLimiter = outputConfig.getRateLimiter();
         outputRateLimitAlgorithm = null != outputRateLimiter ? JobRateLimitAlgorithmFactory.newInstance(outputRateLimiter) : null;
-        ShardingSphereAlgorithmConfiguration streamChannel = onRuleAlteredActionConfig.getStreamChannel();
+        AlgorithmConfiguration streamChannel = onRuleAlteredActionConfig.getStreamChannel();
         pipelineChannelCreator = PipelineChannelCreatorFactory.newInstance(streamChannel);
-        ShardingSphereAlgorithmConfiguration completionDetector = onRuleAlteredActionConfig.getCompletionDetector();
+        AlgorithmConfiguration completionDetector = onRuleAlteredActionConfig.getCompletionDetector();
         completionDetectAlgorithm = null != completionDetector ? JobCompletionDetectAlgorithmFactory.newInstance(completionDetector) : null;
-        ShardingSphereAlgorithmConfiguration dataConsistencyCheckerConfig = onRuleAlteredActionConfig.getDataConsistencyCalculator();
+        AlgorithmConfiguration dataConsistencyCheckerConfig = onRuleAlteredActionConfig.getDataConsistencyCalculator();
         dataConsistencyCalculateAlgorithm = null != dataConsistencyCheckerConfig
                 ? DataConsistencyCalculateAlgorithmFactory.newInstance(dataConsistencyCheckerConfig.getType(), dataConsistencyCheckerConfig.getProps())
                 : null;

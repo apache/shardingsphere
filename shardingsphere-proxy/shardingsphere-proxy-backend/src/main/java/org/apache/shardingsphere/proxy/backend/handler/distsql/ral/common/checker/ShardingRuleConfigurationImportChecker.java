@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker;
 
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
@@ -96,10 +96,10 @@ public final class ShardingRuleConfigurationImportChecker {
         checkInvalidAlgorithms(KEY_GENERATOR, currentRuleConfig.getKeyGenerators().values());
     }
     
-    private void checkInvalidAlgorithms(final String algorithmType, final Collection<ShardingSphereAlgorithmConfiguration> algorithmConfigs) throws DistSQLException {
+    private void checkInvalidAlgorithms(final String algorithmType, final Collection<AlgorithmConfiguration> algorithmConfigs) throws DistSQLException {
         Collection<String> invalidAlgorithms = algorithmConfigs.stream()
                 .filter(each -> !TypedSPIRegistry.findRegisteredService(ALGORITHM_TYPE_MAP.get(algorithmType), each.getType(), each.getProps()).isPresent())
-                .map(ShardingSphereAlgorithmConfiguration::getType).collect(Collectors.toList());
+                .map(AlgorithmConfiguration::getType).collect(Collectors.toList());
         DistSQLException.predictionThrow(invalidAlgorithms.isEmpty(), () -> new InvalidAlgorithmConfigurationException(algorithmType, invalidAlgorithms));
     }
     

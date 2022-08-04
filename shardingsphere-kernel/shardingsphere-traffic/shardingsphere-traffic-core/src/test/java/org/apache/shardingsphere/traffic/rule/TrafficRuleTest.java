@@ -20,7 +20,7 @@ package org.apache.shardingsphere.traffic.rule;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ProjectionsSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.CommentSegment;
@@ -102,8 +102,8 @@ public final class TrafficRuleTest {
         return result;
     }
     
-    private ShardingSphereAlgorithmConfiguration createSQLHintTrafficAlgorithm() {
-        ShardingSphereAlgorithmConfiguration result = mock(ShardingSphereAlgorithmConfiguration.class);
+    private AlgorithmConfiguration createSQLHintTrafficAlgorithm() {
+        AlgorithmConfiguration result = mock(AlgorithmConfiguration.class);
         when(result.getType()).thenReturn("SQL_HINT");
         Properties props = new Properties();
         props.put("traffic", true);
@@ -111,14 +111,14 @@ public final class TrafficRuleTest {
         return result;
     }
     
-    private ShardingSphereAlgorithmConfiguration createTransactionTrafficAlgorithm() {
-        ShardingSphereAlgorithmConfiguration result = mock(ShardingSphereAlgorithmConfiguration.class);
+    private AlgorithmConfiguration createTransactionTrafficAlgorithm() {
+        AlgorithmConfiguration result = mock(AlgorithmConfiguration.class);
         when(result.getType()).thenReturn("PROXY");
         return result;
     }
     
-    private ShardingSphereAlgorithmConfiguration createLoadBalancer() {
-        ShardingSphereAlgorithmConfiguration result = mock(ShardingSphereAlgorithmConfiguration.class);
+    private AlgorithmConfiguration createLoadBalancer() {
+        AlgorithmConfiguration result = mock(AlgorithmConfiguration.class);
         when(result.getType()).thenReturn("RANDOM");
         return result;
     }

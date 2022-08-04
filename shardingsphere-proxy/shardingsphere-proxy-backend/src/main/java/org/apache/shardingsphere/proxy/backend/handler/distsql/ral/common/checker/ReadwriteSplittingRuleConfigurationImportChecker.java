@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.resource.RequiredResourceMissedException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
@@ -80,7 +80,7 @@ public final class ReadwriteSplittingRuleConfigurationImportChecker {
     }
     
     private void checkLoadBalancers(final ReadwriteSplittingRuleConfiguration currentRuleConfig) throws DistSQLException {
-        Collection<String> notExistedLoadBalancers = currentRuleConfig.getLoadBalancers().values().stream().map(ShardingSphereAlgorithmConfiguration::getType)
+        Collection<String> notExistedLoadBalancers = currentRuleConfig.getLoadBalancers().values().stream().map(AlgorithmConfiguration::getType)
                 .filter(each -> !ReadQueryLoadBalanceAlgorithmFactory.contains(each)).collect(Collectors.toList());
         DistSQLException.predictionThrow(notExistedLoadBalancers.isEmpty(), () -> new InvalidAlgorithmConfigurationException("Load balancers", notExistedLoadBalancers));
     }

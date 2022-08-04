@@ -115,7 +115,7 @@ public final class OracleSchemaMetaDataLoader implements DialectSchemaMetaDataLo
         boolean generated = versionContainsIdentityColumn(databaseMetaData) && "YES".equals(resultSet.getString("IDENTITY_COLUMN"));
         // TODO need to support caseSensitive when version < 12.2.
         boolean caseSensitive = versionContainsCollation(databaseMetaData) && resultSet.getString("COLLATION").endsWith("_CS");
-        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive);
+        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, true);
     }
     
     private String getOriginalDataType(final String dataType) {

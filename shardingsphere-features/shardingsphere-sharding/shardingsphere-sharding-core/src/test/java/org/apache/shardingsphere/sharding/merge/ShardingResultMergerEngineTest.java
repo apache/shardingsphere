@@ -97,7 +97,7 @@ public final class ShardingResultMergerEngineTest {
     @Test
     public void assertNewInstanceWithDALStatement() {
         ConfigurationProperties props = new ConfigurationProperties(new Properties());
-        CommonSQLStatementContext<PostgreSQLShowStatement> sqlStatementContext = new CommonSQLStatementContext<>(new PostgreSQLShowStatement());
+        CommonSQLStatementContext<PostgreSQLShowStatement> sqlStatementContext = new CommonSQLStatementContext<>(new PostgreSQLShowStatement(""));
         assertThat(new ShardingResultMergerEngine().newInstance(DefaultDatabase.LOGIC_NAME, DatabaseTypeFactory.getInstance("MySQL"), null, props,
                 sqlStatementContext), instanceOf(ShardingDALResultMerger.class));
     }

@@ -23,7 +23,6 @@ import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
-import org.apache.shardingsphere.infra.lock.LockScope;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.lock.definition.LockDefinitionFactory;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
@@ -44,7 +43,7 @@ public final class DistributedLockContextTest {
         DistributedLockContext distributedLockContext = new DistributedLockContext(mock(ClusterPersistRepository.class));
         ComputeNodeInstance currentInstance = new ComputeNodeInstance(new ProxyInstanceMetaData("1", 3307));
         new InstanceContext(currentInstance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), distributedLockContext, eventBusContext);
-        assertThat(distributedLockContext.getLock(LockScope.GLOBAL), instanceOf(ShardingSphereLock.class));
+        assertThat(distributedLockContext.getLock(), instanceOf(ShardingSphereLock.class));
     }
     
     @Test
@@ -52,7 +51,7 @@ public final class DistributedLockContextTest {
         ComputeNodeInstance currentInstance = new ComputeNodeInstance(new ProxyInstanceMetaData("1", 3307));
         DistributedLockContext distributedLockContext = new DistributedLockContext(mock(ClusterPersistRepository.class));
         new InstanceContext(currentInstance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), distributedLockContext, eventBusContext);
-        assertNotNull(distributedLockContext.getLock(LockScope.GLOBAL));
+        assertNotNull(distributedLockContext.getLock());
     }
     
     @Test

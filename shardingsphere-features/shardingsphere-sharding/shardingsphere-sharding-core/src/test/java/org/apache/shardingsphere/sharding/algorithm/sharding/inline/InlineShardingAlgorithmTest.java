@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.algorithm.sharding.inline;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
@@ -48,9 +48,9 @@ public final class InlineShardingAlgorithmTest {
     
     @Before
     public void setUp() {
-        inlineShardingAlgorithm = (InlineShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("INLINE", createAllowRangeQueryProperties()));
+        inlineShardingAlgorithm = (InlineShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("INLINE", createAllowRangeQueryProperties()));
         inlineShardingAlgorithmWithSimplified = (InlineShardingAlgorithm) ShardingAlgorithmFactory.newInstance(
-                new ShardingSphereAlgorithmConfiguration("INLINE", createDisallowRangeQueryProperties()));
+                new AlgorithmConfiguration("INLINE", createDisallowRangeQueryProperties()));
     }
     
     private Properties createAllowRangeQueryProperties() {

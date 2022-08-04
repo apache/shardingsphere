@@ -21,7 +21,7 @@ import org.apache.shardingsphere.authority.factory.AuthorityProviderAlgorithmFac
 import org.apache.shardingsphere.authority.model.AuthorityRegistry;
 import org.apache.shardingsphere.authority.model.ShardingSpherePrivileges;
 import org.apache.shardingsphere.authority.provider.database.DatabasePermittedPrivilegesProviderAlgorithm;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
 import org.junit.Test;
@@ -46,7 +46,7 @@ public final class DatabasePermittedPrivilegesProviderAlgorithmTest {
     
     private DatabasePermittedPrivilegesProviderAlgorithm createAuthorityProviderAlgorithm() {
         return (DatabasePermittedPrivilegesProviderAlgorithm) AuthorityProviderAlgorithmFactory.newInstance(
-                new ShardingSphereAlgorithmConfiguration("DATABASE_PERMITTED", createProperties()));
+                new AlgorithmConfiguration("DATABASE_PERMITTED", createProperties()));
     }
     
     private Properties createProperties() {

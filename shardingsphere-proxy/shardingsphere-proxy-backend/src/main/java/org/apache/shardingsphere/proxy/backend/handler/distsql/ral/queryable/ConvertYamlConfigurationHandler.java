@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertYamlConfigurationStatement;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
 import org.apache.shardingsphere.infra.datasource.props.custom.CustomDataSourceProperties;
@@ -43,7 +43,7 @@ import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingS
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ComplexShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.sharding.yaml.swapper.YamlShardingRuleConfigurationSwapper;
 
 import java.io.File;
 import java.io.IOException;
@@ -153,7 +153,7 @@ public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<
             return;
         }
         for (YamlRuleConfiguration rule : rules) {
-            ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfigurationYamlSwapper().swapToObject((YamlShardingRuleConfiguration) rule);
+            ShardingRuleConfiguration shardingRuleConfig = new YamlShardingRuleConfigurationSwapper().swapToObject((YamlShardingRuleConfiguration) rule);
             appendShardingAlgorithms(shardingRuleConfig, stringBuilder);
             appendKeyGenerators(shardingRuleConfig, stringBuilder);
             appendShardingTableRules(shardingRuleConfig, stringBuilder);
@@ -164,9 +164,9 @@ public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<
     
     private void appendShardingAlgorithms(final ShardingRuleConfiguration shardingRuleConfig, final StringBuilder stringBuilder) {
         stringBuilder.append(DistSQLScriptConstants.CREATE_SHARDING_ALGORITHM);
-        Iterator<Entry<String, ShardingSphereAlgorithmConfiguration>> iterator = shardingRuleConfig.getShardingAlgorithms().entrySet().iterator();
+        Iterator<Entry<String, AlgorithmConfiguration>> iterator = shardingRuleConfig.getShardingAlgorithms().entrySet().iterator();
         while (iterator.hasNext()) {
-            Entry<String, ShardingSphereAlgorithmConfiguration> entry = iterator.next();
+            Entry<String, AlgorithmConfiguration> entry = iterator.next();
             String shardingAlgorithmName = entry.getKey();
             String algorithmType = entry.getValue().getType().toLowerCase();
             String property = appendShardingAlgorithmProperties(entry.getValue().getProps());
@@ -193,9 +193,9 @@ public class ConvertYamlConfigurationHandler extends QueryableRALBackendHandler<
     
     private void appendKeyGenerators(final ShardingRuleConfiguration shardingRuleConfig, final StringBuilder stringBuilder) {
         stringBuilder.append(DistSQLScriptConstants.CREATE_KEY_GENERATOR);
-        Iterator<Entry<String, ShardingSphereAlgorithmConfiguration>> iterator = shardingRuleConfig.getKeyGenerators().entrySet().iterator();
+        Iterator<Entry<String, AlgorithmConfiguration>> iterator = shardingRuleConfig.getKeyGenerators().entrySet().iterator();
         while (iterator.hasNext()) {
-            Entry<String, ShardingSphereAlgorithmConfiguration> entry = iterator.next();
+            Entry<String, AlgorithmConfiguration> entry = iterator.next();
             String generatorName = entry.getKey();
             String type = entry.getValue().getType();
             stringBuilder.append(String.format(DistSQLScriptConstants.KEY_GENERATOR, generatorName, type));

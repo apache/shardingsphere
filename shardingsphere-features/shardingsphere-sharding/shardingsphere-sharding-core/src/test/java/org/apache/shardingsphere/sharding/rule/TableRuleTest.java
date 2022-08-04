@@ -17,9 +17,10 @@
 
 package org.apache.shardingsphere.sharding.rule;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.exception.ShardingSphereConfigurationException;
 import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.algorithm.sharding.mod.ModShardingAlgorithm;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -79,7 +80,7 @@ public final class TableRuleTest {
     public void assertCreateAutoTableRuleWithModAlgorithm() {
         ShardingAutoTableRuleConfiguration tableRuleConfig = new ShardingAutoTableRuleConfiguration("LOGIC_TABLE", "ds0,ds1");
         tableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("col_1", "MOD"));
-        ModShardingAlgorithm shardingAlgorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("MOD", createProperties()));
+        ModShardingAlgorithm shardingAlgorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("MOD", createProperties()));
         TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), shardingAlgorithm, null);
         assertThat(actual.getLogicTable(), is("LOGIC_TABLE"));
         assertThat(actual.getActualDataNodes().size(), is(4));
@@ -93,7 +94,7 @@ public final class TableRuleTest {
     public void assertCreateAutoTableRuleWithModAlgorithmWithoutActualDataSources() {
         ShardingAutoTableRuleConfiguration tableRuleConfig = new ShardingAutoTableRuleConfiguration("LOGIC_TABLE", null);
         tableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("col_1", "MOD"));
-        ModShardingAlgorithm shardingAlgorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("MOD", createProperties()));
+        ModShardingAlgorithm shardingAlgorithm = (ModShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("MOD", createProperties()));
         TableRule actual = new TableRule(tableRuleConfig, Arrays.asList("ds0", "ds1", "ds2"), shardingAlgorithm, null);
         assertThat(actual.getLogicTable(), is("LOGIC_TABLE"));
         assertThat(actual.getActualDataNodes().size(), is(4));
@@ -180,7 +181,7 @@ public final class TableRuleTest {
     }
     
     @Test
-    public void assertDatNodeGroupsWhenShardingTableConfigActualTablePrefix() {
+    public void assertGetDatNodeGroupsWhenShardingTableConfigActualTablePrefix() {
         ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds_${0..1}.t_order_${0..1}");
         shardingTableRuleConfig.setActualTablePrefix("tmp_");
         TableRule tableRule = new TableRule(shardingTableRuleConfig, Arrays.asList("ds_0", "ds_1"), "order_id");
@@ -193,7 +194,7 @@ public final class TableRuleTest {
     }
     
     @Test
-    public void assertDatNodeGroupsWhenShardingAutoTableConfigActualTablePrefix() {
+    public void assertGetDatNodeGroupsWhenShardingAutoTableConfigActualTablePrefix() {
         ShardingAutoTableRuleConfiguration shardingTableRuleConfig = new ShardingAutoTableRuleConfiguration("t_order", "ds_${0..1}");
         shardingTableRuleConfig.setActualTablePrefix("tmp_");
         shardingTableRuleConfig.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "mod"));
@@ -205,6 +206,26 @@ public final class TableRuleTest {
         assertTrue(actual.get("ds_0").contains(new DataNode("ds_0", "tmp_t_order_2")));
         assertTrue(actual.get("ds_1").contains(new DataNode("ds_1", "tmp_t_order_1")));
         assertTrue(actual.get("ds_1").contains(new DataNode("ds_1", "tmp_t_order_3")));
+    }
+    
+    @Test
+    public void assertGetTableDataNode() {
+        ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds_0.t_order_0_0,ds_0.t_order_0_1,ds_1.t_order_1_0,ds_1.t_order_1_1");
+        TableRule tableRule = new TableRule(shardingTableRuleConfig, Arrays.asList("ds_0", "ds_1"), "order_id");
+        DataNodeInfo actual = tableRule.getTableDataNode();
+        assertThat(actual.getPrefix(), is("t_order_"));
+        assertThat(actual.getPaddingChar(), is('0'));
+        assertThat(actual.getSuffixMinLength(), is(3));
+    }
+    
+    @Test
+    public void assertGetDataSourceDataNode() {
+        ShardingTableRuleConfiguration shardingTableRuleConfig = new ShardingTableRuleConfiguration("t_order", "ds_0.t_order,ds_1.t_order");
+        TableRule tableRule = new TableRule(shardingTableRuleConfig, Arrays.asList("ds_0", "ds_1"), "order_id");
+        DataNodeInfo actual = tableRule.getDataSourceDataNode();
+        assertThat(actual.getPrefix(), is("ds_"));
+        assertThat(actual.getPaddingChar(), is('0'));
+        assertThat(actual.getSuffixMinLength(), is(1));
     }
     
     private ModShardingAlgorithm createModShardingAlgorithm() {
