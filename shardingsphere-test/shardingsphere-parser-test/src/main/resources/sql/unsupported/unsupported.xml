@@ -340,9 +340,6 @@
     <sql-case id="create_by_mysql_source_test_case482" value="CREATE TABLE t1 (f1 INT) START TRANSACTION" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case483" value="CREATE TABLE t1 (f1 INT) START TRANSACTION" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case484" value="CREATE TABLE t1 (f1 INT) START TRANSACTION" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case485" value="CREATE TABLE t1 (f1 INT, f2 INT PRIMARY KEY INVISIBLE)" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case486" value="CREATE TABLE t1 (f1 INT, f2 INT PRIMARY KEY INVISIBLE)" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case487" value="CREATE TABLE t1 (f1 INT, f2 INT PRIMARY KEY INVISIBLE)" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case488" value="CREATE TABLE t1 (g GEOMCOLLECTION)" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case489" value="CREATE TABLE t1 (get INT)" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case495" value="CREATE TABLE t1 AS SELECT CONCAT(CURRENT_TIME()), CONCAT(CURRENT_TIME(6)), CONCAT(UTC_TIME()), CONCAT(UTC_TIME(6)), CONCAT(CURRENT_TIMESTAMP()), CONCAT(CURRENT_TIMESTAMP(6)), CONCAT(UTC_TIMESTAMP()), CONCAT(UTC_TIMESTAMP(6)), CONCAT(LOCALTIME()), CONCAT(LOCALTIME(6)), CONCAT(LOCALTIMESTAMP()), CONCAT(LOCALTIMESTAMP(6)), CONCAT(SYSDATE()), CONCAT(SYSDATE(6))" db-types="MySQL" />
@@ -372,12 +369,8 @@
     <sql-case id="create_by_mysql_source_test_case521" value="CREATE TABLE t1(a DATETIME NOT NULL DEFAULT NOW(), b INT)" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case522" value="CREATE TABLE t1(a DATETIME NOT NULL DEFAULT NOW(), b INT)" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case523" value="CREATE TABLE t1(a DATETIME) PARTITION BY HASH (EXTRACT(HOUR_MICROSECOND FROM a))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case525" value="CREATE TABLE t1(a INT, b DATE NOT NULL INVISIBLE) PARTITION BY RANGE( YEAR(b) ) ( PARTITION p0 VALUES LESS THAN (1960), PARTITION p1 VALUES LESS THAN (1970), PARTITION p2 VALUES LESS THAN (1980), PARTITION p3 VALUES LESS THAN (1990))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case526" value="CREATE TABLE t1(c1 INT, c2 INT, CONSTRAINT FLOAT CHECK (c2 &lt; 10))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case530" value="CREATE TABLE t1(col1 MULTIPOLYGON NOT NULL, SPATIAL INDEX USING BTREE (col1))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case531" value="CREATE TABLE t1(f1 INT INVISIBLE, f2 INT)" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case532" value="CREATE TABLE t1(f1 INT INVISIBLE, f2 INT, f3 INT AS (f1 + 10), f4 INT AS (f2 + 10) INVISIBLE)" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case533" value="CREATE TABLE t1(f1 INT INVISIBLE, f2 INT, f3 INT AS (f1 + 10), f4 INT AS (f2 + 10) INVISIBLE, f5 INT AS (f2 + 10) STORED INVISIBLE)" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case535" value="CREATE TABLE t1(f1 int CHECK())" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case536" value="CREATE TABLE t1(f1 int CHECK(f1 &lt; 10), f2 int CHECK())" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case537" value="CREATE TABLE t1(f1 int CHECK(f1 &lt; 10), f2 int CHECK(f2 &lt; 10) NOT)" db-types="MySQL" />
@@ -398,15 +391,11 @@
     <sql-case id="create_by_mysql_source_test_case552" value="CREATE TABLE t1(f1 int, CONSTRAINT t1_ck CHECK)" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case553" value="CREATE TABLE t1(i INT PRIMARY KEY) KEY_BLOCK_SIZE = -2147483647" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case554" value="CREATE TABLE t1(i INT PRIMARY KEY) KEY_BLOCK_SIZE = -2147483648" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case555" value="CREATE TABLE t1(id INT NOT NULL INVISIBLE, name VARCHAR(10)) PARTITION BY LIST(id) ( PARTITION p0 VALUES IN (10,19), PARTITION p1 VALUES IN (20,29), PARTITION p2 VALUES IN (30,39), PARTITION p3 VALUES IN (40,49))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case556" value="CREATE TABLE t1(id INT NOT NULL INVISIBLE, name VARCHAR(40)) PARTITION BY HASH(id) PARTITIONS 4" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case557" value="CREATE TABLE t1(id INT PRIMARY KEY NOT NULL INVISIBLE, name VARCHAR(40)) PARTITION BY KEY() PARTITIONS 4" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case559" value="CREATE TABLE t1(j json, INDEX mv_idx((CAST(j AS UNSIGNED ARRAY))))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case561" value="CREATE TABLE t1(x INT, KEY `` ((x + 1)))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case565" value="CREATE TABLE t2 (a INT, b INT DEFAULT (select * from t1))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case566" value="CREATE TABLE t2 (a INT, b INT DEFAULT (select 1))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case567" value="CREATE TABLE t2 (a INT, b INT DEFAULT (select count(*) from t1))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case568" value="CREATE TABLE t2 (f1 INT PRIMARY KEY INVISIBLE, f2 INT, CONSTRAINT FOREIGN KEY (f1) REFERENCES t1(f2))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case569" value="CREATE TABLE t2 (i INT, j DOUBLE DEFAULT (SQRT(i)), k DOUBLE DEFAULT (DEFAULT(j)))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case570" value="CREATE TABLE t2 (pk INTEGER PRIMARY KEY) TABLESPACE ``" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case572" value="CREATE TABLE t2 AS SELECT INSERT(1133,3,0,22) FROM t1" db-types="MySQL" />
@@ -416,7 +405,6 @@
     <sql-case id="create_by_mysql_source_test_case576" value="CREATE TABLE t2 AS SELECT REPEAT(1,2) FROM t1" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case577" value="CREATE TABLE t2 AS SELECT REPEAT(1,2) FROM t1" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case578" value="CREATE TABLE t2 LIKE t1 PARTITION (p0, p2)" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case579" value="CREATE TABLE t2(f1 INT, f2 INT INVISIBLE)" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case580" value="CREATE TABLE t3 (a INT PRIMARY KEY, d INT DEFAULT (-a + 1), c INT DEFAULT (DEFAULT(d)) )" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case585" value="CREATE TABLE t4 (s1 CHAR(50) CHARACTER SET latin1, s2 CHAR(50) CHARACTER SET cp932, d DECIMAL(10,2))| CREATE PROCEDURE bug18293 (IN ins1 CHAR(50), IN ins2 CHAR(50) CHARACTER SET cp932, IN ind DECIMAL(10,2)) BEGIN INSERT INTO t4 VALUES (ins1, ins2, ind)" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case588" value="CREATE TABLE t_illegal (col_1 INT CHECK something (whatever))" db-types="MySQL" />
@@ -1886,17 +1874,9 @@
     <sql-case id="alter_by_mysql_source_test_case13" value="ALTER TABLE t ALTER COLUMN b SET DEFAULT (repeat(&apos;b&apos;, i))" db-types="MySQL" />
     <sql-case id="alter_by_mysql_source_test_case14" value="ALTER TABLE t ALTER COLUMN b SET DEFAULT (repeat(&apos;b&apos;, i))" db-types="MySQL" />
     <sql-case id="alter_by_mysql_source_test_case15" value="ALTER TABLE t ALTER COLUMN b SET DEFAULT (repeat(&apos;b&apos;, i))" db-types="MySQL" />
-    <sql-case id="alter_by_mysql_source_test_case16" value="ALTER TABLE t1 ALTER COLUMN f1 SET INVISIBLE, ALGORITHM = INPLACE" db-types="MySQL" />
-    <sql-case id="alter_by_mysql_source_test_case17" value="ALTER TABLE t1 ALTER COLUMN f1 SET INVISIBLE, ALGORITHM = INPLACE" db-types="MySQL" />
-    <sql-case id="alter_by_mysql_source_test_case18" value="ALTER TABLE t1 ALTER COLUMN f1 SET INVISIBLE, ALGORITHM = INSTANT" db-types="MySQL" />
-    <sql-case id="alter_by_mysql_source_test_case19" value="ALTER TABLE t1 ALTER COLUMN f1 SET INVISIBLE, ALGORITHM = INSTANT" db-types="MySQL" />
     <sql-case id="alter_by_mysql_source_test_case20" value="ALTER TABLE t1 ALTER COLUMN i SET DEFAULT(GROUPING(r))" db-types="MySQL" />
-    <sql-case id="alter_by_mysql_source_test_case21" value="ALTER TABLE t1 CHANGE f1 f1 INT VISIBLE, ALGORITHM = INPLACE" db-types="MySQL" />
-    <sql-case id="alter_by_mysql_source_test_case22" value="ALTER TABLE t1 CHANGE f1 f1 INT VISIBLE, ALGORITHM = INSTANT" db-types="MySQL" />
     <sql-case id="alter_by_mysql_source_test_case23" value="ALTER TABLE t1 MODIFY COLUMN c1 FLOAT(10.3), DROP CHECK t1_chk_1, ADD CONSTRAINT CHECK(C1 &gt; 10.1) ENFORCED" db-types="MySQL" />
     <sql-case id="alter_by_mysql_source_test_case24" value="ALTER TABLE t1 MODIFY COLUMN i INT AUTO_INCREMENT PRIMARY KEY DEFAULT(GROUPING(r))" db-types="MySQL" />
-    <sql-case id="alter_by_mysql_source_test_case25" value="ALTER TABLE t1 MODIFY f1 INT INVISIBLE, ALGORITHM = INPLACE" db-types="MySQL" />
-    <sql-case id="alter_by_mysql_source_test_case26" value="ALTER TABLE t1 MODIFY f1 INT INVISIBLE, ALGORITHM = INSTANT" db-types="MySQL" />
     <sql-case id="alter_by_mysql_source_test_case27" value="ALTER TABLE t1 ORDER BY t1.id, t1.status, t1.type_id, t1.user_id, t1.body" db-types="MySQL" />
     <sql-case id="alter_by_mysql_source_test_case28" value="ALTER TABLE t1 TABLESPACE ``" db-types="MySQL" />
     <sql-case id="alter_by_mysql_source_test_case29" value="ALTER TABLE t1 partition by range (a) subpartition by hash (a+b) ( partition x1 values less than (1) ( subpartition x11 engine innodb nodegroup 0, subpartition x12 engine innodb nodegroup 1), partition x2 values less than (5) ( subpartition x21 engine innodb nodegroup 0, subpartition x22 engine innodb nodegroup 1) )" db-types="MySQL" />
