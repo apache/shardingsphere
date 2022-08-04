@@ -36,7 +36,7 @@ import static org.junit.Assert.fail;
  * MySQL truncate XA transaction integration test.
  */
 @Slf4j
-@TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL}, transactionTypes = {TransactionType.XA})
+@TransactionTestCase(dbTypes = {TransactionTestConstants.MYSQL}, adapters = {TransactionTestConstants.PROXY}, transactionTypes = {TransactionType.XA})
 public final class MySQLXATruncateTestCase extends BaseTransactionTestCase {
     
     public MySQLXATruncateTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
@@ -50,6 +50,7 @@ public final class MySQLXATruncateTestCase extends BaseTransactionTestCase {
     }
     
     private void assertTruncateInMySQLXATransaction() throws SQLException {
+        // TODO This test case may cause bad effects to other test cases in JDBC adapter
         prepare();
         Connection conn = getDataSource().getConnection();
         conn.setAutoCommit(false);
