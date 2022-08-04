@@ -25,7 +25,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.JobProgressYamlSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobProgress;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAPI {
     
-    private static final JobProgressYamlSwapper SWAPPER = new JobProgressYamlSwapper();
+    private static final YamlJobProgressSwapper SWAPPER = new YamlJobProgressSwapper();
     
     private final ClusterPersistRepository repository;
     

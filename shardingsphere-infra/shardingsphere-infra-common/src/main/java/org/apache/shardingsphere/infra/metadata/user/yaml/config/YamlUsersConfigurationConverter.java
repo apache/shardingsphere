@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.user.ShardingSphereUser;
-import org.apache.shardingsphere.infra.metadata.user.yaml.swapper.UserYamlSwapper;
+import org.apache.shardingsphere.infra.metadata.user.yaml.swapper.YamlUserSwapper;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class YamlUsersConfigurationConverter {
     
-    private static final UserYamlSwapper SWAPPER = new UserYamlSwapper();
+    private static final YamlUserSwapper SWAPPER = new YamlUserSwapper();
     
     /**
      * Convert to users YAML content.

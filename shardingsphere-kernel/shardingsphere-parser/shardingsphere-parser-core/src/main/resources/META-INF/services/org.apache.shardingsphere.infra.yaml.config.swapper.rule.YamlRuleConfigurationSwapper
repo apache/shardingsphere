@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.parser.yaml.swapper.SQLParserRuleConfigurationYamlSwapper
+org.apache.shardingsphere.parser.yaml.swapper.YamlSQLParserRuleConfigurationSwapper

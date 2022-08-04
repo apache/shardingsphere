@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
-import org.apache.shardingsphere.infra.yaml.schema.swapper.ShardingSphereTableYamlSwapper;
+import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlTableSwapper;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -55,7 +55,7 @@ public final class DatabaseMetaDataPersistServiceTest {
     
     @Test
     public void assertPersist() {
-        ShardingSphereTable table = new ShardingSphereTableYamlSwapper().swapToObject(YamlEngine.unmarshal(readYAML(), YamlShardingSphereTable.class));
+        ShardingSphereTable table = new YamlTableSwapper().swapToObject(YamlEngine.unmarshal(readYAML(), YamlShardingSphereTable.class));
         ShardingSphereSchema schema = new ShardingSphereSchema();
         schema.getTables().put("t_order", table);
         new DatabaseMetaDataPersistService(repository).persistMetaData("foo_db", "foo_schema", schema);
