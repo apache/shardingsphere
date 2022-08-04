@@ -31,7 +31,7 @@ Compute node governance is suitable for Cluster mode. For more information about
 **Cluster Preparation**
 Take a standalone simulation of three Proxy compute nodes as an example. To use the mode, follow the configuration below:
 
-```
+```yaml
 mode:
   type: Cluster
   repository:
@@ -47,7 +47,7 @@ mode:
 ```
 Execute the bootup command separately:
 
-```
+```bash
 sh %SHARDINGSPHERE_PROXY_HOME%/bin/start.sh 3307
 sh %SHARDINGSPHERE_PROXY_HOME%/bin/start.sh 3308
 sh %SHARDINGSPHERE_PROXY_HOME%/bin/start.sh 3309
@@ -58,7 +58,7 @@ After the three Proxy instances are successfully started, the compute node clust
 
 Use the client to connect to any compute node, such as 3307:
 
-```
+```bash
 mysql -h 127.0.0.1 -P 3307 -u root -p
 ```
 
@@ -170,7 +170,7 @@ By listening to the community’s feedback, we noticed that querying and modifyi
 
 First, let’s review how to configure props:
 
-```
+```yaml
 props:
   max-connections-size-per-query: 1
   kernel-executor-size: 16  # Infinite by default.
