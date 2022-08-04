@@ -27,6 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
@@ -49,7 +50,7 @@ public final class BinlogContextTest {
     
     @Before
     public void setUp() {
-        binlogContext = new BinlogContext();
+        binlogContext = new BinlogContext(4, new HashMap<>());
         when(tableMapEventPacket.getSchemaName()).thenReturn(TEST_SCHEMA);
         when(tableMapEventPacket.getTableName()).thenReturn(TEST_TABLE);
     }

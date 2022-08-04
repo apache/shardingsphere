@@ -39,6 +39,7 @@ import org.apache.shardingsphere.proxy.backend.exception.TableModifyInTransactio
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.DDLStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.TruncateStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.opengauss.OpenGaussStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.PostgreSQLStatement;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -79,13 +80,25 @@ public final class ReactiveProxySQLExecutor {
     
     private boolean isExecuteDDLInXATransaction(final SQLStatement sqlStatement) {
         TransactionStatus transactionStatus = backendConnection.getConnectionSession().getTransactionStatus();
-        return TransactionType.XA == transactionStatus.getTransactionType() && sqlStatement instanceof DDLStatement && transactionStatus.isInTransaction();
+        return TransactionType.XA == transactionStatus.getTransactionType() && isUnsupportedDDLStatement(sqlStatement) && transactionStatus.isInTransaction();
     }
     
     private boolean isExecuteDDLInPostgreSQLOpenGaussTransaction(final SQLStatement sqlStatement) {
         // TODO implement DDL statement commit/rollback in PostgreSQL/openGauss transaction
         boolean isPostgreSQLOpenGaussStatement = sqlStatement instanceof PostgreSQLStatement || sqlStatement instanceof OpenGaussStatement;
-        return sqlStatement instanceof DDLStatement && isPostgreSQLOpenGaussStatement && backendConnection.getConnectionSession().getTransactionStatus().isInTransaction();
+        boolean isSupportedDDLStatement = sqlStatement instanceof TruncateStatement;
+        return sqlStatement instanceof DDLStatement && !isSupportedDDLStatement && isPostgreSQLOpenGaussStatement && backendConnection.getConnectionSession().getTransactionStatus().isInTransaction();
+    }
+    
+    private boolean isUnsupportedDDLStatement(final SQLStatement sqlStatement) {
+        if (isPostgreSQLOrOpenGaussStatement(sqlStatement) && sqlStatement instanceof TruncateStatement) {
+            return false;
+        }
+        return sqlStatement instanceof DDLStatement;
+    }
+    
+    private boolean isPostgreSQLOrOpenGaussStatement(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof PostgreSQLStatement || sqlStatement instanceof OpenGaussStatement;
     }
     
     /**

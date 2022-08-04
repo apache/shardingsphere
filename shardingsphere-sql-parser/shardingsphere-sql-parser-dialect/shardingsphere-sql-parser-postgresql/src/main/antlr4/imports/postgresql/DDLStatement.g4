@@ -1059,7 +1059,7 @@ alterStatistics
     ( ifExists? anyName SET STATISTICS signedIconst
     | anyName RENAME TO name
     | anyName SET SCHEMA name
-    | anyName OWNER TO roleSpec)
+    | anyName OWNER TO roleSpec )
     ;
 
 alterSubscription

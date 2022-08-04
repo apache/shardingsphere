@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.manager.lock.definition;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.lock.LockMode;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
 
 /**
@@ -28,8 +27,6 @@ import org.apache.shardingsphere.infra.lock.LockDefinition;
 @RequiredArgsConstructor
 @Getter
 public final class DatabaseLockDefinition implements LockDefinition {
-    
-    private final LockMode lockMode;
     
     private final DatabaseLockNameDefinition lockNameDefinition;
 }

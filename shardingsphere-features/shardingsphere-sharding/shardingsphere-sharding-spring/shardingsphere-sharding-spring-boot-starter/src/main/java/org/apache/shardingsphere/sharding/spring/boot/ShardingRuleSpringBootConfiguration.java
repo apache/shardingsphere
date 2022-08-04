@@ -27,7 +27,7 @@ import org.apache.shardingsphere.sharding.spring.boot.algorithm.ShardingAlgorith
 import org.apache.shardingsphere.sharding.spring.boot.condition.ShardingSpringBootCondition;
 import org.apache.shardingsphere.sharding.spring.boot.rule.YamlShardingRuleSpringBootConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleAlgorithmProviderConfigurationYamlSwapper;
+import org.apache.shardingsphere.sharding.yaml.swapper.YamlShardingRuleAlgorithmProviderConfigurationSwapper;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -50,7 +50,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ShardingRuleSpringBootConfiguration {
     
-    private final ShardingRuleAlgorithmProviderConfigurationYamlSwapper swapper = new ShardingRuleAlgorithmProviderConfigurationYamlSwapper();
+    private final YamlShardingRuleAlgorithmProviderConfigurationSwapper swapper = new YamlShardingRuleAlgorithmProviderConfigurationSwapper();
     
     private final YamlShardingRuleSpringBootConfiguration yamlConfig;
     

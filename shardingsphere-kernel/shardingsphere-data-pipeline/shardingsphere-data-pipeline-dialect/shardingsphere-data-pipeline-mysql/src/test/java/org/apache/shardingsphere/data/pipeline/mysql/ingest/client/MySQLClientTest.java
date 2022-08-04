@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.mysql.ingest.client;
 
 import io.netty.channel.Channel;
+import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelPipeline;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.util.concurrent.Promise;
@@ -52,14 +53,18 @@ public final class MySQLClientTest {
     @Mock
     private ChannelPipeline pipeline;
     
+    @Mock
+    private ChannelFuture channelFuture;
+    
     private MySQLClient mysqlClient;
     
     @Before
-    public void setUp() {
+    public void setUp() throws InterruptedException {
         mysqlClient = new MySQLClient(new ConnectInfo(1, "host", 3306, "username", "password"));
         when(channel.pipeline()).thenReturn(pipeline);
         when(channel.isOpen()).thenReturn(true);
-        when(channel.close()).thenAnswer(invocation -> {
+        when(channel.close()).thenReturn(channelFuture);
+        when(channelFuture.sync()).thenAnswer(invocation -> {
             when(channel.isOpen()).thenReturn(false);
             return null;
         });
