@@ -51,7 +51,7 @@ public final class JDBCRepository implements StandalonePersistRepository {
     
     @SneakyThrows
     @Override
-    public void init(Properties props) {
+    public void init(final Properties props) {
         jdbcRepositoryProvider = JDBCRepositoryProviderFactory.getInstance(props.get("provider"));
         JDBCRepositoryProperties localRepositoryProps = new JDBCRepositoryProperties(props);
         String jdbcUrl = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(JDBCRepositoryPropertyKey.JDBC_URL))).orElse(jdbcRepositoryProvider.getDefaultJDBCUrl());
