@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.yaml.config.swapper.mode;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
@@ -26,7 +27,6 @@ import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
  * Persist repository configuration YAML swapper factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@SuppressWarnings("rawtypes")
 public final class PersistRepositoryConfigurationYamlSwapperFactory {
     
     static {
@@ -39,7 +39,8 @@ public final class PersistRepositoryConfigurationYamlSwapperFactory {
      * @param type swapper type
      * @return got instance
      */
-    public static PersistRepositoryConfigurationYamlSwapper getInstance(final String type) {
+    @SuppressWarnings("unchecked")
+    public static PersistRepositoryConfigurationYamlSwapper<PersistRepositoryConfiguration> getInstance(final String type) {
         return TypedSPIRegistry.getRegisteredService(PersistRepositoryConfigurationYamlSwapper.class, type);
     }
 }
