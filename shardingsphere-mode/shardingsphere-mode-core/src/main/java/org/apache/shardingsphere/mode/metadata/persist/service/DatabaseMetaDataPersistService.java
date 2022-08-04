@@ -21,8 +21,8 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlTableMetaData;
-import org.apache.shardingsphere.infra.yaml.schema.swapper.TableMetaDataYamlSwapper;
+import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
+import org.apache.shardingsphere.infra.yaml.schema.swapper.ShardingSphereTableYamlSwapper;
 import org.apache.shardingsphere.mode.metadata.persist.node.DatabaseMetaDataNode;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 
@@ -62,7 +62,7 @@ public final class DatabaseMetaDataPersistService {
             return;
         }
         tables.forEach((key, value) -> repository.persist(DatabaseMetaDataNode.getTableMetaDataPath(databaseName, schemaName, key),
-                YamlEngine.marshal(new TableMetaDataYamlSwapper().swapToYamlConfiguration(value))));
+                YamlEngine.marshal(new ShardingSphereTableYamlSwapper().swapToYamlConfiguration(value))));
     }
     
     /**
@@ -74,7 +74,7 @@ public final class DatabaseMetaDataPersistService {
      */
     public void persistTable(final String databaseName, final String schemaName, final ShardingSphereTable table) {
         repository.persist(DatabaseMetaDataNode.getTableMetaDataPath(databaseName, schemaName, table.getName().toLowerCase()),
-                YamlEngine.marshal(new TableMetaDataYamlSwapper().swapToYamlConfiguration(table)));
+                YamlEngine.marshal(new ShardingSphereTableYamlSwapper().swapToYamlConfiguration(table)));
     }
     
     /**
@@ -159,7 +159,7 @@ public final class DatabaseMetaDataPersistService {
         ShardingSphereSchema schema = new ShardingSphereSchema();
         tables.forEach(each -> {
             String content = repository.get(DatabaseMetaDataNode.getTableMetaDataPath(databaseName, schemaName, each));
-            ShardingSphereTable table = new TableMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(content, YamlTableMetaData.class));
+            ShardingSphereTable table = new ShardingSphereTableYamlSwapper().swapToObject(YamlEngine.unmarshal(content, YamlShardingSphereTable.class));
             schema.put(each, table);
         });
         return Optional.of(schema);
