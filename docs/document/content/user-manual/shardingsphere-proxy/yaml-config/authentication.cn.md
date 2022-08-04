@@ -14,7 +14,7 @@ weight = 1
 - `ALL_PERMITTED`：授予所有权限，不鉴权；
 - `DATABASE_PERMITTED`：为用户授予指定逻辑库的权限，通过 user-database-mappings 进行映射。
 
-在配置 Authority Rule  时，管理员可根据需要选择使用哪一种权限提供者。
+在配置 Authority Rule 时，管理员可根据需要选择使用哪一种权限提供者。
 
 ## 参数解释
 
