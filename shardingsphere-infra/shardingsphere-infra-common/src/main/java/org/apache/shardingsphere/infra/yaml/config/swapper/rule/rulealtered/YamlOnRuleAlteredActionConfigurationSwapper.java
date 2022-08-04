@@ -27,9 +27,9 @@ import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwap
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
 
 /**
- * On rule altered action configuration YAML swapper.
+ * YAML on rule altered action configuration swapper.
  */
-public final class OnRuleAlteredActionConfigurationYamlSwapper implements YamlConfigurationSwapper<YamlOnRuleAlteredActionConfiguration, OnRuleAlteredActionConfiguration> {
+public final class YamlOnRuleAlteredActionConfigurationSwapper implements YamlConfigurationSwapper<YamlOnRuleAlteredActionConfiguration, OnRuleAlteredActionConfiguration> {
     
     private static final YamlAlgorithmConfigurationSwapper ALGORITHM_CONFIG_SWAPPER = new YamlAlgorithmConfigurationSwapper();
     

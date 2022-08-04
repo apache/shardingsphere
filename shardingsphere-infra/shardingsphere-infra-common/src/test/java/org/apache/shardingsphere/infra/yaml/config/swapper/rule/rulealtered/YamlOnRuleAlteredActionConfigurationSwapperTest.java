@@ -31,9 +31,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
-public final class OnRuleAlteredActionConfigurationYamlSwapperTest {
+public final class YamlOnRuleAlteredActionConfigurationSwapperTest {
     
-    private static final OnRuleAlteredActionConfigurationYamlSwapper CONFIG_YAML_SWAPPER = new OnRuleAlteredActionConfigurationYamlSwapper();
+    private static final YamlOnRuleAlteredActionConfigurationSwapper CONFIG_YAML_SWAPPER = new YamlOnRuleAlteredActionConfigurationSwapper();
     
     @Test
     public void assertSwap() {
@@ -56,7 +56,7 @@ public final class OnRuleAlteredActionConfigurationYamlSwapperTest {
         Properties dataConsistencyCheckerProps = new Properties();
         dataConsistencyCheckerProps.setProperty("chunk-size", "1000");
         yamlConfig.setDataConsistencyChecker(new YamlAlgorithmConfiguration("DATA_MATCH", dataConsistencyCheckerProps));
-        OnRuleAlteredActionConfigurationYamlSwapper yamlSwapper = new OnRuleAlteredActionConfigurationYamlSwapper();
+        YamlOnRuleAlteredActionConfigurationSwapper yamlSwapper = new YamlOnRuleAlteredActionConfigurationSwapper();
         OnRuleAlteredActionConfiguration actualConfig = yamlSwapper.swapToObject(yamlConfig);
         YamlOnRuleAlteredActionConfiguration actualYamlConfig = yamlSwapper.swapToYamlConfiguration(actualConfig);
         assertThat(YamlEngine.marshal(actualYamlConfig), is(YamlEngine.marshal(yamlConfig)));

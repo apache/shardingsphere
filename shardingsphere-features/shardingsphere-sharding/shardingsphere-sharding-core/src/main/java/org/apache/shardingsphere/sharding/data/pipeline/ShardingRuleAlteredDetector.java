@@ -23,7 +23,7 @@ import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActi
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlOnRuleAlteredActionConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.rulealtered.OnRuleAlteredActionConfigurationYamlSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.rulealtered.YamlOnRuleAlteredActionConfigurationSwapper;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
@@ -47,9 +47,9 @@ import java.util.stream.Collectors;
  */
 public final class ShardingRuleAlteredDetector implements RuleAlteredDetector {
     
-    private static final ShardingRuleConfigurationYamlSwapper SHARDING_RULE_CONFIG_YAML_SWAPPER = new ShardingRuleConfigurationYamlSwapper();
+    private static final ShardingRuleConfigurationYamlSwapper SHARDING_RULE_CONFIG_SWAPPER = new ShardingRuleConfigurationYamlSwapper();
     
-    private static final OnRuleAlteredActionConfigurationYamlSwapper RULE_ALTERED_ACTION_CONFIG_YAML_SWAPPER = new OnRuleAlteredActionConfigurationYamlSwapper();
+    private static final YamlOnRuleAlteredActionConfigurationSwapper RULE_ALTERED_ACTION_CONFIG_SWAPPER = new YamlOnRuleAlteredActionConfigurationSwapper();
     
     @Override
     public String getYamlRuleConfigClassName() {
@@ -74,8 +74,8 @@ public final class ShardingRuleAlteredDetector implements RuleAlteredDetector {
         if (isShardingRulesTheSame((YamlShardingRuleConfiguration) sourceRuleConfig, (YamlShardingRuleConfiguration) targetRuleConfig)) {
             return Collections.emptyList();
         }
-        ShardingRuleConfiguration sourceShardingConfig = SHARDING_RULE_CONFIG_YAML_SWAPPER.swapToObject((YamlShardingRuleConfiguration) sourceRuleConfig);
-        ShardingRuleConfiguration targetShardingConfig = SHARDING_RULE_CONFIG_YAML_SWAPPER.swapToObject((YamlShardingRuleConfiguration) targetRuleConfig);
+        ShardingRuleConfiguration sourceShardingConfig = SHARDING_RULE_CONFIG_SWAPPER.swapToObject((YamlShardingRuleConfiguration) sourceRuleConfig);
+        ShardingRuleConfiguration targetShardingConfig = SHARDING_RULE_CONFIG_SWAPPER.swapToObject((YamlShardingRuleConfiguration) targetRuleConfig);
         // TODO InstanceContext should not null
         ShardingRule sourceShardingRule = new ShardingRule(sourceShardingConfig, sourceDataSources.keySet(), null);
         ShardingRule targetShardingRule = new ShardingRule(targetShardingConfig, targetDataSources.keySet(), null);
@@ -156,7 +156,7 @@ public final class ShardingRuleAlteredDetector implements RuleAlteredDetector {
         OnRuleAlteredActionConfiguration result = shardingRuleConfig.getScaling().get(scalingName);
         if (null == result) {
             YamlOnRuleAlteredActionConfiguration yamlConfig = new YamlOnRuleAlteredActionConfiguration();
-            result = RULE_ALTERED_ACTION_CONFIG_YAML_SWAPPER.swapToObject(yamlConfig);
+            result = RULE_ALTERED_ACTION_CONFIG_SWAPPER.swapToObject(yamlConfig);
         }
         return Optional.of(result);
     }

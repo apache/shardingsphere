@@ -28,7 +28,7 @@ import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActi
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.rule.rulealtered.OnRuleAlteredActionConfigurationYamlSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.rulealtered.YamlOnRuleAlteredActionConfigurationSwapper;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -45,7 +45,7 @@ public final class EncryptRuleConfigurationYamlSwapper implements YamlRuleConfig
     
     private final YamlAlgorithmConfigurationSwapper algorithmSwapper = new YamlAlgorithmConfigurationSwapper();
     
-    private final OnRuleAlteredActionConfigurationYamlSwapper onRuleAlteredActionYamlSwapper = new OnRuleAlteredActionConfigurationYamlSwapper();
+    private final YamlOnRuleAlteredActionConfigurationSwapper onRuleAlteredActionSwapper = new YamlOnRuleAlteredActionConfigurationSwapper();
     
     @Override
     public YamlEncryptRuleConfiguration swapToYamlConfiguration(final EncryptRuleConfiguration data) {
@@ -54,14 +54,14 @@ public final class EncryptRuleConfigurationYamlSwapper implements YamlRuleConfig
         data.getEncryptors().forEach((key, value) -> result.getEncryptors().put(key, algorithmSwapper.swapToYamlConfiguration(value)));
         result.setQueryWithCipherColumn(data.isQueryWithCipherColumn());
         result.setDataConverterName(data.getDataConverterName());
-        data.getDataConverters().forEach((key, value) -> result.getDataConverters().put(key, onRuleAlteredActionYamlSwapper.swapToYamlConfiguration(value)));
+        data.getDataConverters().forEach((key, value) -> result.getDataConverters().put(key, onRuleAlteredActionSwapper.swapToYamlConfiguration(value)));
         return result;
     }
     
     @Override
     public EncryptRuleConfiguration swapToObject(final YamlEncryptRuleConfiguration yamlConfig) {
         Map<String, OnRuleAlteredActionConfiguration> dataConverters = new LinkedHashMap<>();
-        yamlConfig.getDataConverters().forEach((key, value) -> dataConverters.put(key, onRuleAlteredActionYamlSwapper.swapToObject(value)));
+        yamlConfig.getDataConverters().forEach((key, value) -> dataConverters.put(key, onRuleAlteredActionSwapper.swapToObject(value)));
         return new EncryptRuleConfiguration(swapTables(yamlConfig), swapEncryptAlgorithm(yamlConfig), yamlConfig.isQueryWithCipherColumn(),
                 yamlConfig.getDataConverterName(), dataConverters);
     }
