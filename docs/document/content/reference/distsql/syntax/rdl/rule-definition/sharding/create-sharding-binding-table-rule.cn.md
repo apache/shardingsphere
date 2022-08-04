@@ -45,6 +45,11 @@ CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item);
 CREATE SHARDING BINDING TABLE RULES (t_order,t_order_item),(t_product,t_product_item);
 ```
 
+### 保留字
+
+`CREATE`、`SHARDING`、`BINDING`、`TABLE`、`RULES`
+
 ### 相关链接
 
+- [保留字](/cn/reference/distsql/syntax/reserved-word/)
 - [CREATE SHARDING TABLE RULE](/cn/reference/distsql/syntax/rdl/rule-definition/create-sharding-table-rule/)

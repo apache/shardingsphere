@@ -63,6 +63,11 @@ CREATE DEFAULT SHARDING TABLE STRATEGY (
 );
 ```
 
+### Reserved word
+
+`CREATE`, `DEFAULT`, `SHARDING`, `DATABASE`, `TABLE`, `STRATEGY`, `TYPE`, `SHARDING_COLUMN`, `SHARDING_COLUMNS`, `SHARDING_ALGORITHM`, `NAME`, `PROPERTIES`
+
 ### Related links
 
+- [Reserved word](/cn/reference/distsql/syntax/reserved-word/)
 - [CREATE SHARDING ALGORITHM](/en/reference/distsql/syntax/rdl/rule-definition/create-sharding-algorithm/)

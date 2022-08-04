@@ -51,4 +51,5 @@ CREATE SHARDING ALGORITHM interval_algorithm (
 `CREATE`, `SHARDING`, `ALGORITHM`, `TYPE`, `NAME`, `PROPERTIES`
 
 ### Related links
+
 - [Reserved word](/cn/reference/distsql/syntax/reserved-word/)
