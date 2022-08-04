@@ -1056,7 +1056,7 @@ foreignServerVersion
 
 alterStatistics
     : ALTER STATISTICS
-    ( anyName SET STATISTICS signedIconst
+    ( ifExists? anyName SET STATISTICS signedIconst
     | anyName RENAME TO name
     | anyName SET SCHEMA name
     | anyName OWNER TO roleSpec )
