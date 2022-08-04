@@ -37,4 +37,6 @@ public final class YamlShardingSphereColumn implements YamlConfiguration {
     private boolean generated;
     
     private boolean caseSensitive;
+    
+    private boolean visible;
 }
