@@ -15,50 +15,53 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.process.subscriber;
+package org.apache.shardingsphere.mode.manager.standalone.process;
 
-import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.mode.manager.cluster.process.subscriber.ProcessRegistrySubscriber;
-import org.apache.shardingsphere.mode.metadata.persist.node.ComputeNode;
+import org.apache.shardingsphere.mode.manager.standalone.subscriber.ProcessStandaloneSubscriber;
+import org.apache.shardingsphere.mode.process.ShowProcessListManager;
 import org.apache.shardingsphere.mode.process.event.ShowProcessListRequestEvent;
-import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import org.mockito.MockedStatic;
 
 import java.util.Collections;
 
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-@RunWith(MockitoJUnitRunner.class)
-public final class ProcessRegistrySubscriberTest {
-    
-    @Mock
-    private ClusterPersistRepository repository;
+public final class ProcessStandaloneSubscriberTest {
     
     private final EventBusContext eventBusContext = new EventBusContext();
     
-    private ProcessRegistrySubscriber processRegistrySubscriber;
+    private ProcessStandaloneSubscriber processRegistrySubscriber;
+    
+    private ShowProcessListManager showProcessListManager;
+    
+    private MockedStatic<ShowProcessListManager> mockedStatic;
     
     @Before
     public void setUp() {
-        processRegistrySubscriber = new ProcessRegistrySubscriber(repository, eventBusContext);
+        processRegistrySubscriber = new ProcessStandaloneSubscriber(eventBusContext);
+        mockedStatic = mockStatic(ShowProcessListManager.class);
+        showProcessListManager = mock(ShowProcessListManager.class);
+        mockedStatic.when(ShowProcessListManager::getInstance).thenReturn(showProcessListManager);
     }
     
     @Test
     public void assertLoadShowProcessListData() {
-        when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.JDBC))).thenReturn(Collections.emptyList());
-        when(repository.getChildrenKeys(ComputeNode.getOnlineNodePath(InstanceType.PROXY))).thenReturn(Collections.singletonList("abc"));
-        when(repository.get(any())).thenReturn(null);
         ShowProcessListRequestEvent showProcessListRequestEvent = mock(ShowProcessListRequestEvent.class);
+        when(showProcessListManager.getProcessContextMap()).thenReturn(Collections.emptyMap());
         processRegistrySubscriber.loadShowProcessListData(showProcessListRequestEvent);
-        verify(repository, times(1)).persist(any(), any());
+        verify(showProcessListManager, times(1)).getProcessContextMap();
+    }
+    
+    @After
+    public void tearDown() {
+        mockedStatic.close();
     }
 }
