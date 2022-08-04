@@ -65,7 +65,7 @@ Note: remember to include a space at the end of the `licenseHeader`. Otherwise t
 
 **b) Add `shardingsphereeclipseformatter.xml`**
 
-```
+```xml
 ?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <profiles version="13">
     <profile kind="CodeFormatterProfile" name="'ShardingSphere Apache Current'" version="13">
@@ -104,7 +104,7 @@ The content of `shardingsphereeclipseformatter.xml` is tailor-made in accordance
 
 **c) Add Maven plugin**
 
-```
+```xml
 <plugin>
     <groupId>com.diffplug.spotless</groupId>
     <artifactId>spotless-maven-plugin</artifactId>
@@ -138,7 +138,7 @@ user@machine repo % mvn spotless:check
 ## 2. Binding the Maven Life Cycle
 In the actual ShardingSphere application, you can opt to bind Spotless apply to the compile phase so that it is automatically formatted when mvn install is executed locally.
 
-```
+```xml
 <plugin>
     <groupId>com.diffplug.spotless</groupId>
     <artifactId>spotless-maven-plugin</artifactId>
@@ -192,7 +192,7 @@ In extreme circumstances, Spotless formatted code cannot pass Checkstyle checkin
 
 The underlying cause is a conflict between the checking mechanism and formatting configurations set by both. For example, Spotless formats a newline with a 16-space indent, while Checkstyle checks for a 12-space newline.
 
-```
+```java
 private static Collection<PreciseHintShadowValue<Comparable<?>>> createNoteShadowValues(final ShadowDetermineCondition shadowDetermineCondition) {
     // format that can pass Checkstyle
     return shadowDetermineCondition.getSqlComments().stream().<PreciseHintShadowValue<Comparable<?>>>map(
