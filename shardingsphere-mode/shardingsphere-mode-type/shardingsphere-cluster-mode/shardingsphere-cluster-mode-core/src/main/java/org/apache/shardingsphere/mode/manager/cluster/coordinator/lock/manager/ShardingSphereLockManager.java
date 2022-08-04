@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager;
 
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.infra.lock.LockScope;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal.ShardingSphereInternalLockHolder;
 import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockDefinition;
@@ -42,10 +41,9 @@ public interface ShardingSphereLockManager extends RequiredSPI {
     /**
      * Get distributed lock.
      *
-     * @param lockScope lock scope
      * @return distributed lock
      */
-    ShardingSphereLock getDistributedLock(LockScope lockScope);
+    ShardingSphereLock getDistributedLock();
     
     /**
      * Try lock for database.
