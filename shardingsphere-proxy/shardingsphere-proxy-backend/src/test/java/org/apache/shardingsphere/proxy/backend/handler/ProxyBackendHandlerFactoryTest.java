@@ -261,7 +261,7 @@ public final class ProxyBackendHandlerFactoryTest extends ProxyContextRestorer {
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(RQLBackendHandler.class));
     }
-
+    
     @Test
     public void assertDistSQLRULStatementInTransaction() throws SQLException {
         when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);

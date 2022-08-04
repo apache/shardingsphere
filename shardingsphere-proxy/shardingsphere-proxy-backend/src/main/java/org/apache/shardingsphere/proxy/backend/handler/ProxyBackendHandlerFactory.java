@@ -114,7 +114,7 @@ public final class ProxyBackendHandlerFactory {
                 sqlStatement, connectionSession.getDefaultDatabaseName());
         return newInstance(databaseType, new LogicSQL(sqlStatementContext, sql, Collections.emptyList()), connectionSession, false);
     }
-
+    
     /**
      * Create new instance of backend handler.
      *
@@ -159,17 +159,17 @@ public final class ProxyBackendHandlerFactory {
         backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession);
         return backendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(logicSQL, connectionSession, preferPreparedStatement));
     }
-
+    
     private static void checkUnsupportedDistSQLStatementInTransaction(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
         if (connectionSession.getTransactionStatus().isInTransaction() && !isSupportedDistSQLStatementInTransaction(sqlStatement)) {
             throw new UnsupportedOperationException("Non-query dist sql is not supported within a transaction");
         }
     }
-
+    
     private static boolean isSupportedDistSQLStatementInTransaction(final SQLStatement sqlStatement) {
         return sqlStatement instanceof RQLStatement || sqlStatement instanceof QueryableRALStatement || sqlStatement instanceof RULStatement;
     }
-
+    
     private static DatabaseType getProtocolType(final DatabaseType defaultDatabaseType, final ConnectionSession connectionSession) {
         String databaseName = connectionSession.getDatabaseName();
         return Strings.isNullOrEmpty(databaseName) || !ProxyContext.getInstance().databaseExists(databaseName)
