@@ -15,11 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.swapper.strategy;
+package org.apache.shardingsphere.sharding.yaml.swapper.strategy;
 
 import org.apache.shardingsphere.sharding.api.config.strategy.audit.ShardingAuditStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.audit.YamlShardingAuditStrategyConfiguration;
-import org.apache.shardingsphere.sharding.yaml.swapper.strategy.YamlShardingAuditStrategyConfigurationSwapper;
 import org.junit.Test;
 
 import java.util.Arrays;
