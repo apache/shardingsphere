@@ -31,49 +31,63 @@ public interface JDBCRepositoryProvider extends TypedSPI {
      *
      * @return SQL to drop table
      */
-    String dropTableSQL();
+    default String dropTableSQL() {
+        return "DROP TABLE IF EXISTS repository";
+    }
     
     /**
      * Create table SQL.
      *
      * @return SQL to create table
      */
-    String createTableSQL();
+    default String createTableSQL() {
+        return "CREATE TABLE repository(id varchar(36) PRIMARY KEY, `key` TEXT, `value` TEXT, parent TEXT)";
+    }
     
     /**
      * Select by key SQL.
      *
      * @return SQL to select table
      */
-    String selectByKeySQL();
+    default String selectByKeySQL() {
+        return "SELECT `value` FROM repository WHERE `key` = ?";
+    }
     
     /**
      * Select by parent key SQL.
      *
      * @return SQL to select table
      */
-    String selectByParentKeySQL();
+    default String selectByParentKeySQL() {
+        return "SELECT `key` FROM repository WHERE parent = ?";
+    }
     
     /**
      * Insert SQL.
      *
      * @return SQL to insert table
      */
-    String insertSQL();
+    default String insertSQL() {
+        return "INSERT INTO repository VALUES(?, ?, ?, ?)";
+    }
     
     /**
      * Update SQL.
      *
      * @return SQL to update table
      */
-    String updateSQL();
+    default String updateSQL() {
+        return "UPDATE repository SET `value` = ? WHERE `key` = ?";
+    }
     
     /**
      * Delete SQL.
      *
      * @return SQL to delete table
      */
-    String deleteSQL();
+    default String deleteSQL() {
+        return "UPDATE repository SET `value` = ? WHERE `key` = ?";
+    }
     
     /**
      * Get default JDBC url.
