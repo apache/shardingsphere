@@ -61,8 +61,8 @@ public class SpringBootJNDIDataSourceTest {
     public void assertDataSources() {
         Map<String, DataSource> dataSources = getContextManager(dataSource).getMetaDataContexts().getMetaData().getDatabase("foo_db").getResource().getDataSources();
         assertThat(dataSources.size(), is(3));
-        assertTrue(dataSources.containsKey("ds0"));
-        assertTrue(dataSources.containsKey("ds1"));
+        assertTrue(dataSources.containsKey("read_ds_0"));
+        assertTrue(dataSources.containsKey("read_ds_1"));
         assertTrue(dataSources.containsKey("write_ds"));
     }
     
