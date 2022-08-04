@@ -51,6 +51,7 @@ import java.util.Objects;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -215,7 +216,7 @@ public final class MySQLClient {
     @SuppressWarnings("unchecked")
     private <T> T waitExpectedResponse(final Class<T> type) {
         try {
-            Object response = responseCallback.get();
+            Object response = responseCallback.get(10, TimeUnit.SECONDS);
             if (null == response) {
                 return null;
             }
@@ -226,7 +227,7 @@ public final class MySQLClient {
                 throw new RuntimeException(((MySQLErrPacket) response).getErrorMessage());
             }
             throw new RuntimeException("unexpected response type");
-        } catch (final InterruptedException | ExecutionException ex) {
+        } catch (final InterruptedException | ExecutionException | TimeoutException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -239,11 +240,9 @@ public final class MySQLClient {
             return;
         }
         try {
-            channel.close();
-            // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
-            // CHECKSTYLE:ON
-            log.error("close channel error", ex);
+            channel.close().sync();
+        } catch (final InterruptedException ex) {
+            log.error("close channel interrupted", ex);
         }
     }
     
@@ -286,23 +285,24 @@ public final class MySQLClient {
             if (!running) {
                 return;
             }
-            if (reconnectTimes.get() > 3) {
-                log.warn("exceeds the maximum number of retry times, last binlog event:{}", lastBinlogEvent);
-                running = false;
-                return;
-            }
             reconnect();
         }
-        
+    
         @Override
         public void exceptionCaught(final ChannelHandlerContext ctx, final Throwable cause) {
             running = false;
             String fileName = null == lastBinlogEvent ? null : lastBinlogEvent.getFileName();
             Long position = null == lastBinlogEvent ? null : lastBinlogEvent.getPosition();
             log.error("MySQLBinlogEventHandler protocol resolution error, file name:{}, position:{}", fileName, position, cause);
+            reconnect();
         }
-        
+    
         private void reconnect() {
+            if (reconnectTimes.get() > 3) {
+                log.warn("exceeds the maximum number of retry times, last binlog event:{}", lastBinlogEvent);
+                running = false;
+                return;
+            }
             int retryTimes = reconnectTimes.incrementAndGet();
             log.info("reconnect MySQL client, retry times={}", retryTimes);
             closeChannel();
