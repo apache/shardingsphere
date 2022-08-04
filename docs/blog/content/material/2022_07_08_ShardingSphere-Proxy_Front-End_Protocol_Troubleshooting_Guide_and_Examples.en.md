@@ -117,7 +117,7 @@ The error occurred at the front end of the Proxy, which excludes the backend JDB
 **2.2.1 Analysis**
 Directly determine in the source code that if the sequence ID is not equal to 0, an error is reported.
 
-```
+```java
 public final class MySQLCommandPacketTypeLoader {
     
     /**
@@ -147,7 +147,7 @@ Considering that the error is generated during bulk insertion, the problem might
 **2.2.2 Trying to recreate the problem**
 Using a `longtext` type field. The original idea was to construct a SQL with a length of more than 16 MB, but inadvertently we found that the error was also reported when the SQL length was more than 8 MB. The code was reproduced as follows:
 
-```
+```java
 try (Connection connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:13306/bmsql", "root", "root")) {
     try (Statement statement = connection.createStatement()) {
         statement.execute("drop table if exists foo");
@@ -178,7 +178,7 @@ Although the error message is consistent with the problem description, it does n
 
 After the length exceeding issue is fixed, continue troubleshooting the problem. Send approximately 64 MB of data to ShardingSphere-Proxy using the following code:
 
-```
+```java
 try (Connection connection = DriverManager.getConnection("jdbc:mysql://127.0.0.1:13306/bmsql", "root", "root")) {
     try (Statement statement = connection.createStatement()) {
         statement.execute("drop table if exists foo");
@@ -204,7 +204,7 @@ The results indicate that the client sent multiple 16MB data packets, and Wiresh
 
 Correlating with ShardingSphere-Proxy MySQL decoding logic:
 
-```
+```java
 int payloadLength = in.markReaderIndex().readUnsignedMediumLE();
 int remainPayloadLength = SEQUENCE_LENGTH + payloadLength;
 if (in.readableBytes() < remainPayloadLength) {
