@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.mode.manager.standalone.lock;
 
-import org.apache.shardingsphere.infra.lock.LockScope;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.lock.AbstractLockContext;
 import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockDefinition;
@@ -30,7 +29,7 @@ public final class StandaloneLockContext extends AbstractLockContext {
     private final ShardingSphereLock standaloneLock = new ShardingSphereStandaloneLock();
     
     @Override
-    public ShardingSphereLock getLock(final LockScope lockScope) {
+    public ShardingSphereLock getLock() {
         return standaloneLock;
     }
     
