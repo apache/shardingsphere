@@ -50,7 +50,7 @@ public final class BinlogContextTest {
     
     @Before
     public void setUp() {
-        binlogContext = new BinlogContext(new HashMap<>());
+        binlogContext = new BinlogContext(4, new HashMap<>());
         when(tableMapEventPacket.getSchemaName()).thenReturn(TEST_SCHEMA);
         when(tableMapEventPacket.getTableName()).thenReturn(TEST_TABLE);
     }

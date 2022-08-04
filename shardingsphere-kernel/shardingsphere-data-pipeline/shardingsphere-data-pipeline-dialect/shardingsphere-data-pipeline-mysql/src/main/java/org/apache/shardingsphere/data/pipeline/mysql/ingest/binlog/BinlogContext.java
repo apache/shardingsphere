@@ -30,13 +30,13 @@ import java.util.Map;
  * Binlog context.
  */
 @Getter
-@Setter
 @RequiredArgsConstructor
 public final class BinlogContext {
     
+    @Setter
     private String fileName;
     
-    private int checksumLength;
+    private final int checksumLength;
     
     private final Map<Long, MySQLBinlogTableMapEventPacket> tableMap;
     

@@ -51,8 +51,7 @@ public final class MySQLBinlogEventPacketDecoder extends ByteToMessageDecoder {
     private final BinlogContext binlogContext;
     
     public MySQLBinlogEventPacketDecoder(final int checksumLength, final Map<Long, MySQLBinlogTableMapEventPacket> tableMap) {
-        binlogContext = new BinlogContext(tableMap);
-        binlogContext.setChecksumLength(checksumLength);
+        binlogContext = new BinlogContext(checksumLength, tableMap);
     }
     
     @Override
