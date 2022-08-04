@@ -22,7 +22,6 @@ import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleC
 import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
-import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
@@ -38,8 +37,6 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -47,10 +44,11 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.withSettings;
 
 @RunWith(MockitoJUnitRunner.class)
 public final class YamlShardingAutoTableRuleConfigurationSwapperTest {
+    
+    private YamlShardingAutoTableRuleConfigurationSwapper tableSwapper;
     
     @Mock
     private YamlShardingStrategyConfigurationSwapper shardingStrategySwapper;
@@ -58,17 +56,18 @@ public final class YamlShardingAutoTableRuleConfigurationSwapperTest {
     @Mock
     private YamlKeyGenerateStrategyConfigurationSwapper keyGenerateStrategySwapper;
     
-    private final YamlShardingAutoTableRuleConfigurationSwapper tableSwapper = new YamlShardingAutoTableRuleConfigurationSwapper(mockAlgorithms(), Collections.emptyMap());
-    
     @Before
     public void setUp() throws ReflectiveOperationException {
+        ShardingAutoTableAlgorithm shardingAlgorithm = mock(ShardingAutoTableAlgorithm.class);
+        when(shardingAlgorithm.getAutoTablesAmount()).thenReturn(2);
+        tableSwapper = new YamlShardingAutoTableRuleConfigurationSwapper(Collections.singletonMap("foo_algorithm", shardingAlgorithm), Collections.emptyMap());
         setSwapper("shardingStrategySwapper", shardingStrategySwapper);
         when(shardingStrategySwapper.swapToYamlConfiguration(ArgumentMatchers.any())).thenReturn(mock(YamlShardingStrategyConfiguration.class));
         setSwapper("keyGenerateStrategySwapper", keyGenerateStrategySwapper);
         when(keyGenerateStrategySwapper.swapToYamlConfiguration(ArgumentMatchers.any())).thenReturn(mock(YamlKeyGenerateStrategyConfiguration.class));
     }
     
-    private void setSwapper(final String swapperFieldName, final YamlConfigurationSwapper swapperFieldValue) throws ReflectiveOperationException {
+    private void setSwapper(final String swapperFieldName, final YamlConfigurationSwapper<?, ?> swapperFieldValue) throws ReflectiveOperationException {
         Field field = YamlShardingAutoTableRuleConfigurationSwapper.class.getDeclaredField(swapperFieldName);
         field.setAccessible(true);
         field.set(tableSwapper, swapperFieldValue);
@@ -104,7 +103,7 @@ public final class YamlShardingAutoTableRuleConfigurationSwapperTest {
         ShardingAutoTableRuleConfiguration shardingTableRuleConfig = new ShardingAutoTableRuleConfiguration("tbl", "ds0,ds1");
         shardingTableRuleConfig.setActualTablePrefix("tmp_");
         StandardShardingStrategyConfiguration strategyConfiguration = mock(StandardShardingStrategyConfiguration.class);
-        when(strategyConfiguration.getShardingAlgorithmName()).thenReturn("mod_2");
+        when(strategyConfiguration.getShardingAlgorithmName()).thenReturn("foo_algorithm");
         shardingTableRuleConfig.setShardingStrategy(strategyConfiguration);
         shardingTableRuleConfig.setKeyGenerateStrategy(mock(KeyGenerateStrategyConfiguration.class));
         YamlShardingAutoTableRuleConfiguration actual = tableSwapper.swapToYamlConfiguration(shardingTableRuleConfig);
@@ -114,14 +113,6 @@ public final class YamlShardingAutoTableRuleConfigurationSwapperTest {
         assertThat(actual.getActualDataNodes(), is("ds0.tbl_0,ds1.tbl_1"));
         assertNotNull(actual.getShardingStrategy());
         assertNotNull(actual.getKeyGenerateStrategy());
-    }
-    
-    private Map<String, ShardingAlgorithm> mockAlgorithms() {
-        Map<String, ShardingAlgorithm> result = new LinkedHashMap<>();
-        ShardingAlgorithm algorithm = mock(ShardingAlgorithm.class, withSettings().extraInterfaces(ShardingAutoTableAlgorithm.class));
-        when(((ShardingAutoTableAlgorithm) algorithm).getAutoTablesAmount()).thenReturn(2);
-        result.put("mod_2", algorithm);
-        return result;
     }
     
     @Test(expected = NullPointerException.class)

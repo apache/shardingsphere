@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.sharding.api.sharding;
 
+import org.apache.shardingsphere.sharding.spi.ShardingAlgorithm;
+
 /**
  * Sharding auto table algorithm.
  */
-public interface ShardingAutoTableAlgorithm {
+public interface ShardingAutoTableAlgorithm extends ShardingAlgorithm {
     
     /**
      * Get auto tables amount.
