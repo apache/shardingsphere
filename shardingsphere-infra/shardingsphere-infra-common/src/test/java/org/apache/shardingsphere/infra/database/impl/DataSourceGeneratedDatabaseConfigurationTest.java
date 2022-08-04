@@ -37,7 +37,7 @@ import static org.junit.Assert.assertThat;
 public final class DataSourceGeneratedDatabaseConfigurationTest {
     
     @Test
-    public void assertDataSource() {
+    public void assertGetDataSources() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
         HikariDataSource hikariDataSource = (HikariDataSource) databaseConfig.getDataSources().get("normal_db");
         assertThat(hikariDataSource.getJdbcUrl(), is("jdbc:mock://127.0.0.1/normal_db"));
@@ -46,14 +46,14 @@ public final class DataSourceGeneratedDatabaseConfigurationTest {
     }
     
     @Test
-    public void assertRuleConfiguration() {
+    public void assertGetRuleConfigurations() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
         FixtureRuleConfiguration ruleConfig = (FixtureRuleConfiguration) databaseConfig.getRuleConfigurations().iterator().next();
         assertThat(ruleConfig.getName(), is("test_rule"));
     }
     
     @Test
-    public void assertDataSourceProperties() {
+    public void assertGetDataSourceProperties() {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
         DataSourceProperties props = databaseConfig.getDataSourceProperties().get("normal_db");
         Map<String, Object> poolStandardProps = props.getPoolPropertySynonyms().getStandardProperties();
