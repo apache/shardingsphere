@@ -14,10 +14,15 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<integration-test-cases>
-    <test-case sql="SHOW DATABASES" db-types="MySQL" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt">
-        <assertion expected-data-file="show_databases.xml" />
-    </test-case>
 
-    <test-case sql="RESET ALL" db-types="PostgreSQL,openGauss" />
-</integration-test-cases>
+<dataset>
+    <metadata>
+        <column name="name" />
+        <column name="type" />
+        <column name="props" />
+    </metadata>
+    <row values="it_standard_fixture| IT.STANDARD.FIXTURE| " />
+    <row values="table_inline_item_id| INLINE| algorithm-expression=t_order_item_federate_sharding_${item_id % 2}" />
+    <row values="table_inline_order_id| INLINE| algorithm-expression=t_order_federate_sharding_${order_id_sharding % 2}" />
+    <row values="table_inline_user_id| INLINE| algorithm-expression=t_user_encrypt_federate_sharding_${user_id % 2},allow-range-query-with-inline-sharding=true" />
+</dataset>

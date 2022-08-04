@@ -14,10 +14,7 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<integration-test-cases>
-    <test-case sql="SHOW DATABASES" db-types="MySQL" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt">
-        <assertion expected-data-file="show_databases.xml" />
-    </test-case>
 
-    <test-case sql="RESET ALL" db-types="PostgreSQL,openGauss" />
-</integration-test-cases>
+<dataset>
+    <metadata table-name="t_user_details" data-nodes="encrypt_ds_${0..9}.t_user_details_${0..9}" />
+</dataset>

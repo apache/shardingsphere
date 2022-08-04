@@ -14,10 +14,19 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<integration-test-cases>
-    <test-case sql="SHOW DATABASES" db-types="MySQL" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt">
-        <assertion expected-data-file="show_databases.xml" />
-    </test-case>
 
-    <test-case sql="RESET ALL" db-types="PostgreSQL,openGauss" />
-</integration-test-cases>
+<dataset>
+    <metadata>
+        <column name="rule_name"/>
+        <column name="count"/>
+    </metadata>
+    <row values="single_table| 5"/>
+    <row values="sharding_table| 6"/>
+    <row values="sharding_binding_table| 1"/>
+    <row values="sharding_broadcast_table| 0"/>
+    <row values="sharding_scaling| 0"/>
+    <row values="readwrite_splitting| 0"/>
+    <row values="db_discovery| 0"/>
+    <row values="encrypt| 4"/>
+    <row values="shadow| 0"/>
+</dataset>
