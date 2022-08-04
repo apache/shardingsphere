@@ -55,7 +55,7 @@ The above need to be installed and configured before getting started.
 **Prepare charts source code**
 Download Apache ShardingSphere-Proxy charts in the [repository](https://shardingsphere.apache.org/charts/).
 
-```
+```bash
 helm repo add shardingsphere https://shardingsphere.apache.org/charts
  helm pull shardingsphere/apache-shardingsphere-proxy
  tar -zxvf apache-shardingsphere-proxy-1.1.0-chart.tgz
@@ -66,7 +66,7 @@ Configure `values.yaml` file.
 
 Modify the following code：
 
-```
+```yaml
 governance:
    ...
    zookeeper:
@@ -78,7 +78,7 @@ governance:
 ```
 into：
 
-```
+```yaml
 governance:
    ...
    zookeeper:
