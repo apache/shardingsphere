@@ -21,8 +21,6 @@ import com.google.common.base.Strings;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.mode.repository.standalone.StandalonePersistRepository;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -35,13 +33,15 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
+import java.util.Properties;
 import java.util.UUID;
 
 /**
  * JDBC repository.
  */
 @Slf4j
-public abstract class JDBCRepository implements StandalonePersistRepository {
+public final class JDBCRepository implements StandalonePersistRepository {
     
     private static final String SEPARATOR = "/";
     
@@ -49,13 +49,14 @@ public abstract class JDBCRepository implements StandalonePersistRepository {
     
     private JDBCRepositoryProvider jdbcRepositoryProvider;
     
-    static {
-        ShardingSphereServiceLoader.register(JDBCRepositoryProvider.class);
-    }
-    
     @SneakyThrows
-    protected void initProviderAndTable(final String jdbcUrl, final String user, final String password) {
-        jdbcRepositoryProvider = TypedSPIRegistry.getRegisteredService(JDBCRepositoryProvider.class, getType(), null);
+    @Override
+    public void init(Properties props) {
+        jdbcRepositoryProvider = JDBCRepositoryProviderFactory.getInstance(props.get("provider"));
+        JDBCRepositoryProperties localRepositoryProps = new JDBCRepositoryProperties(props);
+        String jdbcUrl = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(JDBCRepositoryPropertyKey.JDBC_URL))).orElse(jdbcRepositoryProvider.getDefaultJDBCUrl());
+        String user = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(JDBCRepositoryPropertyKey.USER))).orElse(jdbcRepositoryProvider.getDefaultUser());
+        String password = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(JDBCRepositoryPropertyKey.PASSWORD))).orElse(jdbcRepositoryProvider.getDefaultPassword());
         connection = DriverManager.getConnection(jdbcUrl, user, password);
         try (Statement statement = connection.createStatement()) {
             statement.execute(jdbcRepositoryProvider.dropTableSQL());
@@ -167,5 +168,10 @@ public abstract class JDBCRepository implements StandalonePersistRepository {
         } catch (final SQLException ex) {
             log.error(String.format("Failed to release %s database resources.", getType()), ex);
         }
+    }
+    
+    @Override
+    public String getType() {
+        return "JDBC";
     }
 }

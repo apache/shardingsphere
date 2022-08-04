@@ -22,7 +22,13 @@ import org.apache.shardingsphere.mode.repository.standalone.jdbc.JDBCRepositoryP
 /**
  * H2 JDBC repository provider.
  */
-public class H2JDBCRepositoryProvider implements JDBCRepositoryProvider {
+public final class H2JDBCRepositoryProvider implements JDBCRepositoryProvider {
+    
+    private static final String DEFAULT_JDBC_URL = "jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL";
+    
+    private static final String DEFAULT_USER = "sa";
+    
+    private static final String DEFAULT_PASSWORD = "";
     
     @Override
     public String dropTableSQL() {
@@ -31,17 +37,17 @@ public class H2JDBCRepositoryProvider implements JDBCRepositoryProvider {
     
     @Override
     public String createTableSQL() {
-        return "CREATE TABLE repository(id varchar(36) PRIMARY KEY, key TEXT, value TEXT, parent TEXT)";
+        return "CREATE TABLE repository(id varchar(36) PRIMARY KEY, `key` TEXT, `value` TEXT, parent TEXT)";
     }
     
     @Override
     public String selectByKeySQL() {
-        return "SELECT value FROM repository WHERE key = ?";
+        return "SELECT `value` FROM repository WHERE `key` = ?";
     }
     
     @Override
     public String selectByParentKeySQL() {
-        return "SELECT key FROM repository WHERE parent = ?";
+        return "SELECT `key` FROM repository WHERE parent = ?";
     }
     
     @Override
@@ -51,16 +57,31 @@ public class H2JDBCRepositoryProvider implements JDBCRepositoryProvider {
     
     @Override
     public String updateSQL() {
-        return "UPDATE repository SET value = ? WHERE key = ?";
+        return "UPDATE repository SET `value` = ? WHERE `key` = ?";
     }
     
     @Override
     public String deleteSQL() {
-        return "UPDATE repository SET value = ? WHERE key = ?";
+        return "UPDATE repository SET `value` = ? WHERE `key` = ?";
     }
     
     @Override
     public String getType() {
         return "H2";
+    }
+    
+    @Override
+    public String getDefaultJDBCUrl() {
+        return DEFAULT_JDBC_URL;
+    }
+    
+    @Override
+    public String getDefaultUser() {
+        return DEFAULT_USER;
+    }
+    
+    @Override
+    public String getDefaultPassword() {
+        return DEFAULT_PASSWORD;
     }
 }

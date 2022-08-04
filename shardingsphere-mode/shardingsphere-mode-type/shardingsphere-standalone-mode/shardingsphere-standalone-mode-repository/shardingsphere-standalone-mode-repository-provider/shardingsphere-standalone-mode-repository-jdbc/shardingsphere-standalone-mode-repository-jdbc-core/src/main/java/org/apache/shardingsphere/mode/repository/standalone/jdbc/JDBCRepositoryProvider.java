@@ -29,49 +29,76 @@ public interface JDBCRepositoryProvider extends TypedSPI {
     /**
      * Drop table SQL.
      *
-     * @return SQL statement to drop table
+     * @return SQL to drop table
      */
     String dropTableSQL();
     
     /**
      * Create table SQL.
      *
-     * @return SQL statement to create table
+     * @return SQL to create table
      */
     String createTableSQL();
     
     /**
      * Select by key SQL.
      *
-     * @return SQL statement to select table
+     * @return SQL to select table
      */
     String selectByKeySQL();
     
     /**
      * Select by parent key SQL.
      *
-     * @return SQL statement to select table
+     * @return SQL to select table
      */
     String selectByParentKeySQL();
     
     /**
      * Insert SQL.
      *
-     * @return SQL statement to insert table
+     * @return SQL to insert table
      */
     String insertSQL();
     
     /**
      * Update SQL.
      *
-     * @return SQL statement to update table
+     * @return SQL to update table
      */
     String updateSQL();
     
     /**
      * Delete SQL.
      *
-     * @return SQL statement to delete table
+     * @return SQL to delete table
      */
     String deleteSQL();
+    
+    /**
+     * Get default JDBC url.
+     *
+     * @return Default JDBC url
+     */
+    default String getDefaultJDBCUrl() {
+        return "";
+    }
+    
+    /**
+     * Get default user.
+     *
+     * @return Default user
+     */
+    default String getDefaultUser() {
+        return "";
+    }
+    
+    /**
+     * Get default password.
+     *
+     * @return Default password
+     */
+    default String getDefaultPassword() {
+        return "";
+    }
 }
