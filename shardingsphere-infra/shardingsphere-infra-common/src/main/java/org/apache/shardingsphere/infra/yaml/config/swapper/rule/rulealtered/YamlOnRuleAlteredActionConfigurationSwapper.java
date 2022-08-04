@@ -18,13 +18,11 @@
 package org.apache.shardingsphere.infra.yaml.config.swapper.rule.rulealtered;
 
 import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActionConfiguration;
-import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActionConfiguration.InputConfiguration;
-import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActionConfiguration.OutputConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlOnRuleAlteredActionConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlOnRuleAlteredActionConfiguration.YamlInputConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlOnRuleAlteredActionConfiguration.YamlOutputConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.algorithm.YamlAlgorithmConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.data.pipeline.YamlPipelineOutputConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.data.pipeline.YamlPipelineInputConfigurationSwapper;
 
 /**
  * YAML on rule altered action configuration swapper.
@@ -33,9 +31,9 @@ public final class YamlOnRuleAlteredActionConfigurationSwapper implements YamlCo
     
     private static final YamlAlgorithmConfigurationSwapper ALGORITHM_CONFIG_SWAPPER = new YamlAlgorithmConfigurationSwapper();
     
-    private static final InputConfigurationSwapper INPUT_CONFIG_SWAPPER = new InputConfigurationSwapper();
+    private static final YamlPipelineInputConfigurationSwapper INPUT_CONFIG_SWAPPER = new YamlPipelineInputConfigurationSwapper();
     
-    private static final OutputConfigurationSwapper OUTPUT_CONFIG_SWAPPER = new OutputConfigurationSwapper();
+    private static final YamlPipelineOutputConfigurationSwapper OUTPUT_CONFIG_SWAPPER = new YamlPipelineOutputConfigurationSwapper();
     
     @Override
     public YamlOnRuleAlteredActionConfiguration swapToYamlConfiguration(final OnRuleAlteredActionConfiguration data) {
@@ -62,51 +60,5 @@ public final class YamlOnRuleAlteredActionConfigurationSwapper implements YamlCo
                 ALGORITHM_CONFIG_SWAPPER.swapToObject(yamlConfig.getStreamChannel()),
                 ALGORITHM_CONFIG_SWAPPER.swapToObject(yamlConfig.getCompletionDetector()),
                 ALGORITHM_CONFIG_SWAPPER.swapToObject(yamlConfig.getDataConsistencyChecker()));
-    }
-    
-    public static class InputConfigurationSwapper implements YamlConfigurationSwapper<YamlInputConfiguration, InputConfiguration> {
-        
-        @Override
-        public YamlInputConfiguration swapToYamlConfiguration(final InputConfiguration data) {
-            if (null == data) {
-                return null;
-            }
-            YamlInputConfiguration result = new YamlInputConfiguration();
-            result.setWorkerThread(data.getWorkerThread());
-            result.setBatchSize(data.getBatchSize());
-            result.setShardingSize(data.getShardingSize());
-            result.setRateLimiter(ALGORITHM_CONFIG_SWAPPER.swapToYamlConfiguration(data.getRateLimiter()));
-            return result;
-        }
-        
-        @Override
-        public InputConfiguration swapToObject(final YamlInputConfiguration yamlConfig) {
-            return null == yamlConfig
-                    ? null
-                    : new InputConfiguration(yamlConfig.getWorkerThread(), yamlConfig.getBatchSize(), yamlConfig.getShardingSize(),
-                            ALGORITHM_CONFIG_SWAPPER.swapToObject(yamlConfig.getRateLimiter()));
-        }
-    }
-    
-    public static class OutputConfigurationSwapper implements YamlConfigurationSwapper<YamlOutputConfiguration, OutputConfiguration> {
-        
-        @Override
-        public YamlOutputConfiguration swapToYamlConfiguration(final OutputConfiguration data) {
-            if (null == data) {
-                return null;
-            }
-            YamlOutputConfiguration result = new YamlOutputConfiguration();
-            result.setWorkerThread(data.getWorkerThread());
-            result.setBatchSize(data.getBatchSize());
-            result.setRateLimiter(ALGORITHM_CONFIG_SWAPPER.swapToYamlConfiguration(data.getRateLimiter()));
-            return result;
-        }
-        
-        @Override
-        public OutputConfiguration swapToObject(final YamlOutputConfiguration yamlConfig) {
-            return null == yamlConfig
-                    ? null
-                    : new OutputConfiguration(yamlConfig.getWorkerThread(), yamlConfig.getBatchSize(), ALGORITHM_CONFIG_SWAPPER.swapToObject(yamlConfig.getRateLimiter()));
-        }
     }
 }

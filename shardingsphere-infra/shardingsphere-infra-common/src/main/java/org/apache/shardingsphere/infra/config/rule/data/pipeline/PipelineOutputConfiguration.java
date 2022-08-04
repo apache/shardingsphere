@@ -15,31 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config.pojo.rule;
+package org.apache.shardingsphere.infra.config.rule.data.pipeline;
 
 import lombok.Getter;
-import lombok.Setter;
+import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineInputConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineOutputConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 
 /**
- * YAML on rule altered action configuration.
+ * Pipeline output configuration.
  */
+@RequiredArgsConstructor
 @Getter
-@Setter
 @ToString
-public final class YamlOnRuleAlteredActionConfiguration implements YamlConfiguration {
+public final class PipelineOutputConfiguration {
     
-    private YamlPipelineInputConfiguration input;
+    private final Integer workerThread;
     
-    private YamlPipelineOutputConfiguration output;
+    private final Integer batchSize;
     
-    private YamlAlgorithmConfiguration streamChannel;
-    
-    private YamlAlgorithmConfiguration completionDetector;
-    
-    private YamlAlgorithmConfiguration dataConsistencyChecker;
+    private final AlgorithmConfiguration rateLimiter;
 }
