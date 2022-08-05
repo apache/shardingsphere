@@ -56,7 +56,6 @@ public final class HikariDataSourcePoolCreatorTest {
         Properties result = new Properties();
         result.put("foo", "foo_value");
         result.put("bar", "bar_value");
-        result.put("registerMbeans", true);
         return result;
     }
 }
