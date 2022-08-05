@@ -171,5 +171,6 @@ execute
     | createForeignDataWrapper
     | createForeignTable
     | alterStatistics
+    | createGroup
     ) SEMI_? EOF
     ;

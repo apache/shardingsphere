@@ -18,11 +18,11 @@
 package org.apache.shardingsphere.infra.yaml.config.swapper.rule.rulealtered;
 
 import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActionConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlOnRuleAlteredActionConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlOnRuleAlteredActionConfiguration.YamlInputConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlOnRuleAlteredActionConfiguration.YamlOutputConfiguration;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineInputConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineOutputConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlOnRuleAlteredActionConfiguration;
 import org.junit.Test;
 
 import java.util.Properties;
@@ -41,10 +41,10 @@ public final class YamlOnRuleAlteredActionConfigurationSwapperTest {
         Properties rateLimiterProps = new Properties();
         rateLimiterProps.setProperty("batch-size", "1000");
         rateLimiterProps.setProperty("qps", "50");
-        YamlInputConfiguration yamlInputConfig = YamlInputConfiguration.buildWithDefaultValue();
+        YamlPipelineInputConfiguration yamlInputConfig = YamlPipelineInputConfiguration.buildWithDefaultValue();
         yamlConfig.setInput(yamlInputConfig);
         yamlInputConfig.setRateLimiter(new YamlAlgorithmConfiguration("INPUT", rateLimiterProps));
-        YamlOutputConfiguration yamlOutputConfig = YamlOutputConfiguration.buildWithDefaultValue();
+        YamlPipelineOutputConfiguration yamlOutputConfig = YamlPipelineOutputConfiguration.buildWithDefaultValue();
         yamlOutputConfig.setRateLimiter(new YamlAlgorithmConfiguration("OUTPUT", rateLimiterProps));
         yamlConfig.setOutput(yamlOutputConfig);
         Properties streamChannelProps = new Properties();

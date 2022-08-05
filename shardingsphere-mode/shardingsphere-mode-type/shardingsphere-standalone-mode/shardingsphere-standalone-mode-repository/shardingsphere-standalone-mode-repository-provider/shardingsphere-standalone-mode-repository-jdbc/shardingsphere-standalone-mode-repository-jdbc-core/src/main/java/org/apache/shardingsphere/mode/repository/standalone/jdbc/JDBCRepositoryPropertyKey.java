@@ -28,9 +28,11 @@ import org.apache.shardingsphere.infra.util.props.TypedPropertyKey;
 @Getter
 public enum JDBCRepositoryPropertyKey implements TypedPropertyKey {
     
-    JDBC_URL("jdbc_url", "", String.class),
+    PROVIDER("provider", "H2", String.class),
     
-    USER("user", "", String.class),
+    JDBC_URL("jdbc_url", "jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL", String.class),
+    
+    USERNAME("username", "sa", String.class),
     
     PASSWORD("password", "", String.class);
     

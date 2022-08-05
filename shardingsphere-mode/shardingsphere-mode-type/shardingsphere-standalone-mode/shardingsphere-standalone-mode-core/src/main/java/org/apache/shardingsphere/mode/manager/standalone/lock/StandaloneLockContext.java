@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.mode.manager.standalone.lock;
 
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.mode.manager.lock.AbstractLockContext;
-import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockDefinition;
+import org.apache.shardingsphere.mode.lock.AbstractLockContext;
+import org.apache.shardingsphere.mode.lock.definition.DatabaseLockDefinition;
 
 /**
  * Standalone lock context.
@@ -35,21 +35,21 @@ public final class StandaloneLockContext extends AbstractLockContext {
     
     @Override
     protected boolean tryLock(final DatabaseLockDefinition lockDefinition) {
-        return standaloneLock.tryLock(lockDefinition.getLockNameDefinition().getDatabaseName());
+        return standaloneLock.tryLock(lockDefinition.getDatabaseName());
     }
     
     @Override
     protected boolean tryLock(final DatabaseLockDefinition lockDefinition, final long timeoutMilliseconds) {
-        return standaloneLock.tryLock(lockDefinition.getLockNameDefinition().getDatabaseName(), timeoutMilliseconds);
+        return standaloneLock.tryLock(lockDefinition.getDatabaseName(), timeoutMilliseconds);
     }
     
     @Override
-    protected void releaseLock(final DatabaseLockDefinition lockDefinition) {
-        standaloneLock.releaseLock(lockDefinition.getLockNameDefinition().getDatabaseName());
+    protected void unLock(final DatabaseLockDefinition lockDefinition) {
+        standaloneLock.releaseLock(lockDefinition.getDatabaseName());
     }
     
     @Override
     protected boolean isLocked(final DatabaseLockDefinition lockDefinition) {
-        return standaloneLock.isLocked(lockDefinition.getLockNameDefinition().getDatabaseName());
+        return standaloneLock.isLocked(lockDefinition.getDatabaseName());
     }
 }

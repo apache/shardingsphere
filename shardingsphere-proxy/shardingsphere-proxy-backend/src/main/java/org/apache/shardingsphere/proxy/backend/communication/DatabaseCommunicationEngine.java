@@ -42,8 +42,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRe
 import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtil;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
-import org.apache.shardingsphere.mode.manager.lock.LockJudgeEngine;
-import org.apache.shardingsphere.mode.manager.lock.LockJudgeEngineFactory;
+import org.apache.shardingsphere.mode.lock.engine.LockJudgeEngine;
+import org.apache.shardingsphere.mode.lock.engine.LockJudgeEngineFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.RuleNotExistedException;
 import org.apache.shardingsphere.proxy.backend.exception.UnsupportedUpdateOperationException;

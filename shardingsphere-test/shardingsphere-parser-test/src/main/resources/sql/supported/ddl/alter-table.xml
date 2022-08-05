@@ -142,4 +142,10 @@
     <sql-case id="alter_table_coalesce_partition" value="ALTER TABLE t_order COALESCE PARTITION" db-types="Oracle" />
     <sql-case id="alter_table_convert" value="ALTER TABLE t1 CONVERT TO CHARACTER SET DEFAULT" db-types="MySQL" />
     <sql-case id="alter_table_convert_collate" value="ALTER TABLE t1 CONVERT TO CHARACTER SET DEFAULT COLLATE cp1251_bin;" db-types="MySQL" />
+    <sql-case id="alter_table_add_column_with_visible" value="ALTER TABLE t_order ADD COLUMN status VARCHAR(10) VISIBLE" db-types="MySQL" />
+    <sql-case id="alter_table_add_column_with_invisible" value="ALTER TABLE t_order ADD COLUMN status VARCHAR(10) INVISIBLE" db-types="MySQL" />
+    <sql-case id="alter_table_modify_column_with_visible" value="ALTER TABLE t_order MODIFY COLUMN status VARCHAR(10) VISIBLE" db-types="MySQL" />
+    <sql-case id="alter_table_modify_column_with_invisible" value="ALTER TABLE t_order MODIFY COLUMN status VARCHAR(10) INVISIBLE" db-types="MySQL" />
+    <sql-case id="alter_table_alter_column_set_visible" value="ALTER TABLE t_order ALTER COLUMN status SET VISIBLE" db-types="MySQL" />
+    <sql-case id="alter_table_alter_column_set_invisible" value="ALTER TABLE t_order ALTER COLUMN status SET INVISIBLE" db-types="MySQL" />
 </sql-cases>

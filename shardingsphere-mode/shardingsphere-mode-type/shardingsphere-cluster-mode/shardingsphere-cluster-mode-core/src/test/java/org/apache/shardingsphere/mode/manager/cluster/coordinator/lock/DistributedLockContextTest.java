@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.proxy.ProxyInstanceMetaData;
 import org.apache.shardingsphere.infra.instance.workerid.WorkerIdGenerator;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.mode.manager.lock.definition.LockDefinitionFactory;
+import org.apache.shardingsphere.mode.lock.definition.LockDefinitionFactory;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.junit.Test;
 
@@ -59,7 +59,7 @@ public final class DistributedLockContextTest {
         ComputeNodeInstance currentInstance = new ComputeNodeInstance(new ProxyInstanceMetaData("1", 3307));
         DistributedLockContext distributedLockContext = new DistributedLockContext(mock(ClusterPersistRepository.class));
         new InstanceContext(currentInstance, mock(WorkerIdGenerator.class), mock(ModeConfiguration.class), distributedLockContext, eventBusContext);
-        distributedLockContext.releaseLock(LockDefinitionFactory.newDatabaseLockDefinition("database"));
+        distributedLockContext.unLock(LockDefinitionFactory.newDatabaseLockDefinition("database"));
     }
     
     @Test

@@ -94,7 +94,7 @@ public final class RuleAlteredJobContext {
         this.initProgress = initProgress;
         this.dataSourceManager = dataSourceManager;
         this.jobPreparer = jobPreparer;
-        taskConfig = RuleAlteredJobWorker.buildTaskConfig(jobConfig, jobShardingItem, ruleAlteredContext.getOnRuleAlteredActionConfig());
+        taskConfig = RuleAlteredJobWorker.buildTaskConfig(jobConfig, jobShardingItem, ruleAlteredContext.getPipelineProcessConfig());
     }
     
     /**

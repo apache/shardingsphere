@@ -20,6 +20,9 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database
 import com.google.common.eventbus.Subscribe;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
+import org.apache.shardingsphere.mode.lock.definition.DatabaseLockDefinition;
+import org.apache.shardingsphere.mode.lock.manager.state.LockStateContext;
+import org.apache.shardingsphere.mode.lock.util.TimeoutMilliseconds;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.event.DatabaseAckLockReleasedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.event.DatabaseAckLockedEvent;
@@ -27,11 +30,8 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.event.DatabaseLockedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal.ExclusiveInternalLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal.ShardingSphereInternalLockHolder;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.state.LockStateContext;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockNodeServiceFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
-import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDefinition;
 
 import java.util.Optional;
 
@@ -66,7 +66,7 @@ public final class ShardingSphereDistributedDatabaseLock implements ShardingSphe
     
     private boolean innerTryLock(final String lockName, final long timeoutMillis) {
         if (lockHolder.getOrCreateInterMutexLock(lockNodeService.generateLocksName(lockName)).tryLock(timeoutMillis)) {
-            lockStateContext.register(new DatabaseLockNameDefinition(lockName));
+            lockStateContext.register(new DatabaseLockDefinition(lockName));
             return true;
         }
         return false;
@@ -81,13 +81,13 @@ public final class ShardingSphereDistributedDatabaseLock implements ShardingSphe
         Optional<ExclusiveInternalLock> interMutexLock = getInterMutexLock(lockName);
         if (interMutexLock.isPresent()) {
             interMutexLock.get().unlock();
-            lockStateContext.unregister(new DatabaseLockNameDefinition(lockName));
+            lockStateContext.unregister(new DatabaseLockDefinition(lockName));
         }
     }
     
     @Override
     public boolean isLocked(final String lockName) {
-        return lockStateContext.isLocked(new DatabaseLockNameDefinition(lockName));
+        return lockStateContext.isLocked(new DatabaseLockDefinition(lockName));
     }
     
     /**
@@ -97,11 +97,11 @@ public final class ShardingSphereDistributedDatabaseLock implements ShardingSphe
      */
     @Subscribe
     public synchronized void locked(final DatabaseLockedEvent event) {
-        String database = event.getLockNameDefinition().getDatabaseName();
+        String database = event.getLockDefinition().getDatabaseName();
         String lockedInstanceId = lockHolder.getCurrentInstanceId();
         ExclusiveInternalLock exclusiveLock = lockHolder.getOrCreateInterMutexLock(lockNodeService.generateLocksName(database));
         exclusiveLock.ackLock(lockNodeService.generateAckLockName(database, lockedInstanceId), lockedInstanceId);
-        lockStateContext.register(event.getLockNameDefinition());
+        lockStateContext.register(event.getLockDefinition());
     }
     
     /**
@@ -111,12 +111,12 @@ public final class ShardingSphereDistributedDatabaseLock implements ShardingSphe
      */
     @Subscribe
     public synchronized void lockReleased(final DatabaseLockReleasedEvent event) {
-        String database = event.getLockNameDefinition().getDatabaseName();
+        String database = event.getLockDefinition().getDatabaseName();
         String lockedInstanceId = lockHolder.getCurrentInstanceId();
         Optional<ExclusiveInternalLock> interMutexLock = getInterMutexLock(database);
         if (interMutexLock.isPresent()) {
             interMutexLock.get().releaseAckLock(lockNodeService.generateAckLockName(database, lockedInstanceId), lockedInstanceId);
-            lockStateContext.unregister(event.getLockNameDefinition());
+            lockStateContext.unregister(event.getLockDefinition());
         }
     }
     
@@ -127,7 +127,7 @@ public final class ShardingSphereDistributedDatabaseLock implements ShardingSphe
      */
     @Subscribe
     public synchronized void ackLocked(final DatabaseAckLockedEvent event) {
-        getInterMutexLock(event.getLockNameDefinition().getDatabaseName()).ifPresent(mutexLock -> mutexLock.addLockedInstance(event.getLockedInstance()));
+        getInterMutexLock(event.getLockDefinition().getDatabaseName()).ifPresent(mutexLock -> mutexLock.addLockedInstance(event.getLockedInstance()));
     }
     
     /**
@@ -137,6 +137,6 @@ public final class ShardingSphereDistributedDatabaseLock implements ShardingSphe
      */
     @Subscribe
     public synchronized void ackLockReleased(final DatabaseAckLockReleasedEvent event) {
-        getInterMutexLock(event.getLockNameDefinition().getDatabaseName()).ifPresent(mutexLock -> mutexLock.removeLockedInstance(event.getLockedInstance()));
+        getInterMutexLock(event.getLockDefinition().getDatabaseName()).ifPresent(mutexLock -> mutexLock.removeLockedInstance(event.getLockedInstance()));
     }
 }

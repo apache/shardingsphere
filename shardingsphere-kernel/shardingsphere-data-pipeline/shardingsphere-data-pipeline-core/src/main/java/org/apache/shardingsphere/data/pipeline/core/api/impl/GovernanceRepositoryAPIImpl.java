@@ -21,9 +21,9 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.JobIncrementalTaskProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.JobInventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
-import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
-import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobProgress;
@@ -35,9 +35,7 @@ import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -62,26 +60,23 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
         JobProgress jobProgress = new JobProgress();
         jobProgress.setStatus(jobContext.getStatus());
         jobProgress.setSourceDatabaseType(jobContext.getJobConfig().getSourceDatabaseType());
-        jobProgress.setIncrementalTaskProgressMap(getIncrementalTaskProgressMap(jobContext));
-        jobProgress.setInventoryTaskProgressMap(getInventoryTaskProgressMap(jobContext));
+        jobProgress.setJobIncrementalTask(getIncrementalTaskProgress(jobContext));
+        jobProgress.setJobInventoryTask(getInventoryTaskProgress(jobContext));
         String value = YamlEngine.marshal(SWAPPER.swapToYaml(jobProgress));
         repository.persist(PipelineMetaDataNode.getScalingJobOffsetPath(jobContext.getJobId(), jobContext.getShardingItem()), value);
     }
     
-    private Map<String, IncrementalTaskProgress> getIncrementalTaskProgressMap(final RuleAlteredJobContext jobContext) {
-        Map<String, IncrementalTaskProgress> result = new HashMap<>(jobContext.getIncrementalTasks().size(), 1);
-        for (IncrementalTask each : jobContext.getIncrementalTasks()) {
-            result.put(each.getTaskId(), each.getProgress());
-        }
-        return result;
+    private JobIncrementalTaskProgress getIncrementalTaskProgress(final RuleAlteredJobContext jobContext) {
+        return new JobIncrementalTaskProgress(
+                jobContext.getIncrementalTasks()
+                        .stream().collect(Collectors.toMap(IncrementalTask::getTaskId, IncrementalTask::getProgress)));
     }
     
-    private Map<String, InventoryTaskProgress> getInventoryTaskProgressMap(final RuleAlteredJobContext jobContext) {
-        Map<String, InventoryTaskProgress> result = new HashMap<>(jobContext.getInventoryTasks().size(), 1);
-        for (InventoryTask each : jobContext.getInventoryTasks()) {
-            result.put(each.getTaskId(), each.getProgress());
-        }
-        return result;
+    private JobInventoryTaskProgress getInventoryTaskProgress(final RuleAlteredJobContext jobContext) {
+        return new JobInventoryTaskProgress(
+                jobContext.getInventoryTasks()
+                        .stream()
+                        .collect(Collectors.toMap(InventoryTask::getTaskId, InventoryTask::getProgress)));
     }
     
     @Override

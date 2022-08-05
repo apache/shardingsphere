@@ -1758,4 +1758,30 @@
             <column name="national" />
         </column-definition>
     </create-table>
+
+    <create-table sql-case-id="create_table_with_visible">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT" start-index="22" stop-index="33">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT" start-index="36" stop-index="46">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="49" stop-index="74">
+            <column name="status" />
+        </column-definition>
+    </create-table>
+
+    <create-table sql-case-id="create_table_with_invisible">
+        <table name="t_order" start-index="13" stop-index="19" />
+        <column-definition type="INT" start-index="22" stop-index="33">
+            <column name="order_id" />
+        </column-definition>
+        <column-definition type="INT" start-index="36" stop-index="46">
+            <column name="user_id" />
+        </column-definition>
+        <column-definition type="VARCHAR" start-index="49" stop-index="76">
+            <column name="status" />
+        </column-definition>
+    </create-table>
 </sql-parser-test-cases>

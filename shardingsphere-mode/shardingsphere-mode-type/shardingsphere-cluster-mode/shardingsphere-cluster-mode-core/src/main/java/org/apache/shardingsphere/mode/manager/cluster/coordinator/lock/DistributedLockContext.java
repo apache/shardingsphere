@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.ShardingSphereLockManager;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal.ShardingSphereInternalLockHolder;
-import org.apache.shardingsphere.mode.manager.lock.AbstractLockContext;
-import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockDefinition;
+import org.apache.shardingsphere.mode.lock.AbstractLockContext;
+import org.apache.shardingsphere.mode.lock.definition.DatabaseLockDefinition;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
@@ -54,27 +54,27 @@ public final class DistributedLockContext extends AbstractLockContext {
     }
     
     @Override
-    public ShardingSphereLock getLock() {
-        return lockManager.getDistributedLock();
-    }
-    
-    @Override
     protected boolean tryLock(final DatabaseLockDefinition lockDefinition) {
         return lockManager.tryLock(lockDefinition);
     }
     
     @Override
-    protected boolean tryLock(final DatabaseLockDefinition lockDefinition, final long timeoutMilliseconds) {
-        return lockManager.tryLock(lockDefinition, timeoutMilliseconds);
+    protected boolean tryLock(final DatabaseLockDefinition lockDefinition, final long timeoutMillis) {
+        return lockManager.tryLock(lockDefinition, timeoutMillis);
     }
     
     @Override
-    protected void releaseLock(final DatabaseLockDefinition lockDefinition) {
+    protected void unLock(final DatabaseLockDefinition lockDefinition) {
         lockManager.releaseLock(lockDefinition);
     }
     
     @Override
     protected boolean isLocked(final DatabaseLockDefinition lockDefinition) {
         return lockManager.isLocked(lockDefinition);
+    }
+    
+    @Override
+    public ShardingSphereLock getLock() {
+        return lockManager.getDistributedLock();
     }
 }

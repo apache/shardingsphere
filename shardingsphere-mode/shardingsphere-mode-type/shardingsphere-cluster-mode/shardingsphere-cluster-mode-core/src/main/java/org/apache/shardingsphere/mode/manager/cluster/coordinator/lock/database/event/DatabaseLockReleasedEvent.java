@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.lock.definition.DatabaseLockDefinition;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
-import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDefinition;
 
 /**
  * Database lock released event.
@@ -29,9 +29,9 @@ import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDe
 @Getter
 public final class DatabaseLockReleasedEvent implements GovernanceEvent {
     
-    private final DatabaseLockNameDefinition lockNameDefinition;
+    private final DatabaseLockDefinition lockDefinition;
     
     public DatabaseLockReleasedEvent(final String lockedName) {
-        this.lockNameDefinition = new DatabaseLockNameDefinition(lockedName);
+        this.lockDefinition = new DatabaseLockDefinition(lockedName);
     }
 }

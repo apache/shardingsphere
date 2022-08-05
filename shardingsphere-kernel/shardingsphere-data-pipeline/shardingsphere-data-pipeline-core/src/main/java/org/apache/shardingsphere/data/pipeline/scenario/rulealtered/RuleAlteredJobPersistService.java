@@ -94,7 +94,7 @@ public final class RuleAlteredJobPersistService {
                 && !persistContext.getHasNewEvents().get()) {
             return;
         }
-        Map<Integer, RuleAlteredJobScheduler> schedulerMap = RuleAlteredJobSchedulerCenter.getJobSchedulerMap(jobId);
+        Map<Integer, RuleAlteredJobScheduler> schedulerMap = RuleAlteredJobCenter.getJobSchedulerMap(jobId);
         RuleAlteredJobScheduler scheduler = schedulerMap.get(shardingItem);
         if (null == scheduler) {
             log.warn("persist, job schedule not exists, jobId={}, shardingItem={}", jobId, shardingItem);

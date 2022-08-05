@@ -75,12 +75,12 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithm implements JobCom
     }
     
     private static boolean isAllInventoryTasksCompleted(final Collection<JobProgress> jobProgresses) {
-        return jobProgresses.stream().flatMap(each -> each.getInventoryTaskProgressMap().values().stream()).allMatch(each -> each.getPosition() instanceof FinishedPosition);
+        return jobProgresses.stream().flatMap(each -> each.getJobInventoryTask().getInventoryTaskProgressMap().values().stream()).allMatch(each -> each.getPosition() instanceof FinishedPosition);
     }
     
     private static Collection<Long> getIncrementalTasksIdleSeconds(final Collection<JobProgress> jobProgresses) {
         long currentTimeMillis = System.currentTimeMillis();
-        return jobProgresses.stream().flatMap(each -> each.getIncrementalTaskProgressMap().values().stream())
+        return jobProgresses.stream().flatMap(each -> each.getJobIncrementalTask().getIncrementalTaskProgressMap().values().stream())
                 .map(each -> {
                     long latestActiveTimeMillis = each.getIncrementalTaskDelay().getLatestActiveTimeMillis();
                     return latestActiveTimeMillis > 0 ? TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis) : 0;

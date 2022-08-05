@@ -71,12 +71,17 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
                            final PipelineTableMetaDataLoader sourceMetaDataLoader, final ExecuteEngine incrementalDumperExecuteEngine, final PipelineJobPersistCallback pipelineJobPersistCallback) {
         this.incrementalDumperExecuteEngine = incrementalDumperExecuteEngine;
         taskId = dumperConfig.getDataSourceName();
-        progress = new IncrementalTaskProgress();
         IngestPosition<?> position = dumperConfig.getPosition();
-        progress.setPosition(position);
+        progress = createIncrementalTaskProgress(position);
         channel = createChannel(concurrency, pipelineChannelCreator, progress);
         dumper = DumperFactory.createIncrementalDumper(dumperConfig, position, channel, sourceMetaDataLoader);
         importers = createImporters(concurrency, importerConfig, dataSourceManager, channel, pipelineJobPersistCallback);
+    }
+    
+    private IncrementalTaskProgress createIncrementalTaskProgress(final IngestPosition<?> position) {
+        IncrementalTaskProgress incrementalTaskProgress = new IncrementalTaskProgress();
+        incrementalTaskProgress.setPosition(position);
+        return incrementalTaskProgress;
     }
     
     @Override
