@@ -118,10 +118,10 @@ public final class EncryptInsertValueParameterRewriter implements ParameterRewri
             addedParameters.add(originalValue);
         }
         if (!addedParameters.isEmpty()) {
-            if (!parameterBuilder.getAddedIndexAndParameters().containsKey(parameterIndex + 1)) {
-                parameterBuilder.getAddedIndexAndParameters().put(parameterIndex + 1, new LinkedList<>());
+            if (!parameterBuilder.getAddedIndexAndParameters().containsKey(parameterIndex)) {
+                parameterBuilder.getAddedIndexAndParameters().put(parameterIndex, new LinkedList<>());
             }
-            parameterBuilder.getAddedIndexAndParameters().get(parameterIndex + 1).addAll(addedParameters);
+            parameterBuilder.getAddedIndexAndParameters().get(parameterIndex).addAll(addedParameters);
         }
     }
 }

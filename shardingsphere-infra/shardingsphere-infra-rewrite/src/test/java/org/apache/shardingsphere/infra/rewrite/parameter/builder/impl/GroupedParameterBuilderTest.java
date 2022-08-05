@@ -49,8 +49,7 @@ public final class GroupedParameterBuilderTest {
         actual.getGenericParameterBuilder().addReplacedParameters(1, 88);
         actual.getGenericParameterBuilder().addAddedParameters(0, Arrays.asList(66, -1));
         actual.getGenericParameterBuilder().addAddedParameters(2, Arrays.asList(99, 110));
-        actual.getGenericParameterBuilder().addRemovedParameters(1);
-        assertThat(actual.getGenericParameterBuilder().getParameters(), is(Arrays.<Object>asList(66, 77, 88, 99, 110)));
+        assertThat(actual.getGenericParameterBuilder().getParameters(), is(Arrays.<Object>asList(77, 66, -1, 88, 99, 110)));
     }
     
     @Test
