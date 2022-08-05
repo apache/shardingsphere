@@ -105,11 +105,10 @@
         <output sql="INSERT INTO t_account_bak_0(account_id, cipher_password, assisted_query_password, plain_password, cipher_amount, plain_amount) VALUES (2, 'encrypt_bbb', 'assisted_query_bbb', 'bbb', 'encrypt_2000', 2000), (4, 'encrypt_ddd', 'assisted_query_ddd', 'ddd', 'encrypt_4000', 4000)" />
     </rewrite-assertion>
     
-    <!-- TODO FIX parameter rewrite logic when use sharding and encrypt -->
-    <!--<rewrite-assertion id="insert_values_without_columns_with_plain_without_id_for_parameters" db-types="MySQL">
+    <rewrite-assertion id="insert_values_without_columns_with_plain_without_id_for_parameters" db-types="MySQL">
         <input sql="INSERT INTO t_account_bak VALUES (?, ?), ('bbb', 2000), (?, ?), ('ddd', 4000)" parameters="aaa, 1000, ccc, 3000" />
         <output sql="INSERT INTO t_account_bak_1(cipher_password, assisted_query_password, plain_password, cipher_amount, plain_amount, account_id) VALUES (?, ?, ?, ?, ?, ?), ('encrypt_bbb', 'assisted_query_bbb', 'bbb', 'encrypt_2000', 2000, 1), (?, ?, ?, ?, ?, ?), ('encrypt_ddd', 'assisted_query_ddd', 'ddd', 'encrypt_4000', 4000, 1)" parameters="encrypt_aaa, assisted_query_aaa, aaa, encrypt_1000, 1000, 1, encrypt_ccc, assisted_query_ccc, ccc, encrypt_3000, 3000, 1" />
-    </rewrite-assertion>-->
+    </rewrite-assertion>
     
     <rewrite-assertion id="insert_values_without_columns_with_plain_without_id_for_literals" db-types="MySQL">
         <input sql="INSERT INTO t_account_bak VALUES ('aaa', 1000), ('bbb', 2000), ('ccc', 3000), ('ddd', 4000)" />

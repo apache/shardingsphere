@@ -37,11 +37,10 @@ public final class StandardParameterBuilderTest {
     public void setUp() {
         parameterBuilder = new StandardParameterBuilder(parameters);
         parameterBuilder.addAddedParameters(4, Collections.singleton(7));
-        parameterBuilder.addRemovedParameters(1);
     }
     
     @Test
     public void assertGetParameters() {
-        assertThat(parameterBuilder.getParameters(), is(Arrays.<Object>asList(1, 1, 5, 7)));
+        assertThat(parameterBuilder.getParameters(), is(Arrays.<Object>asList(1, 2, 1, 5, 7)));
     }
 }
