@@ -49,6 +49,6 @@ public final class YamlPipelineInputConfigurationSwapper implements YamlConfigur
         return null == yamlConfig
                 ? null
                 : new PipelineInputConfiguration(yamlConfig.getWorkerThread(), yamlConfig.getBatchSize(), yamlConfig.getShardingSize(),
-                ALGORITHM_CONFIG_SWAPPER.swapToObject(yamlConfig.getRateLimiter()));
+                        ALGORITHM_CONFIG_SWAPPER.swapToObject(yamlConfig.getRateLimiter()));
     }
 }

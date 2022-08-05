@@ -225,7 +225,6 @@ public final class ProjectionsContextEngineTest {
     private SelectStatementContext createSelectStatementContext(final SelectStatement selectStatement) {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class);
         when(database.getSchemas()).thenReturn(mockSchemas());
-        when(schema.getAllColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "content"));
         return new SelectStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), Collections.emptyList(), selectStatement, DefaultDatabase.LOGIC_NAME);
     }
     

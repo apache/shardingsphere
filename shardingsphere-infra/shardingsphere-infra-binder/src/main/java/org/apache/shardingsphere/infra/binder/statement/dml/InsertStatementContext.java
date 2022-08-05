@@ -92,7 +92,7 @@ public final class InsertStatementContext extends CommonSQLStatementContext<Inse
         onDuplicateKeyUpdateValueContext = getOnDuplicateKeyUpdateValueContext(parameters, parametersOffset).orElse(null);
         tablesContext = new TablesContext(getAllSimpleTableSegments(), getDatabaseType());
         ShardingSphereSchema schema = getSchema(databases, defaultDatabaseName);
-        columnNames = containsInsertColumns() ? insertColumnNames : schema.getAllColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue());
+        columnNames = containsInsertColumns() ? insertColumnNames : schema.getVisibleColumnNames(sqlStatement.getTable().getTableName().getIdentifier().getValue());
         generatedKeyContext = new GeneratedKeyContextEngine(sqlStatement, schema).createGenerateKeyContext(insertColumnNames, getAllValueExpressions(sqlStatement), parameters).orElse(null);
     }
     
