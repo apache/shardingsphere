@@ -15,12 +15,11 @@
 # limitations under the License.
 #
 #
- incremental:
-   dataSources:
-     ds0:
-       delay:
-         lastEventTimestamps: 0
-         latestActiveTimeMillis: 0
-       position: ''
+incremental:
+  dataSourceName: ds0
+  delay:
+    lastEventTimestamps: 0
+    latestActiveTimeMillis: 0
+  position: ''
  sourceDatabaseType: H2
  status: RUNNING

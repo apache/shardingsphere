@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 
-import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskDelay;
@@ -28,15 +27,10 @@ import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTask
 @Getter
 @Setter
 public final class YamlIncrementalTaskProgress {
-    
-    private Map<String, YamlIncrementalTaskProgressItem> dataSources;
-    
-    @Getter
-    @Setter
-    public static final class YamlIncrementalTaskProgressItem {
+
+    private String dataSourceName;
         
-        private String position;
+    private String position;
         
-        private IncrementalTaskDelay delay;
-    }
+    private IncrementalTaskDelay delay;
 }

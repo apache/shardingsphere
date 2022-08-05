@@ -16,12 +16,11 @@
 #
 
 incremental:
-  dataSources:
-    ds_0:
-      delay:
-        lastEventTimestamps: 0
-        latestActiveTimeMillis: 0
-      position: ''
+  dataSourceName: ds0
+  delay:
+    lastEventTimestamps: 0
+    latestActiveTimeMillis: 0
+  position: ''
 inventory:
   unfinished:
     ds_0.t_order#0: ''

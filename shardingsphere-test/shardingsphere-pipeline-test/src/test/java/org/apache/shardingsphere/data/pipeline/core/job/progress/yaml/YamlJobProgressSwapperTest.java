@@ -26,7 +26,6 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNull;
 
 public final class YamlJobProgressSwapperTest {
@@ -48,9 +47,8 @@ public final class YamlJobProgressSwapperTest {
         assertThat(actual.getInventory().getUnfinished().size(), is(2));
         assertThat(actual.getInventory().getUnfinished().get("ds1.t_2"), is("i,1,2"));
         assertThat(actual.getInventory().getUnfinished().get("ds1.t_1"), is(""));
-        assertThat(actual.getIncremental().getDataSources().size(), is(1));
-        assertTrue(actual.getIncremental().getDataSources().containsKey("ds0"));
-        assertThat(actual.getIncremental().getDataSources().get("ds0").getPosition().length(), is(0));
+        assertThat(actual.getIncremental().getDataSourceName(), is("ds0"));
+        assertThat(actual.getIncremental().getPosition().length(), is(0));
     }
     
     @Test

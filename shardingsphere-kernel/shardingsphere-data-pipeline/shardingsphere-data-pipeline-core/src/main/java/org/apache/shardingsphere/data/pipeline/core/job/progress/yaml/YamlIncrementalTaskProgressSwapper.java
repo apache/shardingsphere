@@ -17,8 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.util.Collections;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgressItem;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializerFactory;
@@ -37,17 +36,16 @@ public final class YamlIncrementalTaskProgressSwapper {
         if (incremental == null) {
             return null;
         }
-        YamlIncrementalTaskProgress yamlIncrementalTaskProgress = new YamlIncrementalTaskProgress();
-        yamlIncrementalTaskProgress.setDataSources(incremental.getIncrementalTaskProgressItemMap()
+        return incremental.getIncrementalTaskProgressItemMap()
                 .entrySet()
                 .stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> {
-                    YamlIncrementalTaskProgress.YamlIncrementalTaskProgressItem result = new YamlIncrementalTaskProgress.YamlIncrementalTaskProgressItem();
-                    result.setPosition(entry.getValue().getPosition().toString());
-                    result.setDelay(entry.getValue().getIncrementalTaskDelay());
-                    return result;
-                })));
-        return yamlIncrementalTaskProgress;
+                .map(entry -> {
+                    YamlIncrementalTaskProgress yamlIncrementalTaskProgress = new YamlIncrementalTaskProgress();
+                    yamlIncrementalTaskProgress.setDataSourceName(entry.getKey());
+                    yamlIncrementalTaskProgress.setPosition(entry.getValue().getPosition().toString());
+                    yamlIncrementalTaskProgress.setDelay(entry.getValue().getIncrementalTaskDelay());
+                    return yamlIncrementalTaskProgress;
+                }).findAny().orElse(null);
     }
     
     /**
@@ -60,13 +58,9 @@ public final class YamlIncrementalTaskProgressSwapper {
         if (incremental == null) {
             return null;
         }
-        return new IncrementalTaskProgress(incremental.getDataSources().entrySet()
-                .stream()
-                .collect(Collectors.toMap(Map.Entry::getKey, entry -> {
-                    IncrementalTaskProgressItem result = new IncrementalTaskProgressItem();
-                    result.setPosition(PositionInitializerFactory.getInstance(databaseType).init(entry.getValue().getPosition()));
-                    result.setIncrementalTaskDelay(entry.getValue().getDelay());
-                    return result;
-                })));
+        IncrementalTaskProgressItem result = new IncrementalTaskProgressItem();
+        result.setPosition(PositionInitializerFactory.getInstance(databaseType).init(incremental.getPosition()));
+        result.setIncrementalTaskDelay(incremental.getDelay());
+        return new IncrementalTaskProgress(Collections.singletonMap(incremental.getDataSourceName(), result));
     }
 }
