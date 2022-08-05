@@ -21,17 +21,26 @@ on:
   push:
     branches: [ master, dev ]
     paths:
+      - '.github/workflows/it-transaction.yml'
+      - 'shardingsphere-kernel/shardingsphere-transaction/**/src/main/**'
+      - 'shardingsphere-kernel/shardingsphere-transaction/**/pom.xml'
+      - '!shardingsphere-test/**'
+      - 'shardingsphere-test/pom.xml'
+      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-fixture/**'
+      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-env/**'
+      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/**'
       - '!*.md'
   pull_request:
     branches: [ master ]
     paths:
-      - '!examples/**'
       - '.github/workflows/it-transaction.yml'
+      - 'shardingsphere-kernel/shardingsphere-transaction/**/src/main/**'
+      - 'shardingsphere-kernel/shardingsphere-transaction/**/pom.xml'
       - '!shardingsphere-test/**'
-      - 'shardingsphere-test/**/pom.xml'
-      - 'shardingsphere-test/shardingsphere-integration-test/**'
-      - '!shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/**'
-      - '!shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/**'
+      - 'shardingsphere-test/pom.xml'
+      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-fixture/**'
+      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-env/**'
+      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-transaction/**'
       - '!*.md'
 
 concurrency:
