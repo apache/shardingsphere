@@ -23,6 +23,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
@@ -64,7 +65,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -355,24 +356,16 @@ public abstract class BaseITCase {
         }
         log.info("jobId: {}", jobId);
         Set<String> actualStatus = null;
-        for (int i = 0; i < 15; i++) {
-            actualStatus = new HashSet<>();
+        for (int i = 0; i < 20; i++) {
             List<Map<String, Object>> showScalingStatusResult = showScalingStatus(jobId);
             log.info("show scaling status result: {}", showScalingStatusResult);
-            boolean finished = true;
-            for (Map<String, Object> each : showScalingStatusResult) {
-                String status = each.get("status").toString();
-                assertThat(status, not(JobStatus.PREPARING_FAILURE.name()));
-                assertThat(status, not(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name()));
-                assertThat(status, not(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name()));
-                actualStatus.add(status);
-                if (!Objects.equals(status, JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
-                    log.info("scaling status before increment, status: {}", status);
-                    finished = false;
-                    break;
-                }
-            }
-            if (finished) {
+            actualStatus = showScalingStatusResult.stream().map(each -> each.get("status").toString()).collect(Collectors.toSet());
+            assertFalse(CollectionUtils.containsAny(actualStatus, Arrays.asList(JobStatus.PREPARING_FAILURE.name(), JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name(),
+                    JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name())));
+            if (actualStatus.size() == 1 && actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
+                break;
+            } else if (actualStatus.size() >= 1 && actualStatus.containsAll(new HashSet<>(Arrays.asList("", JobStatus.EXECUTE_INCREMENTAL_TASK.name())))) {
+                log.error("one of the shardingItem was not started correctly");
                 break;
             }
             ThreadUtil.sleep(2, TimeUnit.SECONDS);

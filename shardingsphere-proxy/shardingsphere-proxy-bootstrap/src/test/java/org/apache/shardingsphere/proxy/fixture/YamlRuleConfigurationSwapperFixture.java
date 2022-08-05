@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.proxy.fixture;
 
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapper;
 import org.apache.shardingsphere.test.fixture.rule.MockedRuleConfiguration;
 
 public final class YamlRuleConfigurationSwapperFixture implements YamlRuleConfigurationSwapper<YamlRuleConfigurationFixture, MockedRuleConfiguration> {

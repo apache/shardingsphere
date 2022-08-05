@@ -1,7 +1,7 @@
 +++
-pre = "<b>1.5 </b>"
-title = "应用场景"
-weight = 5
+pre = "<b>1.3 </b>"
+title = "JDBC & Proxy"
+weight = 3
 chapter = true
 +++
 

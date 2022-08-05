@@ -21,11 +21,11 @@ import com.google.common.base.Preconditions;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.yaml.swapper.DatabaseDiscoveryRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.dbdiscovery.yaml.swapper.YamlDatabaseDiscoveryRuleConfigurationSwapper;
 import org.apache.shardingsphere.distsql.parser.statement.ral.updatable.ImportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.encrypt.api.config.EncryptRuleConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.encrypt.yaml.swapper.YamlEncryptRuleConfigurationSwapper;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.DataSourcePropertiesCreator;
@@ -48,13 +48,13 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checke
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.common.checker.ShardingRuleConfigurationImportChecker;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
 import org.apache.shardingsphere.readwritesplitting.yaml.config.YamlReadwriteSplittingRuleConfiguration;
-import org.apache.shardingsphere.readwritesplitting.yaml.swapper.ReadwriteSplittingRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.readwritesplitting.yaml.swapper.YamlReadwriteSplittingRuleConfigurationSwapper;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.yaml.swapper.ShadowRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.shadow.yaml.swapper.YamlShadowRuleConfigurationSwapper;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.yaml.config.YamlShardingRuleConfiguration;
-import org.apache.shardingsphere.sharding.yaml.swapper.ShardingRuleConfigurationYamlSwapper;
+import org.apache.shardingsphere.sharding.yaml.swapper.YamlShardingRuleConfigurationSwapper;
 
 import java.io.File;
 import java.io.IOException;
@@ -148,23 +148,23 @@ public final class ImportDatabaseConfigurationHandler extends UpdatableRALBacken
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
         for (YamlRuleConfiguration each : yamlRuleConfigs) {
             if (each instanceof YamlShardingRuleConfiguration) {
-                ShardingRuleConfiguration shardingRuleConfig = new ShardingRuleConfigurationYamlSwapper().swapToObject((YamlShardingRuleConfiguration) each);
+                ShardingRuleConfiguration shardingRuleConfig = new YamlShardingRuleConfigurationSwapper().swapToObject((YamlShardingRuleConfiguration) each);
                 shardingRuleConfigurationImportChecker.check(database, shardingRuleConfig);
                 ruleConfigs.add(shardingRuleConfig);
             } else if (each instanceof YamlReadwriteSplittingRuleConfiguration) {
-                ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig = new ReadwriteSplittingRuleConfigurationYamlSwapper().swapToObject((YamlReadwriteSplittingRuleConfiguration) each);
+                ReadwriteSplittingRuleConfiguration readwriteSplittingRuleConfig = new YamlReadwriteSplittingRuleConfigurationSwapper().swapToObject((YamlReadwriteSplittingRuleConfiguration) each);
                 readwriteSplittingRuleConfigurationImportChecker.check(database, readwriteSplittingRuleConfig);
                 ruleConfigs.add(readwriteSplittingRuleConfig);
             } else if (each instanceof YamlDatabaseDiscoveryRuleConfiguration) {
-                DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig = new DatabaseDiscoveryRuleConfigurationYamlSwapper().swapToObject((YamlDatabaseDiscoveryRuleConfiguration) each);
+                DatabaseDiscoveryRuleConfiguration databaseDiscoveryRuleConfig = new YamlDatabaseDiscoveryRuleConfigurationSwapper().swapToObject((YamlDatabaseDiscoveryRuleConfiguration) each);
                 databaseDiscoveryRuleConfigurationImportChecker.check(database, databaseDiscoveryRuleConfig);
                 ruleConfigs.add(databaseDiscoveryRuleConfig);
             } else if (each instanceof YamlEncryptRuleConfiguration) {
-                EncryptRuleConfiguration encryptRuleConfig = new EncryptRuleConfigurationYamlSwapper().swapToObject((YamlEncryptRuleConfiguration) each);
+                EncryptRuleConfiguration encryptRuleConfig = new YamlEncryptRuleConfigurationSwapper().swapToObject((YamlEncryptRuleConfiguration) each);
                 // TODO check
                 ruleConfigs.add(encryptRuleConfig);
             } else if (each instanceof YamlShadowRuleConfiguration) {
-                ShadowRuleConfiguration shadowRuleConfig = new ShadowRuleConfigurationYamlSwapper().swapToObject((YamlShadowRuleConfiguration) each);
+                ShadowRuleConfiguration shadowRuleConfig = new YamlShadowRuleConfigurationSwapper().swapToObject((YamlShadowRuleConfiguration) each);
                 // TODO check
                 ruleConfigs.add(shadowRuleConfig);
             }

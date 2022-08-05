@@ -42,7 +42,7 @@
 
     <create-account-sharding-algorithm>
         CREATE SHARDING ALGORITHM account_inline (
-        TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="account_${id % 2}"))
+        TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="account_${Math.floorMod(Math.floorDiv(id.longValue(), 2L), 2L)}"))
         )
     </create-account-sharding-algorithm>
 

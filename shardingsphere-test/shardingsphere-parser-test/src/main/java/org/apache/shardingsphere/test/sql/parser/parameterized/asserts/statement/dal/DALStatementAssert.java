@@ -23,6 +23,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatemen
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ExplainStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ResetParameterStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.ShowStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLAlterResourceGroupStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLBinlogStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLCacheIndexStatement;
@@ -70,7 +71,6 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQ
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUninstallComponentStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUninstallPluginStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLUseStatement;
-import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.dal.PostgreSQLShowStatement;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.SQLCaseAssertContext;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl.CacheIndexStatementAssert;
 import org.apache.shardingsphere.test.sql.parser.parameterized.asserts.statement.dal.impl.CheckTableStatementAssert;
@@ -212,8 +212,8 @@ public final class DALStatementAssert {
             ShowIndexStatementAssert.assertIs(assertContext, (MySQLShowIndexStatement) actual, (ShowIndexStatementTestCase) expected);
         } else if (actual instanceof MySQLShowRelaylogEventsStatement) {
             ShowRelaylogEventsStatementAssert.assertIs(assertContext, (MySQLShowRelaylogEventsStatement) actual, (ShowRelaylogEventsStatementTestCase) expected);
-        } else if (actual instanceof PostgreSQLShowStatement) {
-            ShowStatementAssert.assertIs(assertContext, (PostgreSQLShowStatement) actual, (ShowStatementTestCase) expected);
+        } else if (actual instanceof ShowStatement) {
+            ShowStatementAssert.assertIs(assertContext, (ShowStatement) actual, (ShowStatementTestCase) expected);
         } else if (actual instanceof SetStatement) {
             SetParameterStatementAssert.assertIs(assertContext, (SetStatement) actual, (SetParameterStatementTestCase) expected);
         } else if (actual instanceof ResetParameterStatement) {

@@ -9,7 +9,7 @@ weight = 6
 
 ### 语法定义
 
-```SQL
+```sql
 CreateShardingAlgorithm ::=
   'CREATE' 'SHARDING' 'KEY' 'GENERATOR' keyGeneratorName '(' algorithmDefinition ')'
 
@@ -28,13 +28,14 @@ algorithmType ::=
 
 ### 补充说明
 
-- `algorithmType` 为分布式主键生成算法类型，详细的分布式主键生成算法类型信息请参考[分布式序列算法类型](cn/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen/)
+- `algorithmType`
+  为分布式主键生成算法类型，详细的分布式主键生成算法类型信息请参考[分布式序列算法类型](cn/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen/)
 
 ### 示例
 
 #### 创建分布式主键生成器
 
-```SQL
+```sql
 CREATE SHARDING KEY GENERATOR snowflake_key_generator (
     TYPE(NAME=SNOWFLAKE, PROPERTIES("max-vibration-offset"=3))
 );
@@ -42,8 +43,8 @@ CREATE SHARDING KEY GENERATOR snowflake_key_generator (
 
 ### 保留字
 
-    CREATE、SHARDING、KEY、GENERATOR、TYPE、NAME、PROPERTIES
+`CREATE`、`SHARDING`、`KEY`、`GENERATOR`、`TYPE`、`NAME`、`PROPERTIES`
 
 ### 相关链接
-- [保留字](/cn/reference/distsql/syntax/reserved-word/)
 
+- [保留字](/cn/reference/distsql/syntax/reserved-word/)

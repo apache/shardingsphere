@@ -29,7 +29,7 @@ import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.fixture.FixturePipelineJobPersistCallback;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.JobProgressYamlSwapper;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
@@ -62,7 +62,7 @@ import static org.mockito.Mockito.mock;
 
 public final class GovernanceRepositoryAPIImplTest {
     
-    private static final JobProgressYamlSwapper JOB_PROGRESS_YAML_SWAPPER = new JobProgressYamlSwapper();
+    private static final YamlJobProgressSwapper SWAPPER = new YamlJobProgressSwapper();
     
     private static GovernanceRepositoryAPI governanceRepositoryAPI;
     
@@ -77,7 +77,7 @@ public final class GovernanceRepositoryAPIImplTest {
         RuleAlteredJobContext jobContext = mockJobContext();
         governanceRepositoryAPI.persistJobProgress(jobContext);
         JobProgress actual = governanceRepositoryAPI.getJobProgress(jobContext.getJobId(), jobContext.getShardingItem());
-        assertThat(YamlEngine.marshal(JOB_PROGRESS_YAML_SWAPPER.swapToYaml(actual)), is(ConfigurationFileUtil.readFileAndIgnoreComments("governance-repository.yaml")));
+        assertThat(YamlEngine.marshal(SWAPPER.swapToYaml(actual)), is(ConfigurationFileUtil.readFileAndIgnoreComments("governance-repository.yaml")));
     }
     
     @Test
