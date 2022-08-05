@@ -48,8 +48,6 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     
     private final ExecutorService executor = Executors.newFixedThreadPool(20);
     
-    private OneOffJobBootstrap oneOffJobBootstrap;
-    
     @Override
     protected void doStart() {
         PipelineAPIFactory.getGovernanceRepositoryAPI().watch(DataPipelineConstants.DATA_PIPELINE_ROOT, event -> getJobConfigPOJO(event).ifPresent(optional -> processEvent(event, optional)));
@@ -104,7 +102,7 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     private void execute(final JobConfigurationPOJO jobConfigPOJO) {
         RuleAlteredJob job = new RuleAlteredJob();
         RuleAlteredJobCenter.addJob(jobConfigPOJO.getJobName(), job);
-        oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration());
+        OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration());
         oneOffJobBootstrap.execute();
         job.setOneOffJobBootstrap(oneOffJobBootstrap);
     }
