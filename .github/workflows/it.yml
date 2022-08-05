@@ -212,7 +212,7 @@ jobs:
         env: [ docker ]
         adapter: [ proxy, jdbc ]
         database: [ MySQL, PostgreSQL ]
-        scenario: [ dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt ]
+        scenario: [ dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt, sharding_and_encrypt ]
     steps:
       - uses: actions/checkout@v2
       - name: Cache Maven Repos
@@ -247,7 +247,7 @@ jobs:
         env: [ docker ]
         adapter: [ proxy ]
         database: [ MySQL, PostgreSQL ]
-        scenario: [ dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt ]
+        scenario: [ dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt, sharding_and_encrypt ]
     steps:
       - uses: actions/checkout@v2
       - name: Cache Maven Repos
