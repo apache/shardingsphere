@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.RuleAlteredJobConfigurationSwapper;
@@ -27,6 +28,9 @@ import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Rule altered job.
@@ -43,6 +47,9 @@ public final class RuleAlteredJob implements SimpleJob, PipelineJob {
     // Shared by all sharding items
     private final RuleAlteredJobPreparer jobPreparer = new RuleAlteredJobPreparer();
     
+    @Getter
+    private final Map<Integer, RuleAlteredJobScheduler> jobSchedulerMap = new ConcurrentHashMap<>();
+    
     private volatile boolean stopping;
     
     @Override
@@ -56,7 +63,16 @@ public final class RuleAlteredJob implements SimpleJob, PipelineJob {
         RuleAlteredJobConfiguration jobConfig = RuleAlteredJobConfigurationSwapper.swapToObject(shardingContext.getJobParameter());
         JobProgress initProgress = governanceRepositoryAPI.getJobProgress(shardingContext.getJobName(), shardingContext.getShardingItem());
         RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, shardingContext.getShardingItem(), initProgress, dataSourceManager, jobPreparer);
-        RuleAlteredJobSchedulerCenter.start(jobContext);
+        int shardingItem = jobContext.getShardingItem();
+        if (jobSchedulerMap.containsKey(shardingItem)) {
+            log.warn("schedulerMap contains shardingItem {}, ignore", shardingItem);
+            return;
+        }
+        log.info("start RuleAlteredJobScheduler, jobId={}, shardingItem={}", jobId, shardingItem);
+        RuleAlteredJobScheduler jobScheduler = new RuleAlteredJobScheduler(jobContext);
+        jobScheduler.start();
+        jobSchedulerMap.put(shardingItem, jobScheduler);
+        RuleAlteredJobPersistService.addJobPersistParameter(jobId, shardingItem);
     }
     
     /**
@@ -69,7 +85,11 @@ public final class RuleAlteredJob implements SimpleJob, PipelineJob {
             log.info("stop, jobId is null, ignore");
             return;
         }
-        log.info("stop, jobId={}", jobId);
-        RuleAlteredJobSchedulerCenter.stop(jobId);
+        log.info("stop job scheduler, jobId={}", jobId);
+        for (RuleAlteredJobScheduler each : jobSchedulerMap.values()) {
+            each.stop();
+        }
+        jobSchedulerMap.clear();
+        RuleAlteredJobPersistService.removeJobPersistParameter(jobId);
     }
 }
