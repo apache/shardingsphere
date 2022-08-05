@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.state;
+package org.apache.shardingsphere.mode.lock.engine;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -23,21 +23,21 @@ import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 
 /**
- * Lock state context factory.
+ * Lock judge engine factory.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class LockStateContextFactory {
+public final class LockJudgeEngineFactory {
     
     static {
-        ShardingSphereServiceLoader.register(LockStateContext.class);
+        ShardingSphereServiceLoader.register(LockJudgeEngine.class);
     }
     
     /**
-     * Get lock state context.
+     * Get instance of lock judge engine.
      *
-     * @return lock state context
+     * @return got instance
      */
-    public static LockStateContext getLockStateContext() {
-        return RequiredSPIRegistry.getRegisteredService(LockStateContext.class);
+    public static LockJudgeEngine getInstance() {
+        return RequiredSPIRegistry.getRegisteredService(LockJudgeEngine.class);
     }
 }

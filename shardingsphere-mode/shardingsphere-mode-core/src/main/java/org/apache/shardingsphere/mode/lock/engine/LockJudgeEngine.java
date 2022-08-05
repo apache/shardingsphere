@@ -15,37 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.state;
+package org.apache.shardingsphere.mode.lock.engine;
 
-import org.apache.shardingsphere.infra.lock.LockNameDefinition;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
 import org.apache.shardingsphere.spi.type.required.RequiredSPI;
 
 /**
- * Lock state context.
+ * Lock judge engine.
  */
 @SingletonSPI
-public interface LockStateContext extends RequiredSPI {
-    
-    /**
-     * Register lock state.
-     *
-     * @param lockName lock name definition
-     */
-    void register(LockNameDefinition lockName);
-    
-    /**
-     * Un-register lock state.
-     *
-     * @param lockName lock name definition
-     */
-    void unregister(LockNameDefinition lockName);
+public interface LockJudgeEngine extends RequiredSPI {
     
     /**
      * Is locked.
      *
-     * @param lockName lock name definition
+     * @param lockContext lock context
+     * @param databaseName database name
+     * @param sqlStatementContext sql statement context
      * @return is locked or not
      */
-    boolean isLocked(LockNameDefinition lockName);
+    boolean isLocked(LockContext lockContext, String databaseName, SQLStatementContext<?> sqlStatementContext);
 }

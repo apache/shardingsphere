@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.state;
+package org.apache.shardingsphere.mode.lock.manager.state;
 
-import org.apache.shardingsphere.infra.lock.LockNameDefinition;
+import org.apache.shardingsphere.infra.lock.LockDefinition;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -28,7 +28,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /**
  * Lock state context.
  */
-public final class ShardingSphereLockStateContext implements LockStateContext {
+public final class LockStateContext {
     
     private final ReadWriteLock lock = new ReentrantReadWriteLock();
     
@@ -36,13 +36,17 @@ public final class ShardingSphereLockStateContext implements LockStateContext {
     
     private final Map<String, Boolean> lockStates = new LinkedHashMap<>();
     
-    @Override
-    public void register(final LockNameDefinition lockName) {
+    /**
+     * Register lock state.
+     *
+     * @param lockDefinition lock definition
+     */
+    public void register(final LockDefinition lockDefinition) {
         lock.writeLock().lock();
         try {
-            Boolean isLocked = lockStates.get(lockName.getLockName());
+            Boolean isLocked = lockStates.get(lockDefinition.getLockKey());
             if (null == isLocked || !isLocked) {
-                lockStates.put(lockName.getLockName(), true);
+                lockStates.put(lockDefinition.getLockKey(), true);
                 lockCounter.incrementAndGet();
             }
         } finally {
@@ -50,13 +54,17 @@ public final class ShardingSphereLockStateContext implements LockStateContext {
         }
     }
     
-    @Override
-    public void unregister(final LockNameDefinition lockName) {
+    /**
+     * Un-register lock state.
+     *
+     * @param lockDefinition lock definition
+     */
+    public void unregister(final LockDefinition lockDefinition) {
         lock.writeLock().lock();
         try {
-            Boolean isLocked = lockStates.get(lockName.getLockName());
+            Boolean isLocked = lockStates.get(lockDefinition.getLockKey());
             if (null != isLocked && isLocked) {
-                lockStates.put(lockName.getLockName(), false);
+                lockStates.put(lockDefinition.getLockKey(), false);
                 lockCounter.decrementAndGet();
             }
         } finally {
@@ -64,14 +72,19 @@ public final class ShardingSphereLockStateContext implements LockStateContext {
         }
     }
     
-    @Override
-    public boolean isLocked(final LockNameDefinition lockName) {
+    /**
+     * Is locked.
+     *
+     * @param lockDefinition lock definition
+     * @return is locked or not
+     */
+    public boolean isLocked(final LockDefinition lockDefinition) {
         if (isExistLock()) {
             return false;
         }
         lock.readLock().lock();
         try {
-            Boolean isLocked = lockStates.get(lockName.getLockName());
+            Boolean isLocked = lockStates.get(lockDefinition.getLockKey());
             return null != isLocked && isLocked;
         } finally {
             lock.readLock().unlock();

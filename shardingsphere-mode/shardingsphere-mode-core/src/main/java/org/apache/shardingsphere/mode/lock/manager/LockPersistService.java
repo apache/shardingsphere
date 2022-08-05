@@ -15,29 +15,31 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.lock;
+package org.apache.shardingsphere.mode.lock.manager;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.required.RequiredSPI;
+import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 /**
- * Lock judge engine factory.
+ * Lock persist service.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class LockJudgeEngineFactory {
-    
-    static {
-        ShardingSphereServiceLoader.register(LockJudgeEngine.class);
-    }
+@SingletonSPI
+public interface LockPersistService extends TypedSPI, RequiredSPI {
     
     /**
-     * Get instance of lock judge engine.
+     * Try lock.
      *
-     * @return got instance
+     * @param lockKey lock key
+     * @param timeoutMillis timeout millis
+     * @return is locked or not
      */
-    public static LockJudgeEngine getInstance() {
-        return RequiredSPIRegistry.getRegisteredService(LockJudgeEngine.class);
-    }
+    boolean tryLock(String lockKey, long timeoutMillis);
+    
+    /**
+     * Un lock.
+     *
+     * @param lockKey lock key
+     */
+    void unLock(String lockKey);
 }

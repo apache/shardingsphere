@@ -15,25 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.lock.definition;
+package org.apache.shardingsphere.mode.lock.util;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.lock.LockDefinition;
+import lombok.SneakyThrows;
+
+import java.util.concurrent.TimeUnit;
 
 /**
- * Lock definition factory.
+ * Timeout milliseconds.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class LockDefinitionFactory {
+public final class TimeoutMilliseconds {
+    
+    public static final long MAX_TRY_LOCK = 3 * 60 * 1000L;
+    
+    public static final long MIN_TRY_LOCK = 200L;
+    
+    public static final long DEFAULT_REGISTRY = 50L;
+    
+    public static final long MAX_ACK_EXPEND = 100L;
     
     /**
-     * New database lock definition.
+     * Sleep interval.
      *
-     * @param databaseName database name
-     * @return database lock definition
+     * @param timeMilliseconds time milliseconds
      */
-    public static LockDefinition newDatabaseLockDefinition(final String databaseName) {
-        return new DatabaseLockDefinition(new DatabaseLockNameDefinition(databaseName));
+    @SneakyThrows(InterruptedException.class)
+    public static void sleepInterval(final long timeMilliseconds) {
+        TimeUnit.MILLISECONDS.sleep(timeMilliseconds);
     }
 }

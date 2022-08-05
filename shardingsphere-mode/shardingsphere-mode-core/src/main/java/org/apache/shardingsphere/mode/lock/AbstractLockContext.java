@@ -15,11 +15,11 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.lock;
+package org.apache.shardingsphere.mode.lock;
 
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
-import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockDefinition;
+import org.apache.shardingsphere.mode.lock.definition.DatabaseLockDefinition;
 
 /**
  * Abstract lock context.
@@ -37,25 +37,25 @@ public abstract class AbstractLockContext implements LockContext {
     protected abstract boolean tryLock(DatabaseLockDefinition lockDefinition);
     
     @Override
-    public boolean tryLock(final LockDefinition lockDefinition, final long timeoutMilliseconds) {
+    public boolean tryLock(final LockDefinition lockDefinition, final long timeoutMillis) {
         if (lockDefinition instanceof DatabaseLockDefinition) {
-            return tryLock((DatabaseLockDefinition) lockDefinition, timeoutMilliseconds);
+            return tryLock((DatabaseLockDefinition) lockDefinition, timeoutMillis);
         }
         throw new UnsupportedOperationException();
     }
     
-    protected abstract boolean tryLock(DatabaseLockDefinition lockDefinition, long timeoutMilliseconds);
+    protected abstract boolean tryLock(DatabaseLockDefinition lockDefinition, long timeoutMillis);
     
     @Override
-    public void releaseLock(final LockDefinition lockDefinition) {
+    public void unLock(final LockDefinition lockDefinition) {
         if (lockDefinition instanceof DatabaseLockDefinition) {
-            releaseLock((DatabaseLockDefinition) lockDefinition);
+            this.unLock((DatabaseLockDefinition) lockDefinition);
             return;
         }
         throw new UnsupportedOperationException();
     }
     
-    protected abstract void releaseLock(DatabaseLockDefinition lockDefinition);
+    protected abstract void unLock(DatabaseLockDefinition lockDefinition);
     
     @Override
     public boolean isLocked(final LockDefinition lockDefinition) {

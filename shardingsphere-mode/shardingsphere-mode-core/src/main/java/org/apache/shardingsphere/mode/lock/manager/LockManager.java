@@ -15,23 +15,36 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.lock.definition;
+package org.apache.shardingsphere.mode.lock.manager;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.lock.LockNameDefinition;
+import org.apache.shardingsphere.infra.lock.LockDefinition;
 
 /**
- * Database lock name definition.
+ * Lock manager.
  */
-@Getter
-public final class DatabaseLockNameDefinition implements LockNameDefinition {
+public interface LockManager {
     
-    private final String lockName;
+    /**
+     * Try lock.
+     *
+     * @param lockDefinition lock definition
+     * @param timeoutMillis timeout millis
+     * @return is locked or not
+     */
+    boolean tryLock(LockDefinition lockDefinition, long timeoutMillis);
     
-    private final String databaseName;
+    /**
+     * Un lock.
+     *
+     * @param lockDefinition lock definition
+     */
+    void unLock(LockDefinition lockDefinition);
     
-    public DatabaseLockNameDefinition(final String databaseName) {
-        lockName = databaseName;
-        this.databaseName = databaseName;
-    }
+    /**
+     * Is locked.
+     *
+     * @param lockDefinition lock definition
+     * @return is locked or not
+     */
+    boolean isLocked(LockDefinition lockDefinition);
 }

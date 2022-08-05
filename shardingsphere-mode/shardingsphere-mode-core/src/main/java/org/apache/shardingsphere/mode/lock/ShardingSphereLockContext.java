@@ -15,43 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal;
+package org.apache.shardingsphere.mode.lock;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.infra.lock.LockDefinition;
+import org.apache.shardingsphere.mode.lock.manager.LockManager;
 import org.apache.shardingsphere.mode.lock.util.TimeoutMilliseconds;
 
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
-
 /**
- * Inter mutex reentrant lock.
+ * Lock context of ShardingSphere.
  */
 @RequiredArgsConstructor
-public final class ReentrantInternalLock implements InternalLock {
+public final class ShardingSphereLockContext implements LockContext {
     
-    private final Lock internalLock;
+    private final LockManager lockManager;
     
     @Override
-    public boolean tryLock() {
-        return tryLock(TimeoutMilliseconds.MAX_TRY_LOCK);
+    public boolean tryLock(final LockDefinition lockDefinition) {
+        return lockManager.tryLock(lockDefinition, TimeoutMilliseconds.MAX_TRY_LOCK);
     }
     
     @Override
-    public boolean tryLock(final long timeoutMillis) {
-        try {
-            return internalLock.tryLock(timeoutMillis, TimeUnit.MILLISECONDS);
-        } catch (final InterruptedException ignore) {
-            return false;
-        }
+    public boolean tryLock(final LockDefinition lockDefinition, final long timeoutMillis) {
+        return lockManager.tryLock(lockDefinition, timeoutMillis);
     }
     
     @Override
-    public void unlock() {
-        internalLock.unlock();
+    public void unLock(final LockDefinition lockDefinition) {
+        lockManager.unLock(lockDefinition);
     }
     
     @Override
-    public boolean isLocked() {
-        throw new UnsupportedOperationException();
+    public boolean isLocked(final LockDefinition lockDefinition) {
+        return lockManager.isLocked(lockDefinition);
     }
 }

@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service;
 
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.mode.lock.manager.LockPersistService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
@@ -25,17 +26,12 @@ import java.util.Collection;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Mutex lock registry service.
+ * Cluster lock persist service.
  */
 @RequiredArgsConstructor
-public final class MutexLockRegistryService implements LockRegistryService {
+public final class ClusterLockPersistService implements LockPersistService {
     
     private final ClusterPersistRepository repository;
-    
-    @Override
-    public Collection<String> acquireAckLockedInstances(final String ackLockName) {
-        return repository.getChildrenKeys(ackLockName);
-    }
     
     @Override
     public boolean tryLock(final String lockName, final long timeoutMilliseconds) {
@@ -47,21 +43,52 @@ public final class MutexLockRegistryService implements LockRegistryService {
     }
     
     @Override
+    public void unLock(final String lockName) {
+        repository.delete(LockNodeUtil.generateLockLeasesNodePath(lockName));
+    }
+    
+    /**
+     * Acquire ack locked instances.
+     *
+     * @param ackLockName ack lock name
+     * @return ack locked instances
+     * @deprecated remove me when the distributed lock refactoring was completed
+     */
+    @Deprecated
+    public Collection<String> acquireAckLockedInstances(final String ackLockName) {
+        return repository.getChildrenKeys(ackLockName);
+    }
+    
+    /**
+     * Release lock.
+     *
+     * @param lockName lock name
+     * @deprecated remove me when the distributed lock refactoring was completed
+     */
+    @Deprecated
     public void releaseLock(final String lockName) {
         repository.getInternalMutexLock(lockName).unlock();
     }
     
-    @Override
-    public void removeLock(final String lockName) {
-        repository.delete(LockNodeUtil.generateLockLeasesNodePath(lockName));
-    }
-    
-    @Override
+    /**
+     * Ack lock.
+     *
+     * @param lockName lock name
+     * @param lockValue lock value
+     * @deprecated remove me when the distributed lock refactoring was completed
+     */
+    @Deprecated
     public void ackLock(final String lockName, final String lockValue) {
         repository.persistEphemeral(lockName, lockValue);
     }
     
-    @Override
+    /**
+     * Release ack lock.
+     *
+     * @param lockName lock name
+     * @deprecated remove me when the distributed lock refactoring was completed
+     */
+    @Deprecated
     public void releaseAckLock(final String lockName) {
         repository.delete(lockName);
     }

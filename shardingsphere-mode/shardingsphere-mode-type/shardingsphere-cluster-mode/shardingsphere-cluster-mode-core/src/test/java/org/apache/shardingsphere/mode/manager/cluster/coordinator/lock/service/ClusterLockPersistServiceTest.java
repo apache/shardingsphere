@@ -30,36 +30,36 @@ import java.lang.reflect.Field;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class MutexLockRegistryServiceTest {
+public final class ClusterLockPersistServiceTest {
     
     @Mock
     private ClusterPersistRepository clusterPersistRepository;
     
-    private LockRegistryService lockRegistryService;
+    private ClusterLockPersistService clusterLockPersistService;
     
     @Before
     public void setUp() throws ReflectiveOperationException {
-        lockRegistryService = new MutexLockRegistryService(clusterPersistRepository);
-        Field field = lockRegistryService.getClass().getDeclaredField("repository");
+        clusterLockPersistService = new ClusterLockPersistService(clusterPersistRepository);
+        Field field = clusterLockPersistService.getClass().getDeclaredField("repository");
         field.setAccessible(true);
-        field.set(lockRegistryService, clusterPersistRepository);
+        field.set(clusterLockPersistService, clusterPersistRepository);
     }
     
     @Test
-    public void assertRemoveLock() {
-        lockRegistryService.removeLock("test");
+    public void assertUnLock() {
+        clusterLockPersistService.unLock("test");
         verify(clusterPersistRepository).delete(LockNodeUtil.generateLockLeasesNodePath("test"));
     }
     
     @Test
     public void assertAckLock() {
-        lockRegistryService.ackLock("databaseAckLock", "127.0.0.1@3307");
+        clusterLockPersistService.ackLock("databaseAckLock", "127.0.0.1@3307");
         verify(clusterPersistRepository).persistEphemeral("databaseAckLock", "127.0.0.1@3307");
     }
     
     @Test
     public void assertReleaseAckLock() {
-        lockRegistryService.releaseAckLock("databaseAckLock");
+        clusterLockPersistService.releaseAckLock("databaseAckLock");
         verify(clusterPersistRepository).delete("databaseAckLock");
     }
 }
