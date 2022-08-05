@@ -15,12 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
+package org.apache.shardingsphere.data.pipeline.core.job.progress.persist;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.job.persist.PipelineJobPersistContext;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobCenter;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobScheduler;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 
 import java.util.Collections;
@@ -33,17 +34,16 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Rule altered job persist service.
+ * Pipeline job progress persist service.
  */
-
 @Slf4j
-public final class RuleAlteredJobPersistService {
+public final class PipelineJobProgressPersistService {
     
-    private static final Map<String, Map<Integer, PipelineJobPersistContext>> JOB_PERSIST_MAP = new ConcurrentHashMap<>();
+    private static final Map<String, Map<Integer, PipelineJobProgressPersistContext>> JOB_PROGRESS_PERSIST_MAP = new ConcurrentHashMap<>();
     
     private static final GovernanceRepositoryAPI REPOSITORY_API = PipelineAPIFactory.getGovernanceRepositoryAPI();
     
-    private static final ScheduledExecutorService JOB_PERSIST_EXECUTOR = Executors.newSingleThreadScheduledExecutor(ExecutorThreadFactoryBuilder.build("scaling-job-schedule-%d"));
+    private static final ScheduledExecutorService JOB_PERSIST_EXECUTOR = Executors.newSingleThreadScheduledExecutor(ExecutorThreadFactoryBuilder.build("pipeline-progress-persist-%d"));
     
     private static final long DELAY_SECONDS = 1;
     
@@ -52,43 +52,43 @@ public final class RuleAlteredJobPersistService {
     }
     
     /**
-     * Remove job schedule parameter by job id.
+     * Remove job progress persist context.
      *
      * @param jobId job id
      */
-    public static void removeJobPersistParameter(final String jobId) {
-        log.info("Remove job persist, job id: {}", jobId);
-        JOB_PERSIST_MAP.remove(jobId);
+    public static void removeJobProgressPersistContext(final String jobId) {
+        log.info("Remove job progress persist context, jobId={}", jobId);
+        JOB_PROGRESS_PERSIST_MAP.remove(jobId);
     }
     
     /**
-     * Add job schedule parameter.
+     * Add job progress persist context.
      *
      * @param jobId job id
      * @param shardingItem sharding item
      */
-    public static void addJobPersistParameter(final String jobId, final int shardingItem) {
-        log.info("Add job schedule, jobId={}, shardingItem={}", jobId, shardingItem);
-        JOB_PERSIST_MAP.computeIfAbsent(jobId, key -> new ConcurrentHashMap<>()).put(shardingItem, new PipelineJobPersistContext(jobId, shardingItem));
+    public static void addJobProgressPersistContext(final String jobId, final int shardingItem) {
+        log.info("Add job progress persist context, jobId={}, shardingItem={}", jobId, shardingItem);
+        JOB_PROGRESS_PERSIST_MAP.computeIfAbsent(jobId, key -> new ConcurrentHashMap<>()).put(shardingItem, new PipelineJobProgressPersistContext(jobId, shardingItem));
     }
     
     /**
-     * Persist job process, may not be implemented immediately, depending on persist interval.
+     * Notify persist.
      *
      * @param jobId job id
      * @param shardingItem sharding item
      */
-    public static void triggerPersist(final String jobId, final int shardingItem) {
-        Map<Integer, PipelineJobPersistContext> intervalParamMap = JOB_PERSIST_MAP.getOrDefault(jobId, Collections.emptyMap());
-        PipelineJobPersistContext parameter = intervalParamMap.get(shardingItem);
-        if (null == parameter) {
-            log.debug("Persist interval parameter is null, jobId={}, shardingItem={}", jobId, shardingItem);
+    public static void notifyPersist(final String jobId, final int shardingItem) {
+        Map<Integer, PipelineJobProgressPersistContext> persistContextMap = JOB_PROGRESS_PERSIST_MAP.getOrDefault(jobId, Collections.emptyMap());
+        PipelineJobProgressPersistContext persistContext = persistContextMap.get(shardingItem);
+        if (null == persistContext) {
+            log.debug("persistContext is null, jobId={}, shardingItem={}", jobId, shardingItem);
             return;
         }
-        parameter.getHasNewEvents().set(true);
+        persistContext.getHasNewEvents().set(true);
     }
     
-    private static void persist(final String jobId, final int shardingItem, final PipelineJobPersistContext persistContext) {
+    private static void persist(final String jobId, final int shardingItem, final PipelineJobProgressPersistContext persistContext) {
         Long beforePersistingProgressMillis = persistContext.getBeforePersistingProgressMillis().get();
         if ((null == beforePersistingProgressMillis || System.currentTimeMillis() - beforePersistingProgressMillis < TimeUnit.SECONDS.toMillis(DELAY_SECONDS))
                 && !persistContext.getHasNewEvents().get()) {
@@ -116,7 +116,7 @@ public final class RuleAlteredJobPersistService {
         
         @Override
         public void run() {
-            for (Entry<String, Map<Integer, PipelineJobPersistContext>> entry : JOB_PERSIST_MAP.entrySet()) {
+            for (Entry<String, Map<Integer, PipelineJobProgressPersistContext>> entry : JOB_PROGRESS_PERSIST_MAP.entrySet()) {
                 entry.getValue().forEach((shardingItem, persistContext) -> {
                     persist(entry.getKey(), shardingItem, persistContext);
                 });

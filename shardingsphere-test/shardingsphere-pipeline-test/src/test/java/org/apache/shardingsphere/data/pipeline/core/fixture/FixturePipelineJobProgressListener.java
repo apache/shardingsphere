@@ -15,34 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.scaling.core.job.persist;
+package org.apache.shardingsphere.data.pipeline.core.fixture;
 
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.data.pipeline.api.job.persist.PipelineJobPersistCallback;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobPersistService;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 
-/**
- * Async job process persist callback.
- */
-@RequiredArgsConstructor
-public final class AsyncPipelineJobPersistCallback implements PipelineJobPersistCallback {
-    
-    private final String jobId;
-    
-    private final int shardingItem;
+public final class FixturePipelineJobProgressListener implements PipelineJobProgressListener {
     
     @Override
-    public String getJobId() {
-        return jobId;
-    }
-    
-    @Override
-    public int getShardingItem() {
-        return shardingItem;
-    }
-    
-    @Override
-    public void pushPersistEvent() {
-        RuleAlteredJobPersistService.triggerPersist(jobId, shardingItem);
+    public void onProgressUpdated() {
     }
 }
