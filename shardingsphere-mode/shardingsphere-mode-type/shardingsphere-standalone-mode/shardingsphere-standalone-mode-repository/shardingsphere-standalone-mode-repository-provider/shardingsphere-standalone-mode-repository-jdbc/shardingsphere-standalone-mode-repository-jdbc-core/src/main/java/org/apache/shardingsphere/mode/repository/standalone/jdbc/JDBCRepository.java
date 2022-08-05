@@ -33,7 +33,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -53,15 +52,9 @@ public final class JDBCRepository implements StandalonePersistRepository {
     @Override
     public void init(final Properties props) {
         JDBCRepositoryProperties localRepositoryProps = new JDBCRepositoryProperties(props);
-        String provider = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(JDBCRepositoryPropertyKey.PROVIDER)))
-                .orElse(localRepositoryProps.getValue(JDBCRepositoryPropertyKey.PROVIDER));
-        String jdbcUrl = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(JDBCRepositoryPropertyKey.JDBC_URL)))
-                .orElse(localRepositoryProps.getValue(JDBCRepositoryPropertyKey.JDBC_URL));
-        String username = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(JDBCRepositoryPropertyKey.USERNAME)))
-                .orElse(localRepositoryProps.getValue(JDBCRepositoryPropertyKey.USERNAME));
-        String password = localRepositoryProps.getValue(JDBCRepositoryPropertyKey.PASSWORD);
-        connection = DriverManager.getConnection(jdbcUrl, username, password);
-        jdbcRepositoryProvider = JDBCRepositoryProviderFactory.getInstance(provider);
+        connection = DriverManager.getConnection(localRepositoryProps.getValue(JDBCRepositoryPropertyKey.JDBC_URL),
+                localRepositoryProps.getValue(JDBCRepositoryPropertyKey.USERNAME), localRepositoryProps.getValue(JDBCRepositoryPropertyKey.PASSWORD));
+        jdbcRepositoryProvider = JDBCRepositoryProviderFactory.getInstance(localRepositoryProps.getValue(JDBCRepositoryPropertyKey.PROVIDER));
         try (Statement statement = connection.createStatement()) {
             statement.execute(jdbcRepositoryProvider.dropTableSQL());
             statement.execute(jdbcRepositoryProvider.createTableSQL());
