@@ -19,18 +19,11 @@ package org.apache.shardingsphere.data.pipeline.api.job.progress;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
-import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Job progress.
@@ -46,19 +39,17 @@ public final class JobProgress implements PipelineJobProgress {
     
     private boolean active;
     
-    private Map<String, InventoryTaskProgress> inventoryTaskProgressMap;
+    private JobInventoryTaskProgress jobInventoryTask;
     
-    private Map<String, IncrementalTaskProgress> incrementalTaskProgressMap;
+    private JobIncrementalTaskProgress jobIncrementalTask;
     
     /**
-     * Get incremental position.
-     *
-     * @param dataSourceName data source name
+     * get incremental position.
+     * @param dataSourceName dataSource
      * @return incremental position
      */
     public Optional<IngestPosition<?>> getIncrementalPosition(final String dataSourceName) {
-        IncrementalTaskProgress progress = incrementalTaskProgressMap.get(dataSourceName);
-        return Optional.ofNullable(null != progress ? progress.getPosition() : null);
+        return jobIncrementalTask.getIncrementalPosition(dataSourceName);
     }
     
     /**
@@ -68,10 +59,7 @@ public final class JobProgress implements PipelineJobProgress {
      * @return inventory position
      */
     public Map<String, IngestPosition<?>> getInventoryPosition(final String tableName) {
-        Pattern pattern = Pattern.compile(String.format("%s(#\\d+)?", tableName));
-        return inventoryTaskProgressMap.entrySet().stream()
-                .filter(entry -> pattern.matcher(entry.getKey()).find())
-                .collect(Collectors.toMap(Entry::getKey, entry -> entry.getValue().getPosition()));
+        return jobInventoryTask.getInventoryPosition(tableName);
     }
     
     /**
@@ -80,7 +68,7 @@ public final class JobProgress implements PipelineJobProgress {
      * @return data source
      */
     public String getDataSource() {
-        return incrementalTaskProgressMap.keySet().stream().findAny().orElse("");
+        return jobIncrementalTask.getIncrementalTaskProgressMap().keySet().stream().findAny().orElse("");
     }
     
     /**
@@ -89,10 +77,7 @@ public final class JobProgress implements PipelineJobProgress {
      * @return finished percentage
      */
     public int getInventoryFinishedPercentage() {
-        long finished = inventoryTaskProgressMap.values().stream()
-                .filter(each -> each.getPosition() instanceof FinishedPosition)
-                .count();
-        return inventoryTaskProgressMap.isEmpty() ? 0 : (int) (finished * 100 / inventoryTaskProgressMap.size());
+        return jobInventoryTask.getInventoryFinishedPercentage();
     }
     
     /**
@@ -101,9 +86,6 @@ public final class JobProgress implements PipelineJobProgress {
      * @return latest active time, <code>0</code> is there is no activity
      */
     public long getIncrementalLatestActiveTimeMillis() {
-        List<Long> delays = incrementalTaskProgressMap.values().stream()
-                .map(each -> each.getIncrementalTaskDelay().getLatestActiveTimeMillis())
-                .collect(Collectors.toList());
-        return delays.stream().reduce(Long::max).orElse(0L);
+        return null == jobIncrementalTask ? 0L : jobIncrementalTask.getIncrementalLatestActiveTimeMillis();
     }
 }

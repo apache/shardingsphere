@@ -17,21 +17,19 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 
+import java.util.HashMap;
+import java.util.Map;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Yaml job progress.
+ * Yaml InventoryTaskProgress.
  */
 @Getter
 @Setter
-public final class YamlJobProgress {
+public final class YamlInventoryTaskProgress {
     
-    private String status;
+    private String[] finished = new String[0];
     
-    private String sourceDatabaseType;
-    
-    private YamlInventoryTaskProgress inventory;
-    
-    private YamlIncrementalTaskProgress incremental;
+    private Map<String, String> unfinished = new HashMap<>();
 }

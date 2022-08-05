@@ -19,19 +19,18 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskDelay;
 
 /**
- * Yaml job progress.
+ * Yaml IncrementalTaskProgress.
  */
 @Getter
 @Setter
-public final class YamlJobProgress {
+public final class YamlIncrementalTaskProgress {
     
-    private String status;
+    private String dataSourceName;
     
-    private String sourceDatabaseType;
+    private String position;
     
-    private YamlInventoryTaskProgress inventory;
-    
-    private YamlIncrementalTaskProgress incremental;
+    private IncrementalTaskDelay delay;
 }
