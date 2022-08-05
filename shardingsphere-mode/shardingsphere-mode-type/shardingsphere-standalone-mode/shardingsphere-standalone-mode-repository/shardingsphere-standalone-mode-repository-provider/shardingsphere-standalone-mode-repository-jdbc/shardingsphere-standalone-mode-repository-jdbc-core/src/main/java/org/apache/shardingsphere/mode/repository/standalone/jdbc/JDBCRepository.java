@@ -52,12 +52,16 @@ public final class JDBCRepository implements StandalonePersistRepository {
     @SneakyThrows
     @Override
     public void init(final Properties props) {
-        jdbcRepositoryProvider = JDBCRepositoryProviderFactory.getInstance(props.get("provider"));
         JDBCRepositoryProperties localRepositoryProps = new JDBCRepositoryProperties(props);
-        String jdbcUrl = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(JDBCRepositoryPropertyKey.JDBC_URL))).orElse(jdbcRepositoryProvider.getDefaultJDBCUrl());
-        String user = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(JDBCRepositoryPropertyKey.USER))).orElse(jdbcRepositoryProvider.getDefaultUser());
-        String password = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(JDBCRepositoryPropertyKey.PASSWORD))).orElse(jdbcRepositoryProvider.getDefaultPassword());
-        connection = DriverManager.getConnection(jdbcUrl, user, password);
+        String provider = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(JDBCRepositoryPropertyKey.PROVIDER)))
+                .orElse(localRepositoryProps.getValue(JDBCRepositoryPropertyKey.PROVIDER));
+        String jdbcUrl = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(JDBCRepositoryPropertyKey.JDBC_URL)))
+                .orElse(localRepositoryProps.getValue(JDBCRepositoryPropertyKey.JDBC_URL));
+        String username = Optional.ofNullable(Strings.emptyToNull(localRepositoryProps.getValue(JDBCRepositoryPropertyKey.USERNAME)))
+                .orElse(localRepositoryProps.getValue(JDBCRepositoryPropertyKey.USERNAME));
+        String password = localRepositoryProps.getValue(JDBCRepositoryPropertyKey.PASSWORD);
+        connection = DriverManager.getConnection(jdbcUrl, username, password);
+        jdbcRepositoryProvider = JDBCRepositoryProviderFactory.getInstance(provider);
         try (Statement statement = connection.createStatement()) {
             statement.execute(jdbcRepositoryProvider.dropTableSQL());
             statement.execute(jdbcRepositoryProvider.createTableSQL());

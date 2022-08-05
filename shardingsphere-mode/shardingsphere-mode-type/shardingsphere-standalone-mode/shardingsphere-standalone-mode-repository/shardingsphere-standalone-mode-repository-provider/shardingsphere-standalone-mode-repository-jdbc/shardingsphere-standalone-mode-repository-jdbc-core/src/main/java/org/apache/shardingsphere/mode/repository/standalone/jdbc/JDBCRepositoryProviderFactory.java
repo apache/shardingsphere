@@ -20,6 +20,7 @@ package org.apache.shardingsphere.mode.repository.standalone.jdbc;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
 
 /**
@@ -39,6 +40,7 @@ public final class JDBCRepositoryProviderFactory {
      * @return got instance
      */
     public static JDBCRepositoryProvider getInstance(final Object jdbcRepositoryType) {
-        return TypedSPIRegistry.getRegisteredService(JDBCRepositoryProvider.class, jdbcRepositoryType == null ? "" : jdbcRepositoryType.toString());
+        return jdbcRepositoryType == null ? RequiredSPIRegistry.getRegisteredService(JDBCRepositoryProvider.class)
+                : TypedSPIRegistry.getRegisteredService(JDBCRepositoryProvider.class, jdbcRepositoryType.toString());
     }
 }

@@ -18,101 +18,61 @@
 package org.apache.shardingsphere.mode.repository.standalone.jdbc;
 
 import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.spi.type.required.RequiredSPI;
 import org.apache.shardingsphere.spi.type.typed.TypedSPI;
 
 /**
  * JDBC repository provider.
  */
 @SingletonSPI
-public interface JDBCRepositoryProvider extends TypedSPI {
+public interface JDBCRepositoryProvider extends TypedSPI, RequiredSPI {
     
     /**
      * Drop table SQL.
      *
      * @return SQL to drop table
      */
-    default String dropTableSQL() {
-        return "DROP TABLE IF EXISTS repository";
-    }
+    String dropTableSQL();
     
     /**
      * Create table SQL.
      *
      * @return SQL to create table
      */
-    default String createTableSQL() {
-        return "CREATE TABLE repository(id varchar(36) PRIMARY KEY, `key` TEXT, `value` TEXT, parent TEXT)";
-    }
+    String createTableSQL();
     
     /**
      * Select by key SQL.
      *
      * @return SQL to select table
      */
-    default String selectByKeySQL() {
-        return "SELECT `value` FROM repository WHERE `key` = ?";
-    }
+    String selectByKeySQL();
     
     /**
      * Select by parent key SQL.
      *
      * @return SQL to select table
      */
-    default String selectByParentKeySQL() {
-        return "SELECT `key` FROM repository WHERE parent = ?";
-    }
+    String selectByParentKeySQL();
     
     /**
      * Insert SQL.
      *
      * @return SQL to insert table
      */
-    default String insertSQL() {
-        return "INSERT INTO repository VALUES(?, ?, ?, ?)";
-    }
+    String insertSQL();
     
     /**
      * Update SQL.
      *
      * @return SQL to update table
      */
-    default String updateSQL() {
-        return "UPDATE repository SET `value` = ? WHERE `key` = ?";
-    }
+    String updateSQL();
     
     /**
      * Delete SQL.
      *
      * @return SQL to delete table
      */
-    default String deleteSQL() {
-        return "UPDATE repository SET `value` = ? WHERE `key` = ?";
-    }
-    
-    /**
-     * Get default JDBC url.
-     *
-     * @return Default JDBC url
-     */
-    default String getDefaultJDBCUrl() {
-        return "";
-    }
-    
-    /**
-     * Get default user.
-     *
-     * @return Default user
-     */
-    default String getDefaultUser() {
-        return "";
-    }
-    
-    /**
-     * Get default password.
-     *
-     * @return Default password
-     */
-    default String getDefaultPassword() {
-        return "";
-    }
+    String deleteSQL();
 }

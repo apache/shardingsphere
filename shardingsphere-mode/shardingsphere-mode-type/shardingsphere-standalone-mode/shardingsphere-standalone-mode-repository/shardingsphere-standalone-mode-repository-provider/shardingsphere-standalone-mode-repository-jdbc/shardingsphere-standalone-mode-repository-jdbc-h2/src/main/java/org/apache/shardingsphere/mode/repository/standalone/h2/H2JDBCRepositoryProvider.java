@@ -30,12 +30,42 @@ public final class H2JDBCRepositoryProvider implements JDBCRepositoryProvider {
     }
     
     @Override
-    public String getDefaultJDBCUrl() {
-        return "jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL";
+    public String dropTableSQL() {
+        return "DROP TABLE IF EXISTS `repository`";
     }
     
     @Override
-    public String getDefaultUser() {
-        return "sa";
+    public String createTableSQL() {
+        return "CREATE TABLE `repository`(id varchar(36) PRIMARY KEY, `key` TEXT, `value` TEXT, parent TEXT)";
+    }
+    
+    @Override
+    public String selectByKeySQL() {
+        return "SELECT `value` FROM `repository` WHERE `key` = ?";
+    }
+    
+    @Override
+    public String selectByParentKeySQL() {
+        return "SELECT `key` FROM `repository` WHERE parent = ?";
+    }
+    
+    @Override
+    public String insertSQL() {
+        return "INSERT INTO `repository` VALUES(?, ?, ?, ?)";
+    }
+    
+    @Override
+    public String updateSQL() {
+        return "UPDATE `repository` SET `value` = ? WHERE `key` = ?";
+    }
+    
+    @Override
+    public String deleteSQL() {
+        return "DELETE FROM `repository` WHERE `key` = ?";
+    }
+    
+    @Override
+    public boolean isDefault() {
+        return true;
     }
 }
