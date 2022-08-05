@@ -15,4 +15,4 @@
 # limitations under the License.
 #
 
-org.apache.shardingsphere.mode.repository.standalone.h2.H2Repository
+org.apache.shardingsphere.mode.repository.standalone.h2.H2JDBCRepositoryProvider
