@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.repository.standalone.jdbc;
+package org.apache.shardingsphere.mode.repository.standalone.jdbc.props;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
