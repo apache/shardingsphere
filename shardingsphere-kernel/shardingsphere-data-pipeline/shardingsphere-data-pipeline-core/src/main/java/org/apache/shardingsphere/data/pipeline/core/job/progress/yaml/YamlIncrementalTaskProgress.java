@@ -27,10 +27,10 @@ import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTask
 @Getter
 @Setter
 public final class YamlIncrementalTaskProgress {
-
+    
     private String dataSourceName;
-        
+    
     private String position;
-        
+    
     private IncrementalTaskDelay delay;
 }

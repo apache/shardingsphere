@@ -17,10 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.api.task.progress;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
@@ -36,30 +32,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPositio
 @ToString
 public final class IncrementalTaskProgress implements TaskProgress {
     
-    private final Map<String, IncrementalTaskProgressItem> incrementalTaskProgressItemMap;
+    private volatile IngestPosition<?> position;
     
-    /**
-     * Get incremental position.
-     * @param dataSourceName dataSource
-     * @return incremental position
-     */
-    public Optional<IngestPosition<?>> getIncrementalPosition(final String dataSourceName) {
-        Optional<IncrementalTaskProgressItem> incrementalTaskProgressItem = incrementalTaskProgressItemMap.entrySet().stream()
-                .filter(entry -> dataSourceName.equals(entry.getKey()))
-                .map(Map.Entry::getValue)
-                .findAny();
-        return incrementalTaskProgressItem.map(IncrementalTaskProgressItem::getPosition);
-    }
-    
-    /**
-     * Get incremental latest active time milliseconds.
-     *
-     * @return latest active time, <code>0</code> is there is no activity
-     */
-    public long getIncrementalLatestActiveTimeMillis() {
-        List<Long> delays = incrementalTaskProgressItemMap.values().stream()
-                .map(each -> each.getIncrementalTaskDelay().getLatestActiveTimeMillis())
-                .collect(Collectors.toList());
-        return delays.stream().reduce(Long::max).orElse(0L);
-    }
+    private IncrementalTaskDelay incrementalTaskDelay = new IncrementalTaskDelay();
 }

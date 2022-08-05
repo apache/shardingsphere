@@ -35,8 +35,8 @@ public final class YamlJobProgressSwapper {
         YamlJobProgress result = new YamlJobProgress();
         result.setStatus(jobProgress.getStatus().name());
         result.setSourceDatabaseType(jobProgress.getSourceDatabaseType());
-        result.setInventory(new YamlInventoryTaskProgressSwapper().swapToYaml(jobProgress.getInventory()));
-        result.setIncremental(new YamlIncrementalTaskProgressSwapper().swapToYaml(jobProgress.getIncremental()));
+        result.setInventory(new YamlInventoryTaskProgressSwapper().swapToYaml(jobProgress.getJobInventoryTask()));
+        result.setIncremental(new YamlIncrementalTaskProgressSwapper().swapToYaml(jobProgress.getJobIncrementalTask()));
         return result;
     }
     
@@ -50,8 +50,8 @@ public final class YamlJobProgressSwapper {
         JobProgress result = new JobProgress();
         result.setStatus(JobStatus.valueOf(yamlJobProgress.getStatus()));
         result.setSourceDatabaseType(yamlJobProgress.getSourceDatabaseType());
-        result.setInventory(new YamlInventoryTaskProgressSwapper().swapToObject(yamlJobProgress.getInventory()));
-        result.setIncremental(new YamlIncrementalTaskProgressSwapper().swapToObject(yamlJobProgress.getSourceDatabaseType(), yamlJobProgress.getIncremental()));
+        result.setJobInventoryTask(new YamlInventoryTaskProgressSwapper().swapToObject(yamlJobProgress.getInventory()));
+        result.setJobIncrementalTask(new YamlIncrementalTaskProgressSwapper().swapToObject(yamlJobProgress.getSourceDatabaseType(), yamlJobProgress.getIncremental()));
         return result;
     }
 }

@@ -62,7 +62,7 @@ public final class IncrementalTaskTest {
     public void assertStart() {
         incrementalTask.start();
         assertThat(incrementalTask.getTaskId(), is("ds_0"));
-        assertThat(incrementalTask.getProgress().getIncrementalTaskProgressItemMap().get(incrementalTask.getTaskId()).getPosition(), instanceOf(PlaceholderPosition.class));
+        assertThat(incrementalTask.getProgress().getPosition(), instanceOf(PlaceholderPosition.class));
     }
     
     @After

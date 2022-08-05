@@ -21,8 +21,6 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
-import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 
 import java.util.Map;
 import java.util.Optional;
@@ -41,9 +39,9 @@ public final class JobProgress implements PipelineJobProgress {
     
     private boolean active;
     
-    private InventoryTaskProgress inventory;
+    private JobInventoryTaskProgress jobInventoryTask;
     
-    private IncrementalTaskProgress incremental;
+    private JobIncrementalTaskProgress jobIncrementalTask;
     
     /**
      * get incremental position.
@@ -51,7 +49,7 @@ public final class JobProgress implements PipelineJobProgress {
      * @return incremental position
      */
     public Optional<IngestPosition<?>> getIncrementalPosition(final String dataSourceName) {
-        return incremental.getIncrementalPosition(dataSourceName);
+        return jobIncrementalTask.getIncrementalPosition(dataSourceName);
     }
     
     /**
@@ -61,7 +59,7 @@ public final class JobProgress implements PipelineJobProgress {
      * @return inventory position
      */
     public Map<String, IngestPosition<?>> getInventoryPosition(final String tableName) {
-        return inventory.getInventoryPosition(tableName);
+        return jobInventoryTask.getInventoryPosition(tableName);
     }
     
     /**
@@ -70,7 +68,7 @@ public final class JobProgress implements PipelineJobProgress {
      * @return data source
      */
     public String getDataSource() {
-        return incremental.getIncrementalTaskProgressItemMap().keySet().stream().findAny().orElse("");
+        return jobIncrementalTask.getIncrementalTaskProgressMap().keySet().stream().findAny().orElse("");
     }
     
     /**
@@ -79,7 +77,7 @@ public final class JobProgress implements PipelineJobProgress {
      * @return finished percentage
      */
     public int getInventoryFinishedPercentage() {
-        return inventory.getInventoryFinishedPercentage();
+        return jobInventoryTask.getInventoryFinishedPercentage();
     }
     
     /**
@@ -88,6 +86,6 @@ public final class JobProgress implements PipelineJobProgress {
      * @return latest active time, <code>0</code> is there is no activity
      */
     public long getIncrementalLatestActiveTimeMillis() {
-        return incremental == null ? 0L : incremental.getIncrementalLatestActiveTimeMillis();
+        return null == jobIncrementalTask ? 0L : jobIncrementalTask.getIncrementalLatestActiveTimeMillis();
     }
 }

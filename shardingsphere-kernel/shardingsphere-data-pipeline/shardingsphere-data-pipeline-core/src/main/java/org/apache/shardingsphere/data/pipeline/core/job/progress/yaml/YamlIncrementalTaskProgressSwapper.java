@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 
 import java.util.Collections;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.JobIncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
-import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgressItem;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializerFactory;
 
 /**
@@ -29,14 +29,15 @@ public final class YamlIncrementalTaskProgressSwapper {
     
     /**
      * Swap to YAML.
-     * @param incremental incrementalTask progress
+     *
+     * @param jobIncrementalTask incrementalTask progress
      * @return IncrementalTaskProgress
      */
-    public YamlIncrementalTaskProgress swapToYaml(final IncrementalTaskProgress incremental) {
-        if (incremental == null) {
+    public YamlIncrementalTaskProgress swapToYaml(final JobIncrementalTaskProgress jobIncrementalTask) {
+        if (null == jobIncrementalTask) {
             return null;
         }
-        return incremental.getIncrementalTaskProgressItemMap()
+        return jobIncrementalTask.getIncrementalTaskProgressMap()
                 .entrySet()
                 .stream()
                 .map(entry -> {
@@ -50,17 +51,18 @@ public final class YamlIncrementalTaskProgressSwapper {
     
     /**
      * Swap to object.
+     *
      * @param databaseType databaseType
      * @param incremental yaml incrementalTask progress
      * @return incrementalTask progress
      */
-    public IncrementalTaskProgress swapToObject(final String databaseType, final YamlIncrementalTaskProgress incremental) {
-        if (incremental == null) {
+    public JobIncrementalTaskProgress swapToObject(final String databaseType, final YamlIncrementalTaskProgress incremental) {
+        if (null == incremental) {
             return null;
         }
-        IncrementalTaskProgressItem result = new IncrementalTaskProgressItem();
+        IncrementalTaskProgress result = new IncrementalTaskProgress();
         result.setPosition(PositionInitializerFactory.getInstance(databaseType).init(incremental.getPosition()));
         result.setIncrementalTaskDelay(incremental.getDelay());
-        return new IncrementalTaskProgress(Collections.singletonMap(incremental.getDataSourceName(), result));
+        return new JobIncrementalTaskProgress(Collections.singletonMap(incremental.getDataSourceName(), result));
     }
 }

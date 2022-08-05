@@ -26,8 +26,8 @@ import java.util.stream.Collectors;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPositionFactory;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.JobInventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
-import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgressItem;
 
 /**
  * YAML InventoryTask progress swapper.
@@ -40,7 +40,7 @@ public final class YamlInventoryTaskProgressSwapper {
      * @param inventory inventoryTask progress
      * @return YAML inventoryTask progress
      */
-    public YamlInventoryTaskProgress swapToYaml(final InventoryTaskProgress inventory) {
+    public YamlInventoryTaskProgress swapToYaml(final JobInventoryTaskProgress inventory) {
         YamlInventoryTaskProgress result = new YamlInventoryTaskProgress();
         if (inventory != null) {
             result.setFinished(getFinished(inventory));
@@ -49,15 +49,15 @@ public final class YamlInventoryTaskProgressSwapper {
         return result;
     }
     
-    private String[] getFinished(final InventoryTaskProgress inventoryTaskProgress) {
-        return inventoryTaskProgress.getInventoryTaskProgressItemMap().entrySet().stream()
+    private String[] getFinished(final JobInventoryTaskProgress jobInventoryTaskProgress) {
+        return jobInventoryTaskProgress.getInventoryTaskProgressMap().entrySet().stream()
                 .filter(entry -> entry.getValue().getPosition() instanceof FinishedPosition)
                 .map(Map.Entry::getKey)
                 .toArray(String[]::new);
     }
     
-    private Map<String, String> getUnfinished(final InventoryTaskProgress inventoryTaskProgress) {
-        return inventoryTaskProgress.getInventoryTaskProgressItemMap().entrySet().stream()
+    private Map<String, String> getUnfinished(final JobInventoryTaskProgress jobInventoryTaskProgress) {
+        return jobInventoryTaskProgress.getInventoryTaskProgressMap().entrySet().stream()
                 .filter(entry -> !(entry.getValue().getPosition() instanceof FinishedPosition))
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getPosition().toString()));
     }
@@ -68,22 +68,22 @@ public final class YamlInventoryTaskProgressSwapper {
      * @param inventory yaml inventoryTask progress
      * @return inventoryTask progress
      */
-    public InventoryTaskProgress swapToObject(final YamlInventoryTaskProgress inventory) {
-        if (inventory == null) {
+    public JobInventoryTaskProgress swapToObject(final YamlInventoryTaskProgress inventory) {
+        if (null == inventory) {
             return null;
         }
-        Map<String, InventoryTaskProgressItem> inventoryTaskProgressItemMap = new HashMap<>();
+        Map<String, InventoryTaskProgress> inventoryTaskProgressItemMap = new HashMap<>();
         inventoryTaskProgressItemMap.putAll(Arrays.stream(inventory.getFinished())
-                .collect(Collectors.toMap(key -> key, value -> new InventoryTaskProgressItem(new FinishedPosition()))));
+                .collect(Collectors.toMap(key -> key, value -> new InventoryTaskProgress(new FinishedPosition()))));
         inventoryTaskProgressItemMap.putAll(inventory.getUnfinished().entrySet()
                 .stream()
                 .collect(Collectors.toMap(
                         Map.Entry::getKey, getInventoryTaskProgressFunction())));
-        return new InventoryTaskProgress(inventoryTaskProgressItemMap);
+        return new JobInventoryTaskProgress(inventoryTaskProgressItemMap);
     }
     
-    private Function<Map.Entry<String, String>, InventoryTaskProgressItem> getInventoryTaskProgressFunction() {
-        return entry -> new InventoryTaskProgressItem(
+    private Function<Map.Entry<String, String>, InventoryTaskProgress> getInventoryTaskProgressFunction() {
+        return entry -> new InventoryTaskProgress(
                 Strings.isNullOrEmpty(entry.getValue()) ? new PlaceholderPosition() : PrimaryKeyPositionFactory.newInstance(entry.getValue()));
     }
 }

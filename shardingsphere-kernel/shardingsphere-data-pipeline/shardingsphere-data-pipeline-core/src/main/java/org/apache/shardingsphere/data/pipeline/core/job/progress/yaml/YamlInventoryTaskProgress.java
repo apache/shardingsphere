@@ -32,5 +32,4 @@ public final class YamlInventoryTaskProgress {
     private String[] finished = new String[0];
     
     private Map<String, String> unfinished = new HashMap<>();
-    
 }

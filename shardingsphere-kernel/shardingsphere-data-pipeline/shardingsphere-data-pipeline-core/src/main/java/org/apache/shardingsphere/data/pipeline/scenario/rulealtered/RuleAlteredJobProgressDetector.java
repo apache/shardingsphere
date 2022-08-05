@@ -44,7 +44,7 @@ public final class RuleAlteredJobProgressDetector {
         if (inventoryTasks.isEmpty()) {
             log.warn("inventoryTasks is empty");
         }
-        return inventoryTasks.stream().allMatch(each -> each.getProgress().getInventoryTaskProgressItemMap().get(each.getTaskId()).getPosition() instanceof FinishedPosition);
+        return inventoryTasks.stream().allMatch(each -> each.getProgress().getPosition() instanceof FinishedPosition);
     }
     
     /**

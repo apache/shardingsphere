@@ -22,7 +22,6 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAltere
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IntegerPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
-import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
@@ -85,9 +84,8 @@ public final class InventoryTaskSplitterTest {
         List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext);
         assertThat(actual.size(), is(1));
         InventoryTask task = actual.get(0);
-        InventoryTaskProgress progress = actual.get(0).getProgress();
-        assertThat(((IntegerPrimaryKeyPosition) task.getProgress().getInventoryTaskProgressItemMap().get(task.getTaskId()).getPosition()).getBeginValue(), is(0L));
-        assertThat(((IntegerPrimaryKeyPosition) task.getProgress().getInventoryTaskProgressItemMap().get(task.getTaskId()).getPosition()).getEndValue(), is(0L));
+        assertThat(((IntegerPrimaryKeyPosition) task.getProgress().getPosition()).getBeginValue(), is(0L));
+        assertThat(((IntegerPrimaryKeyPosition) task.getProgress().getPosition()).getEndValue(), is(0L));
     }
     
     @Test
@@ -96,8 +94,8 @@ public final class InventoryTaskSplitterTest {
         List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext);
         assertThat(actual.size(), is(10));
         InventoryTask task = actual.get(9);
-        assertThat(((IntegerPrimaryKeyPosition) task.getProgress().getInventoryTaskProgressItemMap().get(task.getTaskId()).getPosition()).getBeginValue(), is(91L));
-        assertThat(((IntegerPrimaryKeyPosition) task.getProgress().getInventoryTaskProgressItemMap().get(task.getTaskId()).getPosition()).getEndValue(), is(100L));
+        assertThat(((IntegerPrimaryKeyPosition) task.getProgress().getPosition()).getBeginValue(), is(91L));
+        assertThat(((IntegerPrimaryKeyPosition) task.getProgress().getPosition()).getEndValue(), is(100L));
     }
     
     @Test

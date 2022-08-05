@@ -34,5 +34,4 @@ public final class YamlJobProgress {
     private YamlInventoryTaskProgress inventory;
     
     private YamlIncrementalTaskProgress incremental;
-    
 }
