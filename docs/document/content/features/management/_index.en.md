@@ -1,7 +1,7 @@
 +++
-pre = "<b>3.3. </b>"
+pre = "<b>3.6. </b>"
 title = "Cluster Management"
-weight = 3
+weight = 6
 chapter = true
 +++
 
