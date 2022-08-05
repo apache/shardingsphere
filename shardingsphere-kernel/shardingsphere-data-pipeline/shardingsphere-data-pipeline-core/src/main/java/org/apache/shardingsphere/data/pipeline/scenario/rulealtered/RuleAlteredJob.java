@@ -65,6 +65,7 @@ public final class RuleAlteredJob implements SimpleJob, PipelineJob {
         RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, shardingContext.getShardingItem(), initProgress, dataSourceManager, jobPreparer);
         int shardingItem = jobContext.getShardingItem();
         if (jobSchedulerMap.containsKey(shardingItem)) {
+            // If the following log is output, it is possible that the elasticjob task was not closed correctly
             log.warn("schedulerMap contains shardingItem {}, ignore", shardingItem);
             return;
         }
