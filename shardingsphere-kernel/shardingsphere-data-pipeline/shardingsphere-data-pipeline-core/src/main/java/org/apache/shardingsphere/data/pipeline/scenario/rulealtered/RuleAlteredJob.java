@@ -18,6 +18,8 @@
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.RuleAlteredJobConfigurationSwapper;
@@ -27,6 +29,7 @@ import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
+import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 
 import java.util.Map;
@@ -36,6 +39,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Rule altered job.
  */
 @Slf4j
+@RequiredArgsConstructor
 public final class RuleAlteredJob implements SimpleJob, PipelineJob {
     
     private final GovernanceRepositoryAPI governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
@@ -52,6 +56,9 @@ public final class RuleAlteredJob implements SimpleJob, PipelineJob {
     
     private volatile boolean stopping;
     
+    @Setter
+    private OneOffJobBootstrap oneOffJobBootstrap;
+    
     @Override
     public void execute(final ShardingContext shardingContext) {
         log.info("Execute job {}-{}", shardingContext.getJobName(), shardingContext.getShardingItem());
@@ -65,6 +72,7 @@ public final class RuleAlteredJob implements SimpleJob, PipelineJob {
         RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, shardingContext.getShardingItem(), initProgress, dataSourceManager, jobPreparer);
         int shardingItem = jobContext.getShardingItem();
         if (jobSchedulerMap.containsKey(shardingItem)) {
+            // If the following log is output, it is possible that the elasticjob task was not closed correctly
             log.warn("schedulerMap contains shardingItem {}, ignore", shardingItem);
             return;
         }
@@ -81,6 +89,9 @@ public final class RuleAlteredJob implements SimpleJob, PipelineJob {
     public void stop() {
         stopping = true;
         dataSourceManager.close();
+        if (null != oneOffJobBootstrap) {
+            oneOffJobBootstrap.shutdown();
+        }
         if (null == jobId) {
             log.info("stop, jobId is null, ignore");
             return;

@@ -102,7 +102,9 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     private void execute(final JobConfigurationPOJO jobConfigPOJO) {
         RuleAlteredJob job = new RuleAlteredJob();
         RuleAlteredJobCenter.addJob(jobConfigPOJO.getJobName(), job);
-        new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration()).execute();
+        OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration());
+        oneOffJobBootstrap.execute();
+        job.setOneOffJobBootstrap(oneOffJobBootstrap);
     }
     
     @Override
