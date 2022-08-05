@@ -40,11 +40,11 @@ public interface ShardingSphereLock {
     boolean tryLock(String lockName, long timeoutMillis);
     
     /**
-     * Release lock.
+     * Unlock.
      *
      * @param lockName lock name
      */
-    void releaseLock(String lockName);
+    void unlock(String lockName);
     
     /**
      * Check whether resource is locked in current instance.

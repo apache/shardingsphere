@@ -33,6 +33,16 @@ public final class LockKeyUtil {
     private static final String LOCKS_NODE_DATABASE = "database";
     
     /**
+     * Generate lock key leases.
+     *
+     * @param lockKey lock key
+     * @return locks name
+     */
+    public static String generateLockKeyLeases(final String lockKey) {
+        return lockKey + "/leases";
+    }
+    
+    /**
      * Generate exclusive lock key.
      *
      * @param lockName locks name
