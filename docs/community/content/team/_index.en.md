@@ -422,7 +422,8 @@ chapter = true
         <td>
             <b>Junjie Zhang</b>        
         </td>
-    </tr><tr>
+    </tr>
+    <tr>
         <td>
             <a href="https://github.com/Swastyy" target="_blank">
                 <img src="https://avatars.githubusercontent.com/u/64654203?v=4" style="border-radius:50%; overflow:hidden">
