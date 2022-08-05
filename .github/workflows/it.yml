@@ -130,7 +130,7 @@ jobs:
         run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
 
   it-single-rule:
-    name: single rule
+    name: single rule ${{ matrix.mode }}
     needs: it-empty-rule
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -145,6 +145,10 @@ jobs:
         exclude:
           - adapter: jdbc
             mode: Cluster
+          - adapter: proxy
+            mode: Cluster
+            database: PostgreSQL
+            scenario: shadow
     steps:
       - uses: actions/checkout@v2
       - name: Cache Maven Repos
