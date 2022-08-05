@@ -68,7 +68,7 @@ public final class RuleAlteredJobWorkerTest {
     
     @Test
     public void assertCreateRuleAlteredContextSuccess() {
-        assertNotNull(RuleAlteredJobWorker.createRuleAlteredContext(JobConfigurationBuilder.createJobConfiguration()).getOnRuleAlteredActionConfig());
+        assertNotNull(RuleAlteredJobWorker.createRuleAlteredContext(JobConfigurationBuilder.createJobConfiguration()).getPipelineProcessConfig());
     }
     
     @Test

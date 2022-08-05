@@ -111,7 +111,7 @@ public final class InventoryTaskSplitter {
                                                                        final InventoryDumperConfiguration dumperConfig) {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
         RuleAlteredContext ruleAlteredContext = jobContext.getRuleAlteredContext();
-        PipelineInputConfiguration inputConfig = ruleAlteredContext.getOnRuleAlteredActionConfig().getInput();
+        PipelineInputConfiguration inputConfig = ruleAlteredContext.getPipelineProcessConfig().getInput();
         int batchSize = inputConfig.getBatchSize();
         JobRateLimitAlgorithm rateLimitAlgorithm = ruleAlteredContext.getInputRateLimitAlgorithm();
         Collection<IngestPosition<?>> inventoryPositions = getInventoryPositions(jobContext, dumperConfig, dataSource, metaDataLoader);
@@ -192,7 +192,7 @@ public final class InventoryTaskSplitter {
         RuleAlteredJobConfiguration jobConfig = jobContext.getJobConfig();
         String sql = PipelineSQLBuilderFactory.getInstance(jobConfig.getSourceDatabaseType())
                 .buildSplitByPrimaryKeyRangeSQL(dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName())), dumperConfig.getActualTableName(), dumperConfig.getUniqueKey());
-        int shardingSize = jobContext.getRuleAlteredContext().getOnRuleAlteredActionConfig().getInput().getShardingSize();
+        int shardingSize = jobContext.getRuleAlteredContext().getPipelineProcessConfig().getInput().getShardingSize();
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement ps = connection.prepareStatement(sql)) {
