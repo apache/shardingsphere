@@ -75,18 +75,21 @@ public abstract class AbstractPipelineProcessContext {
         AlgorithmConfiguration streamChannel = processConfig.getStreamChannel();
         pipelineChannelCreator = PipelineChannelCreatorFactory.newInstance(streamChannel);
         inventoryDumperExecuteEngineLazyInitializer = new LazyInitializer<ExecuteEngine>() {
+            
             @Override
             protected ExecuteEngine initialize() {
                 return ExecuteEngine.newFixedThreadInstance(inputConfig.getWorkerThread(), "Inventory-" + jobId);
             }
         };
         incrementalDumperExecuteEngineLazyInitializer = new LazyInitializer<ExecuteEngine>() {
+            
             @Override
             protected ExecuteEngine initialize() {
                 return ExecuteEngine.newCachedThreadInstance("Incremental-" + jobId);
             }
         };
         importerExecuteEngineLazyInitializer = new LazyInitializer<ExecuteEngine>() {
+            
             @Override
             protected ExecuteEngine initialize() {
                 return ExecuteEngine.newFixedThreadInstance(outputConfig.getWorkerThread(), "Importer-" + jobId);

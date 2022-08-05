@@ -28,9 +28,9 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class H2RepositoryTest {
+public final class H2JDBCRepositoryTest {
     
-    private final JDBCRepository jdbcRepository = new JDBCRepository();
+    private final JDBCRepository repository = new JDBCRepository();
     
     @Before
     public void setUp() {
@@ -38,36 +38,35 @@ public final class H2RepositoryTest {
         props.setProperty("jdbc_url", "jdbc:h2:mem:config;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false;MODE=MYSQL");
         props.setProperty("username", "sa");
         props.setProperty("password", "");
-        props.setProperty("driver_class", "org.h2.Driver");
         props.setProperty("provider", "H2");
-        jdbcRepository.init(props);
+        repository.init(props);
+    }
+    
+    @After
+    public void stop() {
+        repository.close();
     }
     
     @Test
     public void assertPersistAndGet() {
-        jdbcRepository.persist("/testPath/test1", "test1_content");
-        assertThat(jdbcRepository.get("/testPath/test1"), is("test1_content"));
-        jdbcRepository.persist("/testPath/test1", "modify_content");
-        assertThat(jdbcRepository.get("/testPath/test1"), is("modify_content"));
+        repository.persist("/testPath/test1", "test1_content");
+        assertThat(repository.get("/testPath/test1"), is("test1_content"));
+        repository.persist("/testPath/test1", "modify_content");
+        assertThat(repository.get("/testPath/test1"), is("modify_content"));
     }
     
     @Test
     public void assertPersistAndGetChildrenKeys() {
-        jdbcRepository.persist("/testPath/test1", "test1_content");
-        jdbcRepository.persist("/testPath/test2", "test2_content");
-        List<String> childrenKeys = jdbcRepository.getChildrenKeys("/testPath");
+        repository.persist("/testPath/test1", "test1_content");
+        repository.persist("/testPath/test2", "test2_content");
+        List<String> childrenKeys = repository.getChildrenKeys("/testPath");
         assertThat(childrenKeys.get(0), is("test1"));
         assertThat(childrenKeys.get(1), is("test2"));
     }
     
     @Test
     public void assertDelete() {
-        jdbcRepository.delete("/testPath");
-        assertThat(jdbcRepository.get("/testPath"), is(""));
-    }
-    
-    @After
-    public void stop() {
-        jdbcRepository.close();
+        repository.delete("/testPath");
+        assertThat(repository.get("/testPath"), is(""));
     }
 }

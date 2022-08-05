@@ -17,17 +17,12 @@
 
 package org.apache.shardingsphere.mode.repository.standalone.h2;
 
-import org.apache.shardingsphere.mode.repository.standalone.jdbc.JDBCRepositoryProvider;
+import org.apache.shardingsphere.mode.repository.standalone.jdbc.provider.JDBCRepositoryProvider;
 
 /**
  * H2 JDBC repository provider.
  */
 public final class H2JDBCRepositoryProvider implements JDBCRepositoryProvider {
-    
-    @Override
-    public String getType() {
-        return "H2";
-    }
     
     @Override
     public String dropTableSQL() {
@@ -62,6 +57,11 @@ public final class H2JDBCRepositoryProvider implements JDBCRepositoryProvider {
     @Override
     public String deleteSQL() {
         return "DELETE FROM `repository` WHERE `key` = ?";
+    }
+    
+    @Override
+    public String getType() {
+        return "H2";
     }
     
     @Override

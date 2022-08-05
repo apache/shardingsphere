@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.repository.standalone.jdbc;
+package org.apache.shardingsphere.mode.repository.standalone.jdbc.provider;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -36,11 +36,10 @@ public final class JDBCRepositoryProviderFactory {
     /**
      * Get instance of JDBC repository provider.
      *
-     * @param jdbcRepositoryType JDBC repository type
+     * @param type JDBC repository type
      * @return got instance
      */
-    public static JDBCRepositoryProvider getInstance(final Object jdbcRepositoryType) {
-        return jdbcRepositoryType == null ? RequiredSPIRegistry.getRegisteredService(JDBCRepositoryProvider.class)
-                : TypedSPIRegistry.getRegisteredService(JDBCRepositoryProvider.class, jdbcRepositoryType.toString());
+    public static JDBCRepositoryProvider getInstance(final Object type) {
+        return null == type ? RequiredSPIRegistry.getRegisteredService(JDBCRepositoryProvider.class) : TypedSPIRegistry.getRegisteredService(JDBCRepositoryProvider.class, type.toString());
     }
 }
