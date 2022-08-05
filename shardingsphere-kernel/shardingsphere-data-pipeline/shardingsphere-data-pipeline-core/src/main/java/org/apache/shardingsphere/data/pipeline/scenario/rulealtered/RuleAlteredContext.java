@@ -31,13 +31,13 @@ import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChanne
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineInputConfiguration;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineOutputConfiguration;
 import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActionConfiguration;
-import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActionConfiguration.InputConfiguration;
-import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActionConfiguration.OutputConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineInputConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineOutputConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlOnRuleAlteredActionConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlOnRuleAlteredActionConfiguration.YamlInputConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlOnRuleAlteredActionConfiguration.YamlOutputConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.rulealtered.YamlOnRuleAlteredActionConfigurationSwapper;
 
 import java.util.Properties;
@@ -80,10 +80,10 @@ public final class RuleAlteredContext {
     public RuleAlteredContext(final String jobId, final OnRuleAlteredActionConfiguration actionConfig) {
         OnRuleAlteredActionConfiguration onRuleAlteredActionConfig = convertActionConfig(actionConfig);
         this.onRuleAlteredActionConfig = onRuleAlteredActionConfig;
-        InputConfiguration inputConfig = onRuleAlteredActionConfig.getInput();
+        PipelineInputConfiguration inputConfig = onRuleAlteredActionConfig.getInput();
         AlgorithmConfiguration inputRateLimiter = inputConfig.getRateLimiter();
         inputRateLimitAlgorithm = null != inputRateLimiter ? JobRateLimitAlgorithmFactory.newInstance(inputRateLimiter) : null;
-        OutputConfiguration outputConfig = onRuleAlteredActionConfig.getOutput();
+        PipelineOutputConfiguration outputConfig = onRuleAlteredActionConfig.getOutput();
         AlgorithmConfiguration outputRateLimiter = outputConfig.getRateLimiter();
         outputRateLimitAlgorithm = null != outputRateLimiter ? JobRateLimitAlgorithmFactory.newInstance(outputRateLimiter) : null;
         AlgorithmConfiguration streamChannel = onRuleAlteredActionConfig.getStreamChannel();
@@ -102,12 +102,12 @@ public final class RuleAlteredContext {
     private OnRuleAlteredActionConfiguration convertActionConfig(final OnRuleAlteredActionConfiguration actionConfig) {
         YamlOnRuleAlteredActionConfiguration yamlActionConfig = SWAPPER.swapToYamlConfiguration(actionConfig);
         if (null == yamlActionConfig.getInput()) {
-            yamlActionConfig.setInput(YamlInputConfiguration.buildWithDefaultValue());
+            yamlActionConfig.setInput(YamlPipelineInputConfiguration.buildWithDefaultValue());
         } else {
             yamlActionConfig.getInput().fillInNullFieldsWithDefaultValue();
         }
         if (null == yamlActionConfig.getOutput()) {
-            yamlActionConfig.setOutput(YamlOutputConfiguration.buildWithDefaultValue());
+            yamlActionConfig.setOutput(YamlPipelineOutputConfiguration.buildWithDefaultValue());
         } else {
             yamlActionConfig.getOutput().fillInNullFieldsWithDefaultValue();
         }

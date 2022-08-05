@@ -1404,3 +1404,55 @@ FORCE_NOT_NULL
 FORCE_NULL
     : F O R C E UL_ N U L L
     ;
+
+SUPERUSER
+    : S U P E R U S E R
+    ;
+
+NOSUPERUSER
+    : N O S U P E R U S E R
+    ;
+
+CREATEDB
+    : C R E A T E D B
+    ;
+
+NOCREATEDB
+    : N O C R E A T E D B
+    ;
+
+CREATEROLE
+    : C R E A T E R O L E
+    ;
+
+NOCREATEROLE
+    : N O C R E A T E R O L E
+    ;
+
+NOINHERIT
+    : N O I N H E R I T
+    ;
+
+LOGIN
+    : L O G I N
+    ;
+
+NOLOGIN
+    : N O L O G I N
+    ;
+
+REPLICATION
+    : R E P L I C A T I O N
+    ;
+
+NOREPLICATION
+    : N O R E P L I C A T I O N
+    ;
+
+BYPASSRLS
+    : B Y P A S S R L S
+    ;
+
+NOBYPASSRLS
+    : N O B Y P A S S R L S
+    ;

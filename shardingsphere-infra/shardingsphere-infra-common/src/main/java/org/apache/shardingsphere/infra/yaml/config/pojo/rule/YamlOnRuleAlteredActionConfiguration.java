@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.infra.yaml.config.pojo.rule;
 
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineInputConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineOutputConfiguration;
 
 /**
  * YAML on rule altered action configuration.
@@ -32,90 +33,13 @@ import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmC
 @ToString
 public final class YamlOnRuleAlteredActionConfiguration implements YamlConfiguration {
     
-    private YamlInputConfiguration input;
+    private YamlPipelineInputConfiguration input;
     
-    private YamlOutputConfiguration output;
+    private YamlPipelineOutputConfiguration output;
     
     private YamlAlgorithmConfiguration streamChannel;
     
     private YamlAlgorithmConfiguration completionDetector;
     
     private YamlAlgorithmConfiguration dataConsistencyChecker;
-    
-    @Data
-    public static final class YamlInputConfiguration implements YamlConfiguration {
-        
-        private static final Integer DEFAULT_WORKER_THREAD = 40;
-        
-        private static final Integer DEFAULT_BATCH_SIZE = 1000;
-        
-        private static final Integer DEFAULT_SHARDING_SIZE = 1000_0000;
-        
-        private Integer workerThread = DEFAULT_WORKER_THREAD;
-        
-        private Integer batchSize = DEFAULT_BATCH_SIZE;
-        
-        private Integer shardingSize = DEFAULT_SHARDING_SIZE;
-        
-        private YamlAlgorithmConfiguration rateLimiter;
-        
-        /**
-         * Build with default value.
-         *
-         * @return input configuration
-         */
-        public static YamlInputConfiguration buildWithDefaultValue() {
-            return new YamlInputConfiguration();
-        }
-        
-        /**
-         * Fill in null fields with default value.
-         */
-        public void fillInNullFieldsWithDefaultValue() {
-            if (null == workerThread) {
-                workerThread = DEFAULT_WORKER_THREAD;
-            }
-            if (null == batchSize) {
-                batchSize = DEFAULT_BATCH_SIZE;
-            }
-            if (null == shardingSize) {
-                shardingSize = DEFAULT_SHARDING_SIZE;
-            }
-        }
-    }
-    
-    @Data
-    public static final class YamlOutputConfiguration implements YamlConfiguration {
-        
-        private static final Integer DEFAULT_WORKER_THREAD = 40;
-        
-        private static final Integer DEFAULT_BATCH_SIZE = 1000;
-        
-        private Integer workerThread = DEFAULT_WORKER_THREAD;
-        
-        private Integer batchSize = DEFAULT_BATCH_SIZE;
-        
-        private YamlAlgorithmConfiguration rateLimiter;
-        
-        /**
-         * Build with default value.
-         *
-         * @return output configuration
-         */
-        public static YamlOutputConfiguration buildWithDefaultValue() {
-            return new YamlOutputConfiguration();
-        }
-        
-        /**
-         * Fill in null fields with default value.
-         */
-        public void fillInNullFieldsWithDefaultValue() {
-            if (null == workerThread) {
-                workerThread = DEFAULT_WORKER_THREAD;
-            }
-            if (null == batchSize) {
-                batchSize = DEFAULT_BATCH_SIZE;
-            }
-        }
-    }
 }
