@@ -28,7 +28,7 @@ import java.util.Properties;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class H2RepositoryTest {
+public final class H2JDBCRepositoryTest {
     
     private final JDBCRepository repository = new JDBCRepository();
     
