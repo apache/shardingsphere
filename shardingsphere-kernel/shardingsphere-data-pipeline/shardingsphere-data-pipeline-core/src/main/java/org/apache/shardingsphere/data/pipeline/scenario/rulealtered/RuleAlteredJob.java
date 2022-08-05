@@ -89,7 +89,7 @@ public final class RuleAlteredJob implements SimpleJob, PipelineJob {
     public void stop() {
         stopping = true;
         dataSourceManager.close();
-        if (oneOffJobBootstrap != null) {
+        if (null != oneOffJobBootstrap) {
             oneOffJobBootstrap.shutdown();
         }
         if (null == jobId) {
