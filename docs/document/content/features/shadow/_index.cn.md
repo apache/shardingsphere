@@ -1,7 +1,7 @@
 +++
-pre = "<b>3.10. </b>"
+pre = "<b>3.9. </b>"
 title = "影子库"
-weight = 10
+weight = 9
 +++
 
 ## 定义
@@ -53,3 +53,10 @@ Apache ShardingSphere 全链路在线压测场景下，在数据库层面对于�
   | BETWEEN | SELECT/UPDATE/DELETE ... WHERE column BETWEEN value1 AND value2  | 不支持  |
   | GROUP BY ... HAVING... | SELECT/UPDATE/DELETE ... WHERE ... GROUP BY column HAVING column > value  | 不支持     |
   | 子查询  | SELECT/UPDATE/DELETE ... WHERE column = (SELECT column FROM table WHERE column = value) | 不支持  |
+
+## 相关参考
+
+- [Java API：影子库](/cn/user-manual/shardingsphere-jdbc/java-api/rules/shadow/)
+- [YAML 配置：影子库](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/shadow/)
+- [Spring Boot Starter：影子库](/cn/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/shadow/)
+- [Spring 命名空间：影子库](/cn/user-manual/shardingsphere-jdbc/spring-namespace/rules/shadow/)

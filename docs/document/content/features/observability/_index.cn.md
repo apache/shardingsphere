@@ -1,7 +1,7 @@
 +++
-pre = "<b>3.12. </b>"
+pre = "<b>3.10. </b>"
 title = "可观察性"
-weight = 12
+weight = 10
 +++
 
 ## 定义
@@ -10,30 +10,8 @@ weight = 12
 登录到具体服务器的点对点运维方式，无法适用于面向大量分布式服务器的场景。
 通过对可系统观察性数据的遥测是分布式系统推荐的运维方式。
 
-## 相关概念
-
-### Agent
-
-基于字节码增强和插件化设计，以提供 Tracing 和 Metrics 埋点，以及日志输出功能。
-需要开启 Agent 的插件功能后，才能将监控指标数据输出至第三方 APM 中展示。
-
-### APM
-
-APM 是应用性能监控的缩写。
-着眼于分布式系统的性能诊断，其主要功能包括调用链展示，应用拓扑分析等。
-
-### Tracing
-
-链路跟踪，通过探针收集调用链数据，并发送到第三方 APM 系统。
-
-### Metrics
-
-系统统计指标，通过探针收集，并且写入到时序数据库，供第三方应用展示。
-
-### Logging
-
-日志，通过 Agent 能够方便的扩展日志内容，为分析系统运行状态提供更多信息。
-
 ## 相关参考
 
-[特殊 API：可观察性](/cn/user-manual/shardingsphere-jdbc/special-api/observability/)
+- [可观察性的使用](/cn/user-manual/shardingsphere-proxy/observability/)
+- [开发者指南：可观察性](/cn/dev-manual/agent/)
+- [实现原理](/cn/reference/observability/)
