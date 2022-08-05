@@ -68,6 +68,7 @@ public final class DataSourcePropertiesCreator {
         result.put("maxLifetimeMilliseconds", dataSourceConfig.getPool().getMaxLifetimeMilliseconds());
         result.put("maxPoolSize", dataSourceConfig.getPool().getMaxPoolSize());
         result.put("minPoolSize", dataSourceConfig.getPool().getMinPoolSize());
+        result.put("registerMbeans", dataSourceConfig.getPool().getRegisterMbeans());
         result.put("readOnly", dataSourceConfig.getPool().getReadOnly());
         if (null != dataSourceConfig.getPool().getCustomProperties()) {
             result.putAll((Map) dataSourceConfig.getPool().getCustomProperties());

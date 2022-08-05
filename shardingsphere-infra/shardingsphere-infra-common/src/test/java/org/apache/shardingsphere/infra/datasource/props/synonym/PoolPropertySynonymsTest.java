@@ -31,31 +31,33 @@ public final class PoolPropertySynonymsTest {
     @Test
     public void assertGetStandardPropertiesWithStandardProperties() {
         PoolPropertySynonyms actual = new PoolPropertySynonyms(createStandardProperties(), createPropertySynonyms());
-        assertThat(actual.getStandardProperties().size(), is(6));
+        assertThat(actual.getStandardProperties().size(), is(7));
         assertThat(actual.getStandardProperties().get("connectionTimeoutMilliseconds"), is(30000));
         assertThat(actual.getStandardProperties().get("idleTimeoutMilliseconds"), is(180000));
         assertThat(actual.getStandardProperties().get("maxLifetimeMilliseconds"), is(180000));
         assertThat(actual.getStandardProperties().get("maxPoolSize"), is(30));
         assertThat(actual.getStandardProperties().get("minPoolSize"), is(10));
+        assertThat(actual.getStandardProperties().get("registerMbeans"), is(true));
         assertFalse((Boolean) actual.getStandardProperties().get("readOnly"));
     }
     
     @Test
     public void assertGetStandardPropertiesWithLocalProperties() {
         PoolPropertySynonyms actual = new PoolPropertySynonyms(createLocalProperties(), createPropertySynonyms());
-        assertThat(actual.getStandardProperties().size(), is(6));
+        assertThat(actual.getStandardProperties().size(), is(7));
         assertThat(actual.getStandardProperties().get("connectionTimeoutMilliseconds"), is(30000));
         assertThat(actual.getStandardProperties().get("idleTimeoutMilliseconds"), is(180000));
         assertThat(actual.getStandardProperties().get("maxLifetimeMilliseconds"), is(180000));
         assertThat(actual.getStandardProperties().get("maxPoolSize"), is(30));
         assertThat(actual.getStandardProperties().get("minPoolSize"), is(10));
+        assertThat(actual.getStandardProperties().get("registerMbeans"), is(true));
         assertFalse((Boolean) actual.getStandardProperties().get("readOnly"));
     }
     
     @Test
     public void assertGetLocalPropertiesWithStandardProperties() {
         PoolPropertySynonyms actual = new PoolPropertySynonyms(createStandardProperties(), createPropertySynonyms());
-        assertThat(actual.getLocalProperties().size(), is(6));
+        assertThat(actual.getLocalProperties().size(), is(7));
         assertThat(actual.getLocalProperties().get("connectionTimeout"), is(30000));
         assertThat(actual.getLocalProperties().get("idleTimeout"), is(180000));
         assertThat(actual.getLocalProperties().get("maxLifetime"), is(180000));
@@ -67,34 +69,37 @@ public final class PoolPropertySynonymsTest {
     @Test
     public void assertGetLocalPropertiesWithLocalProperties() {
         PoolPropertySynonyms actual = new PoolPropertySynonyms(createLocalProperties(), createPropertySynonyms());
-        assertThat(actual.getLocalProperties().size(), is(6));
+        assertThat(actual.getLocalProperties().size(), is(7));
         assertThat(actual.getLocalProperties().get("connectionTimeout"), is(30000));
         assertThat(actual.getLocalProperties().get("idleTimeout"), is(180000));
         assertThat(actual.getLocalProperties().get("maxLifetime"), is(180000));
         assertThat(actual.getLocalProperties().get("maximumPoolSize"), is(30));
         assertThat(actual.getLocalProperties().get("minimumIdle"), is(10));
+        assertThat(actual.getStandardProperties().get("registerMbeans"), is(true));
         assertFalse((Boolean) actual.getLocalProperties().get("readOnly"));
     }
     
     private Map<String, Object> createStandardProperties() {
-        Map<String, Object> result = new LinkedHashMap<>(6, 1);
+        Map<String, Object> result = new LinkedHashMap<>(7, 1);
         result.put("connectionTimeoutMilliseconds", 30000);
         result.put("idleTimeoutMilliseconds", 180000);
         result.put("maxLifetimeMilliseconds", 180000);
         result.put("maxPoolSize", 30);
         result.put("minPoolSize", 10);
+        result.put("registerMbeans", true);
         result.put("readOnly", false);
         return result;
     }
     
     private Map<String, Object> createLocalProperties() {
-        Map<String, Object> result = new LinkedHashMap<>(6, 1);
+        Map<String, Object> result = new LinkedHashMap<>(7, 1);
         result.put("connectionTimeout", 30000);
         result.put("idleTimeout", 180000);
         result.put("maxLifetime", 180000);
         result.put("maximumPoolSize", 30);
         result.put("minimumIdle", 10);
         result.put("readOnly", false);
+        result.put("registerMbeans", true);
         return result;
     }
     

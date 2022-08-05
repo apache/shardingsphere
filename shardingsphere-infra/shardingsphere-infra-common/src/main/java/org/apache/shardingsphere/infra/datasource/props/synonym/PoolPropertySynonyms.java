@@ -37,6 +37,7 @@ public final class PoolPropertySynonyms extends PropertySynonyms {
         STANDARD_PROPERTY_KEYS.add("maxLifetimeMilliseconds");
         STANDARD_PROPERTY_KEYS.add("maxPoolSize");
         STANDARD_PROPERTY_KEYS.add("minPoolSize");
+        STANDARD_PROPERTY_KEYS.add("registerMbeans");
         STANDARD_PROPERTY_KEYS.add("readOnly");
     }
     
