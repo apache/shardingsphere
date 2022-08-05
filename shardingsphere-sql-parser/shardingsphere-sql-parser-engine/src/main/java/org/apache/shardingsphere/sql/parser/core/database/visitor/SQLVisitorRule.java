@@ -628,7 +628,9 @@ public enum SQLVisitorRule {
     
     CREATE_FOREIGN_DATA_WRAPPER("CreateForeignDataWrapper", SQLStatementType.DDL),
     
-    CREATE_FOREIGN_TABLE("CreateForeignTable", SQLStatementType.DDL);
+    CREATE_FOREIGN_TABLE("CreateForeignTable", SQLStatementType.DDL),
+    
+    CREATE_GROUP("CreateGroup", SQLStatementType.DCL);
     
     private final String name;
     
