@@ -40,7 +40,7 @@ public final class JDBCRepositoryProviderFactory {
      * @return got instance
      */
     public static JDBCRepositoryProvider getInstance(final Object jdbcRepositoryType) {
-        return jdbcRepositoryType == null ? RequiredSPIRegistry.getRegisteredService(JDBCRepositoryProvider.class)
+        return null == jdbcRepositoryType ? RequiredSPIRegistry.getRegisteredService(JDBCRepositoryProvider.class)
                 : TypedSPIRegistry.getRegisteredService(JDBCRepositoryProvider.class, jdbcRepositoryType.toString());
     }
 }
