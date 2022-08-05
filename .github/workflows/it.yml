@@ -30,9 +30,10 @@ on:
       - '!shardingsphere-distribution/shardingsphere-proxy-distribution/src/main/release-docs/**'
       - '!shardingsphere-kernel/shardingsphere-data-pipeline/**'
       - '!shardingsphere-test/**'
-      - 'shardingsphere-test/**/pom.xml'
-      - 'shardingsphere-test/shardingsphere-integration-test/**'
-      - '!shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/**'
+      - 'shardingsphere-test/pom.xml'
+      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-fixture/**'
+      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-env/**'
+      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/**'
       - 'shardingsphere-test/shardingsphere-integration-agent-test/**'
       - '!*.md'
   pull_request:
@@ -47,9 +48,10 @@ on:
       - '!shardingsphere-distribution/shardingsphere-proxy-distribution/src/main/release-docs/**'
       - '!shardingsphere-kernel/shardingsphere-data-pipeline/**'
       - '!shardingsphere-test/**'
-      - 'shardingsphere-test/**/pom.xml'
-      - 'shardingsphere-test/shardingsphere-integration-test/**'
-      - '!shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-scaling/**'
+      - 'shardingsphere-test/pom.xml'
+      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-fixture/**'
+      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-env/**'
+      - 'shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/**'
       - 'shardingsphere-test/shardingsphere-integration-agent-test/**'
       - '!*.md'
 
@@ -210,7 +212,7 @@ jobs:
         env: [ docker ]
         adapter: [ proxy, jdbc ]
         database: [ MySQL, PostgreSQL ]
-        scenario: [ dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt ]
+        scenario: [ dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt, sharding_and_encrypt ]
     steps:
       - uses: actions/checkout@v2
       - name: Cache Maven Repos
@@ -245,7 +247,7 @@ jobs:
         env: [ docker ]
         adapter: [ proxy ]
         database: [ MySQL, PostgreSQL ]
-        scenario: [ dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt ]
+        scenario: [ dbtbl_with_readwrite_splitting, dbtbl_with_readwrite_splitting_and_encrypt, sharding_and_encrypt ]
     steps:
       - uses: actions/checkout@v2
       - name: Cache Maven Repos

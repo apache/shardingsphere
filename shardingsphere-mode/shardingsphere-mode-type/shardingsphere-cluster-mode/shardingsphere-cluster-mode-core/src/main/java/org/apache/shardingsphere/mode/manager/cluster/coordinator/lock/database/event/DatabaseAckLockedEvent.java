@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.event;
 
 import lombok.Getter;
+import org.apache.shardingsphere.mode.lock.definition.DatabaseLockDefinition;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
-import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDefinition;
 
 /**
  * Database ack locked event.
@@ -28,13 +28,13 @@ import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDe
 @Getter
 public final class DatabaseAckLockedEvent implements GovernanceEvent {
     
-    private final DatabaseLockNameDefinition lockNameDefinition;
+    private final DatabaseLockDefinition lockDefinition;
     
     private final String lockedInstance;
     
     public DatabaseAckLockedEvent(final String ackLockedName) {
         String[] databaseInstance = LockNodeUtil.parseAckLockName(ackLockedName);
-        lockNameDefinition = new DatabaseLockNameDefinition(databaseInstance[0]);
+        lockDefinition = new DatabaseLockDefinition(databaseInstance[0]);
         this.lockedInstance = databaseInstance[1];
     }
 }

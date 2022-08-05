@@ -21,9 +21,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.lock.LockState;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
+import org.apache.shardingsphere.mode.lock.util.TimeoutMilliseconds;
+import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.ClusterLockPersistService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 
 import java.util.Collection;
 import java.util.Set;
@@ -42,7 +42,7 @@ public final class ExclusiveInternalLock implements InternalLock, LockAckAble {
     
     private final InternalLock sequencedInternalLock;
     
-    private final LockRegistryService lockService;
+    private final ClusterLockPersistService lockService;
     
     private final ComputeNodeInstance currentInstance;
     
@@ -153,7 +153,7 @@ public final class ExclusiveInternalLock implements InternalLock, LockAckAble {
                 lockService.releaseLock(lockName);
                 log.debug("inter mutex lock owner lock release lock success. lock name: {}", lockName);
             } else {
-                lockService.removeLock(lockName);
+                lockService.unLock(lockName);
                 log.debug("inter mutex lock not owner remove lock success. lock name: {}", lockName);
             }
             reSetLockState();
