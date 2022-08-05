@@ -101,7 +101,6 @@ jobs:
     needs: build-it-image
     strategy:
       matrix:
-        env: [ docker ]
         adapter: [ proxy, jdbc ]
         database: [ MySQL, PostgreSQL ]
         scenario: [ empty_rules ]
@@ -130,14 +129,13 @@ jobs:
         run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dit.run.modes=Cluster -Dit.scenarios=${{ matrix.scenario }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.cluster.databases=${{ matrix.database }} -Dit.cluster.env.type=DOCKER
 
   it-single-rule:
-    name: single rule ${{ matrix.mode }}
+    name: single rule
     needs: it-empty-rule
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
       max-parallel: 10
       matrix:
-        env: [ DOCKER ]
         adapter: [ proxy, jdbc ]
         mode: [ Standalone, Cluster ]
         database: [ MySQL, PostgreSQL ]
@@ -171,17 +169,16 @@ jobs:
         if: matrix.adapter == 'proxy'
         run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
-        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dit.cluster.env.type=${{ matrix.env }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.run.modes=${{ matrix.mode }} -Dit.cluster.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }}
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dit.cluster.env.type=DOCKER -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.run.modes=${{ matrix.mode }} -Dit.cluster.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }}
 
   it-mixture-rule:
-    name: mixture rule ${{ matrix.mode }}
+    name: mixture rule
     needs: it-single-rule
     runs-on: ubuntu-latest
     timeout-minutes: 10
     strategy:
       max-parallel: 8
       matrix:
-        env: [ DOCKER ]
         adapter: [ proxy, jdbc ]
         mode: [ Standalone, Cluster ]
         database: [ MySQL, PostgreSQL ]
@@ -211,7 +208,7 @@ jobs:
         if: matrix.adapter == 'proxy'
         run: docker load -i /tmp/shardingsphere-proxy-test.tar
       - name: Run Integration Test
-        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dit.cluster.env.type=${{ matrix.env }} -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.run.modes=${{ matrix.mode }} -Dit.cluster.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }}
+        run: ./mvnw -nsu -B install -f shardingsphere-test/shardingsphere-integration-test/shardingsphere-integration-test-suite/pom.xml -Dcheckstyle.skip=true -Dspotless.apply.skip=true -Dit.cluster.env.type=DOCKER -Dit.cluster.adapters=${{ matrix.adapter }} -Dit.run.modes=${{ matrix.mode }} -Dit.cluster.databases=${{ matrix.database }} -Dit.scenarios=${{ matrix.scenario }}
 
   mysql-proxy-agent:
     name: Agent Metrics & OpenTelemetry
