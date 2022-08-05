@@ -28,6 +28,7 @@ dataSources:
     maxPoolSize:  4
     minPoolSize: 5
     readOnly: true
+    registerMbeans: true
 
 rules:
 - !READWRITE_SPLITTING

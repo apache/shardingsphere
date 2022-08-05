@@ -48,6 +48,7 @@ public final class HikariDataSourcePoolCreatorTest {
         result.put("driverClassName", MockedDataSource.class.getName());
         result.put("username", "root");
         result.put("password", "root");
+        result.put("registerMbeans", true);
         result.put("dataSourceProperties", createJdbcUrlProperties());
         return result;
     }

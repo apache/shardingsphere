@@ -59,6 +59,7 @@ public final class YamlProxyDataSourceConfigurationSwapperTest {
         assertThat(actualPool.getMaxLifetimeMilliseconds(), is(3L));
         assertThat(actualPool.getMaxPoolSize(), is(4));
         assertThat(actualPool.getMinPoolSize(), is(5));
+        assertThat(actualPool.getRegisterMbeans(), is(true));
         assertTrue(actualPool.getReadOnly());
     }
 }

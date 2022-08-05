@@ -40,6 +40,8 @@ public final class PoolConfiguration {
     private final Integer minPoolSize;
     
     private final Boolean readOnly;
+
+    private final Boolean registerMbeans;
     
     private final Properties customProperties;
 }
