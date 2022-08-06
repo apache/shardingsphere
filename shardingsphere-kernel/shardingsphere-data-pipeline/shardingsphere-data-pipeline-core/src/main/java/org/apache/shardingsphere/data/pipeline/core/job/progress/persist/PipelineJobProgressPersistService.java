@@ -18,15 +18,16 @@
 package org.apache.shardingsphere.data.pipeline.core.job.progress.persist;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobCenter;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobScheduler;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.infra.executor.kernel.thread.ExecutorThreadFactoryBuilder;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -94,10 +95,9 @@ public final class PipelineJobProgressPersistService {
                 && !persistContext.getHasNewEvents().get()) {
             return;
         }
-        Map<Integer, RuleAlteredJobScheduler> schedulerMap = RuleAlteredJobCenter.getJobSchedulerMap(jobId);
-        RuleAlteredJobScheduler scheduler = schedulerMap.get(shardingItem);
-        if (null == scheduler) {
-            log.warn("persist, job schedule not exists, jobId={}, shardingItem={}", jobId, shardingItem);
+        Optional<PipelineJobContext> jobContext = PipelineJobCenter.getJobContext(jobId, shardingItem);
+        if (!jobContext.isPresent()) {
+            log.warn("persist, job context does not exist, jobId={}, shardingItem={}", jobId, shardingItem);
             return;
         }
         if (null == beforePersistingProgressMillis) {
@@ -105,7 +105,7 @@ public final class PipelineJobProgressPersistService {
         }
         persistContext.getHasNewEvents().set(false);
         long startTimeMillis = System.currentTimeMillis();
-        REPOSITORY_API.persistJobProgress(scheduler.getJobContext());
+        REPOSITORY_API.persistJobProgress(jobContext.get());
         persistContext.getBeforePersistingProgressMillis().set(null);
         if (6 == ThreadLocalRandom.current().nextInt(100)) {
             log.info("persist, jobId={}, shardingItem={}, cost time: {} ms", jobId, shardingItem, System.currentTimeMillis() - startTimeMillis);

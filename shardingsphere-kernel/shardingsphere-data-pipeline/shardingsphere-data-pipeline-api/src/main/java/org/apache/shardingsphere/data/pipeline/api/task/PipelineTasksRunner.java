@@ -15,27 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job;
+package org.apache.shardingsphere.data.pipeline.api.task;
 
-import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
-
-import java.util.Optional;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
 
 /**
- * Pipeline job.
+ * Pipeline tasks runner.
  */
-public interface PipelineJob {
+public interface PipelineTasksRunner {
     
     /**
-     * Get tasks runner.
+     * Get job context.
      *
-     * @param shardingItem sharding item
-     * @return tasks runner
+     * @return job context.
      */
-    Optional<PipelineTasksRunner> getTasksRunner(int shardingItem);
+    PipelineJobContext getJobContext();
     
     /**
-     * Stop job.
+     * Start tasks runner.
+     */
+    void start();
+    
+    /**
+     * Stop tasks runner.
      */
     void stop();
 }
