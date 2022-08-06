@@ -43,7 +43,7 @@ disableInstance
     : DISABLE INSTANCE instanceId
     ;
 
-showInstance
+showInstanceList
     : SHOW INSTANCE LIST
     ;
 
