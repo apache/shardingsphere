@@ -19,7 +19,7 @@
 <sql-parser-test-cases>
     <reset-parameter sql-case-id="reset_all" configuration-parameter="ALL" />
     <reset-parameter sql-case-id="reset_timezone" configuration-parameter="timezone" />
-    <reset-parameter sql-case-id="reset_time_zone" configuration-parameter="TIME ZONE" />
+    <reset-parameter sql-case-id="reset_time_zone" configuration-parameter="TIME" />
     <reset sql-case-id="reset_master">
         <option master="true" start-index="6" stop-index="11" />
     </reset>
