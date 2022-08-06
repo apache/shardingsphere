@@ -31,7 +31,7 @@ import java.util.Optional;
 @Getter
 @Setter
 // TODO now rename
-public final class JobProgress implements PipelineJobProgress {
+public final class JobProgress implements PipelineJobItemProgress {
     
     private JobStatus status = JobStatus.RUNNING;
     
@@ -39,9 +39,9 @@ public final class JobProgress implements PipelineJobProgress {
     
     private boolean active;
     
-    private JobInventoryTaskProgress jobInventoryTask;
+    private JobItemInventoryTasksProgress inventory;
     
-    private JobIncrementalTaskProgress jobIncrementalTask;
+    private JobItemIncrementalTasksProgress incremental;
     
     /**
      * get incremental position.
@@ -49,7 +49,7 @@ public final class JobProgress implements PipelineJobProgress {
      * @return incremental position
      */
     public Optional<IngestPosition<?>> getIncrementalPosition(final String dataSourceName) {
-        return jobIncrementalTask.getIncrementalPosition(dataSourceName);
+        return incremental.getIncrementalPosition(dataSourceName);
     }
     
     /**
@@ -59,7 +59,7 @@ public final class JobProgress implements PipelineJobProgress {
      * @return inventory position
      */
     public Map<String, IngestPosition<?>> getInventoryPosition(final String tableName) {
-        return jobInventoryTask.getInventoryPosition(tableName);
+        return inventory.getInventoryPosition(tableName);
     }
     
     /**
@@ -68,7 +68,7 @@ public final class JobProgress implements PipelineJobProgress {
      * @return data source
      */
     public String getDataSource() {
-        return jobIncrementalTask.getIncrementalTaskProgressMap().keySet().stream().findAny().orElse("");
+        return incremental.getIncrementalTaskProgressMap().keySet().stream().findAny().orElse("");
     }
     
     /**
@@ -77,7 +77,7 @@ public final class JobProgress implements PipelineJobProgress {
      * @return finished percentage
      */
     public int getInventoryFinishedPercentage() {
-        return jobInventoryTask.getInventoryFinishedPercentage();
+        return inventory.getInventoryFinishedPercentage();
     }
     
     /**
@@ -86,6 +86,6 @@ public final class JobProgress implements PipelineJobProgress {
      * @return latest active time, <code>0</code> is there is no activity
      */
     public long getIncrementalLatestActiveTimeMillis() {
-        return null == jobIncrementalTask ? 0L : jobIncrementalTask.getIncrementalLatestActiveTimeMillis();
+        return null == incremental ? 0L : incremental.getIncrementalLatestActiveTimeMillis();
     }
 }

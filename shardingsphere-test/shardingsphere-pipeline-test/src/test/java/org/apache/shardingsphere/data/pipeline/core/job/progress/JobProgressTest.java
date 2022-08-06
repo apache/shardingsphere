@@ -45,8 +45,8 @@ public final class JobProgressTest {
         JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress.yaml"));
         assertThat(jobProgress.getStatus(), is(JobStatus.RUNNING));
         assertThat(jobProgress.getSourceDatabaseType(), is("H2"));
-        assertThat(jobProgress.getJobInventoryTask().getInventoryTaskProgressMap().size(), is(4));
-        assertThat(jobProgress.getJobIncrementalTask().getIncrementalTaskProgressMap().size(), is(1));
+        assertThat(jobProgress.getInventory().getInventoryTaskProgressMap().size(), is(4));
+        assertThat(jobProgress.getIncremental().getIncrementalTaskProgressMap().size(), is(1));
     }
     
     @Test

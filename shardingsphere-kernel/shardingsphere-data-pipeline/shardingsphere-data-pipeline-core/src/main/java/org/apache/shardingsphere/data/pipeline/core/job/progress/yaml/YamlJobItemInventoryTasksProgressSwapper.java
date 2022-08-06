@@ -18,46 +18,46 @@
 package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 
 import com.google.common.base.Strings;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PrimaryKeyPositionFactory;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobInventoryTaskProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemInventoryTasksProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
 /**
- * YAML InventoryTask progress swapper.
+ * YAML job item inventory tasks progress swapper.
  */
-public final class YamlInventoryTaskProgressSwapper {
+public final class YamlJobItemInventoryTasksProgressSwapper {
     
     /**
      * Swap to YAML.
      *
-     * @param inventory inventoryTask progress
-     * @return YAML inventoryTask progress
+     * @param progress progress
+     * @return YAML progress
      */
-    public YamlInventoryTaskProgress swapToYaml(final JobInventoryTaskProgress inventory) {
-        YamlInventoryTaskProgress result = new YamlInventoryTaskProgress();
-        if (inventory != null) {
-            result.setFinished(getFinished(inventory));
-            result.setUnfinished(getUnfinished(inventory));
+    public YamlJobItemInventoryTasksProgress swapToYaml(final JobItemInventoryTasksProgress progress) {
+        YamlJobItemInventoryTasksProgress result = new YamlJobItemInventoryTasksProgress();
+        if (progress != null) {
+            result.setFinished(getFinished(progress));
+            result.setUnfinished(getUnfinished(progress));
         }
         return result;
     }
     
-    private String[] getFinished(final JobInventoryTaskProgress jobInventoryTaskProgress) {
-        return jobInventoryTaskProgress.getInventoryTaskProgressMap().entrySet().stream()
+    private String[] getFinished(final JobItemInventoryTasksProgress progress) {
+        return progress.getInventoryTaskProgressMap().entrySet().stream()
                 .filter(entry -> entry.getValue().getPosition() instanceof FinishedPosition)
-                .map(Map.Entry::getKey)
-                .toArray(String[]::new);
+                .map(Map.Entry::getKey).toArray(String[]::new);
     }
     
-    private Map<String, String> getUnfinished(final JobInventoryTaskProgress jobInventoryTaskProgress) {
-        return jobInventoryTaskProgress.getInventoryTaskProgressMap().entrySet().stream()
+    private Map<String, String> getUnfinished(final JobItemInventoryTasksProgress progress) {
+        return progress.getInventoryTaskProgressMap().entrySet().stream()
                 .filter(entry -> !(entry.getValue().getPosition() instanceof FinishedPosition))
                 .collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getPosition().toString()));
     }
@@ -65,21 +65,17 @@ public final class YamlInventoryTaskProgressSwapper {
     /**
      * Swap to object.
      *
-     * @param inventory yaml inventoryTask progress
-     * @return inventoryTask progress
+     * @param yamlProgress YAML progress
+     * @return progress
      */
-    public JobInventoryTaskProgress swapToObject(final YamlInventoryTaskProgress inventory) {
-        if (null == inventory) {
+    public JobItemInventoryTasksProgress swapToObject(final YamlJobItemInventoryTasksProgress yamlProgress) {
+        if (null == yamlProgress) {
             return null;
         }
-        Map<String, InventoryTaskProgress> inventoryTaskProgressItemMap = new HashMap<>();
-        inventoryTaskProgressItemMap.putAll(Arrays.stream(inventory.getFinished())
-                .collect(Collectors.toMap(key -> key, value -> new InventoryTaskProgress(new FinishedPosition()))));
-        inventoryTaskProgressItemMap.putAll(inventory.getUnfinished().entrySet()
-                .stream()
-                .collect(Collectors.toMap(
-                        Map.Entry::getKey, getInventoryTaskProgressFunction())));
-        return new JobInventoryTaskProgress(inventoryTaskProgressItemMap);
+        Map<String, InventoryTaskProgress> taskProgressMap = new LinkedHashMap<>();
+        taskProgressMap.putAll(Arrays.stream(yamlProgress.getFinished()).collect(Collectors.toMap(key -> key, value -> new InventoryTaskProgress(new FinishedPosition()))));
+        taskProgressMap.putAll(yamlProgress.getUnfinished().entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, getInventoryTaskProgressFunction())));
+        return new JobItemInventoryTasksProgress(taskProgressMap);
     }
     
     private Function<Map.Entry<String, String>, InventoryTaskProgress> getInventoryTaskProgressFunction() {
