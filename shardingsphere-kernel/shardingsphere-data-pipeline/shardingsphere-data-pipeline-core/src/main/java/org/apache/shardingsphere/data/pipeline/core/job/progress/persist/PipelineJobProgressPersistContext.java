@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job.persist;
+package org.apache.shardingsphere.data.pipeline.core.job.progress.persist;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -23,9 +23,12 @@ import lombok.RequiredArgsConstructor;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
+/**
+ * Pipeline job progress persist context.
+ */
 @Getter
 @RequiredArgsConstructor
-public final class PipelineJobPersistContext {
+public final class PipelineJobProgressPersistContext {
     
     private final String jobId;
     

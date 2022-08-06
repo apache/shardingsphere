@@ -15,29 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job.persist;
+package org.apache.shardingsphere.data.pipeline.core.job.progress.listener;
+
+import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 
 /**
- * Job persist callback.
+ * Default pipeline job progress listener implementation.
  */
-public interface PipelineJobPersistCallback {
+@RequiredArgsConstructor
+public final class DefaultPipelineJobProgressListener implements PipelineJobProgressListener {
     
-    /**
-     * Get job id.
-     *
-     * @return job id
-     */
-    String getJobId();
+    private final String jobId;
     
-    /**
-     * Get sharding item.
-     *
-     * @return sharding item
-     */
-    int getShardingItem();
+    private final int shardingItem;
     
-    /**
-     * Push persist event.
-     */
-    void pushPersistEvent();
+    @Override
+    public void onProgressUpdated() {
+        PipelineJobProgressPersistService.notifyPersist(jobId, shardingItem);
+    }
 }

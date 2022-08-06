@@ -28,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
@@ -80,7 +81,7 @@ public final class RuleAlteredJob implements SimpleJob, PipelineJob {
         RuleAlteredJobScheduler jobScheduler = new RuleAlteredJobScheduler(jobContext);
         jobScheduler.start();
         jobSchedulerMap.put(shardingItem, jobScheduler);
-        RuleAlteredJobPersistService.addJobPersistParameter(jobId, shardingItem);
+        PipelineJobProgressPersistService.addJobProgressPersistContext(jobId, shardingItem);
     }
     
     /**
@@ -101,6 +102,6 @@ public final class RuleAlteredJob implements SimpleJob, PipelineJob {
             each.stop();
         }
         jobSchedulerMap.clear();
-        RuleAlteredJobPersistService.removeJobPersistParameter(jobId);
+        PipelineJobProgressPersistService.removeJobProgressPersistContext(jobId);
     }
 }
