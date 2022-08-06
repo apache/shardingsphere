@@ -53,7 +53,7 @@ public final class YamlShardingRuleAlgorithmProviderConfigurationSwapperTest {
     private AlgorithmProvidedShardingRuleConfiguration createAlgorithmProvidedShardingRuleConfiguration() {
         AlgorithmProvidedShardingRuleConfiguration result = new AlgorithmProvidedShardingRuleConfiguration();
         result.getTables().add(new ShardingTableRuleConfiguration("foo_db"));
-        result.getAutoTables().add(new ShardingAutoTableRuleConfiguration("foo_db"));
+        result.getAutoTables().add(new ShardingAutoTableRuleConfiguration("foo_db", null));
         result.getBindingTableGroups().add("foo_bind_tb");
         result.setBroadcastTables(Collections.singleton("foo_broad_cast_tb"));
         result.setDefaultDatabaseShardingStrategy(mock(ShardingStrategyConfiguration.class));
