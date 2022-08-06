@@ -84,37 +84,52 @@ public final class ReadwriteSplittingRule implements DatabaseRule, DataSourceCon
     
     private Map<String, ReadwriteSplittingDataSourceRule> buildReadwriteSplittingDataSourceRules(final ReadwriteSplittingDataSourceRuleConfiguration config,
                                                                                                  final Collection<ShardingSphereRule> builtRules) {
-        Map<String, ReadwriteSplittingDataSourceRule> result = new LinkedHashMap<>();
         ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm = null == loadBalancers.get(config.getLoadBalancerName())
                 ? ReadQueryLoadBalanceAlgorithmFactory.newInstance()
                 : loadBalancers.get(config.getLoadBalancerName());
-        List<String> readwriteInlineNames = new InlineExpressionParser(config.getName()).splitAndEvaluate();
         if (null != config.getStaticStrategy()) {
-            List<String> writeInlineDatasourceNames = new InlineExpressionParser(config.getStaticStrategy().getWriteDataSourceName()).splitAndEvaluate();
-            List<List<String>> readInlineDatasourceNames = config.getStaticStrategy().getReadDataSourceNames().stream()
-                    .map(each -> new InlineExpressionParser(each).splitAndEvaluate()).collect(Collectors.toList());
-            Preconditions.checkArgument(writeInlineDatasourceNames.size() == readwriteInlineNames.size(), "Inline expression write data source names size error");
-            readInlineDatasourceNames.forEach(e -> Preconditions.checkArgument(e.size() == readwriteInlineNames.size(), "Inline expression read data source names size error"));
-            for (int i = 0; i < readwriteInlineNames.size(); i++) {
-                final int finalI = i;
-                ReadwriteSplittingDataSourceRuleConfiguration staticConfig = new ReadwriteSplittingDataSourceRuleConfiguration(readwriteInlineNames.get(i),
-                        new StaticReadwriteSplittingStrategyConfiguration(writeInlineDatasourceNames.get(i),
-                                readInlineDatasourceNames.stream().map(each -> each.get(finalI)).collect(Collectors.toList())),
-                        null, config.getLoadBalancerName());
-                result.put(readwriteInlineNames.get(i), new ReadwriteSplittingDataSourceRule(staticConfig, loadBalanceAlgorithm, builtRules));
-            }
+            return buildStaticReadwriteSplittingDataSourceRules(config, builtRules, loadBalanceAlgorithm);
         } else {
-            List<String> autoAwareNames = new InlineExpressionParser(config.getDynamicStrategy().getAutoAwareDataSourceName()).splitAndEvaluate();
-            Preconditions.checkArgument(autoAwareNames.size() == readwriteInlineNames.size(), "Inline expression auto aware data source names size error");
-            for (int i = 0; i < readwriteInlineNames.size(); i++) {
-                ReadwriteSplittingDataSourceRuleConfiguration dynamicConfig = new ReadwriteSplittingDataSourceRuleConfiguration(readwriteInlineNames.get(i), null,
-                        new DynamicReadwriteSplittingStrategyConfiguration(autoAwareNames.get(i), config.getDynamicStrategy().getWriteDataSourceQueryEnabled()), config.getLoadBalancerName());
-                result.put(readwriteInlineNames.get(i), new ReadwriteSplittingDataSourceRule(dynamicConfig, loadBalanceAlgorithm, builtRules));
-            }
+            return buildDynamicReadwriteSplittingDataSourceRules(config, builtRules, loadBalanceAlgorithm);
+        }
+    }
+
+    private Map<String, ReadwriteSplittingDataSourceRule> buildStaticReadwriteSplittingDataSourceRules(final ReadwriteSplittingDataSourceRuleConfiguration config,
+                                                                                                       final Collection<ShardingSphereRule> builtRules,
+                                                                                                       final ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm) {
+        Map<String, ReadwriteSplittingDataSourceRule> result = new LinkedHashMap<>();
+        List<String> readwriteInlineNames = new InlineExpressionParser(config.getName()).splitAndEvaluate();
+        List<String> writeInlineDatasourceNames = new InlineExpressionParser(config.getStaticStrategy().getWriteDataSourceName()).splitAndEvaluate();
+        List<List<String>> readInlineDatasourceNames = config.getStaticStrategy().getReadDataSourceNames().stream()
+                .map(each -> new InlineExpressionParser(each).splitAndEvaluate()).collect(Collectors.toList());
+        Preconditions.checkArgument(writeInlineDatasourceNames.size() == readwriteInlineNames.size(), "Inline expression write data source names size error");
+        readInlineDatasourceNames.forEach(e -> Preconditions.checkArgument(e.size() == readwriteInlineNames.size(), "Inline expression read data source names size error"));
+        for (int i = 0; i < readwriteInlineNames.size(); i++) {
+            final int index = i;
+            ReadwriteSplittingDataSourceRuleConfiguration staticConfig = new ReadwriteSplittingDataSourceRuleConfiguration(readwriteInlineNames.get(index),
+                    new StaticReadwriteSplittingStrategyConfiguration(writeInlineDatasourceNames.get(index),
+                            readInlineDatasourceNames.stream().map(each -> each.get(index)).collect(Collectors.toList())),
+                    null, config.getLoadBalancerName());
+            result.put(readwriteInlineNames.get(i), new ReadwriteSplittingDataSourceRule(staticConfig, loadBalanceAlgorithm, builtRules));
         }
         return result;
     }
-    
+
+    private Map<String, ReadwriteSplittingDataSourceRule> buildDynamicReadwriteSplittingDataSourceRules(final ReadwriteSplittingDataSourceRuleConfiguration config,
+                                                                                                        final Collection<ShardingSphereRule> builtRules,
+                                                                                                        final ReadQueryLoadBalanceAlgorithm loadBalanceAlgorithm) {
+        Map<String, ReadwriteSplittingDataSourceRule> result = new LinkedHashMap<>();
+        List<String> readwriteInlineNames = new InlineExpressionParser(config.getName()).splitAndEvaluate();
+        List<String> autoAwareNames = new InlineExpressionParser(config.getDynamicStrategy().getAutoAwareDataSourceName()).splitAndEvaluate();
+        Preconditions.checkArgument(autoAwareNames.size() == readwriteInlineNames.size(), "Inline expression auto aware data source names size error");
+        for (int i = 0; i < readwriteInlineNames.size(); i++) {
+            ReadwriteSplittingDataSourceRuleConfiguration dynamicConfig = new ReadwriteSplittingDataSourceRuleConfiguration(readwriteInlineNames.get(i), null,
+                    new DynamicReadwriteSplittingStrategyConfiguration(autoAwareNames.get(i), config.getDynamicStrategy().getWriteDataSourceQueryEnabled()), config.getLoadBalancerName());
+            result.put(readwriteInlineNames.get(i), new ReadwriteSplittingDataSourceRule(dynamicConfig, loadBalanceAlgorithm, builtRules));
+        }
+        return result;
+    }
+
     /**
      * Get single data source rule.
      *
