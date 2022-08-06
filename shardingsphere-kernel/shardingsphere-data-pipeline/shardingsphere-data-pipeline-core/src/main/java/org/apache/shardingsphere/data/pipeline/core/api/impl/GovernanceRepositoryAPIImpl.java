@@ -21,8 +21,8 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobIncrementalTaskProgress;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobInventoryTaskProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemInventoryTasksProgress;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobProgressSwapper;
@@ -60,20 +60,20 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
         JobProgress jobProgress = new JobProgress();
         jobProgress.setStatus(jobContext.getStatus());
         jobProgress.setSourceDatabaseType(jobContext.getJobConfig().getSourceDatabaseType());
-        jobProgress.setJobIncrementalTask(getIncrementalTaskProgress(jobContext));
-        jobProgress.setJobInventoryTask(getInventoryTaskProgress(jobContext));
+        jobProgress.setIncremental(getIncrementalTasksProgress(jobContext));
+        jobProgress.setInventory(getInventoryTasksProgress(jobContext));
         String value = YamlEngine.marshal(SWAPPER.swapToYaml(jobProgress));
         repository.persist(PipelineMetaDataNode.getScalingJobOffsetPath(jobContext.getJobId(), jobContext.getShardingItem()), value);
     }
     
-    private JobIncrementalTaskProgress getIncrementalTaskProgress(final RuleAlteredJobContext jobContext) {
-        return new JobIncrementalTaskProgress(
+    private JobItemIncrementalTasksProgress getIncrementalTasksProgress(final RuleAlteredJobContext jobContext) {
+        return new JobItemIncrementalTasksProgress(
                 jobContext.getIncrementalTasks()
                         .stream().collect(Collectors.toMap(IncrementalTask::getTaskId, IncrementalTask::getProgress)));
     }
     
-    private JobInventoryTaskProgress getInventoryTaskProgress(final RuleAlteredJobContext jobContext) {
-        return new JobInventoryTaskProgress(
+    private JobItemInventoryTasksProgress getInventoryTasksProgress(final RuleAlteredJobContext jobContext) {
+        return new JobItemInventoryTasksProgress(
                 jobContext.getInventoryTasks()
                         .stream()
                         .collect(Collectors.toMap(InventoryTask::getTaskId, InventoryTask::getProgress)));

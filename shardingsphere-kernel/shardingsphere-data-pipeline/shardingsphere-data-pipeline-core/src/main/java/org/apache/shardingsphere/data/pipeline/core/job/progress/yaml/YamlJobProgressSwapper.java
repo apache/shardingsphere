@@ -25,6 +25,10 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
  */
 public final class YamlJobProgressSwapper {
     
+    private static final YamlJobItemInventoryTasksProgressSwapper INVENTORY_PROGRESS_SWAPPER = new YamlJobItemInventoryTasksProgressSwapper();
+    
+    private static final YamlJobItemIncrementalTasksProgressSwapper INCREMENTAL_PROGRESS_SWAPPER = new YamlJobItemIncrementalTasksProgressSwapper();
+    
     /**
      * Swap to YAML.
      *
@@ -35,8 +39,8 @@ public final class YamlJobProgressSwapper {
         YamlJobProgress result = new YamlJobProgress();
         result.setStatus(jobProgress.getStatus().name());
         result.setSourceDatabaseType(jobProgress.getSourceDatabaseType());
-        result.setInventory(new YamlInventoryTaskProgressSwapper().swapToYaml(jobProgress.getJobInventoryTask()));
-        result.setIncremental(new YamlIncrementalTaskProgressSwapper().swapToYaml(jobProgress.getJobIncrementalTask()));
+        result.setInventory(INVENTORY_PROGRESS_SWAPPER.swapToYaml(jobProgress.getInventory()));
+        result.setIncremental(INCREMENTAL_PROGRESS_SWAPPER.swapToYaml(jobProgress.getIncremental()));
         return result;
     }
     
@@ -50,8 +54,8 @@ public final class YamlJobProgressSwapper {
         JobProgress result = new JobProgress();
         result.setStatus(JobStatus.valueOf(yamlJobProgress.getStatus()));
         result.setSourceDatabaseType(yamlJobProgress.getSourceDatabaseType());
-        result.setJobInventoryTask(new YamlInventoryTaskProgressSwapper().swapToObject(yamlJobProgress.getInventory()));
-        result.setJobIncrementalTask(new YamlIncrementalTaskProgressSwapper().swapToObject(yamlJobProgress.getSourceDatabaseType(), yamlJobProgress.getIncremental()));
+        result.setInventory(INVENTORY_PROGRESS_SWAPPER.swapToObject(yamlJobProgress.getInventory()));
+        result.setIncremental(INCREMENTAL_PROGRESS_SWAPPER.swapToObject(yamlJobProgress.getSourceDatabaseType(), yamlJobProgress.getIncremental()));
         return result;
     }
 }

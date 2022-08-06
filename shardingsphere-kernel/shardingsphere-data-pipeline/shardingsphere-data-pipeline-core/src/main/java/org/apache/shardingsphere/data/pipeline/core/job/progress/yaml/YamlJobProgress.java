@@ -31,7 +31,7 @@ public final class YamlJobProgress {
     
     private String sourceDatabaseType;
     
-    private YamlInventoryTaskProgress inventory;
+    private YamlJobItemInventoryTasksProgress inventory;
     
-    private YamlIncrementalTaskProgress incremental;
+    private YamlJobItemIncrementalTasksProgress incremental;
 }

@@ -15,22 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
-
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskDelay;
+package org.apache.shardingsphere.data.pipeline.api.job.progress;
 
 /**
- * Yaml IncrementalTaskProgress.
+ * Pipeline job item progress.
  */
-@Getter
-@Setter
-public final class YamlIncrementalTaskProgress {
-    
-    private String dataSourceName;
-    
-    private String position;
-    
-    private IncrementalTaskDelay delay;
+public interface PipelineJobItemProgress {
 }

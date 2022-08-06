@@ -27,32 +27,30 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPositio
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
 
 /**
- * Job incrementalTask progress.
+ * Job item incremental tasks progress.
  */
 @RequiredArgsConstructor
 @Getter
-public class JobIncrementalTaskProgress {
+public final class JobItemIncrementalTasksProgress {
     
     private final Map<String, IncrementalTaskProgress> incrementalTaskProgressMap;
     
     /**
      * Get incremental position.
      * 
-     * @param dataSourceName dataSource
+     * @param dataSourceName data source name
      * @return incremental position
      */
     public Optional<IngestPosition<?>> getIncrementalPosition(final String dataSourceName) {
-        Optional<IncrementalTaskProgress> incrementalTaskProgressItem = incrementalTaskProgressMap.entrySet().stream()
-                .filter(entry -> dataSourceName.equals(entry.getKey()))
-                .map(Map.Entry::getValue)
-                .findAny();
-        return incrementalTaskProgressItem.map(IncrementalTaskProgress::getPosition);
+        Optional<IncrementalTaskProgress> incrementalTaskProgress = incrementalTaskProgressMap.entrySet().stream()
+                .filter(entry -> dataSourceName.equals(entry.getKey())).map(Map.Entry::getValue).findAny();
+        return incrementalTaskProgress.map(IncrementalTaskProgress::getPosition);
     }
     
     /**
      * Get incremental latest active time milliseconds.
      *
-     * @return latest active time, <code>0</code> is there is no activity
+     * @return latest active time, <code>0</code> means there is no activity
      */
     public long getIncrementalLatestActiveTimeMillis() {
         List<Long> delays = incrementalTaskProgressMap.values().stream()

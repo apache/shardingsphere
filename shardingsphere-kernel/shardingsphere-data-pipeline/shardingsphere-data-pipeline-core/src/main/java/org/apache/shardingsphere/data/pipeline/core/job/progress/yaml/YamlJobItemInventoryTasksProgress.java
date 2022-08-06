@@ -15,10 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job.progress;
+package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
+
+import java.util.HashMap;
+import java.util.Map;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Pipeline job progress.
+ * YAML job item inventory tasks progress.
  */
-public interface PipelineJobProgress {
+@Getter
+@Setter
+public final class YamlJobItemInventoryTasksProgress {
+    
+    private String[] finished = new String[0];
+    
+    private Map<String, String> unfinished = new HashMap<>();
 }

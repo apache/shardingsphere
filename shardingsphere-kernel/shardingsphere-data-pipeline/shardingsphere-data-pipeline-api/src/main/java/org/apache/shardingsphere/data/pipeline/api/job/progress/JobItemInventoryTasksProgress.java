@@ -27,11 +27,11 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPositio
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 
 /**
- * Job inventoryTask progress.
+ * Job item inventory tasks progress.
  */
 @RequiredArgsConstructor
 @Getter
-public class JobInventoryTaskProgress {
+public final class JobItemInventoryTasksProgress {
     
     private final Map<String, InventoryTaskProgress> inventoryTaskProgressMap;
     
@@ -54,6 +54,7 @@ public class JobInventoryTaskProgress {
      * @return finished percentage
      */
     public int getInventoryFinishedPercentage() {
+        // TODO finished percentage is not accurate enough
         long finished = inventoryTaskProgressMap.values().stream()
                 .filter(each -> each.getPosition() instanceof FinishedPosition)
                 .count();
