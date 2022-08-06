@@ -20,7 +20,7 @@ package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
 /**
- * Show instance statement.
+ * Show instance list statement.
  */
-public final class ShowInstanceStatement extends QueryableRALStatement {
+public final class ShowInstanceListStatement extends QueryableRALStatement {
 }

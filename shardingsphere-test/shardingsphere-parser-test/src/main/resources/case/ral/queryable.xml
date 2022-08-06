@@ -20,8 +20,6 @@
     <show-variable sql-case-id="show-variable" name="CACHED_CONNECTIONS" />
     <show-all-variable sql-case-id="show-all-variables" />
     
-    <show-instance sql-case-id="show-instance" />
-    
     <show-readwrite-splitting-read-resources sql-case-id="show-readwrite-splitting-read-resources" />
     
     <show-table-metadata sql-case-id="show-table-metadata">
@@ -34,6 +32,8 @@
     <show-sql-parser-rule sql-case-id="show-sql-parser-rule" />
     <show-traffic-rules sql-case-id="show-traffic-rules" rule-name="rule_name" />
     <show-sql-translator-rule sql-case-id="show-sql-translator-rule" />
+
+    <show-instance-list sql-case-id="show-instance-list" />
     <show-instance-info sql-case-id="show-instance-info" />
     <show-mode-info sql-case-id="show-mode-info" />
     
