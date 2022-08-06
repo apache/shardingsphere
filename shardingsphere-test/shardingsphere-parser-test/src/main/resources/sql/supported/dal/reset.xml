@@ -19,6 +19,7 @@
 <sql-cases>
     <sql-case id="reset_all" value="RESET ALL" db-types="PostgreSQL,openGauss" />
     <sql-case id="reset_timezone" value="RESET timezone" db-types="PostgreSQL,openGauss" />
+    <sql-case id="reset_time_zone" value="RESET TIME ZONE" db-types="PostgreSQL,openGauss" />
     <sql-case id="reset_master" value="RESET MASTER" db-types="MySQL" />
     <sql-case id="reset_slave" value="RESET SLAVE" db-types="MySQL" />
     <sql-case id="reset_master_slave" value="RESET MASTER, SLAVE" db-types="MySQL" />
