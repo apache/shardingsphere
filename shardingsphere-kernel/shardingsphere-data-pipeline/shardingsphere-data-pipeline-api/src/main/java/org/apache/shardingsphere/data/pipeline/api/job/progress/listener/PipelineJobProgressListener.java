@@ -15,23 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.fixture;
+package org.apache.shardingsphere.data.pipeline.api.job.progress.listener;
 
-import org.apache.shardingsphere.data.pipeline.api.job.persist.PipelineJobPersistCallback;
-
-public final class FixturePipelineJobPersistCallback implements PipelineJobPersistCallback {
+/**
+ * Pipeline job progress listener.
+ */
+public interface PipelineJobProgressListener {
     
-    @Override
-    public String getJobId() {
-        return null;
-    }
-    
-    @Override
-    public int getShardingItem() {
-        return 0;
-    }
-    
-    @Override
-    public void pushPersistEvent() {
-    }
+    /**
+     * Emit on progress updated.
+     */
+    void onProgressUpdated();
 }
