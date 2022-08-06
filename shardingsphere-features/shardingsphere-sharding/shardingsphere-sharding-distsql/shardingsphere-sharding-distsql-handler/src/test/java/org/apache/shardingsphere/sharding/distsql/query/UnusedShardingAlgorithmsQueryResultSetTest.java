@@ -81,7 +81,7 @@ public final class UnusedShardingAlgorithmsQueryResultSetTest {
     }
     
     private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {
-        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("auto_table");
+        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("auto_table", null);
         result.setShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "hash_mod"));
         return result;
     }

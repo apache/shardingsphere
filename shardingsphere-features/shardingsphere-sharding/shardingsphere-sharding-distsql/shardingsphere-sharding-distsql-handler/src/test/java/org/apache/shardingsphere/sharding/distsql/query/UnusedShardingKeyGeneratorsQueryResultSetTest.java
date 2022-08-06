@@ -73,7 +73,7 @@ public final class UnusedShardingKeyGeneratorsQueryResultSetTest {
     }
     
     private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {
-        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("auto_table");
+        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("auto_table", null);
         result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake_key_generator"));
         return result;
     }
