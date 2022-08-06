@@ -26,6 +26,7 @@ import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineIgnoredException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 
@@ -99,7 +100,7 @@ public final class RuleAlteredJobScheduler implements Runnable {
     }
     
     private synchronized boolean executeInventoryTask() {
-        if (RuleAlteredJobProgressDetector.allInventoryTasksFinished(jobContext.getInventoryTasks())) {
+        if (PipelineJobProgressDetector.allInventoryTasksFinished(jobContext.getInventoryTasks())) {
             log.info("All inventory tasks finished.");
             return true;
         }
@@ -120,7 +121,7 @@ public final class RuleAlteredJobScheduler implements Runnable {
             
             @Override
             public void onSuccess() {
-                if (RuleAlteredJobProgressDetector.allInventoryTasksFinished(jobContext.getInventoryTasks())) {
+                if (PipelineJobProgressDetector.allInventoryTasksFinished(jobContext.getInventoryTasks())) {
                     log.info("onSuccess, all inventory tasks finished.");
                     executeIncrementalTask();
                 }
