@@ -5,7 +5,8 @@ weight = 3
 chapter = true
 +++
 
-Apache ShardingSphere 由 ShardingSphere-JDBC 和 ShardingSphere-Proxy 这 2 款既能够独立部署，又支持混合部署配合使用的产品组成。 它们均提供标准化的基于数据库作为存储节点的增量功能，可适用于如 Java 同构、异构语言、云原生等各种多样化的应用场景。
+Apache ShardingSphere 由 ShardingSphere-JDBC 和 ShardingSphere-Proxy 这 2 款既能够独立部署，又支持混合部署配合使用的产品组成。
+它们均提供标准化的基于数据库作为存储节点的增量功能，可适用于如 Java 同构、异构语言、云原生等各种多样化的应用场景。
 
 ## ShardingSphere-JDBC 独立部署
 
@@ -20,14 +21,14 @@ ShardingSphere-JDBC 是 Apache ShardingSphere 的第一个产品，也是 Apache
 
 ![ShardingSphere-JDBC Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-jdbc_v3.png)
 
-||	ShardingSphere-JDBC	| ShardingSphere-Proxy |
-|---|---|---|
-|数据库|	任意	|MySQL/PostgreSQL|
-|连接消耗数|	高	|低|
-|异构语言|	仅 Java	| 任意 |
-|性能	| 损耗低	| 损耗略高 |
-|无中心化	|是	| 否 |
-|静态入口|	无	|有 |
+|           | ShardingSphere-JDBC | ShardingSphere-Proxy |
+| --------- | ------------------- | -------------------- |
+| 数据库     | `任意`               | MySQL/PostgreSQL     |
+| 连接消耗数  | `高`                | 低                    |
+| 异构语言   | `仅 Java`            | 任意                  |
+| 性能      | `损耗低`              | 损耗略高               |
+| 无中心化   | `是`                 | 否                    |
+| 静态入口   | `无`                 | 有                    |
 
 ShardingSphere-JDBC 的优势在于对 Java 应用的友好度。
 
@@ -47,15 +48,14 @@ ShardingSphere-Proxy 是 Apache ShardingSphere 的第二个产品。它定位为
 
 ![ShardingSphere-Proxy Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-proxy_v2.png)
 
-
-||	ShardingSphere-JDBC	|ShardingSphere-Proxy|
-|---|---|---|
-|数据库	|任意	|MySQL/PostgreSQL|
-|连接消耗数	|高|	低|
-|异构语言	|仅 Java	|任意|
-|性能|	损耗低	|损耗略高|
-|无中心化	|是|	否|
-|静态入口|	无|	有|
+|           | ShardingSphere-JDBC | ShardingSphere-Proxy |
+| --------- | ------------------- | -------------------- |
+| 数据库     | 任意                 | `MySQL/PostgreSQL`   |
+| 连接消耗数  | 高                  | `低`                  |
+| 异构语言   | 仅 Java              | `任意`                |
+| 性能      | 损耗低                | `损耗略高`             |
+| 无中心化   | 是                   | `否`                  |
+| 静态入口   | 无                   | `有`                  |
 
 ShardingSphere-Proxy 的优势在于对异构语言的支持，以及为 DBA 提供可操作入口。
 源码：[https://github.com/apache/shardingsphere/tree/master/shardingsphere-proxy](https://github.com/apache/shardingsphere/tree/master/shardingsphere-proxy)
