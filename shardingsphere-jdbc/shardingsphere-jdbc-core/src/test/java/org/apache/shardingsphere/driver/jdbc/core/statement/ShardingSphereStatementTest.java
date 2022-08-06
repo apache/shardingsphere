@@ -58,10 +58,9 @@ public final class ShardingSphereStatementTest extends AbstractShardingSphereDat
             generatedKeysResultSet = statement.getGeneratedKeys();
             assertTrue(generatedKeysResultSet.next());
             assertThat(generatedKeysResultSet.getLong(1), is(6L));
-            assertFalse(statement.execute(String.format(sql, 1, 1, "init"), new String[]{"no"}));
             generatedKeysResultSet = statement.getGeneratedKeys();
             assertTrue(generatedKeysResultSet.next());
-            assertThat(generatedKeysResultSet.getLong(1), is(7L));
+            assertThat(generatedKeysResultSet.getLong(1), is(6L));
         }
     }
     

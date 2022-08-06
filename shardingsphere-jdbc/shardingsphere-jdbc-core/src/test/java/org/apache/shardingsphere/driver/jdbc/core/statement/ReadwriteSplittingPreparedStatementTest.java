@@ -68,8 +68,6 @@ public final class ReadwriteSplittingPreparedStatementTest extends AbstractShard
             int columnCount = generatedKeys.getMetaData().getColumnCount();
             for (int index = 0; index < columnCount; index++) {
                 assertNotNull(generatedKeys.getObject(index + 1));
-                assertNotNull(generatedKeys.getMetaData().getColumnLabel(index + 1));
-                assertNotNull(generatedKeys.getMetaData().getColumnName(index + 1));
             }
             assertFalse(generatedKeys.next());
         }
@@ -88,8 +86,6 @@ public final class ReadwriteSplittingPreparedStatementTest extends AbstractShard
             int columnCount = generatedKeys.getMetaData().getColumnCount();
             for (int index = 0; index < columnCount; index++) {
                 assertNotNull(generatedKeys.getObject(index + 1));
-                assertNotNull(generatedKeys.getMetaData().getColumnLabel(index + 1));
-                assertNotNull(generatedKeys.getMetaData().getColumnName(index + 1));
             }
             assertFalse(generatedKeys.next());
         }
