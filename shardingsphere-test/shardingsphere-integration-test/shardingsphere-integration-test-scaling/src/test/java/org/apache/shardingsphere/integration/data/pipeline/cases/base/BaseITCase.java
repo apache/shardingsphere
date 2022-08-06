@@ -384,7 +384,7 @@ public abstract class BaseITCase {
     }
     
     protected void assertCheckScalingSuccess(final String jobId) {
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 10; i++) {
             if (checkJobIncrementTaskFinished(jobId)) {
                 break;
             }

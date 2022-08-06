@@ -327,14 +327,8 @@
     <sql-case id="create_by_mysql_source_test_case457" value="CREATE TABLE t1 (a VARCHAR(10)) PARTITION BY HASH (EXTRACT(MINUTE_SECOND FROM a))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case458" value="CREATE TABLE t1 (a VARCHAR(10)) PARTITION BY HASH (EXTRACT(SECOND_MICROSECOND FROM a))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case459" value="CREATE TABLE t1 (a VARCHAR(10)) PARTITION BY HASH (EXTRACT(YEAR_MONTH FROM a))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case460" value="CREATE TABLE t1 (a datetime, b datetime DEFAULT (utc_date()))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case461" value="CREATE TABLE t1 (a datetime, b datetime DEFAULT (utc_time()))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case471" value="CREATE TABLE t1 (c1 YEAR(4294967295))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case472" value="CREATE TABLE t1 (c1 YEAR(4294967296))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case473" value="CREATE TABLE t1 (created DATETIME NOT NULL DEFAULT (UTC_DATE()))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case474" value="CREATE TABLE t1 (created DATETIME NOT NULL DEFAULT (UTC_TIME()))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case477" value="CREATE TABLE t1 (f1 DATETIME CHECK (f1 + UTC_DATE() &gt; &apos;2011-11-21&apos;))" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case478" value="CREATE TABLE t1 (f1 DATETIME CHECK (f1 + UTC_TIME() &gt; &apos;23:11:21&apos;))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case479" value="CREATE TABLE t1 (f1 INT CHECK (f1 = default(f1)))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case481" value="CREATE TABLE t1 (f1 INT) ENGINE=MyiSAM START TRANSACTION" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case482" value="CREATE TABLE t1 (f1 INT) START TRANSACTION" db-types="MySQL" />
@@ -342,7 +336,6 @@
     <sql-case id="create_by_mysql_source_test_case484" value="CREATE TABLE t1 (f1 INT) START TRANSACTION" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case488" value="CREATE TABLE t1 (g GEOMCOLLECTION)" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case489" value="CREATE TABLE t1 (get INT)" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case495" value="CREATE TABLE t1 AS SELECT CONCAT(CURRENT_TIME()), CONCAT(CURRENT_TIME(6)), CONCAT(UTC_TIME()), CONCAT(UTC_TIME(6)), CONCAT(CURRENT_TIMESTAMP()), CONCAT(CURRENT_TIMESTAMP(6)), CONCAT(UTC_TIMESTAMP()), CONCAT(UTC_TIMESTAMP(6)), CONCAT(LOCALTIME()), CONCAT(LOCALTIME(6)), CONCAT(LOCALTIMESTAMP()), CONCAT(LOCALTIMESTAMP(6)), CONCAT(SYSDATE()), CONCAT(SYSDATE(6))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case496" value="CREATE TABLE t1 AS SELECT REPEAT (&apos; &apos;, 10) AS a LIMIT 0" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case497" value="CREATE TABLE t1 AS SELECT REPEAT (&apos; &apos;, 10) AS a LIMIT 0" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case498" value="CREATE TABLE t1 AS SELECT REPEAT(&apos; &apos;, 10) AS a LIMIT 0" db-types="MySQL" />
@@ -503,7 +496,6 @@
     <sql-case id="create_by_mysql_source_test_case843" value="CREATE VIEW v1 AS SELECT 1 FROM t1 GROUP BY SUBSTRING(1 FROM (SELECT 3 FROM t1 WHERE a &gt;= ANY(SELECT 1)))" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case844" value="CREATE VIEW v1 AS SELECT 1 IN (1 LIKE 2,0) AS f" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case845" value="CREATE VIEW v1 AS SELECT GROUPING(a2345678901234567890123456789012345678901234.a), GROUPING(a2345678901234567890123456789012345678901234.a), GROUPING(a2345678901234567890123456789012345678901234.a) FROM t1 AS a2345678901234567890123456789012345678901234 GROUP BY a WITH ROLLUP" db-types="MySQL" />
-    <sql-case id="create_by_mysql_source_test_case846" value="CREATE VIEW v1 AS SELECT NOW(6), CURTIME(4), LOCALTIME(3), CURRENT_TIME(2), CURRENT_TIMESTAMP(0), LOCALTIMESTAMP(1), UTC_TIME(4), UTC_TIMESTAMP(4)" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case847" value="CREATE VIEW v1 AS SELECT STDDEV_SAMP(a) OVER ( ORDER BY a ROWS CURRENT ROW) AS std_dev_samp FROM t" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case851" value="CREATE VIEW v1 AS SELECT id, &apos;a&apos; AS name, a AS val FROM t1 UNION SELECT id, &apos;mn&apos;, HEX(LIKE_RANGE_MIN(a, 16)) AS min FROM t1 UNION SELECT id, &apos;mx&apos;, HEX(LIKE_RANGE_MAX(a, 16)) AS max FROM t1 UNION SELECT id, &apos;sp&apos;, REPEAT(&apos;-&apos;, 32) AS sep FROM t1 ORDER BY id, name" db-types="MySQL" />
     <sql-case id="create_by_mysql_source_test_case852" value="CREATE VIEW v1 AS SELECT test.bug12812()" db-types="MySQL" />
@@ -842,8 +834,6 @@
     <sql-case id="select_by_mysql_source_test_case87" value="SELECT * FROM t11 LEFT JOIN t12 force index (idx) ON t12.t12b = t11.t11b JOIN LATERAL (SELECT t12a) dt" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case91" value="SELECT /*+ JOIN_PREFIX(tbl1, tbl2) */ * FROM t1 AS tbl1 LEFT JOIN t1 AS tbl3 ON FALSE WHERE tbl1.id NOT IN (SELECT id FROM t1 AS tbl2 JOIN LATERAL (SELECT 1 FROM t2 WHERE id = tbl2.id LIMIT 10) AS d1)" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case92" value="SELECT /*+ SET_VAR(optimizer_switch = &apos;materialization=off,semijoin=off&apos;) */ * FROM t1 AS ta, lateral (select 1 WHERE ta.a IN (SELECT b FROM t2 AS tb                WHERE tb.b &gt;= SOME(SELECT SUM(tc.a) as sg FROM t1 as tc                                   GROUP BY tc.b                                   HAVING ta.a=tc.b))) dt" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case93" value="SELECT /*+ SET_VAR(time_zone = &apos;+04:00&apos;) */ TIMEDIFF(NOW(), UTC_TIMESTAMP)" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case94" value="SELECT /*+ SET_VAR(time_zone = &apos;UTC&apos;) */ TIMEDIFF(NOW(), UTC_TIMESTAMP)" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case95" value="SELECT /*+ no_merge() */  outr.pk AS x FROM ( SELECT * FROM  t1  ) AS  outr WHERE outr.col_int_key  IN ( SELECT /*+ no_merge() no_semijoin() */ id FROM JSON_TABLE( IF(outr.col_date_key&lt;&gt;NOW(), &apos;[{&quot;a&quot;:&quot;3&quot;},{&quot;a&quot;:2},{&quot;b&quot;:1},{&quot;a&quot;:0}]&apos;, &apos;&apos;) , &apos;$[*]&apos; columns (id for ordinality, jpath varchar(100) path &apos;$.a&apos;, jexst int exists path &apos;$.b&apos;)   ) AS qn ) ORDER BY outr.col_datetime" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case96" value="SELECT 0 &amp; (JSON_ARRAYAGG(1) OVER w) FROM (select 1) as dt  WINDOW w as ()" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case97" value="SELECT 1 /*!99999 /* */ */" db-types="MySQL" />
@@ -855,7 +845,6 @@
     <sql-case id="select_by_mysql_source_test_case103" value="SELECT 1 FROM t1 GROUP BY SUBSTRING(SYSDATE() FROM &apos;K&apos; FOR &apos;jxW&lt;&apos;)" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case105" value="SELECT 1 FROM t1 GROUP BY insert(a,&apos;1&apos;,&apos;11&apos;,&apos;1&apos;)" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case106" value="SELECT 1 FROM v1 AS table1 RIGHT OUTER JOIN LATERAL (SELECT 1 FROM v1 AS table2 RIGHT OUTER JOIN LATERAL ( SELECT 1 FROM v1 AS table3 ) AS table4 ON table1.c1 = 1) AS table5 ON 1" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case107" value="SELECT 1 HAVING json_objectagg(utc_date(), 1416) &lt;&gt; 0" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case108" value="SELECT 1 IN (SELECT MAKE_SET(-1, 1, (SELECT 1 FROM t)) FROM t)" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case109" value="SELECT 1 NOT IN (SELECT 1 FROM t1 as t1 GROUP BY 1 LIKE (SELECT 1 FROM t1 as t2)) AS col" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case110" value="SELECT 1 NOT IN (SELECT 1 FROM t1 as t1 ORDER BY 1 LIKE (SELECT 1 FROM t1 as t2)) AS col" db-types="MySQL" />
@@ -930,7 +919,6 @@
     <sql-case id="select_by_mysql_source_test_case179" value="SELECT @before=@after" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case180" value="SELECT @trace RLIKE &quot;keypart_reference_from_where_clause&quot;" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case181" value="SELECT ADDDATE(&apos;8112-06-20&apos;, REPEAT(&apos;1&apos;, 32))" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case182" value="SELECT ADDTIME(UTC_DATE, &apos;23:28:14.014837&apos;) FROM dual" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case183" value="SELECT AES_DECRYPT(AES_ENCRYPT(@ENCSTR, @KEYS), @KEYS)=@ENCSTR" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case184" value="SELECT AES_DECRYPT(AES_ENCRYPT(@ENCSTR, @KEYS), @KEYS)=@ENCSTR" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case185" value="SELECT AES_DECRYPT(AES_ENCRYPT(@ENCSTR, @KEYS), @KEYS)=@ENCSTR" db-types="MySQL" />
@@ -1059,7 +1047,6 @@
     <sql-case id="select_by_mysql_source_test_case317" value="SELECT MAKETIME(((1)&lt;=&gt; (2*JSON_OBJECTAGG(&apos;1&apos;,1)OVER())),&apos;1&apos;,1)" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case318" value="SELECT MAKETIME(((1)&lt;=&gt; (JSON_OBJECTAGG(&apos;1&apos;,1)OVER())),&apos;1&apos;,1)" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case319" value="SELECT MAX( t2.i2 ) FROM t3 RIGHT JOIN t2 ON ( t2.i3 = 2 ) WHERE t2.i3 &lt;&gt; t1.i1 ) AS field1 FROM t1" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case320" value="SELECT MICROSECOND(CURRENT_TIME(6))=MICROSECOND(UTC_TIME(6))" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case321" value="SELECT NULL IN(SELECT (f1 between 0 and 1) FROM (SELECT f1 FROM t WHERE  (@b:=NULL) - f2)as dt )" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case322" value="SELECT OCT(LEFT(REPEAT(&apos;b&apos;,64),15))" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case323" value="SELECT POLYGON((SELECT 1 FROM (SELECT 1 IN (GROUP_CONCAT(t1.f1)) FROM t1, t1 t GROUP BY t.f1 ) d))" db-types="MySQL" />
@@ -1103,16 +1090,12 @@
     <sql-case id="select_by_mysql_source_test_case361" value="SELECT ST_GeomFromText(&apos;POINT(0 0)&apos;) IN (SELECT b FROM t) AS result" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case362" value="SELECT ST_GeomFromText(&apos;POINT(0 0)&apos;) IN (SELECT b FROM t1) AS result" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case363" value="SELECT ST_GeomFromText(&apos;POINT(0 0)&apos;) IN (SELECT b FROM t1) AS result" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case366" value="SELECT SUBTIME(UTC_DATE, &apos;04:44:03.014042&apos;) FROM dual" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case367" value="SELECT SUBTIME(col_timestamp_3_not_null_key , SYSDATE()) AS c1 FROM t1 WHERE col_timestamp_1_not_null_key NOT IN (col_datetime_4_key , GREATEST(DATE(&apos;2006-04-26&apos;), UTC_DATE())) ORDER BY col_datetime_6 , col_time_2_not_null_key , col_time_5_not_null_key" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case368" value="SELECT SUM(1) OVER w FROM (SELECT * FROM t1,t2 WHERE t1.id=t2.user_id) t SELECT  SUM(id) OVER (PARTITION BY sex ORDER BY id ROWS UNBOUNDED PRECEDING) summ, sex FROM t1" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case369" value="SELECT SUM(b) OVER (ORDER by a GROUPS 2 PRECEDING) FROM t" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case370" value="SELECT SUM(b) OVER (ORDER by a ROWS 2 PRECEDING EXCLUDE CURRENT ROW) FROM t" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case371" value="SELECT SUM(b) OVER (ORDER by a ROWS 2 PRECEDING EXCLUDE GROUP) FROM t" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case372" value="SELECT SUM(b) OVER (ORDER by a ROWS 2 PRECEDING EXCLUDE NO OTHERS) FROM t" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case373" value="SELECT SUM(b) OVER (ORDER by a ROWS 2 PRECEDING EXCLUDE TIES) FROM t" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case374" value="SELECT TIMEDIFF(&apos;0000-00-00 00:00:00.00000&apos;, UTC_DATE) FROM dual" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case375" value="SELECT TIMEDIFF(NOW(), UTC_TIMESTAMP)" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case376" value="SELECT TO_BASE64(AES_ENCRYPT(&apos;a&apos;, &apos;a&apos;, REPEAT(&apos;a&apos;, 1024)))" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case377" value="SELECT TRACE NOT RLIKE &apos;&quot;final_filtering_effect&quot;: 1&apos; AS OK FROM INFORMATION_SCHEMA.OPTIMIZER_TRACE" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case378" value="SELECT TRACE RLIKE &apos;disjuntive_predicate_present&apos; AS OK FROM INFORMATION_SCHEMA.OPTIMIZER_TRACE" db-types="MySQL" />
@@ -1135,8 +1118,6 @@
     <sql-case id="select_by_mysql_source_test_case395" value="SELECT TRACE RLIKE &apos;minmax_keypart_in_disjunctive_query&apos; AS OK FROM INFORMATION_SCHEMA.OPTIMIZER_TRACE" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case396" value="SELECT TRACE RLIKE &apos;minmax_keypart_in_disjunctive_query&apos; AS OK FROM INFORMATION_SCHEMA.OPTIMIZER_TRACE" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case397" value="SELECT TRACE RLIKE &apos;minmax_keypart_in_disjunctive_query&apos; AS OK FROM INFORMATION_SCHEMA.OPTIMIZER_TRACE" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case406" value="SELECT UNIX_TIMESTAMP(col_datetime_4_not_null) AS c1 FROM t1 WHERE col_time_4_key NOT BETWEEN &apos;2001-07-06&apos; AND LEAST(FROM_DAYS(col_timestamp_key), col_timestamp_5) OR CONVERT_TZ(MAKETIME(24, 5, 7), &apos;Japan&apos;, &apos;Japan&apos;) IS NULL OR CURRENT_TIMESTAMP() IS NOT NULL OR col_datetime_not_null_key &gt;= UTC_TIME() ORDER BY 1" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case407" value="SELECT UTC_DATE()" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case408" value="SELECT VALIDATE_PASSWORD_STRENGTH(REPEAT(&quot;aA1#&quot;, 26))" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case409" value="SELECT VARIANCE(b) over w `var`, AVG(b) OVER w `avg`, SUM(b) OVER w `sum`, b, COUNT(b) OVER w count FROM t1 WINDOW w as (ORDER BY b ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING)" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case410" value="SELECT VARIANCE(b) over w `var`, AVG(b) OVER w `avg`, SUM(b) OVER w `sum`, b, count(b) OVER w count FROM t1 WINDOW w as (ORDER BY b ROWS BETWEEN 1 PRECEDING AND 1 FOLLOWING)" db-types="MySQL" />
@@ -1199,12 +1180,7 @@
     <sql-case id="select_by_mysql_source_test_case684" value="SELECT cast(TIMESTAMP&apos;2019-10-10 10:11:12&apos; AT TIME ZONE &apos;+00:00&apos; AS DATETIME)" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case685" value="SELECT cast(TIMESTAMP&apos;2019-10-10 10:11:12&apos; AT TIME ZONE &apos;UTC&apos; AS DATETIME)" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case686" value="SELECT cast(TIMESTAMP&apos;2019-10-10 10:11:12+00:00&apos; AT TIME ZONE &apos;+00:00&apos; AS DATETIME)" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case688" value="SELECT col_datetime_5_not_null AS c1, col_time_1_not_null_key AS c2 FROM t1 WHERE col_time_4_not_null = MAKETIME(24, 60, 3 ) AND col_time_3 NOT IN ( col_datetime_5, UTC_DATE(), col_timestamp_5_key, ADDDATE(&apos;0000-00-00 00:00:00&apos;, DATEDIFF(&apos;2001-09-21&apos;,FROM_UNIXTIME(1018888192, CONCAT_WS(&apos;-&apos;,&apos;%s&apos;,&apos;%V&apos;,&apos;%u&apos;)))), col_timestamp_4) AND col_timestamp_2 NOT BETWEEN col_datetime AND &apos;2005-09-12&apos; ORDER BY 1" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case689" value="SELECT col_datetime_5_not_null AS c1, col_time_1_not_null_key AS c2 FROM t1 WHERE col_time_4_not_null=MAKETIME(24,60, 3) AND col_time_3 NOT IN (col_datetime_5, UTC_DATE(), col_timestamp_5_key,  col_timestamp_4) AND col_timestamp_2 NOT BETWEEN col_datetime AND &apos;2005-09-12&apos; ORDER BY 1" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case690" value="SELECT col_time_5_key AS c1, col_time_key AS c2, col_timestamp AS c3 FROM t1 WHERE col_time_not_null NOT BETWEEN EXTRACT(YEAR_MONTH FROM &apos;0000-00-00 00:00:00&apos;) AND COALESCE (col_time_6_not_null_key, col_datetime_key) ORDER BY 1, 2" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case691" value="SELECT col_timestamp_3 AS c1, col_date AS c2, CURTIME() AS c3 FROM t1 WHERE col_time_3_not_null NOT IN (col_time_not_null, CAST(col_time_5 AS DATETIME(3)), MAKEDATE(DAYOFMONTH(&apos;2002-09-13&apos;), DATEDIFF(&apos;2009-12-15&apos;, col_timestamp_6)), CURRENT_DATE()) AND col_time_3_key NOT BETWEEN LEAST(CURRENT_TIME(), TIMESTAMPADD(HOUR, 187, MAKETIME(209, 60, 1))) AND CURTIME() AND col_datetime_2_not_null NOT IN (DATE(&apos;2009-03-28&apos;), col_timestamp_2_not_null_key, ADDDATE(col_timestamp_2_key, 28), col_datetime_3, UTC_DATE()) OR col_time_6_key IS NOT NULL AND col_timestamp_3_not_null IN (col_timestamp_1, col_datetime_3_key, col_time_4_key) OR col_time_6_not_null_key BETWEEN TIMESTAMP(&apos;0000-00-00&apos;, &apos;16:50:23.062015&apos;) AND col_datetime_5 AND col_datetime_4 &gt;= col_time_2_key AND col_time_5_not_null BETWEEN col_timestamp_3_not_null AND col_datetime_1_not_null_key ORDER BY col_time_4_key, col_datetime_3_key" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case692" value="SELECT col_timestamp_6_not_null_key AS c1, col_datetime_key AS c2, UTC_DATE() AS c3 FROM t1 WHERE col_time_1_key BETWEEN TIMESTAMPADD(MONTH, 38 ,CONVERT_TZ( DATE(MAKEDATE(207, 38 )), &apos;+00:00&apos;,&apos;+04:00&apos;)) AND LOCALTIMESTAMP() ORDER BY col_datetime_4_not_null_key , col_time_5 , col_time_3_not_null" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case693" value="SELECT col_timestamp_not_null AS c1, col_datetime_6_not_null_key AS c2 FROM t1 WHERE col_timestamp IS NOT NULL AND col_timestamp_2 &lt;&gt; col_time_1_not_null AND col_timestamp_key BETWEEN col_datetime_3_not_null AND CURRENT_TIME() OR col_time_6_not_null != LEAST(col_time_6, UTC_TIME())" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case694" value="SELECT current_date IN ( MAX(NULL), 1 )" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case695" value="SELECT current_time IN ( MAX(NULL), 1 )" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case696" value="SELECT db1.f1()" db-types="MySQL" />
@@ -1588,11 +1564,6 @@
     <sql-case id="select_by_mysql_source_test_case1111" value="select straight_join * from t1, lateral (select t1.a) as dt, t2" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case1112" value="select straight_join * from t1, t2, lateral (select t1.a) as dt" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case1115" value="select straight_join * from t2, t1, lateral (select t1.a) as dt" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case1116" value="select strcmp(concat(utc_date(),&apos; &apos;,utc_time()),utc_timestamp())=0" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case1117" value="select strcmp(date_format(date_sub(localtimestamp(), interval 3 hour),&quot;%T&quot;), utc_time())=0" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case1118" value="select strcmp(date_format(date_sub(localtimestamp(), interval 3 hour),&quot;%Y-%m-%d&quot;), utc_date())=0" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case1119" value="select strcmp(date_format(utc_timestamp(),&quot;%T&quot;), utc_time())=0" db-types="MySQL" />
-    <sql-case id="select_by_mysql_source_test_case1120" value="select strcmp(date_format(utc_timestamp(),&quot;%Y-%m-%d&quot;), utc_date())=0" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case1121" value="select sum(all a),count(all a),avg(all a),std(all a),variance(all a),bit_or(all a),bit_and(all a),min(all a),max(all a),min(all c),max(all c) from t1" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case1122" value="select sum(col1) as co12 from t1 group by col2 having col2 10" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case1123" value="select t1.*, dt.c from t t1 cross join lateral (select count(*) as c from t t2 left join t t3 on t3.a&gt;t2.a-t1.a) as dt" db-types="MySQL" />
@@ -1614,7 +1585,6 @@
     <sql-case id="select_by_mysql_source_test_case1139" value="select test.pi(), test.pi ()" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case1140" value="select test.pi(), test.pi ()" db-types="MySQL" />
     <sql-case id="select_by_mysql_source_test_case1145" value="select vq1.b,dt.b from v1 vq1, lateral (select vq1.b) dt" db-types="MySQL" />
-    <sql-case id="insert_by_mysql_source_test_case1" value="INSERT /*+ SET_VAR(time_zone = &apos;UTC&apos;) */ t1 VALUES (TIMEDIFF(NOW(), UTC_TIMESTAMP))" db-types="MySQL" />
     <sql-case id="insert_by_mysql_source_test_case2" value="INSERT IGNORE INTO t1 SELECT 101, REPEAT(&apos;ab&apos;, @max_allowed_packet)" db-types="MySQL" />
     <sql-case id="insert_by_mysql_source_test_case3" value="INSERT IGNORE INTO t1 SELECT REPEAT(&apos;a&apos;,11)" db-types="MySQL" />
     <sql-case id="insert_by_mysql_source_test_case4" value="INSERT IGNORE INTO t3 VALUES( REPEAT( &apos;a&apos;, 65536 ), 3 )" db-types="MySQL" />
@@ -1798,7 +1768,6 @@
     <sql-case id="insert_by_mysql_source_test_case185" value="insert into t2 select x3.a,  -- 3 concat(&apos;val-&apos;, x3.a + 3*x4.a), -- 12 concat(&apos;val-&apos;, @a:=x3.a + 3*x4.a + 12*C.a), -- 120 concat(&apos;val-&apos;, @a + 120*D.a) from t1 x3, t1 x4, t1 C, t1 D where x3.a &lt; 3 and x4.a &lt; 4 and D.a &lt; 4 order by x3.a, x4.a, C.a, D.a" db-types="MySQL" />
     <sql-case id="insert_by_mysql_source_test_case186" value="insert into t5 select * from `äöüÄÖÜ` flush logs" db-types="MySQL" />
     <sql-case id="update_by_mysql_source_test_case1" value="UPDATE (VALUES ROW(1),ROW(2)) AS dt(a) LEFT JOIN performance_schema.setup_instruments ON dt.a=enabled SET enabled = &apos;YES&apos; WHERE name = &apos;wait/lock/metadata/sql/mdl&apos;" db-types="MySQL" />
-    <sql-case id="update_by_mysql_source_test_case2" value="UPDATE /*+ SET_VAR(time_zone = &apos;UTC&apos;) */ t1 SET f1 = TIMEDIFF(NOW(), UTC_TIMESTAMP)" db-types="MySQL" />
     <sql-case id="update_by_mysql_source_test_case3" value="UPDATE IGNORE t1 SET c12= REPEAT(&apos;ab&apos;, @max_allowed_packet)" db-types="MySQL" />
     <sql-case id="update_by_mysql_source_test_case4" value="UPDATE IGNORE t1 set data=repeat(&apos;a&apos;,18*1024*1024)" db-types="MySQL" />
     <sql-case id="update_by_mysql_source_test_case5" value="UPDATE IGNORE t1, t2 SET c12= REPEAT(&apos;ab&apos;, @max_allowed_packet), c22= &apos;ab&apos;" db-types="MySQL" />
@@ -1820,7 +1789,6 @@
     <sql-case id="update_by_mysql_source_test_case21" value="update t1 set b=repeat(left(b,1),200) where a=1" db-types="MySQL" />
     <sql-case id="update_by_mysql_source_test_case22" value="update t1 set b=repeat(left(b,1),255) where a between 1 and 5" db-types="MySQL" />
     <sql-case id="update_by_mysql_source_test_case23" value="update t1 set b=repeat(left(b,1),65) where a between 67 and 70" db-types="MySQL" />
-    <sql-case id="delete_by_mysql_source_test_case1" value="DELETE /*+ SET_VAR(time_zone = &apos;UTC&apos;) */ FROM t1 WHERE f1 = TIMEDIFF(NOW(), UTC_TIMESTAMP)" db-types="MySQL" />
     <sql-case id="delete_by_mysql_source_test_case4" value="DELETE FROM t1 WHERE c12 &lt;=&gt; REPEAT(&apos;ab&apos;, @max_allowed_packet)" db-types="MySQL" />
     <sql-case id="delete_by_mysql_source_test_case5" value="DELETE FROM t1 WHERE c12 &lt;=&gt; REPEAT(&apos;ab&apos;, @max_allowed_packet)" db-types="MySQL" />
     <sql-case id="delete_by_mysql_source_test_case6" value="DELETE FROM t1, t2 USING t1 INNER JOIN t2 WHERE t1.c11 = t2.c21 AND t2.c22 &lt;=&gt; REPEAT(&apos;ab&apos;, @max_allowed_packet)" db-types="MySQL" />
@@ -3000,7 +2968,6 @@
     <sql-case id="low_explain_by_mysql_source_test_case19" value="explain select id, not (a=1 is true) from t1" db-types="MySQL" />
     <sql-case id="low_explain_by_mysql_source_test_case20" value="explain select id, not (a=1 is unknown) from t1" db-types="MySQL" />
     <sql-case id="low_explain_by_mysql_source_test_case21" value="explain select insert(&apos;txs&apos;,2,1,&apos;hi&apos;)" db-types="MySQL" />
-    <sql-case id="low_explain_by_mysql_source_test_case22" value="explain select period_add(&quot;9602&quot;,-12),period_diff(199505,&quot;9404&quot;),from_days(to_days(&quot;960101&quot;)),dayofmonth(&quot;1997-01-02&quot;), month(&quot;1997-01-02&quot;), monthname(&quot;1972-03-04&quot;),dayofyear(&quot;0000-00-00&quot;),HOUR(&quot;1997-03-03 23:03:22&quot;),MINUTE(&quot;23:03:22&quot;),SECOND(230322),QUARTER(980303),WEEK(&quot;1998-03-03&quot;),yearweek(&quot;2000-01-01&quot;,1),week(19950101,1),year(&quot;98-02-03&quot;),weekday(curdate())-weekday(now()),dayname(&quot;1962-03-03&quot;),unix_timestamp(),sec_to_time(time_to_sec(&quot;0:30:47&quot;)/6.21),curtime(),utc_time(),curdate(),utc_date(),utc_timestamp(),date_format(&quot;1997-01-02 03:04:05&quot;, &quot;%M %W %D %Y %y %m %d %h %i %s %w&quot;),from_unixtime(unix_timestamp(&quot;1994-03-02 10:11:12&quot;)),&quot;1997-12-31 23:59:59&quot; + INTERVAL 1 SECOND,&quot;1998-01-01 00:00:00&quot; - INTERVAL 1 SECOND,INTERVAL 1 DAY + &quot;1997-12-31&quot;, extract(YEAR FROM &quot;1999-01-02 10:11:12&quot;),date_add(&quot;1997-12-31 23:59:59&quot;,INTERVAL 1 SECOND)" db-types="MySQL" />
     <sql-case id="low_explain_by_mysql_source_test_case23" value="explain select row(1,2,row(3,4)) IN (row(3,2,row(3,4)), row(1,2,row(3,NULL)))" db-types="MySQL" />
     <sql-case id="low_flush_by_mysql_source_test_case1" value="flush table" db-types="MySQL" />
     <sql-case id="low_flush_by_mysql_source_test_case2" value="flush table mysqltest_db1.t1" db-types="MySQL" />

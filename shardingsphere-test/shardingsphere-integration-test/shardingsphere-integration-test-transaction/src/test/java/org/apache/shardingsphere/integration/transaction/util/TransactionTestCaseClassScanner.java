@@ -39,7 +39,7 @@ import java.util.jar.JarFile;
  */
 public class TransactionTestCaseClassScanner {
     
-    private static final String TEST_CASE_BASE_PACKAGE_NAME = "org.apache.shardingsphere.integration.transaction.cases";
+    private static final String TEST_CASE_PACKAGE_NAME = "org.apache.shardingsphere.integration.transaction.cases";
     
     private static final List<File> FILES = new ArrayList<>();
     
@@ -52,7 +52,7 @@ public class TransactionTestCaseClassScanner {
      */
     @SneakyThrows
     public static List<Class<? extends BaseTransactionTestCase>> scan() {
-        final Enumeration<URL> urls = Thread.currentThread().getContextClassLoader().getResources(TEST_CASE_BASE_PACKAGE_NAME.replace(".", File.separator));
+        final Enumeration<URL> urls = Thread.currentThread().getContextClassLoader().getResources(TEST_CASE_PACKAGE_NAME.replace(".", File.separator));
         return scanURL(urls);
     }
     
@@ -95,7 +95,7 @@ public class TransactionTestCaseClassScanner {
         while (jarEntryEnumeration.hasMoreElements()) {
             JarEntry entry = jarEntryEnumeration.nextElement();
             String jarEntryName = entry.getName();
-            if (jarEntryName.contains(CLASS_SYMBOL) && jarEntryName.replace("/", ".").startsWith(TEST_CASE_BASE_PACKAGE_NAME)) {
+            if (jarEntryName.contains(CLASS_SYMBOL) && jarEntryName.replace("/", ".").startsWith(TEST_CASE_PACKAGE_NAME)) {
                 String className = jarEntryName.substring(0, jarEntryName.lastIndexOf(".")).replace("/", ".");
                 Class<?> clazz = Class.forName(className);
                 if (clazz.isAssignableFrom(BaseTransactionTestCase.class)) {
