@@ -125,4 +125,6 @@
     <sql-case id="create_bit_xor_table_with_space" value="create table BIT_XOR (a int)" db-types="MySQL" />
     <sql-case id="create_table_path" value="CREATE TABLE files (path PATH);" db-types="PostgreSQL" />
     <sql-case id="create_table_national" value="CREATE TABLE t_order (national int);" db-types="PostgreSQL,openGauss" />
+    <sql-case id="create_table_with_visible" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10) VISIBLE) ENGINE=INNODB" db-types="MySQL" />
+    <sql-case id="create_table_with_invisible" value="CREATE TABLE t_order (order_id INT, user_id INT, status VARCHAR(10) INVISIBLE) ENGINE=INNODB" db-types="MySQL" />
 </sql-cases>

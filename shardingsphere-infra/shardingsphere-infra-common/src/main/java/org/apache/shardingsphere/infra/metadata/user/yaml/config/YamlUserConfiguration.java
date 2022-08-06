@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.metadata.user.yaml.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlConfiguration;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
  * User for YAML.

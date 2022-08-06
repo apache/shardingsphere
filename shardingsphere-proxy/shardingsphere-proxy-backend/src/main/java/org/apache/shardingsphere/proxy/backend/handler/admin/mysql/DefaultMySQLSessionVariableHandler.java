@@ -18,10 +18,10 @@
 package org.apache.shardingsphere.proxy.backend.handler.admin.mysql;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.ReplayRequiredSessionVariablesLoader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 
-import java.util.stream.Collectors;
+import java.util.Collection;
 
 /**
  * Default session variable handler for MySQL.
@@ -29,11 +29,14 @@ import java.util.stream.Collectors;
 @Slf4j
 public final class DefaultMySQLSessionVariableHandler implements MySQLSessionVariableHandler {
     
+    private final Collection<String> replayRequiredSessionVariables = ReplayRequiredSessionVariablesLoader.getVariables("MySQL");
+    
     @Override
-    public void handle(final ConnectionSession connectionSession, final SetStatement setStatement) {
-        if (log.isDebugEnabled()) {
-            log.debug("Set statement {} was discarded.", setStatement.getVariableAssigns().stream()
-                    .map(segment -> String.format("%s %s = %s", segment.getVariable().getScope(), segment.getVariable().getVariable(), segment.getAssignValue())).collect(Collectors.joining(", ")));
+    public void handle(final ConnectionSession connectionSession, final String variableName, final String assignValue) {
+        if (!replayRequiredSessionVariables.contains(variableName)) {
+            log.debug("Set statement {} = {} was discarded.", variableName, assignValue);
+        } else {
+            connectionSession.getRequiredSessionVariableRecorder().setVariable(variableName, assignValue);
         }
     }
 }

@@ -22,12 +22,12 @@ import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.metadata.database.schema.builder.SystemSchemaBuilderRule;
-import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlRuleConfigurationSwapperEngine;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
-import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlTableMetaData;
-import org.apache.shardingsphere.infra.yaml.schema.swapper.TableMetaDataYamlSwapper;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.infra.yaml.schema.pojo.YamlShardingSphereTable;
+import org.apache.shardingsphere.infra.yaml.schema.swapper.YamlTableSwapper;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcher;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.datasource.DataSourceChangedEvent;
@@ -174,6 +174,6 @@ public final class MetaDataChangedWatcher implements GovernanceWatcher<Governanc
     private SchemaChangedEvent createSchemaChangedEvent(final DataChangedEvent event, final String databaseName, final String schemaName, final String tableName) {
         return Type.DELETED == event.getType()
                 ? new SchemaChangedEvent(databaseName, schemaName, null, tableName)
-                : new SchemaChangedEvent(databaseName, schemaName, new TableMetaDataYamlSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlTableMetaData.class)), null);
+                : new SchemaChangedEvent(databaseName, schemaName, new YamlTableSwapper().swapToObject(YamlEngine.unmarshal(event.getValue(), YamlShardingSphereTable.class)), null);
     }
 }

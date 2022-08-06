@@ -20,7 +20,9 @@ package org.apache.shardingsphere.infra.yaml.config.pojo;
 import com.google.common.base.Strings;
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.mode.YamlModeConfiguration;
+import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -37,6 +39,12 @@ public final class YamlRootConfiguration implements YamlConfiguration {
     
     private String databaseName;
     
+    /**
+     * Schema name.
+     * 
+     * @deprecated Should use databaseName, schemaName will remove in next version.
+     */
+    @Deprecated
     private String schemaName;
     
     private Map<String, Map<String, Object>> dataSources = new HashMap<>();

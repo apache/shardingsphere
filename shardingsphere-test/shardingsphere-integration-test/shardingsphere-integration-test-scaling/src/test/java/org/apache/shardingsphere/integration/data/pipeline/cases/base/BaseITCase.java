@@ -23,6 +23,7 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
@@ -53,18 +54,18 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
@@ -87,6 +88,8 @@ public abstract class BaseITCase {
     protected static final String DS_4 = "scaling_it_4";
     
     protected static final Executor SCALING_EXECUTOR = Executors.newFixedThreadPool(5);
+    
+    protected static final int TABLE_INIT_ROW_COUNT = 3000;
     
     @Rule
     @Getter(AccessLevel.NONE)
@@ -330,6 +333,7 @@ public abstract class BaseITCase {
     }
     
     protected void applyScaling(final String jobId) {
+        assertBeforeApplyScalingMetadataCorrectly();
         executeWithLog(String.format("APPLY SCALING %s", jobId));
     }
     
@@ -351,30 +355,28 @@ public abstract class BaseITCase {
             TimeUnit.SECONDS.timedJoin(increaseTaskThread, 60);
         }
         log.info("jobId: {}", jobId);
-        Map<String, String> actualStatusMap = new HashMap<>(2, 1);
-        for (int i = 0; i < 15; i++) {
-            List<Map<String, Object>> showScalingStatusResMap = showScalingStatus(jobId);
-            log.info("show scaling status result: {}", showScalingStatusResMap);
-            boolean finished = true;
-            for (Map<String, Object> entry : showScalingStatusResMap) {
-                String status = entry.get("status").toString();
-                assertThat(status, not(JobStatus.PREPARING_FAILURE.name()));
-                assertThat(status, not(JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name()));
-                assertThat(status, not(JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name()));
-                String datasourceName = entry.get("data_source").toString();
-                actualStatusMap.put(datasourceName, status);
-                if (!Objects.equals(status, JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
-                    finished = false;
-                    break;
-                }
-            }
-            if (finished) {
+        Set<String> actualStatus = null;
+        for (int i = 0; i < 20; i++) {
+            List<Map<String, Object>> showScalingStatusResult = showScalingStatus(jobId);
+            log.info("show scaling status result: {}", showScalingStatusResult);
+            actualStatus = showScalingStatusResult.stream().map(each -> each.get("status").toString()).collect(Collectors.toSet());
+            assertFalse(CollectionUtils.containsAny(actualStatus, Arrays.asList(JobStatus.PREPARING_FAILURE.name(), JobStatus.EXECUTE_INVENTORY_TASK_FAILURE.name(),
+                    JobStatus.EXECUTE_INCREMENTAL_TASK_FAILURE.name())));
+            if (actualStatus.size() == 1 && actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
+                break;
+            } else if (actualStatus.size() >= 1 && actualStatus.containsAll(new HashSet<>(Arrays.asList("", JobStatus.EXECUTE_INCREMENTAL_TASK.name())))) {
+                log.error("one of the shardingItem was not started correctly");
                 break;
             }
-            assertBeforeApplyScalingMetadataCorrectly();
-            ThreadUtil.sleep(4, TimeUnit.SECONDS);
+            ThreadUtil.sleep(2, TimeUnit.SECONDS);
         }
-        assertThat(actualStatusMap.values().stream().filter(StringUtils::isNotBlank).collect(Collectors.toSet()), is(Collections.singleton(JobStatus.EXECUTE_INCREMENTAL_TASK.name())));
+        assertThat(actualStatus, is(Collections.singleton(JobStatus.EXECUTE_INCREMENTAL_TASK.name())));
+    }
+    
+    protected void assertGreaterThanInitTableInitRows(final int tableInitRows, final String schema) {
+        String countSQL = StringUtils.isBlank(schema) ? "SELECT COUNT(*) as count FROM t_order" : String.format("SELECT COUNT(*) as count FROM %s.t_order", schema);
+        Map<String, Object> actual = jdbcTemplate.queryForMap(countSQL);
+        assertTrue("actual count " + actual.get("count"), Integer.parseInt(actual.get("count").toString()) > tableInitRows);
     }
     
     protected List<Map<String, Object>> showScalingStatus(final String jobId) {
@@ -382,11 +384,11 @@ public abstract class BaseITCase {
     }
     
     protected void assertCheckScalingSuccess(final String jobId) {
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 10; i++) {
             if (checkJobIncrementTaskFinished(jobId)) {
                 break;
             }
-            ThreadUtil.sleep(10, TimeUnit.SECONDS);
+            ThreadUtil.sleep(3, TimeUnit.SECONDS);
         }
         boolean secondCheckJobResult = checkJobIncrementTaskFinished(jobId);
         log.info("second check job result: {}", secondCheckJobResult);
@@ -407,7 +409,7 @@ public abstract class BaseITCase {
                 return false;
             }
             int incrementalIdleSeconds = Integer.parseInt(entry.get("incremental_idle_seconds").toString());
-            if (incrementalIdleSeconds <= 10) {
+            if (incrementalIdleSeconds <= 3) {
                 return false;
             }
         }

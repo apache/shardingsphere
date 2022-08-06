@@ -99,7 +99,7 @@ public final class SQLServerSchemaMetaDataLoader implements DialectSchemaMetaDat
         boolean primaryKey = "1".equals(resultSet.getString("IS_PRIMARY_KEY"));
         boolean generated = "1".equals(resultSet.getString("IS_IDENTITY"));
         boolean caseSensitive = null != collationName && collationName.indexOf("_CS") > 0;
-        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive);
+        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, true);
     }
     
     private String getTableMetaDataSQL(final Collection<String> tables) {

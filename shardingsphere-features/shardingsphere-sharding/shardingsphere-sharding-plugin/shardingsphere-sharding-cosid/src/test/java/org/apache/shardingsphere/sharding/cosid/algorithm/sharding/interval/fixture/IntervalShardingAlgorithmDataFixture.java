@@ -25,7 +25,7 @@ import java.util.function.Function;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import me.ahoo.cosid.sharding.ExactCollection;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.sharding.cosid.algorithm.Arguments;
 import org.apache.shardingsphere.sharding.cosid.algorithm.CosIdAlgorithmConstants;
 import org.apache.shardingsphere.sharding.cosid.algorithm.sharding.interval.CosIdIntervalShardingAlgorithm;
@@ -124,7 +124,7 @@ public final class IntervalShardingAlgorithmDataFixture {
      * @return CosIdIntervalShardingAlgorithm
      */
     public static CosIdIntervalShardingAlgorithm createShardingAlgorithm() {
-        return (CosIdIntervalShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("COSID_INTERVAL", createProperties()));
+        return (CosIdIntervalShardingAlgorithm) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("COSID_INTERVAL", createProperties()));
     }
     
     private static Properties createProperties() {

@@ -4379,4 +4379,16 @@
             <column-projection name="status" alias="ns1:status" start-index="101" stop-index="122"/>
         </projections>
     </select>
+
+    <select sql-case-id="select_with_mysql_main_and_utc_data_and_so_on">
+        <from>
+            <simple-table name="test" start-index="55" stop-index="58" />
+        </from>
+        <projections start-index="7" stop-index="48">
+            <column-projection name="MYSQL_MAIN" start-index="7" stop-index="16" />
+            <column-projection name="UTC_DATE" start-index="18" stop-index="25" />
+            <column-projection name="UTC_TIME" start-index="27" stop-index="34" />
+            <column-projection name="UTC_TIMESTAMP" start-index="36" stop-index="48" />
+        </projections>
+    </select>
 </sql-parser-test-cases>

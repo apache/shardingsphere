@@ -989,7 +989,7 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
         if (null != ctx.withClause()) {
             result.setWithSegment((WithSegment) visit(ctx.withClause()));
         }
-        result.setTableSegment((TableSegment) visit(ctx.tableReferences()));
+        result.setTable((TableSegment) visit(ctx.tableReferences()));
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setAssignmentsClause()));
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));
@@ -1044,9 +1044,9 @@ public abstract class SQLServerStatementSQLVisitor extends SQLServerStatementBas
             result.setWithSegment((WithSegment) visit(ctx.withClause()));
         }
         if (null != ctx.multipleTablesClause()) {
-            result.setTableSegment((TableSegment) visit(ctx.multipleTablesClause()));
+            result.setTable((TableSegment) visit(ctx.multipleTablesClause()));
         } else {
-            result.setTableSegment((TableSegment) visit(ctx.singleTableClause()));
+            result.setTable((TableSegment) visit(ctx.singleTableClause()));
         }
         if (null != ctx.outputClause()) {
             result.setOutputSegment((OutputSegment) visit(ctx.outputClause()));

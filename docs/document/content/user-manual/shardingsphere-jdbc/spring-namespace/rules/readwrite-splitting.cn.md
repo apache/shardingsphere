@@ -77,5 +77,5 @@ weight = 2
 ## 相关参考
 - [核心特性：读写分离](/cn/features/readwrite-splitting/)
 - [Java API：读写分离](/cn/user-manual/shardingsphere-jdbc/java-api/rules/readwrite-splitting/)
-- [YAML配置：读写分离](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/readwrite-splitting/)
+- [YAML 配置：读写分离](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/readwrite-splitting/)
 - [Spring Boot Starter：读写分离](/cn/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/readwrite-splitting/)

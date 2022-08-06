@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.spi.detect;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
@@ -41,7 +41,7 @@ public final class JobCompletionDetectAlgorithmFactory {
      * @return created instance
      */
     @SuppressWarnings("rawtypes")
-    public static JobCompletionDetectAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration jobCompletionDetectAlgorithmConfig) {
+    public static JobCompletionDetectAlgorithm newInstance(final AlgorithmConfiguration jobCompletionDetectAlgorithmConfig) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(jobCompletionDetectAlgorithmConfig, JobCompletionDetectAlgorithm.class);
     }
     

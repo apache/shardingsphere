@@ -19,8 +19,9 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distribu
 
 import com.google.common.eventbus.Subscribe;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.eventbus.EventBusContext;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
+import org.apache.shardingsphere.mode.lock.util.TimeoutMilliseconds;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.event.DistributedAckLockReleasedEvent;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.event.DistributedAckLockedEvent;
@@ -30,13 +31,13 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.i
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal.ShardingSphereInternalLockHolder;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockNodeServiceFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
 
 import java.util.Optional;
 
 /**
  * Distribute global lock of ShardingSphere.
  */
+@SuppressWarnings("UnstableApiUsage")
 @Slf4j
 public final class ShardingSphereDistributedGlobalLock implements ShardingSphereLock {
     

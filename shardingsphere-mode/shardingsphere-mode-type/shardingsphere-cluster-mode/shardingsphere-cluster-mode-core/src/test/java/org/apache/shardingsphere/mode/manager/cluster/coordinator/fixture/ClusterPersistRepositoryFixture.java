@@ -51,11 +51,6 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     }
     
     @Override
-    public String getSequentialId(final String key, final String value) {
-        return null;
-    }
-    
-    @Override
     public void delete(final String key) {
     }
     

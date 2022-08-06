@@ -30,7 +30,6 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.admin.DatabaseAdminQueryBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.admin.DatabaseAdminUpdateBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.data.impl.UnicastDatabaseBackendHandler;
@@ -38,8 +37,10 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.QueryableRALB
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.hint.HintRALBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.updatable.SetVariableHandler;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.rql.RQLBackendHandler;
+import org.apache.shardingsphere.proxy.backend.handler.distsql.rul.SQLRULBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.transaction.TransactionBackendHandler;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.sql.parser.exception.SQLParsingException;
@@ -259,5 +260,13 @@ public final class ProxyBackendHandlerFactoryTest extends ProxyContextRestorer {
         String sql = "SHOW SINGLE TABLE RULES";
         ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
         assertThat(actual, instanceOf(RQLBackendHandler.class));
+    }
+    
+    @Test
+    public void assertDistSQLRULStatementInTransaction() throws SQLException {
+        when(connectionSession.getTransactionStatus().isInTransaction()).thenReturn(true);
+        String sql = "PREVIEW INSERT INTO account VALUES(1, 1, 1)";
+        ProxyBackendHandler actual = ProxyBackendHandlerFactory.newInstance(databaseType, sql, connectionSession);
+        assertThat(actual, instanceOf(SQLRULBackendHandler.class));
     }
 }

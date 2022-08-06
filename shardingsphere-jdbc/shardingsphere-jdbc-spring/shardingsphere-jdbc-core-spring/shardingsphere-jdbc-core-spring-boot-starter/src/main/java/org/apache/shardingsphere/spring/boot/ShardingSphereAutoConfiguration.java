@@ -21,7 +21,7 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.driver.api.ShardingSphereDataSourceFactory;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.swapper.mode.ModeConfigurationYamlSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.mode.YamlModeConfigurationSwapper;
 import org.apache.shardingsphere.spring.boot.datasource.DataSourceMapSetter;
 import org.apache.shardingsphere.spring.boot.prop.SpringBootPropertiesConfiguration;
 import org.apache.shardingsphere.spring.boot.rule.LocalRulesCondition;
@@ -72,7 +72,7 @@ public class ShardingSphereAutoConfiguration implements EnvironmentAware {
      */
     @Bean
     public ModeConfiguration modeConfiguration() {
-        return null == props.getMode() ? null : new ModeConfigurationYamlSwapper().swapToObject(props.getMode());
+        return null == props.getMode() ? null : new YamlModeConfigurationSwapper().swapToObject(props.getMode());
     }
     
     /**

@@ -25,7 +25,7 @@ import org.apache.shardingsphere.shadow.spring.boot.algorithm.ShadowAlgorithmPro
 import org.apache.shardingsphere.shadow.spring.boot.condition.ShadowSpringBootCondition;
 import org.apache.shardingsphere.shadow.spring.boot.rule.YamlShadowRuleSpringBootConfiguration;
 import org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration;
-import org.apache.shardingsphere.shadow.yaml.swapper.ShadowRuleAlgorithmProviderConfigurationYamlSwapper;
+import org.apache.shardingsphere.shadow.yaml.swapper.YamlShadowRuleAlgorithmProviderConfigurationSwapper;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -48,7 +48,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ShadowRuleSpringBootConfiguration {
     
-    private final ShadowRuleAlgorithmProviderConfigurationYamlSwapper swapper = new ShadowRuleAlgorithmProviderConfigurationYamlSwapper();
+    private final YamlShadowRuleAlgorithmProviderConfigurationSwapper swapper = new YamlShadowRuleAlgorithmProviderConfigurationSwapper();
     
     private final YamlShadowRuleSpringBootConfiguration yamlConfig;
     

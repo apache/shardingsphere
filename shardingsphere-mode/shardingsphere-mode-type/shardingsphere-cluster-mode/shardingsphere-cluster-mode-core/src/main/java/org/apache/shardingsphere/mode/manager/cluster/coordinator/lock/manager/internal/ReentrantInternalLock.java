@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
+import org.apache.shardingsphere.mode.lock.util.TimeoutMilliseconds;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;

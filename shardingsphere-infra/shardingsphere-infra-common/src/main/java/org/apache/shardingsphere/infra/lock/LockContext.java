@@ -33,14 +33,6 @@ public interface LockContext {
     }
     
     /**
-     * Get lock.
-     *
-     * @param lockScope lock scope
-     * @return lock
-     */
-    ShardingSphereLock getLock(LockScope lockScope);
-    
-    /**
      * Try lock.
      *
      * @param lockDefinition lock definition
@@ -52,17 +44,17 @@ public interface LockContext {
      * Try Lock.
      *
      * @param lockDefinition lock definition
-     * @param timeoutMilliseconds timeout milliseconds
+     * @param timeoutMillis timeout milliseconds
      * @return is locked or not
      */
-    boolean tryLock(LockDefinition lockDefinition, long timeoutMilliseconds);
+    boolean tryLock(LockDefinition lockDefinition, long timeoutMillis);
     
     /**
-     * Release lock.
+     * Un lock.
      *
      * @param lockDefinition lock definition
      */
-    void releaseLock(LockDefinition lockDefinition);
+    void unLock(LockDefinition lockDefinition);
     
     /**
      *  Is locked.
@@ -71,4 +63,15 @@ public interface LockContext {
      * @return is locked or not
      */
     boolean isLocked(LockDefinition lockDefinition);
+    
+    /**
+     * Get lock.
+     *
+     * @return lock
+     * @deprecated remove me when the distributed lock refactoring was completed
+     */
+    @Deprecated
+    default ShardingSphereLock getLock() {
+        throw new UnsupportedOperationException();
+    }
 }

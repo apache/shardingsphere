@@ -62,7 +62,7 @@ public final class PostgreSQLProxyTransactionIT extends BaseTransactionITCase {
             if (Objects.equals(parameterized.getTransactionType(), TransactionType.LOCAL)) {
                 alterLocalTransactionRule();
             } else if (Objects.equals(parameterized.getTransactionType(), TransactionType.XA)) {
-                alterXaTransactionRule();
+                alterXaTransactionRule(parameterized.getProvider());
             }
         }
     }

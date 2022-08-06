@@ -32,7 +32,6 @@ import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLAuthPlu
 import org.apache.shardingsphere.db.protocol.mysql.packet.handshake.MySQLHandshakePacket;
 import org.apache.shardingsphere.db.protocol.mysql.payload.MySQLPacketPayload;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -49,10 +48,10 @@ import org.junit.Test;
 import java.lang.reflect.Field;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Properties;
-import java.util.Map;
-import java.util.LinkedHashMap;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -164,7 +163,7 @@ public final class MySQLAuthenticationEngineTest extends ProxyContextRestorer {
         Map<String, ShardingSphereDatabase> databases = new LinkedHashMap<>(1, 1);
         databases.put("sharding_db", mock(ShardingSphereDatabase.class));
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class), new ShardingSphereMetaData(databases, mock(ShardingSphereRuleMetaData.class),
-                new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
+                new ConfigurationProperties(new Properties())));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
     }

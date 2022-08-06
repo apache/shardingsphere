@@ -17,13 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
-import java.sql.SQLException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
@@ -41,6 +34,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineIgnoredExc
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializerFactory;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.DefaultPipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparerFactory;
@@ -58,9 +52,16 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.lock.LockScope;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
+
+import javax.sql.DataSource;
+import java.sql.SQLException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Rule altered job preparer.
@@ -103,7 +104,7 @@ public final class RuleAlteredJobPreparer {
         RuleAlteredJobConfiguration jobConfig = jobContext.getJobConfig();
         // TODO the lock will be replaced
         String lockName = "prepare-" + jobConfig.getJobId();
-        ShardingSphereLock lock = PipelineContext.getContextManager().getInstanceContext().getLockContext().getLock(LockScope.GLOBAL);
+        ShardingSphereLock lock = PipelineContext.getContextManager().getInstanceContext().getLockContext().getLock();
         if (lock.tryLock(lockName, 3000)) {
             try {
                 prepareAndCheckTarget(jobContext);
@@ -191,8 +192,9 @@ public final class RuleAlteredJobPreparer {
         PipelineDataSourceManager dataSourceManager = jobContext.getDataSourceManager();
         taskConfig.getDumperConfig().setPosition(getIncrementalPosition(jobContext, taskConfig, dataSourceManager));
         PipelineTableMetaDataLoader sourceMetaDataLoader = jobContext.getSourceMetaDataLoader();
-        IncrementalTask incrementalTask = new IncrementalTask(taskConfig.getJobConfig().getConcurrency(),
-                taskConfig.getDumperConfig(), taskConfig.getImporterConfig(), pipelineChannelCreator, dataSourceManager, sourceMetaDataLoader, incrementalDumperExecuteEngine);
+        DefaultPipelineJobProgressListener jobProgressListener = new DefaultPipelineJobProgressListener(jobContext.getJobId(), jobContext.getShardingItem());
+        IncrementalTask incrementalTask = new IncrementalTask(taskConfig.getImporterConfig().getConcurrency(),
+                taskConfig.getDumperConfig(), taskConfig.getImporterConfig(), pipelineChannelCreator, dataSourceManager, sourceMetaDataLoader, incrementalDumperExecuteEngine, jobProgressListener);
         jobContext.getIncrementalTasks().add(incrementalTask);
     }
     
@@ -204,7 +206,7 @@ public final class RuleAlteredJobPreparer {
                 return position.get();
             }
         }
-        String databaseType = taskConfig.getJobConfig().getSourceDatabaseType();
+        String databaseType = taskConfig.getDumperConfig().getDataSourceConfig().getDatabaseType().getType();
         DataSource dataSource = dataSourceManager.getDataSource(taskConfig.getDumperConfig().getDataSourceConfig());
         return PositionInitializerFactory.getInstance(databaseType).init(dataSource);
     }

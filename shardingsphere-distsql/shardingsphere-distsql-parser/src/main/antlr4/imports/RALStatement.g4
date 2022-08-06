@@ -43,7 +43,7 @@ disableInstance
     : DISABLE INSTANCE instanceId
     ;
 
-showInstance
+showInstanceList
     : SHOW INSTANCE LIST
     ;
 
@@ -79,8 +79,12 @@ alterSQLParserRule
     : ALTER SQL_PARSER RULE sqlParserRuleDefinition
     ;
 
-showInstanceMode
-    : SHOW INSTANCE MODE
+showInstanceInfo
+    : SHOW INSTANCE INFO
+    ;
+
+showModeInfo
+    : SHOW MODE INFO
     ;
 
 createTrafficRule

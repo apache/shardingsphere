@@ -21,7 +21,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleCon
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -68,8 +68,8 @@ public final class DatabaseDiscoveryTypeQueryResultSetTest {
                 "ms-heartbeat", "test");
         Properties discoveryTypeProps = new Properties();
         discoveryTypeProps.put("type_key", "type_value");
-        ShardingSphereAlgorithmConfiguration shardingSphereAlgorithmConfig = new ShardingSphereAlgorithmConfiguration("MySQL.MGR", discoveryTypeProps);
-        Map<String, ShardingSphereAlgorithmConfiguration> discoverTypes = Collections.singletonMap("test_name", shardingSphereAlgorithmConfig);
+        AlgorithmConfiguration shardingSphereAlgorithmConfig = new AlgorithmConfiguration("MySQL.MGR", discoveryTypeProps);
+        Map<String, AlgorithmConfiguration> discoverTypes = Collections.singletonMap("test_name", shardingSphereAlgorithmConfig);
         return new DatabaseDiscoveryRuleConfiguration(Collections.singleton(databaseDiscoveryDataSourceRuleConfig), Collections.emptyMap(), discoverTypes);
     }
 }

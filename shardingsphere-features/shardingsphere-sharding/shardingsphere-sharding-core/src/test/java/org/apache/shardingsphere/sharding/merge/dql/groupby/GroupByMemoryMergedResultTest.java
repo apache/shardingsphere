@@ -197,7 +197,6 @@ public final class GroupByMemoryMergedResultTest {
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(schema);
         when(database.getSchemas()).thenReturn(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema));
         when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
-        when(schema.getAllColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "content"));
         ShardingDQLResultMerger merger = new ShardingDQLResultMerger(DatabaseTypeFactory.getInstance("MySQL"));
         MergedResult actual = merger.merge(Arrays.asList(queryResult, queryResult, queryResult), createSelectStatementContext(database), database);
         assertFalse(actual.next());

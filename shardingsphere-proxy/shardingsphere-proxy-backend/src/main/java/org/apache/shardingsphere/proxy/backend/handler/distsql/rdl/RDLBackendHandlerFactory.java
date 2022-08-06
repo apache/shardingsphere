@@ -48,10 +48,6 @@ public final class RDLBackendHandlerFactory {
      * @throws SQLException SQL exception
      */
     public static ProxyBackendHandler newInstance(final RDLStatement sqlStatement, final ConnectionSession connectionSession) throws SQLException {
-        return createBackendHandler(sqlStatement, connectionSession);
-    }
-    
-    private static ProxyBackendHandler createBackendHandler(final RDLStatement sqlStatement, final ConnectionSession connectionSession) {
         if (sqlStatement instanceof AddResourceStatement) {
             return new AddResourceBackendHandler((AddResourceStatement) sqlStatement, connectionSession);
         }

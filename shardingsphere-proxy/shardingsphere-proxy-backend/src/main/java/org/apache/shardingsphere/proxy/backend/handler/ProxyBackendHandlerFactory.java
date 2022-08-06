@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.statement.DistSQLStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 import org.apache.shardingsphere.distsql.parser.statement.rql.RQLStatement;
+import org.apache.shardingsphere.distsql.parser.statement.rul.RULStatement;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
@@ -34,7 +35,6 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.communication.SQLStatementDatabaseHolder;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.admin.DatabaseAdminBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandlerFactory;
 import org.apache.shardingsphere.proxy.backend.handler.database.DatabaseOperateBackendHandlerFactory;
@@ -42,6 +42,7 @@ import org.apache.shardingsphere.proxy.backend.handler.distsql.DistSQLBackendHan
 import org.apache.shardingsphere.proxy.backend.handler.extra.ExtraProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.skip.SkipBackendHandler;
 import org.apache.shardingsphere.proxy.backend.handler.transaction.TransactionBackendHandlerFactory;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.FlushStatement;
@@ -106,9 +107,7 @@ public final class ProxyBackendHandlerFactory {
         databaseType.handleRollbackOnly(connectionSession.getTransactionStatus().isRollbackOnly(), sqlStatement);
         checkUnsupportedSQLStatement(sqlStatement);
         if (sqlStatement instanceof DistSQLStatement) {
-            if (connectionSession.getTransactionStatus().isInTransaction() && !(sqlStatement instanceof RQLStatement || sqlStatement instanceof QueryableRALStatement)) {
-                throw new UnsupportedOperationException("Non-query dist sql is not supported within a transaction");
-            }
+            checkUnsupportedDistSQLStatementInTransaction(sqlStatement, connectionSession);
             return DistSQLBackendHandlerFactory.newInstance((DistSQLStatement) sqlStatement, connectionSession);
         }
         SQLStatementContext<?> sqlStatementContext = SQLStatementContextFactory.newInstance(ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(),
@@ -159,6 +158,16 @@ public final class ProxyBackendHandlerFactory {
                 getRules(databaseName), databaseName, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getDatabases(), connectionSession.getGrantee());
         backendHandler = DatabaseAdminBackendHandlerFactory.newInstance(databaseType, sqlStatementContext, connectionSession);
         return backendHandler.orElseGet(() -> DatabaseBackendHandlerFactory.newInstance(logicSQL, connectionSession, preferPreparedStatement));
+    }
+    
+    private static void checkUnsupportedDistSQLStatementInTransaction(final SQLStatement sqlStatement, final ConnectionSession connectionSession) {
+        if (connectionSession.getTransactionStatus().isInTransaction() && !isSupportedDistSQLStatementInTransaction(sqlStatement)) {
+            throw new UnsupportedOperationException("Non-query dist sql is not supported within a transaction");
+        }
+    }
+    
+    private static boolean isSupportedDistSQLStatementInTransaction(final SQLStatement sqlStatement) {
+        return sqlStatement instanceof RQLStatement || sqlStatement instanceof QueryableRALStatement || sqlStatement instanceof RULStatement;
     }
     
     private static DatabaseType getProtocolType(final DatabaseType defaultDatabaseType, final ConnectionSession connectionSession) {

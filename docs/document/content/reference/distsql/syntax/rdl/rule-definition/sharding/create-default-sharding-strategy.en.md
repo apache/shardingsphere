@@ -9,7 +9,7 @@ The `CREATE DEFAULT SHARDING STRATEGY` syntax is used to create a default shardi
 
 ### Syntax
 
-```SQL
+```sql
 CreateDefaultShardingStrategy ::=
   'CREATE' 'DEFAULT' 'SHARDING' ('DATABASE' | 'TABLE') 'STRATEGY' '(' shardingStrategy ')'
 
@@ -35,8 +35,8 @@ algorithmType ::=
 ### Supplement
 
 - When using the complex sharding algorithm, multiple sharding columns need to be specified using `SHARDING_COLUMNS`
-- `algorithmType` is the sharding algorithm type. For detailed sharding algorithm type information, please refer to [Sharding Algorithm](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/)
-
+- `algorithmType` is the sharding algorithm type. For detailed sharding algorithm type information, please refer
+  to [Sharding Algorithm](/en/user-manual/shardingsphere-jdbc/builtin-algorithm/sharding/)
 
 ### Example
 
@@ -63,6 +63,11 @@ CREATE DEFAULT SHARDING TABLE STRATEGY (
 );
 ```
 
-### Related links
-- [CREATE SHARDING ALGORITHM](/en/reference/distsql/syntax/rdl/rule-definition/create-sharding-algorithm/)
+### Reserved word
 
+`CREATE`, `DEFAULT`, `SHARDING`, `DATABASE`, `TABLE`, `STRATEGY`, `TYPE`, `SHARDING_COLUMN`, `SHARDING_COLUMNS`, `SHARDING_ALGORITHM`, `NAME`, `PROPERTIES`
+
+### Related links
+
+- [Reserved word](/cn/reference/distsql/syntax/reserved-word/)
+- [CREATE SHARDING ALGORITHM](/en/reference/distsql/syntax/rdl/rule-definition/create-sharding-algorithm/)

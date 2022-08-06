@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.checker;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationCheckerFactory;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -57,9 +57,9 @@ public final class ShardingRuleConfigurationCheckerTest {
     
     private ShardingRuleConfiguration createRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        result.getShardingAlgorithms().put("foo_algorithm", mock(ShardingSphereAlgorithmConfiguration.class));
-        result.getAuditors().put("foo_audit", mock(ShardingSphereAlgorithmConfiguration.class));
-        result.getKeyGenerators().put("foo_keygen", mock(ShardingSphereAlgorithmConfiguration.class));
+        result.getShardingAlgorithms().put("foo_algorithm", mock(AlgorithmConfiguration.class));
+        result.getAuditors().put("foo_audit", mock(AlgorithmConfiguration.class));
+        result.getKeyGenerators().put("foo_keygen", mock(AlgorithmConfiguration.class));
         result.setDefaultKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("foo_col", "foo_keygen"));
         return result;
     }

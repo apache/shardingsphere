@@ -40,6 +40,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.LoadIndexInfoStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.OptimizeTableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.RepairTableStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ResetParameterStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ResetPersistStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.ResetStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dal.SetParameterStatementTestCase;
@@ -76,6 +77,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.AlterLoginStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.AlterRoleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.AlterUserStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.CreateGroupStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.CreateLoginStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.CreateRoleStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.dcl.CreateUserStatementTestCase;
@@ -120,8 +122,8 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterJavaStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterLanguageStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterLibraryStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterMaterializedViewLogStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterLockdownProfileStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterMaterializedViewLogStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterMaterializedViewStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterMaterializedZonemapStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterOperatorStatementTestCase;
@@ -136,6 +138,7 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSchemaStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSequenceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterServerStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterStatisticsStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterServiceStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSessionStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl.AlterSynonymStatementTestCase;
@@ -286,7 +289,9 @@ import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.SetVariableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowAllVariableStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowAuthorityRuleStatementTestCase;
-import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowInstanceStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowInstanceInfoStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowInstanceListStatementTestCase;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowModeInfoStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowReadwriteSplittingHintStatusStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowReadwriteSplittingReadResourcesStatementTestCase;
 import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.distsql.ral.ShowSQLParserRuleStatementTestCase;
@@ -648,6 +653,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "alter-server")
     private final List<AlterServerStatementTestCase> alterServerTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "alter-statistics")
+    private final List<AlterStatisticsStatementTestCase> alterStatisticsTestCases = new LinkedList<>();
     
     @XmlElement(name = "alter-session")
     private final List<AlterSessionStatementTestCase> alterSessionTestCases = new LinkedList<>();
@@ -1126,8 +1134,8 @@ public final class SQLParserTestCases {
     @XmlElement(name = "install-plugin")
     private final List<InstallPluginStatementTestCase> installPluginTestCases = new LinkedList<>();
     
-    @XmlElement(name = "show-instance")
-    private final List<ShowInstanceStatementTestCase> showInstanceTestCases = new LinkedList<>();
+    @XmlElement(name = "show-instance-list")
+    private final List<ShowInstanceListStatementTestCase> showInstanceTestCases = new LinkedList<>();
     
     @XmlElement(name = "clone")
     private final List<CloneStatementTestCase> cloneTestCases = new LinkedList<>();
@@ -1206,6 +1214,9 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "reset-persist")
     private final List<ResetPersistStatementTestCase> resetPersistTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "reset-parameter")
+    private final List<ResetParameterStatementTestCase> resetParameterTestCases = new LinkedList<>();
     
     @XmlElement(name = "cache-index")
     private final List<CacheIndexStatementTestCase> cacheIndexTestCases = new LinkedList<>();
@@ -1626,6 +1637,15 @@ public final class SQLParserTestCases {
     
     @XmlElement(name = "create-foreign-table")
     private final List<CreateForeignTableStatementTestCase> createForeignTableStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-instance-info")
+    private final List<ShowInstanceInfoStatementTestCase> showInstanceInfoStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "show-mode-info")
+    private final List<ShowModeInfoStatementTestCase> showModeInfoStatementTestCases = new LinkedList<>();
+    
+    @XmlElement(name = "create-group")
+    private final List<CreateGroupStatementTestCase> createGroupStatementTestCases = new LinkedList<>();
     
     /**
      * Get all SQL parser test cases.

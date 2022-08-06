@@ -309,9 +309,9 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitUpdate(final UpdateContext ctx) {
         OracleUpdateStatement result = new OracleUpdateStatement();
-        result.setTableSegment((TableSegment) visit(ctx.updateSpecification()));
+        result.setTable((TableSegment) visit(ctx.updateSpecification()));
         if (null != ctx.alias()) {
-            result.getTableSegment().setAlias((AliasSegment) visit(ctx.alias()));
+            result.getTable().setAlias((AliasSegment) visit(ctx.alias()));
         }
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.updateSetClause()));
         if (null != ctx.whereClause()) {
@@ -424,9 +424,9 @@ public final class OracleDMLStatementSQLVisitor extends OracleStatementSQLVisito
     @Override
     public ASTNode visitDelete(final DeleteContext ctx) {
         OracleDeleteStatement result = new OracleDeleteStatement();
-        result.setTableSegment((TableSegment) visit(ctx.deleteSpecification()));
+        result.setTable((TableSegment) visit(ctx.deleteSpecification()));
         if (null != ctx.alias()) {
-            result.getTableSegment().setAlias((AliasSegment) visit(ctx.alias()));
+            result.getTable().setAlias((AliasSegment) visit(ctx.alias()));
         }
         if (null != ctx.whereClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereClause()));

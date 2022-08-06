@@ -170,5 +170,7 @@ execute
     | createEventTrigger
     | createForeignDataWrapper
     | createForeignTable
+    | alterStatistics
+    | createGroup
     ) SEMI_? EOF
     ;

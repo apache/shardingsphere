@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.api.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
@@ -59,11 +59,11 @@ public final class ShardingRuleConfiguration implements DatabaseRuleConfiguratio
     
     private String defaultShardingColumn;
     
-    private Map<String, ShardingSphereAlgorithmConfiguration> shardingAlgorithms = new LinkedHashMap<>();
+    private Map<String, AlgorithmConfiguration> shardingAlgorithms = new LinkedHashMap<>();
     
-    private Map<String, ShardingSphereAlgorithmConfiguration> keyGenerators = new LinkedHashMap<>();
+    private Map<String, AlgorithmConfiguration> keyGenerators = new LinkedHashMap<>();
     
-    private Map<String, ShardingSphereAlgorithmConfiguration> auditors = new LinkedHashMap<>();
+    private Map<String, AlgorithmConfiguration> auditors = new LinkedHashMap<>();
     
     private String scalingName;
     

@@ -5,11 +5,12 @@ weight = 6
 
 ## Description
 
-The `CREATE SHARDING KEY GENERATOR` syntax is used to add a distributed primary key generator for the currently selected logic database
+The `CREATE SHARDING KEY GENERATOR` syntax is used to add a distributed primary key generator for the currently selected
+logic database
 
 ### Syntax
 
-```SQL
+```sql
 CreateShardingAlgorithm ::=
   'CREATE' 'SHARDING' 'KEY' 'GENERATOR' keyGeneratorName '(' algorithmDefinition ')'
 
@@ -28,13 +29,14 @@ algorithmType ::=
 
 ### Supplement
 
-- `algorithmType` is the key generate algorithm type. For detailed key generate algorithm type information, please refer to [KEY GENERATE ALGORITHM](en/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen/)
+- `algorithmType` is the key generate algorithm type. For detailed key generate algorithm type information, please refer
+  to [KEY GENERATE ALGORITHM](en/user-manual/shardingsphere-jdbc/builtin-algorithm/keygen/)
 
 ### Example
 
 #### Create a distributed primary key generator
 
-```SQL
+```sql
 CREATE SHARDING KEY GENERATOR snowflake_key_generator (
     TYPE(NAME=SNOWFLAKE, PROPERTIES("max-vibration-offset"=3))
 );
@@ -42,8 +44,8 @@ CREATE SHARDING KEY GENERATOR snowflake_key_generator (
 
 ### Reserved word
 
-    CREATE、SHARDING、KEY、GENERATOR、TYPE、NAME、PROPERTIES
+`CREATE`, `SHARDING`, `KEY`, `GENERATOR`, `TYPE`, `NAME`, `PROPERTIES`
 
 ### Related links
-- [Reserved word](/en/reference/distsql/syntax/reserved-word/)
 
+- [Reserved word](/en/reference/distsql/syntax/reserved-word/)

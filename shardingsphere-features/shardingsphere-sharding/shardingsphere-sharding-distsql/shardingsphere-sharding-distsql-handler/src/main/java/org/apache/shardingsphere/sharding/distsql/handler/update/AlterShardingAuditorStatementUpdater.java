@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
@@ -71,7 +71,7 @@ public final class AlterShardingAuditorStatementUpdater implements RuleDefinitio
     @Override
     public ShardingRuleConfiguration buildToBeAlteredRuleConfiguration(final AlterShardingAuditorStatement sqlStatement) {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
-        Map<String, ShardingSphereAlgorithmConfiguration> algorithmConfigMap = sqlStatement.getAuditorSegments().stream()
+        Map<String, AlgorithmConfiguration> algorithmConfigMap = sqlStatement.getAuditorSegments().stream()
                 .collect(Collectors.toMap(ShardingAuditorSegment::getAuditorName, each -> ShardingTableRuleStatementConverter.createAlgorithmConfiguration(each.getAlgorithmSegment())));
         result.setAuditors(algorithmConfigMap);
         return result;

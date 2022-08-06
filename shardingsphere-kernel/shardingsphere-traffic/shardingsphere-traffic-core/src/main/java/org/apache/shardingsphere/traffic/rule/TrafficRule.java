@@ -21,7 +21,7 @@ import com.google.common.base.Preconditions;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContext;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.hint.SQLHintProperties;
 import org.apache.shardingsphere.infra.rule.identifier.scope.GlobalRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -67,17 +67,17 @@ public final class TrafficRule implements GlobalRule {
         strategyRules = createTrafficStrategyRules(ruleConfig.getTrafficStrategies(), trafficAlgorithms, loadBalancers);
     }
     
-    private Map<String, TrafficAlgorithm> createTrafficAlgorithms(final Map<String, ShardingSphereAlgorithmConfiguration> trafficAlgorithms) {
+    private Map<String, TrafficAlgorithm> createTrafficAlgorithms(final Map<String, AlgorithmConfiguration> trafficAlgorithms) {
         Map<String, TrafficAlgorithm> result = new LinkedHashMap<>();
-        for (Entry<String, ShardingSphereAlgorithmConfiguration> entry : trafficAlgorithms.entrySet()) {
+        for (Entry<String, AlgorithmConfiguration> entry : trafficAlgorithms.entrySet()) {
             result.put(entry.getKey(), TrafficAlgorithmFactory.newInstance(entry.getValue()));
         }
         return result;
     }
     
-    private Map<String, TrafficLoadBalanceAlgorithm> createTrafficLoadBalanceAlgorithms(final Map<String, ShardingSphereAlgorithmConfiguration> loadBalancers) {
+    private Map<String, TrafficLoadBalanceAlgorithm> createTrafficLoadBalanceAlgorithms(final Map<String, AlgorithmConfiguration> loadBalancers) {
         Map<String, TrafficLoadBalanceAlgorithm> result = new LinkedHashMap<>();
-        for (Entry<String, ShardingSphereAlgorithmConfiguration> entry : loadBalancers.entrySet()) {
+        for (Entry<String, AlgorithmConfiguration> entry : loadBalancers.entrySet()) {
             result.put(entry.getKey(), TrafficLoadBalanceAlgorithmFactory.newInstance(entry.getValue()));
         }
         return result;

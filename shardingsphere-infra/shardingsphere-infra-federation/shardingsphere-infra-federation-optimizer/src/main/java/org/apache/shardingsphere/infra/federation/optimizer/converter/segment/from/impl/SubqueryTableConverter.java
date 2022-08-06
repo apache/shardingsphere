@@ -30,6 +30,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.Sub
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 import java.util.Optional;
@@ -47,7 +48,7 @@ public final class SubqueryTableConverter implements SQLSegmentConverter<Subquer
         Collection<SqlNode> sqlNodes = new LinkedList<>();
         sqlNodes.add(new SelectStatementConverter().convertToSQLNode(segment.getSubquery().getSelect()));
         segment.getAlias().ifPresent(optional -> sqlNodes.add(new SqlIdentifier(optional, SqlParserPos.ZERO)));
-        return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, sqlNodes.toArray(new SqlNode[]{}), SqlParserPos.ZERO));
+        return Optional.of(new SqlBasicCall(SqlStdOperatorTable.AS, new ArrayList<>(sqlNodes), SqlParserPos.ZERO));
     }
     
     @Override

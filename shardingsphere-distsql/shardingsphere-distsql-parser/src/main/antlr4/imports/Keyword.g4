@@ -330,3 +330,7 @@ SINGLE_TABLE
 SQL_TRANSLATOR
     : S Q L UL_ T R A N S L A T O R
     ;
+
+INFO
+    : I N F O
+    ;

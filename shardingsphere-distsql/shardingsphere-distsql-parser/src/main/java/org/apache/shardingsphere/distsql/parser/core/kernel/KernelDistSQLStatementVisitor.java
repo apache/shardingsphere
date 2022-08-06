@@ -61,8 +61,9 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.SetVariableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowAllVariablesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowAuthorityRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowInstanceContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowInstanceModeContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowInstanceInfoContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowInstanceListContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowModeInfoContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowResourcesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowRulesUsedResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowSQLParserRuleContext;
@@ -90,8 +91,9 @@ import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ConvertY
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAllVariableStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowAuthorityRuleStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceModeStatement;
-import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceInfoStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowInstanceListStatement;
+import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowModeInfoStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowSQLParserRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowSQLTranslatorRuleStatement;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ShowTableMetadataStatement;
@@ -178,13 +180,18 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     }
     
     @Override
-    public ASTNode visitShowInstance(final ShowInstanceContext ctx) {
-        return new ShowInstanceStatement();
+    public ASTNode visitShowInstanceList(final ShowInstanceListContext ctx) {
+        return new ShowInstanceListStatement();
     }
     
     @Override
-    public ASTNode visitShowInstanceMode(final ShowInstanceModeContext ctx) {
-        return new ShowInstanceModeStatement();
+    public ASTNode visitShowInstanceInfo(final ShowInstanceInfoContext ctx) {
+        return new ShowInstanceInfoStatement();
+    }
+    
+    @Override
+    public ASTNode visitShowModeInfo(final ShowModeInfoContext ctx) {
+        return new ShowModeInfoStatement();
     }
     
     @Override

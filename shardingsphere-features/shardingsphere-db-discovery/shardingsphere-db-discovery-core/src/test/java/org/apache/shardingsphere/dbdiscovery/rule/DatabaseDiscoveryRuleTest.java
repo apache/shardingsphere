@@ -20,7 +20,7 @@ package org.apache.shardingsphere.dbdiscovery.rule;
 import org.apache.shardingsphere.dbdiscovery.api.config.DatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryDataSourceRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHeartBeatConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.config.mode.PersistRepositoryConfiguration;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
@@ -105,6 +105,6 @@ public final class DatabaseDiscoveryRuleTest {
         when(instanceContext.getInstance().getCurrentInstanceId()).thenReturn("foo_id");
         return new DatabaseDiscoveryRule("db_discovery", dataSourceMap, new DatabaseDiscoveryRuleConfiguration(
                 Collections.singleton(config), Collections.singletonMap("discovery_heartbeat", new DatabaseDiscoveryHeartBeatConfiguration(new Properties())),
-                Collections.singletonMap("CORE.FIXTURE", new ShardingSphereAlgorithmConfiguration("CORE.FIXTURE", new Properties()))), instanceContext);
+                Collections.singletonMap("CORE.FIXTURE", new AlgorithmConfiguration("CORE.FIXTURE", new Properties()))), instanceContext);
     }
 }

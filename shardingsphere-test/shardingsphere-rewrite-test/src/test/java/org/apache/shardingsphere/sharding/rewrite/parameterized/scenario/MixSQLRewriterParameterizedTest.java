@@ -23,8 +23,8 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.AbstractSQLRewriterParameterizedTest;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParameters;
 import org.apache.shardingsphere.sharding.rewrite.parameterized.engine.parameter.SQLRewriteEngineTestParametersBuilder;
@@ -81,6 +81,8 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
         when(result.get("t_account_detail")).thenReturn(mock(ShardingSphereTable.class));
         when(result.getAllColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
         when(result.getAllColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "password", "amount", "status"));
+        when(result.getVisibleColumnNames("t_account")).thenReturn(Arrays.asList("account_id", "password", "amount"));
+        when(result.getVisibleColumnNames("t_account_bak")).thenReturn(Arrays.asList("account_id", "password", "amount"));
         return Collections.singletonMap(schemaName, result);
     }
     
@@ -94,7 +96,7 @@ public final class MixSQLRewriterParameterizedTest extends AbstractSQLRewriterPa
     
     private Map<String, ShardingSphereColumn> createColumns() {
         Map<String, ShardingSphereColumn> result = new LinkedHashMap<>(4, 1);
-        result.put("account_id", new ShardingSphereColumn("account_id", Types.INTEGER, true, true, false));
+        result.put("account_id", new ShardingSphereColumn("account_id", Types.INTEGER, true, true, false, true));
         result.put("password", mock(ShardingSphereColumn.class));
         result.put("amount", mock(ShardingSphereColumn.class));
         result.put("status", mock(ShardingSphereColumn.class));

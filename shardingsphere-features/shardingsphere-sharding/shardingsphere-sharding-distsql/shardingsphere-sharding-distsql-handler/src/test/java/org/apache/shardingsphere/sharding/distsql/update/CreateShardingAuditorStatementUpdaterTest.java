@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateAuditorException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
@@ -62,7 +62,7 @@ public final class CreateShardingAuditorStatementUpdaterTest {
     public void assertExecuteWithExist() throws DistSQLException {
         ShardingAuditorSegment auditorSegment = new ShardingAuditorSegment("sharding_key_required_auditor", new AlgorithmSegment("DML_SHARDING_CONDITIONS", new Properties()));
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        ruleConfig.getAuditors().put("sharding_key_required_auditor", new ShardingSphereAlgorithmConfiguration("DML_SHARDING_CONDITIONS", new Properties()));
+        ruleConfig.getAuditors().put("sharding_key_required_auditor", new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", new Properties()));
         updater.checkSQLStatement(database, createSQLStatement(auditorSegment), ruleConfig);
     }
     

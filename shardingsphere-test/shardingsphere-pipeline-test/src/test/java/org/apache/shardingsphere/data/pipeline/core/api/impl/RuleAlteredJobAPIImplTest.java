@@ -39,7 +39,7 @@ import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobPreparer;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

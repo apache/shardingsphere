@@ -30,7 +30,7 @@ import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJ
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobProgressDetector;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 
 import java.util.Optional;
@@ -102,7 +102,9 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     private void execute(final JobConfigurationPOJO jobConfigPOJO) {
         RuleAlteredJob job = new RuleAlteredJob();
         RuleAlteredJobCenter.addJob(jobConfigPOJO.getJobName(), job);
-        new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration()).execute();
+        OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration());
+        oneOffJobBootstrap.execute();
+        job.setOneOffJobBootstrap(oneOffJobBootstrap);
     }
     
     @Override

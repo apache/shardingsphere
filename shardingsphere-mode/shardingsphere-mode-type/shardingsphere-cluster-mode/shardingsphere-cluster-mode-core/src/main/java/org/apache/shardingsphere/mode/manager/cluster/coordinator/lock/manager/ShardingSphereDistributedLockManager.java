@@ -19,20 +19,14 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager;
 
 import com.google.common.base.Preconditions;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.infra.eventbus.EventBusContext;
-import org.apache.shardingsphere.infra.lock.LockMode;
-import org.apache.shardingsphere.infra.lock.LockNameDefinition;
-import org.apache.shardingsphere.infra.lock.LockScope;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
+import org.apache.shardingsphere.mode.lock.manager.state.LockStateContext;
+import org.apache.shardingsphere.mode.lock.util.TimeoutMilliseconds;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.ShardingSphereDistributedDatabaseLock;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.ShardingSphereDistributedGlobalLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.ShardingSphereDistributedStandardLock;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.state.LockStateContext;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.state.LockStateContextFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal.ShardingSphereInternalLockHolder;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.TimeoutMilliseconds;
-import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockDefinition;
-import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDefinition;
+import org.apache.shardingsphere.mode.lock.definition.DatabaseLockDefinition;
 
 /**
  * Distribute lock manager of ShardingSphere.
@@ -40,9 +34,7 @@ import org.apache.shardingsphere.mode.manager.lock.definition.DatabaseLockNameDe
 @Slf4j
 public final class ShardingSphereDistributedLockManager implements ShardingSphereLockManager {
     
-    private LockStateContext lockStateContext;
-    
-    private ShardingSphereLock standardDistributedLock;
+    private final LockStateContext lockStateContext = new LockStateContext();
     
     private ShardingSphereLock globalDistributedLock;
     
@@ -50,22 +42,13 @@ public final class ShardingSphereDistributedLockManager implements ShardingSpher
     
     @Override
     public void init(final ShardingSphereInternalLockHolder lockHolder, final EventBusContext eventBusContext) {
-        lockStateContext = LockStateContextFactory.getLockStateContext();
-        standardDistributedLock = new ShardingSphereDistributedStandardLock(lockHolder);
         globalDistributedLock = new ShardingSphereDistributedGlobalLock(lockHolder, eventBusContext);
         databaseLock = new ShardingSphereDistributedDatabaseLock(lockHolder, lockStateContext, eventBusContext);
     }
     
     @Override
-    public ShardingSphereLock getDistributedLock(final LockScope lockScope) {
-        switch (lockScope) {
-            case STANDARD:
-                return standardDistributedLock;
-            case GLOBAL:
-                return globalDistributedLock;
-            default:
-                throw new UnsupportedOperationException();
-        }
+    public ShardingSphereLock getDistributedLock() {
+        return globalDistributedLock;
     }
     
     @Override
@@ -77,19 +60,12 @@ public final class ShardingSphereDistributedLockManager implements ShardingSpher
     @Override
     public boolean tryLock(final DatabaseLockDefinition lockDefinition, final long timeoutMilliseconds) {
         Preconditions.checkNotNull(lockDefinition, "Try Lock for database arg lock definition can not be null.");
-        return innerTryLock(lockDefinition.getLockMode(), lockDefinition.getLockNameDefinition(), timeoutMilliseconds);
+        return innerTryLock(lockDefinition, timeoutMilliseconds);
     }
     
-    private synchronized boolean innerTryLock(final LockMode lockMode, final DatabaseLockNameDefinition lockNameDefinition, final long timeoutMilliseconds) {
+    private synchronized boolean innerTryLock(final DatabaseLockDefinition lockNameDefinition, final long timeoutMilliseconds) {
         Preconditions.checkNotNull(lockNameDefinition, "Try Lock for database arg database name can not be null.");
-        Preconditions.checkNotNull(lockMode, "Try Lock for database args lock mode can not be null.");
-        switch (lockMode) {
-            case READ:
-                return innerDatabaseTryLock(lockNameDefinition.getDatabaseName(), timeoutMilliseconds);
-            case WRITE:
-            default:
-                throw new UnsupportedOperationException();
-        }
+        return innerDatabaseTryLock(lockNameDefinition.getDatabaseName(), timeoutMilliseconds);
     }
     
     private boolean innerDatabaseTryLock(final String databaseName, final long timeoutMilliseconds) {
@@ -104,7 +80,7 @@ public final class ShardingSphereDistributedLockManager implements ShardingSpher
     @Override
     public void releaseLock(final DatabaseLockDefinition lockDefinition) {
         Preconditions.checkNotNull(lockDefinition, "Try Lock for database arg lock definition can not be null.");
-        String databaseName = lockDefinition.getLockNameDefinition().getDatabaseName();
+        String databaseName = lockDefinition.getDatabaseName();
         Preconditions.checkNotNull(databaseName, "Release lock write args database name can not be null.");
         databaseLock.releaseLock(databaseName);
     }
@@ -112,8 +88,6 @@ public final class ShardingSphereDistributedLockManager implements ShardingSpher
     @Override
     public boolean isLocked(final DatabaseLockDefinition lockDefinition) {
         Preconditions.checkNotNull(lockDefinition, "Try Lock for database arg lock definition can not be null.");
-        LockNameDefinition lockNameDefinition = lockDefinition.getLockNameDefinition();
-        Preconditions.checkNotNull(lockNameDefinition, "Is locked database args lock name definition can not be null.");
-        return lockStateContext.isLocked(lockNameDefinition);
+        return lockStateContext.isLocked(lockDefinition);
     }
 }

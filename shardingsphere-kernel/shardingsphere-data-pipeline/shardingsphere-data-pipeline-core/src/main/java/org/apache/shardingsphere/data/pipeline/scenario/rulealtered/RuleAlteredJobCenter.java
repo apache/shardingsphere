@@ -18,7 +18,9 @@
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -65,5 +67,35 @@ public final class RuleAlteredJobCenter {
         job.stop();
         log.info("remove job, jobId={}", jobId);
         JOB_MAP.remove(jobId);
+    }
+    
+    /**
+     * Get job scheduler map.
+     *
+     * @param jobId job id
+     * @return job scheduler
+     */
+    public static Map<Integer, RuleAlteredJobScheduler> getJobSchedulerMap(final String jobId) {
+        RuleAlteredJob ruleAlteredJob = JOB_MAP.get(jobId);
+        return ruleAlteredJob == null ? Collections.emptyMap() : ruleAlteredJob.getJobSchedulerMap();
+    }
+    
+    /**
+     * Update job status for all job sharding.
+     *
+     * @param jobId job id
+     * @param jobStatus job status
+     */
+    public static void updateJobStatus(final String jobId, final JobStatus jobStatus) {
+        RuleAlteredJob ruleAlteredJob = JOB_MAP.get(jobId);
+        if (null == ruleAlteredJob) {
+            log.info("job is null, ignore, jobId={}", jobId);
+            return;
+        }
+        Map<Integer, RuleAlteredJobScheduler> schedulerMap = ruleAlteredJob.getJobSchedulerMap();
+        log.info("updateJobStatus, shardingItems={}, jobStatus={}", schedulerMap.keySet(), jobStatus);
+        for (RuleAlteredJobScheduler each : schedulerMap.values()) {
+            each.getJobContext().setStatus(jobStatus);
+        }
     }
 }
