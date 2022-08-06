@@ -29,10 +29,8 @@ import java.sql.SQLException;
 
 public final class SPIBasedShardingRawYamlConfigurationExample {
     
-    private static ShardingType shardingType = ShardingType.SHARDING_DATABASES;
-    
     public static void main(final String[] args) throws SQLException, IOException {
-        DataSource dataSource = YamlDataSourceFactory.newInstance(shardingType);
+        DataSource dataSource = YamlDataSourceFactory.newInstance(ShardingType.SHARDING_DATABASES);
         ExampleExecuteTemplate.run(getExampleService(dataSource));
     }
     
