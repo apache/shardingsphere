@@ -42,6 +42,9 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
     public void decide(final SQLFederationDeciderContext deciderContext, final LogicSQL logicSQL, final ShardingSphereDatabase database, final ShardingRule rule, final ConfigurationProperties props) {
         SelectStatementContext select = (SelectStatementContext) logicSQL.getSqlStatementContext();
         Collection<String> tableNames = rule.getShardingLogicTableNames(select.getTablesContext().getTableNames());
+        if (tableNames.isEmpty()) {
+            return;
+        }
         addTableDataNodes(deciderContext, rule, tableNames);
         ShardingConditions shardingConditions = createShardingConditions(logicSQL, database, rule);
         if (select.getPaginationContext().isHasPagination() || (shardingConditions.isNeedMerge() && shardingConditions.isSameShardingCondition())) {
