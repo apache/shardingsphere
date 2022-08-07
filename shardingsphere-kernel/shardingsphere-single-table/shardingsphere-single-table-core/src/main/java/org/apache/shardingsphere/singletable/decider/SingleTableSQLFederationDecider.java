@@ -35,7 +35,6 @@ import org.apache.shardingsphere.singletable.rule.SingleTableRule;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.table.SimpleTableSegment;
 
 import java.util.Collection;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.Optional;
 
@@ -55,7 +54,7 @@ public final class SingleTableSQLFederationDecider implements SQLFederationDecid
     
     private static void addTableDataNodes(final SQLFederationDeciderContext deciderContext, final SingleTableRule rule, final Collection<QualifiedTable> singleTableNames) {
         for (QualifiedTable each : singleTableNames) {
-            rule.findSingleTableDataNode(each.getSchemaName(), each.getTableName()).ifPresent(optional -> deciderContext.addTableDataNodes(Collections.singletonList(optional)));
+            rule.findSingleTableDataNode(each.getSchemaName(), each.getTableName()).ifPresent(optional -> deciderContext.getDataNodes().add(optional));
         }
     }
     

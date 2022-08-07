@@ -15,23 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.binder.decider.context;
+package org.apache.shardingsphere.infra.binder.decider.fixture.rule;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.infra.datanode.DataNode;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
-import java.util.Collection;
-import java.util.LinkedHashSet;
+import static org.mockito.Mockito.mock;
 
-/**
- * Route context.
- */
-@Getter
-public final class SQLFederationDeciderContext {
+public final class SQLFederationDeciderRuleMatchFixture implements ShardingSphereRule {
     
-    private final Collection<DataNode> dataNodes = new LinkedHashSet<>();
+    @Override
+    public RuleConfiguration getConfiguration() {
+        return mock(RuleConfiguration.class);
+    }
     
-    @Setter
-    private boolean useSQLFederation;
+    @Override
+    public String getType() {
+        return SQLFederationDeciderRuleMatchFixture.class.getSimpleName();
+    }
 }

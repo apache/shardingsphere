@@ -60,7 +60,7 @@ public final class ShardingSQLFederationDecider implements SQLFederationDecider<
     
     private static void addTableDataNodes(final SQLFederationDeciderContext deciderContext, final ShardingRule rule, final Collection<String> tableNames) {
         for (String each : tableNames) {
-            rule.findTableRule(each).ifPresent(optional -> deciderContext.addTableDataNodes(optional.getActualDataNodes()));
+            rule.findTableRule(each).ifPresent(optional -> deciderContext.getDataNodes().addAll(optional.getActualDataNodes()));
         }
     }
     
