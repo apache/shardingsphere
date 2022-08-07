@@ -104,20 +104,20 @@
     <source-add-resource-template>
         ADD RESOURCE ds_0 (
         URL="${ds0}",
-        USER=${user},
-        PASSWORD=${password}
+        USER="${user}",
+        PASSWORD="${password}"
         ), ds_1 (
         URL="${ds1}",
-        USER=${user},
-        PASSWORD=${password}
+        USER="${user}",
+        PASSWORD="${password}"
         )
     </source-add-resource-template>
 
     <source-add-new-resource-template>
         ADD RESOURCE ds_2 (
             URL="${ds2}",
-            USER=${user},
-            PASSWORD=${password}
+            USER="${user}",
+            PASSWORD="${password}"
         )
     </source-add-new-resource-template>
     

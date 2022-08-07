@@ -17,7 +17,7 @@
   -->
 
 <sql-cases>
-    <distsql-case id="set-variable" value="SET VARIABLE TRANSACTION_TYPE=LOCAL" />
+    <distsql-case id="set-variable" value="SET VARIABLE TRANSACTION_TYPE='LOCAL'" />
     
     <distsql-case id="refresh-table-metadata" value="REFRESH TABLE METADATA" />
     <distsql-case id="refresh-table-metadata-with-table-name" value="REFRESH TABLE METADATA t_order" />
@@ -33,8 +33,8 @@
     <distsql-case id="alter-traffic-rule" value="ALTER TRAFFIC RULE sql_match_traffic (LABELS(OLTP),TRAFFIC_ALGORITHM(TYPE(NAME=SQL_MATCH,PROPERTIES('sql' = 'SELECT * FROM t_order WHERE order_id = ?; UPDATE t_order SET order_id = ?;'))), LOAD_BALANCER(TYPE(NAME=RANDOM, PROPERTIES('key'='value'))) )" />
     <distsql-case id="drop-traffic-rule" value="DROP TRAFFIC RULE rule_name" />
     
-    <distsql-case id="alter-instance-xa-recovery-nodes" value="ALTER INSTANCE instance_xa_recovery SET XA_RECOVERY_NODES=instance_1" />
-    <distsql-case id="alter-instance-xa-recovery-nodes-with-multiple-values" value="ALTER INSTANCE instance_xa_recovery_multiple SET XA_RECOVERY_NODES=instance_1,instance_2 " />
+    <distsql-case id="alter-instance-xa-recovery-nodes" value="ALTER INSTANCE instance_xa_recovery SET XA_RECOVERY_NODES='instance_1'" />
+    <distsql-case id="alter-instance-xa-recovery-nodes-with-multiple-values" value="ALTER INSTANCE instance_xa_recovery_multiple SET XA_RECOVERY_NODES='instance_1,instance_2'" />
     
     <distsql-case id="label-instance" value="LABEL INSTANCE instance_label WITH OLAP_1,OLAP_2" />
     <distsql-case id="relabel-instance" value="RELABEL INSTANCE instance_relabel WITH OLAP_1,OLAP_2" />
