@@ -73,11 +73,6 @@ public final class JobProgressTest {
     }
     
     @Test
-    public void assertGetNoFinishedInventoryFinishedPercentage() {
-        assertThat(getJobProgress(ConfigurationFileUtil.readFile("job-progress-no-finished.yaml")).getInventory().getInventoryFinishedPercentage(), is(0));
-    }
-    
-    @Test
     public void assertGetAllFinishedInventoryFinishedPercentage() {
         assertThat(getJobProgress(ConfigurationFileUtil.readFile("job-progress-all-finished.yaml")).getInventory().getInventoryFinishedPercentage(), is(100));
     }

@@ -20,13 +20,11 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.core.util.ConfigurationFileUtil;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 public final class YamlJobProgressSwapperTest {
     
@@ -49,13 +47,6 @@ public final class YamlJobProgressSwapperTest {
         assertThat(actual.getInventory().getUnfinished().get("ds1.t_1"), is(""));
         assertThat(actual.getIncremental().getDataSourceName(), is("ds0"));
         assertThat(actual.getIncremental().getPosition().length(), is(0));
-    }
-    
-    @Test
-    public void assertNullIncremental() {
-        JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress-no-finished.yaml"));
-        YamlJobProgress actual = SWAPPER.swapToYaml(jobProgress);
-        assertNull(actual.getIncremental());
     }
     
     @Test
