@@ -39,9 +39,6 @@ public final class ShardingSQLRewriteContextDecorator implements SQLRewriteConte
     @SuppressWarnings("rawtypes")
     @Override
     public void decorate(final ShardingRule shardingRule, final ConfigurationProperties props, final SQLRewriteContext sqlRewriteContext, final RouteContext routeContext) {
-        if (routeContext.isFederated()) {
-            return;
-        }
         if (!sqlRewriteContext.getParameters().isEmpty()) {
             Collection<ParameterRewriter> parameterRewriters = new ShardingParameterRewriterBuilder(shardingRule,
                     routeContext, sqlRewriteContext.getSchemas(), sqlRewriteContext.getSqlStatementContext()).getParameterRewriters();

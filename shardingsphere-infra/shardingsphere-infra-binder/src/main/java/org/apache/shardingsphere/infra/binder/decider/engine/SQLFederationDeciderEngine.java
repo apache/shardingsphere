@@ -21,10 +21,12 @@ import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.decider.SQLFederationDecider;
 import org.apache.shardingsphere.infra.binder.decider.SQLFederationDeciderFactory;
 import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
+import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtil;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 
 import java.util.Collection;
@@ -56,8 +58,14 @@ public final class SQLFederationDeciderEngine {
     @SuppressWarnings({"unchecked", "rawtypes"})
     public SQLFederationDeciderContext decide(final LogicSQL logicSQL, final ShardingSphereDatabase database) {
         SQLFederationDeciderContext result = new SQLFederationDeciderContext();
+        SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
+        // TODO move this logic to SQLFederationDecider implement class when we remove sqlFederationEnabled
+        if (isSelectStatementContainsSystemSchema(sqlStatementContext, database)) {
+            result.setUseSQLFederation(true);
+            return result;
+        }
         boolean sqlFederationEnabled = props.getValue(ConfigurationPropertyKey.SQL_FEDERATION_ENABLED);
-        if (!sqlFederationEnabled || !(logicSQL.getSqlStatementContext() instanceof SelectStatementContext)) {
+        if (!sqlFederationEnabled || !(sqlStatementContext instanceof SelectStatementContext)) {
             return result;
         }
         for (Entry<ShardingSphereRule, SQLFederationDecider> entry : deciders.entrySet()) {
@@ -66,5 +74,10 @@ public final class SQLFederationDeciderEngine {
             }
         }
         return result;
+    }
+    
+    private boolean isSelectStatementContainsSystemSchema(final SQLStatementContext<?> sqlStatementContext, final ShardingSphereDatabase database) {
+        return sqlStatementContext instanceof SelectStatementContext
+                && SystemSchemaUtil.containsSystemSchema(sqlStatementContext.getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames(), database);
     }
 }

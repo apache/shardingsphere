@@ -53,7 +53,6 @@ import java.util.Map;
 import java.util.Properties;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
@@ -69,7 +68,6 @@ public final class SingleTableSQLRouterTest {
         rule.getSingleTableDataNodes().put("t_order", Collections.singletonList(createDataNode("foo_ds")));
         ShardingSphereDatabase database = mockSingleDatabase();
         RouteContext actual = new SingleTableSQLRouter().createRouteContext(createLogicSQL(), database, rule, new ConfigurationProperties(new Properties()));
-        assertFalse(actual.isFederated());
         assertThat(actual.getRouteUnits().size(), is(1));
         RouteUnit routeUnit = actual.getRouteUnits().iterator().next();
         assertThat(routeUnit.getDataSourceMapper().getLogicName(), is("foo_ds"));
@@ -90,7 +88,6 @@ public final class SingleTableSQLRouterTest {
         rule.getSingleTableDataNodes().put("t_order", Collections.singletonList(createDataNode("write_ds")));
         ShardingSphereDatabase database = mockReadwriteSplittingDatabase();
         RouteContext actual = new SingleTableSQLRouter().createRouteContext(createLogicSQL(), database, rule, new ConfigurationProperties(new Properties()));
-        assertFalse(actual.isFederated());
         assertThat(actual.getRouteUnits().size(), is(1));
         RouteUnit routeUnit = actual.getRouteUnits().iterator().next();
         assertThat(routeUnit.getDataSourceMapper().getLogicName(), is("readwrite_ds"));
@@ -118,7 +115,6 @@ public final class SingleTableSQLRouterTest {
         RouteMapper tableMapper = routeUnits.get(0).getTableMappers().iterator().next();
         assertThat(tableMapper.getActualName(), is("t_order"));
         assertThat(tableMapper.getLogicName(), is("t_order"));
-        assertFalse(actual.isFederated());
     }
     
     private Map<String, DataSource> createMultiDataSourceMap() throws SQLException {
