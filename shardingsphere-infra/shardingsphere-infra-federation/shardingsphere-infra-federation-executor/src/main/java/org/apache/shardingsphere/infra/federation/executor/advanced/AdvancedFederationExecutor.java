@@ -131,6 +131,8 @@ public final class AdvancedFederationExecutor implements FederationExecutor {
     
     @Override
     public void close() throws SQLException {
-        resultSet.close();
+        if (null != resultSet) {
+            resultSet.close();
+        }
     }
 }
