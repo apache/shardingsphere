@@ -174,7 +174,7 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
         }
     }
     
-    private String getSchemaName(String logicTableName) {
+    private String getSchemaName(final String logicTableName) {
         return getImporterConfig().getSchemaName(new LogicTableName(logicTableName));
     }
     
