@@ -22,6 +22,9 @@ import org.apache.shardingsphere.sharding.api.config.strategy.keygen.KeyGenerate
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.StandardShardingStrategyConfiguration;
 import org.apache.shardingsphere.sharding.api.sharding.ShardingAutoTableAlgorithm;
 import org.apache.shardingsphere.sharding.yaml.config.rule.YamlShardingAutoTableRuleConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.keygen.YamlKeyGenerateStrategyConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlShardingStrategyConfiguration;
+import org.apache.shardingsphere.sharding.yaml.config.strategy.sharding.YamlStandardShardingStrategyConfiguration;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -88,5 +91,27 @@ public final class YamlShardingAutoTableRuleConfigurationSwapperTest {
     @Test(expected = NullPointerException.class)
     public void assertSwapToObjectWithoutLogicTable() {
         new YamlShardingAutoTableRuleConfigurationSwapper(Collections.emptyMap(), Collections.emptyMap()).swapToObject(new YamlShardingAutoTableRuleConfiguration());
+    }
+
+    @Test
+    public void assertSwapToObject() {
+        YamlShardingStrategyConfiguration yamlShardingStrategyConfiguration = new YamlShardingStrategyConfiguration();
+        YamlStandardShardingStrategyConfiguration standard = new YamlStandardShardingStrategyConfiguration();
+        standard.setShardingColumn("col");
+        standard.setShardingAlgorithmName("foo_algorithm");
+        yamlShardingStrategyConfiguration.setStandard(standard);
+        YamlShardingAutoTableRuleConfiguration configuration = swapper.swapToYamlConfiguration(
+                new ShardingAutoTableRuleConfiguration("tbl", "ds0,ds1"));
+        configuration.setShardingStrategy(yamlShardingStrategyConfiguration);
+        YamlKeyGenerateStrategyConfiguration keyGenerateStrategy = new YamlKeyGenerateStrategyConfiguration();
+        keyGenerateStrategy.setColumn("col");
+        configuration.setKeyGenerateStrategy(keyGenerateStrategy);
+        configuration.setActualTablePrefix("tmp_");
+        ShardingAutoTableRuleConfiguration actual = new YamlShardingAutoTableRuleConfigurationSwapper(Collections.emptyMap(), Collections.emptyMap()).swapToObject(configuration);
+        assertThat(actual.getLogicTable(), is("tbl"));
+        assertThat(actual.getActualDataSources(), is("ds0,ds1"));
+        assertThat(actual.getActualTablePrefix(), is("tmp_"));
+        assertNotNull(actual.getShardingStrategy());
+        assertNotNull(actual.getKeyGenerateStrategy());
     }
 }
