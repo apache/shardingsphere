@@ -29,11 +29,13 @@ import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
+import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -53,7 +55,7 @@ public final class RuleAlteredJob implements SimpleJob, PipelineJob {
     private final RuleAlteredJobPreparer jobPreparer = new RuleAlteredJobPreparer();
     
     @Getter
-    private final Map<Integer, RuleAlteredJobScheduler> jobSchedulerMap = new ConcurrentHashMap<>();
+    private final Map<Integer, PipelineTasksRunner> tasksRunnerMap = new ConcurrentHashMap<>();
     
     private volatile boolean stopping;
     
@@ -72,7 +74,7 @@ public final class RuleAlteredJob implements SimpleJob, PipelineJob {
         JobProgress initProgress = governanceRepositoryAPI.getJobProgress(shardingContext.getJobName(), shardingContext.getShardingItem());
         RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, shardingContext.getShardingItem(), initProgress, dataSourceManager, jobPreparer);
         int shardingItem = jobContext.getShardingItem();
-        if (jobSchedulerMap.containsKey(shardingItem)) {
+        if (tasksRunnerMap.containsKey(shardingItem)) {
             // If the following log is output, it is possible that the elasticjob task was not closed correctly
             log.warn("schedulerMap contains shardingItem {}, ignore", shardingItem);
             return;
@@ -80,8 +82,13 @@ public final class RuleAlteredJob implements SimpleJob, PipelineJob {
         log.info("start RuleAlteredJobScheduler, jobId={}, shardingItem={}", jobId, shardingItem);
         RuleAlteredJobScheduler jobScheduler = new RuleAlteredJobScheduler(jobContext);
         jobScheduler.start();
-        jobSchedulerMap.put(shardingItem, jobScheduler);
+        tasksRunnerMap.put(shardingItem, jobScheduler);
         PipelineJobProgressPersistService.addJobProgressPersistContext(jobId, shardingItem);
+    }
+    
+    @Override
+    public Optional<PipelineTasksRunner> getTasksRunner(final int shardingItem) {
+        return Optional.ofNullable(tasksRunnerMap.get(shardingItem));
     }
     
     /**
@@ -98,10 +105,10 @@ public final class RuleAlteredJob implements SimpleJob, PipelineJob {
             return;
         }
         log.info("stop job scheduler, jobId={}", jobId);
-        for (RuleAlteredJobScheduler each : jobSchedulerMap.values()) {
+        for (PipelineTasksRunner each : tasksRunnerMap.values()) {
             each.stop();
         }
-        jobSchedulerMap.clear();
+        tasksRunnerMap.clear();
         PipelineJobProgressPersistService.removeJobProgressPersistContext(jobId);
     }
 }

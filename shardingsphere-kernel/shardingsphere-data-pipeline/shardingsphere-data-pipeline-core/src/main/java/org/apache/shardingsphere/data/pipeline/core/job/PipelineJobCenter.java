@@ -15,22 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
+package org.apache.shardingsphere.data.pipeline.core.job;
 
 import lombok.extern.slf4j.Slf4j;
-import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
+import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
+import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 
-import java.util.Collections;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Rule altered job center.
+ * Pipeline job center.
  */
 @Slf4j
-public final class RuleAlteredJobCenter {
+public final class PipelineJobCenter {
     
-    private static final Map<String, RuleAlteredJob> JOB_MAP = new ConcurrentHashMap<>();
+    private static final Map<String, PipelineJob> JOB_MAP = new ConcurrentHashMap<>();
     
     /**
      * Add job.
@@ -38,7 +40,7 @@ public final class RuleAlteredJobCenter {
      * @param jobId job id
      * @param job job
      */
-    public static void addJob(final String jobId, final RuleAlteredJob job) {
+    public static void addJob(final String jobId, final PipelineJob job) {
         log.info("add job, jobId={}", jobId);
         JOB_MAP.put(jobId, job);
     }
@@ -59,7 +61,7 @@ public final class RuleAlteredJobCenter {
      * @param jobId job id
      */
     public static void stop(final String jobId) {
-        RuleAlteredJob job = JOB_MAP.get(jobId);
+        PipelineJob job = JOB_MAP.get(jobId);
         if (null == job) {
             log.info("job is null, ignore, jobId={}", jobId);
             return;
@@ -70,32 +72,18 @@ public final class RuleAlteredJobCenter {
     }
     
     /**
-     * Get job scheduler map.
+     * Get job context.
      *
      * @param jobId job id
-     * @return job scheduler
+     * @param shardingItem sharding item
+     * @return job context
      */
-    public static Map<Integer, RuleAlteredJobScheduler> getJobSchedulerMap(final String jobId) {
-        RuleAlteredJob ruleAlteredJob = JOB_MAP.get(jobId);
-        return ruleAlteredJob == null ? Collections.emptyMap() : ruleAlteredJob.getJobSchedulerMap();
-    }
-    
-    /**
-     * Update job status for all job sharding.
-     *
-     * @param jobId job id
-     * @param jobStatus job status
-     */
-    public static void updateJobStatus(final String jobId, final JobStatus jobStatus) {
-        RuleAlteredJob ruleAlteredJob = JOB_MAP.get(jobId);
-        if (null == ruleAlteredJob) {
-            log.info("job is null, ignore, jobId={}", jobId);
-            return;
+    public static Optional<PipelineJobContext> getJobContext(final String jobId, final int shardingItem) {
+        PipelineJob job = JOB_MAP.get(jobId);
+        if (null == job) {
+            return Optional.empty();
         }
-        Map<Integer, RuleAlteredJobScheduler> schedulerMap = ruleAlteredJob.getJobSchedulerMap();
-        log.info("updateJobStatus, shardingItems={}, jobStatus={}", schedulerMap.keySet(), jobStatus);
-        for (RuleAlteredJobScheduler each : schedulerMap.values()) {
-            each.getJobContext().setStatus(jobStatus);
-        }
+        Optional<PipelineTasksRunner> tasksRunner = job.getTasksRunner(shardingItem);
+        return tasksRunner.map(PipelineTasksRunner::getJobContext);
     }
 }

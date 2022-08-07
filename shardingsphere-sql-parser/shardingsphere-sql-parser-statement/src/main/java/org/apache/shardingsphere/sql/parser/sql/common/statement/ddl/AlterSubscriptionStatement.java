@@ -15,27 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
-
-import java.util.Optional;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Pipeline job.
+ * Alter subscription statement.
  */
-public interface PipelineJob {
-    
-    /**
-     * Get tasks runner.
-     *
-     * @param shardingItem sharding item
-     * @return tasks runner
-     */
-    Optional<PipelineTasksRunner> getTasksRunner(int shardingItem);
-    
-    /**
-     * Stop job.
-     */
-    void stop();
+@ToString(callSuper = true)
+public abstract class AlterSubscriptionStatement extends AbstractSQLStatement implements DDLStatement {
 }

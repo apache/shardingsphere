@@ -172,5 +172,6 @@ execute
     | createForeignTable
     | alterStatistics
     | createGroup
+    | alterSubscription
     ) SEMI_? EOF
     ;

@@ -3264,46 +3264,6 @@
     <sql-case id="alter_by_postgresql_source_test_case214" value="ALTER OPERATOR FAMILY alt_opf7 USING btree DROP OPERATOR 1 (int4, int2, int8);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case215" value="ALTER OPERATOR FAMILY alt_opf8 USING btree ADD OPERATOR 1 &lt; (int4, int4);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case216" value="ALTER OPERATOR FAMILY alt_opf9 USING gist ADD OPERATOR 1 &lt; (int4, int4) FOR ORDER BY float_ops;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case327" value="ALTER SUBSCRIPTION regress_doesnotexist CONNECTION &apos;dbname=regress_doesnotexist2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case328" value="ALTER SUBSCRIPTION regress_testsub ADD PUBLICATION testpub WITH (refresh = false);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case329" value="ALTER SUBSCRIPTION regress_testsub ADD PUBLICATION testpub1, testpub1 WITH (refresh = false);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case330" value="ALTER SUBSCRIPTION regress_testsub ADD PUBLICATION testpub1, testpub2 WITH (refresh = false);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case331" value="ALTER SUBSCRIPTION regress_testsub ADD PUBLICATION testpub1, testpub2 WITH (refresh = false);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case332" value="ALTER SUBSCRIPTION regress_testsub CONNECTION &apos;dbname=regress_doesnotexist2&apos;;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case333" value="ALTER SUBSCRIPTION regress_testsub CONNECTION &apos;foobar&apos;;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case334" value="ALTER SUBSCRIPTION regress_testsub DISABLE;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case335" value="ALTER SUBSCRIPTION regress_testsub DISABLE;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case336" value="ALTER SUBSCRIPTION regress_testsub DROP PUBLICATION testpub, testpub1, testpub2 WITH (refresh = false);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case337" value="ALTER SUBSCRIPTION regress_testsub DROP PUBLICATION testpub1, testpub1 WITH (refresh = false);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case338" value="ALTER SUBSCRIPTION regress_testsub DROP PUBLICATION testpub1, testpub2 WITH (refresh = false);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case339" value="ALTER SUBSCRIPTION regress_testsub DROP PUBLICATION testpub3 WITH (refresh = false);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case340" value="ALTER SUBSCRIPTION regress_testsub ENABLE;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case341" value="ALTER SUBSCRIPTION regress_testsub ENABLE;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case342" value="ALTER SUBSCRIPTION regress_testsub OWNER TO regress_subscription_user2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case343" value="ALTER SUBSCRIPTION regress_testsub OWNER TO regress_subscription_user2;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case344" value="ALTER SUBSCRIPTION regress_testsub REFRESH PUBLICATION;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case345" value="ALTER SUBSCRIPTION regress_testsub RENAME TO regress_testsub_dummy;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case346" value="ALTER SUBSCRIPTION regress_testsub RENAME TO regress_testsub_foo;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case347" value="ALTER SUBSCRIPTION regress_testsub SET (binary = false);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case348" value="ALTER SUBSCRIPTION regress_testsub SET (create_slot = false);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case349" value="ALTER SUBSCRIPTION regress_testsub SET (slot_name = &apos;&apos;);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case350" value="ALTER SUBSCRIPTION regress_testsub SET (slot_name = &apos;newname&apos;);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case351" value="ALTER SUBSCRIPTION regress_testsub SET (slot_name = NONE);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case352" value="ALTER SUBSCRIPTION regress_testsub SET (slot_name = NONE);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case353" value="ALTER SUBSCRIPTION regress_testsub SET (slot_name = NONE);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case354" value="ALTER SUBSCRIPTION regress_testsub SET (slot_name = NONE);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case355" value="ALTER SUBSCRIPTION regress_testsub SET (slot_name = NONE);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case356" value="ALTER SUBSCRIPTION regress_testsub SET (slot_name = NONE);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case357" value="ALTER SUBSCRIPTION regress_testsub SET (streaming = false);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case358" value="ALTER SUBSCRIPTION regress_testsub SET (streaming = true);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case359" value="ALTER SUBSCRIPTION regress_testsub SET (two_phase = false);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case360" value="ALTER SUBSCRIPTION regress_testsub SET PUBLICATION mypub WITH (refresh = true);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case361" value="ALTER SUBSCRIPTION regress_testsub SET PUBLICATION testpub2, testpub3 WITH (refresh = false);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case362" value="ALTER SUBSCRIPTION regress_testsub3 ENABLE;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case363" value="ALTER SUBSCRIPTION regress_testsub3 REFRESH PUBLICATION;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case364" value="ALTER SUBSCRIPTION regress_testsub_foo RENAME TO regress_testsub;" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case365" value="ALTER SUBSCRIPTION regress_testsub_foo SET (synchronous_commit = foobar);" db-types="PostgreSQL" />
-    <sql-case id="alter_by_postgresql_source_test_case366" value="ALTER SUBSCRIPTION regress_testsub_foo SET (synchronous_commit = local);" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case367" value="ALTER TABLE ONLY gtest30 ALTER COLUMN b DROP EXPRESSION;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case368" value="ALTER TABLE ab1 ALTER a SET STATISTICS -1;" db-types="PostgreSQL" />
     <sql-case id="alter_by_postgresql_source_test_case369" value="ALTER TABLE am_partitioned SET ACCESS METHOD heap2;" db-types="PostgreSQL" />

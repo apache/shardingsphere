@@ -19,7 +19,7 @@ package org.apache.shardingsphere.data.pipeline.core.api;
 
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 import java.util.List;
@@ -43,7 +43,7 @@ public interface GovernanceRepositoryAPI {
      *
      * @param jobContext job context
      */
-    void persistJobProgress(RuleAlteredJobContext jobContext);
+    void persistJobProgress(PipelineJobContext jobContext);
     
     /**
      * Get job progress.
