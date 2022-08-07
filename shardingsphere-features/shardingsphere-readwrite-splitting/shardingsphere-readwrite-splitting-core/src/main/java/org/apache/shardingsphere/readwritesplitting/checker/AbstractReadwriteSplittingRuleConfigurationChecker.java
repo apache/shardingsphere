@@ -54,30 +54,41 @@ public abstract class AbstractReadwriteSplittingRuleConfigurationChecker<T exten
         checkLoadBalancerDataSourceName(databaseName, configs, getLoadBalancer(config), rules);
     }
     
-    private void checkDataSources(final String databaseName, final Collection<ReadwriteSplittingDataSourceRuleConfiguration> configs,
-                                  final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
-        Collection<String> writeDataSourceNames = new HashSet<>();
-        Collection<String> readDataSourceNames = new HashSet<>();
+    private void checkDataSources(final String databaseName,
+                                  final Collection<ReadwriteSplittingDataSourceRuleConfiguration> configs, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
+        Collection<String> addedWriteDataSourceNames = new HashSet<>();
+        Collection<String> addedReadDataSourceNames = new HashSet<>();
         for (ReadwriteSplittingDataSourceRuleConfiguration each : configs) {
-            Preconditions.checkArgument(!Strings.isNullOrEmpty(each.getName()), "Name is required.");
-            Preconditions.checkState(null != each.getStaticStrategy() || null != each.getDynamicStrategy(),
-                    "No available readwrite-splitting rule configuration in database `%s`.", databaseName);
-            Optional.ofNullable(each.getStaticStrategy()).ifPresent(optional -> checkStaticStrategy(databaseName, dataSourceMap, writeDataSourceNames, readDataSourceNames, optional));
+            Preconditions.checkArgument(!Strings.isNullOrEmpty(each.getName()), "Readwrite-splitting data source name is required.");
+            Preconditions.checkState(null != each.getStaticStrategy() || null != each.getDynamicStrategy(), "No available readwrite-splitting rule configuration in database `%s`.", databaseName);
+            Optional.ofNullable(each.getStaticStrategy()).ifPresent(optional -> checkStaticStrategy(databaseName, dataSourceMap, addedWriteDataSourceNames, addedReadDataSourceNames, optional));
             Optional.ofNullable(each.getDynamicStrategy()).ifPresent(optional -> checkDynamicStrategy(rules, optional));
         }
     }
     
-    private void checkStaticStrategy(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> writeDataSourceNames,
+    private void checkStaticStrategy(final String databaseName, final Map<String, DataSource> dataSourceMap, final Collection<String> addedWriteDataSourceNames,
                                      final Collection<String> readDataSourceNames, final StaticReadwriteSplittingStrategyConfiguration strategyConfig) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(strategyConfig.getWriteDataSourceName()), "Write data source name is required.");
         Preconditions.checkArgument(!strategyConfig.getReadDataSourceNames().isEmpty(), "Read data source names are required.");
-        Collection<String> inlineWriteNames = new InlineExpressionParser(strategyConfig.getWriteDataSourceName()).splitAndEvaluate();
-        inlineWriteNames.forEach(each -> Preconditions.checkState(null != dataSourceMap.get(each), "Write data source name `%s` not in database `%s`.", each, databaseName));
-        inlineWriteNames.forEach(each -> Preconditions.checkState(writeDataSourceNames.add(each), "Can not config duplicate write dataSource `%s` in database `%s`.", each, databaseName));
-        for (String readName : readDataSourceNames) {
-            Collection<String> inlineReadNames = new InlineExpressionParser(readName).splitAndEvaluate();
-            inlineReadNames.forEach(each -> Preconditions.checkState(null != dataSourceMap.get(each), "Read data source name `%s` not in database `%s`.", each, databaseName));
-            inlineReadNames.forEach(each -> Preconditions.checkState(readDataSourceNames.add(each), "Can not config duplicate write dataSource `%s` in database `%s`.", each, databaseName));
+        checkWriteDataSourceNames(databaseName, dataSourceMap, addedWriteDataSourceNames, strategyConfig);
+        for (String each : readDataSourceNames) {
+            checkReadeDataSourceNames(databaseName, dataSourceMap, readDataSourceNames, each);
+        }
+    }
+    
+    private void checkWriteDataSourceNames(final String databaseName, final Map<String, DataSource> dataSourceMap,
+                                           final Collection<String> addedWriteDataSourceNames, final StaticReadwriteSplittingStrategyConfiguration strategyConfig) {
+        for (String each : new InlineExpressionParser(strategyConfig.getWriteDataSourceName()).splitAndEvaluate()) {
+            Preconditions.checkState(dataSourceMap.containsKey(each), "Write data source name `%s` not in database `%s`.", each, databaseName);
+            Preconditions.checkState(addedWriteDataSourceNames.add(each), "Can not config duplicate write data source `%s` in database `%s`.", each, databaseName);
+        }
+    }
+    
+    private void checkReadeDataSourceNames(final String databaseName,
+                                           final Map<String, DataSource> dataSourceMap, final Collection<String> addedReadDataSourceNames, final String readDataSourceName) {
+        for (String each : new InlineExpressionParser(readDataSourceName).splitAndEvaluate()) {
+            Preconditions.checkState(dataSourceMap.containsKey(each), "Read data source name `%s` not in database `%s`.", each, databaseName);
+            Preconditions.checkState(addedReadDataSourceNames.add(each), "Can not config duplicate write data source `%s` in database `%s`.", each, databaseName);
         }
     }
     
