@@ -24,25 +24,23 @@ import org.junit.Test;
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
 
-public final class YamlShadowDataSourcePropertiesSwapperTest {
+public final class YamlShadowDataSourceConfigurationSwapperTest {
     
     @Test
     public void assertSwapToYamlConfiguration() {
-        ShadowDataSourceConfiguration shadowDataSourceConfig = new ShadowDataSourceConfiguration("ds", "ds-shadow");
-        YamlShadowDataSourceConfigurationSwapper swapper = new YamlShadowDataSourceConfigurationSwapper();
-        YamlShadowDataSourceConfiguration yamlConfig = swapper.swapToYamlConfiguration(shadowDataSourceConfig);
-        assertThat(shadowDataSourceConfig.getSourceDataSourceName(), is(yamlConfig.getSourceDataSourceName()));
-        assertThat(shadowDataSourceConfig.getShadowDataSourceName(), is(yamlConfig.getShadowDataSourceName()));
+        ShadowDataSourceConfiguration shadowDataSourceConfig = new ShadowDataSourceConfiguration("ds", "shadow_ds");
+        YamlShadowDataSourceConfiguration actual = new YamlShadowDataSourceConfigurationSwapper().swapToYamlConfiguration(shadowDataSourceConfig);
+        assertThat(actual.getSourceDataSourceName(), is("ds"));
+        assertThat(actual.getShadowDataSourceName(), is("shadow_ds"));
     }
     
     @Test
     public void assertSwapToObject() {
         YamlShadowDataSourceConfiguration yamlConfig = new YamlShadowDataSourceConfiguration();
-        yamlConfig.setShadowDataSourceName("ds-shadow");
         yamlConfig.setSourceDataSourceName("ds");
-        YamlShadowDataSourceConfigurationSwapper swapper = new YamlShadowDataSourceConfigurationSwapper();
-        ShadowDataSourceConfiguration dataSourceConfig = swapper.swapToObject(yamlConfig);
-        assertThat(yamlConfig.getSourceDataSourceName(), is(dataSourceConfig.getSourceDataSourceName()));
-        assertThat(yamlConfig.getShadowDataSourceName(), is(dataSourceConfig.getShadowDataSourceName()));
+        yamlConfig.setShadowDataSourceName("shadow_ds");
+        ShadowDataSourceConfiguration actual = new YamlShadowDataSourceConfigurationSwapper().swapToObject(yamlConfig);
+        assertThat(actual.getSourceDataSourceName(), is("ds"));
+        assertThat(actual.getShadowDataSourceName(), is("shadow_ds"));
     }
 }
