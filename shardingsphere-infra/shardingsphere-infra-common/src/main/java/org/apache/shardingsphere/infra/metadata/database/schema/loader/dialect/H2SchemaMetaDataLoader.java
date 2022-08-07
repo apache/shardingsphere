@@ -60,10 +60,10 @@ public final class H2SchemaMetaDataLoader implements DialectSchemaMetaDataLoader
     
     private static final String PRIMARY_KEY_META_DATA_SQL_IN_TABLES = PRIMARY_KEY_META_DATA_SQL + " AND TABLE_NAME IN (%s)";
     
-    private static final String GENERATED_INFO_SQL = "SELECT C.TABLE_NAME TABLE_NAME, C.COLUMN_NAME COLUMN_NAME, (CASE WHEN C.IS_GENERATED='ALWAYS' THEN TRUE ELSE FALSE END) IS_GENERATED"
-            + " FROM INFORMATION_SCHEMA.COLUMNS C WHERE C.TABLE_CATALOG=? AND C.TABLE_SCHEMA=?";
+    private static final String GENERATED_INFO_SQL = "SELECT C.TABLE_NAME TABLE_NAME, C.COLUMN_NAME COLUMN_NAME, COALESCE(I.IS_GENERATED, FALSE) IS_GENERATED FROM INFORMATION_SCHEMA.COLUMNS C"
+            + " RIGHT JOIN INFORMATION_SCHEMA.INDEXES I ON C.TABLE_NAME=I.TABLE_NAME WHERE C.TABLE_CATALOG=? AND C.TABLE_SCHEMA=?";
     
-    private static final String GENERATED_INFO_SQL_IN_TABLES = GENERATED_INFO_SQL + " AND TABLE_NAME IN (%s)";
+    private static final String GENERATED_INFO_SQL_IN_TABLES = GENERATED_INFO_SQL + " AND C.TABLE_NAME IN (%s)";
     
     @Override
     public Collection<SchemaMetaData> load(final DataSource dataSource, final Collection<String> tables, final String defaultSchemaName) throws SQLException {
