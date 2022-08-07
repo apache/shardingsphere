@@ -24,7 +24,10 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-public class C3P0DataSourcePoolMetaData implements DataSourcePoolMetaData {
+/**
+ * C3P0 data source pool meta data.
+ */
+public final class C3P0DataSourcePoolMetaData implements DataSourcePoolMetaData {
     
     private static final Map<String, Object> DEFAULT_PROPERTIES = new HashMap<>(6, 1);
     

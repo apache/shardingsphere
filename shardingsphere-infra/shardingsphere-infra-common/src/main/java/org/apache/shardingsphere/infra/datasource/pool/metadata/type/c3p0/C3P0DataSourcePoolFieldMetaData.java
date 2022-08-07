@@ -19,7 +19,10 @@ package org.apache.shardingsphere.infra.datasource.pool.metadata.type.c3p0;
 
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolFieldMetaData;
 
-public class C3P0DataSourcePoolFieldMetaData implements DataSourcePoolFieldMetaData {
+/**
+ * C3P0 data source pool field meta data.
+ */
+public final class C3P0DataSourcePoolFieldMetaData implements DataSourcePoolFieldMetaData {
     
     @Override
     public String getUsernameFieldName() {
