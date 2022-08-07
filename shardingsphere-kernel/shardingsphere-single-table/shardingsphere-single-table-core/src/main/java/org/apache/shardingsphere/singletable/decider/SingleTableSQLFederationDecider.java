@@ -48,6 +48,9 @@ public final class SingleTableSQLFederationDecider implements SQLFederationDecid
                        final ShardingSphereDatabase database, final SingleTableRule rule, final ConfigurationProperties props) {
         SelectStatementContext select = (SelectStatementContext) logicSQL.getSqlStatementContext();
         Collection<QualifiedTable> singleTableNames = getSingleTableNames(select, database, rule);
+        if (singleTableNames.isEmpty()) {
+            return;
+        }
         addTableDataNodes(deciderContext, rule, singleTableNames);
         deciderContext.setUseSQLFederation(!isAllTablesInSameDataSource(deciderContext, rule, singleTableNames));
     }
