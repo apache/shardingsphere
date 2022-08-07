@@ -33,9 +33,4 @@ public final class PostgreSQLImporter extends AbstractImporter {
                               final PipelineJobProgressListener jobProgressListener) {
         super(importerConfig, dataSourceManager, channel, jobProgressListener);
     }
-    
-    @Override
-    protected String getSchemaName(final String logicTableName) {
-        return getImporterConfig().getSchemaName(new LogicTableName(logicTableName));
-    }
 }

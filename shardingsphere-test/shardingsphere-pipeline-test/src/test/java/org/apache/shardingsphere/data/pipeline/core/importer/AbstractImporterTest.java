@@ -83,11 +83,6 @@ public final class AbstractImporterTest {
     @Before
     public void setUp() throws SQLException {
         jdbcImporter = new AbstractImporter(mockImporterConfiguration(), dataSourceManager, channel, new FixturePipelineJobProgressListener()) {
-            
-            @Override
-            protected String getSchemaName(final String logicTableName) {
-                return null;
-            }
         };
         when(dataSourceManager.getDataSource(dataSourceConfig)).thenReturn(dataSource);
         when(dataSource.getConnection()).thenReturn(connection);
