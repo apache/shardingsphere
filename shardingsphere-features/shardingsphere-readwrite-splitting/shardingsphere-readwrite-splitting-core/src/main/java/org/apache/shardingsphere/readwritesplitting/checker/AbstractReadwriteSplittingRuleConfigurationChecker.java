@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
+import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.TransactionWeightReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.algorithm.loadbalance.WeightReadQueryLoadBalanceAlgorithm;
 import org.apache.shardingsphere.readwritesplitting.api.rule.ReadwriteSplittingDataSourceRuleConfiguration;
@@ -70,11 +71,14 @@ public abstract class AbstractReadwriteSplittingRuleConfigurationChecker<T exten
                                      final Collection<String> readDataSourceNames, final StaticReadwriteSplittingStrategyConfiguration strategyConfig) {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(strategyConfig.getWriteDataSourceName()), "Write data source name is required.");
         Preconditions.checkArgument(!strategyConfig.getReadDataSourceNames().isEmpty(), "Read data source names are required.");
-        strategyConfig.getReadDataSourceNames().forEach(each -> Preconditions.checkState(null != dataSourceMap.get(each), "Read data source name `%s` not in database `%s`.", each, databaseName));
-        Preconditions.checkState(writeDataSourceNames.add(strategyConfig.getWriteDataSourceName()),
-                "Can not config duplicate write dataSource `%s` in database `%s`.", strategyConfig.getWriteDataSourceName(), databaseName);
-        Preconditions.checkState(readDataSourceNames.addAll(strategyConfig.getReadDataSourceNames()),
-                "Can not config duplicate read dataSources `%s` in database `%s`.", strategyConfig.getReadDataSourceNames(), databaseName);
+        Collection<String> inlineWriteNames = new InlineExpressionParser(strategyConfig.getWriteDataSourceName()).splitAndEvaluate();
+        inlineWriteNames.forEach(each -> Preconditions.checkState(null != dataSourceMap.get(each), "Write data source name `%s` not in database `%s`.", each, databaseName));
+        inlineWriteNames.forEach(each -> Preconditions.checkState(writeDataSourceNames.add(each), "Can not config duplicate write dataSource `%s` in database `%s`.", each, databaseName));
+        for (String readName : readDataSourceNames) {
+            Collection<String> inlineReadNames = new InlineExpressionParser(readName).splitAndEvaluate();
+            inlineReadNames.forEach(each -> Preconditions.checkState(null != dataSourceMap.get(each), "Read data source name `%s` not in database `%s`.", each, databaseName));
+            inlineReadNames.forEach(each -> Preconditions.checkState(readDataSourceNames.add(each), "Can not config duplicate write dataSource `%s` in database `%s`.", each, databaseName));
+        }
     }
     
     private void checkDynamicStrategy(final Collection<ShardingSphereRule> rules, final DynamicReadwriteSplittingStrategyConfiguration dynamicStrategy) {
