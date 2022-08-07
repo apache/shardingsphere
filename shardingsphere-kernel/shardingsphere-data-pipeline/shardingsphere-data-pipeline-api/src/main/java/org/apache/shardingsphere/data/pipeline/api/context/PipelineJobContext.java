@@ -15,22 +15,48 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
+package org.apache.shardingsphere.data.pipeline.api.context;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskDelay;
+import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 
 /**
- * Yaml IncrementalTaskProgress.
+ * Pipeline job context.
  */
-@Getter
-@Setter
-public final class YamlIncrementalTaskProgress {
+public interface PipelineJobContext {
     
-    private String dataSourceName;
+    /**
+     * Get job id.
+     *
+     * @return job id
+     */
+    String getJobId();
     
-    private String position;
+    /**
+     * Get sharding item.
+     *
+     * @return sharding item
+     */
+    int getShardingItem();
     
-    private IncrementalTaskDelay delay;
+    /**
+     * Get job status.
+     *
+     * @return job status
+     */
+    JobStatus getStatus();
+    
+    /**
+     * Set job status.
+     *
+     * @param status job status
+     */
+    void setStatus(JobStatus status);
+    
+    /**
+     * Get job configuration.
+     *
+     * @return job configuration
+     */
+    PipelineJobConfiguration getJobConfig();
 }

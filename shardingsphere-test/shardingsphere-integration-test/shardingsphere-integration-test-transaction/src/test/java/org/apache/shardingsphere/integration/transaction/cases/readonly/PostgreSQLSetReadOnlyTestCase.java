@@ -32,8 +32,8 @@ import java.sql.Statement;
 /**
  * PostgreSQL set read only transaction integration test.
  */
-@Slf4j
 @TransactionTestCase(dbTypes = {TransactionTestConstants.POSTGRESQL})
+@Slf4j
 public final class PostgreSQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
     
     public PostgreSQLSetReadOnlyTestCase(final BaseTransactionITCase baseTransactionITCase, final DataSource dataSource) {
@@ -58,7 +58,7 @@ public final class PostgreSQLSetReadOnlyTestCase extends SetReadOnlyTestCase {
             String updateSql = "update account set balance=100 where id=2;";
             log.info("Connection execute update: {}.", updateSql);
             updateStatement.execute(updateSql);
-            log.info("Using the driver of postgresql:42.3.3 expect to update successfully");
+            log.info("Using the driver of postgresql:42.4.1 expect to update successfully");
         } catch (SQLException e) {
             Assert.fail("Update failed, should be successfully.");
         }

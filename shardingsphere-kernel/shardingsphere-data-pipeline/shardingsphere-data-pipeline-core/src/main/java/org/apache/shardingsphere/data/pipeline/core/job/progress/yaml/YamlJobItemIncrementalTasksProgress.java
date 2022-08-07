@@ -15,27 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job;
+package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 
-import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
-
-import java.util.Optional;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskDelay;
 
 /**
- * Pipeline job.
+ * YAML job item incremental tasks progress.
  */
-public interface PipelineJob {
+@Getter
+@Setter
+public final class YamlJobItemIncrementalTasksProgress {
     
-    /**
-     * Get tasks runner.
-     *
-     * @param shardingItem sharding item
-     * @return tasks runner
-     */
-    Optional<PipelineTasksRunner> getTasksRunner(int shardingItem);
+    private String dataSourceName;
     
-    /**
-     * Stop job.
-     */
-    void stop();
+    private String position;
+    
+    private IncrementalTaskDelay delay;
 }

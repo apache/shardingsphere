@@ -15,21 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
+package org.apache.shardingsphere.sql.parser.sql.common.statement.ddl;
 
-import java.util.HashMap;
-import java.util.Map;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.ToString;
+import org.apache.shardingsphere.sql.parser.sql.common.statement.AbstractSQLStatement;
 
 /**
- * Yaml InventoryTaskProgress.
+ * Alter subscription statement.
  */
-@Getter
-@Setter
-public final class YamlInventoryTaskProgress {
-    
-    private String[] finished = new String[0];
-    
-    private Map<String, String> unfinished = new HashMap<>();
+@ToString(callSuper = true)
+public abstract class AlterSubscriptionStatement extends AbstractSQLStatement implements DDLStatement {
 }

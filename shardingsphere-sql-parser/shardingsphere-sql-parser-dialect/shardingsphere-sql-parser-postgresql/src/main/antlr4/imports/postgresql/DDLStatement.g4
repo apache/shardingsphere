@@ -1070,6 +1070,8 @@ alterSubscription
     | CONNECTION STRING_
     | REFRESH PUBLICATION (WITH definition)?
     | SET PUBLICATION publicationNameList (WITH definition)?
+    | ADD PUBLICATION publicationNameList (WITH definition)?
+    | DROP PUBLICATION publicationNameList (WITH definition)?
     | (ENABLE | DISABLE))
     ;
 

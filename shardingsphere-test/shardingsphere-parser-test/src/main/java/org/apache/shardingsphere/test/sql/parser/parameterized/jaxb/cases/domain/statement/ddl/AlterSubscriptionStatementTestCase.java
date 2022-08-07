@@ -15,27 +15,12 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job;
+package org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.ddl;
 
-import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
-
-import java.util.Optional;
+import org.apache.shardingsphere.test.sql.parser.parameterized.jaxb.cases.domain.statement.SQLParserTestCase;
 
 /**
- * Pipeline job.
+ * Alter subscription statement test case.
  */
-public interface PipelineJob {
-    
-    /**
-     * Get tasks runner.
-     *
-     * @param shardingItem sharding item
-     * @return tasks runner
-     */
-    Optional<PipelineTasksRunner> getTasksRunner(int shardingItem);
-    
-    /**
-     * Stop job.
-     */
-    void stop();
+public final class AlterSubscriptionStatementTestCase extends SQLParserTestCase {
 }

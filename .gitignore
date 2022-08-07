@@ -31,6 +31,7 @@ cobertura.ser
 # temp ignore
 logs/
 *.log
+*.tlog
 *.doc
 *.cache
 *.diff

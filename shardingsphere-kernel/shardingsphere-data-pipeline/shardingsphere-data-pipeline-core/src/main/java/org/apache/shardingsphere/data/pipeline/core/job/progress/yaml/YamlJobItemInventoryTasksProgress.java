@@ -15,27 +15,21 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job;
+package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 
-import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
-
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * Pipeline job.
+ * YAML job item inventory tasks progress.
  */
-public interface PipelineJob {
+@Getter
+@Setter
+public final class YamlJobItemInventoryTasksProgress {
     
-    /**
-     * Get tasks runner.
-     *
-     * @param shardingItem sharding item
-     * @return tasks runner
-     */
-    Optional<PipelineTasksRunner> getTasksRunner(int shardingItem);
+    private String[] finished = new String[0];
     
-    /**
-     * Stop job.
-     */
-    void stop();
+    private Map<String, String> unfinished = new HashMap<>();
 }

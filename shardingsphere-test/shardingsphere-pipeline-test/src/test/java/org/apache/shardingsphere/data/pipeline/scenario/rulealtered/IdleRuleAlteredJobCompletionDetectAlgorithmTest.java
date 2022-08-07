@@ -20,8 +20,8 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 import org.apache.shardingsphere.data.pipeline.api.detect.RuleAlteredJobAlmostCompletedParameter;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobIncrementalTaskProgress;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobInventoryTaskProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemInventoryTasksProgress;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
@@ -68,7 +68,7 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithmTest {
     public void assertFalseOnUnFinishedPosition() {
         int jobShardingCount = 1;
         JobProgress jobProgress = new JobProgress();
-        jobProgress.setJobInventoryTask(new JobInventoryTaskProgress(Collections.singletonMap("foo_ds", new InventoryTaskProgress(new PlaceholderPosition()))));
+        jobProgress.setInventory(new JobItemInventoryTasksProgress(Collections.singletonMap("foo_ds", new InventoryTaskProgress(new PlaceholderPosition()))));
         Collection<JobProgress> jobProgresses = Collections.singleton(jobProgress);
         RuleAlteredJobAlmostCompletedParameter parameter = new RuleAlteredJobAlmostCompletedParameter(jobShardingCount, jobProgresses);
         assertFalse(JobCompletionDetectAlgorithmFactory.newInstance(new AlgorithmConfiguration("IDLE", new Properties())).isAlmostCompleted(parameter));
@@ -98,11 +98,11 @@ public final class IdleRuleAlteredJobCompletionDetectAlgorithmTest {
     
     private JobProgress createJobProgress(final long latestActiveTimeMillis) {
         JobProgress result = new JobProgress();
-        result.setJobInventoryTask(new JobInventoryTaskProgress(Collections.singletonMap("foo_ds", new InventoryTaskProgress(new FinishedPosition()))));
+        result.setInventory(new JobItemInventoryTasksProgress(Collections.singletonMap("foo_ds", new InventoryTaskProgress(new FinishedPosition()))));
         IncrementalTaskProgress incrementalTaskProgress = new IncrementalTaskProgress();
         incrementalTaskProgress.getIncrementalTaskDelay().setLatestActiveTimeMillis(latestActiveTimeMillis);
-        JobIncrementalTaskProgress jobIncrementalTaskProgress = new JobIncrementalTaskProgress(Collections.singletonMap("foo_ds", incrementalTaskProgress));
-        result.setJobIncrementalTask(jobIncrementalTaskProgress);
+        JobItemIncrementalTasksProgress incremental = new JobItemIncrementalTasksProgress(Collections.singletonMap("foo_ds", incrementalTaskProgress));
+        result.setIncremental(incremental);
         return result;
     }
 }

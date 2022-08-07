@@ -25,7 +25,7 @@ import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExe
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJob;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobCenter;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobPreparer;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobProgressDetector;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
@@ -81,13 +81,13 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
                 log.info("isJobSuccessful=true");
                 new RuleAlteredJobPreparer().cleanup(jobConfig);
             }
-            RuleAlteredJobCenter.stop(jobId);
+            PipelineJobCenter.stop(jobId);
             return;
         }
         switch (event.getType()) {
             case ADDED:
             case UPDATED:
-                if (RuleAlteredJobCenter.isJobExisting(jobConfigPOJO.getJobName())) {
+                if (PipelineJobCenter.isJobExisting(jobConfigPOJO.getJobName())) {
                     log.info("{} added to executing jobs failed since it already exists", jobConfigPOJO.getJobName());
                 } else {
                     log.info("{} executing jobs", jobConfigPOJO.getJobName());
@@ -101,7 +101,7 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     
     private void execute(final JobConfigurationPOJO jobConfigPOJO) {
         RuleAlteredJob job = new RuleAlteredJob();
-        RuleAlteredJobCenter.addJob(jobConfigPOJO.getJobName(), job);
+        PipelineJobCenter.addJob(jobConfigPOJO.getJobName(), job);
         OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration());
         oneOffJobBootstrap.execute();
         job.setOneOffJobBootstrap(oneOffJobBootstrap);

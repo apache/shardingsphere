@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.api.job.progress;
 
 /**
- * Pipeline job progress.
+ * Pipeline job item progress.
  */
-public interface PipelineJobProgress {
+public interface PipelineJobItemProgress {
 }
