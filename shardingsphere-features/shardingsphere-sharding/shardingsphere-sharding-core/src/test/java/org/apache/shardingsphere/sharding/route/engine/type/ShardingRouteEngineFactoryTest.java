@@ -314,8 +314,6 @@ public final class ShardingRouteEngineFactoryTest {
         when(shardingRule.getShardingLogicTableNames(tableNames)).thenReturn(tableNames);
         when(shardingRule.getTableRule("t_order").getActualDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
         when(shardingRule.isAllShardingTables(Collections.singletonList("t_order"))).thenReturn(true);
-        when(shardingConditions.isNeedMerge()).thenReturn(true);
-        when(shardingConditions.isSameShardingCondition()).thenReturn(true);
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, sqlStatementContext, shardingConditions, createFederationConfigurationProperties());
         assertThat(actual, instanceOf(ShardingStandardRoutingEngine.class));
     }
