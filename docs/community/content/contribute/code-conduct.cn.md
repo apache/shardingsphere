@@ -22,7 +22,7 @@ chapter = true
  - 确保覆盖率不低于 master 分支。
  - 应尽量将设计精细化拆分；做到小幅度修改，多次数提交，但应保证提交的完整性。
  - 确保遵守编码规范。
- - 如果您使用 IDEA，可导入推荐的 [Settings](https://shardingsphere.apache.org/community/data/shardingsphere-settings.jar)，或者 `src/resources/code-style-idea.xml`。
+ - 如果您使用 IDEA，可导入推荐的 `src/resources/code-style-idea.xml`。
  - 通过 Spotless 统一代码风格，执行 `mvn spotless:apply` 格式化代码。
  
 ## 编码规范
