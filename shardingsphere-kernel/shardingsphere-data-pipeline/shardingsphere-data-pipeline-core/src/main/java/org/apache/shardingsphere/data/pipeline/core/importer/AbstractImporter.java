@@ -29,6 +29,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.record.FinishedRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.GroupedDataRecord;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
+import org.apache.shardingsphere.data.pipeline.api.metadata.LogicTableName;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
 import org.apache.shardingsphere.data.pipeline.core.ingest.IngestDataChangeType;
@@ -173,7 +174,9 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
         }
     }
     
-    protected abstract String getSchemaName(String logicTableName);
+    private String getSchemaName(final String logicTableName) {
+        return getImporterConfig().getSchemaName(new LogicTableName(logicTableName));
+    }
     
     private void executeUpdate(final Connection connection, final List<DataRecord> dataRecords) throws SQLException {
         for (DataRecord each : dataRecords) {

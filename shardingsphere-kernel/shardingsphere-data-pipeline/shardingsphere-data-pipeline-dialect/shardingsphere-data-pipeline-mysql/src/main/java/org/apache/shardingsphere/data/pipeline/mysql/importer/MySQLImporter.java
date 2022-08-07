@@ -32,9 +32,4 @@ public final class MySQLImporter extends AbstractImporter {
                          final PipelineJobProgressListener jobProgressListener) {
         super(importerConfig, dataSourceManager, channel, jobProgressListener);
     }
-    
-    @Override
-    protected String getSchemaName(final String logicTableName) {
-        return null;
-    }
 }
