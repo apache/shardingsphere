@@ -146,8 +146,9 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
         RouteContext routeContext = new RouteContext();
         when(backendConnection.getConnectionSession().getStatementManager()).thenReturn(new JDBCBackendStatement());
         FederationExecutor federationExecutor = mock(FederationExecutor.class);
-        try (MockedStatic<FederationExecutorFactory> federationExecutorFactory = mockStatic(FederationExecutorFactory.class); 
-             MockedStatic<SystemSchemaUtil> systemSchemaUtil = mockStatic(SystemSchemaUtil.class)) {
+        try (
+                MockedStatic<FederationExecutorFactory> federationExecutorFactory = mockStatic(FederationExecutorFactory.class);
+                MockedStatic<SystemSchemaUtil> systemSchemaUtil = mockStatic(SystemSchemaUtil.class)) {
             when(federationExecutor.executeQuery(any(DriverExecutionPrepareEngine.class), any(ProxyJDBCExecutorCallback.class), any(FederationContext.class))).thenReturn(resultSet);
             when(resultSet.getMetaData().getColumnCount()).thenReturn(1);
             when(resultSet.getMetaData().getColumnType(1)).thenReturn(Types.INTEGER);
