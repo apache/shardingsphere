@@ -516,7 +516,7 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
         if (trafficContext.isMatchTraffic()) {
             return executor.getTrafficExecutor().getResultSet();
         }
-        if (deciderContext.isUseSQLFederation()) {
+        if (null != deciderContext && deciderContext.isUseSQLFederation()) {
             return executor.getFederationExecutor().getResultSet();
         }
         if (executionContext.getSqlStatementContext() instanceof SelectStatementContext || executionContext.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {
