@@ -57,13 +57,14 @@ public final class DataSourceGeneratedDatabaseConfigurationTest {
         DataSourceGeneratedDatabaseConfiguration databaseConfig = createDataSourceGeneratedDatabaseConfiguration();
         DataSourceProperties props = databaseConfig.getDataSourceProperties().get("normal_db");
         Map<String, Object> poolStandardProps = props.getPoolPropertySynonyms().getStandardProperties();
-        assertThat(poolStandardProps.size(), is(6));
+        assertThat(poolStandardProps.size(), is(7));
         assertThat(poolStandardProps.get("connectionTimeoutMilliseconds"), is(2000L));
         assertThat(poolStandardProps.get("idleTimeoutMilliseconds"), is(1000L));
         assertThat(poolStandardProps.get("maxLifetimeMilliseconds"), is(1000L));
         assertThat(poolStandardProps.get("maxPoolSize"), is(2));
         assertThat(poolStandardProps.get("minPoolSize"), is(1));
         assertThat(poolStandardProps.get("readOnly"), is(false));
+        assertThat(poolStandardProps.get("registerMbeans"), is(false));
         Map<String, Object> connStandardProps = props.getConnectionPropertySynonyms().getStandardProperties();
         assertThat(connStandardProps.size(), is(3));
         assertThat(connStandardProps.get("url"), is("jdbc:mock://127.0.0.1/normal_db"));

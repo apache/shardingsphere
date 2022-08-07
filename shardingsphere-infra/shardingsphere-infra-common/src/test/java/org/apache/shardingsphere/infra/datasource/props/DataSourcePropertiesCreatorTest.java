@@ -47,7 +47,7 @@ public final class DataSourcePropertiesCreatorTest {
     
     private void assertParameter(final DataSourceProperties actual) {
         Map<String, Object> props = actual.getAllLocalProperties();
-        assertThat(props.size(), is(9));
+        assertThat(props.size(), is(10));
         assertThat(props.get("jdbcUrl"), is("jdbc:mysql://localhost:3306/demo_ds"));
         assertThat(props.get("username"), is("root"));
         assertThat(props.get("password"), is("root"));
@@ -56,6 +56,7 @@ public final class DataSourcePropertiesCreatorTest {
         assertNull(props.get("connectionTimeout"));
         assertNull(props.get("idleTimeout"));
         assertNull(props.get("maxLifetime"));
+        assertNull(props.get("registerMbeans"));
     }
     
     @Test
