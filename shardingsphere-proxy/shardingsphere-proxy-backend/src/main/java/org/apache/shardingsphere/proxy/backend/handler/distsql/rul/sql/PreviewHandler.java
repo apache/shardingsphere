@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.binder.type.CursorAvailable;
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -114,14 +115,15 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
             throw new RuleNotExistedException();
         }
         LogicSQL logicSQL = new LogicSQL(sqlStatementContext, getSqlStatement().getSql(), Collections.emptyList());
-        SQLFederationDeciderContext deciderContext = decide(logicSQL, metaDataContexts, metaDataContexts.getMetaData().getDatabase(getConnectionSession().getDatabaseName()));
+        ConfigurationProperties props = metaDataContexts.getMetaData().getProps();
+        SQLFederationDeciderContext deciderContext = decide(logicSQL, props, metaDataContexts.getMetaData().getDatabase(getConnectionSession().getDatabaseName()));
         Collection<ExecutionUnit> executionUnits = deciderContext.isUseSQLFederation() ? getFederationExecutionUnits(logicSQL, databaseName, metaDataContexts)
-                : kernelProcessor.generateExecutionContext(logicSQL, database, globalRuleMetaData, metaDataContexts.getMetaData().getProps()).getExecutionUnits();
+                : kernelProcessor.generateExecutionContext(logicSQL, database, globalRuleMetaData, props).getExecutionUnits();
         return executionUnits.stream().map(this::buildRow).collect(Collectors.toList());
     }
     
-    private static SQLFederationDeciderContext decide(final LogicSQL logicSQL, final MetaDataContexts metaDataContexts, final ShardingSphereDatabase database) {
-        SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps());
+    private static SQLFederationDeciderContext decide(final LogicSQL logicSQL, final ConfigurationProperties props, final ShardingSphereDatabase database) {
+        SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(database.getRuleMetaData().getRules(), props);
         return deciderEngine.decide(logicSQL, database);
     }
     

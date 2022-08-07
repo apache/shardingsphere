@@ -39,6 +39,7 @@ import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKey
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
@@ -215,7 +216,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficContext, logicSQL);
                 return executor.getTrafficExecutor().execute(executionUnit, (statement, sql) -> ((PreparedStatement) statement).executeQuery());
             }
-            deciderContext = decide(logicSQL, metaDataContexts, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()));
+            deciderContext = decide(logicSQL, metaDataContexts.getMetaData().getProps(), metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()));
             if (deciderContext.isUseSQLFederation()) {
                 return executeFederationQuery(logicSQL);
             }
@@ -233,8 +234,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         return result;
     }
     
-    private static SQLFederationDeciderContext decide(final LogicSQL logicSQL, final MetaDataContexts metaDataContexts, final ShardingSphereDatabase database) {
-        SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps());
+    private static SQLFederationDeciderContext decide(final LogicSQL logicSQL, final ConfigurationProperties props, final ShardingSphereDatabase database) {
+        SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(database.getRuleMetaData().getRules(), props);
         return deciderEngine.decide(logicSQL, database);
     }
     
@@ -375,7 +376,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficContext, logicSQL);
                 return executor.getTrafficExecutor().execute(executionUnit, (statement, sql) -> ((PreparedStatement) statement).execute());
             }
-            deciderContext = decide(logicSQL, metaDataContexts, metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()));
+            deciderContext = decide(logicSQL, metaDataContexts.getMetaData().getProps(), metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()));
             if (deciderContext.isUseSQLFederation()) {
                 ResultSet resultSet = executeFederationQuery(logicSQL);
                 return null != resultSet;

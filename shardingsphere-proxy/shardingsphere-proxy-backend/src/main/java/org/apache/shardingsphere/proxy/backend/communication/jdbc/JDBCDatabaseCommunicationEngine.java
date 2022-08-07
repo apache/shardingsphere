@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
 import org.apache.shardingsphere.infra.binder.decider.engine.SQLFederationDeciderEngine;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
@@ -116,7 +117,7 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
         LogicSQL logicSQL = getLogicSQL();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(backendConnection.getConnectionSession().getDatabaseName());
-        SQLFederationDeciderContext deciderContext = decide(logicSQL, metaDataContexts, database);
+        SQLFederationDeciderContext deciderContext = decide(logicSQL, metaDataContexts.getMetaData().getProps(), database);
         if (deciderContext.isUseSQLFederation()) {
             prepareFederationExecutor();
             ResultSet resultSet = doExecuteFederation(logicSQL, metaDataContexts);
@@ -137,8 +138,8 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
                 : processExecuteUpdate(executionContext, result);
     }
     
-    private static SQLFederationDeciderContext decide(final LogicSQL logicSQL, final MetaDataContexts metaDataContexts, final ShardingSphereDatabase database) {
-        SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps());
+    private static SQLFederationDeciderContext decide(final LogicSQL logicSQL, final ConfigurationProperties props, final ShardingSphereDatabase database) {
+        SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(database.getRuleMetaData().getRules(), props);
         return deciderEngine.decide(logicSQL, database);
     }
     
