@@ -31,19 +31,19 @@ public final class YamlShadowTableConfigurationSwapperTest {
     
     @Test
     public void assertSwapToYamlConfiguration() {
-        ShadowTableConfiguration shadowTableConfig = new ShadowTableConfiguration(Collections.singletonList("shadow-data-source"), Arrays.asList("t_order", "t_user"));
-        YamlShadowTableConfiguration yamlShadowTableConfig = new YamlShadowTableConfigurationSwapper().swapToYamlConfiguration(shadowTableConfig);
-        assertThat(yamlShadowTableConfig.getShadowAlgorithmNames(), is(shadowTableConfig.getShadowAlgorithmNames()));
-        assertThat(yamlShadowTableConfig.getDataSourceNames(), is(shadowTableConfig.getDataSourceNames()));
+        YamlShadowTableConfiguration actual = new YamlShadowTableConfigurationSwapper().swapToYamlConfiguration(
+                new ShadowTableConfiguration(Collections.singleton("shadow-data-source"), Arrays.asList("user-id-match-algorithm", "note-algorithm")));
+        assertThat(actual.getDataSourceNames(), is(Collections.singleton("shadow-data-source")));
+        assertThat(actual.getShadowAlgorithmNames(), is(Arrays.asList("user-id-match-algorithm", "note-algorithm")));
     }
     
     @Test
     public void assertSwapToObject() {
         YamlShadowTableConfiguration yamlConfig = new YamlShadowTableConfiguration();
-        yamlConfig.setDataSourceNames(Collections.singletonList("shadow-data-source"));
+        yamlConfig.setDataSourceNames(Collections.singleton("shadow-data-source"));
         yamlConfig.setShadowAlgorithmNames(Arrays.asList("user-id-match-algorithm", "note-algorithm"));
-        ShadowTableConfiguration shadowTableConfig = new YamlShadowTableConfigurationSwapper().swapToObject(yamlConfig);
-        assertThat(shadowTableConfig.getDataSourceNames(), is(yamlConfig.getDataSourceNames()));
-        assertThat(shadowTableConfig.getShadowAlgorithmNames(), is(yamlConfig.getShadowAlgorithmNames()));
+        ShadowTableConfiguration actual = new YamlShadowTableConfigurationSwapper().swapToObject(yamlConfig);
+        assertThat(actual.getDataSourceNames(), is(Collections.singleton("shadow-data-source")));
+        assertThat(actual.getShadowAlgorithmNames(), is(Arrays.asList("user-id-match-algorithm", "note-algorithm")));
     }
 }

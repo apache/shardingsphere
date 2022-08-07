@@ -26,12 +26,10 @@ import static org.junit.Assert.assertThat;
 
 public final class YamlShadowDataSourceConfigurationSwapperTest {
     
-    private final YamlShadowDataSourceConfigurationSwapper swapper = new YamlShadowDataSourceConfigurationSwapper();
-    
     @Test
     public void assertSwapToYamlConfiguration() {
         ShadowDataSourceConfiguration shadowDataSourceConfig = new ShadowDataSourceConfiguration("ds", "shadow_ds");
-        YamlShadowDataSourceConfiguration actual = swapper.swapToYamlConfiguration(shadowDataSourceConfig);
+        YamlShadowDataSourceConfiguration actual = new YamlShadowDataSourceConfigurationSwapper().swapToYamlConfiguration(shadowDataSourceConfig);
         assertThat(actual.getSourceDataSourceName(), is("ds"));
         assertThat(actual.getShadowDataSourceName(), is("shadow_ds"));
     }
@@ -41,7 +39,7 @@ public final class YamlShadowDataSourceConfigurationSwapperTest {
         YamlShadowDataSourceConfiguration yamlConfig = new YamlShadowDataSourceConfiguration();
         yamlConfig.setSourceDataSourceName("ds");
         yamlConfig.setShadowDataSourceName("shadow_ds");
-        ShadowDataSourceConfiguration actual = swapper.swapToObject(yamlConfig);
+        ShadowDataSourceConfiguration actual = new YamlShadowDataSourceConfigurationSwapper().swapToObject(yamlConfig);
         assertThat(actual.getSourceDataSourceName(), is("ds"));
         assertThat(actual.getShadowDataSourceName(), is("shadow_ds"));
     }
