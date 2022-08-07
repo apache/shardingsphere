@@ -21,8 +21,6 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementBaseVisitor;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AddResourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlgorithmDefinitionContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlgorithmPropertiesContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlgorithmPropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterDefaultSingleTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterInstanceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.AlterResourceContext;
@@ -37,7 +35,6 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.CountSingleTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.CreateDefaultSingleTableRuleContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.CreateTrafficRuleContext;
-import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.DataSourceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.DatabaseNameContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.DisableInstanceContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.DiscardDistSQLContext;
@@ -58,6 +55,7 @@ import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementPa
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.PropertyContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ProviderDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.RefreshTableMetadataContext;
+import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ResourceDefinitionContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.SetVariableContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowAllVariablesContext;
 import org.apache.shardingsphere.distsql.parser.autogen.KernelDistSQLStatementParser.ShowAuthorityRuleContext;
@@ -135,7 +133,6 @@ import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.Identifi
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Properties;
 import java.util.stream.Collectors;
 
@@ -146,12 +143,12 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitAddResource(final AddResourceContext ctx) {
-        return new AddResourceStatement(ctx.dataSource().stream().map(each -> (DataSourceSegment) visit(each)).collect(Collectors.toList()));
+        return new AddResourceStatement(ctx.resourceDefinition().stream().map(each -> (DataSourceSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
     public ASTNode visitAlterResource(final AlterResourceContext ctx) {
-        return new AlterResourceStatement(ctx.dataSource().stream().map(each -> (DataSourceSegment) visit(each)).collect(Collectors.toList()));
+        return new AlterResourceStatement(ctx.resourceDefinition().stream().map(each -> (DataSourceSegment) visit(each)).collect(Collectors.toList()));
     }
     
     @Override
@@ -161,22 +158,23 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     }
     
     @Override
-    public ASTNode visitDataSource(final DataSourceContext ctx) {
+    public ASTNode visitResourceDefinition(final ResourceDefinitionContext ctx) {
+        String user = getIdentifierValue(ctx.user());
         String password = null == ctx.password() ? "" : getPassword(ctx.password());
         Properties props = getProperties(ctx.propertiesDefinition());
         DataSourceSegment result = null;
         if (null != ctx.urlSource()) {
-            result = new URLBasedDataSourceSegment(getIdentifierValue(ctx.dataSourceName()), getIdentifierValue(ctx.urlSource().url()), ctx.user().getText(), password, props);
+            result = new URLBasedDataSourceSegment(getIdentifierValue(ctx.resourceName()), getIdentifierValue(ctx.urlSource().url()), user, password, props);
         }
         if (null != ctx.simpleSource()) {
-            result = new HostnameAndPortBasedDataSourceSegment(getIdentifierValue(ctx.dataSourceName()), ctx.simpleSource().hostname().getText(), ctx.simpleSource().port().getText(),
-                    ctx.simpleSource().dbName().getText(), ctx.user().getText(), password, props);
+            result = new HostnameAndPortBasedDataSourceSegment(getIdentifierValue(ctx.resourceName()), getIdentifierValue(ctx.simpleSource().hostname()), ctx.simpleSource().port().getText(),
+                    getIdentifierValue(ctx.simpleSource().dbName()), user, password, props);
         }
         return result;
     }
     
-    private String getPassword(final List<PasswordContext> passwordContexts) {
-        return passwordContexts.stream().map(each -> new IdentifierValue(each.getText()).getValue()).collect(Collectors.joining(""));
+    private String getPassword(final PasswordContext ctx) {
+        return getIdentifierValue(ctx);
     }
     
     @Override
@@ -237,12 +235,12 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitCreateDefaultSingleTableRule(final CreateDefaultSingleTableRuleContext ctx) {
-        return new CreateDefaultSingleTableRuleStatement(getIdentifierValue(ctx.dataSourceName()));
+        return new CreateDefaultSingleTableRuleStatement(getIdentifierValue(ctx.resourceName()));
     }
     
     @Override
     public ASTNode visitAlterDefaultSingleTableRule(final AlterDefaultSingleTableRuleContext ctx) {
-        return new AlterDefaultSingleTableRuleStatement(getIdentifierValue(ctx.dataSourceName()));
+        return new AlterDefaultSingleTableRuleStatement(getIdentifierValue(ctx.resourceName()));
     }
     
     @Override
@@ -265,7 +263,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     public ASTNode visitDropResource(final DropResourceContext ctx) {
         boolean ignoreSingleTables = null != ctx.ignoreSingleTables();
         return new DropResourceStatement(ctx.ifExists() != null,
-                ctx.IDENTIFIER().stream().map(ParseTree::getText).map(each -> new IdentifierValue(each).getValue()).collect(Collectors.toList()), ignoreSingleTables);
+                ctx.resourceName().stream().map(ParseTree::getText).map(each -> new IdentifierValue(each).getValue()).collect(Collectors.toList()), ignoreSingleTables);
     }
     
     @Override
@@ -295,7 +293,7 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitShowSingleTable(final ShowSingleTableContext ctx) {
-        return new ShowSingleTableStatement(null == ctx.table() ? null : getIdentifierValue(ctx.table().tableName()), null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
+        return new ShowSingleTableStatement(null == ctx.TABLE() ? null : getIdentifierValue(ctx.tableName()), null == ctx.databaseName() ? null : (DatabaseSegment) visit(ctx.databaseName()));
     }
     
     @Override
@@ -425,15 +423,15 @@ public final class KernelDistSQLStatementVisitor extends KernelDistSQLStatementB
     
     @Override
     public ASTNode visitAlgorithmDefinition(final AlgorithmDefinitionContext ctx) {
-        return new AlgorithmSegment(getIdentifierValue(ctx.typeName()), buildProperties(ctx.algorithmProperties()));
+        return new AlgorithmSegment(getIdentifierValue(ctx.typeName()), buildProperties(ctx.propertiesDefinition()));
     }
     
-    private Properties buildProperties(final AlgorithmPropertiesContext algorithmProps) {
+    private Properties buildProperties(final PropertiesDefinitionContext ctx) {
         Properties result = new Properties();
-        if (null == algorithmProps) {
+        if (null == ctx) {
             return result;
         }
-        for (AlgorithmPropertyContext each : algorithmProps.algorithmProperty()) {
+        for (PropertyContext each : ctx.properties().property()) {
             result.setProperty(IdentifierValue.getQuotedContent(each.key.getText()), IdentifierValue.getQuotedContent(each.value.getText()));
         }
         return result;
