@@ -38,6 +38,8 @@ public final class HikariDataSourcePoolCreatorTest {
         assertThat(actual.getJdbcUrl(), is("jdbc:mock://127.0.0.1/foo_ds"));
         assertThat(actual.getUsername(), is("root"));
         assertThat(actual.getPassword(), is("root"));
+        assertThat(actual.getMinimumIdle(), is(2));
+        assertThat(actual.isRegisterMbeans(), is(true));
         assertThat(actual.getDataSourceProperties(), is(createJdbcUrlProperties()));
     }
     
@@ -47,7 +49,7 @@ public final class HikariDataSourcePoolCreatorTest {
         result.put("driverClassName", MockedDataSource.class.getName());
         result.put("username", "root");
         result.put("password", "root");
-        result.put("minPoolSize", 2);
+        result.put("minPoolSize", "2");
         result.put("dataSourceProperties", createJdbcUrlProperties());
         return result;
     }
@@ -56,7 +58,7 @@ public final class HikariDataSourcePoolCreatorTest {
         Properties result = new Properties();
         result.put("foo", "foo_value");
         result.put("bar", "bar_value");
-        result.put("registerMbeans", true);
+        result.put("registerMbeans", "true");
         return result;
     }
 }

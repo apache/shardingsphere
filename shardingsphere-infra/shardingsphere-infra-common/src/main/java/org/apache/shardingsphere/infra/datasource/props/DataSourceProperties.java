@@ -54,12 +54,12 @@ public final class DataSourceProperties {
         this.dataSourceClassName = dataSourceClassName;
         Optional<DataSourcePoolMetaData> poolMetaData = DataSourcePoolMetaDataFactory.findInstance(dataSourceClassName);
         Map<String, String> propertySynonyms = poolMetaData.isPresent() ? poolMetaData.get().getPropertySynonyms() : Collections.emptyMap();
-        Collection<String> jdbcUrlProperties = poolMetaData.isPresent() ? poolMetaData.get().getJdbcUrlSynonymFieldNames() : Collections.emptyList();
         connectionPropertySynonyms = new ConnectionPropertySynonyms(props, propertySynonyms);
         poolPropertySynonyms = new PoolPropertySynonyms(props, propertySynonyms);
-        jdbcUrlPropertySynonyms = new JdbcUrlPropertySynonyms(props, jdbcUrlProperties);
         customDataSourceProperties = new CustomDataSourceProperties(
                 props, getStandardPropertyKeys(), poolMetaData.isPresent() ? poolMetaData.get().getTransientFieldNames() : Collections.emptyList(), propertySynonyms);
+        jdbcUrlPropertySynonyms = new JdbcUrlPropertySynonyms(getJdbcUrlProperties(customDataSourceProperties, poolMetaData),
+                poolMetaData.isPresent() ? poolMetaData.get().getJdbcUrlSynonymFieldNames() : Collections.emptyList());
     }
     
     private Collection<String> getStandardPropertyKeys() {
@@ -96,7 +96,18 @@ public final class DataSourceProperties {
         result.putAll(jdbcUrlPropertySynonyms.getLocalProperties());
         return result;
     }
-    
+
+    @SuppressWarnings("unchecked")
+    private Map<String, Object> getJdbcUrlProperties(final CustomDataSourceProperties customDataSourceProps, final Optional<DataSourcePoolMetaData> poolMetaData) {
+        if (poolMetaData.isPresent()) {
+            String jdbcUrlPropertiesFieldName = poolMetaData.get().getFieldMetaData().getJdbcUrlPropertiesFieldName();
+            if (null != jdbcUrlPropertiesFieldName && customDataSourceProps.getProperties().containsKey(jdbcUrlPropertiesFieldName)) {
+                return (Map<String, Object>) customDataSourceProps.getProperties().get(jdbcUrlPropertiesFieldName);
+            }
+        }
+        return Collections.emptyMap();
+    }
+
     @Override
     public boolean equals(final Object obj) {
         return this == obj || null != obj && getClass() == obj.getClass() && equalsByProperties((DataSourceProperties) obj);
@@ -106,6 +117,7 @@ public final class DataSourceProperties {
         if (!dataSourceClassName.equals(dataSourceProps.dataSourceClassName)) {
             return false;
         }
+
         for (Entry<String, Object> entry : getAllLocalProperties().entrySet()) {
             if (!dataSourceProps.getAllLocalProperties().containsKey(entry.getKey())) {
                 continue;
