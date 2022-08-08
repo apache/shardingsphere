@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.admin.mysql;
 
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.SessionVariableHandler;
-import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
 /**
  * Session variable handler for MySQL.

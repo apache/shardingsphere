@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.proxy.backend.handler.admin.postgresql;
 
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 /**
  * Factory for {@link PostgreSQLSessionVariableHandler}.

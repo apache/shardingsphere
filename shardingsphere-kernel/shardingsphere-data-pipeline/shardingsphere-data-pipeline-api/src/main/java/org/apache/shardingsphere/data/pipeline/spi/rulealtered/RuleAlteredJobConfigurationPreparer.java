@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAltere
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.YamlRuleAlteredJobConfiguration;
 import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
-import org.apache.shardingsphere.spi.type.required.RequiredSPI;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 
 /**
  * Rule altered job configuration preparer.

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.config.algorithm;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 /**
  * ShardingSphere algorithm factory.
