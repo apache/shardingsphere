@@ -146,7 +146,7 @@ public abstract class BaseITCase {
             defaultDatabaseName = "postgres";
         }
         String jdbcUrl = composedContainer.getProxyJdbcUrl(defaultDatabaseName);
-        try (Connection connection = DriverManager.getConnection(jdbcUrl, "root", "Root@123")) {
+        try (Connection connection = DriverManager.getConnection(jdbcUrl, "proxy", "Proxy@123")) {
             if (ENV.getItEnvType() == ScalingITEnvTypeEnum.NATIVE) {
                 try {
                     executeWithLog(connection, "DROP DATABASE sharding_db");
@@ -165,8 +165,8 @@ public abstract class BaseITCase {
         HikariDataSource result = new HikariDataSource();
         result.setDriverClassName(DataSourceEnvironment.getDriverClassName(getDatabaseType()));
         result.setJdbcUrl(composedContainer.getProxyJdbcUrl(databaseName));
-        result.setUsername("root");
-        result.setPassword("Root@123");
+        result.setUsername("proxy");
+        result.setPassword("Proxy@123");
         result.setMaximumPoolSize(2);
         result.setTransactionIsolation("TRANSACTION_READ_COMMITTED");
         return result;
@@ -191,12 +191,12 @@ public abstract class BaseITCase {
     protected void addSourceResource() {
         // TODO if mysql can append database firstly, they can be combined
         if (databaseType instanceof MySQLDatabaseType) {
-            try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl(""), "root", "Root@123")) {
+            try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl(""), "proxy", "Proxy@123")) {
                 connection.createStatement().execute("USE sharding_db");
                 addSourceResource0(connection);
             }
         } else {
-            try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl("sharding_db"), "root", "Root@123")) {
+            try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl("sharding_db"), "proxy", "Proxy@123")) {
                 addSourceResource0(connection);
             }
         }
