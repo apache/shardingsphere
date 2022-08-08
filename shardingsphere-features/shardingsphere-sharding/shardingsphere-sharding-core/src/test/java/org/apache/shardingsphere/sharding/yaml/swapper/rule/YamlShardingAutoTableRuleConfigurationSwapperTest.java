@@ -92,7 +92,7 @@ public final class YamlShardingAutoTableRuleConfigurationSwapperTest {
     public void assertSwapToObjectWithoutLogicTable() {
         new YamlShardingAutoTableRuleConfigurationSwapper(Collections.emptyMap(), Collections.emptyMap()).swapToObject(new YamlShardingAutoTableRuleConfiguration());
     }
-
+    
     @Test
     public void assertSwapToObject() {
         YamlShardingStrategyConfiguration yamlShardingStrategyConfiguration = new YamlShardingStrategyConfiguration();

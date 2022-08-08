@@ -17,39 +17,24 @@
 
 package org.apache.shardingsphere.mode.manager.standalone.lock;
 
+import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.mode.lock.AbstractLockContext;
-import org.apache.shardingsphere.mode.lock.definition.DatabaseLockDefinition;
+import org.apache.shardingsphere.mode.lock.LockPersistService;
 
 /**
- * Standalone lock context.
+ * Standalone lock persist service.
  */
-public final class StandaloneLockContext extends AbstractLockContext {
+public final class StandaloneLockPersistService implements LockPersistService {
     
     private final ShardingSphereLock standaloneLock = new ShardingSphereStandaloneLock();
     
     @Override
-    public ShardingSphereLock getLock() {
-        return standaloneLock;
+    public boolean tryLock(final LockDefinition lockDefinition, final long timeoutMillis) {
+        return standaloneLock.tryLock(lockDefinition.getLockKey());
     }
     
     @Override
-    protected boolean tryLock(final DatabaseLockDefinition lockDefinition) {
-        return standaloneLock.tryLock(lockDefinition.getDatabaseName());
-    }
-    
-    @Override
-    protected boolean tryLock(final DatabaseLockDefinition lockDefinition, final long timeoutMilliseconds) {
-        return standaloneLock.tryLock(lockDefinition.getDatabaseName(), timeoutMilliseconds);
-    }
-    
-    @Override
-    protected void unLock(final DatabaseLockDefinition lockDefinition) {
-        standaloneLock.releaseLock(lockDefinition.getDatabaseName());
-    }
-    
-    @Override
-    protected boolean isLocked(final DatabaseLockDefinition lockDefinition) {
-        return standaloneLock.isLocked(lockDefinition.getDatabaseName());
+    public void unlock(final LockDefinition lockDefinition) {
+        standaloneLock.unlock(lockDefinition.getLockKey());
     }
 }

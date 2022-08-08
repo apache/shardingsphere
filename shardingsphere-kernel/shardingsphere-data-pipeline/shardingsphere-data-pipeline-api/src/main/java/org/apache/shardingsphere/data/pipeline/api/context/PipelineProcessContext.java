@@ -15,19 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.node;
+package org.apache.shardingsphere.data.pipeline.api.context;
 
-import org.junit.Test;
-
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class DatabaseLockNodeServiceTest {
-    
-    private static final DatabaseLockNodeService SERVICE = new DatabaseLockNodeService();
-    
-    @Test
-    public void assertGetLockLevel() {
-        assertThat(SERVICE.getLockTypeName(), is("database"));
-    }
+/**
+ * Pipeline process context.
+ */
+public interface PipelineProcessContext {
 }

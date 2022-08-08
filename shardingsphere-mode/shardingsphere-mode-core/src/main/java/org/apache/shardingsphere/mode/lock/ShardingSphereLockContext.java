@@ -17,19 +17,21 @@
 
 package org.apache.shardingsphere.mode.lock;
 
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
-import org.apache.shardingsphere.mode.lock.manager.LockManager;
+import org.apache.shardingsphere.mode.lock.manager.ShardingSphereLockManager;
 import org.apache.shardingsphere.mode.lock.util.TimeoutMilliseconds;
 
 /**
  * Lock context of ShardingSphere.
  */
-@RequiredArgsConstructor
 public final class ShardingSphereLockContext implements LockContext {
     
-    private final LockManager lockManager;
+    private final ShardingSphereLockManager lockManager;
+    
+    public ShardingSphereLockContext(final LockPersistService lockPersistService) {
+        this.lockManager = new ShardingSphereLockManager(lockPersistService);
+    }
     
     @Override
     public boolean tryLock(final LockDefinition lockDefinition) {
@@ -42,7 +44,7 @@ public final class ShardingSphereLockContext implements LockContext {
     }
     
     @Override
-    public void unLock(final LockDefinition lockDefinition) {
+    public void unlock(final LockDefinition lockDefinition) {
         lockManager.unLock(lockDefinition);
     }
     

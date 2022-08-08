@@ -15,24 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
+package org.apache.shardingsphere.data.pipeline.core.job.progress;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.PipelineJobItemProgress;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 
 import java.util.Collection;
 
 /**
- * Rule altered job progress detector.
+ * Pipeline job progress detector.
  */
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 @Slf4j
-public final class RuleAlteredJobProgressDetector {
+public final class PipelineJobProgressDetector {
     
     /**
      * All inventory tasks is finished.
@@ -51,23 +51,23 @@ public final class RuleAlteredJobProgressDetector {
      * Whether job is completed (successful or failed).
      *
      * @param jobShardingCount job sharding count
-     * @param jobProgresses job progresses
+     * @param jobItemProgresses job item progresses
      * @return completed or not
      */
-    public static boolean isJobCompleted(final int jobShardingCount, final Collection<JobProgress> jobProgresses) {
-        return jobShardingCount == jobProgresses.size()
-                && jobProgresses.stream().allMatch(each -> null != each && !each.getStatus().isRunning());
+    public static boolean isJobCompleted(final int jobShardingCount, final Collection<? extends PipelineJobItemProgress> jobItemProgresses) {
+        return jobShardingCount == jobItemProgresses.size()
+                && jobItemProgresses.stream().allMatch(each -> null != each && !each.getStatus().isRunning());
     }
     
     /**
      * Whether job is successful.
      *
      * @param jobShardingCount job sharding count
-     * @param jobProgresses job progresses
+     * @param jobItemProgresses job item progresses
      * @return completed or not
      */
-    public static boolean isJobSuccessful(final int jobShardingCount, final Collection<JobProgress> jobProgresses) {
-        return jobShardingCount == jobProgresses.size()
-                && jobProgresses.stream().allMatch(each -> null != each && JobStatus.FINISHED == each.getStatus());
+    public static boolean isJobSuccessful(final int jobShardingCount, final Collection<? extends PipelineJobItemProgress> jobItemProgresses) {
+        return jobShardingCount == jobItemProgresses.size()
+                && jobItemProgresses.stream().allMatch(each -> null != each && JobStatus.FINISHED == each.getStatus());
     }
 }

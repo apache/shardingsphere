@@ -393,7 +393,6 @@ public abstract class BaseITCase {
         boolean secondCheckJobResult = checkJobIncrementTaskFinished(jobId);
         log.info("second check job result: {}", secondCheckJobResult);
         stopScalingSourceWriting(jobId);
-        assertStopScalingSourceWriting();
         List<Map<String, Object>> checkScalingResults = queryForListWithLog(String.format("CHECK SCALING %s BY TYPE (NAME=DATA_MATCH)", jobId));
         log.info("checkScalingResults: {}", checkScalingResults);
         for (Map<String, Object> entry : checkScalingResults) {
@@ -422,12 +421,4 @@ public abstract class BaseITCase {
         Collections.sort(expect);
         assertThat(dataSourceNames, is(expect));
     }
-    
-    protected void restoreScalingSourceWriting(final String jobId) {
-        executeWithLog(String.format("RESTORE SCALING SOURCE WRITING %s", jobId));
-    }
-    
-    protected abstract void assertStopScalingSourceWriting();
-    
-    protected abstract void assertRestoreScalingSourceWriting();
 }

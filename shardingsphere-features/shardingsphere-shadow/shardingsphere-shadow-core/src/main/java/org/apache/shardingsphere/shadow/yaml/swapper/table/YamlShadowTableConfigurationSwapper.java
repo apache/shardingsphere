@@ -26,7 +26,7 @@ import java.util.LinkedList;
 /**
  * YAML shadow table configuration swapper.
  */
-public class YamlShadowTableConfigurationSwapper implements YamlConfigurationSwapper<YamlShadowTableConfiguration, ShadowTableConfiguration> {
+public final class YamlShadowTableConfigurationSwapper implements YamlConfigurationSwapper<YamlShadowTableConfiguration, ShadowTableConfiguration> {
     
     @Override
     public YamlShadowTableConfiguration swapToYamlConfiguration(final ShadowTableConfiguration data) {

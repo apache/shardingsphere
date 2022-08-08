@@ -17,20 +17,10 @@
 
 package org.apache.shardingsphere.infra.lock;
 
-import org.apache.shardingsphere.infra.instance.InstanceContext;
-
 /**
  * Lock context.
  */
 public interface LockContext {
-    
-    /**
-     * Init lock state.
-     *
-     * @param instanceContext instance context
-     */
-    default void initLockState(InstanceContext instanceContext) {
-    }
     
     /**
      * Try lock.
@@ -50,11 +40,11 @@ public interface LockContext {
     boolean tryLock(LockDefinition lockDefinition, long timeoutMillis);
     
     /**
-     * Un lock.
+     * Unlock.
      *
      * @param lockDefinition lock definition
      */
-    void unLock(LockDefinition lockDefinition);
+    void unlock(LockDefinition lockDefinition);
     
     /**
      *  Is locked.
@@ -63,15 +53,4 @@ public interface LockContext {
      * @return is locked or not
      */
     boolean isLocked(LockDefinition lockDefinition);
-    
-    /**
-     * Get lock.
-     *
-     * @return lock
-     * @deprecated remove me when the distributed lock refactoring was completed
-     */
-    @Deprecated
-    default ShardingSphereLock getLock() {
-        throw new UnsupportedOperationException();
-    }
 }
