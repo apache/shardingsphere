@@ -17,10 +17,13 @@
 
 package org.apache.shardingsphere.infra.util.exception;
 
+import lombok.NoArgsConstructor;
+
 /**
  * ShardingSphere inside exception.
  */
-public abstract class ShardingSphereInsideException extends Exception {
+@NoArgsConstructor
+public abstract class ShardingSphereInsideException extends RuntimeException {
     
     private static final long serialVersionUID = -8238061892944243621L;
     
