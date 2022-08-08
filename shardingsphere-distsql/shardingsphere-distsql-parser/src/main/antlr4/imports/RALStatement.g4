@@ -59,10 +59,6 @@ showTableMetadata
     : SHOW TABLE METADATA tableName (COMMA tableName*)? (FROM databaseName)?
     ;
 
-showAuthorityRule
-    : SHOW AUTHORITY RULE
-    ;
-
 showTransactionRule
     : SHOW TRANSACTION RULE
     ;

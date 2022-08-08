@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.distsql.parser.statement.ral.queryable;
+package org.apache.shardingsphere.authority.distsql.parser.statement;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.QueryableRALStatement;
 
