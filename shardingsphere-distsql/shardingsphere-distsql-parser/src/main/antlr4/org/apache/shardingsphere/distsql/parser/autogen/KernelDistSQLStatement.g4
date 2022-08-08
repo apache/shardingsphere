@@ -31,7 +31,7 @@ execute
     | clearHint
     | enableInstance
     | disableInstance
-    | showInstance
+    | showInstanceList
     | showInstanceInfo
     | showModeInfo
     | labelInstance

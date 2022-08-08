@@ -160,9 +160,9 @@ public final class ProjectionEngine {
                 .orElseGet(() -> DatabaseTypeEngine.getDefaultSchemaName(databaseType, databaseName)).toLowerCase();
         Collection<ColumnProjection> result = new LinkedList<>();
         if (null == owner) {
-            schemas.get(schemaName).getAllColumnNames(tableName).stream().map(each -> new ColumnProjection(tableAlias, each, null)).forEach(result::add);
+            schemas.get(schemaName).getVisibleColumnNames(tableName).stream().map(each -> new ColumnProjection(tableAlias, each, null)).forEach(result::add);
         } else if (owner.equalsIgnoreCase(tableAlias)) {
-            schemas.get(schemaName).getAllColumnNames(tableName).stream().map(each -> new ColumnProjection(owner, each, null)).forEach(result::add);
+            schemas.get(schemaName).getVisibleColumnNames(tableName).stream().map(each -> new ColumnProjection(owner, each, null)).forEach(result::add);
         }
         return result;
     }

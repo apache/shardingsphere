@@ -43,8 +43,6 @@ public final class StandardParameterBuilder implements ParameterBuilder {
     
     private final Map<Integer, Object> replacedIndexAndParameters = new LinkedHashMap<>();
     
-    private final List<Integer> removeIndexAndParameters = new ArrayList<>();
-    
     /**
      * Add added parameters.
      * 
@@ -65,31 +63,31 @@ public final class StandardParameterBuilder implements ParameterBuilder {
         replacedIndexAndParameters.put(index, parameter);
     }
     
-    /**
-     * Add removed parameter.
-     *
-     * @param index parameter index to be removed
-     */
-    public void addRemovedParameters(final int index) {
-        removeIndexAndParameters.add(index);
-    }
-    
     @Override
     public List<Object> getParameters() {
-        List<Object> result = new LinkedList<>(originalParameters);
+        List<Object> replacedParameters = new ArrayList<>(originalParameters);
         for (Entry<Integer, Object> entry : replacedIndexAndParameters.entrySet()) {
-            result.set(entry.getKey(), entry.getValue());
+            replacedParameters.set(entry.getKey(), entry.getValue());
         }
-        for (Entry<Integer, Collection<Object>> entry : ((TreeMap<Integer, Collection<Object>>) addedIndexAndParameters).descendingMap().entrySet()) {
-            if (entry.getKey() > result.size()) {
-                result.addAll(entry.getValue());
-            } else {
-                result.addAll(entry.getKey(), entry.getValue());
+        int maxParameterIndex = getMaxParameterIndex(originalParameters, addedIndexAndParameters);
+        List<Object> result = new LinkedList<>();
+        for (int index = 0; index <= maxParameterIndex; index++) {
+            List<Object> currentIndexParameters = new LinkedList<>();
+            if (replacedParameters.size() > index) {
+                currentIndexParameters.add(replacedParameters.get(index));
             }
-        }
-        for (int index : removeIndexAndParameters) {
-            result.remove(index);
+            if (addedIndexAndParameters.containsKey(index)) {
+                currentIndexParameters.addAll(addedIndexAndParameters.get(index));
+            }
+            result.addAll(currentIndexParameters);
         }
         return result;
+    }
+    
+    private int getMaxParameterIndex(final List<Object> originalParameters, final Map<Integer, Collection<Object>> addedIndexAndParameters) {
+        if (addedIndexAndParameters.isEmpty()) {
+            return originalParameters.size() - 1;
+        }
+        return Math.max(originalParameters.size() - 1, ((TreeMap<Integer, Collection<Object>>) addedIndexAndParameters).descendingMap().firstKey());
     }
 }

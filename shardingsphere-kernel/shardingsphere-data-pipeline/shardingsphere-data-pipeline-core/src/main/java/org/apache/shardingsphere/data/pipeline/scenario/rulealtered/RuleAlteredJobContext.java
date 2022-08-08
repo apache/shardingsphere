@@ -28,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfig
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
@@ -42,8 +43,7 @@ import java.util.LinkedList;
 @Getter
 @Setter
 @Slf4j
-// TODO extract JobContext
-public final class RuleAlteredJobContext {
+public final class RuleAlteredJobContext implements PipelineJobContext {
     
     private final String jobId;
     
@@ -63,7 +63,7 @@ public final class RuleAlteredJobContext {
     
     private final RuleAlteredJobConfiguration jobConfig;
     
-    private final RuleAlteredContext ruleAlteredContext;
+    private final RuleAlteredContext jobProcessContext;
     
     private final PipelineDataSourceManager dataSourceManager;
     
@@ -87,14 +87,14 @@ public final class RuleAlteredJobContext {
     
     public RuleAlteredJobContext(final RuleAlteredJobConfiguration jobConfig, final int jobShardingItem, final JobProgress initProgress,
                                  final PipelineDataSourceManager dataSourceManager, final RuleAlteredJobPreparer jobPreparer) {
-        ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
+        jobProcessContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
         this.jobConfig = jobConfig;
         jobId = jobConfig.getJobId();
         this.shardingItem = jobShardingItem;
         this.initProgress = initProgress;
         this.dataSourceManager = dataSourceManager;
         this.jobPreparer = jobPreparer;
-        taskConfig = RuleAlteredJobWorker.buildTaskConfig(jobConfig, jobShardingItem, ruleAlteredContext.getOnRuleAlteredActionConfig());
+        taskConfig = RuleAlteredJobWorker.buildTaskConfig(jobConfig, jobShardingItem, jobProcessContext.getPipelineProcessConfig());
     }
     
     /**

@@ -70,6 +70,11 @@ public final class ProcessListClusterPersistRepositoryFixture implements Cluster
     }
     
     @Override
+    public boolean tryLock(final String lockKey, final long timeoutMillis) {
+        return false;
+    }
+    
+    @Override
     public Lock getInternalMutexLock(final String lockName) {
         return null;
     }

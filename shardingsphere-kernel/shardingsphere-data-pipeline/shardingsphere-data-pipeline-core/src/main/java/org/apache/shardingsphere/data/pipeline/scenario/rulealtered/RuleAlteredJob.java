@@ -17,6 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.RuleAlteredJobConfigurationSwapper;
@@ -25,13 +28,21 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
+import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
+import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
+
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Rule altered job.
  */
 @Slf4j
+@RequiredArgsConstructor
 public final class RuleAlteredJob implements SimpleJob, PipelineJob {
     
     private final GovernanceRepositoryAPI governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
@@ -43,7 +54,13 @@ public final class RuleAlteredJob implements SimpleJob, PipelineJob {
     // Shared by all sharding items
     private final RuleAlteredJobPreparer jobPreparer = new RuleAlteredJobPreparer();
     
+    @Getter
+    private final Map<Integer, PipelineTasksRunner> tasksRunnerMap = new ConcurrentHashMap<>();
+    
     private volatile boolean stopping;
+    
+    @Setter
+    private OneOffJobBootstrap oneOffJobBootstrap;
     
     @Override
     public void execute(final ShardingContext shardingContext) {
@@ -56,7 +73,22 @@ public final class RuleAlteredJob implements SimpleJob, PipelineJob {
         RuleAlteredJobConfiguration jobConfig = RuleAlteredJobConfigurationSwapper.swapToObject(shardingContext.getJobParameter());
         JobProgress initProgress = governanceRepositoryAPI.getJobProgress(shardingContext.getJobName(), shardingContext.getShardingItem());
         RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, shardingContext.getShardingItem(), initProgress, dataSourceManager, jobPreparer);
-        RuleAlteredJobSchedulerCenter.start(jobContext);
+        int shardingItem = jobContext.getShardingItem();
+        if (tasksRunnerMap.containsKey(shardingItem)) {
+            // If the following log is output, it is possible that the elasticjob task was not closed correctly
+            log.warn("schedulerMap contains shardingItem {}, ignore", shardingItem);
+            return;
+        }
+        log.info("start RuleAlteredJobScheduler, jobId={}, shardingItem={}", jobId, shardingItem);
+        RuleAlteredJobScheduler jobScheduler = new RuleAlteredJobScheduler(jobContext);
+        jobScheduler.start();
+        tasksRunnerMap.put(shardingItem, jobScheduler);
+        PipelineJobProgressPersistService.addJobProgressPersistContext(jobId, shardingItem);
+    }
+    
+    @Override
+    public Optional<PipelineTasksRunner> getTasksRunner(final int shardingItem) {
+        return Optional.ofNullable(tasksRunnerMap.get(shardingItem));
     }
     
     /**
@@ -65,11 +97,18 @@ public final class RuleAlteredJob implements SimpleJob, PipelineJob {
     public void stop() {
         stopping = true;
         dataSourceManager.close();
+        if (null != oneOffJobBootstrap) {
+            oneOffJobBootstrap.shutdown();
+        }
         if (null == jobId) {
             log.info("stop, jobId is null, ignore");
             return;
         }
-        log.info("stop, jobId={}", jobId);
-        RuleAlteredJobSchedulerCenter.stop(jobId);
+        log.info("stop job scheduler, jobId={}", jobId);
+        for (PipelineTasksRunner each : tasksRunnerMap.values()) {
+            each.stop();
+        }
+        tasksRunnerMap.clear();
+        PipelineJobProgressPersistService.removeJobProgressPersistContext(jobId);
     }
 }

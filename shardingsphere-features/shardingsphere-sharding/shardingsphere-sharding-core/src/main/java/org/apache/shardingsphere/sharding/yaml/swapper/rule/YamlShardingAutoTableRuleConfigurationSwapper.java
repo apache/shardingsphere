@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.sharding.yaml.swapper.rule;
 
 import com.google.common.base.Preconditions;
+import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeUtil;
@@ -71,6 +72,38 @@ public final class YamlShardingAutoTableRuleConfigurationSwapper implements Yaml
         return result;
     }
     
+    private void setActualDataNodesWithAlgorithms(final ShardingAutoTableRuleConfiguration data, final YamlShardingAutoTableRuleConfiguration yamlData) {
+        if (!Strings.isNullOrEmpty(data.getActualDataSources())) {
+            getShardingCountWithAlgorithms(data).ifPresent(optional -> yamlData.setActualDataNodes(getActualDataNodes(data, optional)));
+            getShardingCountWithAlgorithmConfiguration(data).ifPresent(optional -> yamlData.setActualDataNodes(getActualDataNodes(data, optional)));
+        }
+    }
+    
+    private Optional<Integer> getShardingCountWithAlgorithms(final ShardingAutoTableRuleConfiguration data) {
+        if (null != data.getShardingStrategy() && shardingAlgorithms.containsKey(data.getShardingStrategy().getShardingAlgorithmName())) {
+            ShardingAlgorithm algorithm = shardingAlgorithms.get(data.getShardingStrategy().getShardingAlgorithmName());
+            if (algorithm instanceof ShardingAutoTableAlgorithm) {
+                return Optional.of(((ShardingAutoTableAlgorithm) algorithm).getAutoTablesAmount());
+            }
+        }
+        return Optional.empty();
+    }
+    
+    private Optional<Integer> getShardingCountWithAlgorithmConfiguration(final ShardingAutoTableRuleConfiguration data) {
+        if (null != data.getShardingStrategy() && shardingAlgorithmConfigs.containsKey(data.getShardingStrategy().getShardingAlgorithmName())) {
+            ShardingAlgorithm algorithm = ShardingAlgorithmFactory.newInstance(shardingAlgorithmConfigs.get(data.getShardingStrategy().getShardingAlgorithmName()));
+            if (algorithm instanceof ShardingAutoTableAlgorithm) {
+                return Optional.of(((ShardingAutoTableAlgorithm) algorithm).getAutoTablesAmount());
+            }
+        }
+        return Optional.empty();
+    }
+    
+    private String getActualDataNodes(final ShardingAutoTableRuleConfiguration data, final int shardingCount) {
+        Collection<String> dataSourceNames = new InlineExpressionParser(data.getActualDataSources()).splitAndEvaluate();
+        return String.join(",", DataNodeUtil.getFormatDataNodes(shardingCount, data.getLogicTable(), dataSourceNames));
+    }
+    
     @Override
     public ShardingAutoTableRuleConfiguration swapToObject(final YamlShardingAutoTableRuleConfiguration yamlConfig) {
         Preconditions.checkNotNull(yamlConfig.getLogicTable(), "Logic table cannot be null.");
@@ -84,37 +117,5 @@ public final class YamlShardingAutoTableRuleConfigurationSwapper implements Yaml
             result.setKeyGenerateStrategy(keyGenerateStrategySwapper.swapToObject(yamlConfig.getKeyGenerateStrategy()));
         }
         return result;
-    }
-    
-    private void setActualDataNodesWithAlgorithms(final ShardingAutoTableRuleConfiguration data, final YamlShardingAutoTableRuleConfiguration result) {
-        if (null != data.getActualDataSources() && !data.getActualDataSources().isEmpty()) {
-            getShardingCountWithAlgorithms(data, shardingAlgorithms).ifPresent(shardingCount -> result.setActualDataNodes(getActualDataNodes(data, shardingCount)));
-            getShardingCountWithAlgorithmConfig(data, shardingAlgorithmConfigs).ifPresent(shardingCount -> result.setActualDataNodes(getActualDataNodes(data, shardingCount)));
-        }
-    }
-    
-    private Optional<Integer> getShardingCountWithAlgorithms(final ShardingAutoTableRuleConfiguration configuration, final Map<String, ShardingAlgorithm> shardingAlgorithms) {
-        if (null != configuration.getShardingStrategy() && shardingAlgorithms.containsKey(configuration.getShardingStrategy().getShardingAlgorithmName())) {
-            ShardingAlgorithm algorithm = shardingAlgorithms.get(configuration.getShardingStrategy().getShardingAlgorithmName());
-            if (algorithm instanceof ShardingAutoTableAlgorithm) {
-                return Optional.of(((ShardingAutoTableAlgorithm) algorithm).getAutoTablesAmount());
-            }
-        }
-        return Optional.empty();
-    }
-    
-    private Optional<Integer> getShardingCountWithAlgorithmConfig(final ShardingAutoTableRuleConfiguration configuration, final Map<String, AlgorithmConfiguration> shardingAlgorithms) {
-        if (null != configuration.getShardingStrategy() && shardingAlgorithms.containsKey(configuration.getShardingStrategy().getShardingAlgorithmName())) {
-            ShardingAlgorithm algorithm = ShardingAlgorithmFactory.newInstance(shardingAlgorithms.get(configuration.getShardingStrategy().getShardingAlgorithmName()));
-            if (algorithm instanceof ShardingAutoTableAlgorithm) {
-                return Optional.of(((ShardingAutoTableAlgorithm) algorithm).getAutoTablesAmount());
-            }
-        }
-        return Optional.empty();
-    }
-    
-    private String getActualDataNodes(final ShardingAutoTableRuleConfiguration data, final int shardingCount) {
-        Collection<String> dataSourceNames = new InlineExpressionParser(data.getActualDataSources()).splitAndEvaluate();
-        return String.join(",", DataNodeUtil.getFormatDataNodes(shardingCount, data.getLogicTable(), dataSourceNames));
     }
 }

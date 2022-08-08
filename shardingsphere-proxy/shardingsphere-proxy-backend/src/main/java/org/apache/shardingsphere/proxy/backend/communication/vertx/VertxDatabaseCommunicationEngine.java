@@ -19,6 +19,9 @@ package org.apache.shardingsphere.proxy.backend.communication.vertx;
 
 import io.vertx.core.Future;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
+import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
+import org.apache.shardingsphere.infra.binder.decider.engine.SQLFederationDeciderEngine;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.ExecuteResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
@@ -55,11 +58,12 @@ public final class VertxDatabaseCommunicationEngine extends DatabaseCommunicatio
     public Future<ResponseHeader> executeFuture() {
         try {
             ShardingSphereMetaData metaData = ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData();
-            ExecutionContext executionContext = getKernelProcessor()
-                    .generateExecutionContext(getLogicSQL(), getDatabase(), metaData.getGlobalRuleMetaData(), metaData.getProps());
-            if (executionContext.getRouteContext().isFederated()) {
+            SQLFederationDeciderContext deciderContext = decide(getLogicSQL(), metaData.getProps(), getDatabase());
+            if (deciderContext.isUseSQLFederation()) {
                 return Future.failedFuture(new UnsupportedOperationException("Executing federated query by Vert.x is not supported yet."));
             }
+            ExecutionContext executionContext = getKernelProcessor()
+                    .generateExecutionContext(getLogicSQL(), getDatabase(), metaData.getGlobalRuleMetaData(), metaData.getProps());
             if (executionContext.getExecutionUnits().isEmpty()) {
                 return Future.succeededFuture(new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement()));
             }
@@ -81,6 +85,11 @@ public final class VertxDatabaseCommunicationEngine extends DatabaseCommunicatio
             // CHECKSTYLE:ON
             return Future.failedFuture(ex);
         }
+    }
+    
+    private static SQLFederationDeciderContext decide(final LogicSQL logicSQL, final ConfigurationProperties props, final ShardingSphereDatabase database) {
+        SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(database.getRuleMetaData().getRules(), props);
+        return deciderEngine.decide(logicSQL, database);
     }
     
     @Override

@@ -45,7 +45,7 @@ public final class ConnectionIdGenerator {
      * @return next connection ID
      */
     public synchronized int nextId() {
-        if (currentId >= Integer.MAX_VALUE) {
+        if (currentId == Integer.MAX_VALUE) {
             currentId = 0;
         }
         return ++currentId;

@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 
 /**
  * Importer configuration.
@@ -81,6 +82,7 @@ public final class ImporterConfiguration {
      * @return schema name. nullable
      */
     public String getSchemaName(final LogicTableName logicTableName) {
-        return tableNameSchemaNameMapping.getSchemaName(logicTableName);
+        String databaseType = dataSourceConfig.getDatabaseType().getType();
+        return DatabaseTypeFactory.getInstance(databaseType).isSchemaAvailable() ? tableNameSchemaNameMapping.getSchemaName(logicTableName) : null;
     }
 }

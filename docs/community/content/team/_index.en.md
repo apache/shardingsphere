@@ -417,10 +417,18 @@ chapter = true
                 <img src="https://avatars.githubusercontent.com/u/76552510?v=4" style="border-radius:50%; overflow:hidden">
             </a>
         </td>
+        <td>
+            <a href="https://github.com/Swastyy" target="_blank">
+                <img src="https://avatars.githubusercontent.com/u/64654203?v=4" style="border-radius:50%; overflow:hidden">
+            </a>
+        </td>
     </tr>
     <tr align="center">
         <td>
             <b>Junjie Zhang</b>        
+        </td>
+        <td>
+            <b>Swastika Gupta</b>        
         </td>
     </tr>
 </table>

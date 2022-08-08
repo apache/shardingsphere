@@ -21,99 +21,36 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.detect.RuleAlteredJobAlmostCompletedParameter;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmFactory;
-import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
-import org.apache.shardingsphere.data.pipeline.core.ingest.channel.memory.MemoryPipelineChannelCreator;
+import org.apache.shardingsphere.data.pipeline.core.context.AbstractPipelineProcessContext;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithm;
 import org.apache.shardingsphere.data.pipeline.spi.detect.JobCompletionDetectAlgorithmFactory;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
-import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreatorFactory;
-import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
-import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithmFactory;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineInputConfiguration;
-import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineOutputConfiguration;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
 import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActionConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineInputConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.data.pipeline.YamlPipelineOutputConfiguration;
-import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlOnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.rulealtered.YamlOnRuleAlteredActionConfigurationSwapper;
-
-import java.util.Properties;
 
 /**
  * Rule altered context.
  */
 @Getter
 @Slf4j
-// TODO extract Pipeline Context
-public final class RuleAlteredContext {
-    
-    private static final String INVENTORY_THREAD_PREFIX = "Inventory-";
-    
-    private static final String INCREMENTAL_THREAD_PREFIX = "Incremental-";
-    
-    private static final String IMPORTER_THREAD_PREFIX = "Importer-";
+public final class RuleAlteredContext extends AbstractPipelineProcessContext {
     
     private static final YamlOnRuleAlteredActionConfigurationSwapper SWAPPER = new YamlOnRuleAlteredActionConfigurationSwapper();
-    
-    private final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig;
-    
-    private final JobRateLimitAlgorithm inputRateLimitAlgorithm;
-    
-    private final JobRateLimitAlgorithm outputRateLimitAlgorithm;
-    
-    private final PipelineChannelCreator pipelineChannelCreator;
     
     private final JobCompletionDetectAlgorithm<RuleAlteredJobAlmostCompletedParameter> completionDetectAlgorithm;
     
     private final DataConsistencyCalculateAlgorithm dataConsistencyCalculateAlgorithm;
     
-    private final ExecuteEngine inventoryDumperExecuteEngine;
-    
-    private final ExecuteEngine incrementalDumperExecuteEngine;
-    
-    private final ExecuteEngine importerExecuteEngine;
-    
     @SuppressWarnings("unchecked")
     public RuleAlteredContext(final String jobId, final OnRuleAlteredActionConfiguration actionConfig) {
-        OnRuleAlteredActionConfiguration onRuleAlteredActionConfig = convertActionConfig(actionConfig);
-        this.onRuleAlteredActionConfig = onRuleAlteredActionConfig;
-        PipelineInputConfiguration inputConfig = onRuleAlteredActionConfig.getInput();
-        AlgorithmConfiguration inputRateLimiter = inputConfig.getRateLimiter();
-        inputRateLimitAlgorithm = null != inputRateLimiter ? JobRateLimitAlgorithmFactory.newInstance(inputRateLimiter) : null;
-        PipelineOutputConfiguration outputConfig = onRuleAlteredActionConfig.getOutput();
-        AlgorithmConfiguration outputRateLimiter = outputConfig.getRateLimiter();
-        outputRateLimitAlgorithm = null != outputRateLimiter ? JobRateLimitAlgorithmFactory.newInstance(outputRateLimiter) : null;
-        AlgorithmConfiguration streamChannel = onRuleAlteredActionConfig.getStreamChannel();
-        pipelineChannelCreator = PipelineChannelCreatorFactory.newInstance(streamChannel);
-        AlgorithmConfiguration completionDetector = onRuleAlteredActionConfig.getCompletionDetector();
+        super(jobId, new PipelineProcessConfiguration(actionConfig.getInput(), actionConfig.getOutput(), actionConfig.getStreamChannel()));
+        AlgorithmConfiguration completionDetector = actionConfig.getCompletionDetector();
         completionDetectAlgorithm = null != completionDetector ? JobCompletionDetectAlgorithmFactory.newInstance(completionDetector) : null;
-        AlgorithmConfiguration dataConsistencyCheckerConfig = onRuleAlteredActionConfig.getDataConsistencyCalculator();
+        AlgorithmConfiguration dataConsistencyCheckerConfig = actionConfig.getDataConsistencyCalculator();
         dataConsistencyCalculateAlgorithm = null != dataConsistencyCheckerConfig
                 ? DataConsistencyCalculateAlgorithmFactory.newInstance(dataConsistencyCheckerConfig.getType(), dataConsistencyCheckerConfig.getProps())
                 : null;
-        inventoryDumperExecuteEngine = ExecuteEngine.newFixedThreadInstance(inputConfig.getWorkerThread(), INVENTORY_THREAD_PREFIX + jobId);
-        incrementalDumperExecuteEngine = ExecuteEngine.newCachedThreadInstance(INCREMENTAL_THREAD_PREFIX + jobId);
-        importerExecuteEngine = ExecuteEngine.newFixedThreadInstance(outputConfig.getWorkerThread(), IMPORTER_THREAD_PREFIX + jobId);
-    }
-    
-    private OnRuleAlteredActionConfiguration convertActionConfig(final OnRuleAlteredActionConfiguration actionConfig) {
-        YamlOnRuleAlteredActionConfiguration yamlActionConfig = SWAPPER.swapToYamlConfiguration(actionConfig);
-        if (null == yamlActionConfig.getInput()) {
-            yamlActionConfig.setInput(YamlPipelineInputConfiguration.buildWithDefaultValue());
-        } else {
-            yamlActionConfig.getInput().fillInNullFieldsWithDefaultValue();
-        }
-        if (null == yamlActionConfig.getOutput()) {
-            yamlActionConfig.setOutput(YamlPipelineOutputConfiguration.buildWithDefaultValue());
-        } else {
-            yamlActionConfig.getOutput().fillInNullFieldsWithDefaultValue();
-        }
-        if (null == yamlActionConfig.getStreamChannel()) {
-            yamlActionConfig.setStreamChannel(new YamlAlgorithmConfiguration(MemoryPipelineChannelCreator.TYPE, new Properties()));
-        }
-        return SWAPPER.swapToObject(yamlActionConfig);
     }
 }

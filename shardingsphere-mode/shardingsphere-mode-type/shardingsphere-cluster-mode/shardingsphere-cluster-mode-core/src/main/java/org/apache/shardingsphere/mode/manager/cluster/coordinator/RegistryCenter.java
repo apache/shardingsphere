@@ -23,8 +23,7 @@ import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.LockRegistryService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.MutexLockRegistryService;
+import org.apache.shardingsphere.mode.lock.LockPersistService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcherFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.subscriber.ScalingRegistrySubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.subscriber.SchemaMetaDataRegistrySubscriber;
@@ -52,7 +51,7 @@ public final class RegistryCenter {
     private final ComputeNodeStatusService computeNodeStatusService;
     
     @Getter
-    private final LockRegistryService lockService;
+    private final LockPersistService lockPersistService;
     
     @Getter
     private final EventBusContext eventBusContext;
@@ -71,7 +70,7 @@ public final class RegistryCenter {
         this.databaseConfigs = databaseConfigs;
         storageNodeStatusService = new StorageNodeStatusService(repository);
         computeNodeStatusService = new ComputeNodeStatusService(repository);
-        lockService = new MutexLockRegistryService(repository);
+        lockPersistService = new ClusterLockPersistService(repository);
         listenerFactory = new GovernanceWatcherFactory(repository, eventBusContext, getJDBCDatabaseName());
         createSubscribers(repository);
     }

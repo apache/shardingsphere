@@ -35,7 +35,7 @@ import java.util.concurrent.locks.Lock;
  * Zookeeper internal lock holder.
  */
 @RequiredArgsConstructor
-public class ZookeeperInternalLockHolder {
+public final class ZookeeperInternalLockHolder {
     
     private final Map<String, ZookeeperInternalLock> locks = new LinkedHashMap<>();
     

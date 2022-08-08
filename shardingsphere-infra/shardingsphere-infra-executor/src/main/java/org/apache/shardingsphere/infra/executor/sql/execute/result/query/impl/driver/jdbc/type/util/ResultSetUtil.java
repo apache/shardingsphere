@@ -25,6 +25,7 @@ import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.SQLException;
@@ -124,7 +125,7 @@ public final class ResultSetUtil {
             try {
                 return value.setScale(scale);
             } catch (final ArithmeticException ex) {
-                return value.setScale(scale, BigDecimal.ROUND_HALF_UP);
+                return value.setScale(scale, RoundingMode.HALF_UP);
             }
         }
         return value;

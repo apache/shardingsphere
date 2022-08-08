@@ -74,9 +74,10 @@ public class SpringBootStarterTest {
     @Test
     public void assertDataSources() {
         Map<String, DataSource> dataSources = getContextManager(dataSource).getMetaDataContexts().getMetaData().getDatabase("foo_db").getResource().getDataSources();
-        assertThat(dataSources.size(), is(2));
-        assertTrue(dataSources.containsKey("ds0"));
-        assertTrue(dataSources.containsKey("ds1"));
+        assertThat(dataSources.size(), is(3));
+        assertTrue(dataSources.containsKey("read_ds_0"));
+        assertTrue(dataSources.containsKey("read_ds_1"));
+        assertTrue(dataSources.containsKey("write_ds"));
     }
     
     @Test
@@ -138,12 +139,12 @@ public class SpringBootStarterTest {
     }
     
     private void assertReadwriteSplittingRule(final ReadwriteSplittingRule actual) {
-        assertThat(actual.getDataSourceMapper(), is(Collections.singletonMap("readwrite_ds", Arrays.asList("write_ds", "ds0", "ds1"))));
+        assertThat(actual.getDataSourceMapper(), is(Collections.singletonMap("readwrite_ds", Arrays.asList("write_ds", "read_ds_0", "read_ds_1"))));
         ReadwriteSplittingDataSourceRule dataSourceRule = actual.getSingleDataSourceRule();
         assertThat(dataSourceRule.getName(), is("readwrite_ds"));
         StaticReadwriteSplittingStrategy staticReadwriteSplittingType = (StaticReadwriteSplittingStrategy) dataSourceRule.getReadwriteSplittingStrategy();
         assertThat(staticReadwriteSplittingType.getWriteDataSource(), is("write_ds"));
-        assertThat(staticReadwriteSplittingType.getReadDataSources(), is(Arrays.asList("ds0", "ds1")));
+        assertThat(staticReadwriteSplittingType.getReadDataSources(), is(Arrays.asList("read_ds_0", "read_ds_1")));
         assertThat(dataSourceRule.getLoadBalancer(), instanceOf(RandomReadQueryLoadBalanceAlgorithm.class));
     }
     
@@ -170,8 +171,8 @@ public class SpringBootStarterTest {
     
     private void assertShadowDataSourceMappings(final Map<String, ShadowDataSourceRule> actual) {
         assertThat(actual.size(), is(1));
-        assertThat(actual.get("shadow-data-source").getSourceDataSource(), is("ds0"));
-        assertThat(actual.get("shadow-data-source").getShadowDataSource(), is("ds1"));
+        assertThat(actual.get("shadow-data-source").getSourceDataSource(), is("read_ds_0"));
+        assertThat(actual.get("shadow-data-source").getShadowDataSource(), is("read_ds_1"));
     }
     
     private void assertShadowAlgorithms(final Map<String, ShadowAlgorithm> actual) {

@@ -59,7 +59,6 @@ public final class InstanceContext {
         this.modeConfiguration = modeConfiguration;
         this.lockContext = lockContext;
         this.eventBusContext = eventBusContext;
-        lockContext.initLockState(this);
     }
     
     /**

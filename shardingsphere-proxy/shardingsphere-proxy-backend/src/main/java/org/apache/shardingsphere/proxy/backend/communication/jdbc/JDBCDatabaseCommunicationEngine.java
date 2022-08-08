@@ -18,8 +18,9 @@
 package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 
 import org.apache.shardingsphere.infra.binder.LogicSQL;
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
+import org.apache.shardingsphere.infra.binder.decider.engine.SQLFederationDeciderEngine;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
@@ -38,7 +39,6 @@ import org.apache.shardingsphere.infra.federation.executor.FederationExecutorFac
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtil;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngine;
 import org.apache.shardingsphere.proxy.backend.communication.ProxySQLExecutor;
@@ -116,17 +116,15 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
     public ResponseHeader execute() throws SQLException {
         LogicSQL logicSQL = getLogicSQL();
         MetaDataContexts metaDataContexts = ProxyContext.getInstance().getContextManager().getMetaDataContexts();
-        ExecutionContext executionContext = getKernelProcessor().generateExecutionContext(
-                logicSQL, getDatabase(), metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps());
-        // TODO move federation route logic to binder
-        SQLStatementContext<?> sqlStatementContext = logicSQL.getSqlStatementContext();
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(backendConnection.getConnectionSession().getDatabaseName());
-        if (executionContext.getRouteContext().isFederated() || (sqlStatementContext instanceof SelectStatementContext
-                && SystemSchemaUtil.containsSystemSchema(sqlStatementContext.getDatabaseType(), sqlStatementContext.getTablesContext().getSchemaNames(), database))) {
+        SQLFederationDeciderContext deciderContext = decide(logicSQL, metaDataContexts.getMetaData().getProps(), database);
+        if (deciderContext.isUseSQLFederation()) {
             prepareFederationExecutor();
             ResultSet resultSet = doExecuteFederation(logicSQL, metaDataContexts);
             return processExecuteFederation(resultSet, metaDataContexts);
         }
+        ExecutionContext executionContext = getKernelProcessor().generateExecutionContext(
+                logicSQL, getDatabase(), metaDataContexts.getMetaData().getGlobalRuleMetaData(), metaDataContexts.getMetaData().getProps());
         if (executionContext.getExecutionUnits().isEmpty()) {
             return new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement());
         }
@@ -138,6 +136,11 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
         return executeResultSample instanceof QueryResult
                 ? processExecuteQuery(executionContext, result, (QueryResult) executeResultSample)
                 : processExecuteUpdate(executionContext, result);
+    }
+    
+    private static SQLFederationDeciderContext decide(final LogicSQL logicSQL, final ConfigurationProperties props, final ShardingSphereDatabase database) {
+        SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(database.getRuleMetaData().getRules(), props);
+        return deciderEngine.decide(logicSQL, database);
     }
     
     private void prepareFederationExecutor() {

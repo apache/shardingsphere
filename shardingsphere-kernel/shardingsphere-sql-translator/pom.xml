@@ -32,5 +32,6 @@
         <module>shardingsphere-sql-translator-api</module>
         <module>shardingsphere-sql-translator-core</module>
         <module>shardingsphere-sql-translator-provider</module>
+        <module>shardingsphere-sql-translator-spring</module>
     </modules>
 </project>

@@ -38,8 +38,8 @@ import org.apache.shardingsphere.integration.data.pipeline.framework.container.c
 import org.apache.shardingsphere.integration.data.pipeline.framework.container.compose.NativeComposedContainer;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
 import org.apache.shardingsphere.integration.data.pipeline.framework.watcher.ScalingWatcher;
-import org.apache.shardingsphere.integration.data.pipeline.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.junit.Rule;
 import org.opengauss.util.PSQLException;
@@ -384,7 +384,7 @@ public abstract class BaseITCase {
     }
     
     protected void assertCheckScalingSuccess(final String jobId) {
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 10; i++) {
             if (checkJobIncrementTaskFinished(jobId)) {
                 break;
             }
@@ -393,7 +393,6 @@ public abstract class BaseITCase {
         boolean secondCheckJobResult = checkJobIncrementTaskFinished(jobId);
         log.info("second check job result: {}", secondCheckJobResult);
         stopScalingSourceWriting(jobId);
-        assertStopScalingSourceWriting();
         List<Map<String, Object>> checkScalingResults = queryForListWithLog(String.format("CHECK SCALING %s BY TYPE (NAME=DATA_MATCH)", jobId));
         log.info("checkScalingResults: {}", checkScalingResults);
         for (Map<String, Object> entry : checkScalingResults) {
@@ -422,12 +421,4 @@ public abstract class BaseITCase {
         Collections.sort(expect);
         assertThat(dataSourceNames, is(expect));
     }
-    
-    protected void restoreScalingSourceWriting(final String jobId) {
-        executeWithLog(String.format("RESTORE SCALING SOURCE WRITING %s", jobId));
-    }
-    
-    protected abstract void assertStopScalingSourceWriting();
-    
-    protected abstract void assertRestoreScalingSourceWriting();
 }

@@ -22,10 +22,13 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineIgnoredException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 
@@ -35,8 +38,7 @@ import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 @Slf4j
 @RequiredArgsConstructor
 @Getter
-// TODO extract JobScheduler
-public final class RuleAlteredJobScheduler implements Runnable {
+public final class RuleAlteredJobScheduler implements PipelineTasksRunner, Runnable {
     
     private final RuleAlteredJobContext jobContext;
     
@@ -74,12 +76,12 @@ public final class RuleAlteredJobScheduler implements Runnable {
             jobContext.getJobPreparer().prepare(jobContext);
         } catch (final PipelineIgnoredException ex) {
             log.info("pipeline ignore exception: {}", ex.getMessage());
-            RuleAlteredJobCenter.stop(jobId);
+            PipelineJobCenter.stop(jobId);
             // CHECKSTYLE:OFF
         } catch (final RuntimeException ex) {
             // CHECKSTYLE:ON
             log.error("job prepare failed, {}-{}", jobId, jobContext.getShardingItem(), ex);
-            RuleAlteredJobCenter.stop(jobId);
+            PipelineJobCenter.stop(jobId);
             jobContext.setStatus(JobStatus.PREPARING_FAILURE);
             governanceRepositoryAPI.persistJobProgress(jobContext);
             throw ex;
@@ -99,7 +101,7 @@ public final class RuleAlteredJobScheduler implements Runnable {
     }
     
     private synchronized boolean executeInventoryTask() {
-        if (RuleAlteredJobProgressDetector.allInventoryTasksFinished(jobContext.getInventoryTasks())) {
+        if (PipelineJobProgressDetector.allInventoryTasksFinished(jobContext.getInventoryTasks())) {
             log.info("All inventory tasks finished.");
             return true;
         }
@@ -110,7 +112,7 @@ public final class RuleAlteredJobScheduler implements Runnable {
             if (each.getProgress().getPosition() instanceof FinishedPosition) {
                 continue;
             }
-            jobContext.getRuleAlteredContext().getInventoryDumperExecuteEngine().submit(each, inventoryTaskCallback);
+            jobContext.getJobProcessContext().getInventoryDumperExecuteEngine().submit(each, inventoryTaskCallback);
         }
         return false;
     }
@@ -120,7 +122,7 @@ public final class RuleAlteredJobScheduler implements Runnable {
             
             @Override
             public void onSuccess() {
-                if (RuleAlteredJobProgressDetector.allInventoryTasksFinished(jobContext.getInventoryTasks())) {
+                if (PipelineJobProgressDetector.allInventoryTasksFinished(jobContext.getInventoryTasks())) {
                     log.info("onSuccess, all inventory tasks finished.");
                     executeIncrementalTask();
                 }
@@ -147,7 +149,7 @@ public final class RuleAlteredJobScheduler implements Runnable {
             if (each.getProgress().getPosition() instanceof FinishedPosition) {
                 continue;
             }
-            jobContext.getRuleAlteredContext().getIncrementalDumperExecuteEngine().submit(each, incrementalTaskCallback);
+            jobContext.getJobProcessContext().getIncrementalDumperExecuteEngine().submit(each, incrementalTaskCallback);
         }
     }
     
