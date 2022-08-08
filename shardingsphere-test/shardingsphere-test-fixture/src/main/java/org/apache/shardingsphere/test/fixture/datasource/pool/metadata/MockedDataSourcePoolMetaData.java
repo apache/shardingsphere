@@ -34,7 +34,7 @@ public final class MockedDataSourcePoolMetaData implements DataSourcePoolMetaDat
     public Map<String, Object> getDefaultProperties() {
         return Collections.singletonMap("maxPoolSize", 100);
     }
-    
+
     @Override
     public Map<String, Object> getInvalidProperties() {
         Map<String, Object> result = new HashMap<>(2, 1);
@@ -42,7 +42,13 @@ public final class MockedDataSourcePoolMetaData implements DataSourcePoolMetaDat
         result.put("minPoolSize", -1);
         return result;
     }
-    
+
+    @Override
+    public Collection<String> getJdbcUrlSynonymFieldNames() {
+        return Collections.emptyList();
+    }
+
+
     @Override
     public Map<String, String> getPropertySynonyms() {
         Map<String, String> result = new HashMap<>(2, 1);
