@@ -15,25 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+package org.apache.shardingsphere.mode.repository.cluster.lock;
 
 /**
- * Unsupported update operation exception.
+ * Internal lock.
  */
-@RequiredArgsConstructor
-@Getter
-public final class UnsupportedUpdateOperationException extends BackendException {
+public interface InternalLock {
     
-    private static final long serialVersionUID = -5409739222950362541L;
+    /**
+     * Try lock.
+     *
+     * @param timeoutMillis timeout millis
+     * @return is locked or not
+     */
+    boolean tryLock(long timeoutMillis);
     
-    private final String databaseName;
-    
-    private final String errorMessage;
-    
-    public UnsupportedUpdateOperationException(final String databaseName) {
-        this(databaseName, String.format("The database %s is read-only", databaseName));
-    }
+    /**
+     * Unlock.
+     */
+    void unlock();
 }

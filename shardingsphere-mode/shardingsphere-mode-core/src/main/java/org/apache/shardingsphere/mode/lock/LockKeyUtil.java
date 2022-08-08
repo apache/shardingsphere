@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock.util;
+package org.apache.shardingsphere.mode.lock;
 
 /**
  * Lock key util.
@@ -30,18 +30,6 @@ public final class LockKeyUtil {
     
     private static final String LOCKS_NODE_EXCLUSIVE = "exclusive";
     
-    private static final String LOCKS_NODE_DATABASE = "database";
-    
-    /**
-     * Generate lock key leases.
-     *
-     * @param lockKey lock key
-     * @return locks name
-     */
-    public static String generateLockKeyLeases(final String lockKey) {
-        return lockKey + "/leases";
-    }
-    
     /**
      * Generate exclusive lock key.
      *
@@ -52,22 +40,17 @@ public final class LockKeyUtil {
         return generateLocksNodePath(LOCKS_NODE_EXCLUSIVE) + "/" + lockName;
     }
     
-    /**
-     * Generate database lock key.
-     *
-     * @param lockName locks name
-     * @return locks name
-     */
-    public static String generateDatabaseLockKey(final String lockName) {
-        return generateLocksNodePath(LOCKS_NODE_DATABASE) + "/" + lockName;
+    private static String generateLocksNodePath(final String lockPath) {
+        return PATH_DELIMITER + LOCK_ROOT + PATH_DELIMITER + lockPath + PATH_DELIMITER + LOCKS_NODE;
     }
     
     /**
-     * Generate locks node path.
+     * Generate lock key leases.
      *
-     * @return locks node path
+     * @param lockKey lock key
+     * @return locks name
      */
-    private static String generateLocksNodePath(final String lockPath) {
-        return PATH_DELIMITER + LOCK_ROOT + PATH_DELIMITER + lockPath + PATH_DELIMITER + LOCKS_NODE;
+    public static String generateLockKeyLeases(final String lockKey) {
+        return lockKey + "/leases";
     }
 }

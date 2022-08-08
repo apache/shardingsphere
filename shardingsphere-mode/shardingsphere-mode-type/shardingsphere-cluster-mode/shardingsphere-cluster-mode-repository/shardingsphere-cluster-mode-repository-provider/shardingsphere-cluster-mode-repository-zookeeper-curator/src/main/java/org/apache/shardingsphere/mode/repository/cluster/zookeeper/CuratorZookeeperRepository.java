@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.repository.cluster.zookeeper;
 
 import com.google.common.base.Strings;
-import lombok.SneakyThrows;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.CuratorFrameworkFactory.Builder;
@@ -51,7 +50,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
 
 /**
  * Registry repository of ZooKeeper.
@@ -257,19 +255,8 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     }
     
     @Override
-    public Lock getInternalMutexLock(final String lockName) {
-        return internalLockHolder.getInternalMutexLock(lockName);
-    }
-    
-    @Override
-    public Lock getInternalReentrantMutexLock(final String lockName) {
-        return internalLockHolder.getInternalReentrantMutexLock(lockName);
-    }
-    
-    @Override
-    @SneakyThrows(InterruptedException.class)
     public boolean tryLock(final String lockKey, final long timeoutMillis) {
-        return internalLockHolder.getInternalMutexLock(lockKey).tryLock(timeoutMillis, TimeUnit.MILLISECONDS);
+        return internalLockHolder.getInternalLock(lockKey).tryLock(timeoutMillis);
     }
     
     @Override

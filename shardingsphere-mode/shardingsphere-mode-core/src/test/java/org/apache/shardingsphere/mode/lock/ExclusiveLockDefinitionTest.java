@@ -15,32 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock.util;
+package org.apache.shardingsphere.mode.lock;
 
-import lombok.SneakyThrows;
+import org.junit.Test;
 
-import java.util.concurrent.TimeUnit;
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
 
-/**
- * Timeout milliseconds.
- */
-public final class TimeoutMilliseconds {
+public final class ExclusiveLockDefinitionTest {
     
-    public static final long MAX_TRY_LOCK = 3 * 60 * 1000L;
-    
-    public static final long MIN_TRY_LOCK = 200L;
-    
-    public static final long DEFAULT_REGISTRY = 50L;
-    
-    public static final long MAX_ACK_EXPEND = 100L;
-    
-    /**
-     * Sleep interval.
-     *
-     * @param timeMilliseconds time milliseconds
-     */
-    @SneakyThrows(InterruptedException.class)
-    public static void sleepInterval(final long timeMilliseconds) {
-        TimeUnit.MILLISECONDS.sleep(timeMilliseconds);
+    @Test
+    public void assertNewLockDefinition() {
+        ExclusiveLockDefinition lockDefinition = new ExclusiveLockDefinition("exclusive_lock");
+        assertThat(lockDefinition.getLockName(), is("exclusive_lock"));
+        assertThat(lockDefinition.getLockKey(), is("/lock/exclusive/locks/exclusive_lock"));
     }
 }

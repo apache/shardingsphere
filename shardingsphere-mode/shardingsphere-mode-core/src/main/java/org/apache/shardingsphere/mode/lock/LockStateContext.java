@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock.manager.state;
+package org.apache.shardingsphere.mode.lock;
 
 import org.apache.shardingsphere.infra.lock.LockDefinition;
 
