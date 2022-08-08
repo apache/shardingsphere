@@ -15,23 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.node;
+package org.apache.shardingsphere.mode.lock;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
+import org.apache.shardingsphere.infra.lock.LockDefinition;
 
 /**
- * Distributed lock node service.
+ * Lock persist service.
  */
-public final class DistributedLockNodeService implements LockNodeService {
+public interface LockPersistService {
     
-    @Override
-    public String getLockTypeName() {
-        return "distributed";
-    }
+    /**
+     * Try lock.
+     *
+     * @param lockDefinition lock definition
+     * @param timeoutMillis timeout millis
+     * @return is locked or not
+     */
+    boolean tryLock(LockDefinition lockDefinition, long timeoutMillis);
     
-    @Override
-    public LockNodeType getType() {
-        return LockNodeType.DISTRIBUTED;
-    }
+    /**
+     * Unlock.
+     *
+     * @param lockDefinition lock definition
+     */
+    void unlock(LockDefinition lockDefinition);
 }

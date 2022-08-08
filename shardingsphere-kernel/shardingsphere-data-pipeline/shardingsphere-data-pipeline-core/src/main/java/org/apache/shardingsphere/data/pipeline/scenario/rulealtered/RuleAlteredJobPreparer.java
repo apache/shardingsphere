@@ -52,7 +52,9 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
+import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.infra.lock.LockDefinition;
+import org.apache.shardingsphere.mode.lock.definition.LockDefinitionFactory;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 
 import javax.sql.DataSource;
@@ -104,23 +106,24 @@ public final class RuleAlteredJobPreparer {
         RuleAlteredJobConfiguration jobConfig = jobContext.getJobConfig();
         // TODO the lock will be replaced
         String lockName = "prepare-" + jobConfig.getJobId();
-        ShardingSphereLock lock = PipelineContext.getContextManager().getInstanceContext().getLockContext().getLock();
-        if (lock.tryLock(lockName, 3000)) {
+        LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
+        LockDefinition lockDefinition = LockDefinitionFactory.newExclusiveLockDefinition(lockName);
+        if (lockContext.tryLock(lockDefinition, 3000)) {
             try {
                 prepareAndCheckTarget(jobContext);
             } finally {
-                lock.releaseLock(lockName);
+                lockContext.unlock(lockDefinition);
             }
         } else {
-            waitUntilLockReleased(lock, lockName);
+            waitUntilLockReleased(lockContext, lockDefinition);
         }
     }
     
-    private void waitUntilLockReleased(final ShardingSphereLock lock, final String lockName) {
+    private void waitUntilLockReleased(final LockContext lockContext, final LockDefinition lockDefinition) {
         for (int loopCount = 0; loopCount < 30; loopCount++) {
             ThreadUtil.sleep(TimeUnit.SECONDS.toMillis(5));
-            if (!lock.isLocked(lockName)) {
-                log.info("unlocked, lockName={}", lockName);
+            if (!lockContext.isLocked(lockDefinition)) {
+                log.info("unlocked, lockName={}", lockDefinition.getLockKey());
                 return;
             }
         }

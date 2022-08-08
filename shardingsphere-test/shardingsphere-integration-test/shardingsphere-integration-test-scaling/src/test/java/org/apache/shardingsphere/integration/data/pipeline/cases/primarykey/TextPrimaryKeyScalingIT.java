@@ -82,7 +82,6 @@ public class TextPrimaryKeyScalingIT extends BaseExtraSQLITCase {
         assertCheckScalingSuccess(jobId);
         applyScaling(jobId);
         assertPreviewTableSuccess("t_order", Arrays.asList("ds_2", "ds_3", "ds_4"));
-        restoreScalingSourceWriting(getScalingJobId());
     }
     
     private void batchInsertOrder() {
