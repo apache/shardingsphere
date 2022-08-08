@@ -58,7 +58,7 @@ public final class RuleAlteredJob extends AbstractPipelineJob implements SimpleJ
         setJobId(shardingContext.getJobName());
         RuleAlteredJobConfiguration jobConfig = RuleAlteredJobConfigurationSwapper.swapToObject(shardingContext.getJobParameter());
         JobProgress initProgress = governanceRepositoryAPI.getJobProgress(shardingContext.getJobName(), shardingContext.getShardingItem());
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, shardingContext.getShardingItem(), initProgress, dataSourceManager, jobPreparer);
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, shardingContext.getShardingItem(), initProgress, dataSourceManager);
         int shardingItem = jobContext.getShardingItem();
         if (getTasksRunnerMap().containsKey(shardingItem)) {
             // If the following log is output, it is possible that the elasticjob task was not shutdown correctly
@@ -68,7 +68,7 @@ public final class RuleAlteredJob extends AbstractPipelineJob implements SimpleJ
         log.info("start RuleAlteredJobScheduler, jobId={}, shardingItem={}", getJobId(), shardingItem);
         RuleAlteredJobScheduler jobScheduler = new RuleAlteredJobScheduler(jobContext);
         runInBackground(() -> {
-            prepareJob(jobContext);
+            prepare(jobContext);
             jobScheduler.start();
         });
         getTasksRunnerMap().put(shardingItem, jobScheduler);
@@ -96,9 +96,9 @@ public final class RuleAlteredJob extends AbstractPipelineJob implements SimpleJ
         PipelineJobProgressPersistService.removeJobProgressPersistContext(getJobId());
     }
     
-    private void prepareJob(final RuleAlteredJobContext jobContext) {
+    private void prepare(final RuleAlteredJobContext jobContext) {
         try {
-            jobContext.getJobPreparer().prepare(jobContext);
+            jobPreparer.prepare(jobContext);
         } catch (final PipelineIgnoredException ex) {
             log.info("pipeline ignore exception: {}", ex.getMessage());
             PipelineJobCenter.stop(getJobId());

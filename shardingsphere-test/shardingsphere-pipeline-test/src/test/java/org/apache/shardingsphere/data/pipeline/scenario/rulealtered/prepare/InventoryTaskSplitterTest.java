@@ -29,7 +29,6 @@ import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobPreparer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -68,7 +67,7 @@ public final class InventoryTaskSplitterTest {
     private void initJobContext() {
         RuleAlteredJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
         JobProgress initProgress = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobProgress(jobConfig.getJobId(), 0);
-        jobContext = new RuleAlteredJobContext(jobConfig, 0, initProgress, new PipelineDataSourceManager(), new RuleAlteredJobPreparer());
+        jobContext = new RuleAlteredJobContext(jobConfig, 0, initProgress, new PipelineDataSourceManager());
         dataSourceManager = jobContext.getDataSourceManager();
         taskConfig = jobContext.getTaskConfig();
     }
