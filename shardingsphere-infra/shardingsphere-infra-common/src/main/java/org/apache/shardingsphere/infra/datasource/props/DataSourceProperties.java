@@ -47,7 +47,7 @@ public final class DataSourceProperties {
     private final PoolPropertySynonyms poolPropertySynonyms;
     
     private final CustomDataSourceProperties customDataSourceProperties;
-
+    
     private final JdbcUrlPropertySynonyms jdbcUrlPropertySynonyms;
     
     public DataSourceProperties(final String dataSourceClassName, final Map<String, Object> props) {
@@ -96,7 +96,7 @@ public final class DataSourceProperties {
         result.putAll(jdbcUrlPropertySynonyms.getLocalProperties());
         return result;
     }
-
+    
     @SuppressWarnings("unchecked")
     private Map<String, Object> getJdbcUrlProperties(final CustomDataSourceProperties customDataSourceProps, final Optional<DataSourcePoolMetaData> poolMetaData) {
         if (poolMetaData.isPresent()) {
@@ -107,7 +107,7 @@ public final class DataSourceProperties {
         }
         return Collections.emptyMap();
     }
-
+    
     @Override
     public boolean equals(final Object obj) {
         return this == obj || null != obj && getClass() == obj.getClass() && equalsByProperties((DataSourceProperties) obj);
@@ -117,7 +117,7 @@ public final class DataSourceProperties {
         if (!dataSourceClassName.equals(dataSourceProps.dataSourceClassName)) {
             return false;
         }
-
+        
         for (Entry<String, Object> entry : getAllLocalProperties().entrySet()) {
             if (!dataSourceProps.getAllLocalProperties().containsKey(entry.getKey())) {
                 continue;

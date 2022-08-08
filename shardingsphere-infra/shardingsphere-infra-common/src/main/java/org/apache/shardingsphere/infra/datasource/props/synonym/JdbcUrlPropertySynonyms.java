@@ -28,7 +28,7 @@ import lombok.EqualsAndHashCode;
  */
 @EqualsAndHashCode(callSuper = true)
 public final class JdbcUrlPropertySynonyms extends PropertySynonyms {
-
+    
     public JdbcUrlPropertySynonyms(final Map<String, Object> props, final Collection<String> standardPropertyKeys) {
         super(props, standardPropertyKeys, standardPropertyKeys.stream().collect(Collectors.toMap(String::toString, String::toString)));
     }

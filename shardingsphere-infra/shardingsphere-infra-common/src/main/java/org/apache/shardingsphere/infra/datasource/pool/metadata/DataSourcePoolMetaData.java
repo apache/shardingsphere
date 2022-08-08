@@ -49,14 +49,14 @@ public interface DataSourcePoolMetaData extends TypedSPI {
      * @return property synonyms
      */
     Map<String, String> getPropertySynonyms();
-
+    
     /**
      * Get jdbc url synonym field names.
      *
      * @return jdbc url synonym field names
      */
     Collection<String> getJdbcUrlSynonymFieldNames();
-
+    
     /**
      * Get transient field names.
      *

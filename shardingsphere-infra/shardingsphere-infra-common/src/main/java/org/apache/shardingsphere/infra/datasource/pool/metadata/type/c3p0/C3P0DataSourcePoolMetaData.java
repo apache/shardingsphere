@@ -20,6 +20,7 @@ package org.apache.shardingsphere.infra.datasource.pool.metadata.type.c3p0;
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaData;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
@@ -89,6 +90,11 @@ public final class C3P0DataSourcePoolMetaData implements DataSourcePoolMetaData 
     @Override
     public Collection<String> getTransientFieldNames() {
         return TRANSIENT_FIELD_NAMES;
+    }
+    
+    @Override
+    public Collection<String> getJdbcUrlSynonymFieldNames() {
+        return Collections.emptyList();
     }
     
     @Override

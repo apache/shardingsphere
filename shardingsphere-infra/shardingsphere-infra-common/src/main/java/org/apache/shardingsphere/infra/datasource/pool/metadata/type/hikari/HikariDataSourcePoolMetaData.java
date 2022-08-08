@@ -32,13 +32,13 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
     private static final Map<String, Object> DEFAULT_PROPERTIES = new HashMap<>(6, 1);
     
     private static final Map<String, Object> INVALID_PROPERTIES = new HashMap<>(2, 1);
-
+    
     private static final Map<String, String> PROPERTY_SYNONYMS = new HashMap<>(6, 1);
     
     private static final Collection<String> TRANSIENT_FIELD_NAMES = new LinkedList<>();
-
+    
     private static final Collection<String> JDBC_URL_SYNONYM_FIELD_NAMES = new LinkedList<>();
-
+    
     static {
         buildDefaultProperties();
         buildInvalidProperties();
@@ -61,11 +61,11 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
         INVALID_PROPERTIES.put("minimumIdle", -1);
         INVALID_PROPERTIES.put("maximumPoolSize", -1);
     }
-
+    
     private static void buildJdbcUrlSynonymFieldNames() {
         JDBC_URL_SYNONYM_FIELD_NAMES.add("registerMbeans");
     }
-
+    
     private static void buildPropertySynonyms() {
         PROPERTY_SYNONYMS.put("url", "jdbcUrl");
         PROPERTY_SYNONYMS.put("connectionTimeoutMilliseconds", "connectionTimeout");
@@ -89,12 +89,12 @@ public final class HikariDataSourcePoolMetaData implements DataSourcePoolMetaDat
     public Map<String, Object> getInvalidProperties() {
         return INVALID_PROPERTIES;
     }
-
+    
     @Override
     public Collection<String> getJdbcUrlSynonymFieldNames() {
         return JDBC_URL_SYNONYM_FIELD_NAMES;
     }
-
+    
     @Override
     public Map<String, String> getPropertySynonyms() {
         return PROPERTY_SYNONYMS;
