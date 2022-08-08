@@ -22,14 +22,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineIgnoredException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
-import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 
 /**
  * Rule altered job scheduler.
@@ -100,7 +101,7 @@ public final class RuleAlteredJobScheduler implements PipelineTasksRunner, Runna
     }
     
     private synchronized boolean executeInventoryTask() {
-        if (RuleAlteredJobProgressDetector.allInventoryTasksFinished(jobContext.getInventoryTasks())) {
+        if (PipelineJobProgressDetector.allInventoryTasksFinished(jobContext.getInventoryTasks())) {
             log.info("All inventory tasks finished.");
             return true;
         }
@@ -121,7 +122,7 @@ public final class RuleAlteredJobScheduler implements PipelineTasksRunner, Runna
             
             @Override
             public void onSuccess() {
-                if (RuleAlteredJobProgressDetector.allInventoryTasksFinished(jobContext.getInventoryTasks())) {
+                if (PipelineJobProgressDetector.allInventoryTasksFinished(jobContext.getInventoryTasks())) {
                     log.info("onSuccess, all inventory tasks finished.");
                     executeIncrementalTask();
                 }

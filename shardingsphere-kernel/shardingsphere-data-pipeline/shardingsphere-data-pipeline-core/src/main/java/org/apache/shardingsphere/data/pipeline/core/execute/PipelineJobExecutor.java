@@ -27,7 +27,7 @@ import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstan
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJob;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobPreparer;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobProgressDetector;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -77,7 +77,7 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
             RuleAlteredJobConfiguration jobConfig = RuleAlteredJobConfigurationSwapper.swapToObject(jobConfigPOJO.getJobParameter());
             if (isDeleted) {
                 new RuleAlteredJobPreparer().cleanup(jobConfig);
-            } else if (RuleAlteredJobProgressDetector.isJobSuccessful(jobConfig.getJobShardingCount(), RuleAlteredJobAPIFactory.getInstance().getProgress(jobConfig).values())) {
+            } else if (PipelineJobProgressDetector.isJobSuccessful(jobConfig.getJobShardingCount(), RuleAlteredJobAPIFactory.getInstance().getProgress(jobConfig).values())) {
                 log.info("isJobSuccessful=true");
                 new RuleAlteredJobPreparer().cleanup(jobConfig);
             }
