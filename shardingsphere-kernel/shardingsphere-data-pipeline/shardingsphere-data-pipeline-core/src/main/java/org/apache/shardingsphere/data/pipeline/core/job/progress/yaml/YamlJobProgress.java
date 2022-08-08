@@ -19,13 +19,14 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * Yaml job progress.
+ * YAML job progress.
  */
 @Getter
 @Setter
-public final class YamlJobProgress {
+public final class YamlJobProgress implements YamlConfiguration {
     
     private String status;
     
