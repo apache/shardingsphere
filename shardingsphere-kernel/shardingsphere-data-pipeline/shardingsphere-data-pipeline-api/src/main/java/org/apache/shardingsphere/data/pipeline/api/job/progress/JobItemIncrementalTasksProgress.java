@@ -48,6 +48,15 @@ public final class JobItemIncrementalTasksProgress {
     }
     
     /**
+     * Get data source name.
+     *
+     * @return data source
+     */
+    public String getDataSourceName() {
+        return incrementalTaskProgressMap.keySet().stream().findAny().orElse("");
+    }
+    
+    /**
      * Get incremental latest active time milliseconds.
      *
      * @return latest active time, <code>0</code> means there is no activity

@@ -42,6 +42,7 @@ import org.apache.shardingsphere.integration.transaction.framework.container.com
 import org.apache.shardingsphere.integration.transaction.framework.container.database.DatabaseContainer;
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
 import org.apache.shardingsphere.integration.transaction.util.TransactionTestCaseClassScanner;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -350,11 +351,11 @@ public abstract class BaseITCase {
     
     private String getProxyJdbcUrl(final DatabaseType databaseType) {
         String defaultDatabaseName = "";
-        if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
+        if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
             defaultDatabaseName = "postgres";
         }
         String jdbcUrl = composedContainer.getProxyJdbcUrl(defaultDatabaseName);
-        if (databaseType instanceof PostgreSQLDatabaseType || databaseType instanceof OpenGaussDatabaseType) {
+        if (DatabaseTypeUtil.isPostgreSQL(databaseType) || DatabaseTypeUtil.isOpenGauss(databaseType)) {
             jdbcUrl = JDBC_URL_APPENDER.appendQueryProperties(jdbcUrl, getPostgreSQLQueryProperties());
         }
         return jdbcUrl;
@@ -382,7 +383,7 @@ public abstract class BaseITCase {
     
     @SneakyThrows
     protected void addResources() {
-        if (databaseType instanceof MySQLDatabaseType) {
+        if (DatabaseTypeUtil.isMySQL(databaseType)) {
             try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl(""), ENV.getProxyUserName(), ENV.getProxyPassword())) {
                 executeWithLog(connection, "USE sharding_db");
                 addResources(connection);

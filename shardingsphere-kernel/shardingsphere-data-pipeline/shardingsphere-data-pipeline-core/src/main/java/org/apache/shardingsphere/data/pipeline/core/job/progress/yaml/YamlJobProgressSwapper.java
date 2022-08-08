@@ -19,23 +19,19 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import org.apache.shardingsphere.infra.yaml.config.swapper.YamlConfigurationSwapper;
 
 /**
  * YAML Job progress swapper.
  */
-public final class YamlJobProgressSwapper {
+public final class YamlJobProgressSwapper implements YamlConfigurationSwapper<YamlJobProgress, JobProgress> {
     
     private static final YamlJobItemInventoryTasksProgressSwapper INVENTORY_PROGRESS_SWAPPER = new YamlJobItemInventoryTasksProgressSwapper();
     
     private static final YamlJobItemIncrementalTasksProgressSwapper INCREMENTAL_PROGRESS_SWAPPER = new YamlJobItemIncrementalTasksProgressSwapper();
     
-    /**
-     * Swap to YAML.
-     *
-     * @param jobProgress job progress
-     * @return YAML job progress
-     */
-    public YamlJobProgress swapToYaml(final JobProgress jobProgress) {
+    @Override
+    public YamlJobProgress swapToYamlConfiguration(final JobProgress jobProgress) {
         YamlJobProgress result = new YamlJobProgress();
         result.setStatus(jobProgress.getStatus().name());
         result.setSourceDatabaseType(jobProgress.getSourceDatabaseType());
@@ -44,12 +40,7 @@ public final class YamlJobProgressSwapper {
         return result;
     }
     
-    /**
-     * Swap to object.
-     *
-     * @param yamlJobProgress yaml job progress
-     * @return job progress
-     */
+    @Override
     public JobProgress swapToObject(final YamlJobProgress yamlJobProgress) {
         JobProgress result = new JobProgress();
         result.setStatus(JobStatus.valueOf(yamlJobProgress.getStatus()));

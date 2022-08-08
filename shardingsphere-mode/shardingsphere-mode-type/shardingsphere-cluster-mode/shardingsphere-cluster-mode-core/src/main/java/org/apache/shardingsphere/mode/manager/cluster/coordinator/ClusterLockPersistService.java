@@ -15,43 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.manager.internal;
+package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.mode.lock.util.TimeoutMilliseconds;
-
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Lock;
+import org.apache.shardingsphere.infra.lock.LockDefinition;
+import org.apache.shardingsphere.mode.lock.LockPersistService;
+import org.apache.shardingsphere.mode.lock.util.LockKeyUtil;
+import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
- * Inter mutex reentrant lock.
+ * Cluster lock persist service.
  */
 @RequiredArgsConstructor
-public final class ReentrantInternalLock implements InternalLock {
+public final class ClusterLockPersistService implements LockPersistService {
     
-    private final Lock internalLock;
+    private final ClusterPersistRepository repository;
     
     @Override
-    public boolean tryLock() {
-        return tryLock(TimeoutMilliseconds.MAX_TRY_LOCK);
+    public boolean tryLock(final LockDefinition lockDefinition, final long timeoutMillis) {
+        return repository.tryLock(lockDefinition.getLockKey(), timeoutMillis);
     }
     
     @Override
-    public boolean tryLock(final long timeoutMillis) {
-        try {
-            return internalLock.tryLock(timeoutMillis, TimeUnit.MILLISECONDS);
-        } catch (final InterruptedException ignore) {
-            return false;
-        }
-    }
-    
-    @Override
-    public void unlock() {
-        internalLock.unlock();
-    }
-    
-    @Override
-    public boolean isLocked() {
-        throw new UnsupportedOperationException();
+    public void unlock(final LockDefinition lockDefinition) {
+        repository.delete(LockKeyUtil.generateLockKeyLeases(lockDefinition.getLockKey()));
     }
 }

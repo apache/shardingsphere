@@ -59,4 +59,11 @@ public interface PipelineJobContext {
      * @return job configuration
      */
     PipelineJobConfiguration getJobConfig();
+    
+    /**
+     * Get job process context.
+     *
+     * @return job process context
+     */
+    PipelineProcessContext getJobProcessContext();
 }

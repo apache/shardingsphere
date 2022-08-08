@@ -20,13 +20,11 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.core.util.ConfigurationFileUtil;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThat;
 
 public final class YamlJobProgressSwapperTest {
     
@@ -37,9 +35,9 @@ public final class YamlJobProgressSwapperTest {
     }
     
     @Test
-    public void assertFullSwapToYaml() {
+    public void assertFullSwapToYamlConfiguration() {
         JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress.yaml"));
-        YamlJobProgress actual = SWAPPER.swapToYaml(jobProgress);
+        YamlJobProgress actual = SWAPPER.swapToYamlConfiguration(jobProgress);
         assertThat(actual.getStatus(), is("RUNNING"));
         assertThat(actual.getSourceDatabaseType(), is("H2"));
         assertThat(actual.getInventory().getFinished().length, is(2));
@@ -52,16 +50,9 @@ public final class YamlJobProgressSwapperTest {
     }
     
     @Test
-    public void assertNullIncremental() {
-        JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress-no-finished.yaml"));
-        YamlJobProgress actual = SWAPPER.swapToYaml(jobProgress);
-        assertNull(actual.getIncremental());
-    }
-    
-    @Test
-    public void assertNullInventory() {
+    public void assertSwapToYamlConfigurationWithNullInventory() {
         JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress-no-inventory.yaml"));
-        YamlJobProgress actual = SWAPPER.swapToYaml(jobProgress);
+        YamlJobProgress actual = SWAPPER.swapToYamlConfiguration(jobProgress);
         assertThat(actual.getInventory().getFinished().length, is(0));
     }
 }

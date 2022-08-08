@@ -19,8 +19,8 @@ package org.apache.shardingsphere.integration.data.pipeline.framework.container.
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.integration.data.pipeline.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.container.wait.JDBCConnectionWaitStrategy;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.testcontainers.containers.BindMode;

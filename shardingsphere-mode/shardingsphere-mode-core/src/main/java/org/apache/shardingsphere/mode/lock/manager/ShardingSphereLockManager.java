@@ -19,34 +19,50 @@ package org.apache.shardingsphere.mode.lock.manager;
 
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
+import org.apache.shardingsphere.mode.lock.LockPersistService;
 import org.apache.shardingsphere.mode.lock.manager.state.LockStateContext;
 
 /**
  * Lock manager of ShardingSphere.
  */
 @RequiredArgsConstructor
-public final class ShardingSphereLockManager implements LockManager {
+public final class ShardingSphereLockManager {
     
     private final LockStateContext lockStateContext = new LockStateContext();
     
     private final LockPersistService lockPersistService;
     
-    @Override
+    /**
+     * Try lock.
+     *
+     * @param lockDefinition lock definition
+     * @param timeoutMillis timeout millis
+     * @return is locked or not
+     */
     public boolean tryLock(final LockDefinition lockDefinition, final long timeoutMillis) {
-        if (lockPersistService.tryLock(lockDefinition.getLockKey(), timeoutMillis)) {
+        if (lockPersistService.tryLock(lockDefinition, timeoutMillis)) {
             lockStateContext.register(lockDefinition);
             return true;
         }
         return false;
     }
     
-    @Override
+    /**
+     * Unlock.
+     *
+     * @param lockDefinition lock definition
+     */
     public void unLock(final LockDefinition lockDefinition) {
-        lockPersistService.unLock(lockDefinition.getLockKey());
+        lockPersistService.unlock(lockDefinition);
         lockStateContext.unregister(lockDefinition);
     }
     
-    @Override
+    /**
+     * Is locked.
+     *
+     * @param lockDefinition lock definition
+     * @return is locked or not
+     */
     public boolean isLocked(final LockDefinition lockDefinition) {
         return lockStateContext.isLocked(lockDefinition);
     }

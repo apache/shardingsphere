@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.sharding.yaml.swapper;
+package org.apache.shardingsphere.sharding.yaml.it;
 
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
@@ -35,7 +35,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-public final class YamlRootRuleConfigurationsForYamlShardingRuleConfigurationTest {
+public final class YamlShardingRuleConfigurationIT {
     
     @Test
     public void assertUnmarshalWithYamlFile() throws IOException {

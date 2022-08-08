@@ -19,11 +19,7 @@ package org.apache.shardingsphere.data.pipeline.api.job.progress;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-
-import java.util.Map;
-import java.util.Optional;
 
 /**
  * Job progress.
@@ -42,50 +38,4 @@ public final class JobProgress implements PipelineJobItemProgress {
     private JobItemInventoryTasksProgress inventory;
     
     private JobItemIncrementalTasksProgress incremental;
-    
-    /**
-     * get incremental position.
-     * @param dataSourceName dataSource
-     * @return incremental position
-     */
-    public Optional<IngestPosition<?>> getIncrementalPosition(final String dataSourceName) {
-        return incremental.getIncrementalPosition(dataSourceName);
-    }
-    
-    /**
-     * Get inventory position.
-     *
-     * @param tableName table name
-     * @return inventory position
-     */
-    public Map<String, IngestPosition<?>> getInventoryPosition(final String tableName) {
-        return inventory.getInventoryPosition(tableName);
-    }
-    
-    /**
-     * Get data source.
-     *
-     * @return data source
-     */
-    public String getDataSource() {
-        return incremental.getIncrementalTaskProgressMap().keySet().stream().findAny().orElse("");
-    }
-    
-    /**
-     * Get inventory finished percentage.
-     *
-     * @return finished percentage
-     */
-    public int getInventoryFinishedPercentage() {
-        return inventory.getInventoryFinishedPercentage();
-    }
-    
-    /**
-     * Get incremental latest active time milliseconds.
-     *
-     * @return latest active time, <code>0</code> is there is no activity
-     */
-    public long getIncrementalLatestActiveTimeMillis() {
-        return null == incremental ? 0L : incremental.getIncrementalLatestActiveTimeMillis();
-    }
 }

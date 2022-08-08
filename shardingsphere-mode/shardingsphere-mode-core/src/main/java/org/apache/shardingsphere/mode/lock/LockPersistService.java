@@ -15,19 +15,28 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.database.node;
+package org.apache.shardingsphere.mode.lock;
 
-import org.junit.Test;
+import org.apache.shardingsphere.infra.lock.LockDefinition;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.junit.Assert.assertThat;
-
-public final class DatabaseLockNodeServiceTest {
+/**
+ * Lock persist service.
+ */
+public interface LockPersistService {
     
-    private static final DatabaseLockNodeService SERVICE = new DatabaseLockNodeService();
+    /**
+     * Try lock.
+     *
+     * @param lockDefinition lock definition
+     * @param timeoutMillis timeout millis
+     * @return is locked or not
+     */
+    boolean tryLock(LockDefinition lockDefinition, long timeoutMillis);
     
-    @Test
-    public void assertGetLockLevel() {
-        assertThat(SERVICE.getLockTypeName(), is("database"));
-    }
+    /**
+     * Unlock.
+     *
+     * @param lockDefinition lock definition
+     */
+    void unlock(LockDefinition lockDefinition);
 }

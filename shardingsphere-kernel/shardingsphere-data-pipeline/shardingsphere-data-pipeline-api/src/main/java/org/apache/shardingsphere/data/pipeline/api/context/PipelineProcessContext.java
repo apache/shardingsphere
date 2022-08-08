@@ -15,25 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.event;
-
-import lombok.Getter;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeUtil;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceEvent;
+package org.apache.shardingsphere.data.pipeline.api.context;
 
 /**
- * Distributed ack locked event.
+ * Pipeline process context.
  */
-@Getter
-public final class DistributedAckLockedEvent implements GovernanceEvent {
-    
-    private final String lockName;
-    
-    private final String lockedInstance;
-    
-    public DistributedAckLockedEvent(final String ackLockName) {
-        String[] lockNameInstance = LockNodeUtil.parseAckLockName(ackLockName);
-        lockName = lockNameInstance[0];
-        lockedInstance = lockNameInstance[1];
-    }
+public interface PipelineProcessContext {
 }

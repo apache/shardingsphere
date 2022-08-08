@@ -17,8 +17,17 @@
 
 package org.apache.shardingsphere.data.pipeline.api.job.progress;
 
+import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
+
 /**
  * Pipeline job item progress.
  */
 public interface PipelineJobItemProgress {
+    
+    /**
+     * Get job status.
+     *
+     * @return job status
+     */
+    JobStatus getStatus();
 }

@@ -15,23 +15,32 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.distributed.node;
+package org.apache.shardingsphere.infra.datasource.pool.metadata.type.c3p0;
 
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.LockNodeService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.util.LockNodeType;
+import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolFieldMetaData;
 
 /**
- * Distributed lock node service.
+ * C3P0 data source pool field meta data.
  */
-public final class DistributedLockNodeService implements LockNodeService {
+public final class C3P0DataSourcePoolFieldMetaData implements DataSourcePoolFieldMetaData {
     
     @Override
-    public String getLockTypeName() {
-        return "distributed";
+    public String getUsernameFieldName() {
+        return "user";
     }
     
     @Override
-    public LockNodeType getType() {
-        return LockNodeType.DISTRIBUTED;
+    public String getPasswordFieldName() {
+        return "password";
+    }
+    
+    @Override
+    public String getJdbcUrlFieldName() {
+        return "jdbcUrl";
+    }
+    
+    @Override
+    public String getJdbcUrlPropertiesFieldName() {
+        return "properties";
     }
 }

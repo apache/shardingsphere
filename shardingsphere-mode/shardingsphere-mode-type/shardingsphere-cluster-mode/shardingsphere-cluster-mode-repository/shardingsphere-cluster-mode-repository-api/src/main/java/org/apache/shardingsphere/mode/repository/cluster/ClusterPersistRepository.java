@@ -59,11 +59,22 @@ public interface ClusterPersistRepository extends PersistRepository {
     void watchSessionConnection(InstanceContext instanceContext);
     
     /**
+     * Try lock.
+     *
+     * @param lockKey lock key
+     * @param timeoutMillis timeout millis
+     * @return is locked or not
+     */
+    boolean tryLock(String lockKey, long timeoutMillis);
+    
+    /**
      * Get internal mutex lock.
      *
      * @param lockName lock name
      * @return internal mutex lock
+     * @deprecated remove me when the distributed lock refactoring was completed
      */
+    @Deprecated
     Lock getInternalMutexLock(String lockName);
     
     /**
@@ -71,6 +82,8 @@ public interface ClusterPersistRepository extends PersistRepository {
      *
      * @param lockName lock name
      * @return internal reentrant mutex lock
+     * @deprecated remove me when the distributed lock refactoring was completed
      */
+    @Deprecated
     Lock getInternalReentrantMutexLock(String lockName);
 }

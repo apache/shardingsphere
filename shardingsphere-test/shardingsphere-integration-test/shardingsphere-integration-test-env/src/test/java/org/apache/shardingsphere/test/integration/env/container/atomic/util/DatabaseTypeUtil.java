@@ -15,13 +15,13 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.integration.data.pipeline.util;
+package org.apache.shardingsphere.test.integration.env.container.atomic.util;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.PostgreSQLDatabaseType;
-import org.apache.commons.lang.StringUtils;
 
 public final class DatabaseTypeUtil {
     
