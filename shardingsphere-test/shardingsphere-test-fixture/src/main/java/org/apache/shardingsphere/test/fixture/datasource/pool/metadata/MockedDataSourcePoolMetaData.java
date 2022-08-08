@@ -48,7 +48,6 @@ public final class MockedDataSourcePoolMetaData implements DataSourcePoolMetaDat
         return Collections.emptyList();
     }
 
-
     @Override
     public Map<String, String> getPropertySynonyms() {
         Map<String, String> result = new HashMap<>(2, 1);
