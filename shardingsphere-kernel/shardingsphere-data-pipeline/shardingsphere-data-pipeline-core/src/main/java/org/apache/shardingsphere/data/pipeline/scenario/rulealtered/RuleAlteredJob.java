@@ -19,6 +19,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.RuleAlteredJobConfigurationSwapper;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
@@ -75,6 +76,23 @@ public final class RuleAlteredJob extends AbstractPipelineJob implements SimpleJ
         PipelineJobProgressPersistService.addJobProgressPersistContext(getJobId(), shardingItem);
     }
     
+    private void prepare(final RuleAlteredJobContext jobContext) {
+        try {
+            jobPreparer.prepare(jobContext);
+        } catch (final PipelineIgnoredException ex) {
+            log.info("pipeline ignore exception: {}", ex.getMessage());
+            PipelineJobCenter.stop(getJobId());
+            // CHECKSTYLE:OFF
+        } catch (final RuntimeException ex) {
+            // CHECKSTYLE:ON
+            log.error("job prepare failed, {}-{}", getJobId(), jobContext.getShardingItem(), ex);
+            PipelineJobCenter.stop(getJobId());
+            jobContext.setStatus(JobStatus.PREPARING_FAILURE);
+            RuleAlteredJobAPIFactory.getInstance().persistJobProgress(jobContext);
+            throw ex;
+        }
+    }
+    
     /**
      * Stop job.
      */
@@ -94,22 +112,5 @@ public final class RuleAlteredJob extends AbstractPipelineJob implements SimpleJ
         }
         getTasksRunnerMap().clear();
         PipelineJobProgressPersistService.removeJobProgressPersistContext(getJobId());
-    }
-    
-    private void prepare(final RuleAlteredJobContext jobContext) {
-        try {
-            jobPreparer.prepare(jobContext);
-        } catch (final PipelineIgnoredException ex) {
-            log.info("pipeline ignore exception: {}", ex.getMessage());
-            PipelineJobCenter.stop(getJobId());
-            // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
-            // CHECKSTYLE:ON
-            log.error("job prepare failed, {}-{}", getJobId(), jobContext.getShardingItem(), ex);
-            PipelineJobCenter.stop(getJobId());
-            jobContext.setStatus(JobStatus.PREPARING_FAILURE);
-            PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobProgress(jobContext);
-            throw ex;
-        }
     }
 }

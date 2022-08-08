@@ -23,10 +23,15 @@ import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.RuleAlteredJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemInventoryTasksProgress;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
+import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskProgress;
+import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsistencyCalculateAlgorithmFactory;
@@ -36,9 +41,13 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreatio
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
+import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
+import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJob;
+import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
@@ -53,6 +62,7 @@ import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.confi
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,6 +78,8 @@ import java.util.stream.Stream;
  */
 @Slf4j
 public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl implements RuleAlteredJobAPI {
+    
+    private static final YamlJobProgressSwapper SWAPPER = new YamlJobProgressSwapper();
     
     @Override
     public List<JobInfo> list() {
@@ -344,5 +356,36 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     
     private RuleAlteredJobConfiguration getJobConfig(final JobConfigurationPOJO jobConfigPOJO) {
         return RuleAlteredJobConfigurationSwapper.swapToObject(jobConfigPOJO.getJobParameter());
+    }
+    
+    @Override
+    public void persistJobProgress(final PipelineJobContext jobContext) {
+        if (!(jobContext instanceof RuleAlteredJobContext)) {
+            return;
+        }
+        RuleAlteredJobContext context = (RuleAlteredJobContext) jobContext;
+        JobProgress jobProgress = new JobProgress();
+        jobProgress.setStatus(jobContext.getStatus());
+        jobProgress.setSourceDatabaseType(context.getJobConfig().getSourceDatabaseType());
+        jobProgress.setIncremental(getIncrementalTasksProgress(context));
+        jobProgress.setInventory(getInventoryTasksProgress(context));
+        String value = YamlEngine.marshal(SWAPPER.swapToYamlConfiguration(jobProgress));
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobProgress(jobContext.getJobId(), jobContext.getShardingItem(), value);
+    }
+    
+    private JobItemIncrementalTasksProgress getIncrementalTasksProgress(final RuleAlteredJobContext jobContext) {
+        Map<String, IncrementalTaskProgress> incrementalTaskProgressMap = new HashMap<>();
+        for (IncrementalTask each : jobContext.getIncrementalTasks()) {
+            incrementalTaskProgressMap.put(each.getTaskId(), each.getProgress());
+        }
+        return new JobItemIncrementalTasksProgress(incrementalTaskProgressMap);
+    }
+    
+    private JobItemInventoryTasksProgress getInventoryTasksProgress(final RuleAlteredJobContext jobContext) {
+        Map<String, InventoryTaskProgress> inventoryTaskProgressMap = new HashMap<>();
+        for (InventoryTask each : jobContext.getInventoryTasks()) {
+            inventoryTaskProgressMap.put(each.getTaskId(), each.getProgress());
+        }
+        return new JobItemInventoryTasksProgress(inventoryTaskProgressMap);
     }
 }

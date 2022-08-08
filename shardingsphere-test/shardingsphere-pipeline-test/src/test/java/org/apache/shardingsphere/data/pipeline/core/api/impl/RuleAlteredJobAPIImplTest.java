@@ -200,7 +200,7 @@ public final class RuleAlteredJobAPIImplTest {
         assertTrue(jobId.isPresent());
         final GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
         RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, 0, new JobProgress(), new PipelineDataSourceManager());
-        repositoryAPI.persistJobProgress(jobContext);
+        ruleAlteredJobAPI.persistJobProgress(jobContext);
         repositoryAPI.persistJobCheckResult(jobId.get(), true);
         repositoryAPI.updateShardingJobStatus(jobId.get(), 0, JobStatus.FINISHED);
         ruleAlteredJobAPI.switchClusterConfiguration(jobId.get());
@@ -213,7 +213,7 @@ public final class RuleAlteredJobAPIImplTest {
         assertTrue(jobId.isPresent());
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
         RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, 0, new JobProgress(), new PipelineDataSourceManager());
-        repositoryAPI.persistJobProgress(jobContext);
+        ruleAlteredJobAPI.persistJobProgress(jobContext);
         repositoryAPI.persistJobCheckResult(jobId.get(), true);
         repositoryAPI.updateShardingJobStatus(jobId.get(), jobContext.getShardingItem(), JobStatus.EXECUTE_INVENTORY_TASK);
         ruleAlteredJobAPI.switchClusterConfiguration(jobId.get());

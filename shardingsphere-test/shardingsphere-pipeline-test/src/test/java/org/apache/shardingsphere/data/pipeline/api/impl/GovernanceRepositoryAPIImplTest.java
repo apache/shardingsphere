@@ -17,6 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.api.impl;
 
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.InventoryDumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
@@ -65,16 +67,19 @@ public final class GovernanceRepositoryAPIImplTest {
     
     private static GovernanceRepositoryAPI governanceRepositoryAPI;
     
+    private static RuleAlteredJobAPI ruleAlteredJobAPI;
+    
     @BeforeClass
     public static void beforeClass() {
         PipelineContextUtil.mockModeConfigAndContextManager();
+        ruleAlteredJobAPI = RuleAlteredJobAPIFactory.getInstance();
         governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
     }
     
     @Test
     public void assertPersistJobProgress() {
         RuleAlteredJobContext jobContext = mockJobContext();
-        governanceRepositoryAPI.persistJobProgress(jobContext);
+        ruleAlteredJobAPI.persistJobProgress(jobContext);
         JobProgress actual = governanceRepositoryAPI.getJobProgress(jobContext.getJobId(), jobContext.getShardingItem());
         assertThat(YamlEngine.marshal(SWAPPER.swapToYamlConfiguration(actual)), is(ConfigurationFileUtil.readFileAndIgnoreComments("governance-repository.yaml")));
     }
@@ -125,7 +130,7 @@ public final class GovernanceRepositoryAPIImplTest {
     @Test
     public void assertGetShardingItems() {
         RuleAlteredJobContext jobContext = mockJobContext();
-        governanceRepositoryAPI.persistJobProgress(jobContext);
+        ruleAlteredJobAPI.persistJobProgress(jobContext);
         List<Integer> shardingItems = governanceRepositoryAPI.getShardingItems(jobContext.getJobId());
         assertThat(shardingItems.size(), is(1));
         assertThat(shardingItems.get(0), is(jobContext.getShardingItem()));
@@ -134,7 +139,7 @@ public final class GovernanceRepositoryAPIImplTest {
     @Test
     public void assertRenewJobStatus() {
         RuleAlteredJobContext jobContext = mockJobContext();
-        governanceRepositoryAPI.persistJobProgress(jobContext);
+        ruleAlteredJobAPI.persistJobProgress(jobContext);
         governanceRepositoryAPI.updateShardingJobStatus(jobContext.getJobId(), jobContext.getShardingItem(), JobStatus.FINISHED);
         JobProgress jobProgress = governanceRepositoryAPI.getJobProgress(jobContext.getJobId(), jobContext.getShardingItem());
         assertThat(jobProgress.getStatus(), is(JobStatus.FINISHED));

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.data.pipeline.core.api;
 
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
-import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
 import java.util.List;
@@ -41,9 +40,11 @@ public interface GovernanceRepositoryAPI {
     /**
      * Persist job progress.
      *
-     * @param jobContext job context
+     * @param jobId job id
+     * @param shardingItem sharding item
+     * @param progressValue progress value
      */
-    void persistJobProgress(PipelineJobContext jobContext);
+    void persistJobProgress(String jobId, int shardingItem, String progressValue);
     
     /**
      * Get job progress.

@@ -20,10 +20,10 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
-import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
@@ -64,7 +64,7 @@ public final class RuleAlteredJobScheduler implements PipelineTasksRunner {
             log.info("job stopping, ignore inventory task");
             return;
         }
-        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobProgress(jobContext);
+        RuleAlteredJobAPIFactory.getInstance().persistJobProgress(jobContext);
         if (executeInventoryTask()) {
             if (jobContext.isStopping()) {
                 log.info("stopping, ignore incremental task");

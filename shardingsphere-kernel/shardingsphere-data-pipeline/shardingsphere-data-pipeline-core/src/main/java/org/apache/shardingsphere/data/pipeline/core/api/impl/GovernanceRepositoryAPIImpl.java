@@ -21,17 +21,11 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemInventoryTasksProgress;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
-import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobProgress;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
-import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
-import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
@@ -57,28 +51,8 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
     }
     
     @Override
-    public void persistJobProgress(final PipelineJobContext context) {
-        RuleAlteredJobContext jobContext = (RuleAlteredJobContext) context;
-        JobProgress jobProgress = new JobProgress();
-        jobProgress.setStatus(jobContext.getStatus());
-        jobProgress.setSourceDatabaseType(jobContext.getJobConfig().getSourceDatabaseType());
-        jobProgress.setIncremental(getIncrementalTasksProgress(jobContext));
-        jobProgress.setInventory(getInventoryTasksProgress(jobContext));
-        String value = YamlEngine.marshal(SWAPPER.swapToYamlConfiguration(jobProgress));
-        repository.persist(PipelineMetaDataNode.getScalingJobOffsetPath(jobContext.getJobId(), jobContext.getShardingItem()), value);
-    }
-    
-    private JobItemIncrementalTasksProgress getIncrementalTasksProgress(final RuleAlteredJobContext jobContext) {
-        return new JobItemIncrementalTasksProgress(
-                jobContext.getIncrementalTasks()
-                        .stream().collect(Collectors.toMap(IncrementalTask::getTaskId, IncrementalTask::getProgress)));
-    }
-    
-    private JobItemInventoryTasksProgress getInventoryTasksProgress(final RuleAlteredJobContext jobContext) {
-        return new JobItemInventoryTasksProgress(
-                jobContext.getInventoryTasks()
-                        .stream()
-                        .collect(Collectors.toMap(InventoryTask::getTaskId, InventoryTask::getProgress)));
+    public void persistJobProgress(final String jobId, final int shardingItem, final String progressValue) {
+        repository.persist(PipelineMetaDataNode.getScalingJobOffsetPath(jobId, shardingItem), progressValue);
     }
     
     @Override
