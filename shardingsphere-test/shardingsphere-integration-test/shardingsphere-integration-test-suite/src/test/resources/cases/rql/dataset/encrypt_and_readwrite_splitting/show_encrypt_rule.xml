@@ -14,10 +14,21 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<integration-test-cases>
-    <test-case sql="SHOW DATABASES" db-types="MySQL" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
-        <assertion expected-data-file="show_databases.xml" />
-    </test-case>
 
-    <test-case sql="RESET ALL" db-types="PostgreSQL,openGauss" />
-</integration-test-cases>
+<dataset>
+    <metadata>
+        <column name="table" />
+        <column name="logic_column" />
+        <column name="logic_data_type" />
+        <column name="cipher_column" />
+        <column name="cipher_data_type" />
+        <column name="plain_column" />
+        <column name="plain_data_type" />
+        <column name="assisted_query_column" />
+        <column name="assisted_query_data_type" />
+        <column name="encryptor_type" />
+        <column name="encryptor_props" />
+        <column name="query_with_cipher_column" />
+    </metadata>
+    <row values="t_user| pwd| | pwd_cipher| | pwd_plain| | | | AES| aes-key-value=123456abc| true" />
+</dataset>

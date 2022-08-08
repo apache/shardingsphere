@@ -14,10 +14,20 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<integration-test-cases>
-    <test-case sql="SHOW DATABASES" db-types="MySQL" scenario-types="dbtbl_with_readwrite_splitting,readwrite_splitting,dbtbl_with_readwrite_splitting_and_encrypt,sharding_and_encrypt,encrypt_and_readwrite_splitting">
-        <assertion expected-data-file="show_databases.xml" />
-    </test-case>
 
-    <test-case sql="RESET ALL" db-types="PostgreSQL,openGauss" />
-</integration-test-cases>
+<dataset>
+    <metadata>
+        <column name="table_name"/>
+        <column name="resource_name"/>
+    </metadata>
+    <row values="t_order_federate_sharding| readwrite_ds"/>
+    <row values="t_order_item_federate_sharding| readwrite_ds"/>
+    <row values="t_single_table| readwrite_ds"/>
+    <row values="t_user| readwrite_ds"/>
+    <row values="t_user_item| readwrite_ds"/>
+    <row values="t_order_item_federate| readwrite_ds"/>
+    <row values="t_order_federate| readwrite_ds"/>
+    <row values="t_user_encrypt_federate| readwrite_ds"/>
+    <row values="t_user_encrypt_federate_sharding| readwrite_ds"/>
+    <row values="t_user_info| readwrite_ds"/>
+</dataset>
