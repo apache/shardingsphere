@@ -29,40 +29,40 @@ import static org.junit.Assert.assertTrue;
 public final class TypedPropertyValueTest {
     
     @Test
-    public void assertGetBooleanValue() throws TypedPropertyValueException {
+    public void assertGetBooleanValue() {
         assertTrue((Boolean) new TypedPropertyValue(TypedPropertyKeyFixture.BOOLEAN_VALUE, Boolean.TRUE.toString()).getValue());
         assertTrue((Boolean) new TypedPropertyValue(TypedPropertyKeyFixture.BOOLEAN_OBJECT_VALUE, Boolean.TRUE.toString()).getValue());
     }
     
     @Test
-    public void assertGetInvalidBooleanValue() throws TypedPropertyValueException {
+    public void assertGetInvalidBooleanValue() {
         assertFalse((Boolean) new TypedPropertyValue(TypedPropertyKeyFixture.BOOLEAN_VALUE, "test").getValue());
     }
     
     @Test
-    public void assertGetIntValue() throws TypedPropertyValueException {
+    public void assertGetIntValue() {
         assertThat(new TypedPropertyValue(TypedPropertyKeyFixture.INT_VALUE, "1000").getValue(), is(1000));
         assertThat(new TypedPropertyValue(TypedPropertyKeyFixture.INT_OBJECT_VALUE, "1000").getValue(), is(1000));
     }
     
     @Test(expected = TypedPropertyValueException.class)
-    public void assertGetInvalidIntValue() throws TypedPropertyValueException {
+    public void assertGetInvalidIntValue() {
         new TypedPropertyValue(TypedPropertyKeyFixture.INT_VALUE, "test");
     }
     
     @Test
-    public void assertGetLongValue() throws TypedPropertyValueException {
+    public void assertGetLongValue() {
         assertThat(new TypedPropertyValue(TypedPropertyKeyFixture.LONG_VALUE, "10000").getValue(), is(10000L));
         assertThat(new TypedPropertyValue(TypedPropertyKeyFixture.LONG_OBJECT_VALUE, "10000").getValue(), is(10000L));
     }
     
     @Test(expected = TypedPropertyValueException.class)
-    public void assertGetInvalidLongValue() throws TypedPropertyValueException {
+    public void assertGetInvalidLongValue() {
         new TypedPropertyValue(TypedPropertyKeyFixture.LONG_VALUE, "test");
     }
     
     @Test
-    public void assertGetStringValue() throws TypedPropertyValueException {
+    public void assertGetStringValue() {
         assertThat(new TypedPropertyValue(TypedPropertyKeyFixture.STRING_VALUE, "new_value").getValue(), is("new_value"));
     }
 }
