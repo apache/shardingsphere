@@ -131,7 +131,7 @@ public final class EncryptStatementTest extends AbstractShardingSphereDataSource
             assertThat(metaData.getColumnCount(), is(2));
             for (int i = 0; i < metaData.getColumnCount(); i++) {
                 assertThat(metaData.getColumnLabel(1), is("id"));
-                assertThat(metaData.getColumnLabel(2), is("PWD"));
+                assertThat(metaData.getColumnLabel(2), is("pwd"));
             }
         }
     }

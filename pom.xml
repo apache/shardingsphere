@@ -106,7 +106,7 @@
         <opengauss.version>3.0.0</opengauss.version>
         <mysql-connector-java.version>5.1.47</mysql-connector-java.version>
         <mariadb-java-client.version>2.4.2</mariadb-java-client.version>
-        <h2.version>1.4.196</h2.version>
+        <h2.version>2.1.214</h2.version>
         <mssql.version>6.1.7.jre8-preview</mssql.version>
         
         <hikari-cp.version>3.4.2</hikari-cp.version>
