@@ -76,7 +76,8 @@ public final class RegistryCenter {
     }
     
     private String getJDBCDatabaseName() {
-        return instanceMetaData instanceof JDBCInstanceMetaData ? databaseConfigs.keySet().stream().findFirst().get() : null;
+        return instanceMetaData instanceof JDBCInstanceMetaData && databaseConfigs.keySet().stream().findFirst().isPresent()
+                ? databaseConfigs.keySet().stream().findFirst().get() : null;
     }
     
     private void createSubscribers(final ClusterPersistRepository repository) {
