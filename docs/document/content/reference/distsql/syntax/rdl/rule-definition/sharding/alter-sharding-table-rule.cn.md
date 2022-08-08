@@ -46,8 +46,8 @@ algorithmName ::=
 
 ### 补充说明
 
-- `tableDefinition` 为标准分片规则定义；`autoTableDefinition`
-  为自动分片规则定义。标准分片规则和自动分片规则可参考[数据分片](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/)。
+- `tableDefinition` 为标准分片规则定义；
+- `autoTableDefinition`为自动分片规则定义。标准分片规则和自动分片规则可参考[数据分片](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/sharding/)。
 - 当使用标准分片时：
     - `DATANODES` 只能使用已经添加到当前逻辑库的资源，且只能使用 INLINE 表达式指定需要的资源
     - `DATABASE_STRATEGY`、`TABLE_STRATEGY` 表示分库和分表策略，均为可选项，未配置时使用默认策略
