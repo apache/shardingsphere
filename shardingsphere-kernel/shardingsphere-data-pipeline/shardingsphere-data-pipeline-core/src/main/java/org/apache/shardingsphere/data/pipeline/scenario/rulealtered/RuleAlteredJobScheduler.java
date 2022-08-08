@@ -23,11 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
-import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineIgnoredException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
-import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
@@ -38,16 +35,9 @@ import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 @Slf4j
 @RequiredArgsConstructor
 @Getter
-public final class RuleAlteredJobScheduler implements PipelineTasksRunner, Runnable {
+public final class RuleAlteredJobScheduler implements PipelineTasksRunner {
     
     private final RuleAlteredJobContext jobContext;
-    
-    /**
-     * Start execute job.
-     */
-    public void start() {
-        new Thread(this).start();
-    }
     
     /**
      * Stop all task.
@@ -69,28 +59,12 @@ public final class RuleAlteredJobScheduler implements PipelineTasksRunner, Runna
     }
     
     @Override
-    public void run() {
-        String jobId = jobContext.getJobId();
-        GovernanceRepositoryAPI governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        try {
-            jobContext.getJobPreparer().prepare(jobContext);
-        } catch (final PipelineIgnoredException ex) {
-            log.info("pipeline ignore exception: {}", ex.getMessage());
-            PipelineJobCenter.stop(jobId);
-            // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
-            // CHECKSTYLE:ON
-            log.error("job prepare failed, {}-{}", jobId, jobContext.getShardingItem(), ex);
-            PipelineJobCenter.stop(jobId);
-            jobContext.setStatus(JobStatus.PREPARING_FAILURE);
-            governanceRepositoryAPI.persistJobProgress(jobContext);
-            throw ex;
-        }
+    public void start() {
         if (jobContext.isStopping()) {
             log.info("job stopping, ignore inventory task");
             return;
         }
-        governanceRepositoryAPI.persistJobProgress(jobContext);
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobProgress(jobContext);
         if (executeInventoryTask()) {
             if (jobContext.isStopping()) {
                 log.info("stopping, ignore incremental task");
