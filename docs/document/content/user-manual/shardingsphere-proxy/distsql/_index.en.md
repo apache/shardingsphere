@@ -31,5 +31,5 @@ Types of literals include:
 
 - string: enclosed in single quotes (') or double quotes (")
 - int: it is generally a positive integer, such as 0-9;
-Note: some DistSQL syntax allows negative values. In this case, a negative sign (-) can be added before the number, such as - 1.
+Note: some DistSQL syntax allows negative values. In this case, a negative sign (-) can be added before the number, such as -1.
 - boolean, containing only true & false. Case insensitive.
