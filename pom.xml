@@ -32,7 +32,6 @@
     <description>Build criterion and ecosystem above multi-model databases</description>
     
     <modules>
-        <module>shardingsphere-spi</module>
         <module>shardingsphere-sql-parser</module>
         <module>shardingsphere-distsql</module>
         <module>shardingsphere-db-protocol</module>

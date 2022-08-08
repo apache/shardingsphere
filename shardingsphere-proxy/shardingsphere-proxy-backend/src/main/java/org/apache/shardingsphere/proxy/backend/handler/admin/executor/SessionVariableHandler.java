@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.backend.handler.admin.executor;
 
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
  * Session variable handler.
