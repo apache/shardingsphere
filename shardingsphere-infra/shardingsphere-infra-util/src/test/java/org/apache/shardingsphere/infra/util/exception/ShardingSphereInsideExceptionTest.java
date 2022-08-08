@@ -17,22 +17,28 @@
 
 package org.apache.shardingsphere.infra.util.exception;
 
-/**
- * ShardingSphere inside exception.
- */
-public abstract class ShardingSphereInsideException extends Exception {
+import org.apache.shardingsphere.infra.util.exception.fixture.ShardingSphereInsideExceptionFixture;
+import org.junit.Test;
+
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class ShardingSphereInsideExceptionTest {
     
-    private static final long serialVersionUID = -8238061892944243621L;
-    
-    public ShardingSphereInsideException(final String errorMessage, final Object... args) {
-        super(String.format(errorMessage, args));
+    @Test
+    public void assertGetMessage() {
+        assertThat(new ShardingSphereInsideExceptionFixture("Test").getMessage(), is("Fixture error message: Test"));
     }
     
-    public ShardingSphereInsideException(final Exception cause) {
-        super(cause);
+    @Test
+    public void assertGetCause() {
+        RuntimeException cause = new RuntimeException("Test");
+        assertThat(new ShardingSphereInsideExceptionFixture(cause).getCause(), is(cause));
     }
     
-    public ShardingSphereInsideException(final String message, final Exception cause) {
-        super(message, cause);
+    @Test
+    public void assertGetCauseWithMessage() {
+        RuntimeException cause = new RuntimeException("Test");
+        assertThat(new ShardingSphereInsideExceptionFixture("Test", cause).getCause(), is(cause));
     }
 }
