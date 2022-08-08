@@ -35,12 +35,12 @@ public final class ShardingSphereProxyDockerContainer extends DockerITContainer 
     
     private final DatabaseType databaseType;
     
-    private final String dockerImageName;
+    private final String storageImageName;
     
-    public ShardingSphereProxyDockerContainer(final DatabaseType databaseType, final String dockerImageName) {
+    public ShardingSphereProxyDockerContainer(final DatabaseType databaseType, final String storageImageName) {
         super("Scaling-Proxy", "apache/shardingsphere-proxy-test");
         this.databaseType = databaseType;
-        this.dockerImageName = dockerImageName;
+        this.storageImageName = storageImageName;
     }
     
     @Override
@@ -58,7 +58,7 @@ public final class ShardingSphereProxyDockerContainer extends DockerITContainer 
     
     private void mapConfigurationFiles() {
         if (DatabaseTypeUtil.isMySQL(databaseType)) {
-            String majorVersion = DatabaseTypeUtil.parseMajorVersion(dockerImageName);
+            String majorVersion = DatabaseTypeUtil.parseMajorVersion(storageImageName);
             withClasspathResourceMapping(String.format("/env/%s/server-%s.yaml", databaseType.getType().toLowerCase(), majorVersion), "/opt/shardingsphere-proxy/conf/server.yaml", BindMode.READ_ONLY);
         } else {
             withClasspathResourceMapping(String.format("/env/%s/server.yaml", databaseType.getType().toLowerCase()), "/opt/shardingsphere-proxy/conf/server.yaml", BindMode.READ_ONLY);

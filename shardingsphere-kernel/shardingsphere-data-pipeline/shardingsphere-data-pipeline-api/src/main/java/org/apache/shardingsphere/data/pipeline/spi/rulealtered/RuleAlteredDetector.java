@@ -20,7 +20,7 @@ package org.apache.shardingsphere.data.pipeline.spi.rulealtered;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.pojo.rule.YamlRuleConfiguration;
-import org.apache.shardingsphere.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
 
 import java.util.List;
 import java.util.Map;

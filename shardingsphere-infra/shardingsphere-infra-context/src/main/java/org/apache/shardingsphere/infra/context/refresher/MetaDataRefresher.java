@@ -20,8 +20,8 @@ package org.apache.shardingsphere.infra.context.refresher;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.event.MetaDataRefreshedEvent;
-import org.apache.shardingsphere.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.sql.SQLException;

@@ -64,7 +64,7 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
         jobProgress.setSourceDatabaseType(jobContext.getJobConfig().getSourceDatabaseType());
         jobProgress.setIncremental(getIncrementalTasksProgress(jobContext));
         jobProgress.setInventory(getInventoryTasksProgress(jobContext));
-        String value = YamlEngine.marshal(SWAPPER.swapToYaml(jobProgress));
+        String value = YamlEngine.marshal(SWAPPER.swapToYamlConfiguration(jobProgress));
         repository.persist(PipelineMetaDataNode.getScalingJobOffsetPath(jobContext.getJobId(), jobContext.getShardingItem()), value);
     }
     
@@ -138,6 +138,6 @@ public final class GovernanceRepositoryAPIImpl implements GovernanceRepositoryAP
             return;
         }
         jobProgress.setStatus(status);
-        persist(PipelineMetaDataNode.getScalingJobOffsetPath(jobId, shardingItem), YamlEngine.marshal(SWAPPER.swapToYaml(jobProgress)));
+        persist(PipelineMetaDataNode.getScalingJobOffsetPath(jobId, shardingItem), YamlEngine.marshal(SWAPPER.swapToYamlConfiguration(jobProgress)));
     }
 }

@@ -19,8 +19,8 @@ package org.apache.shardingsphere.mode.lock.engine;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.spi.type.required.RequiredSPI;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 
 /**
  * Lock judge engine.

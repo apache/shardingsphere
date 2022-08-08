@@ -30,7 +30,6 @@ import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTabl
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobPreparer;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -62,7 +61,7 @@ public final class InventoryTaskTest {
     
     @Before
     public void setUp() {
-        taskConfig = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration(), 0, new JobProgress(), new PipelineDataSourceManager(), new RuleAlteredJobPreparer()).getTaskConfig();
+        taskConfig = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration(), 0, new JobProgress(), new PipelineDataSourceManager()).getTaskConfig();
     }
     
     @Test(expected = IngestException.class)

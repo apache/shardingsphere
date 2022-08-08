@@ -33,7 +33,7 @@ import org.apache.shardingsphere.scaling.distsql.handler.converter.ShardingScali
 import org.apache.shardingsphere.scaling.distsql.statement.CreateShardingScalingRuleStatement;
 import org.apache.shardingsphere.scaling.distsql.statement.segment.ShardingScalingRuleConfigurationSegment;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
-import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
+import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundException;
 
 import java.util.Collections;
 import java.util.Properties;

@@ -1,6 +1,6 @@
 +++
 title = "CREATE SHARDING KEY GENERATOR"
-weight = 6
+weight = 8
 +++
 
 ## Description

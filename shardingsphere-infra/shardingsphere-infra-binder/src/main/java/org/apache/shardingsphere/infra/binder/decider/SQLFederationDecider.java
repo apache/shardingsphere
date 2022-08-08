@@ -22,7 +22,7 @@ import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDecid
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.spi.type.ordered.OrderedSPI;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPI;
 
 /**
  * SQL federation decider.

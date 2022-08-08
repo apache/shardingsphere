@@ -1,6 +1,6 @@
 +++
 title = "CREATE SHARDING BROADCAST TABLE RULE"
-weight = 5
+weight = 7
 +++
 
 ## 描述
