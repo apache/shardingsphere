@@ -15,9 +15,8 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock.util;
+package org.apache.shardingsphere.mode.lock;
 
-import org.apache.shardingsphere.mode.lock.LockKeyUtil;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
