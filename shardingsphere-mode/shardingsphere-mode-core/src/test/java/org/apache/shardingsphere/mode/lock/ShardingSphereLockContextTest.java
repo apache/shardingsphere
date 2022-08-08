@@ -18,7 +18,6 @@
 package org.apache.shardingsphere.mode.lock;
 
 import org.apache.shardingsphere.infra.lock.LockDefinition;
-import org.apache.shardingsphere.mode.lock.util.TimeoutMilliseconds;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,6 +29,8 @@ import static org.mockito.Mockito.when;
 
 public final class ShardingSphereLockContextTest {
     
+    public static final long MAX_TRY_LOCK = 3 * 60 * 1000L;
+    
     private ShardingSphereLockContext lockContext;
     
     private LockPersistService lockPersistService;
@@ -40,7 +41,7 @@ public final class ShardingSphereLockContextTest {
     public void init() {
         lockDefinition = new ExclusiveLockDefinition("exclusive_lock");
         lockPersistService = mock(LockPersistService.class);
-        when(lockPersistService.tryLock(lockDefinition, TimeoutMilliseconds.MAX_TRY_LOCK)).thenReturn(true);
+        when(lockPersistService.tryLock(lockDefinition, MAX_TRY_LOCK)).thenReturn(true);
         when(lockPersistService.tryLock(lockDefinition, 3000)).thenReturn(true);
         doAnswer(invocationOnMock -> null).when(lockPersistService).unlock(lockDefinition);
         lockContext = new ShardingSphereLockContext(lockPersistService);

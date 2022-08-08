@@ -20,7 +20,6 @@ package org.apache.shardingsphere.mode.lock;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
-import org.apache.shardingsphere.mode.lock.util.TimeoutMilliseconds;
 
 /**
  * Lock context of ShardingSphere.
@@ -28,13 +27,15 @@ import org.apache.shardingsphere.mode.lock.util.TimeoutMilliseconds;
 @RequiredArgsConstructor
 public final class ShardingSphereLockContext implements LockContext {
     
+    public static final long MAX_TRY_LOCK = 3 * 60 * 1000L;
+    
     private final LockStateContext lockStateContext = new LockStateContext();
     
     private final LockPersistService lockPersistService;
     
     @Override
     public boolean tryLock(final LockDefinition lockDefinition) {
-        return tryLock(lockDefinition, TimeoutMilliseconds.MAX_TRY_LOCK);
+        return tryLock(lockDefinition, MAX_TRY_LOCK);
     }
     
     @Override

@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock.util;
+package org.apache.shardingsphere.mode.lock;
 
 /**
  * Lock key util.

@@ -19,7 +19,6 @@ package org.apache.shardingsphere.mode.lock;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
-import org.apache.shardingsphere.mode.lock.util.LockKeyUtil;
 
 /**
  * Exclusive lock definition.

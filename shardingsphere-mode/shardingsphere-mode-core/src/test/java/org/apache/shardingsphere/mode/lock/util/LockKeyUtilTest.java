@@ -17,6 +17,7 @@
 
 package org.apache.shardingsphere.mode.lock.util;
 
+import org.apache.shardingsphere.mode.lock.LockKeyUtil;
 import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
