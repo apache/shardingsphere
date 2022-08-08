@@ -1,6 +1,6 @@
 +++
 title = "ALTER RESOURCE"
-weight = 4
+weight = 3
 +++
 
 ### 描述

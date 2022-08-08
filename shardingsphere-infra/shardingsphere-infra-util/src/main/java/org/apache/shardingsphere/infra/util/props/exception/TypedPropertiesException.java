@@ -17,22 +17,22 @@
 
 package org.apache.shardingsphere.infra.util.props.exception;
 
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereException;
+
 import java.util.Collection;
 
 /**
  * Typed properties exception.
  */
-public final class TypedPropertiesException extends RuntimeException {
+public final class TypedPropertiesException extends ShardingSphereException {
     
     private static final long serialVersionUID = -8301410307117564844L;
+    
+    private static final String ERROR_CATEGORY = "PROPS";
     
     private static final int ERROR_CODE = 1;
     
     public TypedPropertiesException(final Collection<String> errorMessages) {
-        super(createErrorMessage(errorMessages));
-    }
-    
-    private static String createErrorMessage(final Collection<String> errorMessages) {
-        return String.format("PROPS-%05d: %s", ERROR_CODE, String.join(System.lineSeparator(), errorMessages));
+        super(ERROR_CATEGORY, ERROR_CODE, String.join(System.lineSeparator(), errorMessages));
     }
 }

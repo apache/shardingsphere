@@ -42,10 +42,11 @@ chapter = true
 
 ### DataSourcePoolMetaData
 
-| *已知实现类*                   | *详细说明*              |
+| *已知实现类*                   | *详细说明*             |
 |------------------------------|-----------------------|
 | DBCPDataSourcePoolMetaData   | DBCP 数据库连接池元数据   |
 | HikariDataSourcePoolMetaData | Hikari 数据源连接池元数据 |
+| C3P0DataSourcePoolMetaData   | C3P0 数据源连接池元数据   |
 
 ### DataSourcePoolActiveDetector 
 

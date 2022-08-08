@@ -1,6 +1,6 @@
 +++
 title = "CREATE SHARDING ALGORITHM"
-weight = 2
+weight = 4
 +++
 
 ## 描述

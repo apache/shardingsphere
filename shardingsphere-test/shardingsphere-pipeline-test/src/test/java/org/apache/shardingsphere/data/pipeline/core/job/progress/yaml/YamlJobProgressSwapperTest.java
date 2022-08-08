@@ -35,9 +35,9 @@ public final class YamlJobProgressSwapperTest {
     }
     
     @Test
-    public void assertFullSwapToYaml() {
+    public void assertFullSwapToYamlConfiguration() {
         JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress.yaml"));
-        YamlJobProgress actual = SWAPPER.swapToYaml(jobProgress);
+        YamlJobProgress actual = SWAPPER.swapToYamlConfiguration(jobProgress);
         assertThat(actual.getStatus(), is("RUNNING"));
         assertThat(actual.getSourceDatabaseType(), is("H2"));
         assertThat(actual.getInventory().getFinished().length, is(2));
@@ -50,9 +50,9 @@ public final class YamlJobProgressSwapperTest {
     }
     
     @Test
-    public void assertNullInventory() {
+    public void assertSwapToYamlConfigurationWithNullInventory() {
         JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress-no-inventory.yaml"));
-        YamlJobProgress actual = SWAPPER.swapToYaml(jobProgress);
+        YamlJobProgress actual = SWAPPER.swapToYamlConfiguration(jobProgress);
         assertThat(actual.getInventory().getFinished().length, is(0));
     }
 }
