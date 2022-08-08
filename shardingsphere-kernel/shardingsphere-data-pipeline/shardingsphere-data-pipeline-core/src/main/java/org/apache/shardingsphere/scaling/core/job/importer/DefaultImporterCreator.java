@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.scaling.core.job.importer;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
+import java.util.Collection;
+import java.util.LinkedList;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
@@ -27,22 +27,27 @@ import org.apache.shardingsphere.data.pipeline.core.importer.DefaultImporter;
 import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 
 /**
- * Importer factory.
+ * Default importer creator.
  */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class ImporterFactory {
+public class DefaultImporterCreator implements ImporterCreator {
     
-    /**
-     * Create importer.
-     *
-     * @param importerConfig importer configuration
-     * @param dataSourceManager data source manager
-     * @param channel channel
-     * @param jobProgressListener job progress listener
-     * @return importer
-     */
-    public static Importer createImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel,
-                                          final PipelineJobProgressListener jobProgressListener) {
+    @Override
+    public String getType() {
+        return "MySQL";
+    }
+    
+    @Override
+    public Collection<String> getTypeAliases() {
+        Collection<String> aliases = new LinkedList<>();
+        aliases.add("PostgreSQL");
+        aliases.add("openGauss");
+        return aliases;
+    }
+    
+    @Override
+    public Importer createImporter(final ImporterConfiguration importerConfig,
+                                   final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel,
+                                   final PipelineJobProgressListener jobProgressListener) {
         return new DefaultImporter(importerConfig, dataSourceManager, channel, jobProgressListener);
     }
 }

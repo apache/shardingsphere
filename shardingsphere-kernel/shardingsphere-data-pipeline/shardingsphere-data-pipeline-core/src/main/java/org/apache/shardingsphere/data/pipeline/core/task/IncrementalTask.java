@@ -38,7 +38,7 @@ import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.Dumper;
 import org.apache.shardingsphere.scaling.core.job.dumper.DumperFactory;
-import org.apache.shardingsphere.scaling.core.job.importer.ImporterFactory;
+import org.apache.shardingsphere.scaling.core.job.importer.ImporterCreatorFactory;
 
 import java.util.Collection;
 import java.util.LinkedList;
@@ -97,7 +97,8 @@ public final class IncrementalTask extends AbstractLifecycleExecutor implements 
                                                  final PipelineJobProgressListener jobProgressListener) {
         Collection<Importer> result = new LinkedList<>();
         for (int i = 0; i < concurrency; i++) {
-            result.add(ImporterFactory.createImporter(importerConfig, dataSourceManager, channel, jobProgressListener));
+            result.add(ImporterCreatorFactory.getInstance(importerConfig.getDataSourceConfig().getDatabaseType().getType()).createImporter(importerConfig, dataSourceManager, channel,
+                    jobProgressListener));
         }
         return result;
     }

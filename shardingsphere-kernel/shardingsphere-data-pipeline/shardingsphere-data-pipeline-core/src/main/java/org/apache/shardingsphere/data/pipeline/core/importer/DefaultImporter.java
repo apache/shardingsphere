@@ -67,7 +67,7 @@ public final class DefaultImporter extends AbstractLifecycleExecutor implements 
     private final PipelineJobProgressListener jobProgressListener;
     
     public DefaultImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel,
-                              final PipelineJobProgressListener jobProgressListener) {
+                           final PipelineJobProgressListener jobProgressListener) {
         this.importerConfig = importerConfig;
         this.dataSourceManager = dataSourceManager;
         this.channel = channel;
