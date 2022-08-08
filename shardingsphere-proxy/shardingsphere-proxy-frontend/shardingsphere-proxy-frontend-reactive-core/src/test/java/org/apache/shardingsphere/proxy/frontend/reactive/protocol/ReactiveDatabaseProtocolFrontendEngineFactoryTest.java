@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.proxy.frontend.reactive.protocol;
 
 import org.apache.shardingsphere.proxy.frontend.reactive.protocol.fixture.DummyReactiveDatabaseProtocolFrontendEngine;
-import org.apache.shardingsphere.spi.exception.ServiceProviderNotFoundException;
+import org.apache.shardingsphere.infra.util.spi.exception.ServiceProviderNotFoundException;
 import org.junit.Assert;
 import org.junit.Test;
 

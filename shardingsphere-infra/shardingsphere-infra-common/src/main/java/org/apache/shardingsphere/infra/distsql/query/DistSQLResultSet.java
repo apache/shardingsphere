@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.distsql.query;
 
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
-import org.apache.shardingsphere.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
 import java.util.Collection;

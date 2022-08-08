@@ -22,8 +22,8 @@ import org.apache.shardingsphere.infra.check.SQLCheckResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
-import org.apache.shardingsphere.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.spi.type.ordered.OrderedSPI;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.ordered.OrderedSPI;
 
 import java.util.List;
 import java.util.Map;

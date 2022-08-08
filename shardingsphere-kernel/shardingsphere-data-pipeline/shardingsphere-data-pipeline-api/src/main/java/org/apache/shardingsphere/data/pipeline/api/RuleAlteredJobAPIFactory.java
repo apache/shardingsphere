@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.data.pipeline.api;
 
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
 
 /**
  * Rule altered job API factory.
