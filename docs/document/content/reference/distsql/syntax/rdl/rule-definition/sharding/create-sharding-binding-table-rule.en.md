@@ -1,6 +1,6 @@
 +++
 title = "CREATE SHARDING BINDING TABLE RULE"
-weight = 4
+weight = 6
 +++
 
 ## Description
