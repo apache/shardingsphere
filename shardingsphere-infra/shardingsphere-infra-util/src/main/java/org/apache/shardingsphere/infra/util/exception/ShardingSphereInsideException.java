@@ -15,41 +15,24 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.exception;
+package org.apache.shardingsphere.infra.util.exception;
 
 /**
- * Basic exception of ShardingSphere.
+ * ShardingSphere inside exception.
  */
-public class ShardingSphereException extends RuntimeException {
+public abstract class ShardingSphereInsideException extends Exception {
     
-    private static final long serialVersionUID = -1343739516839252250L;
+    private static final long serialVersionUID = -8238061892944243621L;
     
-    /**
-     * Constructs an exception with formatted error message and arguments. 
-     * 
-     * @param errorMessage formatted error message
-     * @param args arguments of error message
-     */
-    public ShardingSphereException(final String errorMessage, final Object... args) {
+    public ShardingSphereInsideException(final String errorMessage, final Object... args) {
         super(String.format(errorMessage, args));
     }
     
-    /**
-     * Constructs an exception with error message and cause.
-     * 
-     * @param message error message
-     * @param cause error cause
-     */
-    public ShardingSphereException(final String message, final Exception cause) {
+    public ShardingSphereInsideException(final String message, final Exception cause) {
         super(message, cause);
     }
     
-    /**
-     * Constructs an exception with cause.
-     *
-     * @param cause error cause
-     */
-    public ShardingSphereException(final Exception cause) {
+    public ShardingSphereInsideException(final Exception cause) {
         super(cause);
     }
 }
