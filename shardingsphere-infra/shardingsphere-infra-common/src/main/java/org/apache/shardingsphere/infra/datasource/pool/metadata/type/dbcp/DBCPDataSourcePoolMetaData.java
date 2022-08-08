@@ -49,7 +49,12 @@ public final class DBCPDataSourcePoolMetaData implements DataSourcePoolMetaData 
     public Map<String, Object> getInvalidProperties() {
         return Collections.emptyMap();
     }
-    
+
+    @Override
+    public Collection<String> getJdbcUrlSynonymFieldNames() {
+        return Collections.emptyList();
+    }
+
     @Override
     public Map<String, String> getPropertySynonyms() {
         return Collections.emptyMap();

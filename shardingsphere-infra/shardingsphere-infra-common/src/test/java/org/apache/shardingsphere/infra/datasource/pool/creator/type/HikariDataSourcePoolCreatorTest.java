@@ -43,10 +43,11 @@ public final class HikariDataSourcePoolCreatorTest {
     
     private Map<String, Object> createDataSourceProperties() {
         Map<String, Object> result = new HashMap<>();
-        result.put("jdbcUrl", "jdbc:mock://127.0.0.1/foo_ds");
+        result.put("url", "jdbc:mock://127.0.0.1/foo_ds");
         result.put("driverClassName", MockedDataSource.class.getName());
         result.put("username", "root");
         result.put("password", "root");
+        result.put("minPoolSize", 2);
         result.put("dataSourceProperties", createJdbcUrlProperties());
         return result;
     }
@@ -55,6 +56,7 @@ public final class HikariDataSourcePoolCreatorTest {
         Properties result = new Properties();
         result.put("foo", "foo_value");
         result.put("bar", "bar_value");
+        result.put("registerMbeans", true);
         return result;
     }
 }

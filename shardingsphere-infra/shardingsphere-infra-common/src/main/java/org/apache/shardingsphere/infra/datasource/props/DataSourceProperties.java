@@ -23,6 +23,7 @@ import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMe
 import org.apache.shardingsphere.infra.datasource.pool.metadata.DataSourcePoolMetaDataFactory;
 import org.apache.shardingsphere.infra.datasource.props.custom.CustomDataSourceProperties;
 import org.apache.shardingsphere.infra.datasource.props.synonym.ConnectionPropertySynonyms;
+import org.apache.shardingsphere.infra.datasource.props.synonym.JdbcUrlPropertySynonyms;
 import org.apache.shardingsphere.infra.datasource.props.synonym.PoolPropertySynonyms;
 
 import java.util.Collection;
@@ -46,13 +47,17 @@ public final class DataSourceProperties {
     private final PoolPropertySynonyms poolPropertySynonyms;
     
     private final CustomDataSourceProperties customDataSourceProperties;
+
+    private final JdbcUrlPropertySynonyms jdbcUrlPropertySynonyms;
     
     public DataSourceProperties(final String dataSourceClassName, final Map<String, Object> props) {
         this.dataSourceClassName = dataSourceClassName;
         Optional<DataSourcePoolMetaData> poolMetaData = DataSourcePoolMetaDataFactory.findInstance(dataSourceClassName);
         Map<String, String> propertySynonyms = poolMetaData.isPresent() ? poolMetaData.get().getPropertySynonyms() : Collections.emptyMap();
+        Collection<String> jdbcUrlProperties = poolMetaData.isPresent() ? poolMetaData.get().getJdbcUrlSynonymFieldNames() : Collections.emptyList();
         connectionPropertySynonyms = new ConnectionPropertySynonyms(props, propertySynonyms);
         poolPropertySynonyms = new PoolPropertySynonyms(props, propertySynonyms);
+        jdbcUrlPropertySynonyms = new JdbcUrlPropertySynonyms(props, jdbcUrlProperties);
         customDataSourceProperties = new CustomDataSourceProperties(
                 props, getStandardPropertyKeys(), poolMetaData.isPresent() ? poolMetaData.get().getTransientFieldNames() : Collections.emptyList(), propertySynonyms);
     }
@@ -88,6 +93,7 @@ public final class DataSourceProperties {
         result.putAll(connectionPropertySynonyms.getLocalProperties());
         result.putAll(poolPropertySynonyms.getLocalProperties());
         result.putAll(customDataSourceProperties.getProperties());
+        result.putAll(jdbcUrlPropertySynonyms.getLocalProperties());
         return result;
     }
     
