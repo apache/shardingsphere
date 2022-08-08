@@ -15,24 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock.definition;
-
-import lombok.Getter;
-import org.apache.shardingsphere.infra.lock.LockDefinition;
-import org.apache.shardingsphere.mode.lock.util.LockKeyUtil;
+package org.apache.shardingsphere.mode.repository.cluster.lock;
 
 /**
- * Exclusive lock definition.
+ * Internal lock holder.
  */
-@Getter
-public final class ExclusiveLockDefinition implements LockDefinition {
+public interface InternalLockHolder {
     
-    private final String lockKey;
-    
-    private final String lockName;
-    
-    public ExclusiveLockDefinition(final String lockName) {
-        this.lockName = lockName;
-        lockKey = LockKeyUtil.generateExclusiveLockKey(lockName);
-    }
+    /**
+     * Get internal lock.
+     *
+     * @param lockKey lock key
+     * @return internal lock
+     */
+    InternalLock getInternalLock(String lockKey);
 }

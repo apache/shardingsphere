@@ -15,26 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock.definition;
+package org.apache.shardingsphere.mode.lock;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.lock.LockDefinition;
-import org.apache.shardingsphere.mode.lock.util.LockKeyUtil;
+import org.junit.Test;
 
-/**
- * Database lock definition.
- */
-@RequiredArgsConstructor
-@Getter
-public final class DatabaseLockDefinition implements LockDefinition {
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public final class LockStateContextTest {
     
-    private final String lockKey;
+    private final LockStateContext lockStateContext = new LockStateContext();
     
-    private final String databaseName;
-    
-    public DatabaseLockDefinition(final String databaseName) {
-        this.databaseName = databaseName;
-        lockKey = LockKeyUtil.generateDatabaseLockKey(databaseName);
+    @Test
+    public void assertLockState() {
+        ExclusiveLockDefinition lockDefinition = new ExclusiveLockDefinition("exclusive_lock");
+        lockStateContext.register(lockDefinition);
+        assertTrue(lockStateContext.isLocked(lockDefinition));
+        lockStateContext.unregister(lockDefinition);
+        assertFalse(lockStateContext.isLocked(lockDefinition));
     }
 }

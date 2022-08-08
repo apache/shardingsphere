@@ -15,29 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock.engine;
+package org.apache.shardingsphere.mode.lock.util;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
+import org.junit.Test;
 
-/**
- * Lock judge engine factory.
- */
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
-public final class LockJudgeEngineFactory {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class LockKeyUtilTest {
     
-    static {
-        ShardingSphereServiceLoader.register(LockJudgeEngine.class);
+    @Test
+    public void assertGenerateExclusiveLockKey() {
+        assertThat(LockKeyUtil.generateExclusiveLockKey("exclusive_lock"), is("/lock/exclusive/locks/exclusive_lock"));
     }
     
-    /**
-     * Get instance of lock judge engine.
-     *
-     * @return got instance
-     */
-    public static LockJudgeEngine getInstance() {
-        return RequiredSPIRegistry.getRegisteredService(LockJudgeEngine.class);
+    @Test
+    public void assertGenerateLockKeyLeases() {
+        assertThat(LockKeyUtil.generateLockKeyLeases("/lock/exclusive/locks/exclusive_lock"), is("/lock/exclusive/locks/exclusive_lock/leases"));
     }
 }
