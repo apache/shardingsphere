@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.core.context;
+package org.apache.shardingsphere.data.pipeline.api.context;
 
 /**
  * Pipeline process context.

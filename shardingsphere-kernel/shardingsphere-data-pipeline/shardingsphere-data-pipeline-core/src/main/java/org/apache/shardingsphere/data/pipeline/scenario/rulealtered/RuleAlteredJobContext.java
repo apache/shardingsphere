@@ -25,10 +25,10 @@ import org.apache.commons.lang3.concurrent.ConcurrentException;
 import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
@@ -63,7 +63,7 @@ public final class RuleAlteredJobContext implements PipelineJobContext {
     
     private final RuleAlteredJobConfiguration jobConfig;
     
-    private final RuleAlteredContext ruleAlteredContext;
+    private final RuleAlteredContext jobProcessContext;
     
     private final PipelineDataSourceManager dataSourceManager;
     
@@ -87,14 +87,14 @@ public final class RuleAlteredJobContext implements PipelineJobContext {
     
     public RuleAlteredJobContext(final RuleAlteredJobConfiguration jobConfig, final int jobShardingItem, final JobProgress initProgress,
                                  final PipelineDataSourceManager dataSourceManager, final RuleAlteredJobPreparer jobPreparer) {
-        ruleAlteredContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
+        jobProcessContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
         this.jobConfig = jobConfig;
         jobId = jobConfig.getJobId();
         this.shardingItem = jobShardingItem;
         this.initProgress = initProgress;
         this.dataSourceManager = dataSourceManager;
         this.jobPreparer = jobPreparer;
-        taskConfig = RuleAlteredJobWorker.buildTaskConfig(jobConfig, jobShardingItem, ruleAlteredContext.getPipelineProcessConfig());
+        taskConfig = RuleAlteredJobWorker.buildTaskConfig(jobConfig, jobShardingItem, jobProcessContext.getPipelineProcessConfig());
     }
     
     /**
