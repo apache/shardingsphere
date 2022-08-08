@@ -17,12 +17,12 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered.prepare;
 
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IntegerPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
-import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
@@ -66,7 +66,7 @@ public final class InventoryTaskSplitterTest {
     
     private void initJobContext() {
         RuleAlteredJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
-        JobProgress initProgress = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobProgress(jobConfig.getJobId(), 0);
+        JobProgress initProgress = RuleAlteredJobAPIFactory.getInstance().getJobProgress(jobConfig.getJobId(), 0);
         jobContext = new RuleAlteredJobContext(jobConfig, 0, initProgress, new PipelineDataSourceManager());
         dataSourceManager = jobContext.getDataSourceManager();
         taskConfig = jobContext.getTaskConfig();
