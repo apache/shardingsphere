@@ -30,14 +30,14 @@ import org.apache.shardingsphere.scaling.core.job.importer.ImporterCreator;
 public final class FixtureImporterCreator implements ImporterCreator {
     
     @Override
-    public String getType() {
-        return "H2";
-    }
-    
-    @Override
     public Importer createImporter(final ImporterConfiguration importerConfig,
                                    final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel,
                                    final PipelineJobProgressListener jobProgressListener) {
         return new FixtureImporter(importerConfig, dataSourceManager, channel, jobProgressListener);
+    }
+
+    @Override
+    public String getType() {
+        return "H2";
     }
 }

@@ -29,25 +29,25 @@ import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 /**
  * Default importer creator.
  */
-public class DefaultImporterCreator implements ImporterCreator {
-    
-    @Override
-    public String getType() {
-        return "MySQL";
-    }
-    
-    @Override
-    public Collection<String> getTypeAliases() {
-        Collection<String> aliases = new LinkedList<>();
-        aliases.add("PostgreSQL");
-        aliases.add("openGauss");
-        return aliases;
-    }
+public final class DefaultImporterCreator implements ImporterCreator {
     
     @Override
     public Importer createImporter(final ImporterConfiguration importerConfig,
                                    final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel,
                                    final PipelineJobProgressListener jobProgressListener) {
         return new DefaultImporter(importerConfig, dataSourceManager, channel, jobProgressListener);
+    }
+
+    @Override
+    public String getType() {
+        return "MySQL";
+    }
+
+    @Override
+    public Collection<String> getTypeAliases() {
+        Collection<String> aliases = new LinkedList<>();
+        aliases.add("PostgreSQL");
+        aliases.add("openGauss");
+        return aliases;
     }
 }
