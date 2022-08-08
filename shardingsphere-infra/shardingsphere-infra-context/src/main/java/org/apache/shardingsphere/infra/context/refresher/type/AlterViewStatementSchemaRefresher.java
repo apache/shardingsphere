@@ -76,9 +76,7 @@ public final class AlterViewStatementSchemaRefresher implements MetaDataRefreshe
                 database.getResource().getDatabaseType(), database.getResource().getDataSources(), database.getRuleMetaData().getRules(), props, schemaName);
         Map<String, ShardingSphereSchema> schemaMap = GenericSchemaBuilder.build(Collections.singletonList(viewName), materials);
         Optional<ShardingSphereTable> actualViewMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.get(viewName));
-        actualViewMetaData.ifPresent(optional -> {
-            database.getSchema(schemaName).put(viewName, optional);
-        });
+        actualViewMetaData.ifPresent(optional -> database.getSchema(schemaName).put(viewName, optional));
     }
     
     private boolean containsInImmutableDataNodeContainedRule(final String viewName, final ShardingSphereDatabase database) {

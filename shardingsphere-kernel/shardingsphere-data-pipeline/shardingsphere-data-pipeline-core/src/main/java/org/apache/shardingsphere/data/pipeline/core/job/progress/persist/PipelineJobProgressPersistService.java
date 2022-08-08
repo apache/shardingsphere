@@ -117,9 +117,7 @@ public final class PipelineJobProgressPersistService {
         @Override
         public void run() {
             for (Entry<String, Map<Integer, PipelineJobProgressPersistContext>> entry : JOB_PROGRESS_PERSIST_MAP.entrySet()) {
-                entry.getValue().forEach((shardingItem, persistContext) -> {
-                    persist(entry.getKey(), shardingItem, persistContext);
-                });
+                entry.getValue().forEach((shardingItem, persistContext) -> persist(entry.getKey(), shardingItem, persistContext));
             }
         }
     }

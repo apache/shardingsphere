@@ -71,9 +71,7 @@ public final class RenameTableStatementSchemaRefresher implements MetaDataRefres
                 database.getResource().getDatabaseType(), database.getResource().getDataSources(), database.getRuleMetaData().getRules(), props, schemaName);
         Map<String, ShardingSphereSchema> schemaMap = GenericSchemaBuilder.build(Collections.singletonList(tableName), materials);
         Optional<ShardingSphereTable> actualTableMetaData = Optional.ofNullable(schemaMap.get(schemaName)).map(optional -> optional.get(tableName));
-        actualTableMetaData.ifPresent(optional -> {
-            database.getSchema(schemaName).put(tableName, optional);
-        });
+        actualTableMetaData.ifPresent(optional -> database.getSchema(schemaName).put(tableName, optional));
     }
     
     private boolean containsInImmutableDataNodeContainedRule(final String tableName, final ShardingSphereDatabase database) {
