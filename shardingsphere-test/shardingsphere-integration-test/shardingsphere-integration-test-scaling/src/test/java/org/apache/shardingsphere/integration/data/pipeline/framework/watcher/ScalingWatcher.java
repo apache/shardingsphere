@@ -63,7 +63,6 @@ public class ScalingWatcher extends TestWatcher {
                 dockerComposedContainer.getGovernanceContainer().getServerLists(), new Properties());
         ClusterPersistRepository zookeeperRepository = new CuratorZookeeperRepository();
         zookeeperRepository.init(config);
-        Map<String, Map<String, String>> zookeeperDataMap = new LinkedHashMap<>();
         List<String> childrenKeys = zookeeperRepository.getChildrenKeys("/");
         for (String each : childrenKeys) {
             if (!"scaling".equals(each)) {
@@ -71,7 +70,7 @@ public class ScalingWatcher extends TestWatcher {
             }
             Map<String, String> nodeMap = new LinkedHashMap<>();
             addZookeeperData(each, "", zookeeperRepository, nodeMap);
-            log.warn("zookeeper data, node:{}, data:{}", each, zookeeperDataMap);
+            log.warn("zookeeper data, node:{}, data:{}", each, nodeMap);
         }
     }
     
