@@ -29,7 +29,7 @@
     },
     {
       "name": "spring.shardingsphere.rules.encrypt.encryptors",
-      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration>",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration>",
       "sourceType": "org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration"
     }
   ],
@@ -41,7 +41,7 @@
     },
     {
       "name": "spring.shardingsphere.rules.encrypt.encryptors",
-      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration>",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration>",
       "sourceType": "org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration"
     },
     {
@@ -70,7 +70,7 @@
         {
           "name": "handle-as",
           "parameters": {
-            "target": "org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration"
+            "target": "org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration"
           }
         }
       ]

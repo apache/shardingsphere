@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.postgresql.ingest;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.WalPosition;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.wal.decode.PostgreSQLLogSequenceNumber;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.position.PositionInitializer;
@@ -128,7 +129,9 @@ public final class PostgreSQLPositionInitializer implements PositionInitializer 
      * @throws SQLException failed when getCatalog
      */
     public static String getUniqueSlotName(final Connection connection) throws SQLException {
-        return String.format("%s_%s", SLOT_NAME_PREFIX, connection.getCatalog());
+        // PostgreSQL slot name maximum length can't exceed 64,automatic truncation when the length exceeds the limit
+        String slotName = DigestUtils.md5Hex(connection.getCatalog());
+        return String.format("%s_%s", SLOT_NAME_PREFIX, slotName);
     }
     
     @Override

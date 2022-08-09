@@ -42,7 +42,7 @@
 
     <create-account-sharding-algorithm>
         CREATE SHARDING ALGORITHM account_inline (
-        TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="account_${id % 2}"))
+        TYPE(NAME=INLINE,PROPERTIES("algorithm-expression"="account_${Math.floorMod(Math.floorDiv(id.longValue(), 2L), 2L)}"))
         )
     </create-account-sharding-algorithm>
 
@@ -93,31 +93,31 @@
         ALTER TRANSACTION RULE ( DEFAULT=LOCAL )
     </alter-local-transaction-rule>
 
-    <alter-xa-atomikos-transaction-rule>
+    <alter-xa-transaction-rule>
         ALTER TRANSACTION RULE
         (
         DEFAULT=XA,
         TYPE(NAME=${providerType})
         )
-    </alter-xa-atomikos-transaction-rule>
+    </alter-xa-transaction-rule>
 
     <source-add-resource-template>
         ADD RESOURCE ds_0 (
         URL="${ds0}",
-        USER=${user},
-        PASSWORD=${password}
+        USER="${user}",
+        PASSWORD="${password}"
         ), ds_1 (
         URL="${ds1}",
-        USER=${user},
-        PASSWORD=${password}
+        USER="${user}",
+        PASSWORD="${password}"
         )
     </source-add-resource-template>
 
     <source-add-new-resource-template>
         ADD RESOURCE ds_2 (
             URL="${ds2}",
-            USER=${user},
-            PASSWORD=${password}
+            USER="${user}",
+            PASSWORD="${password}"
         )
     </source-add-new-resource-template>
     

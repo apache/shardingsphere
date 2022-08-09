@@ -73,7 +73,7 @@ public final class VertxBackendConnection implements BackendConnection<Future<Vo
     private List<Future<? extends SqlClient>> getConnectionsWithTransaction(final String dataSourceName, final int connectionSize) {
         Collection<Future<SqlConnection>> connections;
         synchronized (cachedConnections) {
-            connections = cachedConnections.get(dataSourceName);
+            connections = cachedConnections.get(connectionSession.getDatabaseName() + "." + dataSourceName);
         }
         List<Future<SqlConnection>> result;
         if (connections.size() >= connectionSize) {
@@ -84,12 +84,12 @@ public final class VertxBackendConnection implements BackendConnection<Future<Vo
             List<Future<SqlConnection>> newConnections = createNewConnections(dataSourceName, connectionSize - connections.size());
             result.addAll(newConnections);
             synchronized (cachedConnections) {
-                cachedConnections.putAll(dataSourceName, newConnections);
+                cachedConnections.putAll(connectionSession.getDatabaseName() + "." + dataSourceName, newConnections);
             }
         } else {
             result = createNewConnections(dataSourceName, connectionSize);
             synchronized (cachedConnections) {
-                cachedConnections.putAll(dataSourceName, result);
+                cachedConnections.putAll(connectionSession.getDatabaseName() + "." + dataSourceName, result);
             }
         }
         return new ArrayList<>(result);

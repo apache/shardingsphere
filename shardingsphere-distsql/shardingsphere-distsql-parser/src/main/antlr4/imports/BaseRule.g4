@@ -20,7 +20,7 @@ grammar BaseRule;
 import Symbol, Keyword, Literals;
 
 propertiesDefinition
-    : COMMA PROPERTIES LP properties? RP
+    : PROPERTIES LP properties? RP
     ;
 
 properties
@@ -28,11 +28,7 @@ properties
     ;
 
 property
-    : key=(IDENTIFIER | STRING) EQ value=(INT | IDENTIFIER | STRING)
-    ;
-
-tableName
-    : IDENTIFIER
+    : key=STRING EQ value=STRING
     ;
 
 databaseName
@@ -43,14 +39,10 @@ schemaName
     : IDENTIFIER
     ;
 
+tableName
+    : IDENTIFIER
+    ;
+
 resourceName
-    : IDENTIFIER | STRING
-    ;
-
-ip
-    : IDENTIFIER | NUMBER+
-    ;
-
-port
-    : INT
+    : IDENTIFIER
     ;

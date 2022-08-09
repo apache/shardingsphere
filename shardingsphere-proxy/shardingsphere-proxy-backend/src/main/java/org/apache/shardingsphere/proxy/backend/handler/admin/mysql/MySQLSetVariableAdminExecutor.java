@@ -26,19 +26,18 @@ import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.proxy.backend.communication.DatabaseCommunicationEngineFactory;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
 import org.apache.shardingsphere.proxy.backend.handler.data.DatabaseBackendHandler;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -52,9 +51,9 @@ public final class MySQLSetVariableAdminExecutor implements DatabaseAdminExecuto
     @Override
     public void execute(final ConnectionSession connectionSession) throws SQLException {
         Map<String, String> sessionVariables = extractSessionVariables();
-        List<MySQLSessionVariableHandler> handlers = MySQLSessionVariableHandlerFactory.getHandlers(new ArrayList<>(sessionVariables.keySet()));
-        for (MySQLSessionVariableHandler each : handlers) {
-            each.handle(connectionSession, setStatement);
+        Map<String, MySQLSessionVariableHandler> handlers = sessionVariables.keySet().stream().collect(Collectors.toMap(Function.identity(), MySQLSessionVariableHandlerFactory::getHandler));
+        for (String each : handlers.keySet()) {
+            handlers.get(each).handle(connectionSession, each, sessionVariables.get(each));
         }
         executeSetGlobalVariablesIfPresent(connectionSession);
     }

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.checker;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -50,7 +50,7 @@ public final class AlgorithmProvidedShadowRuleConfigurationCheckerTest {
     private AlgorithmProvidedShadowRuleConfiguration createAlgorithmProvidedShadowRuleConfiguration() {
         AlgorithmProvidedShadowRuleConfiguration result = new AlgorithmProvidedShadowRuleConfiguration();
         result.setShadowAlgorithms(Collections.singletonMap(
-                "user-id-insert-match-algorithm", ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("REGEX_MATCH", createProperties()))));
+                "user-id-insert-match-algorithm", ShadowAlgorithmFactory.newInstance(new AlgorithmConfiguration("REGEX_MATCH", createProperties()))));
         result.setDataSources(Collections.singletonMap("shadow-data-source", new ShadowDataSourceConfiguration("ds", "ds_shadow")));
         result.setTables(Collections.singletonMap("t_order", new ShadowTableConfiguration(new LinkedList<>(), new LinkedList<>(Collections.singleton("user-id-insert-match-algorithm")))));
         return result;

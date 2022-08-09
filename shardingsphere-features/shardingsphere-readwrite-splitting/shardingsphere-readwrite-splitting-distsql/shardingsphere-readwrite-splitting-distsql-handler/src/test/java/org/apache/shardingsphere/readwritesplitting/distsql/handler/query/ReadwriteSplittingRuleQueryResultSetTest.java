@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.distsql.handler.query;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableItemConstants;
@@ -89,7 +89,7 @@ public final class ReadwriteSplittingRuleQueryResultSetTest {
                         new StaticReadwriteSplittingStrategyConfiguration("ds_primary", Arrays.asList("ds_slave_0", "ds_slave_1")), null, "test");
         Properties props = new Properties();
         props.setProperty("read_weight", "2:1");
-        return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceRuleConfig), Collections.singletonMap("test", new ShardingSphereAlgorithmConfiguration("random", props)));
+        return new ReadwriteSplittingRuleConfiguration(Collections.singleton(dataSourceRuleConfig), Collections.singletonMap("test", new AlgorithmConfiguration("random", props)));
     }
     
     @Test

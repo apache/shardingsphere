@@ -34,6 +34,7 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineIgnoredExc
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobPrepareFailedException;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializerFactory;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.listener.DefaultPipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparerFactory;
@@ -51,10 +52,10 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCreator;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
-import org.apache.shardingsphere.infra.lock.LockScope;
-import org.apache.shardingsphere.infra.lock.ShardingSphereLock;
-import org.apache.shardingsphere.infra.yaml.config.swapper.YamlDataSourceConfigurationSwapper;
-import org.apache.shardingsphere.scaling.core.job.persist.AsyncPipelineJobPersistCallback;
+import org.apache.shardingsphere.infra.lock.LockContext;
+import org.apache.shardingsphere.infra.lock.LockDefinition;
+import org.apache.shardingsphere.mode.lock.definition.LockDefinitionFactory;
+import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -105,23 +106,24 @@ public final class RuleAlteredJobPreparer {
         RuleAlteredJobConfiguration jobConfig = jobContext.getJobConfig();
         // TODO the lock will be replaced
         String lockName = "prepare-" + jobConfig.getJobId();
-        ShardingSphereLock lock = PipelineContext.getContextManager().getInstanceContext().getLockContext().getLock(LockScope.GLOBAL);
-        if (lock.tryLock(lockName, 3000)) {
+        LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
+        LockDefinition lockDefinition = LockDefinitionFactory.newExclusiveLockDefinition(lockName);
+        if (lockContext.tryLock(lockDefinition, 3000)) {
             try {
                 prepareAndCheckTarget(jobContext);
             } finally {
-                lock.releaseLock(lockName);
+                lockContext.unlock(lockDefinition);
             }
         } else {
-            waitUntilLockReleased(lock, lockName);
+            waitUntilLockReleased(lockContext, lockDefinition);
         }
     }
     
-    private void waitUntilLockReleased(final ShardingSphereLock lock, final String lockName) {
+    private void waitUntilLockReleased(final LockContext lockContext, final LockDefinition lockDefinition) {
         for (int loopCount = 0; loopCount < 30; loopCount++) {
             ThreadUtil.sleep(TimeUnit.SECONDS.toMillis(5));
-            if (!lock.isLocked(lockName)) {
-                log.info("unlocked, lockName={}", lockName);
+            if (!lockContext.isLocked(lockDefinition)) {
+                log.info("unlocked, lockName={}", lockDefinition.getLockKey());
                 return;
             }
         }
@@ -187,22 +189,23 @@ public final class RuleAlteredJobPreparer {
     }
     
     private void initIncrementalTasks(final RuleAlteredJobContext jobContext) throws SQLException {
-        PipelineChannelCreator pipelineChannelCreator = jobContext.getRuleAlteredContext().getPipelineChannelCreator();
-        ExecuteEngine incrementalDumperExecuteEngine = jobContext.getRuleAlteredContext().getIncrementalDumperExecuteEngine();
+        PipelineChannelCreator pipelineChannelCreator = jobContext.getJobProcessContext().getPipelineChannelCreator();
+        ExecuteEngine incrementalDumperExecuteEngine = jobContext.getJobProcessContext().getIncrementalDumperExecuteEngine();
         TaskConfiguration taskConfig = jobContext.getTaskConfig();
         PipelineDataSourceManager dataSourceManager = jobContext.getDataSourceManager();
         taskConfig.getDumperConfig().setPosition(getIncrementalPosition(jobContext, taskConfig, dataSourceManager));
         PipelineTableMetaDataLoader sourceMetaDataLoader = jobContext.getSourceMetaDataLoader();
-        AsyncPipelineJobPersistCallback persistCallback = new AsyncPipelineJobPersistCallback(jobContext.getJobId(), jobContext.getShardingItem());
+        DefaultPipelineJobProgressListener jobProgressListener = new DefaultPipelineJobProgressListener(jobContext.getJobId(), jobContext.getShardingItem());
         IncrementalTask incrementalTask = new IncrementalTask(taskConfig.getImporterConfig().getConcurrency(),
-                taskConfig.getDumperConfig(), taskConfig.getImporterConfig(), pipelineChannelCreator, dataSourceManager, sourceMetaDataLoader, incrementalDumperExecuteEngine, persistCallback);
+                taskConfig.getDumperConfig(), taskConfig.getImporterConfig(), pipelineChannelCreator, dataSourceManager, sourceMetaDataLoader, incrementalDumperExecuteEngine, jobProgressListener);
         jobContext.getIncrementalTasks().add(incrementalTask);
     }
     
     private IngestPosition<?> getIncrementalPosition(final RuleAlteredJobContext jobContext, final TaskConfiguration taskConfig,
                                                      final PipelineDataSourceManager dataSourceManager) throws SQLException {
-        if (null != jobContext.getInitProgress()) {
-            Optional<IngestPosition<?>> position = jobContext.getInitProgress().getIncrementalPosition(taskConfig.getDumperConfig().getDataSourceName());
+        JobProgress initProgress = jobContext.getInitProgress();
+        if (null != initProgress) {
+            Optional<IngestPosition<?>> position = initProgress.getIncremental().getIncrementalPosition(taskConfig.getDumperConfig().getDataSourceName());
             if (position.isPresent()) {
                 return position.get();
             }

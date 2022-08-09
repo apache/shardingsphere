@@ -23,8 +23,6 @@ import org.apache.shardingsphere.sharding.route.engine.condition.value.ListShard
 import org.apache.shardingsphere.sharding.route.engine.condition.value.ShardingConditionValue;
 import org.apache.shardingsphere.sharding.rule.ShardingRule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.Collections;
 import java.util.LinkedList;
@@ -37,7 +35,6 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 
-@RunWith(MockitoJUnitRunner.class)
 public final class ShardingConditionsTest {
     
     @Test

@@ -18,13 +18,12 @@
 package org.apache.shardingsphere.proxy.backend.handler.admin.postgresql;
 
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminExecutor;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.dal.VariableAssignSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
 
 import java.sql.SQLException;
-import java.util.Iterator;
 
 /**
  * Set variable admin executor for PostgreSQL.
@@ -36,11 +35,9 @@ public final class PostgreSQLSetVariableAdminExecutor implements DatabaseAdminEx
     
     @Override
     public void execute(final ConnectionSession connectionSession) throws SQLException {
-        PostgreSQLSessionVariableHandlerFactory.getHandler(getSetConfigurationParameter(setStatement)).handle(connectionSession, setStatement);
-    }
-    
-    private String getSetConfigurationParameter(final SetStatement setStatement) {
-        Iterator<VariableAssignSegment> iterator = setStatement.getVariableAssigns().iterator();
-        return iterator.hasNext() ? iterator.next().getVariable().getVariable().toLowerCase() : "";
+        VariableAssignSegment variableAssignSegment = setStatement.getVariableAssigns().iterator().next();
+        String variableName = variableAssignSegment.getVariable().getVariable().toLowerCase();
+        String assignValue = variableAssignSegment.getAssignValue();
+        PostgreSQLSessionVariableHandlerFactory.getHandler(variableName).handle(connectionSession, variableName, assignValue);
     }
 }

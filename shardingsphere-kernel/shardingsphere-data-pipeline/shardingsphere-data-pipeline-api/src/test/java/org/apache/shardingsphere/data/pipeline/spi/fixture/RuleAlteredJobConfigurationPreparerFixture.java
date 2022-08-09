@@ -21,7 +21,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAltere
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.YamlRuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparer;
-import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActionConfiguration;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
 
 public final class RuleAlteredJobConfigurationPreparerFixture implements RuleAlteredJobConfigurationPreparer {
     
@@ -30,7 +30,7 @@ public final class RuleAlteredJobConfigurationPreparerFixture implements RuleAlt
     }
     
     @Override
-    public TaskConfiguration createTaskConfiguration(final RuleAlteredJobConfiguration jobConfig, final int jobShardingItem, final OnRuleAlteredActionConfiguration onRuleAlteredActionConfig) {
+    public TaskConfiguration createTaskConfiguration(final RuleAlteredJobConfiguration jobConfig, final int jobShardingItem, final PipelineProcessConfiguration pipelineProcessConfig) {
         return null;
     }
 }

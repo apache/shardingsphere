@@ -48,11 +48,11 @@ public final class ShowScalingJobStatusQueryResultSet implements DistSQLResultSe
                     Collection<Object> result = new LinkedList<>();
                     result.add(entry.getKey());
                     if (null != entry.getValue()) {
-                        result.add(entry.getValue().getDataSource());
+                        result.add(entry.getValue().getIncremental().getDataSourceName());
                         result.add(entry.getValue().getStatus());
                         result.add(entry.getValue().isActive() ? Boolean.TRUE.toString() : Boolean.FALSE.toString());
-                        result.add(entry.getValue().getInventoryFinishedPercentage());
-                        long latestActiveTimeMillis = entry.getValue().getIncrementalLatestActiveTimeMillis();
+                        result.add(entry.getValue().getInventory().getInventoryFinishedPercentage());
+                        long latestActiveTimeMillis = entry.getValue().getIncremental().getIncrementalLatestActiveTimeMillis();
                         result.add(latestActiveTimeMillis > 0 ? TimeUnit.MILLISECONDS.toSeconds(currentTimeMillis - latestActiveTimeMillis) : 0);
                     } else {
                         result.add("");

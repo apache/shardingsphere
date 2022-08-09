@@ -29,7 +29,6 @@ import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobPreparer;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -68,7 +67,7 @@ public final class InventoryTaskSplitterTest {
     private void initJobContext() {
         RuleAlteredJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
         JobProgress initProgress = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobProgress(jobConfig.getJobId(), 0);
-        jobContext = new RuleAlteredJobContext(jobConfig, 0, initProgress, new PipelineDataSourceManager(), new RuleAlteredJobPreparer());
+        jobContext = new RuleAlteredJobContext(jobConfig, 0, initProgress, new PipelineDataSourceManager());
         dataSourceManager = jobContext.getDataSourceManager();
         taskConfig = jobContext.getTaskConfig();
     }
@@ -83,8 +82,9 @@ public final class InventoryTaskSplitterTest {
         initEmptyTablePrimaryEnvironment(taskConfig.getDumperConfig());
         List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext);
         assertThat(actual.size(), is(1));
-        assertThat(((IntegerPrimaryKeyPosition) actual.get(0).getProgress().getPosition()).getBeginValue(), is(0L));
-        assertThat(((IntegerPrimaryKeyPosition) actual.get(0).getProgress().getPosition()).getEndValue(), is(0L));
+        InventoryTask task = actual.get(0);
+        assertThat(((IntegerPrimaryKeyPosition) task.getProgress().getPosition()).getBeginValue(), is(0L));
+        assertThat(((IntegerPrimaryKeyPosition) task.getProgress().getPosition()).getEndValue(), is(0L));
     }
     
     @Test
@@ -92,8 +92,9 @@ public final class InventoryTaskSplitterTest {
         initIntPrimaryEnvironment(taskConfig.getDumperConfig());
         List<InventoryTask> actual = inventoryTaskSplitter.splitInventoryData(jobContext);
         assertThat(actual.size(), is(10));
-        assertThat(((IntegerPrimaryKeyPosition) actual.get(9).getProgress().getPosition()).getBeginValue(), is(91L));
-        assertThat(((IntegerPrimaryKeyPosition) actual.get(9).getProgress().getPosition()).getEndValue(), is(100L));
+        InventoryTask task = actual.get(9);
+        assertThat(((IntegerPrimaryKeyPosition) task.getProgress().getPosition()).getBeginValue(), is(91L));
+        assertThat(((IntegerPrimaryKeyPosition) task.getProgress().getPosition()).getEndValue(), is(100L));
     }
     
     @Test

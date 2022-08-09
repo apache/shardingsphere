@@ -19,9 +19,9 @@ package org.apache.shardingsphere.transaction.xa.manager;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.transaction.xa.spi.XATransactionManagerProvider;
 
 import java.util.Properties;

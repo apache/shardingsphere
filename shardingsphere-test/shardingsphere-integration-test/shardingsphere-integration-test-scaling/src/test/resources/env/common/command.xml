@@ -80,28 +80,28 @@
     <source-add-resource-template>
         ADD RESOURCE ds_0 (
         URL="${ds0}",
-        USER=${user},
-        PASSWORD=${password}
+        USER="${user}",
+        PASSWORD="${password}"
         ), ds_1 (
         URL="${ds1}",
-        USER=${user},
-        PASSWORD=${password}
+        USER="${user}",
+        PASSWORD="${password}"
         )
     </source-add-resource-template>
     
     <target-add-resource-template>
         ADD RESOURCE ds_2 (
         URL="${ds2}",
-        USER=${user},
-        PASSWORD=${password}
+        USER="${user}",
+        PASSWORD="${password}"
         ),ds_3 (
         URL="${ds3}",
-        USER=${user},
-        PASSWORD=${password}
+        USER="${user}",
+        PASSWORD="${password}"
         ),ds_4 (
         URL="${ds4}",
-        USER=${user},
-        PASSWORD=${password}
+        USER="${user}",
+        PASSWORD="${password}"
         )
     </target-add-resource-template>
 </command>

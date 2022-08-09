@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.checker;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -55,14 +55,14 @@ public final class ShadowRuleConfigurationCheckerTest {
         return result;
     }
     
-    private Map<String, ShardingSphereAlgorithmConfiguration> createShadowAlgorithmConfigurations() {
-        Map<String, ShardingSphereAlgorithmConfiguration> result = new LinkedHashMap<>();
-        result.put("user-id-insert-match-algorithm", createShardingSphereAlgorithmConfiguration());
+    private Map<String, AlgorithmConfiguration> createShadowAlgorithmConfigurations() {
+        Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>();
+        result.put("user-id-insert-match-algorithm", createAlgorithmConfiguration());
         return result;
     }
     
-    private ShardingSphereAlgorithmConfiguration createShardingSphereAlgorithmConfiguration() {
-        return new ShardingSphereAlgorithmConfiguration("user-id-insert-match-algorithm", createProperties());
+    private AlgorithmConfiguration createAlgorithmConfiguration() {
+        return new AlgorithmConfiguration("user-id-insert-match-algorithm", createProperties());
     }
     
     private Properties createProperties() {

@@ -19,7 +19,7 @@ package org.apache.shardingsphere.shadow.api.config;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.function.DistributedRuleConfiguration;
 import org.apache.shardingsphere.infra.config.rule.scope.DatabaseRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
@@ -41,5 +41,5 @@ public final class ShadowRuleConfiguration implements DatabaseRuleConfiguration,
     
     private Map<String, ShadowTableConfiguration> tables = new LinkedHashMap<>();
     
-    private Map<String, ShardingSphereAlgorithmConfiguration> shadowAlgorithms = new LinkedHashMap<>();
+    private Map<String, AlgorithmConfiguration> shadowAlgorithms = new LinkedHashMap<>();
 }

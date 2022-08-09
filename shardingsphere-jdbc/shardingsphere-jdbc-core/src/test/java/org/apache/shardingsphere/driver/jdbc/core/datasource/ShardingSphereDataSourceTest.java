@@ -25,6 +25,9 @@ import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.state.StateType;
 import org.apache.shardingsphere.mode.manager.ContextManager;
+import org.apache.shardingsphere.parser.config.SQLParserRuleConfiguration;
+import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
+import org.apache.shardingsphere.sql.parser.api.CacheOption;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
 import org.apache.shardingsphere.transaction.core.TransactionTypeHolder;
 import org.junit.After;
@@ -37,6 +40,7 @@ import java.sql.SQLException;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Properties;
+import java.util.Arrays;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertNotNull;
@@ -72,6 +76,17 @@ public final class ShardingSphereDataSourceTest {
         assertThat(contextManager.getInstanceContext().getInstance().getState().getCurrentState(), is(StateType.OK));
         assertThat(contextManager.getDataSourceMap(DefaultDatabase.LOGIC_NAME).size(), is(1));
         assertThat(contextManager.getDataSourceMap(DefaultDatabase.LOGIC_NAME).get("ds").getConnection().getMetaData().getURL(), is("jdbc:mock://127.0.0.1/foo_ds"));
+    }
+    
+    @Test
+    public void assertRemoveGlobalRuleConfiguration() throws SQLException {
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getURL()).thenReturn("jdbc:mock://127.0.0.1/foo_ds");
+        CacheOption cacheOption = new CacheOption(1024, 1024);
+        SQLParserRuleConfiguration sqlParserRuleConfig = new SQLParserRuleConfiguration(true, cacheOption, cacheOption);
+        ShardingSphereDataSource actual = new ShardingSphereDataSource(DefaultDatabase.LOGIC_NAME,
+                null, Collections.singletonMap("ds", new MockedDataSource(connection)), Arrays.asList(mock(ShardingRuleConfiguration.class), sqlParserRuleConfig), new Properties());
+        assertThat(getContextManager(actual).getMetaDataContexts().getMetaData().getDatabase(DefaultDatabase.LOGIC_NAME).getRuleMetaData().getConfigurations().size(), is(2));
     }
     
     @Test

@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import com.google.common.base.Strings;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -75,7 +75,7 @@ public final class ShardingTableNodesQueryResultSet implements DistSQLResultSet 
     }
     
     private int getTotalShardingCount(final ShardingRuleConfiguration ruleConfig, final ShardingAutoTableRuleConfiguration shardingAutoTableRuleConfig) {
-        Map<String, ShardingSphereAlgorithmConfiguration> shardingAlgorithms = ruleConfig.getShardingAlgorithms();
+        Map<String, AlgorithmConfiguration> shardingAlgorithms = ruleConfig.getShardingAlgorithms();
         ShardingStrategyConfiguration shardingStrategy = shardingAutoTableRuleConfig.getShardingStrategy();
         if (useDefaultStrategy(shardingStrategy, ruleConfig)) {
             int tableCount = getShardingCount(shardingAlgorithms.get(ruleConfig.getDefaultTableShardingStrategy().getShardingAlgorithmName()));
@@ -90,7 +90,7 @@ public final class ShardingTableNodesQueryResultSet implements DistSQLResultSet 
                 && null != ruleConfig.getDefaultDatabaseShardingStrategy() && null != ruleConfig.getDefaultTableShardingStrategy();
     }
     
-    private int getShardingCount(final ShardingSphereAlgorithmConfiguration algorithmConfig) {
+    private int getShardingCount(final AlgorithmConfiguration algorithmConfig) {
         if (null == algorithmConfig) {
             return 0;
         }

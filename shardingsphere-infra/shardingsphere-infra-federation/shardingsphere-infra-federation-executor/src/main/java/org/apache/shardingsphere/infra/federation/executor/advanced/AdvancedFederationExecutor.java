@@ -43,13 +43,13 @@ import org.apache.shardingsphere.infra.executor.sql.prepare.driver.DriverExecuti
 import org.apache.shardingsphere.infra.federation.executor.FederationContext;
 import org.apache.shardingsphere.infra.federation.executor.FederationExecutor;
 import org.apache.shardingsphere.infra.federation.executor.advanced.resultset.FederationResultSet;
-import org.apache.shardingsphere.infra.federation.executor.original.schema.FilterableSchema;
+import org.apache.shardingsphere.infra.federation.optimizer.metadata.filter.FilterableSchema;
 import org.apache.shardingsphere.infra.federation.executor.original.table.FilterableTableScanExecutor;
 import org.apache.shardingsphere.infra.federation.executor.original.table.FilterableTableScanExecutorContext;
 import org.apache.shardingsphere.infra.federation.optimizer.ShardingSphereOptimizer;
 import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.context.planner.OptimizerPlannerContextFactory;
-import org.apache.shardingsphere.infra.federation.optimizer.metadata.FederationSchemaMetaData;
+import org.apache.shardingsphere.infra.federation.optimizer.planner.QueryOptimizePlannerFactory;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -108,8 +108,7 @@ public final class AdvancedFederationExecutor implements FederationExecutor {
                                                     final JDBCExecutorCallback<? extends ExecuteResult> callback, final FederationContext federationContext) {
         FilterableTableScanExecutorContext executorContext = new FilterableTableScanExecutorContext(databaseName, schemaName, props, federationContext);
         FilterableTableScanExecutor executor = new FilterableTableScanExecutor(prepareEngine, jdbcExecutor, callback, optimizerContext, globalRuleMetaData, executorContext, eventBusContext);
-        FederationSchemaMetaData schemaMetaData = new FederationSchemaMetaData(schemaName, schema.getTables());
-        return new FilterableSchema(schemaMetaData, executor);
+        return new FilterableSchema(schemaName, schema, executor);
     }
     
     @SuppressWarnings("unchecked")
@@ -120,7 +119,7 @@ public final class AdvancedFederationExecutor implements FederationExecutor {
         CalciteCatalogReader catalogReader = OptimizerPlannerContextFactory.createCatalogReader(schemaName, filterableSchema, relDataTypeFactory, connectionConfig);
         SqlValidator validator = OptimizerPlannerContextFactory.createValidator(catalogReader, relDataTypeFactory, connectionConfig);
         SqlToRelConverter converter = OptimizerPlannerContextFactory.createConverter(catalogReader, validator, relDataTypeFactory);
-        RelNode bestPlan = new ShardingSphereOptimizer(optimizerContext, converter).optimize(databaseName, schemaName, sqlStatement);
+        RelNode bestPlan = new ShardingSphereOptimizer(converter, QueryOptimizePlannerFactory.createHepPlanner()).optimize(sqlStatement);
         Bindable<Object[]> executablePlan = EnumerableInterpretable.toBindable(Collections.emptyMap(), null, (EnumerableRel) bestPlan, EnumerableRel.Prefer.ARRAY);
         return executablePlan.bind(new AdvancedExecuteDataContext(validator, converter));
     }
@@ -132,6 +131,8 @@ public final class AdvancedFederationExecutor implements FederationExecutor {
     
     @Override
     public void close() throws SQLException {
-        resultSet.close();
+        if (null != resultSet) {
+            resultSet.close();
+        }
     }
 }

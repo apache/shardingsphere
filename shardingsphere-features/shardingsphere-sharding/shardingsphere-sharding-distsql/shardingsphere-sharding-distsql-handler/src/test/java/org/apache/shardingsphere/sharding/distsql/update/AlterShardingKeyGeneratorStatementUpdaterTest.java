@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.update;
 
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.DuplicateRuleException;
 import org.apache.shardingsphere.infra.distsql.exception.rule.InvalidAlgorithmConfigurationException;
@@ -67,7 +67,7 @@ public final class AlterShardingKeyGeneratorStatementUpdaterTest {
         Properties props = createProperties();
         ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("not_exist_key_generator_name", new AlgorithmSegment("snowflake", props));
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        ruleConfig.getKeyGenerators().put("exist_key_generator_name", new ShardingSphereAlgorithmConfiguration("hash_mod", props));
+        ruleConfig.getKeyGenerators().put("exist_key_generator_name", new AlgorithmConfiguration("hash_mod", props));
         updater.checkSQLStatement(database, new AlterShardingKeyGeneratorStatement(Collections.singletonList(keyGeneratorSegment)), ruleConfig);
     }
     
@@ -76,7 +76,7 @@ public final class AlterShardingKeyGeneratorStatementUpdaterTest {
         Properties props = createProperties();
         ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("exist_key_generator_name", new AlgorithmSegment("INVALID_TYPE", props));
         ShardingRuleConfiguration ruleConfig = new ShardingRuleConfiguration();
-        ruleConfig.getKeyGenerators().put("exist_key_generator_name", new ShardingSphereAlgorithmConfiguration("UUID", props));
+        ruleConfig.getKeyGenerators().put("exist_key_generator_name", new AlgorithmConfiguration("UUID", props));
         updater.checkSQLStatement(database, new AlterShardingKeyGeneratorStatement(Collections.singletonList(keyGeneratorSegment)), ruleConfig);
     }
     
@@ -84,7 +84,7 @@ public final class AlterShardingKeyGeneratorStatementUpdaterTest {
     public void assertUpdate() {
         ShardingKeyGeneratorSegment keyGeneratorSegment = new ShardingKeyGeneratorSegment("exist_key_generator_name", new AlgorithmSegment("snowflake", createProperties()));
         ShardingRuleConfiguration currentRuleConfig = new ShardingRuleConfiguration();
-        currentRuleConfig.getKeyGenerators().put("exist_key_generator_name", new ShardingSphereAlgorithmConfiguration("uuid", createProperties()));
+        currentRuleConfig.getKeyGenerators().put("exist_key_generator_name", new AlgorithmConfiguration("uuid", createProperties()));
         AlterShardingKeyGeneratorStatement statement = new AlterShardingKeyGeneratorStatement(Collections.singletonList(keyGeneratorSegment));
         ShardingRuleConfiguration toBeAlteredRuleConfiguration = updater.buildToBeAlteredRuleConfiguration(statement);
         updater.updateCurrentRuleConfiguration(currentRuleConfig, toBeAlteredRuleConfiguration);

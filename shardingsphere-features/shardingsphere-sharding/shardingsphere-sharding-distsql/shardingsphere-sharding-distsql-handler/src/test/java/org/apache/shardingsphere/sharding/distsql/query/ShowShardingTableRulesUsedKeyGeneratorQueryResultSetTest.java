@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.query;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -92,19 +92,19 @@ public final class ShowShardingTableRulesUsedKeyGeneratorQueryResultSetTest {
         return result;
     }
     
-    private ShardingSphereAlgorithmConfiguration createShardingInlineAlgorithmConfiguration(final String algorithmExpression) {
+    private AlgorithmConfiguration createShardingInlineAlgorithmConfiguration(final String algorithmExpression) {
         Properties props = new Properties();
         props.put("algorithm-expression", algorithmExpression);
-        return new ShardingSphereAlgorithmConfiguration("INLINE", props);
+        return new AlgorithmConfiguration("INLINE", props);
     }
     
-    private ShardingSphereAlgorithmConfiguration createShardingAutoModAlgorithmConfiguration() {
+    private AlgorithmConfiguration createShardingAutoModAlgorithmConfiguration() {
         Properties props = new Properties();
         props.put("sharding-count", 4);
-        return new ShardingSphereAlgorithmConfiguration("MOD", props);
+        return new AlgorithmConfiguration("MOD", props);
     }
     
-    private ShardingSphereAlgorithmConfiguration createKeyGeneratorConfiguration() {
-        return new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", new Properties());
+    private AlgorithmConfiguration createKeyGeneratorConfiguration() {
+        return new AlgorithmConfiguration("SNOWFLAKE", new Properties());
     }
 }

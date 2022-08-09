@@ -37,7 +37,7 @@ import java.util.concurrent.locks.Lock;
  */
 @RequiredArgsConstructor
 @Slf4j
-public class EtcdInternalLockHolder {
+public final class EtcdInternalLockHolder {
     
     private final Map<String, EtcdInternalLock> locks = new ConcurrentHashMap<>();
     

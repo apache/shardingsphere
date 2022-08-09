@@ -38,7 +38,6 @@ import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFail
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobPreparer;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -200,7 +199,7 @@ public final class RuleAlteredJobAPIImplTest {
         Optional<String> jobId = ruleAlteredJobAPI.start(jobConfig);
         assertTrue(jobId.isPresent());
         final GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, 0, new JobProgress(), new PipelineDataSourceManager(), new RuleAlteredJobPreparer());
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, 0, new JobProgress(), new PipelineDataSourceManager());
         repositoryAPI.persistJobProgress(jobContext);
         repositoryAPI.persistJobCheckResult(jobId.get(), true);
         repositoryAPI.updateShardingJobStatus(jobId.get(), 0, JobStatus.FINISHED);
@@ -213,7 +212,7 @@ public final class RuleAlteredJobAPIImplTest {
         Optional<String> jobId = ruleAlteredJobAPI.start(jobConfig);
         assertTrue(jobId.isPresent());
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, 0, new JobProgress(), new PipelineDataSourceManager(), new RuleAlteredJobPreparer());
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, 0, new JobProgress(), new PipelineDataSourceManager());
         repositoryAPI.persistJobProgress(jobContext);
         repositoryAPI.persistJobCheckResult(jobId.get(), true);
         repositoryAPI.updateShardingJobStatus(jobId.get(), jobContext.getShardingItem(), JobStatus.EXECUTE_INVENTORY_TASK);

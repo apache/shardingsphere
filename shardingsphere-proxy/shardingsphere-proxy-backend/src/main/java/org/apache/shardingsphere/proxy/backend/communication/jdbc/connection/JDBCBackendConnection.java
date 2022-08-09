@@ -35,6 +35,7 @@ import org.apache.shardingsphere.transaction.core.TransactionType;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -66,9 +67,10 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     
     @Override
     public List<Connection> getConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
+        Preconditions.checkNotNull(connectionSession.getDatabaseName(), "Current database name is null.");
         Collection<Connection> connections;
         synchronized (cachedConnections) {
-            connections = cachedConnections.get(dataSourceName);
+            connections = cachedConnections.get(connectionSession.getDatabaseName() + "." + dataSourceName);
         }
         List<Connection> result;
         if (connections.size() >= connectionSize) {
@@ -79,20 +81,20 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
             List<Connection> newConnections = createNewConnections(dataSourceName, connectionSize - connections.size(), connectionMode);
             result.addAll(newConnections);
             synchronized (cachedConnections) {
-                cachedConnections.putAll(dataSourceName, newConnections);
+                cachedConnections.putAll(connectionSession.getDatabaseName() + "." + dataSourceName, newConnections);
             }
         } else {
             result = createNewConnections(dataSourceName, connectionSize, connectionMode);
             synchronized (cachedConnections) {
-                cachedConnections.putAll(dataSourceName, result);
+                cachedConnections.putAll(connectionSession.getDatabaseName() + "." + dataSourceName, result);
             }
         }
         return result;
     }
     
     private List<Connection> createNewConnections(final String dataSourceName, final int connectionSize, final ConnectionMode connectionMode) throws SQLException {
-        Preconditions.checkNotNull(connectionSession.getDatabaseName(), "Current schema is null.");
         List<Connection> result = ProxyContext.getInstance().getBackendDataSource().getConnections(connectionSession.getDatabaseName(), dataSourceName, connectionSize, connectionMode);
+        setSessionVariablesIfNecessary(result);
         for (Connection each : result) {
             replayTransactionOption(each);
         }
@@ -102,6 +104,36 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
             }
         }
         return result;
+    }
+    
+    private void setSessionVariablesIfNecessary(final List<Connection> connections) throws SQLException {
+        if (connectionSession.getRequiredSessionVariableRecorder().isEmpty() || connections.isEmpty()) {
+            return;
+        }
+        String databaseType = connections.iterator().next().getMetaData().getDatabaseProductName();
+        List<String> setSQLs = connectionSession.getRequiredSessionVariableRecorder().toSetSQLs(databaseType);
+        SQLException sqlException = null;
+        for (Connection each : connections) {
+            try (Statement statement = each.createStatement()) {
+                for (String eachSetSQL : setSQLs) {
+                    statement.execute(eachSetSQL);
+                }
+            } catch (final SQLException ex) {
+                sqlException = ex;
+                break;
+            }
+        }
+        if (null == sqlException) {
+            return;
+        }
+        for (Connection each : connections) {
+            try {
+                each.close();
+            } catch (final SQLException ex) {
+                sqlException.setNextException(ex);
+            }
+        }
+        throw sqlException;
     }
     
     private void replayMethodsInvocation(final Connection target) {
@@ -245,6 +277,7 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
     public Collection<SQLException> closeConnections(final boolean forceRollback) {
         Collection<SQLException> result = new LinkedList<>();
         synchronized (cachedConnections) {
+            resetSessionVariablesIfNecessary(cachedConnections.values(), result);
             for (Connection each : cachedConnections.values()) {
                 try {
                     if (forceRollback && connectionSession.getTransactionStatus().isInTransaction()) {
@@ -261,5 +294,29 @@ public final class JDBCBackendConnection implements BackendConnection<Void>, Exe
             connectionPostProcessors.clear();
         }
         return result;
+    }
+    
+    private void resetSessionVariablesIfNecessary(final Collection<Connection> values, final Collection<SQLException> exceptions) {
+        if (connectionSession.getRequiredSessionVariableRecorder().isEmpty() || values.isEmpty()) {
+            return;
+        }
+        String databaseType;
+        try {
+            databaseType = values.iterator().next().getMetaData().getDatabaseProductName();
+        } catch (final SQLException ex) {
+            exceptions.add(ex);
+            return;
+        }
+        List<String> resetSQLs = connectionSession.getRequiredSessionVariableRecorder().toResetSQLs(databaseType);
+        for (Connection each : values) {
+            try (Statement statement = each.createStatement()) {
+                for (String eachResetSQL : resetSQLs) {
+                    statement.execute(eachResetSQL);
+                }
+            } catch (final SQLException ex) {
+                exceptions.add(ex);
+            }
+        }
+        connectionSession.getRequiredSessionVariableRecorder().removeVariablesWithDefaultValue();
     }
 }

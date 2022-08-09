@@ -103,7 +103,7 @@ public final class ReadwriteSplittingPreparedStatementTest extends AbstractShard
                 PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO t_config(id, status) VALUES(?, ?);", Statement.RETURN_GENERATED_KEYS)) {
             connection.setAutoCommit(false);
             Object lastGeneratedId = null;
-            Object generatedId = null;
+            Object generatedId;
             for (int i = 1; i <= 3; i++) {
                 preparedStatement.setObject(1, null);
                 preparedStatement.setString(2, "OK");

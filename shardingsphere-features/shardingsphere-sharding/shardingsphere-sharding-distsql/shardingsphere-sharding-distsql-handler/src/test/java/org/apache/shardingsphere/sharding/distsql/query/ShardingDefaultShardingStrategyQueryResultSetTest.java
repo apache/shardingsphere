@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.query;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -94,7 +94,7 @@ public final class ShardingDefaultShardingStrategyQueryResultSetTest {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         Properties props = new Properties();
         props.put("algorithm-expression", "ds_${user_id % 2}");
-        result.getShardingAlgorithms().put("database_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props));
+        result.getShardingAlgorithms().put("database_inline", new AlgorithmConfiguration("INLINE", props));
         result.setDefaultTableShardingStrategy(new NoneShardingStrategyConfiguration());
         result.setDefaultDatabaseShardingStrategy(new ComplexShardingStrategyConfiguration("use_id, order_id", "database_inline"));
         return result;
@@ -104,7 +104,7 @@ public final class ShardingDefaultShardingStrategyQueryResultSetTest {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         Properties props = new Properties();
         props.put("algorithm-expression", "ds_${user_id % 2}");
-        result.getShardingAlgorithms().put("database_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props));
+        result.getShardingAlgorithms().put("database_inline", new AlgorithmConfiguration("INLINE", props));
         result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("use_id", "database_inline"));
         result.setDefaultDatabaseShardingStrategy(new HintShardingStrategyConfiguration("database_inline"));
         return result;

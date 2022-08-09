@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.cosid.algorithm.sharding.mod;
 import com.google.common.collect.Range;
 import lombok.RequiredArgsConstructor;
 import me.ahoo.cosid.sharding.ExactCollection;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.datanode.DataNodeInfo;
 import org.apache.shardingsphere.sharding.api.sharding.standard.PreciseShardingValue;
 import org.apache.shardingsphere.sharding.api.sharding.standard.RangeShardingValue;
@@ -53,7 +53,7 @@ public final class CosIdModShardingAlgorithmTest {
     
     @SuppressWarnings("unchecked")
     static CosIdModShardingAlgorithm<Long> createShardingAlgorithm() {
-        return (CosIdModShardingAlgorithm<Long>) ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("COSID_MOD", createProperties()));
+        return (CosIdModShardingAlgorithm<Long>) ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("COSID_MOD", createProperties()));
     }
     
     private static Properties createProperties() {

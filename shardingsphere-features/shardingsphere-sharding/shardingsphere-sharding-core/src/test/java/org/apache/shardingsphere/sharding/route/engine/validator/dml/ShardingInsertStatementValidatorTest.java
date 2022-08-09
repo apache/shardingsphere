@@ -20,7 +20,7 @@ package org.apache.shardingsphere.sharding.route.engine.validator.dml;
 import org.apache.shardingsphere.infra.binder.segment.table.TablesContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
@@ -217,7 +217,7 @@ public final class ShardingInsertStatementValidatorTest {
         when(databaseStrategyConfig.getShardingAlgorithmName()).thenReturn("database_inline");
         when(shardingRule.getDatabaseShardingStrategyConfiguration(tableRule)).thenReturn(databaseStrategyConfig);
         when(shardingRule.getShardingAlgorithms()).thenReturn(
-                Collections.singletonMap("database_inline", ShardingAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("INLINE", createProperties()))));
+                Collections.singletonMap("database_inline", ShardingAlgorithmFactory.newInstance(new AlgorithmConfiguration("INLINE", createProperties()))));
     }
     
     private Properties createProperties() {

@@ -28,8 +28,6 @@ import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.executor.kernel.ExecutorEngine;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContextFactory;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
@@ -109,7 +107,6 @@ public final class ContextManager implements AutoCloseable {
         }
         DatabaseType protocolType = DatabaseTypeEngine.getProtocolType(Collections.emptyMap(), metaDataContexts.getMetaData().getProps());
         metaDataContexts.getMetaData().addDatabase(databaseName, protocolType);
-        metaDataContexts.getOptimizerContext().addDatabase(databaseName, protocolType);
         metaDataContexts.getPersistService().getDatabaseMetaDataService().persistDatabase(databaseName);
     }
     
@@ -124,7 +121,6 @@ public final class ContextManager implements AutoCloseable {
         }
         String actualDatabaseName = metaDataContexts.getMetaData().getActualDatabaseName(databaseName);
         metaDataContexts.getMetaData().dropDatabase(actualDatabaseName);
-        metaDataContexts.getOptimizerContext().dropDatabase(actualDatabaseName);
         metaDataContexts.getPersistService().getDatabaseMetaDataService().deleteDatabase(actualDatabaseName);
     }
     
@@ -139,7 +135,6 @@ public final class ContextManager implements AutoCloseable {
             return;
         }
         metaDataContexts.getMetaData().getDatabase(databaseName).putSchema(schemaName, new ShardingSphereSchema());
-        metaDataContexts.getOptimizerContext().addSchema(databaseName, schemaName);
     }
     
     /**
@@ -170,7 +165,6 @@ public final class ContextManager implements AutoCloseable {
     
     private synchronized void alterTable(final String databaseName, final String schemaName, final ShardingSphereTable beBoChangedTable) {
         alterTable(metaDataContexts.getMetaData().getDatabase(databaseName), schemaName, beBoChangedTable);
-        metaDataContexts.getOptimizerContext().alterTable(databaseName, schemaName, beBoChangedTable);
     }
     
     private synchronized void alterTable(final ShardingSphereDatabase database, final String schemaName, final ShardingSphereTable beBoChangedTable) {
@@ -187,7 +181,6 @@ public final class ContextManager implements AutoCloseable {
     private void dropTable(final String databaseName, final String schemaName, final String toBeDeletedTableName) {
         if (metaDataContexts.getMetaData().getDatabase(databaseName).containsSchema(schemaName)) {
             metaDataContexts.getMetaData().getDatabase(databaseName).getSchema(schemaName).remove(toBeDeletedTableName);
-            metaDataContexts.getOptimizerContext().dropTable(databaseName, schemaName, toBeDeletedTableName);
             // TODO check whether need to reloadRules(single table rule) if table dropped?
         }
     }
@@ -204,7 +197,6 @@ public final class ContextManager implements AutoCloseable {
             return;
         }
         database.removeSchema(schemaName);
-        metaDataContexts.getOptimizerContext().getFederationMetaData().getDatabase(databaseName).removeSchemaMetadata(schemaName);
     }
     
     /**
@@ -218,7 +210,6 @@ public final class ContextManager implements AutoCloseable {
         SwitchingResource switchingResource = new ResourceSwitchManager().create(metaDataContexts.getMetaData().getDatabase(databaseName).getResource(), toBeUpdatedDataSourcePropsMap);
         metaDataContexts.getMetaData().getDatabases().putAll(createChangedDatabases(databaseName, switchingResource, null));
         metaDataContexts.getMetaData().getGlobalRuleMetaData().findRules(ResourceHeldRule.class).forEach(each -> each.addResource(metaDataContexts.getMetaData().getDatabase(databaseName)));
-        metaDataContexts.getOptimizerContext().alterDatabase(metaDataContexts.getMetaData().getDatabase(databaseName), metaDataContexts.getMetaData().getGlobalRuleMetaData());
         persistMetaData(metaDataContexts);
         metaDataContexts.getPersistService().getDataSourceService().append(metaDataContexts.getMetaData().getActualDatabaseName(databaseName), toBeUpdatedDataSourcePropsMap);
         switchingResource.closeStaleDataSources();
@@ -311,8 +302,7 @@ public final class ContextManager implements AutoCloseable {
         Map<String, ShardingSphereDatabase> changedDatabases = createChangedDatabases(databaseName, switchingResource, ruleConfigs);
         ShardingSphereRuleMetaData changedGlobalMetaData = new ShardingSphereRuleMetaData(
                 GlobalRulesBuilder.buildRules(metaDataContexts.getMetaData().getGlobalRuleMetaData().getConfigurations(), changedDatabases, instanceContext));
-        return newMetaDataContexts(new ShardingSphereMetaData(changedDatabases, changedGlobalMetaData, metaDataContexts.getMetaData().getProps()),
-                OptimizerContextFactory.create(changedDatabases, changedGlobalMetaData));
+        return newMetaDataContexts(new ShardingSphereMetaData(changedDatabases, changedGlobalMetaData, metaDataContexts.getMetaData().getProps()));
     }
     
     private Map<String, ShardingSphereDatabase> createChangedDatabases(final String databaseName,
@@ -331,8 +321,8 @@ public final class ContextManager implements AutoCloseable {
         return result;
     }
     
-    private MetaDataContexts newMetaDataContexts(final ShardingSphereMetaData metaData, final OptimizerContext optimizerContext) {
-        return new MetaDataContexts(metaDataContexts.getPersistService(), metaData, optimizerContext);
+    private MetaDataContexts newMetaDataContexts(final ShardingSphereMetaData metaData) {
+        return new MetaDataContexts(metaDataContexts.getPersistService(), metaData);
     }
     
     /**
@@ -351,7 +341,7 @@ public final class ContextManager implements AutoCloseable {
                 GlobalRulesBuilder.buildRules(ruleConfigs, metaDataContexts.getMetaData().getDatabases(), instanceContext));
         ShardingSphereMetaData toBeChangedMetaData = new ShardingSphereMetaData(
                 metaDataContexts.getMetaData().getDatabases(), toBeChangedGlobalRuleMetaData, metaDataContexts.getMetaData().getProps());
-        metaDataContexts = newMetaDataContexts(toBeChangedMetaData, metaDataContexts.getOptimizerContext());
+        metaDataContexts = newMetaDataContexts(toBeChangedMetaData);
     }
     
     /**
@@ -362,7 +352,7 @@ public final class ContextManager implements AutoCloseable {
     public synchronized void alterProperties(final Properties props) {
         ShardingSphereMetaData toBeChangedMetaData = new ShardingSphereMetaData(
                 metaDataContexts.getMetaData().getDatabases(), metaDataContexts.getMetaData().getGlobalRuleMetaData(), new ConfigurationProperties(props));
-        metaDataContexts = newMetaDataContexts(toBeChangedMetaData, metaDataContexts.getOptimizerContext());
+        metaDataContexts = newMetaDataContexts(toBeChangedMetaData);
     }
     
     /**

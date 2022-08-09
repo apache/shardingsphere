@@ -35,8 +35,8 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dml.MySQ
 import org.junit.Test;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Optional;
 
@@ -85,7 +85,7 @@ public final class TableExtractorTest {
         Collection<AssignmentSegment> assignmentSegments = new ArrayList<>();
         ColumnSegment columnSegment = new ColumnSegment(133, 136, new IdentifierValue("id"));
         columnSegment.setOwner(new OwnerSegment(130, 132, new IdentifierValue("t_order")));
-        assignmentSegments.add(new ColumnAssignmentSegment(130, 140, Arrays.asList(columnSegment), new LiteralExpressionSegment(141, 142, 1)));
+        assignmentSegments.add(new ColumnAssignmentSegment(130, 140, Collections.singletonList(columnSegment), new LiteralExpressionSegment(141, 142, 1)));
         mySQLInsertStatement.setOnDuplicateKeyColumns(new OnDuplicateKeyColumnsSegment(130, 140, assignmentSegments));
         tableExtractor.extractTablesFromInsert(mySQLInsertStatement);
         assertThat(tableExtractor.getRewriteTables().size(), is(2));

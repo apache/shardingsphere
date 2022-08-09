@@ -20,14 +20,13 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
+import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
-import org.apache.shardingsphere.infra.session.SessionContext;
 import org.apache.shardingsphere.infra.database.DefaultDatabase;
+import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.H2DatabaseType;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
-import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.driver.jdbc.JDBCExecutor;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
@@ -45,8 +44,10 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereIndex;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
+import org.apache.shardingsphere.infra.metadata.database.schema.util.SystemSchemaUtil;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.mode.metadata.persist.MetaDataPersistService;
@@ -114,8 +115,7 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
     public void setUp() {
         when(backendConnection.getConnectionSession().getDatabaseName()).thenReturn("db");
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(mockDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())),
-                mock(OptimizerContext.class, RETURNS_DEEP_STUBS));
+                new ShardingSphereMetaData(mockDatabases(), mock(ShardingSphereRuleMetaData.class), new ConfigurationProperties(new Properties())));
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
@@ -126,6 +126,7 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
         when(database.containsDataSource()).thenReturn(true);
         when(database.isComplete()).thenReturn(true);
         when(database.getResource().getDatabaseType()).thenReturn(new H2DatabaseType());
+        when(database.getProtocolType()).thenReturn(new H2DatabaseType());
         when(database.getRuleMetaData().getRules()).thenReturn(Collections.emptyList());
         Map<String, ShardingSphereDatabase> result = new LinkedHashMap<>(1, 1);
         result.put("db", database);
@@ -134,28 +135,27 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
     
     @Test
     public void assertExecuteFederationAndClose() throws SQLException, NoSuchFieldException, IllegalAccessException {
-        SQLStatementContext<?> sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
+        SQLStatementContext<?> sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
+        when(sqlStatementContext.getDatabaseType()).thenReturn(new MySQLDatabaseType());
         JDBCDatabaseCommunicationEngine engine =
                 DatabaseCommunicationEngineFactory.getInstance().newDatabaseCommunicationEngine(new LogicSQL(sqlStatementContext, "schemaName", Collections.emptyList()), backendConnection, true);
         Field kernelProcessorField = DatabaseCommunicationEngine.class.getDeclaredField("kernelProcessor");
         kernelProcessorField.setAccessible(true);
         KernelProcessor kernelProcessor = mock(KernelProcessor.class);
         kernelProcessorField.set(engine, kernelProcessor);
-        RouteContext routeContext = new RouteContext();
-        routeContext.setFederated(true);
-        ExecutionContext executionContext = new ExecutionContext(mock(LogicSQL.class), Collections.emptyList(), routeContext);
-        when(kernelProcessor.generateExecutionContext(any(LogicSQL.class), any(ShardingSphereDatabase.class), any(ShardingSphereRuleMetaData.class), any(ConfigurationProperties.class),
-                any(SessionContext.class))).thenReturn(executionContext);
         when(backendConnection.getConnectionSession().getStatementManager()).thenReturn(new JDBCBackendStatement());
         FederationExecutor federationExecutor = mock(FederationExecutor.class);
-        try (MockedStatic<FederationExecutorFactory> mockedStatic = mockStatic(FederationExecutorFactory.class)) {
+        try (
+                MockedStatic<FederationExecutorFactory> federationExecutorFactory = mockStatic(FederationExecutorFactory.class);
+                MockedStatic<SystemSchemaUtil> systemSchemaUtil = mockStatic(SystemSchemaUtil.class)) {
             when(federationExecutor.executeQuery(any(DriverExecutionPrepareEngine.class), any(ProxyJDBCExecutorCallback.class), any(FederationContext.class))).thenReturn(resultSet);
             when(resultSet.getMetaData().getColumnCount()).thenReturn(1);
             when(resultSet.getMetaData().getColumnType(1)).thenReturn(Types.INTEGER);
             when(resultSet.next()).thenReturn(true, false);
             when(resultSet.getObject(1)).thenReturn(Integer.MAX_VALUE);
-            mockedStatic.when(() -> FederationExecutorFactory.newInstance(anyString(), nullable(String.class), any(OptimizerContext.class), any(ShardingSphereRuleMetaData.class),
+            federationExecutorFactory.when(() -> FederationExecutorFactory.newInstance(anyString(), nullable(String.class), any(OptimizerContext.class), any(ShardingSphereRuleMetaData.class),
                     any(ConfigurationProperties.class), any(JDBCExecutor.class), any(EventBusContext.class))).thenReturn(federationExecutor);
+            systemSchemaUtil.when(() -> SystemSchemaUtil.containsSystemSchema(any(DatabaseType.class), any(), any(ShardingSphereDatabase.class))).thenReturn(true);
             engine.execute();
         }
         assertTrue(engine.next());
@@ -201,7 +201,7 @@ public final class JDBCDatabaseCommunicationEngineTest extends ProxyContextResto
     
     private ShardingSphereDatabase createDatabaseMetaData() {
         ShardingSphereDatabase result = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        ShardingSphereColumn column = new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false);
+        ShardingSphereColumn column = new ShardingSphereColumn("order_id", Types.INTEGER, true, false, false, true);
         when(result.getSchema(DefaultDatabase.LOGIC_NAME).get("t_logic_order")).thenReturn(
                 new ShardingSphereTable("t_logic_order", Collections.singletonList(column), Collections.singletonList(new ShardingSphereIndex("order_id")), Collections.emptyList()));
         when(result.getRuleMetaData().getRules()).thenReturn(Collections.singletonList(mock(ShardingRule.class)));

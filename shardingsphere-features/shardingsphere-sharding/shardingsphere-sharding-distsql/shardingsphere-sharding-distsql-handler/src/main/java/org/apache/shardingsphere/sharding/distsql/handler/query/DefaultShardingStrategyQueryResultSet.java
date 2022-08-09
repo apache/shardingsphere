@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -68,7 +68,7 @@ public final class DefaultShardingStrategyQueryResultSet implements DistSQLResul
         }
         LinkedList<Object> result = new LinkedList<>(Collections.singleton(strategyType.name()));
         result.addAll(strategyType.getConfigurationContents(strategyConfig));
-        ShardingSphereAlgorithmConfiguration algorithmConfig = ruleConfig.getShardingAlgorithms().get(strategyConfig.getShardingAlgorithmName());
+        AlgorithmConfiguration algorithmConfig = ruleConfig.getShardingAlgorithms().get(strategyConfig.getShardingAlgorithmName());
         result.add(algorithmConfig.getType());
         result.add(algorithmConfig.getProps());
         return result;

@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.checker;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationCheckerFactory;
 import org.apache.shardingsphere.infra.rule.identifier.type.DynamicDataSourceContainedRule;
@@ -86,7 +86,7 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
     public void assertCheckWhenConfigInvalidWriteDataSource() {
         ReadwriteSplittingRuleConfiguration config = mock(ReadwriteSplittingRuleConfiguration.class);
         List<ReadwriteSplittingDataSourceRuleConfiguration> configurations = Arrays.asList(createDataSourceRuleConfig(
-                "write_ds", Arrays.asList("ds_0", "ds_1")), createDataSourceRuleConfig("write_ds", Arrays.asList("ds_2", "ds_3")));
+                "write_ds_0", Arrays.asList("ds_0", "ds_1")), createDataSourceRuleConfig("write_ds_1", Arrays.asList("ds_2", "ds_3")));
         when(config.getDataSources()).thenReturn(configurations);
         Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
         assertTrue(checker.isPresent());
@@ -116,7 +116,7 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
         Properties props = new Properties();
         props.setProperty("read_ds_2", "1");
         props.setProperty("read_ds_1", "2");
-        ShardingSphereAlgorithmConfiguration algorithm = new ShardingSphereAlgorithmConfiguration("WEIGHT", props);
+        AlgorithmConfiguration algorithm = new AlgorithmConfiguration("WEIGHT", props);
         when(config.getLoadBalancers()).thenReturn(Collections.singletonMap("weight_ds", algorithm));
         Optional<RuleConfigurationChecker> checker = RuleConfigurationCheckerFactory.findInstance(config);
         assertTrue(checker.isPresent());
@@ -139,6 +139,8 @@ public final class ReadwriteSplittingRuleConfigurationCheckerTest {
         Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
         result.put("read_ds_0", mock(DataSource.class));
         result.put("read_ds_1", mock(DataSource.class));
+        result.put("write_ds_0", mock(DataSource.class));
+        result.put("write_ds_1", mock(DataSource.class));
         return result;
     }
 }

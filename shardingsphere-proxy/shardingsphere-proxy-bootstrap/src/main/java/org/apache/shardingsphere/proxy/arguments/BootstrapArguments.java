@@ -20,6 +20,7 @@ package org.apache.shardingsphere.proxy.arguments;
 import lombok.RequiredArgsConstructor;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -70,7 +71,7 @@ public final class BootstrapArguments {
      * @return address list
      */
     public List<String> getAddresses() {
-        return args.length < 3 ? Arrays.asList(DEFAULT_BIND_ADDRESS) : Arrays.asList(args[2].split(","));
+        return args.length < 3 ? Collections.singletonList(DEFAULT_BIND_ADDRESS) : Arrays.asList(args[2].split(","));
     }
     
     private String paddingWithSlash(final String pathArg) {

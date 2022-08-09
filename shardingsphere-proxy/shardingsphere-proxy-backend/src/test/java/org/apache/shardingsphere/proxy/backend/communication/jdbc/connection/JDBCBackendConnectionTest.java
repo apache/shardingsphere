@@ -22,7 +22,6 @@ import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.database.type.dialect.MySQLDatabaseType;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.metadata.ShardingSphereMetaData;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
@@ -36,6 +35,7 @@ import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.proxy.backend.exception.BackendConnectionException;
 import org.apache.shardingsphere.proxy.backend.handler.ProxyBackendHandler;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
+import org.apache.shardingsphere.proxy.backend.session.RequiredSessionVariableRecorder;
 import org.apache.shardingsphere.proxy.backend.session.transaction.TransactionStatus;
 import org.apache.shardingsphere.proxy.backend.util.ProxyContextRestorer;
 import org.apache.shardingsphere.transaction.core.TransactionType;
@@ -45,6 +45,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import java.lang.reflect.Field;
@@ -52,6 +53,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -64,11 +66,13 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
@@ -99,12 +103,13 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
         JDBCBackendStatement backendStatement = new JDBCBackendStatement();
         backendStatement.setDatabaseName(connectionSession.getDatabaseName());
         when(connectionSession.getStatementManager()).thenReturn(backendStatement);
+        when(connectionSession.getRequiredSessionVariableRecorder()).thenReturn(new RequiredSessionVariableRecorder());
     }
     
     private void setContextManager() {
         ContextManager contextManager = mock(ContextManager.class, RETURNS_DEEP_STUBS);
         MetaDataContexts metaDataContexts = new MetaDataContexts(mock(MetaDataPersistService.class),
-                new ShardingSphereMetaData(createDatabases(), mockGlobalRuleMetaData(), new ConfigurationProperties(new Properties())), mock(OptimizerContext.class));
+                new ShardingSphereMetaData(createDatabases(), mockGlobalRuleMetaData(), new ConfigurationProperties(new Properties())));
         when(contextManager.getMetaDataContexts()).thenReturn(metaDataContexts);
         ProxyContext.init(contextManager);
     }
@@ -267,6 +272,43 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
     }
     
     @Test
+    public void assertGetConnectionsAndReplaySessionVariables() throws SQLException {
+        connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "value");
+        List<Connection> actualConnections;
+        try (MockedStatic<ProxyContext> mockedStatic = mockStatic(ProxyContext.class)) {
+            ProxyContext proxyContext = mock(ProxyContext.class, RETURNS_DEEP_STUBS);
+            mockedStatic.when(ProxyContext::getInstance).thenReturn(proxyContext);
+            Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+            when(connection.getMetaData().getDatabaseProductName()).thenReturn("PostgreSQL");
+            when(proxyContext.getBackendDataSource().getConnections(anyString(), anyString(), anyInt(), any(ConnectionMode.class)))
+                    .thenReturn(Collections.singletonList(connection));
+            actualConnections = backendConnection.getConnections("", 1, ConnectionMode.CONNECTION_STRICTLY);
+        }
+        Connection actualConnection = actualConnections.get(0);
+        verify(actualConnection.createStatement()).execute("SET key=value");
+    }
+    
+    @Test
+    public void assertGetConnectionsAndFailedToReplaySessionVariables() throws SQLException {
+        connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "value");
+        Connection connection = null;
+        SQLException expectedException = new SQLException();
+        try (MockedStatic<ProxyContext> mockedStatic = mockStatic(ProxyContext.class)) {
+            ProxyContext proxyContext = mock(ProxyContext.class, RETURNS_DEEP_STUBS);
+            mockedStatic.when(ProxyContext::getInstance).thenReturn(proxyContext);
+            connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+            when(connection.getMetaData().getDatabaseProductName()).thenReturn("PostgreSQL");
+            when(connection.createStatement().execute("SET key=value")).thenThrow(expectedException);
+            when(proxyContext.getBackendDataSource().getConnections(anyString(), anyString(), anyInt(), any(ConnectionMode.class)))
+                    .thenReturn(Collections.singletonList(connection));
+            backendConnection.getConnections("", 1, ConnectionMode.CONNECTION_STRICTLY);
+        } catch (SQLException ex) {
+            assertThat(ex, is(expectedException));
+            verify(connection).close();
+        }
+    }
+    
+    @Test
     public void assertGetConnectionsWithoutTransactions() throws SQLException {
         connectionSession.getTransactionStatus().setInTransaction(false);
         List<Connection> connections = MockConnectionUtil.mockNewConnections(1);
@@ -274,7 +316,7 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
         List<Connection> fetchedConnections = backendConnection.getConnections("ds1", 1, null);
         assertThat(fetchedConnections.size(), is(1));
         assertTrue(fetchedConnections.contains(connections.get(0)));
-        assertConnectionsCached("ds1", connections);
+        assertConnectionsCached(connectionSession.getDatabaseName() + ".ds1", connections);
     }
     
     @SuppressWarnings("unchecked")
@@ -392,5 +434,39 @@ public final class JDBCBackendConnectionTest extends ProxyContextRestorer {
         backendConnection.closeAllResources();
         verify(backendConnection).closeHandlers(true);
         verify(backendConnection).closeConnections(true);
+    }
+    
+    @Test
+    public void assertCloseConnectionsAndResetVariables() throws SQLException {
+        connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "default");
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getDatabaseProductName()).thenReturn("PostgreSQL");
+        backendConnection.getCachedConnections().put("", connection);
+        backendConnection.closeConnections(false);
+        verify(connection.createStatement()).execute("RESET ALL");
+        assertTrue(connectionSession.getRequiredSessionVariableRecorder().isEmpty());
+    }
+    
+    @Test
+    public void assertCloseConnectionsAndFailedToGetDatabaseType() throws SQLException {
+        connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "default");
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        SQLException expectedException = new SQLException();
+        when(connection.getMetaData().getDatabaseProductName()).thenThrow(expectedException);
+        backendConnection.getCachedConnections().put("", connection);
+        Collection<SQLException> actualExceptions = backendConnection.closeConnections(false);
+        assertThat(actualExceptions, is(Collections.singletonList(expectedException)));
+    }
+    
+    @Test
+    public void assertCloseConnectionsAndFailedToResetVariables() throws SQLException {
+        connectionSession.getRequiredSessionVariableRecorder().setVariable("key", "default");
+        Connection connection = mock(Connection.class, RETURNS_DEEP_STUBS);
+        when(connection.getMetaData().getDatabaseProductName()).thenReturn("PostgreSQL");
+        SQLException expectedException = new SQLException();
+        when(connection.createStatement()).thenThrow(expectedException);
+        backendConnection.getCachedConnections().put("", connection);
+        Collection<SQLException> actualExceptions = backendConnection.closeConnections(false);
+        assertThat(actualExceptions, is(Collections.singletonList(expectedException)));
     }
 }

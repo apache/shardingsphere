@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.util.yaml.constructor;
 
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 
 import java.util.Collection;
 

@@ -19,10 +19,10 @@ package org.apache.shardingsphere.traffic.factory;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 import org.apache.shardingsphere.traffic.spi.TrafficAlgorithm;
 
 /**
@@ -41,7 +41,7 @@ public final class TrafficAlgorithmFactory {
      * @param trafficAlgorithmConfig traffic algorithm configuration
      * @return created instance
      */
-    public static TrafficAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration trafficAlgorithmConfig) {
+    public static TrafficAlgorithm newInstance(final AlgorithmConfiguration trafficAlgorithmConfig) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(trafficAlgorithmConfig, TrafficAlgorithm.class);
     }
     

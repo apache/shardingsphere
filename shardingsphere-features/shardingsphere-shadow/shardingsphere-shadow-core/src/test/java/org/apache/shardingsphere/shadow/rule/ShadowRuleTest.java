@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.rule;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.algorithm.config.AlgorithmProvidedShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -57,10 +57,10 @@ public final class ShadowRuleTest {
     
     private Map<String, ShadowAlgorithm> createShadowAlgorithms() {
         Map<String, ShadowAlgorithm> result = new LinkedHashMap<>();
-        result.put("simple-hint-algorithm", ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("SIMPLE_HINT", createHintProperties())));
-        result.put("user-id-insert-regex-algorithm", ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("REGEX_MATCH", createColumnProperties("user_id", "insert"))));
-        result.put("user-id-update-regex-algorithm", ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("REGEX_MATCH", createColumnProperties("user_id", "update"))));
-        result.put("order-id-insert-regex-algorithm", ShadowAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("REGEX_MATCH", createColumnProperties("order_id", "insert"))));
+        result.put("simple-hint-algorithm", ShadowAlgorithmFactory.newInstance(new AlgorithmConfiguration("SIMPLE_HINT", createHintProperties())));
+        result.put("user-id-insert-regex-algorithm", ShadowAlgorithmFactory.newInstance(new AlgorithmConfiguration("REGEX_MATCH", createColumnProperties("user_id", "insert"))));
+        result.put("user-id-update-regex-algorithm", ShadowAlgorithmFactory.newInstance(new AlgorithmConfiguration("REGEX_MATCH", createColumnProperties("user_id", "update"))));
+        result.put("order-id-insert-regex-algorithm", ShadowAlgorithmFactory.newInstance(new AlgorithmConfiguration("REGEX_MATCH", createColumnProperties("order_id", "insert"))));
         return result;
     }
     

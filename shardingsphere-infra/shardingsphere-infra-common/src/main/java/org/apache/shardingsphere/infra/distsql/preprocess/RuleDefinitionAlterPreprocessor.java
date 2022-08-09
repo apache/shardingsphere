@@ -18,8 +18,8 @@
 package org.apache.shardingsphere.infra.distsql.preprocess;
 
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.spi.type.typed.TypedSPI;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
 /**
  * Rule definition alter preprocessor.

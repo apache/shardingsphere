@@ -20,7 +20,9 @@ package org.apache.shardingsphere.infra.config.rule.rulealtered;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineInputConfiguration;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineOutputConfiguration;
 
 /**
  * On rule altered action configuration.
@@ -30,39 +32,13 @@ import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmC
 @ToString
 public final class OnRuleAlteredActionConfiguration {
     
-    private final InputConfiguration input;
+    private final PipelineInputConfiguration input;
     
-    private final OutputConfiguration output;
+    private final PipelineOutputConfiguration output;
     
-    private final ShardingSphereAlgorithmConfiguration streamChannel;
+    private final AlgorithmConfiguration streamChannel;
     
-    private final ShardingSphereAlgorithmConfiguration completionDetector;
+    private final AlgorithmConfiguration completionDetector;
     
-    private final ShardingSphereAlgorithmConfiguration dataConsistencyCalculator;
-    
-    @RequiredArgsConstructor
-    @Getter
-    @ToString
-    public static final class InputConfiguration {
-        
-        private final Integer workerThread;
-        
-        private final Integer batchSize;
-        
-        private final Integer shardingSize;
-        
-        private final ShardingSphereAlgorithmConfiguration rateLimiter;
-    }
-    
-    @RequiredArgsConstructor
-    @Getter
-    @ToString
-    public static final class OutputConfiguration {
-        
-        private final Integer workerThread;
-        
-        private final Integer batchSize;
-        
-        private final ShardingSphereAlgorithmConfiguration rateLimiter;
-    }
+    private final AlgorithmConfiguration dataConsistencyCalculator;
 }

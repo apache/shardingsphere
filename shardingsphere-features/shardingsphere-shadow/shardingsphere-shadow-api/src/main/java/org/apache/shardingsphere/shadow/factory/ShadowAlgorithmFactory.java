@@ -19,11 +19,11 @@ package org.apache.shardingsphere.shadow.factory;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.shadow.spi.ShadowAlgorithm;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 /**
  * Shadow algorithm factory.
@@ -41,7 +41,7 @@ public final class ShadowAlgorithmFactory {
      * @param shadowAlgorithmConfig shadow algorithm configuration
      * @return created instance
      */
-    public static ShadowAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration shadowAlgorithmConfig) {
+    public static ShadowAlgorithm newInstance(final AlgorithmConfiguration shadowAlgorithmConfig) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(shadowAlgorithmConfig, ShadowAlgorithm.class);
     }
     

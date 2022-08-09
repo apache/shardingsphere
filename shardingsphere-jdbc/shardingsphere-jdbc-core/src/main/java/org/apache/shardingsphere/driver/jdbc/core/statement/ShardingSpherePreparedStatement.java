@@ -33,14 +33,16 @@ import org.apache.shardingsphere.driver.jdbc.exception.SQLExceptionErrorCode;
 import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.aware.ParameterAware;
+import org.apache.shardingsphere.infra.binder.decider.context.SQLFederationDeciderContext;
+import org.apache.shardingsphere.infra.binder.decider.engine.SQLFederationDeciderEngine;
 import org.apache.shardingsphere.infra.binder.segment.insert.keygen.GeneratedKeyContext;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.InsertStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.dml.SelectStatementContext;
+import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.check.SQLCheckEngine;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutionGroup;
@@ -68,12 +70,14 @@ import org.apache.shardingsphere.infra.hint.HintManager;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.merge.MergeEngine;
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
+import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.parser.ShardingSphereSQLParserEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.DataNodeContainedRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.RawExecutionRule;
 import org.apache.shardingsphere.infra.rule.identifier.type.StorageConnectorReusableRule;
+import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.mode.metadata.MetaDataContexts;
 import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
@@ -146,6 +150,8 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     
     private TrafficContext trafficContext;
     
+    private SQLFederationDeciderContext deciderContext;
+    
     public ShardingSpherePreparedStatement(final ShardingSphereConnection connection, final String sql) throws SQLException {
         this(connection, sql, ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY, ResultSet.HOLD_CURSORS_OVER_COMMIT, false);
     }
@@ -210,11 +216,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficContext, logicSQL);
                 return executor.getTrafficExecutor().execute(executionUnit, (statement, sql) -> ((PreparedStatement) statement).executeQuery());
             }
-            // TODO move federation route logic to binder
-            executionContext = createExecutionContext(logicSQL);
-            if (executionContext.getRouteContext().isFederated()) {
+            deciderContext = decide(logicSQL, metaDataContexts.getMetaData().getProps(), metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()));
+            if (deciderContext.isUseSQLFederation()) {
                 return executeFederationQuery(logicSQL);
             }
+            executionContext = createExecutionContext(logicSQL);
             List<QueryResult> queryResults = executeQuery0();
             MergedResult mergedResult = mergeQuery(queryResults);
             result = new ShardingSphereResultSet(getShardingSphereResultSet(), mergedResult, this, executionContext);
@@ -226,6 +232,11 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         }
         currentResultSet = result;
         return result;
+    }
+    
+    private static SQLFederationDeciderContext decide(final LogicSQL logicSQL, final ConfigurationProperties props, final ShardingSphereDatabase database) {
+        SQLFederationDeciderEngine deciderEngine = new SQLFederationDeciderEngine(database.getRuleMetaData().getRules(), props);
+        return deciderEngine.decide(logicSQL, database);
     }
     
     private JDBCExecutionUnit createTrafficExecutionUnit(final TrafficContext trafficContext, final LogicSQL logicSQL) throws SQLException {
@@ -365,16 +376,17 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficContext, logicSQL);
                 return executor.getTrafficExecutor().execute(executionUnit, (statement, sql) -> ((PreparedStatement) statement).execute());
             }
+            deciderContext = decide(logicSQL, metaDataContexts.getMetaData().getProps(), metaDataContexts.getMetaData().getDatabase(connection.getDatabaseName()));
+            if (deciderContext.isUseSQLFederation()) {
+                ResultSet resultSet = executeFederationQuery(logicSQL);
+                return null != resultSet;
+            }
             executionContext = createExecutionContext(logicSQL);
             if (hasRawExecutionRule()) {
                 // TODO process getStatement
                 Collection<ExecuteResult> executeResults = executor.getRawExecutor().execute(createRawExecutionGroupContext(), executionContext.getLogicSQL(),
                         new RawSQLExecutorCallback(eventBusContext));
                 return executeResults.iterator().next() instanceof QueryResult;
-            }
-            if (executionContext.getRouteContext().isFederated()) {
-                ResultSet resultSet = executeFederationQuery(logicSQL);
-                return null != resultSet;
             }
             ExecutionGroupContext<JDBCExecutionUnit> executionGroupContext = createExecutionGroupContext();
             cacheStatements(executionGroupContext.getInputGroups());
@@ -433,7 +445,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         if (trafficContext.isMatchTraffic()) {
             return executor.getTrafficExecutor().getResultSet();
         }
-        if (executionContext.getRouteContext().isFederated()) {
+        if (null != deciderContext && deciderContext.isUseSQLFederation()) {
             return executor.getFederationExecutor().getResultSet();
         }
         if (executionContext.getSqlStatementContext() instanceof SelectStatementContext || executionContext.getSqlStatementContext().getSqlStatement() instanceof DALStatement) {

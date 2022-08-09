@@ -19,14 +19,14 @@ package org.apache.shardingsphere.data.pipeline.core.fixture;
 
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
-import org.apache.shardingsphere.data.pipeline.api.job.persist.PipelineJobPersistCallback;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 
 public final class FixtureImporter implements Importer {
     
     public FixtureImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel,
-                           final PipelineJobPersistCallback pipelineJobPersistCallback) {
+                           final PipelineJobProgressListener jobProgressListener) {
     }
     
     @Override

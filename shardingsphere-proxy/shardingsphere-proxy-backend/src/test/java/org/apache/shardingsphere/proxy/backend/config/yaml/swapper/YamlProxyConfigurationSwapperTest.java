@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.config.yaml.swapper;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.authority.config.AuthorityRuleConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.database.DatabaseConfiguration;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.proxy.backend.config.ProxyConfiguration;
@@ -84,7 +84,7 @@ public final class YamlProxyConfigurationSwapperTest {
         assertThat(dataSource.getStaticStrategy().getWriteDataSourceName(), is("foo_db"));
         assertThat(dataSource.getStaticStrategy().getReadDataSourceNames(), is(Collections.singletonList("foo_db")));
         assertThat(actual.getLoadBalancers().size(), is(1));
-        ShardingSphereAlgorithmConfiguration loadBalancer = actual.getLoadBalancers().get("round_robin");
+        AlgorithmConfiguration loadBalancer = actual.getLoadBalancers().get("round_robin");
         assertThat(loadBalancer.getProps().size(), is(1));
         assertThat(loadBalancer.getProps().getProperty("foo"), is("foo_value"));
         assertThat(loadBalancer.getType(), is("ROUND_ROBIN"));
