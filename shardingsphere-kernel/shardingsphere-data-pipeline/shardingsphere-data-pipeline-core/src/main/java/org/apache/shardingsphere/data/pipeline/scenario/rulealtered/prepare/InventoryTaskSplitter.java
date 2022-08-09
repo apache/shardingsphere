@@ -74,6 +74,10 @@ public final class InventoryTaskSplitter {
     
     private final PipelineDataSourceWrapper sourceDataSource;
     
+    private final TaskConfiguration taskConfig;
+    
+    private final JobProgress initProgress;
+    
     /**
      * Split inventory data to multi-tasks.
      *
@@ -82,7 +86,6 @@ public final class InventoryTaskSplitter {
      */
     public List<InventoryTask> splitInventoryData(final PipelineJobContext jobContext) {
         List<InventoryTask> result = new LinkedList<>();
-        TaskConfiguration taskConfig = jobContext.getTaskConfig();
         PipelineChannelCreator pipelineChannelCreator = jobContext.getJobProcessContext().getPipelineChannelCreator();
         DefaultPipelineJobProgressListener jobProgressListener = new DefaultPipelineJobProgressListener(jobContext.getJobId(), jobContext.getShardingItem());
         for (InventoryDumperConfiguration each : splitDumperConfig(jobContext, taskConfig.getDumperConfig())) {
@@ -139,7 +142,6 @@ public final class InventoryTaskSplitter {
     
     private Collection<IngestPosition<?>> getInventoryPositions(final PipelineJobContext jobContext, final InventoryDumperConfiguration dumperConfig,
                                                                 final DataSource dataSource, final PipelineTableMetaDataLoader metaDataLoader) {
-        JobProgress initProgress = jobContext.getInitProgress();
         String schemaName = dumperConfig.getSchemaName(new LogicTableName(dumperConfig.getLogicTableName()));
         String actualTableName = dumperConfig.getActualTableName();
         PipelineTableMetaData tableMetaData = metaDataLoader.getTableMetaData(schemaName, actualTableName);
