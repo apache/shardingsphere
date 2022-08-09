@@ -14,14 +14,14 @@ AlterResource ::=
   'ALTER' 'RESOURCE' resourceDefinition (',' resourceDefinition)*
 
 resourceDefinition ::=
-  resourceName '(' ( 'HOST' '=' hostName ',' 'PORT' '=' port ',' 'DB' '=' dbName  |  'URL' '=' url  ) ',' 'USER' '=' user (',' 'PASSWORD' '=' password )?  (',' 'PROPERTIES'  '(' ( key  '=' value ) ( ',' key  '=' value )* ')'  )?')'
+  resourceName '(' ( 'HOST' '=' hostName ',' 'PORT' '=' port ',' 'DB' '=' dbName  |  'URL' '=' url  ) ',' 'USER' '=' user (',' 'PASSWORD' '=' password )?  (',' proerties)?')'
 
 resourceName ::=
   identifier
 
 hostname ::=
   string
-
+    
 port ::=
   int
 
@@ -35,6 +35,18 @@ user ::=
   string
 
 password ::=
+  string
+
+proerties ::=
+  PROPERTIES '(' property ( ',' property )* ')'
+
+property ::=
+  key '=' value
+
+key ::=
+  string
+
+value ::=
   string
 ```
 
