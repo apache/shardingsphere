@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 @Setter
 @ToString(callSuper = true)
 // TODO refactor as SPI
-public final class RuleAlteredJobId extends AbstractJobId {
+public final class RuleAlteredJobId extends AbstractPipelineJobId {
     
     public static final String CURRENT_VERSION = "01";
     

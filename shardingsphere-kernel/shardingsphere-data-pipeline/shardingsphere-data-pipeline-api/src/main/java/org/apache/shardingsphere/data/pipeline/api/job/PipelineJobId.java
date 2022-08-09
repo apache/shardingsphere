@@ -22,7 +22,7 @@ import java.util.List;
 /**
  * Job id.
  */
-public interface JobId {
+public interface PipelineJobId {
     
     /**
      * Get type.

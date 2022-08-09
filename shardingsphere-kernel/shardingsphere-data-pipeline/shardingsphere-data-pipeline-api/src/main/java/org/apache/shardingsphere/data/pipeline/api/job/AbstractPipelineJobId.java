@@ -30,7 +30,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public abstract class AbstractJobId implements JobId {
+public abstract class AbstractPipelineJobId implements PipelineJobId {
     
     @NonNull
     private String type;
