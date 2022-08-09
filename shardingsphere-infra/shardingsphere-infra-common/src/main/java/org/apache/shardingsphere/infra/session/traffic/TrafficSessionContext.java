@@ -15,28 +15,35 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.context;
+package org.apache.shardingsphere.infra.session.traffic;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import lombok.Getter;
+import lombok.Setter;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import java.util.Optional;
 
-@RunWith(MockitoJUnitRunner.class)
-public final class TrafficContextHolderTest {
+/**
+ * Traffic session context.
+ */
+@Getter
+public final class TrafficSessionContext {
     
-    @Mock
-    private TrafficContext trafficContext;
+    @Setter
+    private TrafficContextAware trafficContext;
     
-    @Test
-    public void assertTrafficContextHolder() {
-        assertFalse(TrafficContextHolder.get().isPresent());
-        TrafficContextHolder.set(trafficContext);
-        assertTrue(TrafficContextHolder.get().isPresent());
-        TrafficContextHolder.remove();
-        assertFalse(TrafficContextHolder.get().isPresent());
+    /**
+     * Get traffic context.
+     * 
+     * @return traffic context
+     */
+    public Optional<TrafficContextAware> getTrafficContext() {
+        return Optional.ofNullable(trafficContext);
+    }
+    
+    /**
+     * Clear.
+     */
+    public void clear() {
+        trafficContext = null;
     }
 }

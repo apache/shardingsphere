@@ -76,7 +76,6 @@ import org.apache.shardingsphere.parser.rule.SQLParserRule;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.DALStatement;
 import org.apache.shardingsphere.traffic.context.TrafficContext;
-import org.apache.shardingsphere.traffic.context.TrafficContextHolder;
 import org.apache.shardingsphere.traffic.engine.TrafficEngine;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 
@@ -186,9 +185,9 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private TrafficContext getTrafficContext(final LogicSQL logicSQL) {
-        TrafficContext result = TrafficContextHolder.get().orElseGet(() -> createTrafficContext(logicSQL));
+        TrafficContext result = (TrafficContext) connection.getSqlSession().getTrafficSessionContext().getTrafficContext().orElseGet(() -> createTrafficContext(logicSQL));
         if (connection.isHoldTransaction()) {
-            TrafficContextHolder.set(result);
+            connection.getSqlSession().getTrafficSessionContext().setTrafficContext(result);
         }
         return result;
     }

@@ -26,7 +26,6 @@ import org.apache.shardingsphere.driver.jdbc.core.statement.ShardingSphereStatem
 import org.apache.shardingsphere.infra.session.SQLSession;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.sharding.merge.ddl.fetch.FetchOrderByValueGroupsHolder;
-import org.apache.shardingsphere.traffic.context.TrafficContextHolder;
 import org.apache.shardingsphere.transaction.TransactionHolder;
 
 import java.sql.Array;
@@ -175,7 +174,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         } finally {
             connectionManager.getConnectionTransaction().setRollbackOnly(false);
             TransactionHolder.clear();
-            TrafficContextHolder.remove();
+            sqlSession.getTrafficSessionContext().clear();
             FetchOrderByValueGroupsHolder.remove();
         }
     }
@@ -187,7 +186,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         } finally {
             connectionManager.getConnectionTransaction().setRollbackOnly(false);
             TransactionHolder.clear();
-            TrafficContextHolder.remove();
+            sqlSession.getTrafficSessionContext().clear();
             FetchOrderByValueGroupsHolder.remove();
         }
     }

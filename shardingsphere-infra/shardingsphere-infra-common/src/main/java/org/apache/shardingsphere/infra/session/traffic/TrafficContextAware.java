@@ -15,16 +15,10 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.session;
-
-import lombok.Getter;
-import org.apache.shardingsphere.infra.session.traffic.TrafficSessionContext;
+package org.apache.shardingsphere.infra.session.traffic;
 
 /**
- * SQL session.
+ * Traffic context aware.
  */
-@Getter
-public final class SQLSession {
-    
-    private final TrafficSessionContext trafficSessionContext = new TrafficSessionContext();
+public interface TrafficContextAware {
 }

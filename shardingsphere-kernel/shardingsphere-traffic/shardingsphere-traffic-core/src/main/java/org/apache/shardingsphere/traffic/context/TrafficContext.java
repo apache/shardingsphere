@@ -20,13 +20,14 @@ package org.apache.shardingsphere.traffic.context;
 import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
+import org.apache.shardingsphere.infra.session.traffic.TrafficContextAware;
 
 /**
  * Traffic context.
  */
 @Getter
 @Setter
-public final class TrafficContext {
+public final class TrafficContext implements TrafficContextAware {
     
     private String instanceId;
     
