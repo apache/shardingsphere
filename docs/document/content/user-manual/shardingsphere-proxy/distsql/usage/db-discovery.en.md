@@ -7,23 +7,23 @@ weight = 5
 
 ```sql
 ADD RESOURCE ds_0 (
-HOST=127.0.0.1,
-PORT=3306,
-DB=ds_0,
-USER=root,
-PASSWORD=root
-),RESOURCE ds_1 (
-HOST=127.0.0.1,
-PORT=3306,
-DB=ds_1,
-USER=root,
-PASSWORD=root
-),RESOURCE ds_2 (
-HOST=127.0.0.1,
-PORT=3306,
-DB=ds_2,
-USER=root,
-PASSWORD=root
+    HOST="127.0.0.1",
+    PORT=3306,
+    DB="ds_0",
+    USER="root",
+    PASSWORD="root"
+),ds_1 (
+    HOST="127.0.0.1",
+    PORT=3306,
+    DB="ds_1",
+    USER="root",
+    PASSWORD="root"
+),ds_2 (
+    HOST="127.0.0.1",
+    PORT=3306,
+    DB="ds_2",
+    USER="root",
+    PASSWORD="root"
 );
 ```
 
