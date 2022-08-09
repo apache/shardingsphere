@@ -181,7 +181,7 @@ public final class RuleAlteredJobPreparer {
     
     private void initInventoryTasks(final RuleAlteredJobContext jobContext) {
         InventoryTaskSplitter inventoryTaskSplitter = new InventoryTaskSplitter(jobContext.getSourceMetaDataLoader(), jobContext.getDataSourceManager(),
-                jobContext.getJobProcessContext().getImporterExecuteEngine());
+                jobContext.getJobProcessContext().getImporterExecuteEngine(), jobContext.getSourceDataSource());
         jobContext.getInventoryTasks().addAll(inventoryTaskSplitter.splitInventoryData(jobContext));
     }
     

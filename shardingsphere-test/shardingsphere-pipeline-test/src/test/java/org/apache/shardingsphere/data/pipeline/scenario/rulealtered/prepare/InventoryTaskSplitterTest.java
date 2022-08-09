@@ -61,7 +61,8 @@ public final class InventoryTaskSplitterTest {
     @Before
     public void setUp() {
         initJobContext();
-        inventoryTaskSplitter = new InventoryTaskSplitter(jobContext.getSourceMetaDataLoader(), jobContext.getDataSourceManager(), jobContext.getJobProcessContext().getImporterExecuteEngine());
+        inventoryTaskSplitter = new InventoryTaskSplitter(jobContext.getSourceMetaDataLoader(), jobContext.getDataSourceManager(), jobContext.getJobProcessContext().getImporterExecuteEngine(),
+                jobContext.getSourceDataSource());
     }
     
     private void initJobContext() {

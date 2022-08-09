@@ -100,7 +100,6 @@ public final class RuleAlteredJobContext implements PipelineJobContext {
      * @return source data source
      */
     @SneakyThrows(ConcurrentException.class)
-    @Override
     public PipelineDataSourceWrapper getSourceDataSource() {
         return sourceDataSourceLazyInitializer.get();
     }

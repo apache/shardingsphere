@@ -25,6 +25,7 @@ import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfigu
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineProcessContext;
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IntegerPrimaryKeyPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
@@ -71,6 +72,8 @@ public final class InventoryTaskSplitter {
     
     private final ExecuteEngine importerExecuteEngine;
     
+    private final PipelineDataSourceWrapper sourceDataSource;
+    
     /**
      * Split inventory data to multi-tasks.
      *
@@ -81,19 +84,18 @@ public final class InventoryTaskSplitter {
         List<InventoryTask> result = new LinkedList<>();
         TaskConfiguration taskConfig = jobContext.getTaskConfig();
         PipelineChannelCreator pipelineChannelCreator = jobContext.getJobProcessContext().getPipelineChannelCreator();
-        DataSource dataSource = jobContext.getSourceDataSource();
         DefaultPipelineJobProgressListener jobProgressListener = new DefaultPipelineJobProgressListener(jobContext.getJobId(), jobContext.getShardingItem());
         for (InventoryDumperConfiguration each : splitDumperConfig(jobContext, taskConfig.getDumperConfig())) {
-            result.add(new InventoryTask(each, taskConfig.getImporterConfig(), pipelineChannelCreator, dataSourceManager, dataSource, metaDataLoader, importerExecuteEngine, jobProgressListener));
+            result.add(new InventoryTask(each, taskConfig.getImporterConfig(), pipelineChannelCreator, dataSourceManager, sourceDataSource, metaDataLoader, importerExecuteEngine,
+                    jobProgressListener));
         }
         return result;
     }
     
     private Collection<InventoryDumperConfiguration> splitDumperConfig(final PipelineJobContext jobContext, final DumperConfiguration dumperConfig) {
         Collection<InventoryDumperConfiguration> result = new LinkedList<>();
-        DataSource dataSource = jobContext.getSourceDataSource();
         for (InventoryDumperConfiguration each : splitByTable(dumperConfig)) {
-            result.addAll(splitByPrimaryKey(jobContext, dataSource, metaDataLoader, each));
+            result.addAll(splitByPrimaryKey(jobContext, sourceDataSource, metaDataLoader, each));
         }
         return result;
     }
