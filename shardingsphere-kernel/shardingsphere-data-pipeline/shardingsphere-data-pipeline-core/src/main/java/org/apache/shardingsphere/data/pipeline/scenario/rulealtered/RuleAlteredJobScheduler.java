@@ -19,10 +19,7 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.concurrent.ConcurrentException;
-import org.apache.commons.lang3.concurrent.LazyInitializer;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
@@ -41,43 +38,30 @@ import java.util.Collection;
  */
 @Slf4j
 @RequiredArgsConstructor
-@Getter
 public final class RuleAlteredJobScheduler implements PipelineTasksRunner {
     
+    @Getter
     private final PipelineJobContext jobContext;
-
+    
     private final Collection<InventoryTask> inventoryTasks;
-
+    
     private final Collection<IncrementalTask> incrementalTasks;
-
-    private final LazyInitializer<ExecuteEngine> inventoryDumperExecuteEngineLazyInitializer = new LazyInitializer<ExecuteEngine>() {
-
-        @Override
-        protected ExecuteEngine initialize() {
-            return ExecuteEngine.newCachedThreadInstance("Inventory-" + jobContext.getJobId());
-        }
-    };
-
-    private final LazyInitializer<ExecuteEngine> incrementalDumperExecuteEngineLazyInitializer = new LazyInitializer<ExecuteEngine>() {
-        @Override
-        protected ExecuteEngine initialize() {
-            return ExecuteEngine.newCachedThreadInstance("Incremental-" + jobContext.getJobId());
-        }
-    };
-
-    /**
-     * Stop all task.
-     */
+    
+    private final ExecuteEngine inventoryDumperExecuteEngine;
+    
+    private final ExecuteEngine incrementalDumperExecuteEngine;
+    
+    @Override
     public void stop() {
         jobContext.setStopping(true);
         log.info("stop, jobId={}, shardingItem={}", jobContext.getJobId(), jobContext.getShardingItem());
         // TODO blocking stop
-        for (InventoryTask each : getInventoryTasks()) {
+        for (InventoryTask each : inventoryTasks) {
             log.info("stop inventory task {} - {}", jobContext.getJobId(), each.getTaskId());
             each.stop();
             each.close();
         }
-        for (IncrementalTask each : getIncrementalTasks()) {
+        for (IncrementalTask each : incrementalTasks) {
             log.info("stop incremental task {} - {}", jobContext.getJobId(), each.getTaskId());
             each.stop();
             each.close();
@@ -101,33 +85,28 @@ public final class RuleAlteredJobScheduler implements PipelineTasksRunner {
     }
     
     private synchronized boolean executeInventoryTask() {
-        if (PipelineJobProgressDetector.allInventoryTasksFinished(getInventoryTasks())) {
+        if (PipelineJobProgressDetector.allInventoryTasksFinished(inventoryTasks)) {
             log.info("All inventory tasks finished.");
             return true;
         }
         log.info("-------------- Start inventory task --------------");
         jobContext.setStatus(JobStatus.EXECUTE_INVENTORY_TASK);
         ExecuteCallback inventoryTaskCallback = createInventoryTaskCallback();
-        for (InventoryTask each : getInventoryTasks()) {
+        for (InventoryTask each : inventoryTasks) {
             if (each.getProgress().getPosition() instanceof FinishedPosition) {
                 continue;
             }
-            getInventoryDumperExecuteEngine().submit(each, inventoryTaskCallback);
+            inventoryDumperExecuteEngine.submit(each, inventoryTaskCallback);
         }
         return false;
     }
-
-    @SneakyThrows(ConcurrentException.class)
-    private ExecuteEngine getInventoryDumperExecuteEngine() {
-        return inventoryDumperExecuteEngineLazyInitializer.get();
-    }
-
+    
     private ExecuteCallback createInventoryTaskCallback() {
         return new ExecuteCallback() {
             
             @Override
             public void onSuccess() {
-                if (PipelineJobProgressDetector.allInventoryTasksFinished(getInventoryTasks())) {
+                if (PipelineJobProgressDetector.allInventoryTasksFinished(inventoryTasks)) {
                     log.info("onSuccess, all inventory tasks finished.");
                     executeIncrementalTask();
                 }
@@ -150,19 +129,14 @@ public final class RuleAlteredJobScheduler implements PipelineTasksRunner {
         log.info("-------------- Start incremental task --------------");
         jobContext.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK);
         ExecuteCallback incrementalTaskCallback = createIncrementalTaskCallback();
-        for (IncrementalTask each : getIncrementalTasks()) {
+        for (IncrementalTask each : incrementalTasks) {
             if (each.getProgress().getPosition() instanceof FinishedPosition) {
                 continue;
             }
-            getIncrementalDumperExecuteEngine().submit(each, incrementalTaskCallback);
+            incrementalDumperExecuteEngine.submit(each, incrementalTaskCallback);
         }
     }
-
-    @SneakyThrows(ConcurrentException.class)
-    private ExecuteEngine getIncrementalDumperExecuteEngine() {
-        return incrementalDumperExecuteEngineLazyInitializer.get();
-    }
-
+    
     private ExecuteCallback createIncrementalTaskCallback() {
         return new ExecuteCallback() {
             
