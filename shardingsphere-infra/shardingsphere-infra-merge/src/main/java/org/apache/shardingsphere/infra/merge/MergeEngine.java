@@ -19,7 +19,7 @@ package org.apache.shardingsphere.infra.merge;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
-import org.apache.shardingsphere.infra.session.SessionContext;
+import org.apache.shardingsphere.infra.session.SQLSession;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.engine.ResultProcessEngine;
 import org.apache.shardingsphere.infra.merge.engine.ResultProcessEngineFactory;
@@ -50,13 +50,13 @@ public final class MergeEngine {
     @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, ResultProcessEngine> engines;
     
-    private final SessionContext sessionContext;
+    private final SQLSession SQLSession;
     
-    public MergeEngine(final ShardingSphereDatabase database, final ConfigurationProperties props, final SessionContext sessionContext) {
+    public MergeEngine(final ShardingSphereDatabase database, final ConfigurationProperties props, final SQLSession SQLSession) {
         this.database = database;
         this.props = props;
         engines = ResultProcessEngineFactory.getInstances(database.getRuleMetaData().getRules());
-        this.sessionContext = sessionContext;
+        this.SQLSession = SQLSession;
     }
     
     /**
@@ -79,7 +79,7 @@ public final class MergeEngine {
             if (entry.getValue() instanceof ResultMergerEngine) {
                 ResultMerger resultMerger = ((ResultMergerEngine) entry.getValue()).newInstance(
                         database.getName(), database.getResource().getDatabaseType(), entry.getKey(), props, sqlStatementContext);
-                return Optional.of(resultMerger.merge(queryResults, sqlStatementContext, database, sessionContext));
+                return Optional.of(resultMerger.merge(queryResults, sqlStatementContext, database, SQLSession));
             }
         }
         return Optional.empty();

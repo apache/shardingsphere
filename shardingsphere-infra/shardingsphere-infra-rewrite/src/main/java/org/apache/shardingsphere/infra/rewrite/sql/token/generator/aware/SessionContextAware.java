@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware;
 
-import org.apache.shardingsphere.infra.session.SessionContext;
+import org.apache.shardingsphere.infra.session.SQLSession;
 
 /**
  * Session context aware.
@@ -27,7 +27,7 @@ public interface SessionContextAware {
     /**
      * Set session context.
      *
-     * @param sessionContext session context
+     * @param SQLSession session context
      */
-    void setSessionContext(SessionContext sessionContext);
+    void setSessionContext(SQLSession SQLSession);
 }

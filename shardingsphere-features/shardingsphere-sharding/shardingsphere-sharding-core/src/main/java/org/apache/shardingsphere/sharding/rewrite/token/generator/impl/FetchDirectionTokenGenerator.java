@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.binder.statement.ddl.FetchStatementContex
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SessionContextAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.infra.session.SessionContext;
+import org.apache.shardingsphere.infra.session.SQLSession;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.FetchDirectionToken;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.DirectionType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
@@ -37,7 +37,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.FetchStatem
 @Setter
 public final class FetchDirectionTokenGenerator implements OptionalSQLTokenGenerator<SQLStatementContext<?>>, SessionContextAware {
     
-    private SessionContext sessionContext;
+    private SQLSession SQLSession;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
@@ -53,11 +53,11 @@ public final class FetchDirectionTokenGenerator implements OptionalSQLTokenGener
         int stopIndex = fetchStatement.getDirection().map(DirectionSegment::getStopIndex).orElseGet("FETCH"::length);
         DirectionType directionType = fetchStatement.getDirection().flatMap(DirectionSegment::getDirectionType).orElse(DirectionType.NEXT);
         long fetchCount = fetchStatement.getDirection().flatMap(DirectionSegment::getCount).orElse(1L);
-        return new FetchDirectionToken(startIndex, stopIndex, directionType, fetchCount, cursorName.getIdentifier().getValue().toLowerCase(), sessionContext);
+        return new FetchDirectionToken(startIndex, stopIndex, directionType, fetchCount, cursorName.getIdentifier().getValue().toLowerCase(), SQLSession);
     }
     
     @Override
-    public void setSessionContext(final SessionContext sessionContext) {
-        this.sessionContext = sessionContext;
+    public void setSessionContext(final SQLSession SQLSession) {
+        this.SQLSession = SQLSession;
     }
 }

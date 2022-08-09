@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.merge.fixture.merger;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.session.SessionContext;
+import org.apache.shardingsphere.infra.session.SQLSession;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.driver.jdbc.type.stream.JDBCStreamQueryResult;
 import org.apache.shardingsphere.infra.merge.engine.merger.ResultMerger;
@@ -37,7 +37,7 @@ public final class ResultMergerFixture implements ResultMerger {
     
     @Override
     public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext,
-                              final ShardingSphereDatabase database, final SessionContext sessionContext) throws SQLException {
+                              final ShardingSphereDatabase database, final SQLSession SQLSession) throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getString(1)).thenReturn("merged_value");
         QueryResult queryResult = new JDBCStreamQueryResult(resultSet);

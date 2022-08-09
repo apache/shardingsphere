@@ -21,10 +21,10 @@ import lombok.Getter;
 import org.apache.shardingsphere.infra.session.cursor.CursorSessionContext;
 
 /**
- * Session context.
+ * SQL Session.
  */
 @Getter
-public final class SessionContext {
+public final class SQLSession {
     
     private final CursorSessionContext cursorSessionContext = new CursorSessionContext();
 }

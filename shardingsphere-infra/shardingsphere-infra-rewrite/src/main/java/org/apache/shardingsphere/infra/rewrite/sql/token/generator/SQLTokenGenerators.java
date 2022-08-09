@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.Previou
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SchemaMetaDataAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SessionContextAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
-import org.apache.shardingsphere.infra.session.SessionContext;
+import org.apache.shardingsphere.infra.session.SQLSession;
 
 import java.util.Collection;
 import java.util.LinkedHashMap;
@@ -59,15 +59,15 @@ public final class SQLTokenGenerators {
      * @param sqlStatementContext SQL statement context
      * @param parameters SQL parameters
      * @param schemas ShardingSphere schema map
-     * @param sessionContext session context
+     * @param SQLSession session context
      * @return SQL tokens
      */
     @SuppressWarnings({"rawtypes", "unchecked"})
     public List<SQLToken> generateSQLTokens(final String databaseName, final Map<String, ShardingSphereSchema> schemas,
-                                            final SQLStatementContext sqlStatementContext, final List<Object> parameters, final SessionContext sessionContext) {
+                                            final SQLStatementContext sqlStatementContext, final List<Object> parameters, final SQLSession SQLSession) {
         List<SQLToken> result = new LinkedList<>();
         for (SQLTokenGenerator each : sqlTokenGenerators.values()) {
-            setUpSQLTokenGenerator(each, parameters, databaseName, schemas, result, sessionContext);
+            setUpSQLTokenGenerator(each, parameters, databaseName, schemas, result, SQLSession);
             if (each instanceof OptionalSQLTokenGenerator) {
                 SQLToken sqlToken = ((OptionalSQLTokenGenerator) each).generateSQLToken(sqlStatementContext);
                 if (!result.contains(sqlToken)) {
@@ -81,7 +81,7 @@ public final class SQLTokenGenerators {
     }
     
     private void setUpSQLTokenGenerator(final SQLTokenGenerator sqlTokenGenerator, final List<Object> parameters,
-                                        final String databaseName, final Map<String, ShardingSphereSchema> schemas, final List<SQLToken> previousSQLTokens, final SessionContext sessionContext) {
+                                        final String databaseName, final Map<String, ShardingSphereSchema> schemas, final List<SQLToken> previousSQLTokens, final SQLSession SQLSession) {
         if (sqlTokenGenerator instanceof ParametersAware) {
             ((ParametersAware) sqlTokenGenerator).setParameters(parameters);
         }
@@ -93,7 +93,7 @@ public final class SQLTokenGenerators {
             ((PreviousSQLTokensAware) sqlTokenGenerator).setPreviousSQLTokens(previousSQLTokens);
         }
         if (sqlTokenGenerator instanceof SessionContextAware) {
-            ((SessionContextAware) sqlTokenGenerator).setSessionContext(sessionContext);
+            ((SessionContextAware) sqlTokenGenerator).setSessionContext(SQLSession);
         }
     }
 }
