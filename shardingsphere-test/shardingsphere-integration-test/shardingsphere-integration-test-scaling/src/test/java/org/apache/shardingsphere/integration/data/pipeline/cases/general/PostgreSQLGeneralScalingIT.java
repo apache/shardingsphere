@@ -100,7 +100,5 @@ public final class PostgreSQLGeneralScalingIT extends BaseExtraSQLITCase {
         applyScaling(jobId);
         assertPreviewTableSuccess("t_order", Arrays.asList("ds_2", "ds_3", "ds_4"));
         assertPreviewTableSuccess("t_order_item", Arrays.asList("ds_2", "ds_3", "ds_4"));
-        restoreScalingSourceWriting(jobId);
-        assertRestoreScalingSourceWriting();
     }
 }

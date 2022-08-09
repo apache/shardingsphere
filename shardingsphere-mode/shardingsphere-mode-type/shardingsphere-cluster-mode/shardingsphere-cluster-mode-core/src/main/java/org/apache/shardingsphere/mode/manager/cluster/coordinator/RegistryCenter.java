@@ -23,8 +23,7 @@ import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.jdbc.JDBCInstanceMetaData;
-import org.apache.shardingsphere.mode.lock.manager.LockPersistService;
-import org.apache.shardingsphere.mode.manager.cluster.coordinator.lock.service.ClusterLockPersistService;
+import org.apache.shardingsphere.mode.lock.LockPersistService;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.GovernanceWatcherFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.cache.subscriber.ScalingRegistrySubscriber;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.metadata.subscriber.SchemaMetaDataRegistrySubscriber;
@@ -77,7 +76,9 @@ public final class RegistryCenter {
     }
     
     private String getJDBCDatabaseName() {
-        return instanceMetaData instanceof JDBCInstanceMetaData ? databaseConfigs.keySet().stream().findFirst().get() : null;
+        return instanceMetaData instanceof JDBCInstanceMetaData && databaseConfigs.keySet().stream().findFirst().isPresent()
+                ? databaseConfigs.keySet().stream().findFirst().get()
+                : null;
     }
     
     private void createSubscribers(final ClusterPersistRepository repository) {

@@ -430,7 +430,7 @@ public final class ShardingSpherePreparedStatementTest extends AbstractShardingS
             preparedStatement.setString(8, status);
             preparedStatement.setString(9, updatedStatus);
             int result = preparedStatement.executeUpdate();
-            assertThat(result, is(2));
+            assertThat(result, is(4));
             queryStatement.setInt(1, orderId);
             queryStatement.setInt(2, userId1);
             try (ResultSet resultSet = queryStatement.executeQuery()) {

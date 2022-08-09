@@ -83,17 +83,14 @@ public final class RuleAlteredJobContext implements PipelineJobContext {
         }
     };
     
-    private final RuleAlteredJobPreparer jobPreparer;
-    
     public RuleAlteredJobContext(final RuleAlteredJobConfiguration jobConfig, final int jobShardingItem, final JobProgress initProgress,
-                                 final PipelineDataSourceManager dataSourceManager, final RuleAlteredJobPreparer jobPreparer) {
+                                 final PipelineDataSourceManager dataSourceManager) {
         jobProcessContext = RuleAlteredJobWorker.createRuleAlteredContext(jobConfig);
         this.jobConfig = jobConfig;
         jobId = jobConfig.getJobId();
         this.shardingItem = jobShardingItem;
         this.initProgress = initProgress;
         this.dataSourceManager = dataSourceManager;
-        this.jobPreparer = jobPreparer;
         taskConfig = RuleAlteredJobWorker.buildTaskConfig(jobConfig, jobShardingItem, jobProcessContext.getPipelineProcessConfig());
     }
     

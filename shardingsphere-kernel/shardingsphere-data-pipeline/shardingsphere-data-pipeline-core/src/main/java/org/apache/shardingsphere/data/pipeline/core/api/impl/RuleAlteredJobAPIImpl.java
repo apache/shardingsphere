@@ -202,8 +202,8 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         LockDefinition lockDefinition = LockDefinitionFactory.newDatabaseLockDefinition(databaseName);
         if (lockContext.isLocked(lockDefinition)) {
-            log.info("restoreClusterWriteDB, before unLock, databaseName={}, jobId={}", databaseName, jobConfig.getJobId());
-            lockContext.unLock(lockDefinition);
+            log.info("restoreClusterWriteDB, before unlock, databaseName={}, jobId={}", databaseName, jobConfig.getJobId());
+            lockContext.unlock(lockDefinition);
             return;
         }
         log.info("restoreClusterWriteDB, isLocked false, databaseName={}", databaseName);

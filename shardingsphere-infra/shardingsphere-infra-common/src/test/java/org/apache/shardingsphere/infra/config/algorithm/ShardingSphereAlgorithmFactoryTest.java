@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.config.algorithm;
 
 import org.apache.shardingsphere.infra.config.algorithm.fixture.ShardingSphereAlgorithmFixture;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.junit.BeforeClass;
 import org.junit.Test;
 

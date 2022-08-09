@@ -28,11 +28,9 @@ import java.util.LinkedList;
 @Getter
 public final class BackendConnectionException extends Exception {
     
-    private final Collection<Exception> exceptions = new LinkedList<>();
+    private static final long serialVersionUID = -543640268050869018L;
     
-    public BackendConnectionException(final Exception ex) {
-        exceptions.add(ex);
-    }
+    private final Collection<Exception> exceptions = new LinkedList<>();
     
     public BackendConnectionException(final Collection<Exception> exceptions) {
         this.exceptions.addAll(exceptions);

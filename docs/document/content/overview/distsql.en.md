@@ -33,7 +33,7 @@ Resource & Rule Administration Language, is responsible for hint, circuit breake
 
 ### RUL
 
-Resource Utility Language, is responsible for SQL parsing, SQL formatting, preview execution plan, etc.
+Resource & Rule Utility Language, is responsible for SQL parsing, SQL formatting, preview execution plan, etc.
 
 ## Impact on the System
 

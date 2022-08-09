@@ -26,7 +26,6 @@ import org.apache.shardingsphere.data.pipeline.core.fixture.DataConsistencyCalcu
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobPreparer;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -56,7 +55,7 @@ public final class DataConsistencyCheckerTest {
     
     private RuleAlteredJobConfiguration createJobConfiguration() throws SQLException {
         RuleAlteredJobContext jobContext = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration(), 0,
-                new JobProgress(), new PipelineDataSourceManager(), new RuleAlteredJobPreparer());
+                new JobProgress(), new PipelineDataSourceManager());
         initTableData(jobContext.getTaskConfig().getDumperConfig().getDataSourceConfig());
         initTableData(jobContext.getTaskConfig().getImporterConfig().getDataSourceConfig());
         return jobContext.getJobConfig();

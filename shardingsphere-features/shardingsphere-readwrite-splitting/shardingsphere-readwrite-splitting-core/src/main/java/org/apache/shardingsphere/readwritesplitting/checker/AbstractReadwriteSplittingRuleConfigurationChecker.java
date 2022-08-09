@@ -34,6 +34,7 @@ import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgo
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -108,8 +109,8 @@ public abstract class AbstractReadwriteSplittingRuleConfigurationChecker<T exten
             Preconditions.checkState(null != loadBalancer, "Not found load balance type in database `%s`.", databaseName);
             if (loadBalancer instanceof WeightReadQueryLoadBalanceAlgorithm || loadBalancer instanceof TransactionWeightReadQueryLoadBalanceAlgorithm) {
                 Preconditions.checkState(!loadBalancer.getProps().isEmpty(), "Readwrite-splitting data source weight config are required in database `%s`.", databaseName);
-                List<String> dataSourceNames = getDataSourceNames(each, rules);
-                loadBalancer.getProps().keySet().forEach(dataSourceName -> Preconditions.checkState(dataSourceNames.contains(dataSourceName),
+                Collection<String> dataSourceNames = getDataSourceNames(each, rules);
+                loadBalancer.getProps().keySet().forEach(dataSourceName -> Preconditions.checkState(dataSourceNames.contains((String) dataSourceName),
                         "Load Balancer datasource name config does not match datasource in database `%s`.", databaseName));
             }
         }
@@ -120,6 +121,9 @@ public abstract class AbstractReadwriteSplittingRuleConfigurationChecker<T exten
             return config.getStaticStrategy().getReadDataSourceNames();
         }
         Optional<ShardingSphereRule> dynamicDataSourceStrategy = rules.stream().filter(each -> each instanceof DynamicDataSourceContainedRule).findFirst();
+        if (!dynamicDataSourceStrategy.isPresent()) {
+            return Collections.emptyList();
+        }
         DynamicDataSourceContainedRule dynamicDataSourceRule = (DynamicDataSourceContainedRule) dynamicDataSourceStrategy.get();
         List<String> result = new ArrayList<>(dynamicDataSourceRule.getReplicaDataSourceNames(config.getDynamicStrategy().getAutoAwareDataSourceName()));
         result.add(dynamicDataSourceRule.getPrimaryDataSourceName(config.getDynamicStrategy().getAutoAwareDataSourceName()));

@@ -21,12 +21,11 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.integration.data.pipeline.cases.command.ExtraSQLCommand;
 import org.apache.shardingsphere.integration.data.pipeline.framework.param.ScalingParameterized;
-import org.apache.shardingsphere.integration.data.pipeline.util.DatabaseTypeUtil;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 
 import javax.xml.bind.JAXB;
 import java.util.Objects;
 
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @Slf4j
@@ -59,18 +58,6 @@ public abstract class BaseExtraSQLITCase extends BaseITCase {
     
     protected void createOrderItemTable() {
         executeWithLog(extraSQLCommand.getCreateTableOrderItem());
-    }
-    
-    @Override
-    protected void assertStopScalingSourceWriting() {
-        assertFalse(executeSql(extraSQLCommand.getUpdateTableOrderStatus()));
-        assertFalse(executeSql(extraSQLCommand.getCreateIndexStatus()));
-    }
-    
-    @Override
-    protected void assertRestoreScalingSourceWriting() {
-        assertTrue(executeSql(extraSQLCommand.getUpdateTableOrderStatus()));
-        assertTrue(executeSql(extraSQLCommand.getCreateIndexStatus()));
     }
     
     private boolean executeSql(final String sql) {

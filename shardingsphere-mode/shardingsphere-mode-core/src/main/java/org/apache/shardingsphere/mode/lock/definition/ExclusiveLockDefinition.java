@@ -18,14 +18,12 @@
 package org.apache.shardingsphere.mode.lock.definition;
 
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.mode.lock.util.LockKeyUtil;
 
 /**
  * Exclusive lock definition.
  */
-@RequiredArgsConstructor
 @Getter
 public final class ExclusiveLockDefinition implements LockDefinition {
     
