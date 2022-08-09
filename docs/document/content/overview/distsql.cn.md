@@ -33,7 +33,7 @@ Resource & Rule Administration Language，负责强制路由、熔断、配置�
 
 ### RUL
 
-Resource Utility Language，负责 SQL 解析、SQL 格式化、执行计划预览等功能。
+Resource & Rule Utility Language，负责 SQL 解析、SQL 格式化、执行计划预览等功能。
 
 ## 对系统的影响
 

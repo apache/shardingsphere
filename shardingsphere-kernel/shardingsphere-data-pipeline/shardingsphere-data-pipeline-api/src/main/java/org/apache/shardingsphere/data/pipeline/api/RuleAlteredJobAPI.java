@@ -19,6 +19,8 @@ package org.apache.shardingsphere.data.pipeline.api;
 
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
+import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
@@ -181,4 +183,29 @@ public interface RuleAlteredJobAPI extends PipelineJobAPI, RequiredSPI {
      * @return job configuration
      */
     RuleAlteredJobConfiguration getJobConfig(String jobId);
+    
+    /**
+     * Persist job progress.
+     *
+     * @param jobContext job context
+     */
+    void persistJobProgress(PipelineJobContext jobContext);
+    
+    /**
+     * Get job progress.
+     *
+     * @param jobId job id
+     * @param shardingItem sharding item
+     * @return job progress
+     */
+    JobProgress getJobProgress(String jobId, int shardingItem);
+    
+    /**
+     * Update sharding job status.
+     *
+     * @param jobId job id
+     * @param shardingItem sharding item
+     * @param status status
+     */
+    void updateShardingJobStatus(String jobId, int shardingItem, JobStatus status);
 }

@@ -7,17 +7,17 @@ weight = 2
 
 ```sql
 ADD RESOURCE write_ds (
-HOST=127.0.0.1,
-PORT=3306,
-DB=ds_0,
-USER=root,
-PASSWORD=root
+    HOST="127.0.0.1",
+    PORT=3306,
+    DB="ds_0",
+    USER="root",
+    PASSWORD="root"
 ),read_ds (
-HOST=127.0.0.1,
-PORT=3307,
-DB=ds_0,
-USER=root,
-PASSWORD=root
+    HOST="127.0.0.1",
+    PORT=3307,
+    DB="ds_0",
+    USER="root",
+    PASSWORD="root"
 );
 ```
 

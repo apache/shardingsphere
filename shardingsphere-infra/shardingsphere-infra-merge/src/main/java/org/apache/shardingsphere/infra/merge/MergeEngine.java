@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.merge;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationProperties;
+import org.apache.shardingsphere.infra.session.SessionContext;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.merge.engine.ResultProcessEngine;
 import org.apache.shardingsphere.infra.merge.engine.ResultProcessEngineFactory;
@@ -49,10 +50,13 @@ public final class MergeEngine {
     @SuppressWarnings("rawtypes")
     private final Map<ShardingSphereRule, ResultProcessEngine> engines;
     
-    public MergeEngine(final ShardingSphereDatabase database, final ConfigurationProperties props) {
+    private final SessionContext sessionContext;
+    
+    public MergeEngine(final ShardingSphereDatabase database, final ConfigurationProperties props, final SessionContext sessionContext) {
         this.database = database;
         this.props = props;
         engines = ResultProcessEngineFactory.getInstances(database.getRuleMetaData().getRules());
+        this.sessionContext = sessionContext;
     }
     
     /**

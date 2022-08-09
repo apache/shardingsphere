@@ -39,6 +39,7 @@ import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.binder.SQLStatementContextFactory;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
+import org.apache.shardingsphere.infra.session.SessionContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
@@ -117,7 +118,8 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
         FederationContext federationContext = executorContext.getFederationContext();
         LogicSQL logicSQL = createLogicSQL(federationContext.getDatabases(), sqlString, databaseType);
         ShardingSphereDatabase database = federationContext.getDatabases().get(databaseName.toLowerCase());
-        ExecutionContext context = new KernelProcessor().generateExecutionContext(logicSQL, database, globalRuleMetaData, executorContext.getProps());
+        // TODO need to get session context
+        ExecutionContext context = new KernelProcessor().generateExecutionContext(logicSQL, database, globalRuleMetaData, executorContext.getProps(), new SessionContext());
         if (federationContext.isPreview() || databaseType.getSystemSchemas().contains(schemaName)) {
             federationContext.getExecutionUnits().addAll(context.getExecutionUnits());
             return createEmptyEnumerable();
@@ -132,7 +134,8 @@ public final class FilterableTableScanExecutor implements TableScanExecutor {
             ExecuteProcessEngine.initialize(context.getLogicSQL(), executionGroupContext, eventBusContext);
             List<QueryResult> queryResults = execute(executionGroupContext, databaseType);
             ExecuteProcessEngine.finish(executionGroupContext.getExecutionID(), eventBusContext);
-            MergeEngine mergeEngine = new MergeEngine(database, executorContext.getProps());
+            // TODO need to get session context
+            MergeEngine mergeEngine = new MergeEngine(database, executorContext.getProps(), new SessionContext());
             MergedResult mergedResult = mergeEngine.merge(queryResults, logicSQL.getSqlStatementContext());
             Collection<Statement> statements = getStatements(executionGroupContext.getInputGroups());
             return createEnumerable(mergedResult, queryResults.get(0).getMetaData(), statements);

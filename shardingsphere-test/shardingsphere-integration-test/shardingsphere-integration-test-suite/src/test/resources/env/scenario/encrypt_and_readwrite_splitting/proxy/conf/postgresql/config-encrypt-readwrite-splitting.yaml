@@ -1,0 +1,88 @@
+#
+# Licensed to the Apache Software Foundation (ASF) under one or more
+# contributor license agreements.  See the NOTICE file distributed with
+# this work for additional information regarding copyright ownership.
+# The ASF licenses this file to You under the Apache License, Version 2.0
+# (the "License"); you may not use this file except in compliance with
+# the License.  You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+#
+
+databaseName: encrypt_and_readwrite_splitting
+
+dataSources:
+  encrypt_write_ds:
+    url: jdbc:postgresql://postgresql.encrypt_and_readwrite_splitting.host:5432/encrypt_write_ds
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+  encrypt_read_ds:
+    url: jdbc:postgresql://postgresql.encrypt_and_readwrite_splitting.host:5432/encrypt_read_ds
+    username: test_user
+    password: Test@123
+    connectionTimeoutMilliseconds: 30000
+    idleTimeoutMilliseconds: 60000
+    maxLifetimeMilliseconds: 1800000
+    maxPoolSize: 2
+    minPoolSize: 2
+
+rules:
+
+- !READWRITE_SPLITTING
+  dataSources:
+    readwrite_ds:
+      staticStrategy:
+        writeDataSourceName: encrypt_write_ds
+        readDataSourceNames:
+          - encrypt_read_ds
+      loadBalancerName: roundRobin
+  loadBalancers:
+    roundRobin:
+      type: ROUND_ROBIN
+
+- !ENCRYPT
+  encryptors:
+    aes_encryptor:
+      type: AES
+      props:
+        aes-key-value: 123456abc
+  tables:
+    t_user:
+      columns:
+        pwd:
+          plainColumn: pwd_plain
+          cipherColumn: pwd_cipher
+          encryptorName: aes_encryptor
+    t_user_details:
+      columns:
+        number:
+          plainColumn: number_plain
+          cipherColumn: number_cipher
+          encryptorName: aes_encryptor
+        number_new:
+          plainColumn: number_new_plain
+          cipherColumn: number_new_cipher
+          encryptorName: aes_encryptor
+    t_user_encrypt_federate:
+      columns:
+        pwd:
+          plainColumn: plain_pwd
+          cipherColumn: cipher_pwd
+          encryptorName: aes_encryptor
+    t_user_encrypt_federate_sharding:
+      columns:
+        pwd:
+          plainColumn: plain_pwd
+          cipherColumn: cipher_pwd
+          encryptorName: aes_encryptor
