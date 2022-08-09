@@ -53,8 +53,8 @@ import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCre
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
-import org.apache.shardingsphere.mode.lock.ExclusiveLockDefinition;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.mode.lock.ExclusiveLockDefinition;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
@@ -116,6 +116,7 @@ public final class RuleAlteredJobPreparer {
     }
     
     private void waitUntilLockReleased(final LockContext lockContext, final LockDefinition lockDefinition) {
+        log.info("waiting for lock released, lockKey={}", lockDefinition.getLockKey());
         for (int loopCount = 0; loopCount < 30; loopCount++) {
             ThreadUtil.sleep(TimeUnit.SECONDS.toMillis(5));
             if (!lockContext.isLocked(lockDefinition)) {
