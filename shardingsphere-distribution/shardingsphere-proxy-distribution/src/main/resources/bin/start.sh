@@ -51,6 +51,15 @@ if [ "$int_version" = '1' ] ; then
 fi
 echo "we find java version: java${int_version}, full_version=${total_version}, full_path=$JAVA"
 
+case "$OSTYPE" in
+*solaris*)
+  GREP=/usr/xpg4/bin/grep
+  ;;
+*)
+  GREP=grep
+  ;;
+esac
+
 VERSION_OPTS=""
 if [ "$int_version" = '8' ] ; then
     VERSION_OPTS="-XX:+UseConcMarkSweepGC -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70"
@@ -155,6 +164,9 @@ else
   REAL_PORT=$PORT
 fi
 
+echo "The classpath is ${CLASS_PATH}"
+echo "main class ${MAIN_CLASS}"
+echo "STDOUT log file: $STDOUT_FILE"
 echo -e "Starting the $SERVER_NAME ...\c"
 
 for((i=1;i<=10;i++)); do
@@ -163,7 +175,7 @@ for((i=1;i<=10;i++)); do
     exit
   fi
 
-  PORT_STATUS=$(netstat -ant |grep $REAL_PORT |grep LISTEN)
+  PORT_STATUS=$(netstat -ant |$GREP $REAL_PORT |$GREP LISTEN)
   if [ -n "$PORT_STATUS" ]; then
     echo -e ".\c"
     sleep 1
@@ -171,11 +183,30 @@ for((i=1;i<=10;i++)); do
     break
   fi
 done
-
 echo ""
-echo "The classpath is ${CLASS_PATH}"
-echo "main class ${MAIN_CLASS}"
 
 nohup $JAVA ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &
-sleep 1
-echo "Please check the STDOUT file: $STDOUT_FILE"
+if [ $? -eq 0 ]; then
+  case "$OSTYPE" in
+  *solaris*)
+    pid=$(/bin/echo "${!}\\c")
+    ;;
+  *)
+    pid=$(/bin/echo -n $!)
+    ;;
+  esac
+  if [ $? -eq 0 ]; then
+    sleep 1
+    if ps -p "${pid}" > /dev/null 2>&1; then
+      echo "SUCCESS, PID: $pid"
+      exit 0
+    else
+      echo "FAILED TO START"
+    fi
+  else
+    echo "FAILED TO GET PID"
+  fi
+else
+  echo "SERVER DID NOT START"
+fi
+exit 1
