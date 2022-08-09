@@ -11,5 +11,5 @@ Data migration refers to the preparation of data extraction from one storage clu
 
 ## Related References
 
-[Configurations of data migration ](/en/user-manual/shardingsphere-proxy/scaling/)
-[Reference of data migration](/en/reference/scaling/)
+- [Configurations of data migration ](/en/user-manual/shardingsphere-proxy/scaling/)
+- [Reference of data migration](/en/reference/scaling/)
