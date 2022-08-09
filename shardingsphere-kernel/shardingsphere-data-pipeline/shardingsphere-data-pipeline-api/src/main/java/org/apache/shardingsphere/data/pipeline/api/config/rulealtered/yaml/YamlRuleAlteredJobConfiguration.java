@@ -135,7 +135,7 @@ public final class YamlRuleAlteredJobConfiguration implements YamlConfiguration 
     private String generateJobId() {
         RuleAlteredJobId jobId = new RuleAlteredJobId();
         // TODO type, subTypes
-        jobId.setType(JobType.RULE_ALTERED.getValue());
+        jobId.setType(JobType.MIGRATION.getCode());
         jobId.setFormatVersion(RuleAlteredJobId.CURRENT_VERSION);
         jobId.setSubTypes(Collections.singletonList(JobSubType.SCALING.getValue()));
         jobId.setCurrentMetadataVersion(activeVersion);

@@ -26,12 +26,15 @@ import lombok.Getter;
 @Getter
 public enum JobType {
     
-    RULE_ALTERED("01");
+    MIGRATION("MIGRATION", "01");
     
-    private final String value;
+    private final String name;
     
-    JobType(final String value) {
-        Preconditions.checkArgument(value.length() == 2, "value length is not 2");
-        this.value = value;
+    private final String code;
+    
+    JobType(final String name, final String code) {
+        this.name = name;
+        Preconditions.checkArgument(code.length() == 2, "code length is not 2");
+        this.code = code;
     }
 }

@@ -70,7 +70,7 @@ public final class JobConfigurationBuilder {
     
     private static String generateJobId(final int activeVersion, final String databaseName) {
         RuleAlteredJobId jobId = new RuleAlteredJobId();
-        jobId.setType(JobType.RULE_ALTERED.getValue());
+        jobId.setType(JobType.MIGRATION.getCode());
         jobId.setFormatVersion(RuleAlteredJobId.CURRENT_VERSION);
         jobId.setSubTypes(Collections.singletonList(JobSubType.SCALING.getValue()));
         jobId.setCurrentMetadataVersion(activeVersion);

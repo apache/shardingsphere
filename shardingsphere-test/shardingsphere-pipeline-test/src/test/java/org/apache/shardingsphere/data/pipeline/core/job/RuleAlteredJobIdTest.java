@@ -34,7 +34,7 @@ public final class RuleAlteredJobIdTest {
     @Test
     public void assertSerialization() {
         RuleAlteredJobId jobId = new RuleAlteredJobId();
-        jobId.setType(JobType.RULE_ALTERED.getValue());
+        jobId.setType(JobType.MIGRATION.getCode());
         jobId.setFormatVersion(RuleAlteredJobId.CURRENT_VERSION);
         Pair<List<String>, List<String>> subTypesPair = getSubTypesPair();
         jobId.setSubTypes(subTypesPair.getLeft());
