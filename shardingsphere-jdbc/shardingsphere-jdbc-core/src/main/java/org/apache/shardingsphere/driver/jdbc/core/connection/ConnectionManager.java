@@ -61,6 +61,8 @@ import java.util.Random;
  */
 public final class ConnectionManager implements ExecutorJDBCConnectionManager, AutoCloseable {
     
+    private final String databaseName;
+    
     private final Map<String, DataSource> dataSourceMap = new LinkedHashMap<>();
     
     private final Map<String, DataSource> physicalDataSourceMap = new LinkedHashMap<>();
@@ -77,6 +79,7 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
     private final Random random = new SecureRandom();
     
     public ConnectionManager(final String databaseName, final ContextManager contextManager) {
+        this.databaseName = databaseName;
         dataSourceMap.putAll(contextManager.getDataSourceMap(databaseName));
         dataSourceMap.putAll(getTrafficDataSourceMap(databaseName, contextManager));
         physicalDataSourceMap.putAll(contextManager.getDataSourceMap(databaseName));
@@ -354,7 +357,7 @@ public final class ConnectionManager implements ExecutorJDBCConnectionManager, A
     }
     
     private Connection createConnection(final String dataSourceName, final DataSource dataSource) throws SQLException {
-        Optional<Connection> connectionInTransaction = isRawJdbcDataSource(dataSourceName) ? connectionTransaction.getConnection(dataSourceName) : Optional.empty();
+        Optional<Connection> connectionInTransaction = isRawJdbcDataSource(dataSourceName) ? connectionTransaction.getConnection(databaseName, dataSourceName) : Optional.empty();
         return connectionInTransaction.isPresent() ? connectionInTransaction.get() : dataSource.getConnection();
     }
     
