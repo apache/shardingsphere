@@ -15,26 +15,18 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock.definition;
-
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.lock.LockDefinition;
-import org.apache.shardingsphere.mode.lock.util.LockKeyUtil;
+package org.apache.shardingsphere.mode.repository.cluster.lock;
 
 /**
- * Database lock definition.
+ * Internal lock holder.
  */
-@RequiredArgsConstructor
-@Getter
-public final class DatabaseLockDefinition implements LockDefinition {
+public interface InternalLockHolder {
     
-    private final String lockKey;
-    
-    private final String databaseName;
-    
-    public DatabaseLockDefinition(final String databaseName) {
-        this.databaseName = databaseName;
-        lockKey = LockKeyUtil.generateDatabaseLockKey(databaseName);
-    }
+    /**
+     * Get internal lock.
+     *
+     * @param lockKey lock key
+     * @return internal lock
+     */
+    InternalLock getInternalLock(String lockKey);
 }

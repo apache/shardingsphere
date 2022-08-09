@@ -54,7 +54,7 @@ import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCre
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
-import org.apache.shardingsphere.mode.lock.definition.LockDefinitionFactory;
+import org.apache.shardingsphere.mode.lock.ExclusiveLockDefinition;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 
 import javax.sql.DataSource;
@@ -105,7 +105,7 @@ public final class RuleAlteredJobPreparer {
         // TODO the lock will be replaced
         String lockName = "prepare-" + jobConfig.getJobId();
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        LockDefinition lockDefinition = LockDefinitionFactory.newExclusiveLockDefinition(lockName);
+        LockDefinition lockDefinition = new ExclusiveLockDefinition(lockName);
         if (lockContext.tryLock(lockDefinition, 3000)) {
             try {
                 prepareAndCheckTarget(jobContext);

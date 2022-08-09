@@ -15,24 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock.definition;
+package org.apache.shardingsphere.mode.lock;
 
-import lombok.Getter;
-import org.apache.shardingsphere.infra.lock.LockDefinition;
-import org.apache.shardingsphere.mode.lock.util.LockKeyUtil;
+import org.junit.Test;
 
-/**
- * Exclusive lock definition.
- */
-@Getter
-public final class ExclusiveLockDefinition implements LockDefinition {
+import static org.hamcrest.CoreMatchers.is;
+import static org.junit.Assert.assertThat;
+
+public final class LockKeyUtilTest {
     
-    private final String lockKey;
+    @Test
+    public void assertGenerateExclusiveLockKey() {
+        assertThat(LockKeyUtil.generateExclusiveLockKey("exclusive_lock"), is("/lock/exclusive/locks/exclusive_lock"));
+    }
     
-    private final String lockName;
-    
-    public ExclusiveLockDefinition(final String lockName) {
-        this.lockName = lockName;
-        lockKey = LockKeyUtil.generateExclusiveLockKey(lockName);
+    @Test
+    public void assertGenerateLockKeyLeases() {
+        assertThat(LockKeyUtil.generateLockKeyLeases("/lock/exclusive/locks/exclusive_lock"), is("/lock/exclusive/locks/exclusive_lock/leases"));
     }
 }

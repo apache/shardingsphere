@@ -58,7 +58,7 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
-import org.apache.shardingsphere.mode.lock.definition.LockDefinitionFactory;
+import org.apache.shardingsphere.mode.lock.ExclusiveLockDefinition;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
 
 import java.time.LocalDateTime;
@@ -188,7 +188,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     public void stopClusterWriteDB(final RuleAlteredJobConfiguration jobConfig) {
         String databaseName = jobConfig.getDatabaseName();
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        LockDefinition lockDefinition = LockDefinitionFactory.newDatabaseLockDefinition(databaseName);
+        LockDefinition lockDefinition = new ExclusiveLockDefinition(databaseName);
         if (lockContext.isLocked(lockDefinition)) {
             log.info("stopClusterWriteDB, already stopped");
             return;
@@ -214,7 +214,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     public void restoreClusterWriteDB(final RuleAlteredJobConfiguration jobConfig) {
         String databaseName = jobConfig.getDatabaseName();
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
-        LockDefinition lockDefinition = LockDefinitionFactory.newDatabaseLockDefinition(databaseName);
+        LockDefinition lockDefinition = new ExclusiveLockDefinition(databaseName);
         if (lockContext.isLocked(lockDefinition)) {
             log.info("restoreClusterWriteDB, before unlock, databaseName={}, jobId={}", databaseName, jobConfig.getJobId());
             lockContext.unlock(lockDefinition);
