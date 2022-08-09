@@ -22,8 +22,6 @@ import lombok.NonNull;
 import lombok.Setter;
 import lombok.ToString;
 
-import java.util.List;
-
 /**
  * Abstract job id.
  */
@@ -37,9 +35,6 @@ public abstract class AbstractPipelineJobId implements PipelineJobId {
     
     @NonNull
     private String formatVersion;
-    
-    @NonNull
-    private List<String> subTypes;
     
     @NonNull
     private String databaseName;

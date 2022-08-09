@@ -17,14 +17,9 @@
 
 package org.apache.shardingsphere.data.pipeline.core.job;
 
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.shardingsphere.data.pipeline.api.job.JobSubType;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.RuleAlteredJobId;
 import org.junit.Test;
-
-import java.util.Arrays;
-import java.util.List;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -36,22 +31,14 @@ public final class RuleAlteredJobIdTest {
         RuleAlteredJobId jobId = new RuleAlteredJobId();
         jobId.setType(JobType.MIGRATION.getCode());
         jobId.setFormatVersion(RuleAlteredJobId.CURRENT_VERSION);
-        Pair<List<String>, List<String>> subTypesPair = getSubTypesPair();
-        jobId.setSubTypes(subTypesPair.getLeft());
         jobId.setCurrentMetadataVersion(0);
         jobId.setNewMetadataVersion(1);
         jobId.setDatabaseName("sharding_db");
         String hexText = jobId.marshal();
         RuleAlteredJobId actual = RuleAlteredJobId.unmarshal(hexText);
         assertThat(actual.getFormatVersion(), is(jobId.getFormatVersion()));
-        assertThat(actual.getSubTypes(), is(subTypesPair.getRight()));
         assertThat(actual.getCurrentMetadataVersion(), is(jobId.getCurrentMetadataVersion()));
         assertThat(actual.getNewMetadataVersion(), is(jobId.getNewMetadataVersion()));
         assertThat(actual.getDatabaseName(), is(jobId.getDatabaseName()));
-    }
-    
-    private Pair<List<String>, List<String>> getSubTypesPair() {
-        return Pair.of(Arrays.asList(JobSubType.ENCRYPTION.getValue(), JobSubType.SCALING.getValue()),
-                Arrays.asList(JobSubType.SCALING.getValue(), JobSubType.ENCRYPTION.getValue()));
     }
 }

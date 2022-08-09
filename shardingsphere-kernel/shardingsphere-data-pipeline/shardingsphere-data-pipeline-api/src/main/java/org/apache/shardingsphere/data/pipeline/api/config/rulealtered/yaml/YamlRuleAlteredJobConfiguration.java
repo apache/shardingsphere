@@ -25,13 +25,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.yaml.YamlPipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.job.JobSubType;
 import org.apache.shardingsphere.data.pipeline.api.job.JobType;
 import org.apache.shardingsphere.data.pipeline.api.job.RuleAlteredJobId;
 import org.apache.shardingsphere.data.pipeline.spi.rulealtered.RuleAlteredJobConfigurationPreparerFactory;
 import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -132,12 +130,16 @@ public final class YamlRuleAlteredJobConfiguration implements YamlConfiguration 
         }
     }
     
-    private String generateJobId() {
+    /**
+     * Generate job id.
+     *
+     * @return job id
+     */
+    // TODO add generateJobId in YamlPipelineJobConfig interface
+    public String generateJobId() {
         RuleAlteredJobId jobId = new RuleAlteredJobId();
-        // TODO type, subTypes
         jobId.setType(JobType.MIGRATION.getCode());
         jobId.setFormatVersion(RuleAlteredJobId.CURRENT_VERSION);
-        jobId.setSubTypes(Collections.singletonList(JobSubType.SCALING.getValue()));
         jobId.setCurrentMetadataVersion(activeVersion);
         jobId.setNewMetadataVersion(newVersion);
         jobId.setDatabaseName(databaseName);

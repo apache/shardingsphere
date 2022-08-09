@@ -17,8 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.api.job;
 
-import java.util.List;
-
 /**
  * Job id.
  */
@@ -37,13 +35,6 @@ public interface PipelineJobId {
      * @return format version
      */
     String getFormatVersion();
-    
-    /**
-     * Get sub-types.
-     *
-     * @return sub-types
-     */
-    List<String> getSubTypes();
     
     /**
      * Get database name.
