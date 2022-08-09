@@ -19,11 +19,15 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.adapter.
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.adapter.AdapterContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.StorageContainer;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.container.wait.JDBCConnectionWaitStrategy;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
-import org.apache.shardingsphere.test.integration.env.container.atomic.DockerITContainer;
 import org.testcontainers.containers.BindMode;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.shaded.com.google.common.base.Strings;
 
 import javax.sql.DataSource;
 import java.sql.DriverManager;
@@ -43,12 +47,18 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
     
     private final String scenario;
     
+    private final String module;
+    
+    private final StorageContainer storageContainer;
+    
     private final AtomicReference<DataSource> targetDataSourceProvider = new AtomicReference<>();
     
-    public ShardingSphereProxyClusterContainer(final DatabaseType databaseType, final String scenario) {
+    public ShardingSphereProxyClusterContainer(final DatabaseType databaseType, final String scenario, final StorageContainer storageContainer, final String module) {
         super("ShardingSphere-Proxy", "apache/shardingsphere-proxy-test");
         this.databaseType = databaseType;
         this.scenario = scenario;
+        this.module = module;
+        this.storageContainer = storageContainer;
     }
     
     /**
@@ -67,13 +77,44 @@ public final class ShardingSphereProxyClusterContainer extends DockerITContainer
     protected void configure() {
         withExposedPorts(3307);
         mapConfigurationFiles();
-        setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), scenario), "proxy", "Proxy@123")));
+        if (Strings.isNullOrEmpty(module)) {
+            setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType,
+                    getHost(), getMappedPort(3307), scenario), "proxy", "Proxy@123")));
+        }
+        if ("scaling".equalsIgnoreCase(module)) {
+            scalingConfigure();
+        }
+    }
+    
+    private void scalingConfigure() {
+        if (DatabaseTypeUtil.isPostgreSQL(databaseType)) {
+            setWaitStrategy(
+                    new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), "postgres"), "proxy", "Proxy@123")));
+        } else if (DatabaseTypeUtil.isMySQL(databaseType)) {
+            setWaitStrategy(new JDBCConnectionWaitStrategy(() -> DriverManager.getConnection(DataSourceEnvironment.getURL(databaseType, getHost(), getMappedPort(3307), ""), "proxy", "Proxy@123")));
+        }
     }
     
     private void mapConfigurationFiles() {
         String pathInContainer = "/opt/shardingsphere-proxy/conf";
-        withClasspathResourceMapping("/env/common/cluster/proxy/conf/", pathInContainer, BindMode.READ_ONLY);
-        withClasspathResourceMapping("/env/scenario/" + scenario + "/proxy/conf/" + databaseType.getType().toLowerCase(), pathInContainer, BindMode.READ_ONLY);
+        if (Strings.isNullOrEmpty(module)) {
+            withClasspathResourceMapping("/env/common/standalone/proxy/conf/", pathInContainer, BindMode.READ_ONLY);
+            withClasspathResourceMapping("/env/scenario/" + scenario + "/proxy/conf/" + databaseType.getType().toLowerCase(), pathInContainer, BindMode.READ_ONLY);
+        }
+        if ("scaling".equalsIgnoreCase(module)) {
+            mapScalingConfigurationFiles();
+        }
+    }
+    
+    private void mapScalingConfigurationFiles() {
+        if (DatabaseTypeUtil.isMySQL(databaseType)) {
+            String majorVersion = DatabaseTypeUtil.parseMajorVersion(((GenericContainer<?>) storageContainer).getDockerImageName());
+            withClasspathResourceMapping(String.format("/env/%s/%s/server-%s.yaml", module, databaseType.getType().toLowerCase(), majorVersion),
+                    "/opt/shardingsphere-proxy/conf/server.yaml", BindMode.READ_ONLY);
+        } else {
+            withClasspathResourceMapping(String.format("/env/%s/%s/server.yaml", module, databaseType.getType().toLowerCase()), "/opt/shardingsphere-proxy/conf/server.yaml", BindMode.READ_ONLY);
+        }
+        withClasspathResourceMapping(String.format("/env/%s/logback.xml", module), "/opt/shardingsphere-proxy/conf/logback.xml", BindMode.READ_ONLY);
     }
     
     @Override

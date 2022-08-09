@@ -42,10 +42,26 @@ public final class AdapterContainerFactory {
      * @return created instance
      */
     public static AdapterContainer newInstance(final String mode, final String adapter, final DatabaseType databaseType, final StorageContainer storageContainer, final String scenario) {
+        return newInstance(mode, adapter, databaseType, storageContainer, scenario, "");
+    }
+    
+    /**
+     * Create new instance of adapter container.
+     *
+     * @param mode mode
+     * @param adapter adapter
+     * @param databaseType database type
+     * @param storageContainer storage container
+     * @param scenario scenario
+     * @param module module
+     * @return created instance
+     */
+    public static AdapterContainer newInstance(final String mode, final String adapter, final DatabaseType databaseType,
+                                               final StorageContainer storageContainer, final String scenario, final String module) {
         switch (adapter) {
             case "proxy":
                 if ("Cluster".equalsIgnoreCase(mode)) {
-                    return new ShardingSphereProxyClusterContainer(databaseType, scenario);
+                    return new ShardingSphereProxyClusterContainer(databaseType, scenario, storageContainer, module);
                 }
                 return new ShardingSphereProxyStandaloneContainer(databaseType, scenario);
             case "jdbc":
