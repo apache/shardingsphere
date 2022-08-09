@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.exception;
 
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+
 /**
  * No database selected exception.
  */
-public final class NoDatabaseSelectedException extends BackendException {
+public final class NoDatabaseSelectedException extends ShardingSphereInsideException {
     
     private static final long serialVersionUID = -372108713585501394L;
 }

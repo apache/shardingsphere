@@ -45,26 +45,27 @@ import java.util.Collection;
 public final class RuleAlteredJobScheduler implements PipelineTasksRunner {
     
     private final PipelineJobContext jobContext;
-
+    
     private final Collection<InventoryTask> inventoryTasks;
-
+    
     private final Collection<IncrementalTask> incrementalTasks;
-
+    
     private final LazyInitializer<ExecuteEngine> inventoryDumperExecuteEngineLazyInitializer = new LazyInitializer<ExecuteEngine>() {
-
+        
         @Override
         protected ExecuteEngine initialize() {
             return ExecuteEngine.newCachedThreadInstance("Inventory-" + jobContext.getJobId());
         }
     };
-
+    
     private final LazyInitializer<ExecuteEngine> incrementalDumperExecuteEngineLazyInitializer = new LazyInitializer<ExecuteEngine>() {
+        
         @Override
         protected ExecuteEngine initialize() {
             return ExecuteEngine.newCachedThreadInstance("Incremental-" + jobContext.getJobId());
         }
     };
-
+    
     /**
      * Stop all task.
      */
@@ -116,12 +117,12 @@ public final class RuleAlteredJobScheduler implements PipelineTasksRunner {
         }
         return false;
     }
-
+    
     @SneakyThrows(ConcurrentException.class)
     private ExecuteEngine getInventoryDumperExecuteEngine() {
         return inventoryDumperExecuteEngineLazyInitializer.get();
     }
-
+    
     private ExecuteCallback createInventoryTaskCallback() {
         return new ExecuteCallback() {
             
@@ -157,12 +158,12 @@ public final class RuleAlteredJobScheduler implements PipelineTasksRunner {
             getIncrementalDumperExecuteEngine().submit(each, incrementalTaskCallback);
         }
     }
-
+    
     @SneakyThrows(ConcurrentException.class)
     private ExecuteEngine getIncrementalDumperExecuteEngine() {
         return incrementalDumperExecuteEngineLazyInitializer.get();
     }
-
+    
     private ExecuteCallback createIncrementalTaskCallback() {
         return new ExecuteCallback() {
             
