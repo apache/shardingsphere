@@ -51,7 +51,7 @@
 #      maximumSize: 65535
 #    parseTreeCache:
 #      initialCapacity: 128
-#      maximumSize: 1024
+#      maximumSize: 1024 
 
 #props:
 #  max-connections-size-per-query: 1
