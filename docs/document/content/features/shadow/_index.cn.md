@@ -16,6 +16,10 @@ weight = 9
 
 Apache ShardingSphere 关注于全链路压测场景下，数据库层面的解决方案。 将压测数据自动路由至用户指定的数据库，是 Apache ShardingSphere 影子库模块的主要设计目标。
 
+## 应用场景
+
+在基于微服务的分布式应用架构下，为了提升系统压力测试的准确性，降低测试成本。通常选择在生产环境进行压力测试。测试中风险也会大大提高。通过 ShardingSphere 影子库功能，结合影子算法灵活的配置。可以解决数据污染，数据库性能等问题，满足复杂业务场景的在线压力测试需求。
+
 ## 相关参考
 
 - [Java API：影子库](/cn/user-manual/shardingsphere-jdbc/java-api/rules/shadow/)

@@ -26,6 +26,10 @@ Apache ShardingSphere focuses on data solutions in pressure testing on productio
 
 The main goal of the Apache ShardingSphere shadow Database module is routing pressure testing data to user defined database automatically.
 
+## Application Scenario
+
+In order to improve the accuracy of stress testing and reduce the testing cost under the distributed application architecture based on microservices, stress testing is usually carried out in production environments, which will notably increase testing risks. However, the ShardingSphere shadow DB function, combined with the flexible configuration of the shadow algorithm, can address data pollution, improve database performance, and meet the requirements of online stress testing in complex business scenarios.
+
 ## Related References
 
 - [Java API: shadow DB ](/en/user-manual/shardingsphere-jdbc/java-api/rules/shadow/)
