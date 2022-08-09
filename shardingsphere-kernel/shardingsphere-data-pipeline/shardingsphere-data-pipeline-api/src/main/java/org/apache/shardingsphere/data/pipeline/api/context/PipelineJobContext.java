@@ -18,7 +18,10 @@
 package org.apache.shardingsphere.data.pipeline.api.context;
 
 import org.apache.shardingsphere.data.pipeline.api.config.job.PipelineJobConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
+import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 
 /**
  * Pipeline job context.
@@ -66,4 +69,25 @@ public interface PipelineJobContext {
      * @return job process context
      */
     PipelineProcessContext getJobProcessContext();
+    
+    /**
+     * Get task configuration.
+     *
+     * @return task configuration
+     */
+    TaskConfiguration getTaskConfig();
+    
+    /**
+     * Get init progress.
+     *
+     * @return init progress
+     */
+    JobProgress getInitProgress();
+    
+    /**
+     * Get source data source.
+     *
+     * @return source data source
+     */
+    PipelineDataSourceWrapper getSourceDataSource();
 }
