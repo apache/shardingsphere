@@ -78,6 +78,7 @@ public final class QueryOptimizePlannerFactory {
         planner.addRule(EnumerableRules.ENUMERABLE_AGGREGATE_RULE);
         planner.addRule(EnumerableRules.ENUMERABLE_FILTER_RULE);
         planner.addRule(EnumerableRules.ENUMERABLE_CORRELATE_RULE);
+        planner.addRule(EnumerableRules.ENUMERABLE_UNION_RULE);
     }
     
     private static Collection<RelOptRule> getSubQueryRules() {
