@@ -124,7 +124,7 @@ public final class JDBCDatabaseCommunicationEngine extends DatabaseCommunication
             return processExecuteFederation(resultSet, metaDataContexts);
         }
         ExecutionContext executionContext = getKernelProcessor().generateExecutionContext(logicSQL, getDatabase(), metaDataContexts.getMetaData().getGlobalRuleMetaData(),
-                metaDataContexts.getMetaData().getProps(), backendConnection.getConnectionSession().getSessionContext());
+                metaDataContexts.getMetaData().getProps(), backendConnection.getConnectionSession().getSqlSession());
         if (executionContext.getExecutionUnits().isEmpty()) {
             return new UpdateResponseHeader(executionContext.getSqlStatementContext().getSqlStatement());
         }

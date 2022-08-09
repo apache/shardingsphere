@@ -21,9 +21,9 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 /**
- * Session context.
+ * SQL session.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SessionContext {
+public final class SQLSession {
 }
