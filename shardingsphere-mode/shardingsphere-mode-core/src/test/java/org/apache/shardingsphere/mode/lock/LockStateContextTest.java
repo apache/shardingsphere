@@ -15,26 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock.engine;
+package org.apache.shardingsphere.mode.lock;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
-import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
+import org.junit.Test;
 
-/**
- * Lock judge engine.
- */
-@SingletonSPI
-public interface LockJudgeEngine extends RequiredSPI {
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
+public final class LockStateContextTest {
     
-    /**
-     * Is locked.
-     *
-     * @param lockContext lock context
-     * @param databaseName database name
-     * @param sqlStatementContext sql statement context
-     * @return is locked or not
-     */
-    boolean isLocked(LockContext lockContext, String databaseName, SQLStatementContext<?> sqlStatementContext);
+    private final LockStateContext lockStateContext = new LockStateContext();
+    
+    @Test
+    public void assertLockState() {
+        ExclusiveLockDefinition lockDefinition = new ExclusiveLockDefinition("exclusive_lock");
+        lockStateContext.register(lockDefinition);
+        assertTrue(lockStateContext.isLocked(lockDefinition));
+        lockStateContext.unregister(lockDefinition);
+        assertFalse(lockStateContext.isLocked(lockDefinition));
+    }
 }

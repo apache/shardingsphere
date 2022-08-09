@@ -24,7 +24,6 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.locks.Lock;
 
 public final class ClusterPersistRepositoryFixture implements ClusterPersistRepository {
     
@@ -65,16 +64,6 @@ public final class ClusterPersistRepositoryFixture implements ClusterPersistRepo
     @Override
     public boolean tryLock(final String lockKey, final long timeoutMillis) {
         return false;
-    }
-    
-    @Override
-    public Lock getInternalMutexLock(final String lockName) {
-        return null;
-    }
-    
-    @Override
-    public Lock getInternalReentrantMutexLock(final String lockName) {
-        return null;
     }
     
     @Override

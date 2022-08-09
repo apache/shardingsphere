@@ -17,39 +17,44 @@
 
 package org.apache.shardingsphere.mode.lock;
 
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
-import org.apache.shardingsphere.mode.lock.manager.ShardingSphereLockManager;
-import org.apache.shardingsphere.mode.lock.util.TimeoutMilliseconds;
 
 /**
  * Lock context of ShardingSphere.
  */
+@RequiredArgsConstructor
 public final class ShardingSphereLockContext implements LockContext {
     
-    private final ShardingSphereLockManager lockManager;
+    public static final long MAX_TRY_LOCK = 3 * 60 * 1000L;
     
-    public ShardingSphereLockContext(final LockPersistService lockPersistService) {
-        this.lockManager = new ShardingSphereLockManager(lockPersistService);
-    }
+    private final LockStateContext lockStateContext = new LockStateContext();
+    
+    private final LockPersistService lockPersistService;
     
     @Override
     public boolean tryLock(final LockDefinition lockDefinition) {
-        return lockManager.tryLock(lockDefinition, TimeoutMilliseconds.MAX_TRY_LOCK);
+        return tryLock(lockDefinition, MAX_TRY_LOCK);
     }
     
     @Override
     public boolean tryLock(final LockDefinition lockDefinition, final long timeoutMillis) {
-        return lockManager.tryLock(lockDefinition, timeoutMillis);
+        if (lockPersistService.tryLock(lockDefinition, timeoutMillis)) {
+            lockStateContext.register(lockDefinition);
+            return true;
+        }
+        return false;
     }
     
     @Override
     public void unlock(final LockDefinition lockDefinition) {
-        lockManager.unLock(lockDefinition);
+        lockPersistService.unlock(lockDefinition);
+        lockStateContext.unregister(lockDefinition);
     }
     
     @Override
     public boolean isLocked(final LockDefinition lockDefinition) {
-        return lockManager.isLocked(lockDefinition);
+        return lockStateContext.isLocked(lockDefinition);
     }
 }

@@ -15,20 +15,23 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.mode.lock.engine;
+package org.apache.shardingsphere.mode.lock;
 
-import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
-import org.apache.shardingsphere.infra.lock.LockContext;
-import org.apache.shardingsphere.mode.lock.definition.LockDefinitionFactory;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatementType;
+import lombok.Getter;
+import org.apache.shardingsphere.infra.lock.LockDefinition;
 
 /**
- * Lock judge engine for ShardingSphere.
+ * Exclusive lock definition.
  */
-public final class ShardingSphereLockJudgeEngine implements LockJudgeEngine {
+@Getter
+public final class ExclusiveLockDefinition implements LockDefinition {
     
-    @Override
-    public boolean isLocked(final LockContext lockContext, final String databaseName, final SQLStatementContext<?> sqlStatementContext) {
-        return SQLStatementType.involvesDataChanges(sqlStatementContext.getSqlStatement()) && lockContext.isLocked(LockDefinitionFactory.newDatabaseLockDefinition(databaseName));
+    private final String lockKey;
+    
+    private final String lockName;
+    
+    public ExclusiveLockDefinition(final String lockName) {
+        this.lockName = lockName;
+        lockKey = LockKeyUtil.generateExclusiveLockKey(lockName);
     }
 }

@@ -20,7 +20,7 @@ package org.apache.shardingsphere.mode.manager.cluster.coordinator;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.mode.lock.LockPersistService;
-import org.apache.shardingsphere.mode.lock.util.LockKeyUtil;
+import org.apache.shardingsphere.mode.lock.LockKeyUtil;
 import org.apache.shardingsphere.mode.repository.cluster.ClusterPersistRepository;
 
 /**
