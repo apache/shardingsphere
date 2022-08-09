@@ -81,13 +81,14 @@ public final class ConnectionTransaction {
     
     /**
      * Get connection in transaction.
-     * 
+     *
+     * @param databaseName database name
      * @param dataSourceName data source name
      * @return connection in transaction
      * @throws SQLException SQL exception
      */
-    public Optional<Connection> getConnection(final String dataSourceName) throws SQLException {
-        return isInTransaction() ? Optional.of(transactionManager.getConnection(dataSourceName)) : Optional.empty();
+    public Optional<Connection> getConnection(final String databaseName, final String dataSourceName) throws SQLException {
+        return isInTransaction() ? Optional.of(transactionManager.getConnection(databaseName, dataSourceName)) : Optional.empty();
     }
     
     /**

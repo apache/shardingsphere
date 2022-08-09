@@ -30,6 +30,7 @@ import io.seata.rm.datasource.ConnectionProxy;
 import io.seata.rm.datasource.DataSourceProxy;
 import io.seata.tm.api.GlobalTransactionContext;
 import lombok.SneakyThrows;
+import org.apache.shardingsphere.infra.database.DefaultDatabase;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.infra.executor.kernel.model.ExecutorDataMap;
 import org.apache.shardingsphere.test.mock.MockedDataSource;
@@ -84,7 +85,8 @@ public final class SeataATShardingSphereTransactionManagerTest {
     
     @Before
     public void setUp() {
-        seataTransactionManager.init(DatabaseTypeFactory.getInstance("MySQL"), Collections.singletonList(new ResourceDataSource("foo_ds", new MockedDataSource())), "Seata");
+        seataTransactionManager.init(DatabaseTypeFactory.getInstance("MySQL"), Collections.singletonList(new ResourceDataSource(DefaultDatabase.LOGIC_NAME + ".foo_ds", new MockedDataSource())),
+                "Seata");
     }
     
     @After
@@ -102,13 +104,13 @@ public final class SeataATShardingSphereTransactionManagerTest {
     public void assertInit() {
         Map<String, DataSource> actual = getDataSourceMap();
         assertThat(actual.size(), is(1));
-        assertThat(actual.get("foo_ds"), instanceOf(DataSourceProxy.class));
+        assertThat(actual.get(DefaultDatabase.LOGIC_NAME + ".foo_ds"), instanceOf(DataSourceProxy.class));
         assertThat(seataTransactionManager.getTransactionType(), is(TransactionType.BASE));
     }
     
     @Test
     public void assertGetConnection() throws SQLException {
-        Connection actual = seataTransactionManager.getConnection("foo_ds");
+        Connection actual = seataTransactionManager.getConnection(DefaultDatabase.LOGIC_NAME, "foo_ds");
         assertThat(actual, instanceOf(ConnectionProxy.class));
     }
     
