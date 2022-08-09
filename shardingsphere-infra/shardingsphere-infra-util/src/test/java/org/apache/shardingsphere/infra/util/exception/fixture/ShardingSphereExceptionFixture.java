@@ -15,31 +15,19 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.yaml.config.swapper;
+package org.apache.shardingsphere.infra.util.exception.fixture;
 
-import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereException;
 
-/**
- * YAML configuration swapper.
- *
- * @param <Y> type of YAML configuration
- * @param <T> type of swapped object
- */
-public interface YamlConfigurationSwapper<Y extends YamlConfiguration, T> {
+public final class ShardingSphereExceptionFixture extends ShardingSphereException {
     
-    /**
-     * Swap to YAML configuration.
-     *
-     * @param data data to be swapped
-     * @return YAML configuration
-     */
-    Y swapToYamlConfiguration(T data);
+    private static final long serialVersionUID = 4263474713534006256L;
     
-    /**
-     * Swap from YAML configuration to object.
-     *
-     * @param yamlConfig YAML configuration
-     * @return swapped object
-     */
-    T swapToObject(Y yamlConfig);
+    public ShardingSphereExceptionFixture() {
+        super("FIXTURE", 1, "Fixture error message");
+    }
+    
+    public ShardingSphereExceptionFixture(final Exception cause) {
+        super("FIXTURE", 1, "Fixture error message", cause);
+    }
 }

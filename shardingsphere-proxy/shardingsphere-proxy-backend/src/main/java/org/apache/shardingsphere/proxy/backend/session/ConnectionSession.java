@@ -23,6 +23,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.shardingsphere.infra.binder.statement.ddl.CursorStatementContext;
 import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
+import org.apache.shardingsphere.infra.session.SessionContext;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
 import org.apache.shardingsphere.infra.executor.sql.prepare.driver.ExecutorStatementManager;
@@ -77,6 +78,8 @@ public final class ConnectionSession {
     
     private final PreparedStatementRegistry preparedStatementRegistry = new PreparedStatementRegistry();
     
+    private final SessionContext sessionContext;
+    
     private final RequiredSessionVariableRecorder requiredSessionVariableRecorder = new RequiredSessionVariableRecorder();
     
     public ConnectionSession(final DatabaseType databaseType, final TransactionType initialTransactionType, final AttributeMap attributeMap) {
@@ -85,6 +88,7 @@ public final class ConnectionSession {
         this.attributeMap = attributeMap;
         backendConnection = determineBackendConnection();
         statementManager = determineStatementManager();
+        sessionContext = new SessionContext();
     }
     
     private BackendConnection determineBackendConnection() {

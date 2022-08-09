@@ -15,18 +15,15 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.distsql.exception.rule;
+package org.apache.shardingsphere.infra.session;
 
-import java.util.Collection;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 /**
- * Duplicate algorithm exception.
+ * Session context.
  */
-public final class DuplicateAlgorithmException extends RuleDefinitionViolationException {
-    
-    private static final long serialVersionUID = 4382238091103015055L;
-    
-    public DuplicateAlgorithmException(final String ruleType, final String databaseName, final Collection<String> algorithmNames) {
-        super(1122, String.format("Duplicate %s algorithm names `%s` in database `%s`", ruleType, algorithmNames, databaseName));
-    }
+@RequiredArgsConstructor
+@Getter
+public final class SessionContext {
 }

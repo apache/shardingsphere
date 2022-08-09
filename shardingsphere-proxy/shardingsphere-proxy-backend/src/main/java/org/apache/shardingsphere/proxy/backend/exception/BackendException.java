@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.exception;
 
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+
 /**
  * Backend exception.
  */
-public abstract class BackendException extends RuntimeException {
+public abstract class BackendException extends ShardingSphereInsideException {
     
     private static final long serialVersionUID = -2361593557266150160L;
 }

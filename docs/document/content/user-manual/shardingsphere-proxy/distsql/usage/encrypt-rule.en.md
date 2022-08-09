@@ -7,11 +7,11 @@ weight = 3
 
 ```sql
 ADD RESOURCE ds_0 (
-    HOST=127.0.0.1,
+    HOST="127.0.0.1",
     PORT=3306,
-    DB=ds_0,
-    USER=root,
-    PASSWORD=root
+    DB="ds_0",
+    USER="root",
+    PASSWORD="root"
 );
 ```
 

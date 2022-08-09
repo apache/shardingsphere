@@ -71,8 +71,6 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public final class RuleAlteredJobPreparer {
     
-    private final InventoryTaskSplitter inventoryTaskSplitter = new InventoryTaskSplitter();
-    
     /**
      * Do prepare work for scaling job.
      *
@@ -184,7 +182,7 @@ public final class RuleAlteredJobPreparer {
     }
     
     private void initInventoryTasks(final RuleAlteredJobContext jobContext) {
-        List<InventoryTask> allInventoryTasks = inventoryTaskSplitter.splitInventoryData(jobContext);
+        List<InventoryTask> allInventoryTasks = new InventoryTaskSplitter().splitInventoryData(jobContext);
         jobContext.getInventoryTasks().addAll(allInventoryTasks);
     }
     

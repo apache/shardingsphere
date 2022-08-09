@@ -118,7 +118,7 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
         ConfigurationProperties props = metaDataContexts.getMetaData().getProps();
         SQLFederationDeciderContext deciderContext = decide(logicSQL, props, metaDataContexts.getMetaData().getDatabase(getConnectionSession().getDatabaseName()));
         Collection<ExecutionUnit> executionUnits = deciderContext.isUseSQLFederation() ? getFederationExecutionUnits(logicSQL, databaseName, metaDataContexts)
-                : kernelProcessor.generateExecutionContext(logicSQL, database, globalRuleMetaData, props).getExecutionUnits();
+                : kernelProcessor.generateExecutionContext(logicSQL, database, globalRuleMetaData, props, getConnectionSession().getSessionContext()).getExecutionUnits();
         return executionUnits.stream().map(this::buildRow).collect(Collectors.toList());
     }
     

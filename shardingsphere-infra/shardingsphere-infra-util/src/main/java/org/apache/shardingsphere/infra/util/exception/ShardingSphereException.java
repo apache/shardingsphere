@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.spi.exception;
+package org.apache.shardingsphere.infra.util.exception;
 
 /**
- * ShardingSphere SPI exception.
+ * ShardingSphere exception.
  */
-public abstract class ShardingSphereSPIException extends RuntimeException {
+public abstract class ShardingSphereException extends RuntimeException {
     
-    private static final long serialVersionUID = -3044979409127407014L;
+    private static final long serialVersionUID = 1547233217081261239L;
     
-    public ShardingSphereSPIException(final int errorCode, final String message) {
-        super(createErrorMessage(errorCode, message));
+    public ShardingSphereException(final String errorCategory, final int errorCode, final String message) {
+        super(String.format("%s-%05d: %s", errorCategory, errorCode, message));
     }
     
-    private static String createErrorMessage(final int errorCode, final String message) {
-        return String.format("SPI-%05d: %s", errorCode, message);
+    public ShardingSphereException(final String errorCategory, final int errorCode, final String message, final Exception cause) {
+        super(String.format("%s-%05d: %s", errorCategory, errorCode, message), cause);
     }
 }
