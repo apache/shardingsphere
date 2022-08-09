@@ -51,8 +51,8 @@ public final class SingleTableSQLFederationDecider implements SQLFederationDecid
         if (singleTableNames.isEmpty()) {
             return;
         }
-        addTableDataNodes(deciderContext, rule, singleTableNames);
         deciderContext.setUseSQLFederation(!isAllTablesInSameDataSource(deciderContext, rule, singleTableNames));
+        addTableDataNodes(deciderContext, rule, singleTableNames);
     }
     
     private static void addTableDataNodes(final SQLFederationDeciderContext deciderContext, final SingleTableRule rule, final Collection<QualifiedTable> singleTableNames) {
