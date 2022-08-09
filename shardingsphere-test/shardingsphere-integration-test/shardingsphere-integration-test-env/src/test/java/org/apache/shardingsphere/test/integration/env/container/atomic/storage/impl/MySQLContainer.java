@@ -29,8 +29,11 @@ import java.util.Optional;
  */
 public final class MySQLContainer extends DockerStorageContainer {
     
-    public MySQLContainer(final String dockerImageName, final String scenario) {
-        super(DatabaseTypeFactory.getInstance("MySQL"), Strings.isNullOrEmpty(dockerImageName) ? "mysql/mysql-server:5.7" : dockerImageName, scenario);
+    private final String module;
+    
+    public MySQLContainer(final String dockerImageName, final String scenario, final String module) {
+        super(DatabaseTypeFactory.getInstance("MySQL"), Strings.isNullOrEmpty(dockerImageName) ? "mysql/mysql-server:5.7" : dockerImageName, scenario, module);
+        this.module = module;
     }
     
     @Override
@@ -39,7 +42,12 @@ public final class MySQLContainer extends DockerStorageContainer {
         setCommand("--server-id=1");
         addEnv("LANG", "C.UTF-8");
         addEnv("MYSQL_RANDOM_ROOT_PASSWORD", "yes");
-        withClasspathResourceMapping("/env/mysql/my.cnf", "/etc/mysql/my.cnf", BindMode.READ_ONLY);
+        if (Strings.isNullOrEmpty(module)) {
+            withClasspathResourceMapping("/env/mysql/my.cnf", "/etc/mysql/my.cnf", BindMode.READ_ONLY);
+        }
+        if ("scaling".equalsIgnoreCase(module)) {
+            withClasspathResourceMapping(String.format("/env/%s/mysql/my.cnf", module), "/etc/mysql/my.cnf", BindMode.READ_ONLY);
+        }
         super.configure();
     }
     

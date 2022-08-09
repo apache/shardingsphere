@@ -29,14 +29,22 @@ import java.util.Optional;
  */
 public final class PostgreSQLContainer extends DockerStorageContainer {
     
-    public PostgreSQLContainer(final String dockerImageName, final String scenario) {
-        super(DatabaseTypeFactory.getInstance("PostgreSQL"), Strings.isNullOrEmpty(dockerImageName) ? "postgres:12-alpine" : dockerImageName, scenario);
+    private final String module;
+    
+    public PostgreSQLContainer(final String dockerImageName, final String scenario, final String module) {
+        super(DatabaseTypeFactory.getInstance("PostgreSQL"), Strings.isNullOrEmpty(dockerImageName) ? "postgres:12-alpine" : dockerImageName, scenario, module);
+        this.module = module;
     }
     
     @Override
     protected void configure() {
         addEnv("POSTGRES_PASSWORD", getUnifiedPassword());
-        withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/etc/postgresql/postgresql.conf", BindMode.READ_ONLY);
+        if (Strings.isNullOrEmpty(module)) {
+            withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/etc/postgresql/postgresql.conf", BindMode.READ_ONLY);
+        }
+        if ("scaling".equalsIgnoreCase(module)) {
+            withClasspathResourceMapping(String.format("/env/%s/postgresql/postgresql.conf", module), "/etc/postgresql/postgresql.conf", BindMode.READ_ONLY);
+        }
         setCommand("-c config_file=/etc/postgresql/postgresql.conf");
         super.configure();
     }

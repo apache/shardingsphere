@@ -50,14 +50,17 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     @Getter(AccessLevel.NONE)
     private final String scenario;
     
+    private final String module;
+    
     private final Map<String, DataSource> actualDataSourceMap;
     
     private final Map<String, DataSource> expectedDataSourceMap;
     
-    public DockerStorageContainer(final DatabaseType databaseType, final String dockerImageName, final String scenario) {
+    public DockerStorageContainer(final DatabaseType databaseType, final String dockerImageName, final String scenario, final String module) {
         super(databaseType.getType().toLowerCase(), dockerImageName);
         this.databaseType = databaseType;
         this.scenario = scenario;
+        this.module = module;
         actualDataSourceMap = new LinkedHashMap<>();
         expectedDataSourceMap = new LinkedHashMap<>();
     }
@@ -66,7 +69,13 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     protected void configure() {
         withClasspathResourceMapping("/container/init-sql/" + databaseType.getType().toLowerCase() + "/00-init-authority.sql", "/docker-entrypoint-initdb.d/00-init-authority.sql", BindMode.READ_ONLY);
         if (Strings.isNullOrEmpty(scenario)) {
-            withClasspathResourceMapping("/env/" + databaseType.getType().toLowerCase() + "/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql", BindMode.READ_ONLY);
+            // TODO this should be refactored after the whole IT refactor
+            if (Strings.isNullOrEmpty(module)) {
+                withClasspathResourceMapping("/env/" + databaseType.getType().toLowerCase() + "/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql", BindMode.READ_ONLY);
+            }
+            if ("scaling".equalsIgnoreCase(module)) {
+                withClasspathResourceMapping("/env/" + module + "/" + databaseType.getType().toLowerCase() + "/01-initdb.sql", "/docker-entrypoint-initdb.d/01-initdb.sql", BindMode.READ_ONLY);
+            }
         } else {
             withClasspathResourceMapping(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.ACTUAL, databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
             withClasspathResourceMapping(new ScenarioDataPath(scenario).getInitSQLResourcePath(Type.EXPECTED, databaseType), "/docker-entrypoint-initdb.d/", BindMode.READ_ONLY);
