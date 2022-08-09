@@ -40,7 +40,7 @@ import org.apache.shardingsphere.infra.binder.statement.CommonSQLStatementContex
 import org.apache.shardingsphere.infra.binder.type.TableAvailable;
 import org.apache.shardingsphere.infra.binder.type.WhereAvailable;
 import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
-import org.apache.shardingsphere.infra.exception.NoDatabaseException;
+import org.apache.shardingsphere.infra.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.ParameterMarkerType;
@@ -132,9 +132,8 @@ public final class SelectStatementContext extends CommonSQLStatementContext<Sele
         if (null == databaseName) {
             if (tablesContext.getTables().isEmpty()) {
                 return Collections.emptyMap();
-            } else {
-                throw new NoDatabaseException();
             }
+            throw new NoDatabaseSelectedException();
         }
         ShardingSphereDatabase database = databases.get(databaseName.toLowerCase());
         if (null == database) {

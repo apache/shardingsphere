@@ -17,14 +17,12 @@
 
 package org.apache.shardingsphere.infra.exception;
 
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+
 /**
- * No Database exception.
+ * No database selected exception.
  */
-public final class NoDatabaseException extends ShardingSphereException {
+public final class NoDatabaseSelectedException extends ShardingSphereInsideException {
     
-    private static final long serialVersionUID = -835255743584004153L;
-    
-    public NoDatabaseException() {
-        super("No database exists.");
-    }
+    private static final long serialVersionUID = 7820981156141678308L;
 }
