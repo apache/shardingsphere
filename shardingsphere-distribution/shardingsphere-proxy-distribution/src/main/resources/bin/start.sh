@@ -18,38 +18,47 @@
 
 SERVER_NAME=ShardingSphere-Proxy
 
-cd `dirname $0`
-cd ..
-DEPLOY_DIR=`pwd`
+DEPLOY_BIN="$(dirname "${BASH_SOURCE-$0}")"
+DEPLOY_DIR="$(cd "${DEPLOY_BIN}/../" || exit; pwd)"
 
 LOGS_DIR=${DEPLOY_DIR}/logs
-if [ ! -d ${LOGS_DIR} ]; then
-    mkdir ${LOGS_DIR}
+if [ ! -d "${LOGS_DIR}" ]; then
+    mkdir "${LOGS_DIR}"
 fi
+
 
 STDOUT_FILE=${LOGS_DIR}/stdout.log
 EXT_LIB=${DEPLOY_DIR}/ext-lib
 
 CLASS_PATH=.:${DEPLOY_DIR}/lib/*:${EXT_LIB}/*
 
-is_openjdk=$(java -version 2>&1 | tail -1 | awk '{print ($1 == "OpenJDK") ? "true" : "false"}')
-total_version=`java -version 2>&1 | grep version | sed '1!d' | sed -e 's/"//g' | awk '{print $3}'`
+if [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]];  then
+    JAVA="$JAVA_HOME/bin/java"
+elif type -p java; then
+    JAVA=java
+else
+    echo "Error: JAVA_HOME is not set and java could not be found in PATH." 1>&2
+    exit 1
+fi
+
+is_openjdk=$($JAVA -version 2>&1 | tail -1 | awk '{print ($1 == "OpenJDK") ? "true" : "false"}')
+total_version=$($JAVA -version 2>&1 | grep version | sed '1!d' | sed -e 's/"//g' | awk '{print $3}')
 int_version=${total_version%%.*}
-if [ $int_version = '1' ] ; then
+if [ "$int_version" = '1' ] ; then
     int_version=${total_version%.*}
     int_version=${int_version:2}
 fi
-echo "we find java version: java${int_version}, full_version=${total_version}"
+echo "we find java version: java${int_version}, full_version=${total_version}, full_path=$JAVA"
 
 VERSION_OPTS=""
-if [ $int_version = '8' ] ; then
+if [ "$int_version" = '8' ] ; then
     VERSION_OPTS="-XX:+UseConcMarkSweepGC -XX:+UseCMSInitiatingOccupancyOnly -XX:CMSInitiatingOccupancyFraction=70"
-elif [ $int_version = '11' ] ; then
+elif [ "$int_version" = '11' ] ; then
     VERSION_OPTS="-XX:+SegmentedCodeCache -XX:+AggressiveHeap"
     if $is_openjdk; then
       VERSION_OPTS="$VERSION_OPTS -XX:+UnlockExperimentalVMOptions -XX:+UseJVMCICompiler"
     fi
-elif [ $int_version = '17' ] ; then
+elif [ "$int_version" = '17' ] ; then
     VERSION_OPTS="-XX:+SegmentedCodeCache -XX:+AggressiveHeap"
 else
     echo "unadapted java version, please notice..."
@@ -86,7 +95,7 @@ if [ "$1" == "-h" ] || [ "$1" == "--help" ] ; then
 fi
 
 print_version() {
-    java ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion
+    $JAVA ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} org.apache.shardingsphere.infra.autogen.version.ShardingSphereVersion
     exit 0
 }
 
@@ -137,12 +146,12 @@ if [ -z "$PORT" ]; then
 fi
 
 CLASS_PATH=${CONF_PATH}:${CLASS_PATH}
-MAIN_CLASS=${MAIN_CLASS}" "${PORT}" "${CONF_PATH}" "${ADDRESSES}
+MAIN_CLASS="${MAIN_CLASS} ${PORT} ${CONF_PATH} ${ADDRESSES}"
 
 echo "Starting the $SERVER_NAME ..."
 echo "The classpath is ${CLASS_PATH}"
 echo "main class ${MAIN_CLASS}"
 
-nohup java ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &
+nohup $JAVA ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &
 sleep 1
 echo "Please check the STDOUT file: $STDOUT_FILE"
