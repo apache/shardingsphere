@@ -19,7 +19,6 @@ package org.apache.shardingsphere.infra.session;
 
 import lombok.Getter;
 import org.apache.shardingsphere.infra.session.cursor.CursorSessionContext;
-import org.apache.shardingsphere.infra.session.cursor.CursorSessionContextFactory;
 
 /**
  * Session context.
@@ -27,5 +26,5 @@ import org.apache.shardingsphere.infra.session.cursor.CursorSessionContextFactor
 @Getter
 public final class SessionContext {
     
-    private final CursorSessionContext cursorSessionContext = CursorSessionContextFactory.getInstance();
+    private final CursorSessionContext cursorSessionContext = new CursorSessionContext();
 }

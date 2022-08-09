@@ -17,32 +17,27 @@
 
 package org.apache.shardingsphere.infra.session.cursor;
 
-import org.apache.shardingsphere.spi.type.required.RequiredSPI;
+import lombok.Getter;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Cursor session context.
  */
-public interface CursorSessionContext extends RequiredSPI {
+@Getter
+public final class CursorSessionContext {
     
-    /**
-     * Get order by value groups.
-     * 
-     * @return groups
-     */
-    Map<String, List<FetchGroup>> getOrderByValueGroups();
+    private final Map<String, List<FetchGroup>> orderByValueGroups = new ConcurrentHashMap<>();
     
-    /**
-     * Get min group row counts.
-     * 
-     * @return min group row counts
-     */
-    Map<String, Long> getMinGroupRowCounts();
+    private final Map<String, Long> minGroupRowCounts = new ConcurrentHashMap<>();
     
     /**
      * Clear.
      */
-    void clear();
+    public void clear() {
+        orderByValueGroups.clear();
+        minGroupRowCounts.clear();
+    }
 }
