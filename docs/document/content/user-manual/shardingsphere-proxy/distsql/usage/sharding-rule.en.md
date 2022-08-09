@@ -14,9 +14,7 @@ ADD RESOURCE ds_0 (
     DB="ds_1",
     USER="root",
     PASSWORD="root"
-);
-
-ADD RESOURCE ds_1 (
+),ds_1 (
     HOST="127.0.0.1",
     PORT=3306,
     DB="ds_2",
