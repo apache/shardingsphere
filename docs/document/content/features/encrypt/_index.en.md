@@ -5,13 +5,27 @@ weight = 8
 chapter = true
 +++
 
-## Definition
+## Background
 
-Data encryption refers to the modification of some sensitive information through encryption rules in order to offer reliable protection to sensitive private data. Data related to customer security or some sensitive commercial data, such as ID number, mobile phone number, card number, customer number, and other personal information, shall be encrypted according to the regulations of respective regulations.
+Security control has always been a crucial link of data governance, data encryption falls into this category. For both Internet enterprises and traditional sectors, data security has always been a highly valued and sensitive topic. Data encryption refers to transforming some sensitive information through encrypt rules to safely protect the private data. Data involves client’s security or business sensibility, such as ID number, phone number, card number, client number and other personal information, requires data encryption according to relevant regulations.
 
-## Impact on the system
+The demand for data encryption is generally divided into two situations in real business scenarios:
 
-In real business scenarios, service development teams need to implement and maintain a set of encryption and decryption systems based on the requirements of the security department. When the encryption scenario changes, the self-maintained encryption system often faces the risk of reconstruction or modification. Additionally, for services that have been launched, it is relatively complicated to achieve seamless encrypted transformation in a transparent and secure manner without modifying business logic and SQL.
+1. When the new business start to launch, and the security department stipulates that the sensitive information related to users, such as banks and mobile phone numbers, should be encrypted and stored in the database, and then decrypted when used. Because it is a brand new system, there is no inventory data cleaning problem, so the implementation is relatively simple.
+
+1. For the service has been launched, and plaintext has been stored in the database before. The relevant department suddenly needs to encrypt the data from the on-line business. This scenario generally needs to deal with three issues as followings:
+
+- How to encrypt the historical data, a.k.a.s data clean.
+- How to encrypt the newly added data and store it in the database without changing the business SQL and logic; then decrypt the taken out data when use it.
+- How to securely, seamlessly and transparently migrate plaintext and ciphertext data between business systems.
+
+## Challenges
+
+In the real business scenario, the relevant business development team often needs to implement and maintain a set of encryption and decryption system according to the needs of the company’s security department. When the encryption scenario changes, the encryption system often faces the risk of reconstruction or modification. In addition, for the online business system, it is relatively complex to realize seamless encryption transformation with transparency, security and low risk without modifying the business logic and SQL.
+
+## Goal
+
+Provides a security and transparent data encryption solution, which is the main design goal of Apache ShardingSphere data encryption module.
 
 ## Related References
 
