@@ -135,7 +135,7 @@
         </dependency>
         <dependency>
             <groupId>org.apache.shardingsphere</groupId>
-            <artifactId>shardingsphere-authority-distsql-statement</artifactId>
+            <artifactId>shardingsphere-authority-distsql-handler</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

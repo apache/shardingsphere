@@ -31,5 +31,6 @@
     <modules>
         <module>shardingsphere-authority-distsql-statement</module>
         <module>shardingsphere-authority-distsql-parser</module>
+        <module>shardingsphere-authority-distsql-handler</module>
     </modules>
 </project>
