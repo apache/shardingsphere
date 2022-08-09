@@ -59,16 +59,16 @@ public final class SQLRewriteContext {
     @Getter(AccessLevel.NONE)
     private final SQLTokenGenerators sqlTokenGenerators = new SQLTokenGenerators();
     
-    private final SQLSession SQLSession;
+    private final SQLSession sqlSession;
     
     public SQLRewriteContext(final String databaseName, final Map<String, ShardingSphereSchema> schemas,
-                             final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> parameters, final SQLSession SQLSession) {
+                             final SQLStatementContext<?> sqlStatementContext, final String sql, final List<Object> parameters, final SQLSession sqlSession) {
         this.databaseName = databaseName;
         this.schemas = schemas;
         this.sqlStatementContext = sqlStatementContext;
         this.sql = sql;
         this.parameters = parameters;
-        this.SQLSession = SQLSession;
+        this.sqlSession = sqlSession;
         addSQLTokenGenerators(new DefaultTokenGeneratorBuilder(sqlStatementContext).getSQLTokenGenerators());
         parameterBuilder = ((sqlStatementContext instanceof InsertStatementContext) && (null == ((InsertStatementContext) sqlStatementContext).getInsertSelectContext()))
                 ? new GroupedParameterBuilder(
@@ -89,6 +89,6 @@ public final class SQLRewriteContext {
      * Generate SQL tokens.
      */
     public void generateSQLTokens() {
-        sqlTokens.addAll(sqlTokenGenerators.generateSQLTokens(databaseName, schemas, sqlStatementContext, parameters, SQLSession));
+        sqlTokens.addAll(sqlTokenGenerators.generateSQLTokens(databaseName, schemas, sqlStatementContext, parameters, sqlSession));
     }
 }

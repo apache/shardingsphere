@@ -119,7 +119,7 @@ public abstract class DatabaseCommunicationEngine implements DatabaseBackendHand
             prepareCursorStatementContext(statementContext, connectionSession, cursorName);
         }
         if (statementContext instanceof CloseStatementContext && ((CloseStatementContext) statementContext).getSqlStatement().isCloseAll()) {
-            connectionSession.getSQLSession().getCursorSessionContext().clear();
+            connectionSession.getSqlSession().getCursorSessionContext().clear();
             connectionSession.getCursorDefinitions().clear();
         }
     }
@@ -134,8 +134,8 @@ public abstract class DatabaseCommunicationEngine implements DatabaseBackendHand
             ((CursorDefinitionAware) statementContext).setUpCursorDefinition(cursorStatementContext);
         }
         if (statementContext instanceof CloseStatementContext) {
-            connectionSession.getSQLSession().getCursorSessionContext().getOrderByValueGroups().remove(cursorName);
-            connectionSession.getSQLSession().getCursorSessionContext().getMinGroupRowCounts().remove(cursorName);
+            connectionSession.getSqlSession().getCursorSessionContext().getOrderByValueGroups().remove(cursorName);
+            connectionSession.getSqlSession().getCursorSessionContext().getMinGroupRowCounts().remove(cursorName);
             connectionSession.getCursorDefinitions().remove(cursorName);
         }
     }
@@ -182,7 +182,7 @@ public abstract class DatabaseCommunicationEngine implements DatabaseBackendHand
     
     protected MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(database, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps(),
-                getBackendConnection().getConnectionSession().getSQLSession());
+                getBackendConnection().getConnectionSession().getSqlSession());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     

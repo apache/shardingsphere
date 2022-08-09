@@ -37,9 +37,9 @@ public interface ResultMerger {
      * @param queryResults query results
      * @param sqlStatementContext SQL statement context
      * @param database database
-     * @param SQLSession session context
+     * @param sqlSession sql session
      * @return merged result
      * @throws SQLException SQL exception
      */
-    MergedResult merge(List<QueryResult> queryResults, SQLStatementContext<?> sqlStatementContext, ShardingSphereDatabase database, SQLSession SQLSession) throws SQLException;
+    MergedResult merge(List<QueryResult> queryResults, SQLStatementContext<?> sqlStatementContext, ShardingSphereDatabase database, SQLSession sqlSession) throws SQLException;
 }

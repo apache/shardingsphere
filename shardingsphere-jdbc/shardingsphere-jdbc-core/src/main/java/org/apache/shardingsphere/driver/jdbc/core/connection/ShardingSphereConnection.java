@@ -61,14 +61,14 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
     private volatile boolean closed;
     
     @Getter
-    private final SQLSession SQLSession;
+    private final SQLSession sqlSession;
     
     public ShardingSphereConnection(final String databaseName, final ContextManager contextManager, final JDBCContext jdbcContext) {
         this.databaseName = databaseName;
         this.contextManager = contextManager;
         this.jdbcContext = jdbcContext;
         connectionManager = new ConnectionManager(databaseName, contextManager);
-        SQLSession = new SQLSession();
+        sqlSession = new SQLSession();
     }
     
     /**
@@ -175,7 +175,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
             connectionManager.getConnectionTransaction().setRollbackOnly(false);
             TransactionHolder.clear();
             TrafficContextHolder.remove();
-            SQLSession.getCursorSessionContext().clear();
+            sqlSession.getCursorSessionContext().clear();
         }
     }
     
@@ -187,7 +187,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
             connectionManager.getConnectionTransaction().setRollbackOnly(false);
             TransactionHolder.clear();
             TrafficContextHolder.remove();
-            SQLSession.getCursorSessionContext().clear();
+            sqlSession.getCursorSessionContext().clear();
         }
     }
     

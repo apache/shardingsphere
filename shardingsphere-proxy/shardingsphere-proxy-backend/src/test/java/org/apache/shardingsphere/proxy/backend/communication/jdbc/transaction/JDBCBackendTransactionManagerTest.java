@@ -71,9 +71,9 @@ public final class JDBCBackendTransactionManagerTest extends ProxyContextRestore
         setTransactionContexts();
         when(connectionSession.getTransactionStatus()).thenReturn(transactionStatus);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
-        SQLSession SQLSession = mock(SQLSession.class);
-        when(SQLSession.getCursorSessionContext()).thenReturn(new CursorSessionContext());
-        when(connectionSession.getSQLSession()).thenReturn(SQLSession);
+        SQLSession sqlSession = mock(SQLSession.class);
+        when(sqlSession.getCursorSessionContext()).thenReturn(new CursorSessionContext());
+        when(connectionSession.getSqlSession()).thenReturn(sqlSession);
     }
     
     private void setTransactionContexts() {

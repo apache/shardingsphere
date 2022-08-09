@@ -78,7 +78,7 @@ public final class ConnectionSession {
     
     private final PreparedStatementRegistry preparedStatementRegistry = new PreparedStatementRegistry();
     
-    private final SQLSession SQLSession;
+    private final SQLSession sqlSession;
     
     private final RequiredSessionVariableRecorder requiredSessionVariableRecorder = new RequiredSessionVariableRecorder();
     
@@ -88,7 +88,7 @@ public final class ConnectionSession {
         this.attributeMap = attributeMap;
         backendConnection = determineBackendConnection();
         statementManager = determineStatementManager();
-        SQLSession = new SQLSession();
+        sqlSession = new SQLSession();
     }
     
     private BackendConnection determineBackendConnection() {

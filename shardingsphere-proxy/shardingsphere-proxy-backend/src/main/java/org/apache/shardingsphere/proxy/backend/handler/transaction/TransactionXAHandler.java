@@ -88,7 +88,7 @@ public final class TransactionXAHandler implements ProxyBackendHandler {
                     return backendHandler.execute();
                 } finally {
                     TransactionHolder.clear();
-                    connectionSession.getSQLSession().getCursorSessionContext().clear();
+                    connectionSession.getSqlSession().getCursorSessionContext().clear();
                 }
             default:
                 throw new SQLException("unrecognized XA statement " + tclStatement.getOp());

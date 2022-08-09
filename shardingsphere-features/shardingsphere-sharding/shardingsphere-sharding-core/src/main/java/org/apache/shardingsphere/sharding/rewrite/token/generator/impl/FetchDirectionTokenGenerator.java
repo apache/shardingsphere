@@ -22,7 +22,7 @@ import lombok.Setter;
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.binder.statement.ddl.FetchStatementContext;
 import org.apache.shardingsphere.infra.rewrite.sql.token.generator.OptionalSQLTokenGenerator;
-import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SessionContextAware;
+import org.apache.shardingsphere.infra.rewrite.sql.token.generator.aware.SQLSessionAware;
 import org.apache.shardingsphere.infra.rewrite.sql.token.pojo.SQLToken;
 import org.apache.shardingsphere.infra.session.SQLSession;
 import org.apache.shardingsphere.sharding.rewrite.token.pojo.FetchDirectionToken;
@@ -35,9 +35,9 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.ddl.FetchStatem
  * Fetch direction token generator.
  */
 @Setter
-public final class FetchDirectionTokenGenerator implements OptionalSQLTokenGenerator<SQLStatementContext<?>>, SessionContextAware {
+public final class FetchDirectionTokenGenerator implements OptionalSQLTokenGenerator<SQLStatementContext<?>>, SQLSessionAware {
     
-    private SQLSession SQLSession;
+    private SQLSession sqlSession;
     
     @Override
     public boolean isGenerateSQLToken(final SQLStatementContext<?> sqlStatementContext) {
@@ -53,11 +53,11 @@ public final class FetchDirectionTokenGenerator implements OptionalSQLTokenGener
         int stopIndex = fetchStatement.getDirection().map(DirectionSegment::getStopIndex).orElseGet("FETCH"::length);
         DirectionType directionType = fetchStatement.getDirection().flatMap(DirectionSegment::getDirectionType).orElse(DirectionType.NEXT);
         long fetchCount = fetchStatement.getDirection().flatMap(DirectionSegment::getCount).orElse(1L);
-        return new FetchDirectionToken(startIndex, stopIndex, directionType, fetchCount, cursorName.getIdentifier().getValue().toLowerCase(), SQLSession);
+        return new FetchDirectionToken(startIndex, stopIndex, directionType, fetchCount, cursorName.getIdentifier().getValue().toLowerCase(), sqlSession);
     }
     
     @Override
-    public void setSessionContext(final SQLSession SQLSession) {
-        this.SQLSession = SQLSession;
+    public void setSQLSession(final SQLSession sqlSession) {
+        this.sqlSession = sqlSession;
     }
 }

@@ -37,7 +37,7 @@ public final class ResultMergerFixture implements ResultMerger {
     
     @Override
     public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext,
-                              final ShardingSphereDatabase database, final SQLSession SQLSession) throws SQLException {
+                              final ShardingSphereDatabase database, final SQLSession sqlSession) throws SQLException {
         ResultSet resultSet = mock(ResultSet.class);
         when(resultSet.getString(1)).thenReturn("merged_value");
         QueryResult queryResult = new JDBCStreamQueryResult(resultSet);

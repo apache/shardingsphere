@@ -56,7 +56,7 @@ public final class ShardingDQLResultMerger implements ResultMerger {
     
     @Override
     public MergedResult merge(final List<QueryResult> queryResults, final SQLStatementContext<?> sqlStatementContext,
-                              final ShardingSphereDatabase database, final SQLSession SQLSession) throws SQLException {
+                              final ShardingSphereDatabase database, final SQLSession sqlSession) throws SQLException {
         if (1 == queryResults.size() && !isNeedAggregateRewrite(sqlStatementContext)) {
             return new IteratorStreamMergedResult(queryResults);
         }
