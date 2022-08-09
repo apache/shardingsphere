@@ -138,7 +138,6 @@ props: # 公用配置
  proxy-hint-enabled: false
  sql-show: false
  check-table-metadata-enabled: false
- show-process-list-enabled: false
    # Proxy backend query fetch size. A larger value may increase the memory usage of ShardingSphere Proxy.
    # The default value is -1, which means set the minimum value for different JDBC drivers.
  proxy-backend-query-fetch-size: -1

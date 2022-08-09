@@ -19,12 +19,12 @@ package org.apache.shardingsphere.readwritesplitting.factory;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
 import org.apache.shardingsphere.readwritesplitting.spi.ReadQueryLoadBalanceAlgorithm;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.required.RequiredSPIRegistry;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 /**
  * Read query load-balance algorithm factory.
@@ -51,7 +51,7 @@ public final class ReadQueryLoadBalanceAlgorithmFactory {
      * @param readQueryLoadBalanceAlgorithmConfig read query load-balance algorithm configuration
      * @return created instance
      */
-    public static ReadQueryLoadBalanceAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration readQueryLoadBalanceAlgorithmConfig) {
+    public static ReadQueryLoadBalanceAlgorithm newInstance(final AlgorithmConfiguration readQueryLoadBalanceAlgorithmConfig) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(readQueryLoadBalanceAlgorithmConfig, ReadQueryLoadBalanceAlgorithm.class);
     }
     

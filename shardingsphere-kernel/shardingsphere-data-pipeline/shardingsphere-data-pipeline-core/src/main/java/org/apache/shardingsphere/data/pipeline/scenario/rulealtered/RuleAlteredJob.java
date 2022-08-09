@@ -17,13 +17,19 @@
 
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.yaml.RuleAlteredJobConfigurationSwapper;
+import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.api.job.PipelineJob;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
-import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
-import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
+import org.apache.shardingsphere.data.pipeline.core.exception.PipelineIgnoredException;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
 import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
 
@@ -31,44 +37,76 @@ import org.apache.shardingsphere.elasticjob.simple.job.SimpleJob;
  * Rule altered job.
  */
 @Slf4j
-public final class RuleAlteredJob implements SimpleJob {
-    
-    private final GovernanceRepositoryAPI governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-    
-    private volatile String jobId;
+@RequiredArgsConstructor
+public final class RuleAlteredJob extends AbstractPipelineJob implements SimpleJob, PipelineJob {
     
     private final PipelineDataSourceManager dataSourceManager = new PipelineDataSourceManager();
     
     // Shared by all sharding items
     private final RuleAlteredJobPreparer jobPreparer = new RuleAlteredJobPreparer();
     
-    private volatile boolean stopping;
-    
     @Override
     public void execute(final ShardingContext shardingContext) {
         log.info("Execute job {}-{}", shardingContext.getJobName(), shardingContext.getShardingItem());
-        if (stopping) {
+        if (isStopping()) {
             log.info("stopping true, ignore");
             return;
         }
-        jobId = shardingContext.getJobName();
+        setJobId(shardingContext.getJobName());
         RuleAlteredJobConfiguration jobConfig = RuleAlteredJobConfigurationSwapper.swapToObject(shardingContext.getJobParameter());
-        JobProgress initProgress = governanceRepositoryAPI.getJobProgress(shardingContext.getJobName(), shardingContext.getShardingItem());
-        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, shardingContext.getShardingItem(), initProgress, dataSourceManager, jobPreparer);
-        RuleAlteredJobSchedulerCenter.start(jobContext);
+        JobProgress initProgress = RuleAlteredJobAPIFactory.getInstance().getJobProgress(shardingContext.getJobName(), shardingContext.getShardingItem());
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, shardingContext.getShardingItem(), initProgress, dataSourceManager);
+        int shardingItem = jobContext.getShardingItem();
+        if (getTasksRunnerMap().containsKey(shardingItem)) {
+            // If the following log is output, it is possible that the elasticjob task was not shutdown correctly
+            log.warn("schedulerMap contains shardingItem {}, ignore", shardingItem);
+            return;
+        }
+        log.info("start RuleAlteredJobScheduler, jobId={}, shardingItem={}", getJobId(), shardingItem);
+        RuleAlteredJobScheduler jobScheduler = new RuleAlteredJobScheduler(jobContext, jobContext.getInventoryTasks(), jobContext.getIncrementalTasks());
+        runInBackground(() -> {
+            prepare(jobContext);
+            jobScheduler.start();
+        });
+        getTasksRunnerMap().put(shardingItem, jobScheduler);
+        PipelineJobProgressPersistService.addJobProgressPersistContext(getJobId(), shardingItem);
+    }
+    
+    private void prepare(final RuleAlteredJobContext jobContext) {
+        try {
+            jobPreparer.prepare(jobContext);
+        } catch (final PipelineIgnoredException ex) {
+            log.info("pipeline ignore exception: {}", ex.getMessage());
+            PipelineJobCenter.stop(getJobId());
+            // CHECKSTYLE:OFF
+        } catch (final RuntimeException ex) {
+            // CHECKSTYLE:ON
+            log.error("job prepare failed, {}-{}", getJobId(), jobContext.getShardingItem(), ex);
+            PipelineJobCenter.stop(getJobId());
+            jobContext.setStatus(JobStatus.PREPARING_FAILURE);
+            RuleAlteredJobAPIFactory.getInstance().persistJobProgress(jobContext);
+            throw ex;
+        }
     }
     
     /**
      * Stop job.
      */
     public void stop() {
-        stopping = true;
+        setStopping(true);
         dataSourceManager.close();
-        if (null == jobId) {
+        if (null != getOneOffJobBootstrap()) {
+            getOneOffJobBootstrap().shutdown();
+        }
+        if (null == getJobId()) {
             log.info("stop, jobId is null, ignore");
             return;
         }
-        log.info("stop, jobId={}", jobId);
-        RuleAlteredJobSchedulerCenter.stop(jobId);
+        log.info("stop job scheduler, jobId={}", getJobId());
+        for (PipelineTasksRunner each : getTasksRunnerMap().values()) {
+            each.stop();
+        }
+        getTasksRunnerMap().clear();
+        PipelineJobProgressPersistService.removeJobProgressPersistContext(getJobId());
     }
 }

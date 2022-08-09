@@ -1,11 +1,11 @@
 +++
-title = "Mode Configuration"
+title = "Mode"
 weight = 1
 +++
 
 ## Background
 
-The default configuration uses memory mode.
+The default configuration uses standalone mode.
 
 ## Parameters Explained
 

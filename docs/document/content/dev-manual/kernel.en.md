@@ -29,7 +29,7 @@ Used to process routing results
 
 ### Fully-qualified class name
 
-[`org.apache.shardingsphere.encrypt.rewrite.context.EncryptSQLRewriteContextDecorator`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-infra/shardingsphere-infra-rewrite/src/main/java/org/apache/shardingsphere/infra/rewrite/context/SQLRewriteContextDecorator.java)
+[`org.apache.shardingsphere.infra.rewrite.context.SQLRewriteContextDecorator`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-infra/shardingsphere-infra-rewrite/src/main/java/org/apache/shardingsphere/infra/rewrite/context/SQLRewriteContextDecorator.java)
 
 ### Definition
 
@@ -56,7 +56,7 @@ SQL execution process listener
 
 | *Configuration type*          | *Description*                     | *Fully-qualified class name* |
 | ----------------------------- | --------------------------------- | ---------------------------- |
-| TransactionalSQLExecutionHook | Transaction hook of SQL execution | [`org.apache.shardingsphere.transaction.base.seata.at.TransactionalSQLExecutionHook`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-kernel/shardingsphere-transaction/shardingsphere-transaction-type/shardingsphere-transaction-base/shardingsphere-transaction-base-seata-at/src/main/java/org/apache/shardingsphere/transaction/base/seata/at/TransactionalSQLExecutionHook.java) |
+| Empty | Transaction hook of SQL execution | [`org.apache.shardingsphere.transaction.base.seata.at.TransactionalSQLExecutionHook`](https://github.com/apache/shardingsphere/blob/master/shardingsphere-kernel/shardingsphere-transaction/shardingsphere-transaction-type/shardingsphere-transaction-base/shardingsphere-transaction-base-seata-at/src/main/java/org/apache/shardingsphere/transaction/base/seata/at/TransactionalSQLExecutionHook.java) |
 
 ## ResultProcessEngine
 

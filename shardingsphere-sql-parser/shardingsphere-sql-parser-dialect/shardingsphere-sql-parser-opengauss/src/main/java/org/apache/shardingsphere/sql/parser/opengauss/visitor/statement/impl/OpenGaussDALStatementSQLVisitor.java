@@ -64,7 +64,19 @@ public final class OpenGaussDALStatementSQLVisitor extends OpenGaussStatementSQL
     
     @Override
     public ASTNode visitShow(final ShowContext ctx) {
-        return new OpenGaussShowStatement();
+        if (null != ctx.varName()) {
+            return new OpenGaussShowStatement(ctx.varName().getText());
+        }
+        if (null != ctx.ZONE()) {
+            return new OpenGaussShowStatement("timezone");
+        }
+        if (null != ctx.ISOLATION()) {
+            return new OpenGaussShowStatement("transaction_isolation");
+        }
+        if (null != ctx.AUTHORIZATION()) {
+            return new OpenGaussShowStatement("session_authorization");
+        }
+        return new OpenGaussShowStatement("ALL");
     }
     
     @Override
@@ -103,7 +115,7 @@ public final class OpenGaussDALStatementSQLVisitor extends OpenGaussStatementSQL
     
     @Override
     public ASTNode visitResetParameter(final ResetParameterContext ctx) {
-        return new OpenGaussResetParameterStatement();
+        return new OpenGaussResetParameterStatement(null != ctx.ALL() ? "ALL" : ctx.identifier().getText());
     }
     
     @SuppressWarnings("unchecked")

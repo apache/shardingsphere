@@ -31,8 +31,9 @@ execute
     | clearHint
     | enableInstance
     | disableInstance
-    | showInstance
-    | showInstanceMode
+    | showInstanceList
+    | showInstanceInfo
+    | showModeInfo
     | labelInstance
     | unlabelInstance
     | countSingleTableRule

@@ -18,9 +18,9 @@
 package org.apache.shardingsphere.shadow.checker;
 
 import com.google.common.base.Preconditions;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.checker.RuleConfigurationChecker;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.checker.RuleConfigurationChecker;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
@@ -42,24 +42,18 @@ public abstract class AbstractShadowRuleConfigurationChecker<T extends RuleConfi
     
     @Override
     public final void check(final String databaseName, final T config, final Map<String, DataSource> dataSourceMap, final Collection<ShardingSphereRule> rules) {
-        checkShadowRuleConfiguration(config);
+        checkShadowRuleConfiguration(config, dataSourceMap);
     }
     
-    protected abstract void checkShadowRuleConfiguration(T config);
+    protected abstract void checkShadowRuleConfiguration(T config, Map<String, DataSource> dataSources);
     
-    protected void sizeCheck(final Map<String, ShadowDataSourceConfiguration> dataSources, final Map<String, ShadowTableConfiguration> shadowTables, final String defaultShadowAlgorithmName) {
-        Preconditions.checkState(!dataSources.isEmpty(), "No available shadow data sources mappings in shadow configuration.");
-        if (null == defaultShadowAlgorithmName) {
-            Preconditions.checkState(!shadowTables.isEmpty(), "No available shadow tables in shadow configuration.");
+    protected void checkDataSources(final Map<String, ShadowDataSourceConfiguration> shadowDataSources, final Map<String, DataSource> dataSourceMap) {
+        Set<String> dataSource = dataSourceMap.keySet();
+        for (Entry<String, ShadowDataSourceConfiguration> entry : shadowDataSources.entrySet()) {
+            ShadowDataSourceConfiguration shadowConfiguration = entry.getValue();
+            boolean shadowDataSourceState = dataSource.contains(shadowConfiguration.getSourceDataSourceName()) && dataSource.contains(shadowConfiguration.getShadowDataSourceName());
+            Preconditions.checkState(shadowDataSourceState, "No available data source for shadow data source mapping configuration");
         }
-    }
-    
-    protected void shadowAlgorithmsSizeCheck(final Map<String, ShadowAlgorithm> shadowAlgorithms) {
-        Preconditions.checkState(!shadowAlgorithms.isEmpty(), "No available shadow algorithms in shadow configuration.");
-    }
-    
-    protected void shadowAlgorithmConfigurationsSizeCheck(final Map<String, ShardingSphereAlgorithmConfiguration> shadowAlgorithmConfigs) {
-        Preconditions.checkState(!shadowAlgorithmConfigs.isEmpty(), "No available shadow data algorithms in shadow configuration.");
     }
     
     protected void shadowTableDataSourcesAutoReferences(final Map<String, ShadowTableConfiguration> shadowTables, final Map<String, ShadowDataSourceConfiguration> dataSources) {
@@ -78,9 +72,9 @@ public abstract class AbstractShadowRuleConfigurationChecker<T extends RuleConfi
         });
     }
     
-    protected void defaultShadowAlgorithmConfigurationCheck(final String defaultShadowAlgorithmName, final Map<String, ShardingSphereAlgorithmConfiguration> shadowAlgorithmConfigs) {
+    protected void defaultShadowAlgorithmConfigurationCheck(final String defaultShadowAlgorithmName, final Map<String, AlgorithmConfiguration> shadowAlgorithmConfigs) {
         if (null != defaultShadowAlgorithmName) {
-            ShardingSphereAlgorithmConfiguration algorithmConfig = shadowAlgorithmConfigs.get(defaultShadowAlgorithmName);
+            AlgorithmConfiguration algorithmConfig = shadowAlgorithmConfigs.get(defaultShadowAlgorithmName);
             boolean state = null != algorithmConfig && "SIMPLE_HINT".equals(algorithmConfig.getType());
             Preconditions.checkState(state, "Default shadow algorithm class should be implement HintShadowAlgorithm.");
         }

@@ -41,8 +41,8 @@ import org.apache.shardingsphere.integration.transaction.framework.container.com
 import org.apache.shardingsphere.integration.transaction.framework.container.compose.NativeComposedContainer;
 import org.apache.shardingsphere.integration.transaction.framework.container.database.DatabaseContainer;
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
-import org.apache.shardingsphere.integration.transaction.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.integration.transaction.util.TransactionTestCaseClassScanner;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -86,6 +86,8 @@ public abstract class BaseITCase {
     protected static final String DS_2 = TRANSACTION_IT + "_2";
     
     protected static final Collection<String> ALL_DS = Arrays.asList(DS_0, DS_1, DS_2);
+    
+    protected static final Collection<String> ALL_XA_PROVIDERS = Arrays.asList(TransactionTestConstants.ATOMIKOS, TransactionTestConstants.BITRONIX, TransactionTestConstants.NARAYANA);
     
     protected static final String SHARDING_DB = "sharding_db";
     
@@ -210,9 +212,31 @@ public abstract class BaseITCase {
                 log.info("Collect transaction test case, need to run transaction types don't contain this, skip: {}-{}.", caseClass.getName(), each);
                 continue;
             }
-            result.add(new TransactionParameterized(getSqlDatabaseType(currentTestCaseInfo.getDbType()), currentTestCaseInfo.getRunningAdaptor(), each,
-                    getDockerImageName(currentTestCaseInfo.getDbType(), version), caseClass));
+            addParametersByTransactionProviders(result, version, currentTestCaseInfo, caseClass, each);
         }
+    }
+    
+    private static void addParametersByTransactionProviders(final Collection<TransactionParameterized> result, final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
+                                                            final Class<? extends BaseTransactionTestCase> caseClass, final TransactionType each) {
+        if (TransactionType.LOCAL.equals(each)) {
+            result.add(createTransactionParameter(version, currentTestCaseInfo, caseClass, each, ""));
+        } else if (TransactionType.XA.equals(each)) {
+            if (ENV.getAllowXAProviders().isEmpty()) {
+                for (String provider : ALL_XA_PROVIDERS) {
+                    result.add(createTransactionParameter(version, currentTestCaseInfo, caseClass, each, provider));
+                }
+            } else {
+                for (String provider : ENV.getAllowXAProviders()) {
+                    result.add(createTransactionParameter(version, currentTestCaseInfo, caseClass, each, provider));
+                }
+            }
+        }
+    }
+    
+    private static TransactionParameterized createTransactionParameter(final String version, final TransactionTestCaseRegistry currentTestCaseInfo,
+                                                                       final Class<? extends BaseTransactionTestCase> caseClass, final TransactionType transactionType, final String provider) {
+        return new TransactionParameterized(getSqlDatabaseType(currentTestCaseInfo.getDbType()), currentTestCaseInfo.getRunningAdaptor(), transactionType, provider,
+                getDockerImageName(currentTestCaseInfo.getDbType(), version), caseClass);
     }
     
     private static DatabaseType getSqlDatabaseType(final String databaseType) {
@@ -359,7 +383,7 @@ public abstract class BaseITCase {
     
     @SneakyThrows
     protected void addResources() {
-        if (databaseType instanceof MySQLDatabaseType) {
+        if (DatabaseTypeUtil.isMySQL(databaseType)) {
             try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl(""), ENV.getProxyUserName(), ENV.getProxyPassword())) {
                 executeWithLog(connection, "USE sharding_db");
                 addResources(connection);
@@ -390,7 +414,7 @@ public abstract class BaseITCase {
      * 
      * @param connection connection
      */
-    @SneakyThrows(SQLException.class)
+    @SneakyThrows({SQLException.class, InterruptedException.class})
     public void addNewResource(final Connection connection) {
         String addSourceResource = commonSQLCommand.getSourceAddNewResourceTemplate()
                 .replace("${user}", ENV.getActualDataSourceUsername(databaseType))
@@ -398,6 +422,7 @@ public abstract class BaseITCase {
                 .replace("${ds2}", getActualJdbcUrlTemplate(DS_2));
         executeWithLog(connection, addSourceResource);
         int resourceCount = countWithLog("SHOW DATABASE RESOURCES FROM sharding_db");
+        Thread.sleep(5000);
         assertThat(resourceCount, is(3));
     }
     

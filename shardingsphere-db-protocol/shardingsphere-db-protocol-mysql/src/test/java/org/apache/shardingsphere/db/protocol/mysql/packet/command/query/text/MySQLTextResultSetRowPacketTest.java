@@ -28,6 +28,7 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Collections;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
@@ -82,7 +83,7 @@ public final class MySQLTextResultSetRowPacketTest {
     public void assertLocalDateTime() {
         String localDateTimeStr = "2021-08-23T17:30:30";
         LocalDateTime time = LocalDateTime.parse(localDateTimeStr, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
-        MySQLTextResultSetRowPacket actual = new MySQLTextResultSetRowPacket(1, Arrays.asList(time));
+        MySQLTextResultSetRowPacket actual = new MySQLTextResultSetRowPacket(1, Collections.singletonList(time));
         actual.write(payload);
         verify(payload).writeStringLenenc(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(LocalDateTime.parse(localDateTimeStr, DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"))));
     }

@@ -19,33 +19,16 @@ lexer grammar Literals;
 
 import Alphabet, Symbol;
 
+IDENTIFIER
+    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
+    | BQ ~'`'+ BQ
+    ;
+
 STRING
     : (DQ ('\\'. | '""' | ~('"' | '\\'))* DQ)
     | (SQ ('\\'. | '\'\'' | ~('\'' | '\\'))* SQ)
     ;
 
-IDENTIFIER
-    : [A-Za-z_$0-9]*?[A-Za-z_$]+?[A-Za-z_$0-9]*
-    | BQ ~'`'+ BQ
-    | (DQ ( '\\'. | '""' | ~('"'| '\\') )* DQ)
-    ;
-
 INT
     : [0-9]+
-    ;
-
-HEX
-    : [0-9a-fA-F]
-    ;
-
-NUMBER
-    : INT? DOT? INT (E (PLUS | MINUS)? INT)?
-    ;
-
-HEXDIGIT
-    : '0x' HEX+ | 'X' SQ HEX+ SQ
-    ;
-    
-BITNUM
-    : '0b' ('0' | '1')+ | B SQ ('0' | '1')+ SQ
     ;

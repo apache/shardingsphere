@@ -65,5 +65,4 @@ public final class PartialSQLRouteExecutor implements SQLRouteExecutor {
         }
         return result;
     }
-    
 }

@@ -782,7 +782,7 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     public ASTNode visitUpdate(final UpdateContext ctx) {
         OpenGaussUpdateStatement result = new OpenGaussUpdateStatement();
         SimpleTableSegment tableSegment = (SimpleTableSegment) visit(ctx.relationExprOptAlias());
-        result.setTableSegment(tableSegment);
+        result.setTable(tableSegment);
         result.setSetAssignment((SetAssignmentSegment) visit(ctx.setClauseList()));
         if (null != ctx.whereOrCurrentClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereOrCurrentClause()));
@@ -802,7 +802,7 @@ public abstract class OpenGaussStatementSQLVisitor extends OpenGaussStatementBas
     public ASTNode visitDelete(final DeleteContext ctx) {
         OpenGaussDeleteStatement result = new OpenGaussDeleteStatement();
         SimpleTableSegment tableSegment = (SimpleTableSegment) visit(ctx.relationExprOptAlias());
-        result.setTableSegment(tableSegment);
+        result.setTable(tableSegment);
         if (null != ctx.whereOrCurrentClause()) {
             result.setWhere((WhereSegment) visit(ctx.whereOrCurrentClause()));
         }

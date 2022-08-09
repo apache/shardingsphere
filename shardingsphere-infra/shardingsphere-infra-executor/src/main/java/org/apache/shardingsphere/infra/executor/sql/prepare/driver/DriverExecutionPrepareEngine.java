@@ -62,8 +62,8 @@ public final class DriverExecutionPrepareEngine<T extends DriverExecutionUnit<?>
     }
     
     /**
-     * Refer to https://bugs.openjdk.java.net/browse/JDK-8161372.
-     * 
+     * Refer to <a href="https://bugs.openjdk.java.net/browse/JDK-8161372">JDK-8161372</a>.
+     *
      * @param type type
      * @return sql execution unit builder
      */

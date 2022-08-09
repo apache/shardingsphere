@@ -44,7 +44,6 @@ import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEve
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.locks.Lock;
 import java.util.stream.Collectors;
 
 /**
@@ -107,11 +106,6 @@ public final class EtcdRepository implements ClusterPersistRepository {
     }
     
     @Override
-    public String getSequentialId(final String key, final String value) {
-        return null;
-    }
-    
-    @Override
     public void delete(final String key) {
         client.getKVClient().delete(ByteSequence.from(key, StandardCharsets.UTF_8), DeleteOption.newBuilder().withPrefix(ByteSequence.from(key, StandardCharsets.UTF_8)).build());
     }
@@ -151,13 +145,8 @@ public final class EtcdRepository implements ClusterPersistRepository {
     }
     
     @Override
-    public Lock getInternalMutexLock(final String lockName) {
-        return etcdInternalLockHolder.getInternalMutexLock(lockName);
-    }
-    
-    @Override
-    public Lock getInternalReentrantMutexLock(final String lockName) {
-        return etcdInternalLockHolder.getInternalReentrantMutexLock(lockName);
+    public boolean tryLock(final String lockKey, final long timeoutMillis) {
+        return etcdInternalLockHolder.getInternalLock(lockKey).tryLock(timeoutMillis);
     }
     
     @Override

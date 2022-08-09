@@ -21,11 +21,11 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.dbdiscovery.algorithm.config.AlgorithmProvidedDatabaseDiscoveryRuleConfiguration;
 import org.apache.shardingsphere.dbdiscovery.spi.DatabaseDiscoveryProviderAlgorithm;
 import org.apache.shardingsphere.dbdiscovery.spring.boot.algorithm.DatabaseDiscoveryAlgorithmProvidedBeanRegistry;
-import org.apache.shardingsphere.dbdiscovery.spring.boot.rule.YamlDatabaseDiscoveryRuleSpringBootConfiguration;
 import org.apache.shardingsphere.dbdiscovery.spring.boot.condition.DatabaseDiscoverySpringBootCondition;
+import org.apache.shardingsphere.dbdiscovery.spring.boot.rule.YamlDatabaseDiscoveryRuleSpringBootConfiguration;
 import org.apache.shardingsphere.dbdiscovery.yaml.config.YamlDatabaseDiscoveryRuleConfiguration;
-import org.apache.shardingsphere.dbdiscovery.yaml.swapper.DatabaseDiscoveryRuleAlgorithmProviderConfigurationYamlSwapper;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.dbdiscovery.yaml.swapper.YamlDatabaseDiscoveryRuleAlgorithmProviderConfigurationSwapper;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -48,7 +48,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class DatabaseDiscoveryRuleSpringbootConfiguration {
     
-    private final DatabaseDiscoveryRuleAlgorithmProviderConfigurationYamlSwapper swapper = new DatabaseDiscoveryRuleAlgorithmProviderConfigurationYamlSwapper();
+    private final YamlDatabaseDiscoveryRuleAlgorithmProviderConfigurationSwapper swapper = new YamlDatabaseDiscoveryRuleAlgorithmProviderConfigurationSwapper();
     
     private final YamlDatabaseDiscoveryRuleSpringBootConfiguration yamlConfig;
     

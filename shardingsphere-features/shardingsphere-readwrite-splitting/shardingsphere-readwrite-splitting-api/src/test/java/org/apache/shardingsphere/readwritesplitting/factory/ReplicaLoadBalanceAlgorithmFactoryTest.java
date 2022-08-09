@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.readwritesplitting.factory;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.readwritesplitting.factory.fixture.ReadQueryLoadBalanceAlgorithmFixture;
 import org.junit.Test;
 
@@ -35,8 +35,8 @@ public final class ReplicaLoadBalanceAlgorithmFactoryTest {
     }
     
     @Test
-    public void assertNewInstanceWithShardingSphereAlgorithmConfiguration() {
-        ShardingSphereAlgorithmConfiguration configuration = new ShardingSphereAlgorithmConfiguration("FIXTURE", new Properties());
+    public void assertNewInstanceWithAlgorithmConfiguration() {
+        AlgorithmConfiguration configuration = new AlgorithmConfiguration("FIXTURE", new Properties());
         assertThat(ReadQueryLoadBalanceAlgorithmFactory.newInstance(configuration), instanceOf(ReadQueryLoadBalanceAlgorithmFixture.class));
     }
     

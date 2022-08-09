@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.shadow.checker;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.apache.shardingsphere.shadow.constant.ShadowOrder;
 
+import javax.sql.DataSource;
 import java.util.Map;
 
 /**
@@ -31,15 +32,14 @@ import java.util.Map;
 public final class ShadowRuleConfigurationChecker extends AbstractShadowRuleConfigurationChecker<ShadowRuleConfiguration> {
     
     @Override
-    protected void checkShadowRuleConfiguration(final ShadowRuleConfiguration config) {
+    protected void checkShadowRuleConfiguration(final ShadowRuleConfiguration config, final Map<String, DataSource> dataSourceMap) {
         Map<String, ShadowDataSourceConfiguration> dataSources = config.getDataSources();
+        checkDataSources(dataSources, dataSourceMap);
         Map<String, ShadowTableConfiguration> shadowTables = config.getTables();
-        Map<String, ShardingSphereAlgorithmConfiguration> shadowAlgorithmConfigs = config.getShadowAlgorithms();
-        String defaultShadowAlgorithmName = config.getDefaultShadowAlgorithmName();
-        sizeCheck(dataSources, shadowTables, defaultShadowAlgorithmName);
-        shadowAlgorithmConfigurationsSizeCheck(shadowAlgorithmConfigs);
         shadowTableDataSourcesAutoReferences(shadowTables, dataSources);
         shadowTableDataSourcesReferencesCheck(shadowTables, dataSources);
+        Map<String, AlgorithmConfiguration> shadowAlgorithmConfigs = config.getShadowAlgorithms();
+        String defaultShadowAlgorithmName = config.getDefaultShadowAlgorithmName();
         defaultShadowAlgorithmConfigurationCheck(defaultShadowAlgorithmName, shadowAlgorithmConfigs);
         shadowTableAlgorithmsAutoReferences(shadowTables, shadowAlgorithmConfigs.keySet(), defaultShadowAlgorithmName);
         shadowTableAlgorithmsReferencesCheck(shadowTables);

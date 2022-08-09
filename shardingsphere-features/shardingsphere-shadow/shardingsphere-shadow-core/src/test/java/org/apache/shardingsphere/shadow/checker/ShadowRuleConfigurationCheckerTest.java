@@ -17,12 +17,13 @@
 
 package org.apache.shardingsphere.shadow.checker;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
 import org.apache.shardingsphere.shadow.api.config.table.ShadowTableConfiguration;
 import org.junit.Test;
 
+import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
@@ -30,11 +31,20 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Collections;
 
+import static org.mockito.Mockito.mock;
+
 public final class ShadowRuleConfigurationCheckerTest {
     
     @Test
     public void assertCheck() {
-        new ShadowRuleConfigurationChecker().check("", createShadowRuleConfiguration(), Collections.emptyMap(), Collections.emptyList());
+        new ShadowRuleConfigurationChecker().check("", createShadowRuleConfiguration(), createDataSourceMap(), Collections.emptyList());
+    }
+    
+    private Map<String, DataSource> createDataSourceMap() {
+        Map<String, DataSource> result = new LinkedHashMap<>(2, 1);
+        result.put("ds", mock(DataSource.class));
+        result.put("ds_shadow", mock(DataSource.class));
+        return result;
     }
     
     private ShadowRuleConfiguration createShadowRuleConfiguration() {
@@ -45,14 +55,14 @@ public final class ShadowRuleConfigurationCheckerTest {
         return result;
     }
     
-    private Map<String, ShardingSphereAlgorithmConfiguration> createShadowAlgorithmConfigurations() {
-        Map<String, ShardingSphereAlgorithmConfiguration> result = new LinkedHashMap<>();
-        result.put("user-id-insert-match-algorithm", createShardingSphereAlgorithmConfiguration());
+    private Map<String, AlgorithmConfiguration> createShadowAlgorithmConfigurations() {
+        Map<String, AlgorithmConfiguration> result = new LinkedHashMap<>();
+        result.put("user-id-insert-match-algorithm", createAlgorithmConfiguration());
         return result;
     }
     
-    private ShardingSphereAlgorithmConfiguration createShardingSphereAlgorithmConfiguration() {
-        return new ShardingSphereAlgorithmConfiguration("user-id-insert-match-algorithm", createProperties());
+    private AlgorithmConfiguration createAlgorithmConfiguration() {
+        return new AlgorithmConfiguration("user-id-insert-match-algorithm", createProperties());
     }
     
     private Properties createProperties() {

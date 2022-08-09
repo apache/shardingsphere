@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.infra.metadata.user.yaml.swapper;
 
 import org.apache.shardingsphere.infra.metadata.user.yaml.config.YamlUserConfiguration;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.junit.Test;
 
 import java.util.Properties;

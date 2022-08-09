@@ -18,8 +18,10 @@
 package org.apache.shardingsphere.proxy.backend.handler.admin.postgresql;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.proxy.backend.handler.admin.executor.ReplayRequiredSessionVariablesLoader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatement;
+
+import java.util.Collection;
 
 /**
  * Default session variable handler for PostgreSQL.
@@ -27,9 +29,14 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.dal.SetStatemen
 @Slf4j
 public final class DefaultPostgreSQLSessionVariableHandler implements PostgreSQLSessionVariableHandler {
     
+    private final Collection<String> replayRequiredSessionVariables = ReplayRequiredSessionVariablesLoader.getVariables("PostgreSQL");
+    
     @Override
-    public void handle(final ConnectionSession connectionSession, final SetStatement setStatement) {
-        log.debug("Set statement {} was discarded.", setStatement.getVariableAssigns().stream().findFirst()
-                .map(segment -> String.format("%s = %s", segment.getVariable().getVariable(), segment.getAssignValue())).orElseGet(setStatement::toString));
+    public void handle(final ConnectionSession connectionSession, final String variableName, final String assignValue) {
+        if (!replayRequiredSessionVariables.contains(variableName)) {
+            log.debug("Set statement {} = {} was discarded.", variableName, assignValue);
+        } else {
+            connectionSession.getRequiredSessionVariableRecorder().setVariable(variableName, assignValue);
+        }
     }
 }

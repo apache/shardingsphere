@@ -25,12 +25,12 @@ import org.apache.shardingsphere.data.pipeline.api.executor.AbstractLifecycleExe
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJob;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobCenter;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobPreparer;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobProgressDetector;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
 import org.apache.shardingsphere.elasticjob.lite.api.bootstrap.impl.OneOffJobBootstrap;
-import org.apache.shardingsphere.infra.yaml.engine.YamlEngine;
+import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 
 import java.util.Optional;
@@ -77,17 +77,17 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
             RuleAlteredJobConfiguration jobConfig = RuleAlteredJobConfigurationSwapper.swapToObject(jobConfigPOJO.getJobParameter());
             if (isDeleted) {
                 new RuleAlteredJobPreparer().cleanup(jobConfig);
-            } else if (RuleAlteredJobProgressDetector.isJobSuccessful(jobConfig.getJobShardingCount(), RuleAlteredJobAPIFactory.getInstance().getProgress(jobConfig).values())) {
+            } else if (PipelineJobProgressDetector.isJobSuccessful(jobConfig.getJobShardingCount(), RuleAlteredJobAPIFactory.getInstance().getProgress(jobConfig).values())) {
                 log.info("isJobSuccessful=true");
                 new RuleAlteredJobPreparer().cleanup(jobConfig);
             }
-            RuleAlteredJobCenter.stop(jobId);
+            PipelineJobCenter.stop(jobId);
             return;
         }
         switch (event.getType()) {
             case ADDED:
             case UPDATED:
-                if (RuleAlteredJobCenter.isJobExisting(jobConfigPOJO.getJobName())) {
+                if (PipelineJobCenter.isJobExisting(jobConfigPOJO.getJobName())) {
                     log.info("{} added to executing jobs failed since it already exists", jobConfigPOJO.getJobName());
                 } else {
                     log.info("{} executing jobs", jobConfigPOJO.getJobName());
@@ -101,8 +101,10 @@ public final class PipelineJobExecutor extends AbstractLifecycleExecutor {
     
     private void execute(final JobConfigurationPOJO jobConfigPOJO) {
         RuleAlteredJob job = new RuleAlteredJob();
-        RuleAlteredJobCenter.addJob(jobConfigPOJO.getJobName(), job);
-        new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration()).execute();
+        PipelineJobCenter.addJob(jobConfigPOJO.getJobName(), job);
+        OneOffJobBootstrap oneOffJobBootstrap = new OneOffJobBootstrap(PipelineAPIFactory.getRegistryCenter(), job, jobConfigPOJO.toJobConfiguration());
+        oneOffJobBootstrap.execute();
+        job.setOneOffJobBootstrap(oneOffJobBootstrap);
     }
     
     @Override

@@ -19,10 +19,10 @@ package org.apache.shardingsphere.data.pipeline.spi.ingest.channel;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 /**
  * Pipeline channel creator factory.
@@ -40,7 +40,7 @@ public final class PipelineChannelCreatorFactory {
      * @param pipelineChannelCreatorConfig pipeline channel creator configuration
      * @return created instance
      */
-    public static PipelineChannelCreator newInstance(final ShardingSphereAlgorithmConfiguration pipelineChannelCreatorConfig) {
+    public static PipelineChannelCreator newInstance(final AlgorithmConfiguration pipelineChannelCreatorConfig) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(pipelineChannelCreatorConfig, PipelineChannelCreator.class);
     }
     

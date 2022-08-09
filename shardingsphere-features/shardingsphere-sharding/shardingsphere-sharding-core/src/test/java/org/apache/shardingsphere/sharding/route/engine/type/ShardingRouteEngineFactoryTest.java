@@ -34,7 +34,6 @@ import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingDa
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingInstanceBroadcastRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.broadcast.ShardingTableBroadcastRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.complex.ShardingComplexRoutingEngine;
-import org.apache.shardingsphere.sharding.route.engine.type.federated.ShardingFederatedRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.ignore.ShardingIgnoreRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.standard.ShardingStandardRoutingEngine;
 import org.apache.shardingsphere.sharding.route.engine.type.unicast.ShardingUnicastRoutingEngine;
@@ -300,21 +299,6 @@ public final class ShardingRouteEngineFactoryTest {
         assertThat(actual, instanceOf(ShardingUnicastRoutingEngine.class));
     }
     
-    @Test
-    public void assertNewInstanceForSubqueryWithDifferentConditions() {
-        SelectStatementContext sqlStatementContext = mock(SelectStatementContext.class, RETURNS_DEEP_STUBS);
-        tableNames.add("t_order");
-        when(sqlStatementContext.getTablesContext().getTableNames()).thenReturn(tableNames);
-        when(sqlStatementContext.isContainsSubquery()).thenReturn(true);
-        ShardingRule shardingRule = mock(ShardingRule.class, RETURNS_DEEP_STUBS);
-        when(shardingRule.getShardingRuleTableNames(tableNames)).thenReturn(tableNames);
-        when(shardingRule.getTableRule("t_order").getActualDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
-        when(shardingConditions.isNeedMerge()).thenReturn(true);
-        when(shardingConditions.isSameShardingCondition()).thenReturn(false);
-        ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, sqlStatementContext, shardingConditions, createFederationConfigurationProperties());
-        assertThat(actual, instanceOf(ShardingFederatedRoutingEngine.class));
-    }
-    
     private ConfigurationProperties createFederationConfigurationProperties() {
         Properties props = new Properties();
         props.setProperty(ConfigurationPropertyKey.SQL_FEDERATION_ENABLED.getKey(), String.valueOf(Boolean.TRUE));
@@ -330,8 +314,6 @@ public final class ShardingRouteEngineFactoryTest {
         when(shardingRule.getShardingLogicTableNames(tableNames)).thenReturn(tableNames);
         when(shardingRule.getTableRule("t_order").getActualDataSourceNames()).thenReturn(Arrays.asList("ds_0", "ds_1"));
         when(shardingRule.isAllShardingTables(Collections.singletonList("t_order"))).thenReturn(true);
-        when(shardingConditions.isNeedMerge()).thenReturn(true);
-        when(shardingConditions.isSameShardingCondition()).thenReturn(true);
         ShardingRouteEngine actual = ShardingRouteEngineFactory.newInstance(shardingRule, database, sqlStatementContext, shardingConditions, createFederationConfigurationProperties());
         assertThat(actual, instanceOf(ShardingStandardRoutingEngine.class));
     }

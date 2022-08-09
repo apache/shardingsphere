@@ -97,7 +97,7 @@ public final class ManualBitSet {
             int begin = i == listIndex ? correctIndex % BIT_SET_SIZE : 0;
             for (int j = begin; j < BIT_SET_SIZE; j++) {
                 if (bitSets.get(i).get(j) && --count == 0) {
-                    return startIndex + i * BIT_SET_SIZE + j + 1;
+                    return startIndex + (long) i * BIT_SET_SIZE + j + 1;
                 }
             }
         }
@@ -115,7 +115,7 @@ public final class ManualBitSet {
                 int count = Math.min(bitSets.size(), (int) ((bitIndex - startIndex) / BIT_SET_SIZE));
                 if (count > 0) {
                     bitSets.subList(0, count).clear();
-                    startIndex += count * BIT_SET_SIZE;
+                    startIndex += (long) count * BIT_SET_SIZE;
                 }
             }
         }

@@ -24,7 +24,6 @@ import org.apache.calcite.rel.RelNode;
 import org.apache.calcite.sql.SqlNode;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 import org.apache.shardingsphere.infra.exception.ShardingSphereException;
-import org.apache.shardingsphere.infra.federation.optimizer.context.OptimizerContext;
 import org.apache.shardingsphere.infra.federation.optimizer.converter.SQLNodeConverterEngine;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -34,23 +33,21 @@ import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 @RequiredArgsConstructor
 public final class ShardingSphereOptimizer {
     
-    private final OptimizerContext context;
-    
     private final SqlToRelConverter converter;
+    
+    private final RelOptPlanner hepPlanner;
     
     /**
      * Optimize query execution plan.
      * 
-     * @param databaseName database name
-     * @param schemaName schema name
      * @param sqlStatement SQL statement
      * @return optimized relational node
      */
-    public RelNode optimize(final String databaseName, final String schemaName, final SQLStatement sqlStatement) {
+    public RelNode optimize(final SQLStatement sqlStatement) {
         try {
             SqlNode sqlNode = SQLNodeConverterEngine.convertToSQLNode(sqlStatement);
             RelNode logicPlan = converter.convertQuery(sqlNode, true, true).rel;
-            RelNode bestPlan = optimizeWithRBO(logicPlan, context.getPlannerContexts().get(databaseName).getHepPlanners().get(schemaName));
+            RelNode bestPlan = optimizeWithRBO(logicPlan, hepPlanner);
             return optimizeWithCBO(bestPlan, converter);
         } catch (final UnsupportedOperationException ex) {
             throw new ShardingSphereException(ex);

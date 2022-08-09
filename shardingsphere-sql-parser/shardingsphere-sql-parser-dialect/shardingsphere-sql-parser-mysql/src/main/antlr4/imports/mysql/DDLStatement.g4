@@ -96,7 +96,7 @@ alterListItem
     | DROP (COLUMN? columnInternalRef=identifier restrict? | FOREIGN KEY columnInternalRef=identifier | PRIMARY KEY | keyOrIndex indexName | CHECK identifier | CONSTRAINT identifier)  # alterTableDrop
     | DISABLE KEYS  # disableKeys
     | ENABLE KEYS   # enableKeys
-    | ALTER COLUMN? columnInternalRef=identifier (SET DEFAULT (LP_ expr RP_| signedLiteral)| DROP DEFAULT) # alterColumn
+    | ALTER COLUMN? columnInternalRef=identifier (SET DEFAULT (LP_ expr RP_| signedLiteral)| SET visibility | DROP DEFAULT) # alterColumn
     | ALTER INDEX indexName visibility  # alterIndex
     | ALTER CHECK constraintName constraintEnforcement  # alterCheck
     | ALTER CONSTRAINT constraintName constraintEnforcement # alterConstraint
@@ -448,6 +448,7 @@ columnAttribute
     | value = SRID NUMBER_
     | constraintClause? checkConstraint
     | constraintEnforcement
+    | visibility 
     ;
 
 checkConstraint

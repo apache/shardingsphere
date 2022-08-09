@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -37,7 +37,7 @@ import java.util.Map.Entry;
  */
 public final class ShardingKeyGeneratorsQueryResultSet implements DistSQLResultSet {
     
-    private Iterator<Entry<String, ShardingSphereAlgorithmConfiguration>> data = Collections.emptyIterator();
+    private Iterator<Entry<String, AlgorithmConfiguration>> data = Collections.emptyIterator();
     
     @Override
     public void init(final ShardingSphereDatabase database, final SQLStatement sqlStatement) {
@@ -56,7 +56,7 @@ public final class ShardingKeyGeneratorsQueryResultSet implements DistSQLResultS
     
     @Override
     public Collection<Object> getRowData() {
-        Map.Entry<String, ShardingSphereAlgorithmConfiguration> entry = data.next();
+        Map.Entry<String, AlgorithmConfiguration> entry = data.next();
         return Arrays.asList(entry.getKey(), entry.getValue().getType(), entry.getValue().getProps());
     }
     

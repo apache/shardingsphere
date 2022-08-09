@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.rule.builder.database;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.fixture.FixtureRuleConfiguration;
 import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureDatabaseRuleBuilder;
 import org.apache.shardingsphere.infra.rule.builder.fixture.FixtureDatabaseRuleConfiguration;

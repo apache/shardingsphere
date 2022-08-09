@@ -19,41 +19,20 @@ package org.apache.shardingsphere.data.pipeline.core.job.progress.yaml;
 
 import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.data.pipeline.api.task.progress.IncrementalTaskDelay;
-
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * Yaml job progress.
+ * YAML job progress.
  */
 @Getter
 @Setter
-public final class YamlJobProgress {
+public final class YamlJobProgress implements YamlConfiguration {
     
     private String status;
     
     private String sourceDatabaseType;
     
-    private YamlInventory inventory;
+    private YamlJobItemInventoryTasksProgress inventory;
     
-    private Map<String, YamlIncremental> incremental;
-    
-    @Getter
-    @Setter
-    public static final class YamlInventory {
-        
-        private String[] finished = new String[0];
-        
-        private Map<String, String> unfinished = new HashMap<>();
-    }
-    
-    @Getter
-    @Setter
-    public static final class YamlIncremental {
-        
-        private String position;
-        
-        private IncrementalTaskDelay delay;
-    }
+    private YamlJobItemIncrementalTasksProgress incremental;
 }

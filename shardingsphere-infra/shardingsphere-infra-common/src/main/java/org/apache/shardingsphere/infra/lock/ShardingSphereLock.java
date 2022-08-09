@@ -23,14 +23,6 @@ package org.apache.shardingsphere.infra.lock;
 public interface ShardingSphereLock {
     
     /**
-     * Try to lock.
-     *
-     * @param lockName lock name
-     * @return true if get the lock, false if not
-     */
-    boolean tryLock(String lockName);
-    
-    /**
      * Try to lock with time out.
      *
      * @param lockName lock name
@@ -40,17 +32,9 @@ public interface ShardingSphereLock {
     boolean tryLock(String lockName, long timeoutMillis);
     
     /**
-     * Release lock.
+     * Unlock.
      *
      * @param lockName lock name
      */
-    void releaseLock(String lockName);
-    
-    /**
-     * Check whether resource is locked in current instance.
-     *
-     * @param lockName lock name
-     * @return true if locked, false if not
-     */
-    boolean isLocked(String lockName);
+    void unlock(String lockName);
 }

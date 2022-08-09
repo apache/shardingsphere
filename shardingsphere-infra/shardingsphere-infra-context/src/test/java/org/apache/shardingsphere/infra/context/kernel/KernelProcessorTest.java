@@ -28,6 +28,7 @@ import org.apache.shardingsphere.infra.executor.sql.context.ExecutionContext;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.resource.ShardingSphereResource;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
+import org.apache.shardingsphere.infra.session.SessionContext;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.dml.SelectStatement;
 import org.apache.shardingsphere.sqltranslator.rule.SQLTranslatorRule;
@@ -53,7 +54,8 @@ public final class KernelProcessorTest {
         ShardingSphereDatabase database = new ShardingSphereDatabase(DefaultDatabase.LOGIC_NAME, mock(DatabaseType.class),
                 mock(ShardingSphereResource.class, RETURNS_DEEP_STUBS), new ShardingSphereRuleMetaData(Collections.singleton(mock(SQLTranslatorRule.class))), Collections.emptyMap());
         ConfigurationProperties props = new ConfigurationProperties(createProperties());
-        ExecutionContext actual = new KernelProcessor().generateExecutionContext(logicSQL, database, new ShardingSphereRuleMetaData(Collections.singleton(mock(SQLTranslatorRule.class))), props);
+        ExecutionContext actual = new KernelProcessor().generateExecutionContext(logicSQL, database, new ShardingSphereRuleMetaData(Collections.singleton(mock(SQLTranslatorRule.class))), props,
+                mock(SessionContext.class));
         assertThat(actual.getExecutionUnits().size(), is(1));
     }
     

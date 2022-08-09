@@ -20,10 +20,10 @@ package org.apache.shardingsphere.scaling.distsql.handler.converter;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.distsql.parser.segment.AlgorithmSegment;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
-import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration;
-import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration.InputConfiguration;
-import org.apache.shardingsphere.infra.config.rulealtered.OnRuleAlteredActionConfiguration.OutputConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineInputConfiguration;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineOutputConfiguration;
+import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActionConfiguration;
 import org.apache.shardingsphere.scaling.distsql.statement.segment.InputOrOutputSegment;
 import org.apache.shardingsphere.scaling.distsql.statement.segment.ShardingScalingRuleConfigurationSegment;
 
@@ -40,32 +40,32 @@ public final class ShardingScalingRuleStatementConverter {
      * @return on rule altered action configuration
      */
     public static OnRuleAlteredActionConfiguration convert(final ShardingScalingRuleConfigurationSegment segment) {
-        InputConfiguration inputConfig = convertToInputConfiguration(segment.getInputSegment());
-        OutputConfiguration outputConfig = convertToOutputConfiguration(segment.getOutputSegment());
-        ShardingSphereAlgorithmConfiguration streamChannel = convertToAlgorithm(segment.getStreamChannel());
-        ShardingSphereAlgorithmConfiguration completionDetector = convertToAlgorithm(segment.getCompletionDetector());
-        ShardingSphereAlgorithmConfiguration dataConsistencyChecker = convertToAlgorithm(segment.getDataConsistencyCalculator());
+        PipelineInputConfiguration inputConfig = convertToInputConfiguration(segment.getInputSegment());
+        PipelineOutputConfiguration outputConfig = convertToOutputConfiguration(segment.getOutputSegment());
+        AlgorithmConfiguration streamChannel = convertToAlgorithm(segment.getStreamChannel());
+        AlgorithmConfiguration completionDetector = convertToAlgorithm(segment.getCompletionDetector());
+        AlgorithmConfiguration dataConsistencyChecker = convertToAlgorithm(segment.getDataConsistencyCalculator());
         return new OnRuleAlteredActionConfiguration(inputConfig, outputConfig, streamChannel, completionDetector, dataConsistencyChecker);
     }
     
-    private static InputConfiguration convertToInputConfiguration(final InputOrOutputSegment inputSegment) {
+    private static PipelineInputConfiguration convertToInputConfiguration(final InputOrOutputSegment inputSegment) {
         if (null == inputSegment) {
             return null;
         }
-        return new InputConfiguration(inputSegment.getWorkerThread(), inputSegment.getBatchSize(), inputSegment.getShardingSize(), convertToAlgorithm(inputSegment.getRateLimiter()));
+        return new PipelineInputConfiguration(inputSegment.getWorkerThread(), inputSegment.getBatchSize(), inputSegment.getShardingSize(), convertToAlgorithm(inputSegment.getRateLimiter()));
     }
     
-    private static OutputConfiguration convertToOutputConfiguration(final InputOrOutputSegment outputSegment) {
+    private static PipelineOutputConfiguration convertToOutputConfiguration(final InputOrOutputSegment outputSegment) {
         if (null == outputSegment) {
             return null;
         }
-        return new OutputConfiguration(outputSegment.getWorkerThread(), outputSegment.getBatchSize(), convertToAlgorithm(outputSegment.getRateLimiter()));
+        return new PipelineOutputConfiguration(outputSegment.getWorkerThread(), outputSegment.getBatchSize(), convertToAlgorithm(outputSegment.getRateLimiter()));
     }
     
-    private static ShardingSphereAlgorithmConfiguration convertToAlgorithm(final AlgorithmSegment segment) {
+    private static AlgorithmConfiguration convertToAlgorithm(final AlgorithmSegment segment) {
         if (null == segment) {
             return null;
         }
-        return new ShardingSphereAlgorithmConfiguration(segment.getName(), segment.getProps());
+        return new AlgorithmConfiguration(segment.getName(), segment.getProps());
     }
 }

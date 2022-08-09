@@ -1,55 +1,28 @@
 +++
-pre = "<b>3.10. </b>"
+pre = "<b>3.9. </b>"
 title = "影子库"
-weight = 10
+weight = 9
 +++
 
-## 定义
-Apache ShardingSphere 全链路在线压测场景下，在数据库层面对于压测数据治理的解决方案。
+## 背景
 
-## 相关概念
+在基于微服务的分布式应用架构下，业务需要多个服务是通过一系列的服务、中间件的调用来完成，所以单个服务的压力测试已无法代表真实场景。 在测试环境中，如果重新搭建一整套与生产环境类似的压测环境，成本过高，并且往往无法模拟线上环境的复杂度以及流量。 因此，业内通常选择全链路压测的方式，即在生产环境进行压测，这样所获得的测试结果能够准确地反应系统真实容量和性能水平。
 
-### 生产库
-生产环境使用的数据库。
+## 挑战
 
-### 影子库
-压测数据隔离的影子数据库，与生产数据库应当使用相同的配置。
+全链路压测是一项复杂而庞大的工作。 需要各个微服务、中间件之间配合与调整，以应对不同流量以及压测标识的透传。 通常会搭建一整套压测平台以适用不同测试计划。 在数据库层面需要做好数据隔离，为了保证生产数据的可靠性与完整性，需要将压测产生的数据路由到压测环境数据库，防止压测数据对生产数据库中真实数据造成污染。 这就要求业务应用在执行 SQL 前，能够根据透传的压测标识，做好数据分类，将相应的 SQL 路由到与之对应的数据源。
 
-### 影子算法
-影子算法和业务实现紧密相关，目前提供 2 种类型影子算法。
+## 目标
 
-- 基于列的影子算法
-  通过识别 SQL 中的数据，匹配路由至影子库的场景。
-  适用于由压测数据名单驱动的压测场景。
-  
-- 基于 Hint 的影子算法
-  通过识别 SQL 中的注释，匹配路由至影子库的场景。
-  适用于由上游系统透传标识驱动的压测场景。
-  
-## 使用限制
+Apache ShardingSphere 关注于全链路压测场景下，数据库层面的解决方案。 将压测数据自动路由至用户指定的数据库，是 Apache ShardingSphere 影子库模块的主要设计目标。
 
-### 基于 Hint 的影子算法
-* 无。
+## 应用场景
 
-### 基于列的影子算法
-* 不支持 DDL；
-* 不支持范围、分组和子查询，如：BETWEEN、GROUP BY ... HAVING 等。
-  SQL 支持列表：
-  - INSERT
-  
-  |  *SQL*  |  *是否支持*  |
-  | ------- | ------------ |
-  | INSERT INTO table (column,...) VALUES (value,...)   |  支持  |
-  | INSERT INTO table (column,...) VALUES (value,...),(value,...),...   |  支持   |
-  | INSERT INTO table (column,...) SELECT column1 from table1 where column1 = value1 |  不支持  |
-  
-  - SELECT/UPDATE/DELETE
-  
-  |  *条件类型*  |  *SQL*   |  *是否支持*  |
-  | ------------ | -------- | ----------- |
-  | =  | SELECT/UPDATE/DELETE ... WHERE column = value   | 支持 |
-  | LIKE/NOT LIKE | SELECT/UPDATE/DELETE ... WHERE column LIKE/NOT LIKE value  | 支持  |                        
-  | IN/NOT IN | SELECT/UPDATE/DELETE ... WHERE column IN/NOT IN (value1,value2,...)  | 支持 |
-  | BETWEEN | SELECT/UPDATE/DELETE ... WHERE column BETWEEN value1 AND value2  | 不支持  |
-  | GROUP BY ... HAVING... | SELECT/UPDATE/DELETE ... WHERE ... GROUP BY column HAVING column > value  | 不支持     |
-  | 子查询  | SELECT/UPDATE/DELETE ... WHERE column = (SELECT column FROM table WHERE column = value) | 不支持  |
+在基于微服务的分布式应用架构下，为了提升系统压力测试的准确性，降低测试成本。通常选择在生产环境进行压力测试。测试中风险也会大大提高。通过 ShardingSphere 影子库功能，结合影子算法灵活的配置。可以解决数据污染，数据库性能等问题，满足复杂业务场景的在线压力测试需求。
+
+## 相关参考
+
+- [Java API：影子库](/cn/user-manual/shardingsphere-jdbc/java-api/rules/shadow/)
+- [YAML 配置：影子库](/cn/user-manual/shardingsphere-jdbc/yaml-config/rules/shadow/)
+- [Spring Boot Starter：影子库](/cn/user-manual/shardingsphere-jdbc/spring-boot-starter/rules/shadow/)
+- [Spring 命名空间：影子库](/cn/user-manual/shardingsphere-jdbc/spring-namespace/rules/shadow/)

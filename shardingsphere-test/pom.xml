@@ -41,7 +41,7 @@
     </modules>
     
     <properties>
-        <testcontainers.version>1.15.2</testcontainers.version>
+        <testcontainers.version>1.17.3</testcontainers.version>
     </properties>
     
     <dependencyManagement>

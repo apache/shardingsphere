@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.infra.config.props;
 
-import org.apache.shardingsphere.infra.properties.TypedProperties;
+import org.apache.shardingsphere.infra.util.props.TypedProperties;
 
 import java.util.Properties;
 

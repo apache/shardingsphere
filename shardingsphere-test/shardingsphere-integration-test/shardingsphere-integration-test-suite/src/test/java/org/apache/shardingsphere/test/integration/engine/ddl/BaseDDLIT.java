@@ -21,7 +21,7 @@ import com.google.common.base.Splitter;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.datanode.DataNode;
 import org.apache.shardingsphere.sharding.route.engine.exception.NoSuchTableException;
-import org.apache.shardingsphere.infra.expr.InlineExpressionParser;
+import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetColumn;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetIndex;
 import org.apache.shardingsphere.test.integration.cases.dataset.metadata.DataSetMetaData;
@@ -139,7 +139,8 @@ public abstract class BaseDDLIT extends SingleITCase {
             while (resultSet.next()) {
                 DataSetColumn each = new DataSetColumn();
                 each.setName(resultSet.getString("COLUMN_NAME"));
-                each.setType(resultSet.getString("TYPE_NAME").toLowerCase());
+                String typeName = resultSet.getString("TYPE_NAME");
+                each.setType("CHARACTER VARYING".equals(typeName) ? "VARCHAR".toLowerCase() : typeName.toLowerCase());
                 result.add(each);
             }
             return result;

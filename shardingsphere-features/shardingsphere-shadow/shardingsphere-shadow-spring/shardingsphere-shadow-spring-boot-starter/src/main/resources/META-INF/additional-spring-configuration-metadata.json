@@ -34,7 +34,7 @@
     },
     {
       "name": "spring.shardingsphere.rules.shadow.shadow-algorithms",
-      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration>",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration>",
       "sourceType": "org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration"
     }
   ],
@@ -56,7 +56,7 @@
     },
     {
       "name": "spring.shardingsphere.rules.shadow.shadow-algorithms",
-      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration>",
+      "type": "java.util.Map<java.lang.String, org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration>",
       "sourceType": "org.apache.shardingsphere.shadow.yaml.config.YamlShadowRuleConfiguration"
     }
   ],
@@ -92,7 +92,7 @@
         {
           "name": "handle-as",
           "parameters": {
-            "target": "org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlShardingSphereAlgorithmConfiguration"
+            "target": "org.apache.shardingsphere.infra.yaml.config.pojo.algorithm.YamlAlgorithmConfiguration"
           }
         }
       ]

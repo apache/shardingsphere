@@ -17,8 +17,8 @@
 
 package org.apache.shardingsphere.sharding.distsql.query;
 
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
@@ -63,17 +63,17 @@ public final class UnusedShardingKeyGeneratorsQueryResultSetTest {
     private RuleConfiguration createRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getKeyGenerators().put("snowflake_key_generator", createSnowflakeKeyGeneratorConfiguration());
-        result.getKeyGenerators().put("uuid_key_generator", new ShardingSphereAlgorithmConfiguration("UUID", null));
+        result.getKeyGenerators().put("uuid_key_generator", new AlgorithmConfiguration("UUID", null));
         result.getAutoTables().add(createShardingAutoTableRuleConfiguration());
         return result;
     }
     
-    private ShardingSphereAlgorithmConfiguration createSnowflakeKeyGeneratorConfiguration() {
-        return new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", new Properties());
+    private AlgorithmConfiguration createSnowflakeKeyGeneratorConfiguration() {
+        return new AlgorithmConfiguration("SNOWFLAKE", new Properties());
     }
     
     private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {
-        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("auto_table");
+        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("auto_table", null);
         result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "snowflake_key_generator"));
         return result;
     }

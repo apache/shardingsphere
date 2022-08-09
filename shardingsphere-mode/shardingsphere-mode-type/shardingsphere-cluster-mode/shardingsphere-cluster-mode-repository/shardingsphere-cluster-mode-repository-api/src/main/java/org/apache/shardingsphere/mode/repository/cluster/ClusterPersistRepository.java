@@ -21,8 +21,6 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
-import java.util.concurrent.locks.Lock;
-
 /**
  * Cluster persist repository.
  */
@@ -44,15 +42,6 @@ public interface ClusterPersistRepository extends PersistRepository {
     void persistEphemeral(String key, String value);
     
     /**
-     * Get sequential id.
-     * 
-     * @param key key of data
-     * @param value value of data
-     * @return sequential id
-     */
-    String getSequentialId(String key, String value);
-    
-    /**
      * Watch key or path of governance server.
      *
      * @param key key of data
@@ -68,18 +57,11 @@ public interface ClusterPersistRepository extends PersistRepository {
     void watchSessionConnection(InstanceContext instanceContext);
     
     /**
-     * Get internal mutex lock.
+     * Try lock.
      *
-     * @param lockName lock name
-     * @return internal mutex lock
+     * @param lockKey lock key
+     * @param timeoutMillis timeout millis
+     * @return is locked or not
      */
-    Lock getInternalMutexLock(String lockName);
-    
-    /**
-     * Get internal reentrant mutex lock.
-     *
-     * @param lockName lock name
-     * @return internal reentrant mutex lock
-     */
-    Lock getInternalReentrantMutexLock(String lockName);
+    boolean tryLock(String lockKey, long timeoutMillis);
 }

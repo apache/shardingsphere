@@ -124,10 +124,12 @@ public final class MySQLSchemaMetaDataLoader implements DialectSchemaMetaDataLoa
         String columnName = resultSet.getString("COLUMN_NAME");
         String dataType = resultSet.getString("DATA_TYPE");
         boolean primaryKey = "PRI".equals(resultSet.getString("COLUMN_KEY"));
-        boolean generated = "auto_increment".equals(resultSet.getString("EXTRA"));
+        String extra = resultSet.getString("EXTRA");
+        boolean generated = "auto_increment".equals(extra);
         String collationName = resultSet.getString("COLLATION_NAME");
         boolean caseSensitive = null != collationName && !collationName.endsWith("_ci");
-        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive);
+        boolean visible = !"INVISIBLE".equals(extra);
+        return new ColumnMetaData(columnName, dataTypeMap.get(dataType), primaryKey, generated, caseSensitive, visible);
     }
     
     private String getTableMetaDataSQL(final Collection<String> tables) {
@@ -139,7 +141,6 @@ public final class MySQLSchemaMetaDataLoader implements DialectSchemaMetaDataLoa
         try (
                 Connection connection = dataSource.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(getIndexMetaDataSQL(tableNames))) {
-            preparedStatement.setString(1, connection.getCatalog());
             String databaseName = "".equals(connection.getCatalog()) ? GlobalDataSourceRegistry.getInstance().getCachedDatabaseTables().get(tableNames.iterator().next()) : connection.getCatalog();
             preparedStatement.setString(1, databaseName);
             try (ResultSet resultSet = preparedStatement.executeQuery()) {

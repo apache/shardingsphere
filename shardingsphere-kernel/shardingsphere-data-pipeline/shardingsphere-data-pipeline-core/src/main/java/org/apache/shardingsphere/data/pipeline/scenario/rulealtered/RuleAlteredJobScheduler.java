@@ -19,15 +19,22 @@ package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.concurrent.ConcurrentException;
+import org.apache.commons.lang3.concurrent.LazyInitializer;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
-import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
-import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
-import org.apache.shardingsphere.data.pipeline.core.exception.PipelineIgnoredException;
+import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
+import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
+
+import java.util.Collection;
 
 /**
  * Rule altered job scheduler.
@@ -35,18 +42,29 @@ import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 @Slf4j
 @RequiredArgsConstructor
 @Getter
-// TODO extract JobScheduler
-public final class RuleAlteredJobScheduler implements Runnable {
+public final class RuleAlteredJobScheduler implements PipelineTasksRunner {
     
-    private final RuleAlteredJobContext jobContext;
-    
-    /**
-     * Start execute job.
-     */
-    public void start() {
-        new Thread(this).start();
-    }
-    
+    private final PipelineJobContext jobContext;
+
+    private final Collection<InventoryTask> inventoryTasks;
+
+    private final Collection<IncrementalTask> incrementalTasks;
+
+    private final LazyInitializer<ExecuteEngine> inventoryDumperExecuteEngineLazyInitializer = new LazyInitializer<ExecuteEngine>() {
+
+        @Override
+        protected ExecuteEngine initialize() {
+            return ExecuteEngine.newCachedThreadInstance("Inventory-" + jobContext.getJobId());
+        }
+    };
+
+    private final LazyInitializer<ExecuteEngine> incrementalDumperExecuteEngineLazyInitializer = new LazyInitializer<ExecuteEngine>() {
+        @Override
+        protected ExecuteEngine initialize() {
+            return ExecuteEngine.newCachedThreadInstance("Incremental-" + jobContext.getJobId());
+        }
+    };
+
     /**
      * Stop all task.
      */
@@ -54,12 +72,12 @@ public final class RuleAlteredJobScheduler implements Runnable {
         jobContext.setStopping(true);
         log.info("stop, jobId={}, shardingItem={}", jobContext.getJobId(), jobContext.getShardingItem());
         // TODO blocking stop
-        for (InventoryTask each : jobContext.getInventoryTasks()) {
+        for (InventoryTask each : getInventoryTasks()) {
             log.info("stop inventory task {} - {}", jobContext.getJobId(), each.getTaskId());
             each.stop();
             each.close();
         }
-        for (IncrementalTask each : jobContext.getIncrementalTasks()) {
+        for (IncrementalTask each : getIncrementalTasks()) {
             log.info("stop incremental task {} - {}", jobContext.getJobId(), each.getTaskId());
             each.stop();
             each.close();
@@ -67,28 +85,12 @@ public final class RuleAlteredJobScheduler implements Runnable {
     }
     
     @Override
-    public void run() {
-        String jobId = jobContext.getJobId();
-        GovernanceRepositoryAPI governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-        try {
-            jobContext.getJobPreparer().prepare(jobContext);
-        } catch (final PipelineIgnoredException ex) {
-            log.info("pipeline ignore exception: {}", ex.getMessage());
-            RuleAlteredJobCenter.stop(jobId);
-            // CHECKSTYLE:OFF
-        } catch (final RuntimeException ex) {
-            // CHECKSTYLE:ON
-            log.error("job prepare failed, {}-{}", jobId, jobContext.getShardingItem(), ex);
-            RuleAlteredJobCenter.stop(jobId);
-            jobContext.setStatus(JobStatus.PREPARING_FAILURE);
-            governanceRepositoryAPI.persistJobProgress(jobContext);
-            throw ex;
-        }
+    public void start() {
         if (jobContext.isStopping()) {
             log.info("job stopping, ignore inventory task");
             return;
         }
-        governanceRepositoryAPI.persistJobProgress(jobContext);
+        RuleAlteredJobAPIFactory.getInstance().persistJobProgress(jobContext);
         if (executeInventoryTask()) {
             if (jobContext.isStopping()) {
                 log.info("stopping, ignore incremental task");
@@ -99,28 +101,33 @@ public final class RuleAlteredJobScheduler implements Runnable {
     }
     
     private synchronized boolean executeInventoryTask() {
-        if (RuleAlteredJobProgressDetector.allInventoryTasksFinished(jobContext.getInventoryTasks())) {
+        if (PipelineJobProgressDetector.allInventoryTasksFinished(getInventoryTasks())) {
             log.info("All inventory tasks finished.");
             return true;
         }
         log.info("-------------- Start inventory task --------------");
         jobContext.setStatus(JobStatus.EXECUTE_INVENTORY_TASK);
         ExecuteCallback inventoryTaskCallback = createInventoryTaskCallback();
-        for (InventoryTask each : jobContext.getInventoryTasks()) {
+        for (InventoryTask each : getInventoryTasks()) {
             if (each.getProgress().getPosition() instanceof FinishedPosition) {
                 continue;
             }
-            jobContext.getRuleAlteredContext().getInventoryDumperExecuteEngine().submit(each, inventoryTaskCallback);
+            getInventoryDumperExecuteEngine().submit(each, inventoryTaskCallback);
         }
         return false;
     }
-    
+
+    @SneakyThrows(ConcurrentException.class)
+    private ExecuteEngine getInventoryDumperExecuteEngine() {
+        return inventoryDumperExecuteEngineLazyInitializer.get();
+    }
+
     private ExecuteCallback createInventoryTaskCallback() {
         return new ExecuteCallback() {
             
             @Override
             public void onSuccess() {
-                if (RuleAlteredJobProgressDetector.allInventoryTasksFinished(jobContext.getInventoryTasks())) {
+                if (PipelineJobProgressDetector.allInventoryTasksFinished(getInventoryTasks())) {
                     log.info("onSuccess, all inventory tasks finished.");
                     executeIncrementalTask();
                 }
@@ -143,14 +150,19 @@ public final class RuleAlteredJobScheduler implements Runnable {
         log.info("-------------- Start incremental task --------------");
         jobContext.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK);
         ExecuteCallback incrementalTaskCallback = createIncrementalTaskCallback();
-        for (IncrementalTask each : jobContext.getIncrementalTasks()) {
+        for (IncrementalTask each : getIncrementalTasks()) {
             if (each.getProgress().getPosition() instanceof FinishedPosition) {
                 continue;
             }
-            jobContext.getRuleAlteredContext().getIncrementalDumperExecuteEngine().submit(each, incrementalTaskCallback);
+            getIncrementalDumperExecuteEngine().submit(each, incrementalTaskCallback);
         }
     }
-    
+
+    @SneakyThrows(ConcurrentException.class)
+    private ExecuteEngine getIncrementalDumperExecuteEngine() {
+        return incrementalDumperExecuteEngineLazyInitializer.get();
+    }
+
     private ExecuteCallback createIncrementalTaskCallback() {
         return new ExecuteCallback() {
             

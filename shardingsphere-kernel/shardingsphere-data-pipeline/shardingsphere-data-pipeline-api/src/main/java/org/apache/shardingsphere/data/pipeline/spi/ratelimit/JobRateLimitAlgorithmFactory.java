@@ -19,10 +19,10 @@ package org.apache.shardingsphere.data.pipeline.spi.ratelimit;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
-import org.apache.shardingsphere.spi.type.typed.TypedSPIRegistry;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 /**
  * Job rate limit algorithm factory.
@@ -40,7 +40,7 @@ public final class JobRateLimitAlgorithmFactory {
      * @param jobRateLimitAlgorithmConfig job rate limit algorithm configuration
      * @return created instance
      */
-    public static JobRateLimitAlgorithm newInstance(final ShardingSphereAlgorithmConfiguration jobRateLimitAlgorithmConfig) {
+    public static JobRateLimitAlgorithm newInstance(final AlgorithmConfiguration jobRateLimitAlgorithmConfig) {
         return ShardingSphereAlgorithmFactory.createAlgorithm(jobRateLimitAlgorithmConfig, JobRateLimitAlgorithm.class);
     }
     

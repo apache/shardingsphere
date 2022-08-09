@@ -29,6 +29,7 @@ import org.apache.shardingsphere.infra.rewrite.SQLRewriteEntry;
 import org.apache.shardingsphere.infra.rewrite.engine.result.SQLRewriteResult;
 import org.apache.shardingsphere.infra.route.context.RouteContext;
 import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
+import org.apache.shardingsphere.infra.session.SessionContext;
 
 /**
  * Kernel processor.
@@ -42,10 +43,11 @@ public final class KernelProcessor {
      * @param database database
      * @param globalRuleMetaData global rule meta data
      * @param props configuration properties
+     * @param sessionContext session context
      * @return execution context
      */
-    public ExecutionContext generateExecutionContext(final LogicSQL logicSQL,
-                                                     final ShardingSphereDatabase database, final ShardingSphereRuleMetaData globalRuleMetaData, final ConfigurationProperties props) {
+    public ExecutionContext generateExecutionContext(final LogicSQL logicSQL, final ShardingSphereDatabase database, final ShardingSphereRuleMetaData globalRuleMetaData,
+                                                     final ConfigurationProperties props, final SessionContext sessionContext) {
         RouteContext routeContext = route(logicSQL, database, props);
         SQLRewriteResult rewriteResult = rewrite(logicSQL, database, globalRuleMetaData, props, routeContext);
         ExecutionContext result = createExecutionContext(logicSQL, database, routeContext, rewriteResult);

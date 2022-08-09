@@ -47,16 +47,6 @@
         <output sql="SELECT * FROM t_account_0 WHERE 100 = account_id" />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_with_not_exists" db-types="MySQL">
-        <input sql="SELECT * FROM t_account a WHERE not exists (select * from t_account_detail where a.account_id=account_id and account_id=1000) and account_id = 100" />
-        <output sql="SELECT * FROM t_account a WHERE not exists (select * from t_account_detail where a.account_id=account_id and account_id=1000) and account_id = 100" />
-    </rewrite-assertion>
-
-    <rewrite-assertion id="select_with_sum_fun">
-        <input sql="SELECT SUM(DISTINCT account_id), SUM(account_id) FROM t_account WHERE account_id = 100" />
-        <output sql="SELECT SUM(DISTINCT account_id), SUM(account_id) FROM t_account WHERE account_id = 100" />
-    </rewrite-assertion>
-
     <rewrite-assertion id="select_with_avg_fun">
         <input sql="SELECT AVG(DISTINCT t.account_id), account_id FROM t_account t WHERE account_id = 100" />
         <output sql="SELECT AVG(DISTINCT t.account_id), account_id FROM t_account_0 t WHERE account_id = 100" />
@@ -68,16 +58,6 @@
         <output sql="SELECT DISTINCT amount AS AGGREGATION_DISTINCT_DERIVED_0, account_id FROM t_account_1  ORDER BY account_id ASC " />
     </rewrite-assertion>
 
-    <rewrite-assertion id="select_with_having" db-types="MySQL,PostgreSQL,openGauss,SQLServer,SQL92">
-        <input sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ?" parameters="1"/>
-        <output sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ?" parameters="1"/>
-    </rewrite-assertion>
-
-    <rewrite-assertion id="select_with_having_and_window" db-types="MySQL,PostgreSQL,openGauss">
-        <input sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ? WINDOW w AS (PARTITION BY account_id)" parameters="1"/>
-        <output sql="SELECT COUNT(account_id) as count_alias FROM t_account GROUP BY amount HAVING count_alias > ? WINDOW w AS (PARTITION BY account_id)" parameters="1"/>
-    </rewrite-assertion>
-
     <rewrite-assertion id="select_with_schema" db-types="MySQL,Oracle,SQLServer,SQL92">
         <input sql="SELECT * FROM logic_db.t_account" />
         <output sql="SELECT * FROM t_account_0 UNION ALL SELECT * FROM t_account_1"/>
@@ -86,26 +66,6 @@
     <rewrite-assertion id="select_with_subquery" db-types="MySQL">
         <input sql="SELECT * FROM (select t_account.account_id from t_account where t_account.account_id=?) a WHERE account_id = 100" parameters="100" />
         <output sql="SELECT * FROM (select t_account_0.account_id from t_account_0 where t_account_0.account_id=?) a WHERE account_id = 100" parameters="100" />
-    </rewrite-assertion>
-
-    <rewrite-assertion id="select_with_subquery_and_different_sharding_conditions" db-types="MySQL">
-        <input sql="SELECT * FROM (select t_account.account_id from t_account where t_account.account_id=?) a WHERE account_id = 101" parameters="100" />
-        <output sql="SELECT * FROM (select t_account.account_id from t_account where t_account.account_id=?) a WHERE account_id = 101" parameters="100" />
-    </rewrite-assertion>
-
-    <rewrite-assertion id="select_with_subquery_with_subquery" db-types="MySQL">
-        <input sql="SELECT * FROM (select b.account_id from (select t_account.account_id from t_account) b where b.account_id=?) a WHERE account_id = 100" parameters="100" />
-        <output sql="SELECT * FROM (select b.account_id from (select t_account.account_id from t_account) b where b.account_id=?) a WHERE account_id = 100" parameters="100" />
-    </rewrite-assertion>
-
-    <rewrite-assertion id="select_with_subquery_in_projection_and_where" db-types="MySQL">
-        <input sql="SELECT (select id from t_account limit 1) as myid FROM (select b.account_id from (select t_account.account_id from t_account) b where b.account_id=?) a WHERE account_id >= (select account_id from t_account limit 1)"  parameters="100"/>
-        <output sql="SELECT (select id from t_account limit 1) as myid FROM (select b.account_id from (select t_account.account_id from t_account) b where b.account_id=?) a WHERE account_id >= (select account_id from t_account limit 1)"  parameters="100"/>
-    </rewrite-assertion>
-
-    <rewrite-assertion id="select_with_subquery_only_in_projection" db-types="MySQL">
-        <input sql="SELECT (select id from t_account)"/>
-        <output sql="SELECT (select id from t_account)"/>
     </rewrite-assertion>
 
     <rewrite-assertion id="select_with_subquery_for_where_in_predicate" db-types="MySQL">

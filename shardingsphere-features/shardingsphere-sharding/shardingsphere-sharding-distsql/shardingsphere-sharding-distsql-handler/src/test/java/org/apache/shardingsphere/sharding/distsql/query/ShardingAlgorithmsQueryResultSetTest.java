@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.sharding.distsql.query;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.handler.query.ShardingAlgorithmsQueryResultSet;
@@ -65,7 +65,7 @@ public final class ShardingAlgorithmsQueryResultSetTest {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         Properties props = new Properties();
         props.put("algorithm-expression", "ds_${user_id % 2}");
-        result.getShardingAlgorithms().put("database_inline", new ShardingSphereAlgorithmConfiguration("INLINE", props));
+        result.getShardingAlgorithms().put("database_inline", new AlgorithmConfiguration("INLINE", props));
         return result;
     }
     

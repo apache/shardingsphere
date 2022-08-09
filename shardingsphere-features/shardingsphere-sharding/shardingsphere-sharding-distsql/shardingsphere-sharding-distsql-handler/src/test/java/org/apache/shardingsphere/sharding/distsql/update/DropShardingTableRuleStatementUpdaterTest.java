@@ -113,7 +113,7 @@ public final class DropShardingTableRuleStatementUpdaterTest {
         ShardingTableRuleConfiguration tableRuleConfig = new ShardingTableRuleConfiguration("t_order_item");
         tableRuleConfig.setDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "t_order_item_algorithm"));
         result.getTables().add(tableRuleConfig);
-        result.getAutoTables().add(new ShardingAutoTableRuleConfiguration("t_order"));
+        result.getAutoTables().add(new ShardingAutoTableRuleConfiguration("t_order", null));
         result.setBindingTableGroups(Collections.singleton("t_order_item"));
         result.setDefaultTableShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "default_table_strategy"));
         result.getShardingAlgorithms().put("unused_algorithm", null);

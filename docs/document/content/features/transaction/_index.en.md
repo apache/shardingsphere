@@ -1,77 +1,34 @@
 +++
-pre = "<b>3.5. </b>"
+pre = "<b>3.2. </b>"
 title = "Distributed Transaction"
-weight = 5
+weight = 2
 chapter = true
 +++
 
-## Definition
+## Background
 
-Four properties of transactions: ACID （Atomicity、Consistency、Isolation、Durability).
+Database transactions should satisfy the features of ACID (atomicity, consistency, isolation and durability).
 
 - Atomicity: transactions are executed as a whole, and either all or none is executed.
 - Consistency: transactions should ensure that the state of data remains consistent after the transition.
 - Isolation: when multiple transactions execute concurrently, the execution of one transaction should not affect the execution of others.
 - Durability: when a transaction committed modifies data, the operation will be saved persistently.
 
-Distributed transactions guarantee the ACID properties in distributed scenarios, where a single transaction involves operations on multiple data nodes.
+In single data node, transactions are only restricted to the access and control of single database resources, called local transactions. Almost all the mature relational databases have provided native support for local transactions. But in distributed application situations based on micro-services, more and more of them require to include multiple accesses to services and the corresponding database resources in the same transaction. As a result, distributed transactions appear.
 
-## Related Concepts
+Though the relational database has provided perfect native ACID support, it can become an obstacle to the system performance under distributed situations. How to make databases satisfy ACID features under distributed situations or find a corresponding substitute solution, is the priority work of distributed transactions.
 
-### XA Protocol
+## Challenge
 
-The original distributed transaction model of XA protocol is the "X/Open Distributed Transaction Processing (DTP)" model, XA protocol for short, which was proposed by the X/Open international consortium.
+For different application situations, developers need to reasonably weight the performance and the function between all kinds of distributed transactions.
 
-## Limitations
+Highly consistent transactions do not have totally the same API and functions as soft transactions, and they cannot switch between each other freely and invisibly. The choice between highly consistent transactions and soft transactions as early as development decision-making phase has sharply increased the design and development cost.
 
-Though Apache ShardingSphere intends to be compatible with all distributed scenario and best performance, under CAP theorem guidance, there is no sliver bullet with distributed transaction solution.
+Highly consistent transactions based on XA is relatively easy to use, but is not good at dealing with long transaction and high concurrency situation of the Internet. With a high access cost, soft transactions require developers to transform the application and realize resources lock and backward compensation.
 
-Apache ShardingSphere wants to give the user choice of distributed transaction type and use the most suitable solution in different scenarios.
+## Goal
 
-### LOCAL Transaction
-
-#### Supported
-
-* Support none-cross-database transactions. For example, sharding table or sharding database with its route result in same database;
-* Support cross-database transactions caused by logic exceptions. For example, update two databases in transaction with exception thrown, data can rollback in both databases.
-
-#### Unsupported
-
-* Do not support the cross-database transactions caused by network or hardware crash. For example, when update two databases in transaction, if one database crashes before commit, then only the data of the other database can commit.
-
-### XA Transaction
-
-#### Supported
-
-* Support Savepoint;
-* PostgreSQL/OpenGauss, in the transaction block, the SQL execution is abnormal，then run `Commit`，transactions are automatically rollback;
-* Support cross-database transactions after sharding;
-* Operation atomicity and high data consistency in 2PC transactions;
-* When service is down and restarted, commit and rollback transactions can be recovered automatically;
-* Support use XA and non-XA connection pool together.
-
-#### Unsupported
-
-* Recover committing and rolling back in other machines after the service is down;
-* MySQL,in the transaction block, the SQL execution is abnormal, and run `Commit`, and data remains consistent.
-
-### BASE Transaction
-
-#### Supported
-
-* Support cross-database transactions after sharding;
-* Support RC isolation level;
-* Rollback transaction according to undo log;
-* Support recovery committing transaction automatically after the service is down.
-
-#### Unsupported
-
-* Do not support other isolation level except RC.
-
-#### To Be Optimized
-
-* SQL parsed twice by Apache ShardingSphere and SEATA.
-
+The main design goal of the distributed transaction modular of Apache ShardingSphere is to integrate existing mature transaction cases to provide an unified distributed transaction interface for local transactions, 2PC transactions and soft transactions; compensate for the deficiencies of current solutions to provide a one-stop distributed transaction solution.
 
 ## How it works
 

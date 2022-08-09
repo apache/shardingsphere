@@ -17,9 +17,9 @@
 
 package org.apache.shardingsphere.spring.namespace.fixture.factorybean;
 
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmFactory;
-import org.apache.shardingsphere.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
 import org.apache.shardingsphere.spring.namespace.factorybean.ShardingSphereAlgorithmFactoryBean;
 import org.apache.shardingsphere.spring.namespace.fixture.ShardingSphereFixtureAlgorithm;
 
@@ -37,6 +37,6 @@ public final class ShardingSphereAlgorithmFixtureFactoryBean extends ShardingSph
     
     @Override
     public ShardingSphereFixtureAlgorithm getObject() {
-        return ShardingSphereAlgorithmFactory.createAlgorithm(new ShardingSphereAlgorithmConfiguration(getType(), getProps()), ShardingSphereFixtureAlgorithm.class);
+        return ShardingSphereAlgorithmFactory.createAlgorithm(new AlgorithmConfiguration(getType(), getProps()), ShardingSphereFixtureAlgorithm.class);
     }
 }

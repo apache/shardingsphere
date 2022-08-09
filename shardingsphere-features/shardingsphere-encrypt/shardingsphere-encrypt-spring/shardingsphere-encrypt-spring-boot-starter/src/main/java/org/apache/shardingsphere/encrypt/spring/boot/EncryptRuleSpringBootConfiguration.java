@@ -24,8 +24,8 @@ import org.apache.shardingsphere.encrypt.spring.boot.algorithm.EncryptAlgorithmP
 import org.apache.shardingsphere.encrypt.spring.boot.condition.EncryptSpringBootCondition;
 import org.apache.shardingsphere.encrypt.spring.boot.rule.YamlEncryptRuleSpringBootConfiguration;
 import org.apache.shardingsphere.encrypt.yaml.config.YamlEncryptRuleConfiguration;
-import org.apache.shardingsphere.encrypt.yaml.swapper.EncryptRuleAlgorithmProviderConfigurationYamlSwapper;
-import org.apache.shardingsphere.infra.config.RuleConfiguration;
+import org.apache.shardingsphere.encrypt.yaml.swapper.YamlEncryptRuleAlgorithmProviderConfigurationSwapper;
+import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -48,7 +48,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class EncryptRuleSpringBootConfiguration {
     
-    private final EncryptRuleAlgorithmProviderConfigurationYamlSwapper swapper = new EncryptRuleAlgorithmProviderConfigurationYamlSwapper();
+    private final YamlEncryptRuleAlgorithmProviderConfigurationSwapper swapper = new YamlEncryptRuleAlgorithmProviderConfigurationSwapper();
     
     private final YamlEncryptRuleSpringBootConfiguration yamlConfig;
     

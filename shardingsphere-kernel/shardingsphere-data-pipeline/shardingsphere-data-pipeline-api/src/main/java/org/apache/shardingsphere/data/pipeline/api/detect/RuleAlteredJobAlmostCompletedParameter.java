@@ -31,6 +31,7 @@ import java.util.Collection;
 @RequiredArgsConstructor
 @Getter
 @ToString
+// TODO now rename
 public final class RuleAlteredJobAlmostCompletedParameter {
     
     private final int jobShardingCount;

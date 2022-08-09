@@ -50,14 +50,14 @@ tOrderRuleConfiguration.setKeyGenerateStrategy(new KeyGenerateStrategyConfigurat
 tOrderRuleConfiguration.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_id", "tOrderInlineShardingAlgorithm"));
 Properties tOrderShardingInlineProps = new Properties();
 tOrderShardingInlineProps.setProperty("algorithm-expression", "t_order_${order_id % 2}");
-tOrderRuleConfiguration.getShardingAlgorithms().putIfAbsent("tOrderInlineShardingAlgorithm", new ShardingSphereAlgorithmConfiguration("INLINE",tOrderShardingInlineProps));
+tOrderRuleConfiguration.getShardingAlgorithms().putIfAbsent("tOrderInlineShardingAlgorithm", new AlgorithmConfiguration("INLINE",tOrderShardingInlineProps));
 
 ShardingTableRuleConfiguration tOrderItemRuleConfiguration = new ShardingTableRuleConfiguration("t_order_item", "ds_${0..1}.t_order_item_${[0, 1]}");
 tOrderItemRuleConfiguration.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_item_id", "snowflake"));
 tOrderRuleConfiguration.setTableShardingStrategy(new StandardShardingStrategyConfiguration("order_item_id", "tOrderItemInlineShardingAlgorithm"));
 Properties tOrderItemShardingInlineProps = new Properties();
 tOrderItemShardingInlineProps.setProperty("algorithm-expression", "t_order_item_${order_item_id % 2}");
-tOrderRuleConfiguration.getShardingAlgorithms().putIfAbsent("tOrderItemInlineShardingAlgorithm", new ShardingSphereAlgorithmConfiguration("INLINE",tOrderItemShardingInlineProps));
+tOrderRuleConfiguration.getShardingAlgorithms().putIfAbsent("tOrderItemInlineShardingAlgorithm", new AlgorithmConfiguration("INLINE",tOrderItemShardingInlineProps));
 
 ShardingRuleConfiguration shardingRuleConfiguration = new ShardingRuleConfiguration();
 shardingRuleConfiguration.getTables().add(tOrderRuleConfiguration);
@@ -68,10 +68,10 @@ shardingRuleConfiguration.getBroadcastTables().add("t_bank");
 shardingRuleConfiguration.setDefaultDatabaseShardingStrategy(new StandardShardingStrategyConfiguration("user_id", "default_db_strategy_inline"));
 Properties defaultDatabaseStrategyInlineProps = new Properties();
 defaultDatabaseStrategyInlineProps.setProperty("algorithm-expression", "ds_${user_id % 2}");
-shardingRuleConfiguration.getShardingAlgorithms().put("default_db_strategy_inline", new ShardingSphereAlgorithmConfiguration("INLINE", defaultDatabaseStrategyInlineProps));
+shardingRuleConfiguration.getShardingAlgorithms().put("default_db_strategy_inline", new AlgorithmConfiguration("INLINE", defaultDatabaseStrategyInlineProps));
 // 分布式序列算法配置
 Properties snowflakeProperties = new Properties();
-shardingRuleConfiguration.getKeyGenerators().put("snowflake", new ShardingSphereAlgorithmConfiguration("SNOWFLAKE", snowflakeProperties));
+shardingRuleConfiguration.getKeyGenerators().put("snowflake", new AlgorithmConfiguration("SNOWFLAKE", snowflakeProperties));
 
 /* 数据加密规则配置 */
 Properties encryptProperties = new Properties();
@@ -80,9 +80,9 @@ EncryptColumnRuleConfiguration columnConfigAes = new EncryptColumnRuleConfigurat
 EncryptColumnRuleConfiguration columnConfigTest = new EncryptColumnRuleConfiguration("pwd", "pwd", "assisted_query_pwd", "", "pwd_encryptor");
 EncryptTableRuleConfiguration encryptTableRuleConfig = new EncryptTableRuleConfiguration("t_user", Arrays.asList(columnConfigAes, columnConfigTest));
 
-Map<String, ShardingSphereAlgorithmConfiguration> encryptAlgorithmConfigs = new LinkedHashMap<>(2, 1);
-encryptAlgorithmConfigs.put("name_encryptor", new ShardingSphereAlgorithmConfiguration("AES", encryptProperties));
-encryptAlgorithmConfigs.put("pwd_encryptor", new ShardingSphereAlgorithmConfiguration("assistedTest", encryptProperties));
+Map<String, AlgorithmConfiguration> encryptAlgorithmConfigs = new LinkedHashMap<>(2, 1);
+encryptAlgorithmConfigs.put("name_encryptor", new AlgorithmConfiguration("AES", encryptProperties));
+encryptAlgorithmConfigs.put("pwd_encryptor", new AlgorithmConfiguration("assistedTest", encryptProperties));
 EncryptRuleConfiguration encryptRuleConfiguration = new EncryptRuleConfiguration(Collections.singleton(encryptTableRuleConfig), encryptAlgorithmConfigs);
 
 /* 读写分离规则配置 */
@@ -96,8 +96,8 @@ readwriteProps2.setProperty("read-data-source-names", "write_ds1_read0, write_ds
 ReadwriteSplittingDataSourceRuleConfiguration dataSourceConfiguration2 = new ReadwriteSplittingDataSourceRuleConfiguration("ds_1", "Static", readwriteProps2, "roundRobin");
 
 // 负载均衡算法
-Map<String, ShardingSphereAlgorithmConfiguration> loadBalanceMaps = new HashMap<>(1);
-loadBalanceMaps.put("roundRobin", new ShardingSphereAlgorithmConfiguration("ROUND_ROBIN", new Properties()));
+Map<String, AlgorithmConfiguration> loadBalanceMaps = new HashMap<>();
+loadBalanceMaps.put("roundRobin", new AlgorithmConfiguration("ROUND_ROBIN", new Properties()));
 
 ReadwriteSplittingRuleConfiguration readWriteSplittingyRuleConfiguration = new ReadwriteSplittingRuleConfiguration(Arrays.asList(dataSourceConfiguration1, dataSourceConfiguration2), loadBalanceMaps);
 

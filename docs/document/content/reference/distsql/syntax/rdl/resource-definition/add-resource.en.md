@@ -3,56 +3,71 @@ title = "ADD RESOURCE"
 weight = 2
 +++
 
-
 ### Description
 
 The `ADD RESOURCE` syntax is used to add resources for the currently selected database.
 
-
-
 ### Syntax
-```SQL
+
+```sql
 AddResource ::=
-  'ADD' 'RESOURCE' dataSource (',' dataSource)*
+  'ADD' 'RESOURCE' resourceDefinition (',' resourceDefinition)*
 
-dataSource ::=
-  dataSourceName '(' ( 'HOST' '=' hostName ',' 'PORT' '=' port ',' 'DB' '=' dbName  |  'URL' '=' url  ) ',' 'USER' '=' user (',' 'PASSWORD' '=' password )?  (',' 'PROPERTIES'  '(' ( key  '=' value ) ( ',' key  '=' value )* ')'  )?')'
+resourceDefinition ::=
+  resourceName '(' ( 'HOST' '=' hostName ',' 'PORT' '=' port ',' 'DB' '=' dbName  |  'URL' '=' url  ) ',' 'USER' '=' user (',' 'PASSWORD' '=' password )?  (',' proerties)?')'
 
-dataSourceName ::=
+resourceName ::=
   identifier
 
 hostname ::=
-  identifier | ip
-
-dbName ::=
-  identifier
-
+  string
+    
 port ::=
   int
 
-password ::=
-  identifier | int | string 
-
-user ::=
-  identifier
+dbName ::=
+  string
 
 url ::=
-  identifier | string
+  string
 
+user ::=
+  string
+
+password ::=
+  string
+
+proerties ::=
+  PROPERTIES '(' property ( ',' property )* ')'
+
+property ::=
+  key '=' value
+
+key ::=
+  string
+
+value ::=
+  string
 ```
 
- ### Supplement
-- Before adding resources, please confirm that a database has been created in Proxy, and execute the `use` command to successfully select a database
+### Supplement
+
+- Before adding resources, please confirm that a database has been created in Proxy, and execute the `use` command to
+  successfully select a database
 - Confirm that the added resource can be connected normally, otherwise it will not be added successfully
 - `dataSourceName` is case-sensitive
 - `dataSourceName` needs to be unique within the current database
 - `dataSourceName` name only allows letters, numbers and `_`, and must start with a letter
-- `poolProperty` is used to customize connection pool parameters, `key` must be the same as the connection pool parameter name, `value` supports int and String types
-- When `password` contains special characters, it is recommended to use the string form; for example, the string form of `password@123` is `"password@123"`
+- `poolProperty` is used to customize connection pool parameters, `key` must be the same as the connection pool
+  parameter name, `value` supports int and String types
+- When `password` contains special characters, it is recommended to use the string form; for example, the string form
+  of `password@123` is `"password@123"`
 
- ### Example
+### Example
+
 - Add resource using standard mode
-```SQL
+
+```sql
 ADD RESOURCE ds_0 (
     HOST=127.0.0.1,
     PORT=3306,
@@ -63,7 +78,8 @@ ADD RESOURCE ds_0 (
 ```
 
 - Add resource and set connection pool parameters using standard mode
-```SQL
+
+```sql
 ADD RESOURCE ds_1 (
     HOST=127.0.0.1,
     PORT=3306,
@@ -75,7 +91,8 @@ ADD RESOURCE ds_1 (
 ```
 
 - Add resource and set connection pool parameters using URL patterns
-```SQL
+
+```sql
 ADD RESOURCE ds_2 (
     URL="jdbc:mysql://127.0.0.1:3306/db_2?serverTimezone=UTC&useSSL=false",
     USER=root,
@@ -86,7 +103,8 @@ ADD RESOURCE ds_2 (
 
 ### Reserved word
 
-    ADD, RESOURCE, HOST, PORT, DB, USER, PASSWORD, PROPERTIES, URL
+`ADD`, `RESOURCE`, `HOST`, `PORT`, `DB`, `USER`, `PASSWORD`, `PROPERTIES`, `URL`
 
- ### Related links
+### Related links
+
 - [Reserved word](/en/reference/distsql/syntax/reserved-word/)

@@ -29,6 +29,7 @@ import org.apache.shardingsphere.sql.parser.sql.common.segment.dml.item.ColumnPr
 import org.apache.shardingsphere.sql.parser.sql.common.segment.generic.AliasSegment;
 import org.apache.shardingsphere.sql.parser.sql.common.value.identifier.IdentifierValue;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,7 +43,7 @@ public final class ColumnProjectionConverter implements SQLSegmentConverter<Colu
         if (segment.getAlias().isPresent()) {
             Optional<SqlIdentifier> columnSqlIdentifier = new ColumnConverter().convertToSQLNode(segment.getColumn());
             SqlIdentifier aliasSqlIdentifier = new SqlIdentifier(segment.getAlias().get(), SqlParserPos.ZERO);
-            return Optional.of(new SqlBasicCall(new SqlAsOperator(), new SqlNode[]{columnSqlIdentifier.get(), aliasSqlIdentifier}, SqlParserPos.ZERO));
+            return Optional.of(new SqlBasicCall(new SqlAsOperator(), Arrays.asList(columnSqlIdentifier.get(), aliasSqlIdentifier), SqlParserPos.ZERO));
         }
         return new ColumnConverter().convertToSQLNode(segment.getColumn()).map(optional -> optional);
     }

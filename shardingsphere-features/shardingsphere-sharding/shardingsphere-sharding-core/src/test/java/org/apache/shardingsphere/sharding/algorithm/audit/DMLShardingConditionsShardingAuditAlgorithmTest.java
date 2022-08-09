@@ -19,7 +19,7 @@ package org.apache.shardingsphere.sharding.algorithm.audit;
 
 import org.apache.shardingsphere.infra.binder.statement.SQLStatementContext;
 import org.apache.shardingsphere.infra.check.SQLCheckResult;
-import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithmConfiguration;
+import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.user.Grantee;
 import org.apache.shardingsphere.sharding.factory.ShardingAuditAlgorithmFactory;
@@ -53,7 +53,7 @@ public final class DMLShardingConditionsShardingAuditAlgorithmTest {
     
     @Before
     public void setUp() {
-        shardingAuditAlgorithm = ShardingAuditAlgorithmFactory.newInstance(new ShardingSphereAlgorithmConfiguration("DML_SHARDING_CONDITIONS", new Properties()));
+        shardingAuditAlgorithm = ShardingAuditAlgorithmFactory.newInstance(new AlgorithmConfiguration("DML_SHARDING_CONDITIONS", new Properties()));
         sqlStatementContext = mock(SQLStatementContext.class, RETURNS_DEEP_STUBS);
         database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         rule = mock(ShardingRule.class);
