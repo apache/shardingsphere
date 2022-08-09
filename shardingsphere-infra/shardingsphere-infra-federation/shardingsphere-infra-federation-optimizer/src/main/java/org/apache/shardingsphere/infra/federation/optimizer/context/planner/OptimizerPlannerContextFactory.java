@@ -100,7 +100,7 @@ public final class OptimizerPlannerContextFactory {
     public static SqlValidator createValidator(final CalciteCatalogReader catalogReader, final RelDataTypeFactory relDataTypeFactory, final CalciteConnectionConfig connectionConfig) {
         SqlValidator.Config validatorConfig = SqlValidator.Config.DEFAULT
                 .withLenientOperatorLookup(connectionConfig.lenientOperatorLookup())
-                .withSqlConformance(connectionConfig.conformance())
+                .withConformance(connectionConfig.conformance())
                 .withDefaultNullCollation(connectionConfig.defaultNullCollation())
                 .withIdentifierExpansion(true);
         return SqlValidatorUtil.newValidator(SqlStdOperatorTable.instance(), catalogReader, relDataTypeFactory, validatorConfig);
