@@ -200,9 +200,9 @@ public final class RuleAlteredJobAPIImplTest {
         assertTrue(jobId.isPresent());
         final GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
         RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, 0, new JobProgress(), new PipelineDataSourceManager());
-        repositoryAPI.persistJobProgress(jobContext);
+        ruleAlteredJobAPI.persistJobProgress(jobContext);
         repositoryAPI.persistJobCheckResult(jobId.get(), true);
-        repositoryAPI.updateShardingJobStatus(jobId.get(), 0, JobStatus.FINISHED);
+        ruleAlteredJobAPI.updateShardingJobStatus(jobId.get(), 0, JobStatus.FINISHED);
         ruleAlteredJobAPI.switchClusterConfiguration(jobId.get());
     }
     
@@ -213,9 +213,9 @@ public final class RuleAlteredJobAPIImplTest {
         assertTrue(jobId.isPresent());
         GovernanceRepositoryAPI repositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
         RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, 0, new JobProgress(), new PipelineDataSourceManager());
-        repositoryAPI.persistJobProgress(jobContext);
+        ruleAlteredJobAPI.persistJobProgress(jobContext);
         repositoryAPI.persistJobCheckResult(jobId.get(), true);
-        repositoryAPI.updateShardingJobStatus(jobId.get(), jobContext.getShardingItem(), JobStatus.EXECUTE_INVENTORY_TASK);
+        ruleAlteredJobAPI.updateShardingJobStatus(jobId.get(), jobContext.getShardingItem(), JobStatus.EXECUTE_INVENTORY_TASK);
         ruleAlteredJobAPI.switchClusterConfiguration(jobId.get());
         Map<Integer, JobProgress> progress = ruleAlteredJobAPI.getProgress(jobId.get());
         for (Entry<Integer, JobProgress> entry : progress.entrySet()) {
@@ -251,5 +251,15 @@ public final class RuleAlteredJobAPIImplTest {
             statement.execute("CREATE TABLE t_order (order_id INT PRIMARY KEY, user_id VARCHAR(12))");
             statement.execute("INSERT INTO t_order (order_id, user_id) VALUES (1, 'xxx'), (999, 'yyy')");
         }
+    }
+    
+    @Test
+    public void assertRenewJobStatus() {
+        final RuleAlteredJobConfiguration jobConfig = JobConfigurationBuilder.createJobConfiguration();
+        RuleAlteredJobContext jobContext = new RuleAlteredJobContext(jobConfig, 0, new JobProgress(), new PipelineDataSourceManager());
+        ruleAlteredJobAPI.persistJobProgress(jobContext);
+        ruleAlteredJobAPI.updateShardingJobStatus(jobConfig.getJobId(), 0, JobStatus.FINISHED);
+        JobProgress jobProgress = ruleAlteredJobAPI.getJobProgress(jobContext.getJobId(), jobContext.getShardingItem());
+        assertThat(jobProgress.getStatus(), is(JobStatus.FINISHED));
     }
 }
