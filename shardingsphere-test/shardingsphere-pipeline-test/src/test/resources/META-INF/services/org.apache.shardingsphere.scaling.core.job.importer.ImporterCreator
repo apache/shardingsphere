@@ -16,3 +16,4 @@
 #
 
 org.apache.shardingsphere.data.pipeline.core.fixture.FixtureImporterCreator
+org.apache.shardingsphere.scaling.core.job.importer.DefaultImporterCreator
