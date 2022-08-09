@@ -19,7 +19,8 @@
 SERVER_NAME=ShardingSphere-Proxy
 
 DEPLOY_BIN="$(dirname "${BASH_SOURCE-$0}")"
-DEPLOY_DIR="$(cd "${DEPLOY_BIN}/../" || exit; pwd)"
+cd "${DEPLOY_BIN}/../" || exit;
+DEPLOY_DIR="$(pwd)"
 
 LOGS_DIR=${DEPLOY_DIR}/logs
 if [ ! -d "${LOGS_DIR}" ]; then
@@ -30,12 +31,12 @@ fi
 STDOUT_FILE=${LOGS_DIR}/stdout.log
 EXT_LIB=${DEPLOY_DIR}/ext-lib
 
-CLASS_PATH=.:${DEPLOY_DIR}/lib/*:${EXT_LIB}/*
+CLASS_PATH=".:${DEPLOY_DIR}/lib/*:${EXT_LIB}/*"
 
 if [[ -n "$JAVA_HOME" ]] && [[ -x "$JAVA_HOME/bin/java" ]];  then
     JAVA="$JAVA_HOME/bin/java"
 elif type -p java; then
-    JAVA=java
+    JAVA="$(which java)"
 else
     echo "Error: JAVA_HOME is not set and java could not be found in PATH." 1>&2
     exit 1
@@ -148,7 +149,30 @@ fi
 CLASS_PATH=${CONF_PATH}:${CLASS_PATH}
 MAIN_CLASS="${MAIN_CLASS} ${PORT} ${CONF_PATH} ${ADDRESSES}"
 
-echo "Starting the $SERVER_NAME ..."
+if [ $PORT = -1 ]; then
+  REAL_PORT=3307
+else
+  REAL_PORT=$PORT
+fi
+
+echo -e "Starting the $SERVER_NAME ...\c"
+
+for((i=1;i<=10;i++)); do
+  if [ "$i" = "10" ]; then
+    echo "failed: Address already in use"
+    exit
+  fi
+
+  PORT_STATUS=$(netstat -ant |grep $REAL_PORT |grep LISTEN)
+  if [ -n "$PORT_STATUS" ]; then
+    echo -e ".\c"
+    sleep 1
+  else
+    break
+  fi
+done
+
+echo ""
 echo "The classpath is ${CLASS_PATH}"
 echo "main class ${MAIN_CLASS}"
 

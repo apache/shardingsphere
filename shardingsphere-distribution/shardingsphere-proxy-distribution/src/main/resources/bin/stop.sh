@@ -19,7 +19,8 @@
 SERVER_NAME=ShardingSphere-Proxy
 
 DEPLOY_BIN="$(dirname "${BASH_SOURCE-$0}")"
-DEPLOY_DIR="$(cd "${DEPLOY_BIN}/../" || exit; pwd)"
+cd "${DEPLOY_BIN}/../" || exit;
+DEPLOY_DIR="$(pwd)"
 
 PIDS=$(pgrep  -f  "java.*$DEPLOY_DIR")
 if [ -z "$PIDS" ]; then
