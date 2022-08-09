@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 
 /**
- * Route context.
+ * SQL federation decider context.
  */
 @Getter
 public final class SQLFederationDeciderContext {
