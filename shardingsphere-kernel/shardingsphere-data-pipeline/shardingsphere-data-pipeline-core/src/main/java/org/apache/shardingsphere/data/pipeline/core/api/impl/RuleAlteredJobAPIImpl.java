@@ -83,8 +83,6 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     
     private static final YamlJobProgressSwapper SWAPPER = new YamlJobProgressSwapper();
     
-    private final GovernanceRepositoryAPI governanceRepositoryAPI = PipelineAPIFactory.getGovernanceRepositoryAPI();
-    
     @Override
     public List<JobInfo> list() {
         checkModeConfig();
@@ -374,7 +372,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         jobProgress.setIncremental(getIncrementalTasksProgress(context));
         jobProgress.setInventory(getInventoryTasksProgress(context));
         String value = YamlEngine.marshal(SWAPPER.swapToYamlConfiguration(jobProgress));
-        governanceRepositoryAPI.persistJobProgress(jobContext.getJobId(), jobContext.getShardingItem(), value);
+        PipelineAPIFactory.getGovernanceRepositoryAPI().persistJobProgress(jobContext.getJobId(), jobContext.getShardingItem(), value);
     }
     
     private JobItemIncrementalTasksProgress getIncrementalTasksProgress(final RuleAlteredJobContext jobContext) {
@@ -395,7 +393,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     
     @Override
     public JobProgress getJobProgress(final String jobId, final int shardingItem) {
-        String data = governanceRepositoryAPI.getJobProgress(jobId, shardingItem);
+        String data = PipelineAPIFactory.getGovernanceRepositoryAPI().getJobProgress(jobId, shardingItem);
         if (StringUtils.isBlank(data)) {
             return null;
         }
