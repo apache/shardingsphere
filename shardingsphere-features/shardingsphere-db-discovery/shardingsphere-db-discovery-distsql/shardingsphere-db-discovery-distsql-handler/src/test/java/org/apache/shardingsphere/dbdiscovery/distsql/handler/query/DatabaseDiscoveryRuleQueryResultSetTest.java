@@ -24,7 +24,7 @@ import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDataba
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryDataSourceRule;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.junit.Test;
 
@@ -56,7 +56,7 @@ public final class DatabaseDiscoveryRuleQueryResultSetTest {
         when(dataSourceRule.getPrimaryDataSourceName()).thenReturn("ds_0");
         when(rule.getDataSourceRules()).thenReturn(Collections.singletonMap("ms_group", dataSourceRule));
         when(database.getRuleMetaData().findSingleRule(DatabaseDiscoveryRule.class)).thenReturn(Optional.of(rule));
-        DistSQLResultSet resultSet = new DatabaseDiscoveryRuleQueryResultSet();
+        DatabaseDistSQLResultSet resultSet = new DatabaseDiscoveryRuleQueryResultSet();
         resultSet.init(database, mock(ShowDatabaseDiscoveryRulesStatement.class));
         assertColumns(resultSet.getColumnNames());
         assertRowData(new ArrayList<>(resultSet.getRowData()));
@@ -65,7 +65,7 @@ public final class DatabaseDiscoveryRuleQueryResultSetTest {
     @Test
     public void assertInitWithNullDatabaseDiscoveryRule() {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
-        DistSQLResultSet resultSet = new DatabaseDiscoveryRuleQueryResultSet();
+        DatabaseDistSQLResultSet resultSet = new DatabaseDiscoveryRuleQueryResultSet();
         resultSet.init(database, mock(ShowDatabaseDiscoveryRulesStatement.class));
         assertColumns(resultSet.getColumnNames());
         assertFalse(resultSet.next());

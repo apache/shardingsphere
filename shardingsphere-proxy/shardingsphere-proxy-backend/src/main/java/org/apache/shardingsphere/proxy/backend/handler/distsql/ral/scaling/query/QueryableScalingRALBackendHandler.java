@@ -18,15 +18,15 @@
 package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.scaling.query;
 
 import org.apache.shardingsphere.distsql.parser.statement.ral.RALStatement;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
+import org.apache.shardingsphere.proxy.backend.handler.DatabaseRequiredBackendHandler;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseCell;
 import org.apache.shardingsphere.proxy.backend.response.data.QueryResponseRow;
 import org.apache.shardingsphere.proxy.backend.response.header.ResponseHeader;
-import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
+import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
-import org.apache.shardingsphere.proxy.backend.handler.DatabaseRequiredBackendHandler;
 
 import java.sql.Types;
 import java.util.ArrayList;
@@ -38,9 +38,9 @@ import java.util.List;
  */
 public final class QueryableScalingRALBackendHandler extends DatabaseRequiredBackendHandler<RALStatement> {
     
-    private final DistSQLResultSet resultSet;
+    private final DatabaseDistSQLResultSet resultSet;
     
-    public QueryableScalingRALBackendHandler(final RALStatement sqlStatement, final ConnectionSession connectionSession, final DistSQLResultSet resultSet) {
+    public QueryableScalingRALBackendHandler(final RALStatement sqlStatement, final ConnectionSession connectionSession, final DatabaseDistSQLResultSet resultSet) {
         super(sqlStatement, connectionSession);
         this.resultSet = resultSet;
     }

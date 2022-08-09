@@ -19,7 +19,7 @@ package org.apache.shardingsphere.scaling.distsql.handler.query;
 
 import com.google.gson.Gson;
 import org.apache.shardingsphere.infra.config.rule.rulealtered.OnRuleAlteredActionConfiguration;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.scaling.distsql.statement.ShowShardingScalingRulesStatement;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
@@ -37,7 +37,7 @@ import java.util.Optional;
 /**
  * Query result set for show sharding scaling rules.
  */
-public final class ShardingScalingRulesQueryResultSet implements DistSQLResultSet {
+public final class ShardingScalingRulesQueryResultSet implements DatabaseDistSQLResultSet {
     
     private Iterator<Entry<String, OnRuleAlteredActionConfiguration>> data;
     

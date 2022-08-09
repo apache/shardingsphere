@@ -19,7 +19,7 @@ package org.apache.shardingsphere.dbdiscovery.distsql.handler.query;
 
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.CountDatabaseDiscoveryRuleStatement;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sql.parser.sql.common.statement.SQLStatement;
 
@@ -37,7 +37,7 @@ import java.util.function.Supplier;
 /**
  * Query result set for count database discovery rule.
  */
-public final class CountDatabaseDiscoveryRuleQueryResultSet implements DistSQLResultSet {
+public final class CountDatabaseDiscoveryRuleQueryResultSet implements DatabaseDistSQLResultSet {
     
     private static final String DB_DISCOVERY = "db_discovery";
     

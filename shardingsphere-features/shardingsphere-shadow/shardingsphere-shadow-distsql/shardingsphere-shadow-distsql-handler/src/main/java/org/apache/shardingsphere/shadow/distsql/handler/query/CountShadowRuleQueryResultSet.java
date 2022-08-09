@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.query;
 
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.CountShadowRuleStatement;
 import org.apache.shardingsphere.shadow.rule.ShadowRule;
@@ -37,7 +37,7 @@ import java.util.function.Supplier;
 /**
  * Query result set for count shadow rule.
  */
-public final class CountShadowRuleQueryResultSet implements DistSQLResultSet {
+public final class CountShadowRuleQueryResultSet implements DatabaseDistSQLResultSet {
     
     private static final String SHADOW = "shadow";
     

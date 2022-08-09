@@ -23,7 +23,7 @@ import org.apache.shardingsphere.dbdiscovery.api.config.rule.DatabaseDiscoveryHe
 import org.apache.shardingsphere.dbdiscovery.distsql.parser.statement.ShowDatabaseDiscoveryRulesStatement;
 import org.apache.shardingsphere.dbdiscovery.rule.DatabaseDiscoveryRule;
 import org.apache.shardingsphere.infra.config.rule.RuleConfiguration;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.junit.Test;
@@ -52,7 +52,7 @@ public final class DatabaseDiscoveryHeartbeatQueryResultSetTest {
         ShardingSphereRuleMetaData databaseRuleMetaData = mock(ShardingSphereRuleMetaData.class);
         when(database.getRuleMetaData()).thenReturn(databaseRuleMetaData);
         when(databaseRuleMetaData.getSingleRule(DatabaseDiscoveryRule.class)).thenReturn(rule);
-        DistSQLResultSet resultSet = new DatabaseDiscoveryHeartbeatQueryResultSet();
+        DatabaseDistSQLResultSet resultSet = new DatabaseDiscoveryHeartbeatQueryResultSet();
         resultSet.init(database, mock(ShowDatabaseDiscoveryRulesStatement.class));
         Collection<String> columnNames = resultSet.getColumnNames();
         List<Object> actual = new ArrayList<>(resultSet.getRowData());

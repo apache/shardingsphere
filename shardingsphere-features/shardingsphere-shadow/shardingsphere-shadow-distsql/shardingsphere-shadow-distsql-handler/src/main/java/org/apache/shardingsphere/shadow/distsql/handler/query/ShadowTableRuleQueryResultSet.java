@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.query;
 
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.distsql.parser.statement.ShowShadowTableRulesStatement;
@@ -37,7 +37,7 @@ import java.util.Optional;
 /**
  * Query result set for show shadow table rule.
  */
-public final class ShadowTableRuleQueryResultSet implements DistSQLResultSet {
+public final class ShadowTableRuleQueryResultSet implements DatabaseDistSQLResultSet {
     
     private static final String SHADOW_TABLE = "shadow_table";
     
