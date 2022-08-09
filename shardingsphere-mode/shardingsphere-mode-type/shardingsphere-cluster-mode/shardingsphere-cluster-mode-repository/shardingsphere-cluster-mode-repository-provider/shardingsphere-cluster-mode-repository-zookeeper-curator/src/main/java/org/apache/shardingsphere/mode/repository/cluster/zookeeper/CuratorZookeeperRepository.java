@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.mode.repository.cluster.zookeeper;
 
 import com.google.common.base.Strings;
+import lombok.SneakyThrows;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.CuratorFrameworkFactory.Builder;
@@ -201,19 +202,6 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     }
     
     @Override
-    public String getSequentialId(final String key, final String value) {
-        try {
-            String path = client.create().creatingParentsIfNeeded().withMode(CreateMode.EPHEMERAL_SEQUENTIAL).forPath(key, value.getBytes(StandardCharsets.UTF_8));
-            return path.substring(key.length());
-            // CHECKSTYLE:OFF
-        } catch (final Exception ex) {
-            // CHECKSTYLE:ON
-            CuratorZookeeperExceptionHandler.handleException(ex);
-        }
-        return null;
-    }
-    
-    @Override
     public void delete(final String key) {
         try {
             if (isExisted(key)) {
@@ -276,6 +264,12 @@ public final class CuratorZookeeperRepository implements ClusterPersistRepositor
     @Override
     public Lock getInternalReentrantMutexLock(final String lockName) {
         return internalLockHolder.getInternalReentrantMutexLock(lockName);
+    }
+    
+    @Override
+    @SneakyThrows(InterruptedException.class)
+    public boolean tryLock(final String lockKey, final long timeoutMillis) {
+        return internalLockHolder.getInternalMutexLock(lockKey).tryLock(timeoutMillis, TimeUnit.MILLISECONDS);
     }
     
     @Override

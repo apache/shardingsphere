@@ -41,8 +41,8 @@ import org.apache.shardingsphere.integration.transaction.framework.container.com
 import org.apache.shardingsphere.integration.transaction.framework.container.compose.NativeComposedContainer;
 import org.apache.shardingsphere.integration.transaction.framework.container.database.DatabaseContainer;
 import org.apache.shardingsphere.integration.transaction.framework.param.TransactionParameterized;
-import org.apache.shardingsphere.integration.transaction.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.integration.transaction.util.TransactionTestCaseClassScanner;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 import org.apache.shardingsphere.test.integration.env.runtime.DataSourceEnvironment;
 import org.apache.shardingsphere.transaction.core.TransactionType;
 
@@ -383,7 +383,7 @@ public abstract class BaseITCase {
     
     @SneakyThrows
     protected void addResources() {
-        if (databaseType instanceof MySQLDatabaseType) {
+        if (DatabaseTypeUtil.isMySQL(databaseType)) {
             try (Connection connection = DriverManager.getConnection(getComposedContainer().getProxyJdbcUrl(""), ENV.getProxyUserName(), ENV.getProxyPassword())) {
                 executeWithLog(connection, "USE sharding_db");
                 addResources(connection);

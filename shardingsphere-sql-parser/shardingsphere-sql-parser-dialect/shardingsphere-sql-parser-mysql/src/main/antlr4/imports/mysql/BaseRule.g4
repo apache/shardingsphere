@@ -50,6 +50,11 @@ customKeyword
     | PRIMARY
     | MAXVALUE
     | BIT_XOR
+    | MYSQL_MAIN
+    | UTC_DATE
+    | UTC_TIME
+    | UTC_TIMESTAMP
+    | UTC_TIMESTAMP
     ;
     
 literals

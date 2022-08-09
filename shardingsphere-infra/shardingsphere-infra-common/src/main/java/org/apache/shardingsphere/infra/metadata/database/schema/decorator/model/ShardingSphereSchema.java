@@ -134,4 +134,14 @@ public final class ShardingSphereSchema {
     public List<String> getAllColumnNames(final String tableName) {
         return containsTable(tableName) ? get(tableName).getColumnNames() : Collections.emptyList();
     }
+    
+    /**
+     * Get visible column names via table.
+     *
+     * @param tableName table name
+     * @return visible column names
+     */
+    public List<String> getVisibleColumnNames(final String tableName) {
+        return containsTable(tableName) ? get(tableName).getVisibleColumns() : Collections.emptyList();
+    }
 }

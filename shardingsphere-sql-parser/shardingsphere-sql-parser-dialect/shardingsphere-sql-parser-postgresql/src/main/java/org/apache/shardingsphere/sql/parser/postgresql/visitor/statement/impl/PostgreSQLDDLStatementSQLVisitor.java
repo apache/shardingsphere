@@ -43,12 +43,14 @@ import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.Al
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterPolicyContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterProcedureContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterPublicationContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterSubscriptionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterRenameViewContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterRoutineContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterRuleContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterSchemaContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterSequenceContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterServerContext;
+import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterStatisticsContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTableActionContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTableContext;
 import org.apache.shardingsphere.sql.parser.autogen.PostgreSQLStatementParser.AlterTablespaceContext;
@@ -214,11 +216,13 @@ import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterPolicyStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterProcedureStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterPublicationStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterSubscriptionStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterRoutineStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterRuleStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterSchemaStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterSequenceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterServerStatement;
+import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterStatisticsStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterTableStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterTablespaceStatement;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.postgresql.ddl.PostgreSQLAlterTextSearchStatement;
@@ -491,6 +495,11 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     @Override
     public ASTNode visitAlterPublication(final AlterPublicationContext ctx) {
         return new PostgreSQLAlterPublicationStatement();
+    }
+    
+    @Override
+    public ASTNode visitAlterSubscription(final AlterSubscriptionContext ctx) {
+        return new PostgreSQLAlterSubscriptionStatement();
     }
     
     @Override
@@ -934,6 +943,11 @@ public final class PostgreSQLDDLStatementSQLVisitor extends PostgreSQLStatementS
     @Override
     public ASTNode visitAlterServer(final AlterServerContext ctx) {
         return new PostgreSQLAlterServerStatement();
+    }
+    
+    @Override
+    public ASTNode visitAlterStatistics(final AlterStatisticsContext ctx) {
+        return new PostgreSQLAlterStatisticsStatement();
     }
     
     @Override

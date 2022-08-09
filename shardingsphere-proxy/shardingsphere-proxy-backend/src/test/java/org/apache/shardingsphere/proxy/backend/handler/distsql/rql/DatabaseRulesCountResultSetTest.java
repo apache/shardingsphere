@@ -124,7 +124,7 @@ public final class DatabaseRulesCountResultSetTest {
         ShardingRule result = mock(ShardingRule.class);
         ShardingRuleConfiguration config = mock(ShardingRuleConfiguration.class);
         when(config.getTables()).thenReturn(Collections.singletonList(new ShardingTableRuleConfiguration("sharding_table")));
-        when(config.getAutoTables()).thenReturn(Collections.singletonList(new ShardingAutoTableRuleConfiguration("sharding_auto_table")));
+        when(config.getAutoTables()).thenReturn(Collections.singletonList(new ShardingAutoTableRuleConfiguration("sharding_auto_table", null)));
         when(config.getBindingTableGroups()).thenReturn(Collections.singletonList("binding_table_1,binding_table_2"));
         when(config.getBroadcastTables()).thenReturn(Arrays.asList("broadcast_table_1", "broadcast_table_2"));
         when(result.getConfiguration()).thenReturn(config);

@@ -21,10 +21,10 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
-import org.apache.shardingsphere.infra.database.type.dialect.OpenGaussDatabaseType;
 import org.apache.shardingsphere.integration.transaction.engine.entity.JdbcInfoEntity;
 import org.apache.shardingsphere.integration.transaction.env.enums.TransactionITEnvTypeEnum;
 import org.apache.shardingsphere.integration.transaction.env.enums.TransactionTestCaseRegistry;
+import org.apache.shardingsphere.test.integration.env.container.atomic.util.DatabaseTypeUtil;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -166,7 +166,7 @@ public final class IntegrationTestEnvironment {
      */
     public String getActualDataSourceUsername(final DatabaseType databaseType) {
         String username;
-        if (databaseType instanceof OpenGaussDatabaseType) {
+        if (DatabaseTypeUtil.isOpenGauss(databaseType)) {
             username = "gaussdb";
         } else {
             username = "root";
@@ -185,7 +185,7 @@ public final class IntegrationTestEnvironment {
      */
     public String getActualDataSourcePassword(final DatabaseType databaseType) {
         String password;
-        if (databaseType instanceof OpenGaussDatabaseType) {
+        if (DatabaseTypeUtil.isOpenGauss(databaseType)) {
             password = "Root@123";
         } else {
             password = "root";

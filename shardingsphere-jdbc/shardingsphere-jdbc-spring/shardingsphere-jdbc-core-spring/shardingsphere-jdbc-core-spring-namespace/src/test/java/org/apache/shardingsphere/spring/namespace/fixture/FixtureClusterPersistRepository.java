@@ -59,11 +59,6 @@ public final class FixtureClusterPersistRepository implements ClusterPersistRepo
     }
     
     @Override
-    public String getSequentialId(final String key, final String value) {
-        return null;
-    }
-    
-    @Override
     public void delete(final String key) {
     }
     
@@ -73,6 +68,11 @@ public final class FixtureClusterPersistRepository implements ClusterPersistRepo
     
     @Override
     public void watchSessionConnection(final InstanceContext instanceContext) {
+    }
+    
+    @Override
+    public boolean tryLock(final String lockKey, final long timeoutMillis) {
+        return false;
     }
     
     @Override

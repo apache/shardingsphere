@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.ReentrantLock;
 
 /**
- * Standalone mutex lock of ShardingSphere.
+ * Standalone lock of ShardingSphere.
  */
 public final class ShardingSphereStandaloneLock implements ShardingSphereLock {
     
@@ -63,7 +63,7 @@ public final class ShardingSphereStandaloneLock implements ShardingSphereLock {
     }
     
     @Override
-    public void releaseLock(final String lockName) {
+    public void unlock(final String lockName) {
         Preconditions.checkNotNull(lockName, "Release lock args lockName name can not be null.");
         locks.get(lockName).unlock();
     }

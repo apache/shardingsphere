@@ -56,8 +56,8 @@
     
     <test-case sql="show variable transaction_type">
         <assertion expected-data-file="transaction_type.xml">
-            <initial-sql sql="set variable transaction_type = XA"/>
-            <destroy-sql sql="set variable transaction_type = LOCAL"/>
+            <initial-sql sql="set variable transaction_type = 'XA'"/>
+            <destroy-sql sql="set variable transaction_type = 'LOCAL'"/>
         </assertion>
     </test-case>
     

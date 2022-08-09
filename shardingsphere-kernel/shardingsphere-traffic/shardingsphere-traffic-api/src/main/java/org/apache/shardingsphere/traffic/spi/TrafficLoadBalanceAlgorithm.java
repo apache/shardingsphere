@@ -19,7 +19,7 @@ package org.apache.shardingsphere.traffic.spi;
 
 import org.apache.shardingsphere.infra.config.algorithm.ShardingSphereAlgorithm;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
-import org.apache.shardingsphere.spi.type.required.RequiredSPI;
+import org.apache.shardingsphere.infra.util.spi.type.required.RequiredSPI;
 
 import java.util.List;
 

@@ -139,7 +139,8 @@ public abstract class BaseDDLIT extends SingleITCase {
             while (resultSet.next()) {
                 DataSetColumn each = new DataSetColumn();
                 each.setName(resultSet.getString("COLUMN_NAME"));
-                each.setType(resultSet.getString("TYPE_NAME").toLowerCase());
+                String typeName = resultSet.getString("TYPE_NAME");
+                each.setType("CHARACTER VARYING".equals(typeName) ? "VARCHAR".toLowerCase() : typeName.toLowerCase());
                 result.add(each);
             }
             return result;

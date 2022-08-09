@@ -90,7 +90,7 @@ public final class ProjectionEngineTest {
     @Test
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfShorthandProjectionSegmentAndDuplicateTableSegment() {
         SimpleTableSegment table = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
-        when(schema.getAllColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "content"));
+        when(schema.getVisibleColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "content"));
         Optional<Projection> actual = new ProjectionEngine(DefaultDatabase.LOGIC_NAME,
                 Collections.singletonMap(DefaultDatabase.LOGIC_NAME, schema), databaseType).createProjection(table, new ShorthandProjectionSegment(0, 0));
         assertTrue(actual.isPresent());
@@ -171,9 +171,9 @@ public final class ProjectionEngineTest {
     @Test
     public void assertCreateProjectionWhenProjectionSegmentInstanceOfShorthandProjectionSegmentAndJoinTableSegment() {
         SimpleTableSegment ordersTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_order")));
-        when(schema.getAllColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "customer_id"));
+        when(schema.getVisibleColumnNames("t_order")).thenReturn(Arrays.asList("order_id", "customer_id"));
         SimpleTableSegment customersTableSegment = new SimpleTableSegment(new TableNameSegment(0, 0, new IdentifierValue("t_customer")));
-        when(schema.getAllColumnNames("t_customer")).thenReturn(Collections.singletonList("customer_id"));
+        when(schema.getVisibleColumnNames("t_customer")).thenReturn(Collections.singletonList("customer_id"));
         JoinTableSegment table = new JoinTableSegment();
         table.setLeft(ordersTableSegment);
         table.setRight(customersTableSegment);

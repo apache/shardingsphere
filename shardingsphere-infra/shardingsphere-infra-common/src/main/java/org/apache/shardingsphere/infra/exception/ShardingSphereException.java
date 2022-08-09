@@ -19,7 +19,10 @@ package org.apache.shardingsphere.infra.exception;
 
 /**
  * Basic exception of ShardingSphere.
+ * 
+ * @deprecated instead of org.apache.shardingsphere.infra.util.exception.ShardingSphereException
  */
+@Deprecated
 public class ShardingSphereException extends RuntimeException {
     
     private static final long serialVersionUID = -1343739516839252250L;
@@ -51,14 +54,5 @@ public class ShardingSphereException extends RuntimeException {
      */
     public ShardingSphereException(final Exception cause) {
         super(cause);
-    }
-    
-    /**
-     * Constructs an exception with error message.
-     *
-     * @param message error message
-     */
-    public ShardingSphereException(final String message) {
-        super(message);
     }
 }

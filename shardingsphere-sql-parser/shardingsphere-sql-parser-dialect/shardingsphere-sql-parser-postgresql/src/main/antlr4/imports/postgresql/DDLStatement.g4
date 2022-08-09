@@ -1059,7 +1059,7 @@ alterStatistics
     ( ifExists? anyName SET STATISTICS signedIconst
     | anyName RENAME TO name
     | anyName SET SCHEMA name
-    | anyName OWNER TO roleSpec)
+    | anyName OWNER TO roleSpec )
     ;
 
 alterSubscription
@@ -1070,6 +1070,8 @@ alterSubscription
     | CONNECTION STRING_
     | REFRESH PUBLICATION (WITH definition)?
     | SET PUBLICATION publicationNameList (WITH definition)?
+    | ADD PUBLICATION publicationNameList (WITH definition)?
+    | DROP PUBLICATION publicationNameList (WITH definition)?
     | (ENABLE | DISABLE))
     ;
 

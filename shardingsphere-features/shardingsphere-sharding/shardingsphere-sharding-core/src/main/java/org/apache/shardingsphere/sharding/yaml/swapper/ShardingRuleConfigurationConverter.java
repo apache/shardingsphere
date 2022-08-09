@@ -38,7 +38,7 @@ public final class ShardingRuleConfigurationConverter {
      * @throws IllegalStateException if there is no available sharding rule
      */
     public static ShardingRuleConfiguration findAndConvertShardingRuleConfiguration(final Collection<YamlRuleConfiguration> yamlRuleConfigs) {
-        return new ShardingRuleConfigurationYamlSwapper().swapToObject(findYamlShardingRuleConfiguration(yamlRuleConfigs));
+        return new YamlShardingRuleConfigurationSwapper().swapToObject(findYamlShardingRuleConfiguration(yamlRuleConfigs));
     }
     
     /**

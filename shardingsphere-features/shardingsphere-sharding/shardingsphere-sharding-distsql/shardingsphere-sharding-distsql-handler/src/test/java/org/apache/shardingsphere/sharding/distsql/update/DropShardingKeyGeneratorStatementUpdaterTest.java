@@ -82,7 +82,7 @@ public final class DropShardingKeyGeneratorStatementUpdaterTest {
     }
     
     private ShardingAutoTableRuleConfiguration createShardingAutoTableRuleConfiguration() {
-        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("auto_table");
+        ShardingAutoTableRuleConfiguration result = new ShardingAutoTableRuleConfiguration("auto_table", null);
         result.setKeyGenerateStrategy(new KeyGenerateStrategyConfiguration("order_id", "uuid_key_generator"));
         return result;
     }

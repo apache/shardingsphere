@@ -28,8 +28,8 @@ import org.apache.shardingsphere.data.pipeline.core.api.GovernanceRepositoryAPI;
 import org.apache.shardingsphere.data.pipeline.core.api.PipelineAPIFactory;
 import org.apache.shardingsphere.data.pipeline.core.constant.DataPipelineConstants;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.fixture.FixturePipelineJobPersistCallback;
-import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.JobProgressYamlSwapper;
+import org.apache.shardingsphere.data.pipeline.core.fixture.FixturePipelineJobProgressListener;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.yaml.YamlJobProgressSwapper;
 import org.apache.shardingsphere.data.pipeline.core.metadata.loader.PipelineTableMetaDataLoader;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
@@ -37,7 +37,6 @@ import org.apache.shardingsphere.data.pipeline.core.util.ConfigurationFileUtil;
 import org.apache.shardingsphere.data.pipeline.core.util.JobConfigurationBuilder;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineContextUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobContext;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobPreparer;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEvent.Type;
@@ -62,7 +61,7 @@ import static org.mockito.Mockito.mock;
 
 public final class GovernanceRepositoryAPIImplTest {
     
-    private static final JobProgressYamlSwapper JOB_PROGRESS_YAML_SWAPPER = new JobProgressYamlSwapper();
+    private static final YamlJobProgressSwapper SWAPPER = new YamlJobProgressSwapper();
     
     private static GovernanceRepositoryAPI governanceRepositoryAPI;
     
@@ -77,7 +76,7 @@ public final class GovernanceRepositoryAPIImplTest {
         RuleAlteredJobContext jobContext = mockJobContext();
         governanceRepositoryAPI.persistJobProgress(jobContext);
         JobProgress actual = governanceRepositoryAPI.getJobProgress(jobContext.getJobId(), jobContext.getShardingItem());
-        assertThat(YamlEngine.marshal(JOB_PROGRESS_YAML_SWAPPER.swapToYaml(actual)), is(ConfigurationFileUtil.readFileAndIgnoreComments("governance-repository.yaml")));
+        assertThat(YamlEngine.marshal(SWAPPER.swapToYamlConfiguration(actual)), is(ConfigurationFileUtil.readFileAndIgnoreComments("governance-repository.yaml")));
     }
     
     @Test
@@ -142,7 +141,7 @@ public final class GovernanceRepositoryAPIImplTest {
     }
     
     private RuleAlteredJobContext mockJobContext() {
-        RuleAlteredJobContext result = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration(), 0, new JobProgress(), new PipelineDataSourceManager(), new RuleAlteredJobPreparer());
+        RuleAlteredJobContext result = new RuleAlteredJobContext(JobConfigurationBuilder.createJobConfiguration(), 0, new JobProgress(), new PipelineDataSourceManager());
         TaskConfiguration taskConfig = result.getTaskConfig();
         result.getInventoryTasks().add(mockInventoryTask(taskConfig));
         result.getIncrementalTasks().add(mockIncrementalTask(taskConfig));
@@ -160,7 +159,7 @@ public final class GovernanceRepositoryAPIImplTest {
         PipelineDataSourceWrapper dataSource = mock(PipelineDataSourceWrapper.class);
         PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(dataSource);
         return new InventoryTask(dumperConfig, taskConfig.getImporterConfig(), PipelineContextUtil.getPipelineChannelCreator(),
-                new PipelineDataSourceManager(), dataSource, metaDataLoader, PipelineContextUtil.getExecuteEngine(), new FixturePipelineJobPersistCallback());
+                new PipelineDataSourceManager(), dataSource, metaDataLoader, PipelineContextUtil.getExecuteEngine(), new FixturePipelineJobProgressListener());
     }
     
     private IncrementalTask mockIncrementalTask(final TaskConfiguration taskConfig) {
@@ -168,6 +167,6 @@ public final class GovernanceRepositoryAPIImplTest {
         dumperConfig.setPosition(new PlaceholderPosition());
         PipelineTableMetaDataLoader metaDataLoader = new PipelineTableMetaDataLoader(mock(PipelineDataSourceWrapper.class));
         return new IncrementalTask(3, dumperConfig, taskConfig.getImporterConfig(), PipelineContextUtil.getPipelineChannelCreator(),
-                new PipelineDataSourceManager(), metaDataLoader, PipelineContextUtil.getExecuteEngine(), new FixturePipelineJobPersistCallback());
+                new PipelineDataSourceManager(), metaDataLoader, PipelineContextUtil.getExecuteEngine(), new FixturePipelineJobProgressListener());
     }
 }

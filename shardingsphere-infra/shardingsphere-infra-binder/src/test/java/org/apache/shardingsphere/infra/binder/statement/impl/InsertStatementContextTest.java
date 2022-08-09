@@ -110,7 +110,7 @@ public final class InsertStatementContextTest {
         ShardingSphereSchema schema = mock(ShardingSphereSchema.class);
         String defaultSchemaName = insertStatement instanceof PostgreSQLStatement || insertStatement instanceof OpenGaussStatement ? "public" : DefaultDatabase.LOGIC_NAME;
         when(database.getSchema(defaultSchemaName)).thenReturn(schema);
-        when(schema.getAllColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
+        when(schema.getVisibleColumnNames("tbl")).thenReturn(Arrays.asList("id", "name", "status"));
         return new InsertStatementContext(Collections.singletonMap(DefaultDatabase.LOGIC_NAME, database), parameters, insertStatement, DefaultDatabase.LOGIC_NAME);
     }
     

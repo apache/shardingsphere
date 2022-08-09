@@ -78,7 +78,7 @@ public final class EncryptSchemaMetaDataDecorator implements RuleBasedSchemaMeta
     }
     
     private ColumnMetaData createColumnMetaData(final String columnName, final ColumnMetaData columnMetaData) {
-        return new ColumnMetaData(columnName, columnMetaData.getDataType(), columnMetaData.isPrimaryKey(), columnMetaData.isGenerated(), columnMetaData.isCaseSensitive());
+        return new ColumnMetaData(columnName, columnMetaData.getDataType(), columnMetaData.isPrimaryKey(), columnMetaData.isGenerated(), columnMetaData.isCaseSensitive(), columnMetaData.isVisible());
     }
     
     @Override

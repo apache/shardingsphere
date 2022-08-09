@@ -94,6 +94,8 @@ public enum SQLVisitorRule {
     
     ALTER_PUBLICATION("AlterPublication", SQLStatementType.DDL),
     
+    ALTER_SUBSCRIPTION("AlterSubscription", SQLStatementType.DDL),
+    
     ALTER_PROCEDURE("AlterProcedure", SQLStatementType.DDL),
     
     ALTER_STATEMENT("AlterStatement", SQLStatementType.DDL),
@@ -169,6 +171,8 @@ public enum SQLVisitorRule {
     CREATE_DIRECTORY("CreateDirectory", SQLStatementType.DDL),
     
     ALTER_SERVER("AlterServer", SQLStatementType.DDL),
+    
+    ALTER_STATISTICS("AlterStatistics", SQLStatementType.DDL),
     
     ALTER_SESSION("AlterSession", SQLStatementType.DDL),
     
@@ -626,7 +630,9 @@ public enum SQLVisitorRule {
     
     CREATE_FOREIGN_DATA_WRAPPER("CreateForeignDataWrapper", SQLStatementType.DDL),
     
-    CREATE_FOREIGN_TABLE("CreateForeignTable", SQLStatementType.DDL);
+    CREATE_FOREIGN_TABLE("CreateForeignTable", SQLStatementType.DDL),
+    
+    CREATE_GROUP("CreateGroup", SQLStatementType.DCL);
     
     private final String name;
     

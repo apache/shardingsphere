@@ -84,9 +84,6 @@ public final class SingleTableStandardRouteEngine implements SingleTableRouteEng
             routeContext.getRouteUnits().add(new RouteUnit(new RouteMapper(dataSourceName, dataSourceName), Collections.singleton(new RouteMapper(tableName, tableName))));
         } else if (sqlStatement instanceof AlterTableStatement || sqlStatement instanceof DropTableStatement || rule.isAllTablesInSameDataSource(routeContext, singleTableNames)) {
             fillRouteContext(rule, routeContext, rule.getSingleTableNames(singleTableNames));
-        } else {
-            decorateFederationRouteContext(routeContext);
-            fillRouteContext(rule, routeContext, singleTableNames);
         }
     }
     
@@ -100,17 +97,5 @@ public final class SingleTableStandardRouteEngine implements SingleTableRouteEng
             String dataSource = dataNode.get().getDataSourceName();
             routeContext.putRouteUnit(new RouteMapper(dataSource, dataSource), Collections.singletonList(new RouteMapper(tableName, tableName)));
         }
-    }
-    
-    private void decorateFederationRouteContext(final RouteContext routeContext) {
-        RouteContext newRouteContext = new RouteContext();
-        for (RouteUnit each : routeContext.getRouteUnits()) {
-            newRouteContext.putRouteUnit(each.getDataSourceMapper(), each.getTableMappers());
-        }
-        routeContext.setFederated(true);
-        routeContext.getRouteUnits().clear();
-        routeContext.getOriginalDataNodes().clear();
-        routeContext.getRouteUnits().addAll(newRouteContext.getRouteUnits());
-        routeContext.getOriginalDataNodes().addAll(newRouteContext.getOriginalDataNodes());
     }
 }

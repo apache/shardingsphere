@@ -27,7 +27,7 @@ import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChanne
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.PlaceholderPosition;
 import org.apache.shardingsphere.data.pipeline.api.ingest.record.Record;
-import org.apache.shardingsphere.data.pipeline.api.job.persist.PipelineJobPersistCallback;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobExecutionException;
@@ -68,12 +68,12 @@ public final class InventoryTask extends AbstractLifecycleExecutor implements Pi
     public InventoryTask(final InventoryDumperConfiguration inventoryDumperConfig, final ImporterConfiguration importerConfig,
                          final PipelineChannelCreator pipelineChannelCreator, final PipelineDataSourceManager dataSourceManager,
                          final DataSource sourceDataSource, final PipelineTableMetaDataLoader sourceMetaDataLoader,
-                         final ExecuteEngine importerExecuteEngine, final PipelineJobPersistCallback pipelineJobPersistCallback) {
+                         final ExecuteEngine importerExecuteEngine, final PipelineJobProgressListener jobProgressListener) {
         this.importerExecuteEngine = importerExecuteEngine;
         taskId = generateTaskId(inventoryDumperConfig);
         channel = createChannel(pipelineChannelCreator);
         dumper = DumperFactory.createInventoryDumper(inventoryDumperConfig, channel, sourceDataSource, sourceMetaDataLoader);
-        importer = ImporterFactory.createImporter(importerConfig, dataSourceManager, channel, pipelineJobPersistCallback);
+        importer = ImporterFactory.createImporter(importerConfig, dataSourceManager, channel, jobProgressListener);
         position = inventoryDumperConfig.getPosition();
     }
     

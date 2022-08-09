@@ -107,7 +107,7 @@ public final class DropShardingBroadcastTableRuleStatementUpdaterTest {
     private ShardingRuleConfiguration createCurrentRuleConfiguration() {
         ShardingRuleConfiguration result = new ShardingRuleConfiguration();
         result.getTables().add(new ShardingTableRuleConfiguration("t_order_item"));
-        result.getAutoTables().add(new ShardingAutoTableRuleConfiguration("t_order"));
+        result.getAutoTables().add(new ShardingAutoTableRuleConfiguration("t_order", null));
         result.getBroadcastTables().add("t_order");
         return result;
     }

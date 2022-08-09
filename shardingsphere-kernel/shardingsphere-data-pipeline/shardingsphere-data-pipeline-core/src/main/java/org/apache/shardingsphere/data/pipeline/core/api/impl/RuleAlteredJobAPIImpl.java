@@ -34,12 +34,11 @@ import org.apache.shardingsphere.data.pipeline.core.check.consistency.DataConsis
 import org.apache.shardingsphere.data.pipeline.core.context.PipelineContext;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineJobCreationException;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineVerifyFailedException;
+import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
+import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
 import org.apache.shardingsphere.data.pipeline.core.metadata.node.PipelineMetaDataNode;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredContext;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJob;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobCenter;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobProgressDetector;
-import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobSchedulerCenter;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.RuleAlteredJobWorker;
 import org.apache.shardingsphere.data.pipeline.spi.check.consistency.DataConsistencyCalculateAlgorithm;
 import org.apache.shardingsphere.elasticjob.infra.pojo.JobConfigurationPOJO;
@@ -48,8 +47,8 @@ import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
 import org.apache.shardingsphere.infra.util.yaml.YamlEngine;
+import org.apache.shardingsphere.mode.lock.definition.LockDefinitionFactory;
 import org.apache.shardingsphere.mode.manager.cluster.coordinator.registry.config.event.rule.ScalingTaskFinishedEvent;
-import org.apache.shardingsphere.mode.manager.lock.definition.LockDefinitionFactory;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -154,7 +153,7 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
     }
     
     private void verifyJobNotCompleted(final RuleAlteredJobConfiguration jobConfig) {
-        if (RuleAlteredJobProgressDetector.isJobCompleted(jobConfig.getJobShardingCount(), getProgress(jobConfig).values())) {
+        if (PipelineJobProgressDetector.isJobCompleted(jobConfig.getJobShardingCount(), getProgress(jobConfig).values())) {
             throw new PipelineVerifyFailedException("Job is completed, it's not necessary to do it.");
         }
     }
@@ -203,8 +202,8 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         LockDefinition lockDefinition = LockDefinitionFactory.newDatabaseLockDefinition(databaseName);
         if (lockContext.isLocked(lockDefinition)) {
-            log.info("restoreClusterWriteDB, before releaseLock, databaseName={}, jobId={}", databaseName, jobConfig.getJobId());
-            lockContext.releaseLock(lockDefinition);
+            log.info("restoreClusterWriteDB, before unlock, databaseName={}, jobId={}", databaseName, jobConfig.getJobId());
+            lockContext.unlock(lockDefinition);
             return;
         }
         log.info("restoreClusterWriteDB, isLocked false, databaseName={}", databaseName);
@@ -322,11 +321,11 @@ public final class RuleAlteredJobAPIImpl extends AbstractPipelineJobAPIImpl impl
         ScalingTaskFinishedEvent taskFinishedEvent = new ScalingTaskFinishedEvent(jobConfig.getDatabaseName(), jobConfig.getActiveVersion(), jobConfig.getNewVersion());
         PipelineContext.getContextManager().getInstanceContext().getEventBusContext().post(taskFinishedEvent);
         // TODO rewrite job status update after job progress structure refactor
-        RuleAlteredJobSchedulerCenter.updateJobStatus(jobId, JobStatus.FINISHED);
         for (int each : repositoryAPI.getShardingItems(jobId)) {
+            PipelineJobCenter.getJobContext(jobId, each).ifPresent(jobContext -> jobContext.setStatus(JobStatus.FINISHED));
             repositoryAPI.updateShardingJobStatus(jobId, each, JobStatus.FINISHED);
         }
-        RuleAlteredJobCenter.stop(jobId);
+        PipelineJobCenter.stop(jobId);
         stop(jobId);
     }
     
