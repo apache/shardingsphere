@@ -74,8 +74,6 @@ public final class ConnectionSession {
     
     private final ExecutorStatementManager statementManager;
     
-    private final Map<String, CursorStatementContext> cursorDefinitions = new ConcurrentHashMap<>();
-    
     private final PreparedStatementRegistry preparedStatementRegistry = new PreparedStatementRegistry();
     
     private final SQLSession sqlSession;

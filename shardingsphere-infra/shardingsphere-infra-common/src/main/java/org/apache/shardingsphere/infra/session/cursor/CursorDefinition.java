@@ -17,30 +17,8 @@
 
 package org.apache.shardingsphere.infra.session.cursor;
 
-import lombok.Getter;
-
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 /**
- * Cursor session context.
+ * Cursor definition.
  */
-@Getter
-public final class CursorSessionContext {
-    
-    private final Map<String, List<FetchGroup>> orderByValueGroups = new ConcurrentHashMap<>();
-    
-    private final Map<String, Long> minGroupRowCounts = new ConcurrentHashMap<>();
-    
-    private final Map<String, CursorDefinition> cursorDefinitions = new ConcurrentHashMap<>();
-    
-    /**
-     * Clear.
-     */
-    public void clear() {
-        orderByValueGroups.clear();
-        minGroupRowCounts.clear();
-        cursorDefinitions.clear();
-    }
+public interface CursorDefinition {
 }

@@ -120,23 +120,22 @@ public abstract class DatabaseCommunicationEngine implements DatabaseBackendHand
         }
         if (statementContext instanceof CloseStatementContext && ((CloseStatementContext) statementContext).getSqlStatement().isCloseAll()) {
             connectionSession.getSqlSession().getCursorSessionContext().clear();
-            connectionSession.getCursorDefinitions().clear();
         }
     }
     
     private void prepareCursorStatementContext(final CursorAvailable statementContext, final ConnectionSession connectionSession, final String cursorName) {
         if (statementContext instanceof CursorStatementContext) {
-            connectionSession.getCursorDefinitions().put(cursorName, (CursorStatementContext) statementContext);
+            connectionSession.getSqlSession().getCursorSessionContext().getCursorDefinitions().put(cursorName, (CursorStatementContext) statementContext);
         }
         if (statementContext instanceof CursorDefinitionAware) {
-            CursorStatementContext cursorStatementContext = connectionSession.getCursorDefinitions().get(cursorName);
+            CursorStatementContext cursorStatementContext = (CursorStatementContext) connectionSession.getSqlSession().getCursorSessionContext().getCursorDefinitions().get(cursorName);
             Preconditions.checkArgument(null != cursorStatementContext, "Cursor %s does not exist.", cursorName);
             ((CursorDefinitionAware) statementContext).setUpCursorDefinition(cursorStatementContext);
         }
         if (statementContext instanceof CloseStatementContext) {
             connectionSession.getSqlSession().getCursorSessionContext().getOrderByValueGroups().remove(cursorName);
             connectionSession.getSqlSession().getCursorSessionContext().getMinGroupRowCounts().remove(cursorName);
-            connectionSession.getCursorDefinitions().remove(cursorName);
+            connectionSession.getSqlSession().getCursorSessionContext().getCursorDefinitions().remove(cursorName);
         }
     }
     
