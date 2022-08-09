@@ -11,32 +11,43 @@ The `ALTER RESOURCE` syntax is used to alter resources for the currently selecte
 
 ```sql
 AlterResource ::=
-  'ALTER' 'RESOURCE' dataSource (',' dataSource)*
+  'ALTER' 'RESOURCE' resourceDefinition (',' resourceDefinition)*
 
-dataSource ::=
-  dataSourceName '(' ( 'HOST' '=' hostName ',' 'PORT' '=' port ',' 'DB' '=' dbName  |  'URL' '=' url  ) ',' 'USER' '=' user (',' 'PASSWORD' '=' password )?  (',' 'PROPERTIES'  '(' ( key  '=' value ) ( ',' key  '=' value )* ')'  )?')'
+resourceDefinition ::=
+  resourceName '(' ( 'HOST' '=' hostName ',' 'PORT' '=' port ',' 'DB' '=' dbName  |  'URL' '=' url  ) ',' 'USER' '=' user (',' 'PASSWORD' '=' password )?  (',' proerties)?')'
 
-dataSourceName ::=
+resourceName ::=
   identifier
 
 hostname ::=
-  identifier | ip
-
-dbName ::=
-  identifier
-
+  string
+    
 port ::=
   int
 
-password ::=
-  identifier | int | string 
-
-user ::=
-  identifier
+dbName ::=
+  string
 
 url ::=
-  identifier | string
+  string
 
+user ::=
+  string
+
+password ::=
+  string
+
+proerties ::=
+  PROPERTIES '(' property ( ',' property )* ')'
+
+property ::=
+  key '=' value
+
+key ::=
+  string
+
+value ::=
+  string
 ```
 
 ### Supplement
