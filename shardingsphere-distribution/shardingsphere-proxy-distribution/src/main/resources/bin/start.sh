@@ -167,12 +167,17 @@ fi
 echo "The classpath is ${CLASS_PATH}"
 echo "main class ${MAIN_CLASS}"
 echo "STDOUT log file: $STDOUT_FILE"
-echo -e "Starting the $SERVER_NAME ...\c"
 
+if [ "${IS_DOCKER}" ]; then
+  exec $JAVA ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} ${MAIN_CLASS}
+  exit 0
+fi
+
+echo -e "Starting the $SERVER_NAME ...\c"
 for((i=1;i<=10;i++)); do
   if [ "$i" = "10" ]; then
     echo "failed: Address already in use"
-    exit
+    exit 1
   fi
 
   PORT_STATUS=$(netstat -ant |$GREP $REAL_PORT |$GREP LISTEN)
@@ -183,7 +188,6 @@ for((i=1;i<=10;i++)); do
     break
   fi
 done
-echo ""
 
 nohup $JAVA ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &
 if [ $? -eq 0 ]; then

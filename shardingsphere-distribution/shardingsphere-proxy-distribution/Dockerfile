@@ -28,4 +28,4 @@ MAINTAINER ShardingSphere "dev@shardingsphere.apache.org"
 ENV LOCAL_PATH /opt/shardingsphere-proxy
 
 COPY --from=prepare ${LOCAL_PATH} ${LOCAL_PATH}
-ENTRYPOINT ${LOCAL_PATH}/bin/start.sh ${PORT} && tail -f ${LOCAL_PATH}/logs/stdout.log
+ENTRYPOINT ${LOCAL_PATH}/bin/start.sh ${PORT}
