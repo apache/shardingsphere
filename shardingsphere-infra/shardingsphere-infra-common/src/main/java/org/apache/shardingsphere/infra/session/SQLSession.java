@@ -15,29 +15,38 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.context;
+package org.apache.shardingsphere.infra.session;
 
-import lombok.Getter;
 import lombok.Setter;
-import org.apache.shardingsphere.infra.route.context.RouteContext;
+
+import java.util.Optional;
 
 /**
- * Traffic context.
+ * SQL session.
  */
-@Getter
-@Setter
-public final class TrafficContext {
+public final class SQLSession implements AutoCloseable {
     
-    private String instanceId;
-    
-    private RouteContext routeContext = new RouteContext();
+    @Setter
+    private String trafficInstanceId;
     
     /**
-     * Judge whether statement is match traffic or not.
+     * Get traffic instance id.
      * 
-     * @return whether statement is match traffic or not
+     * @return traffic instance id
      */
-    public boolean isMatchTraffic() {
-        return null != instanceId;
+    public Optional<String> getTrafficInstanceId() {
+        return Optional.ofNullable(trafficInstanceId);
+    }
+    
+    @Override
+    public void close() {
+        clearTrafficInstance();
+    }
+    
+    /**
+     * Clear traffic instance.
+     */
+    public void clearTrafficInstance() {
+        trafficInstanceId = null;
     }
 }

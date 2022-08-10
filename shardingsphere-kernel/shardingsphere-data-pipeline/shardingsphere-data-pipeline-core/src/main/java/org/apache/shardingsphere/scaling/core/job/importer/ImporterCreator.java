@@ -15,21 +15,27 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.opengauss.importer;
+package org.apache.shardingsphere.scaling.core.job.importer;
 
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.importer.AbstractImporter;
+import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
 
-/**
- * Importer of openGauss.
- */
-public final class OpenGaussImporter extends AbstractImporter {
+@SingletonSPI
+public interface ImporterCreator extends TypedSPI {
     
-    public OpenGaussImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel,
-                             final PipelineJobProgressListener jobProgressListener) {
-        super(importerConfig, dataSourceManager, channel, jobProgressListener);
-    }
+    /**
+     * Create importer.
+     * @param importerConfig importerConfig
+     * @param dataSourceManager dataSourceManager
+     * @param channel channel
+     * @param jobProgressListener jobProgressListener
+     * @return importer
+     */
+    Importer createImporter(ImporterConfiguration importerConfig, PipelineDataSourceManager dataSourceManager, PipelineChannel channel,
+                            PipelineJobProgressListener jobProgressListener);
 }

@@ -21,7 +21,7 @@ Data in readwrite-splitting nodes are consistent, whereas that in shards is not.
 
 Though readwrite-splitting can enhance system throughput and availability, it also brings inconsistent data, including that among multiple primary databases and among primary databases and replica databases. What’s more, it also brings the same problem as data sharding, complicating developer and operator’s maintenance and operation. The following diagram has shown the complex topological relations between applications and database groups when sharding used together with readwrite-splitting.
 
-![chanllenges](https://shardingsphere.apache.org/document/current/img/readwrite-splitting/chanllenges.png)
+![challenges](https://shardingsphere.apache.org/document/current/img/readwrite-splitting/challenges.png)
 
 ## Goal
 

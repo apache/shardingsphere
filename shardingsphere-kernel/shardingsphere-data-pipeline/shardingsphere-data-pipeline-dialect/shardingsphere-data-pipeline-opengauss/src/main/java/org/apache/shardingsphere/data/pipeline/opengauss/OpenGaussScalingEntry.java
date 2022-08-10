@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.opengauss;
 
-import org.apache.shardingsphere.data.pipeline.opengauss.importer.OpenGaussImporter;
 import org.apache.shardingsphere.data.pipeline.opengauss.ingest.OpenGaussWalDumper;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLInventoryDumper;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
@@ -35,11 +34,6 @@ public final class OpenGaussScalingEntry implements ScalingEntry {
     @Override
     public Class<OpenGaussWalDumper> getIncrementalDumperClass() {
         return OpenGaussWalDumper.class;
-    }
-    
-    @Override
-    public Class<OpenGaussImporter> getImporterClass() {
-        return OpenGaussImporter.class;
     }
     
     @Override

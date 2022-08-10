@@ -22,7 +22,6 @@ import org.apache.shardingsphere.infra.binder.LogicSQL;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceMetaData;
 import org.apache.shardingsphere.infra.instance.metadata.InstanceType;
-import org.apache.shardingsphere.traffic.context.TrafficContext;
 import org.apache.shardingsphere.traffic.rule.TrafficRule;
 import org.apache.shardingsphere.traffic.rule.TrafficStrategyRule;
 import org.apache.shardingsphere.traffic.spi.TrafficLoadBalanceAlgorithm;
@@ -45,21 +44,20 @@ public final class TrafficEngine {
      *
      * @param logicSQL logic SQL
      * @param inTransaction is in transaction
-     * @return traffic context
+     * @return instance id
      */
-    public TrafficContext dispatch(final LogicSQL logicSQL, final boolean inTransaction) {
+    public Optional<String> dispatch(final LogicSQL logicSQL, final boolean inTransaction) {
         Optional<TrafficStrategyRule> strategyRule = trafficRule.findMatchedStrategyRule(logicSQL, inTransaction);
-        TrafficContext result = new TrafficContext();
         if (!strategyRule.isPresent() || isInvalidStrategyRule(strategyRule.get())) {
-            return result;
+            return Optional.empty();
         }
         List<InstanceMetaData> instances = instanceContext.getAllClusterInstances(InstanceType.PROXY, strategyRule.get().getLabels());
         if (!instances.isEmpty()) {
             TrafficLoadBalanceAlgorithm loadBalancer = strategyRule.get().getLoadBalancer();
             InstanceMetaData instanceMetaData = 1 == instances.size() ? instances.iterator().next() : loadBalancer.getInstanceId(strategyRule.get().getName(), instances);
-            result.setInstanceId(instanceMetaData.getId());
+            return Optional.of(instanceMetaData.getId());
         }
-        return result;
+        return Optional.empty();
     }
     
     private boolean isInvalidStrategyRule(final TrafficStrategyRule strategyRule) {

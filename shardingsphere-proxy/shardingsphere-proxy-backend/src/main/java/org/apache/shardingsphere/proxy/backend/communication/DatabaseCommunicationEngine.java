@@ -177,7 +177,7 @@ public abstract class DatabaseCommunicationEngine implements DatabaseBackendHand
     
     protected MergedResult mergeQuery(final SQLStatementContext<?> sqlStatementContext, final List<QueryResult> queryResults) throws SQLException {
         MergeEngine mergeEngine = new MergeEngine(database, ProxyContext.getInstance().getContextManager().getMetaDataContexts().getMetaData().getProps(),
-                getBackendConnection().getConnectionSession().getSessionContext());
+                getBackendConnection().getConnectionSession().getSqlSession());
         return mergeEngine.merge(queryResults, sqlStatementContext);
     }
     

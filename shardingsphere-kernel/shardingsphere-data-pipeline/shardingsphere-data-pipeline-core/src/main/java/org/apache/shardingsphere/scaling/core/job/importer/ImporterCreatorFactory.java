@@ -15,28 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.traffic.context;
+package org.apache.shardingsphere.scaling.core.job.importer;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnitRunner;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-@RunWith(MockitoJUnitRunner.class)
-public final class TrafficContextHolderTest {
+/**
+ * Importer factory.
+ */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ImporterCreatorFactory {
     
-    @Mock
-    private TrafficContext trafficContext;
+    static {
+        ShardingSphereServiceLoader.register(ImporterCreator.class);
+    }
     
-    @Test
-    public void assertTrafficContextHolder() {
-        assertFalse(TrafficContextHolder.get().isPresent());
-        TrafficContextHolder.set(trafficContext);
-        assertTrue(TrafficContextHolder.get().isPresent());
-        TrafficContextHolder.remove();
-        assertFalse(TrafficContextHolder.get().isPresent());
+    /**
+     * Get ImporterCreator.
+     * @param databaseType databaseType
+     * @return ImporterCreator
+     */
+    public static ImporterCreator getInstance(final String databaseType) {
+        return TypedSPIRegistry.getRegisteredService(ImporterCreator.class, databaseType);
     }
 }

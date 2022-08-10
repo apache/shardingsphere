@@ -15,15 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.session;
+package org.apache.shardingsphere.infra.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 /**
- * Session context.
+ * Unknown database exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class SessionContext {
+public final class UnknownDatabaseException extends ShardingSphereInsideException {
+    
+    private static final long serialVersionUID = 6442120909016308638L;
+    
+    private final String databaseName;
 }
