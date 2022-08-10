@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.exception;
 
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+
 /**
  * Rule does not exist exception.
  */
-public final class RuleNotExistedException extends BackendException {
+public final class RuleNotExistedException extends ShardingSphereInsideException {
     
     private static final long serialVersionUID = -4150905802300104824L;
 }

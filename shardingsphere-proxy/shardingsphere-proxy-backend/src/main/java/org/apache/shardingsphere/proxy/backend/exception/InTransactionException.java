@@ -19,13 +19,16 @@ package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 /**
  * In transaction exception.
  */
-@Getter
 @RequiredArgsConstructor
-public final class InTransactionException extends BackendException {
+@Getter
+public final class InTransactionException extends ShardingSphereInsideException {
+    
+    private static final long serialVersionUID = 8125852172126111520L;
     
     private final String message;
 }

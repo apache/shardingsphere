@@ -17,14 +17,41 @@
 
 package org.apache.shardingsphere.infra.session;
 
+import lombok.Setter;
 import lombok.Getter;
 import org.apache.shardingsphere.infra.session.cursor.CursorSessionContext;
 
+import java.util.Optional;
+
 /**
- * SQL Session.
+ * SQL session.
  */
-@Getter
-public final class SQLSession {
+public final class SQLSession implements AutoCloseable {
     
+    @Getter
     private final CursorSessionContext cursorSessionContext = new CursorSessionContext();
+    
+    @Setter
+    private String trafficInstanceId;
+    
+    /**
+     * Get traffic instance id.
+     * 
+     * @return traffic instance id
+     */
+    public Optional<String> getTrafficInstanceId() {
+        return Optional.ofNullable(trafficInstanceId);
+    }
+    
+    @Override
+    public void close() {
+        clearTrafficInstance();
+    }
+    
+    /**
+     * Clear traffic instance.
+     */
+    public void clearTrafficInstance() {
+        trafficInstanceId = null;
+    }
 }

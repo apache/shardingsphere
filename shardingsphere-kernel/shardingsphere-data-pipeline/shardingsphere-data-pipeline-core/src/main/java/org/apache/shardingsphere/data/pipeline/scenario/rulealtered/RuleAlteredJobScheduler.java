@@ -21,37 +21,47 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
+import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.FinishedPosition;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteCallback;
+import org.apache.shardingsphere.data.pipeline.core.execute.ExecuteEngine;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.PipelineJobProgressDetector;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 
+import java.util.Collection;
+
 /**
  * Rule altered job scheduler.
  */
-@Slf4j
 @RequiredArgsConstructor
-@Getter
+@Slf4j
 public final class RuleAlteredJobScheduler implements PipelineTasksRunner {
     
-    private final RuleAlteredJobContext jobContext;
+    @Getter
+    private final PipelineJobContext jobContext;
     
-    /**
-     * Stop all task.
-     */
+    private final Collection<InventoryTask> inventoryTasks;
+    
+    private final Collection<IncrementalTask> incrementalTasks;
+    
+    private final ExecuteEngine inventoryDumperExecuteEngine;
+    
+    private final ExecuteEngine incrementalDumperExecuteEngine;
+    
+    @Override
     public void stop() {
         jobContext.setStopping(true);
         log.info("stop, jobId={}, shardingItem={}", jobContext.getJobId(), jobContext.getShardingItem());
         // TODO blocking stop
-        for (InventoryTask each : jobContext.getInventoryTasks()) {
+        for (InventoryTask each : inventoryTasks) {
             log.info("stop inventory task {} - {}", jobContext.getJobId(), each.getTaskId());
             each.stop();
             each.close();
         }
-        for (IncrementalTask each : jobContext.getIncrementalTasks()) {
+        for (IncrementalTask each : incrementalTasks) {
             log.info("stop incremental task {} - {}", jobContext.getJobId(), each.getTaskId());
             each.stop();
             each.close();
@@ -75,18 +85,18 @@ public final class RuleAlteredJobScheduler implements PipelineTasksRunner {
     }
     
     private synchronized boolean executeInventoryTask() {
-        if (PipelineJobProgressDetector.allInventoryTasksFinished(jobContext.getInventoryTasks())) {
+        if (PipelineJobProgressDetector.allInventoryTasksFinished(inventoryTasks)) {
             log.info("All inventory tasks finished.");
             return true;
         }
         log.info("-------------- Start inventory task --------------");
         jobContext.setStatus(JobStatus.EXECUTE_INVENTORY_TASK);
         ExecuteCallback inventoryTaskCallback = createInventoryTaskCallback();
-        for (InventoryTask each : jobContext.getInventoryTasks()) {
+        for (InventoryTask each : inventoryTasks) {
             if (each.getProgress().getPosition() instanceof FinishedPosition) {
                 continue;
             }
-            jobContext.getJobProcessContext().getInventoryDumperExecuteEngine().submit(each, inventoryTaskCallback);
+            inventoryDumperExecuteEngine.submit(each, inventoryTaskCallback);
         }
         return false;
     }
@@ -96,7 +106,7 @@ public final class RuleAlteredJobScheduler implements PipelineTasksRunner {
             
             @Override
             public void onSuccess() {
-                if (PipelineJobProgressDetector.allInventoryTasksFinished(jobContext.getInventoryTasks())) {
+                if (PipelineJobProgressDetector.allInventoryTasksFinished(inventoryTasks)) {
                     log.info("onSuccess, all inventory tasks finished.");
                     executeIncrementalTask();
                 }
@@ -119,11 +129,11 @@ public final class RuleAlteredJobScheduler implements PipelineTasksRunner {
         log.info("-------------- Start incremental task --------------");
         jobContext.setStatus(JobStatus.EXECUTE_INCREMENTAL_TASK);
         ExecuteCallback incrementalTaskCallback = createIncrementalTaskCallback();
-        for (IncrementalTask each : jobContext.getIncrementalTasks()) {
+        for (IncrementalTask each : incrementalTasks) {
             if (each.getProgress().getPosition() instanceof FinishedPosition) {
                 continue;
             }
-            jobContext.getJobProcessContext().getIncrementalDumperExecuteEngine().submit(each, incrementalTaskCallback);
+            incrementalDumperExecuteEngine.submit(each, incrementalTaskCallback);
         }
     }
     

@@ -25,6 +25,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemInventory
 import org.apache.shardingsphere.data.pipeline.api.task.progress.InventoryTaskProgress;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
@@ -43,7 +44,7 @@ public final class YamlJobItemInventoryTasksProgressSwapper {
      */
     public YamlJobItemInventoryTasksProgress swapToYaml(final JobItemInventoryTasksProgress progress) {
         YamlJobItemInventoryTasksProgress result = new YamlJobItemInventoryTasksProgress();
-        if (progress != null) {
+        if (null != progress) {
             result.setFinished(getFinished(progress));
             result.setUnfinished(getUnfinished(progress));
         }
@@ -70,7 +71,7 @@ public final class YamlJobItemInventoryTasksProgressSwapper {
      */
     public JobItemInventoryTasksProgress swapToObject(final YamlJobItemInventoryTasksProgress yamlProgress) {
         if (null == yamlProgress) {
-            return null;
+            return new JobItemInventoryTasksProgress(Collections.emptyMap());
         }
         Map<String, InventoryTaskProgress> taskProgressMap = new LinkedHashMap<>();
         taskProgressMap.putAll(Arrays.stream(yamlProgress.getFinished()).collect(Collectors.toMap(key -> key, value -> new InventoryTaskProgress(new FinishedPosition()))));

@@ -21,8 +21,6 @@ import org.apache.shardingsphere.infra.instance.InstanceContext;
 import org.apache.shardingsphere.mode.persist.PersistRepository;
 import org.apache.shardingsphere.mode.repository.cluster.listener.DataChangedEventListener;
 
-import java.util.concurrent.locks.Lock;
-
 /**
  * Cluster persist repository.
  */
@@ -66,24 +64,4 @@ public interface ClusterPersistRepository extends PersistRepository {
      * @return is locked or not
      */
     boolean tryLock(String lockKey, long timeoutMillis);
-    
-    /**
-     * Get internal mutex lock.
-     *
-     * @param lockName lock name
-     * @return internal mutex lock
-     * @deprecated remove me when the distributed lock refactoring was completed
-     */
-    @Deprecated
-    Lock getInternalMutexLock(String lockName);
-    
-    /**
-     * Get internal reentrant mutex lock.
-     *
-     * @param lockName lock name
-     * @return internal reentrant mutex lock
-     * @deprecated remove me when the distributed lock refactoring was completed
-     */
-    @Deprecated
-    Lock getInternalReentrantMutexLock(String lockName);
 }

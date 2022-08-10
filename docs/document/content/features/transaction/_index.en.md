@@ -5,16 +5,30 @@ weight = 2
 chapter = true
 +++
 
-## Definition
+## Background
 
-Four properties of transactions: ACID （Atomicity、Consistency、Isolation、Durability).
+Database transactions should satisfy the features of ACID (atomicity, consistency, isolation and durability).
 
 - Atomicity: transactions are executed as a whole, and either all or none is executed.
 - Consistency: transactions should ensure that the state of data remains consistent after the transition.
 - Isolation: when multiple transactions execute concurrently, the execution of one transaction should not affect the execution of others.
 - Durability: when a transaction committed modifies data, the operation will be saved persistently.
 
-Distributed transactions guarantee the ACID properties in distributed scenarios, where a single transaction involves operations on multiple data nodes.
+In single data node, transactions are only restricted to the access and control of single database resources, called local transactions. Almost all the mature relational databases have provided native support for local transactions. But in distributed application situations based on micro-services, more and more of them require to include multiple accesses to services and the corresponding database resources in the same transaction. As a result, distributed transactions appear.
+
+Though the relational database has provided perfect native ACID support, it can become an obstacle to the system performance under distributed situations. How to make databases satisfy ACID features under distributed situations or find a corresponding substitute solution, is the priority work of distributed transactions.
+
+## Challenge
+
+For different application situations, developers need to reasonably weight the performance and the function between all kinds of distributed transactions.
+
+Highly consistent transactions do not have totally the same API and functions as soft transactions, and they cannot switch between each other freely and invisibly. The choice between highly consistent transactions and soft transactions as early as development decision-making phase has sharply increased the design and development cost.
+
+Highly consistent transactions based on XA is relatively easy to use, but is not good at dealing with long transaction and high concurrency situation of the Internet. With a high access cost, soft transactions require developers to transform the application and realize resources lock and backward compensation.
+
+## Goal
+
+The main design goal of the distributed transaction modular of Apache ShardingSphere is to integrate existing mature transaction cases to provide an unified distributed transaction interface for local transactions, 2PC transactions and soft transactions; compensate for the deficiencies of current solutions to provide a one-stop distributed transaction solution.
 
 ## How it works
 

@@ -30,7 +30,7 @@ public final class StandaloneLockPersistService implements LockPersistService {
     
     @Override
     public boolean tryLock(final LockDefinition lockDefinition, final long timeoutMillis) {
-        return standaloneLock.tryLock(lockDefinition.getLockKey());
+        return standaloneLock.tryLock(lockDefinition.getLockKey(), timeoutMillis);
     }
     
     @Override

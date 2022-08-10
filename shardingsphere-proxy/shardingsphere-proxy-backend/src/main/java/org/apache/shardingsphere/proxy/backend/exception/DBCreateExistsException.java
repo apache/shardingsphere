@@ -19,13 +19,14 @@ package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 /**
  * DB create exists exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DBCreateExistsException extends BackendException {
+public final class DBCreateExistsException extends ShardingSphereInsideException {
     
     private static final long serialVersionUID = 779787160167652641L;
     
