@@ -34,8 +34,8 @@ import org.apache.shardingsphere.infra.config.props.ConfigurationPropertyKey;
 import org.apache.shardingsphere.infra.context.kernel.KernelProcessor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeEngine;
-import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
 import org.apache.shardingsphere.infra.exception.NoDatabaseSelectedException;
+import org.apache.shardingsphere.infra.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.executor.sql.context.ExecutionUnit;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.ConnectionMode;
 import org.apache.shardingsphere.infra.executor.sql.execute.engine.SQLExecutorExceptionHandler;
@@ -184,7 +184,7 @@ public final class PreviewHandler extends SQLRULBackendHandler<PreviewStatement>
             throw new NoDatabaseSelectedException();
         }
         if (!ProxyContext.getInstance().databaseExists(result)) {
-            throw new DatabaseNotExistedException(result);
+            throw new UnknownDatabaseException(result);
         }
         return result;
     }

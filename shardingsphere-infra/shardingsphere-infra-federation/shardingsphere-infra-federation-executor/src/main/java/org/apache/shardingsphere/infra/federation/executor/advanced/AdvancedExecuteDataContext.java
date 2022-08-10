@@ -25,6 +25,8 @@ import org.apache.calcite.schema.SchemaPlus;
 import org.apache.calcite.sql.validate.SqlValidator;
 import org.apache.calcite.sql2rel.SqlToRelConverter;
 
+import java.util.Map;
+
 /**
  * Advanced execute data context.
  */
@@ -34,6 +36,8 @@ public final class AdvancedExecuteDataContext implements DataContext {
     private final SqlValidator validator;
     
     private final SqlToRelConverter converter;
+    
+    private final Map<String, Object> parameters;
     
     @Override
     public SchemaPlus getRootSchema() {
@@ -52,6 +56,6 @@ public final class AdvancedExecuteDataContext implements DataContext {
     
     @Override
     public Object get(final String name) {
-        return null;
+        return parameters.get(name);
     }
 }
