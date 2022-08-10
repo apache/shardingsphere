@@ -18,6 +18,7 @@ FROM alpine AS prepare
 
 ARG APP_NAME
 ENV LOCAL_PATH /opt/shardingsphere-proxy
+ENV IS_DOCKER true
 
 ADD target/${APP_NAME}.tar.gz /opt
 RUN mv /opt/${APP_NAME} ${LOCAL_PATH} && mkdir -p ${LOCAL_PATH}/ext-lib
