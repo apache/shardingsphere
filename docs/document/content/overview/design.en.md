@@ -9,19 +9,17 @@ ShardingSphere adopts the database plus design philosophy, which is committed to
 
 ![Overview](https://shardingsphere.apache.org/document/current/img/overview.en.png)
 
-## Connect
+## Connect: Create database upper level standard
 
-Create database upper level standard, DistSQL
-
-//TODO
-
-## Enhance
-
-Database computing enhancement engine
+ DistSQL
 
 //TODO
 
-## Pluggable
+## Enhance: Database computing enhancement engine
+
+Capture database access entry to provide additional features transparently, such as: redirect (sharding, readwrite-splitting and shadow), transform (data encrypt and mask), authentication (security, audit and authority), governance (circuit breaker and access limitation and analyze, QoS and observability).
+
+## Pluggable: Building database function ecology
 
 The pluggable architecture of Apache ShardingSphere is composed of three layers - L1 Kernel Layer, L2 Feature Layer and L3 Ecosystem Layer.
 
