@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.infra.util.exception.sql;
+package org.apache.shardingsphere.db.protocol.error;
 
 import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
