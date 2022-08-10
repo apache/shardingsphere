@@ -21,7 +21,7 @@ import com.google.common.base.Joiner;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableConstants;
 import org.apache.shardingsphere.infra.distsql.constant.ExportableItemConstants;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.util.props.PropertiesConverter;
 import org.apache.shardingsphere.readwritesplitting.api.ReadwriteSplittingRuleConfiguration;
@@ -41,7 +41,7 @@ import java.util.Optional;
 /**
  * Query result set for show readwrite splitting rule.
  */
-public final class ReadwriteSplittingRuleQueryResultSet implements DistSQLResultSet {
+public final class ReadwriteSplittingRuleQueryResultSet implements DatabaseDistSQLResultSet {
     
     private Iterator<Collection<Object>> data = Collections.emptyIterator();
     

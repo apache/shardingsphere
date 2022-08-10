@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.strategy.sharding.ShardingStrategyConfiguration;
@@ -40,7 +40,7 @@ import java.util.Optional;
 /**
  * Query result set for show default sharding strategy.
  */
-public final class DefaultShardingStrategyQueryResultSet implements DistSQLResultSet {
+public final class DefaultShardingStrategyQueryResultSet implements DatabaseDistSQLResultSet {
     
     private Iterator<Entry<String, LinkedList<Object>>> data = Collections.emptyIterator();
     
@@ -51,7 +51,7 @@ public final class DefaultShardingStrategyQueryResultSet implements DistSQLResul
     }
     
     private Map<String, LinkedList<Object>> buildData(final ShardingRule rule) {
-        Map<String, LinkedList<Object>> result = new LinkedHashMap<>(2);
+        Map<String, LinkedList<Object>> result = new LinkedHashMap<>(2, 1);
         ShardingRuleConfiguration ruleConfig = (ShardingRuleConfiguration) rule.getConfiguration();
         result.put("TABLE", buildDataItem(ruleConfig, ruleConfig.getDefaultTableShardingStrategy()));
         result.put("DATABASE", buildDataItem(ruleConfig, ruleConfig.getDefaultDatabaseShardingStrategy()));

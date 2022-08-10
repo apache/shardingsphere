@@ -19,9 +19,9 @@ package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
-import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
+import org.apache.shardingsphere.infra.util.expr.InlineExpressionParser;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingAutoTableRuleConfiguration;
 import org.apache.shardingsphere.sharding.api.config.rule.ShardingTableRuleConfiguration;
@@ -48,7 +48,7 @@ import java.util.stream.Collectors;
 /**
  * Query result set for show sharding table nodes.
  */
-public final class ShardingTableNodesQueryResultSet implements DistSQLResultSet {
+public final class ShardingTableNodesQueryResultSet implements DatabaseDistSQLResultSet {
     
     private static final String NAME = "name";
     

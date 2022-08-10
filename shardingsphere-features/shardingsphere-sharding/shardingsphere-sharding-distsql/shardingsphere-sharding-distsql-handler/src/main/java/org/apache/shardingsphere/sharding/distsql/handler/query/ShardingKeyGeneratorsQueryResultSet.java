@@ -18,7 +18,7 @@
 package org.apache.shardingsphere.sharding.distsql.handler.query;
 
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.sharding.api.config.ShardingRuleConfiguration;
 import org.apache.shardingsphere.sharding.distsql.parser.statement.ShowShardingKeyGeneratorsStatement;
@@ -35,7 +35,7 @@ import java.util.Map.Entry;
 /**
  * Query result set for show sharding key generators.
  */
-public final class ShardingKeyGeneratorsQueryResultSet implements DistSQLResultSet {
+public final class ShardingKeyGeneratorsQueryResultSet implements DatabaseDistSQLResultSet {
     
     private Iterator<Entry<String, AlgorithmConfiguration>> data = Collections.emptyIterator();
     

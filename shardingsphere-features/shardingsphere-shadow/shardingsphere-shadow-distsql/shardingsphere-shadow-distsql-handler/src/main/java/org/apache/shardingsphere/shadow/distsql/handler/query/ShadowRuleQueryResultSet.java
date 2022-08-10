@@ -17,7 +17,7 @@
 
 package org.apache.shardingsphere.shadow.distsql.handler.query;
 
-import org.apache.shardingsphere.infra.distsql.query.DistSQLResultSet;
+import org.apache.shardingsphere.infra.distsql.query.DatabaseDistSQLResultSet;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.shadow.api.config.ShadowRuleConfiguration;
 import org.apache.shardingsphere.shadow.api.config.datasource.ShadowDataSourceConfiguration;
@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 /**
  * Query result set for show shadow rules.
  */
-public final class ShadowRuleQueryResultSet implements DistSQLResultSet {
+public final class ShadowRuleQueryResultSet implements DatabaseDistSQLResultSet {
     
     private static final String RULE_NAME = "rule_name";
     
