@@ -210,7 +210,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             clearPrevious();
             LogicSQL logicSQL = createLogicSQL();
-            trafficInstanceId = getTrafficInstanceIdAndSave(logicSQL).orElse(null);
+            trafficInstanceId = getInstanceIdAndSet(logicSQL).orElse(null);
             if (null != trafficInstanceId) {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, logicSQL);
                 return executor.getTrafficExecutor().execute(executionUnit, (statement, sql) -> ((PreparedStatement) statement).executeQuery());
@@ -248,10 +248,10 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         return context.getInputGroups().iterator().next().getInputs().iterator().next();
     }
     
-    private Optional<String> getTrafficInstanceIdAndSave(final LogicSQL logicSQL) {
+    private Optional<String> getInstanceIdAndSet(final LogicSQL logicSQL) {
         Optional<String> trafficInstanceId = connection.getSqlSession().getTrafficInstanceId();
         if (!trafficInstanceId.isPresent()) {
-            trafficInstanceId = getTrafficInstanceId(logicSQL);
+            trafficInstanceId = getInstanceId(logicSQL);
         }
         if (connection.isHoldTransaction() && trafficInstanceId.isPresent()) {
             connection.getSqlSession().setTrafficInstanceId(trafficInstanceId.get());
@@ -259,7 +259,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
         return trafficInstanceId;
     }
     
-    private Optional<String> getTrafficInstanceId(final LogicSQL logicSQL) {
+    private Optional<String> getInstanceId(final LogicSQL logicSQL) {
         InstanceContext instanceContext = connection.getContextManager().getInstanceContext();
         return null != trafficRule && !trafficRule.getStrategyRules().isEmpty()
                 ? new TrafficEngine(trafficRule, instanceContext).dispatch(logicSQL, connection.isHoldTransaction())
@@ -316,7 +316,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             clearPrevious();
             LogicSQL logicSQL = createLogicSQL();
-            trafficInstanceId = getTrafficInstanceIdAndSave(logicSQL).orElse(null);
+            trafficInstanceId = getInstanceIdAndSet(logicSQL).orElse(null);
             if (null != trafficInstanceId) {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, logicSQL);
                 return executor.getTrafficExecutor().execute(executionUnit, (statement, sql) -> ((PreparedStatement) statement).executeUpdate());
@@ -373,7 +373,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
             }
             clearPrevious();
             LogicSQL logicSQL = createLogicSQL();
-            trafficInstanceId = getTrafficInstanceIdAndSave(logicSQL).orElse(null);
+            trafficInstanceId = getInstanceIdAndSet(logicSQL).orElse(null);
             if (null != trafficInstanceId) {
                 JDBCExecutionUnit executionUnit = createTrafficExecutionUnit(trafficInstanceId, logicSQL);
                 return executor.getTrafficExecutor().execute(executionUnit, (statement, sql) -> ((PreparedStatement) statement).execute());
@@ -567,7 +567,7 @@ public final class ShardingSpherePreparedStatement extends AbstractPreparedState
     public void addBatch() {
         try {
             LogicSQL logicSQL = createLogicSQL();
-            trafficInstanceId = getTrafficInstanceIdAndSave(logicSQL).orElse(null);
+            trafficInstanceId = getInstanceIdAndSet(logicSQL).orElse(null);
             executionContext = null != trafficInstanceId ? createExecutionContext(logicSQL, trafficInstanceId) : createExecutionContext(logicSQL);
             batchPreparedStatementExecutor.addBatchForExecutionUnits(executionContext.getExecutionUnits());
         } finally {
