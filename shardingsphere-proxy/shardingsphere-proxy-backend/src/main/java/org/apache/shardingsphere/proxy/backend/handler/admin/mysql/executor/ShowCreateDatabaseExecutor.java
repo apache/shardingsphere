@@ -19,7 +19,7 @@ package org.apache.shardingsphere.proxy.backend.handler.admin.mysql.executor;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
+import org.apache.shardingsphere.infra.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResult;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryResultMetaData;
 import org.apache.shardingsphere.infra.executor.sql.execute.result.query.impl.raw.metadata.RawQueryResultColumnMetaData;
@@ -29,8 +29,8 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.type.me
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.merge.result.impl.transparent.TransparentMergedResult;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.proxy.backend.handler.admin.executor.DatabaseAdminQueryExecutor;
+import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
 import org.apache.shardingsphere.sql.parser.sql.dialect.statement.mysql.dal.MySQLShowCreateDatabaseStatement;
 
 import java.sql.Types;
@@ -65,7 +65,7 @@ public final class ShowCreateDatabaseExecutor implements DatabaseAdminQueryExecu
     
     private QueryResult getQueryResult(final String databaseName) {
         if (!ProxyContext.getInstance().databaseExists(databaseName)) {
-            throw new DatabaseNotExistedException(databaseName);
+            throw new UnknownDatabaseException(databaseName);
         }
         List<MemoryQueryResultDataRow> rows = new LinkedList<>();
         rows.add(new MemoryQueryResultDataRow(Arrays.asList(databaseName, String.format(CREATE_DATABASE_PATTERN, databaseName))));

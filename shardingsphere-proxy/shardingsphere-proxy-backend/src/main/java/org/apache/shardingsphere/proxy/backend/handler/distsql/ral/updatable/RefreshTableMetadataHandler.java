@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.distsql.exception.DistSQLException;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
 import org.apache.shardingsphere.infra.exception.NoDatabaseSelectedException;
-import org.apache.shardingsphere.proxy.backend.exception.UnknownDatabaseException;
+import org.apache.shardingsphere.infra.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.proxy.backend.handler.distsql.ral.UpdatableRALBackendHandler;
 
 /**

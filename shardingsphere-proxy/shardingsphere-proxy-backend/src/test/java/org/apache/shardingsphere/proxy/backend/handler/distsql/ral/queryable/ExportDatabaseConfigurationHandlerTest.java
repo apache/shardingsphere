@@ -20,7 +20,8 @@ package org.apache.shardingsphere.proxy.backend.handler.distsql.ral.queryable;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.distsql.parser.statement.ral.queryable.ExportDatabaseConfigurationStatement;
 import org.apache.shardingsphere.infra.config.algorithm.AlgorithmConfiguration;
-import org.apache.shardingsphere.infra.exception.DatabaseNotExistedException;
+import org.apache.shardingsphere.infra.exception.NoDatabaseSelectedException;
+import org.apache.shardingsphere.infra.exception.UnknownDatabaseException;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereColumn;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereIndex;
@@ -28,7 +29,6 @@ import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereTable;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
-import org.apache.shardingsphere.infra.exception.NoDatabaseSelectedException;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryHeader;
 import org.apache.shardingsphere.proxy.backend.response.header.query.QueryResponseHeader;
 import org.apache.shardingsphere.proxy.backend.session.ConnectionSession;
@@ -213,7 +213,7 @@ public final class ExportDatabaseConfigurationHandlerTest extends ProxyContextRe
         assertFalse(handler.next());
     }
     
-    @Test(expected = DatabaseNotExistedException.class)
+    @Test(expected = UnknownDatabaseException.class)
     public void assertExecuteWithNotExistedDatabase() throws SQLException {
         ExportDatabaseConfigurationHandler handler = new ExportDatabaseConfigurationHandler();
         handler.init(new ExportDatabaseConfigurationStatement(new DatabaseSegment(0, 0, new IdentifierValue("not_exist_db")), null), mock(ConnectionSession.class));
