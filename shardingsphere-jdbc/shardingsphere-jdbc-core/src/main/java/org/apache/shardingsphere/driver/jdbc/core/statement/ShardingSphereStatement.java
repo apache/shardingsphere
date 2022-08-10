@@ -185,14 +185,14 @@ public final class ShardingSphereStatement extends AbstractStatementAdapter {
     }
     
     private Optional<String> getInstanceIdAndSet(final LogicSQL logicSQL) {
-        Optional<String> trafficInstanceId = connection.getSqlSession().getTrafficInstanceId();
-        if (!trafficInstanceId.isPresent()) {
-            trafficInstanceId = getInstanceId(logicSQL);
+        Optional<String> result = connection.getSqlSession().getTrafficInstanceId();
+        if (!result.isPresent()) {
+            result = getInstanceId(logicSQL);
         }
-        if (connection.isHoldTransaction() && trafficInstanceId.isPresent()) {
-            connection.getSqlSession().setTrafficInstanceId(trafficInstanceId.get());
+        if (connection.isHoldTransaction() && result.isPresent()) {
+            connection.getSqlSession().setTrafficInstanceId(result.get());
         }
-        return trafficInstanceId;
+        return result;
     }
     
     private Optional<String> getInstanceId(final LogicSQL logicSQL) {
