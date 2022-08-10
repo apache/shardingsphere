@@ -19,7 +19,6 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.storage.
 
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 
-import java.util.Collections;
 import java.util.Map;
 
 public class ScalingPostgreSQLContainerConfiguration extends DefaultPostgreSQLContainerConfiguration {
@@ -33,11 +32,6 @@ public class ScalingPostgreSQLContainerConfiguration extends DefaultPostgreSQLCo
         String[] commands = new String[1];
         commands[0] = "-c config_file=/etc/postgresql/postgresql.conf";
         return commands;
-    }
-    
-    @Override
-    public Map<String, String> getEnvs() {
-        return Collections.emptyMap();
     }
     
     @Override

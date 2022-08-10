@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
 import org.testcontainers.shaded.com.google.common.collect.ImmutableMap;
 
-import java.util.Collections;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -38,7 +37,7 @@ public class DefaultPostgreSQLContainerConfiguration implements StorageContainer
     
     @Override
     public Map<String, String> getEnvs() {
-        return Collections.emptyMap();
+        return ImmutableMap.<String, String>builder().put("POSTGRES_PASSWORD", "Test@123").build();
     }
     
     @Override
