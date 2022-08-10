@@ -174,7 +174,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         } finally {
             connectionManager.getConnectionTransaction().setRollbackOnly(false);
             TransactionHolder.clear();
-            sqlSession.getTrafficSessionContext().clear();
+            sqlSession.clearTrafficInstance();
             FetchOrderByValueGroupsHolder.remove();
         }
     }
@@ -186,7 +186,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
         } finally {
             connectionManager.getConnectionTransaction().setRollbackOnly(false);
             TransactionHolder.clear();
-            sqlSession.getTrafficSessionContext().clear();
+            sqlSession.clearTrafficInstance();
             FetchOrderByValueGroupsHolder.remove();
         }
     }
