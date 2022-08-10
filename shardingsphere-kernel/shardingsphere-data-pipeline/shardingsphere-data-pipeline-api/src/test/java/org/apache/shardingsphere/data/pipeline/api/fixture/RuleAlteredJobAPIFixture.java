@@ -19,9 +19,12 @@ package org.apache.shardingsphere.data.pipeline.api.fixture;
 
 import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPI;
 import org.apache.shardingsphere.data.pipeline.api.check.consistency.DataConsistencyCheckResult;
+import org.apache.shardingsphere.data.pipeline.api.config.job.YamlPipelineJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.context.PipelineJobContext;
 import org.apache.shardingsphere.data.pipeline.api.job.JobStatus;
+import org.apache.shardingsphere.data.pipeline.api.job.JobType;
+import org.apache.shardingsphere.data.pipeline.api.job.PipelineJobId;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.pojo.DataConsistencyCheckAlgorithmInfo;
 import org.apache.shardingsphere.data.pipeline.api.pojo.JobInfo;
@@ -33,6 +36,20 @@ import java.util.Optional;
 import java.util.Properties;
 
 public final class RuleAlteredJobAPIFixture implements RuleAlteredJobAPI {
+    
+    @Override
+    public String marshalJobId(final PipelineJobId pipelineJobId) {
+        return null;
+    }
+    
+    @Override
+    public JobType parseJobType(final String jobId) {
+        return null;
+    }
+    
+    @Override
+    public void extendJobConfiguration(final YamlPipelineJobConfiguration yamlJobConfig) {
+    }
     
     @Override
     public void startDisabledJob(final String jobId) {
