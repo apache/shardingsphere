@@ -31,7 +31,7 @@ import java.util.Collections;
 import java.util.Optional;
 
 /**
- *  Column of order by item converter. 
+ *  Index order by item converter. 
  */
 public final class IndexOrderByItemConverter implements SQLSegmentConverter<IndexOrderByItemSegment, SqlNode> {
     
