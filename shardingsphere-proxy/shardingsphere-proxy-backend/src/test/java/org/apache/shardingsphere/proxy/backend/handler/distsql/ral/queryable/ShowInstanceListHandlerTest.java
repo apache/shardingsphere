@@ -95,12 +95,12 @@ public final class ShowInstanceListHandlerTest extends ProxyContextRestorer {
     }
     
     private InstanceContext createClusterInstanceContext() {
+        InstanceContext result = mock(InstanceContext.class, RETURNS_DEEP_STUBS);
+        when(result.getModeConfiguration()).thenReturn(new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class), true));
         ComputeNodeInstance computeNodeInstance = mock(ComputeNodeInstance.class, RETURNS_DEEP_STUBS);
         when(computeNodeInstance.getMetaData()).thenReturn(new ProxyInstanceMetaData("127.0.0.1@3309", "127.0.0.1@3309"));
         when(computeNodeInstance.getState()).thenReturn(new StateContext());
         when(computeNodeInstance.getWorkerId()).thenReturn(1L);
-        InstanceContext result = mock(InstanceContext.class, RETURNS_DEEP_STUBS);
-        when(result.getModeConfiguration()).thenReturn(new ModeConfiguration("Cluster", mock(PersistRepositoryConfiguration.class), true));
         when(result.getAllClusterInstances()).thenReturn(Collections.singleton(computeNodeInstance));
         return result;
     }
