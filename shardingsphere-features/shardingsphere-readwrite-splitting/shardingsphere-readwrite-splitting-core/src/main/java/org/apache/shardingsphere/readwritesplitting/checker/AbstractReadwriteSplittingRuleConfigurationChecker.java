@@ -110,7 +110,7 @@ public abstract class AbstractReadwriteSplittingRuleConfigurationChecker<T exten
             if (loadBalancer instanceof WeightReadQueryLoadBalanceAlgorithm || loadBalancer instanceof TransactionWeightReadQueryLoadBalanceAlgorithm) {
                 Preconditions.checkState(!loadBalancer.getProps().isEmpty(), "Readwrite-splitting data source weight config are required in database `%s`.", databaseName);
                 Collection<String> dataSourceNames = getDataSourceNames(each, rules);
-                loadBalancer.getProps().keySet().forEach(dataSourceName -> Preconditions.checkState(dataSourceNames.contains((String) dataSourceName),
+                loadBalancer.getProps().stringPropertyNames().forEach(dataSourceName -> Preconditions.checkState(dataSourceNames.contains(dataSourceName),
                         "Load Balancer datasource name config does not match datasource in database `%s`.", databaseName));
             }
         }

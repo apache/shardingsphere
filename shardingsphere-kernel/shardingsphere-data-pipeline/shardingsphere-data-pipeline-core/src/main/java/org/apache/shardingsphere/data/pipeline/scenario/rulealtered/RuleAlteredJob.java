@@ -28,6 +28,7 @@ import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
 import org.apache.shardingsphere.data.pipeline.api.task.PipelineTasksRunner;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.exception.PipelineIgnoredException;
+import org.apache.shardingsphere.data.pipeline.core.job.AbstractPipelineJob;
 import org.apache.shardingsphere.data.pipeline.core.job.PipelineJobCenter;
 import org.apache.shardingsphere.data.pipeline.core.job.progress.persist.PipelineJobProgressPersistService;
 import org.apache.shardingsphere.elasticjob.api.ShardingContext;
@@ -63,7 +64,8 @@ public final class RuleAlteredJob extends AbstractPipelineJob implements SimpleJ
             return;
         }
         log.info("start RuleAlteredJobScheduler, jobId={}, shardingItem={}", getJobId(), shardingItem);
-        RuleAlteredJobScheduler jobScheduler = new RuleAlteredJobScheduler(jobContext);
+        RuleAlteredJobScheduler jobScheduler = new RuleAlteredJobScheduler(jobContext, jobContext.getInventoryTasks(), jobContext.getIncrementalTasks(),
+                jobContext.getJobProcessContext().getInventoryDumperExecuteEngine(), jobContext.getJobProcessContext().getIncrementalDumperExecuteEngine());
         runInBackground(() -> {
             prepare(jobContext);
             jobScheduler.start();

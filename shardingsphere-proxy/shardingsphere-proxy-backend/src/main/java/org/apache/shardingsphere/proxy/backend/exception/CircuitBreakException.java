@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.exception;
 
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+
 /**
  * Circuit break exception.
  */
-public final class CircuitBreakException extends BackendException {
+public final class CircuitBreakException extends ShardingSphereInsideException {
     
     private static final long serialVersionUID = 6339672680026286798L;
 }

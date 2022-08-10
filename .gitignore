@@ -28,6 +28,9 @@ cobertura.ser
 *.iml
 *.iws
 
+# vscode ignore
+.vscode/
+
 # temp ignore
 logs/
 *.log

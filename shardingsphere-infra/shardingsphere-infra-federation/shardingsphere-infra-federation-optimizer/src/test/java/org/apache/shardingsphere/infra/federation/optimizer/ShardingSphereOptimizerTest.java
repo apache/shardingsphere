@@ -85,7 +85,7 @@ public final class ShardingSphereOptimizerTest {
             + "WHERE user_id BETWEEN (SELECT user_id FROM t_user_info WHERE information = 'before') "
             + "AND (SELECT user_id FROM t_user_info WHERE information = 'after')";
     
-    private static final String DATABASE_NAME = "sharding_db";
+    private static final String SELECT_UNION = "SELECT order_id, user_id FROM t_order_federate UNION SELECT 1, user_id FROM t_user_info WHERE information = 'before'";
     
     private static final String SCHEMA_NAME = "federate_jdbc";
     
@@ -257,6 +257,19 @@ public final class ShardingSphereOptimizerTest {
                 + "    EnumerableAggregate(group=[{}], agg#0=[SINGLE_VALUE($0)])" + LINE_SEPARATOR
                 + "      EnumerableCalc(expr#0..1=[{inputs}], expr#2=[CAST($t1):VARCHAR], expr#3=['after':VARCHAR], expr#4=[=($t2, $t3)], user_id=[$t0], $condition=[$t4])" + LINE_SEPARATOR
                 + "        EnumerableTableScan(table=[[federate_jdbc, t_user_info]])" + LINE_SEPARATOR;
+        assertThat(actual, is(expected));
+    }
+    
+    @Test
+    public void assertSelectUnion() {
+        ShardingSphereSQLParserEngine sqlParserEngine = sqlParserRule.getSQLParserEngine(DatabaseTypeEngine.getTrunkDatabaseTypeName(new H2DatabaseType()));
+        SQLStatement sqlStatement = sqlParserEngine.parse(SELECT_UNION, false);
+        String actual = optimizer.optimize(sqlStatement).explain();
+        String expected = "EnumerableUnion(all=[false])" + LINE_SEPARATOR + "  EnumerableCalc(expr#0..2=[{inputs}], proj#0..1=[{exprs}])" + LINE_SEPARATOR
+                + "    EnumerableTableScan(table=[[federate_jdbc, t_order_federate]])" + LINE_SEPARATOR
+                + "  EnumerableCalc(expr#0..1=[{inputs}], expr#2=['1':VARCHAR], expr#3=[CAST($t1):VARCHAR], "
+                + "expr#4=['before':VARCHAR], expr#5=[=($t3, $t4)], EXPR$0=[$t2], user_id=[$t0], $condition=[$t5])" + LINE_SEPARATOR
+                + "    EnumerableTableScan(table=[[federate_jdbc, t_user_info]])" + LINE_SEPARATOR;
         assertThat(actual, is(expected));
     }
 }

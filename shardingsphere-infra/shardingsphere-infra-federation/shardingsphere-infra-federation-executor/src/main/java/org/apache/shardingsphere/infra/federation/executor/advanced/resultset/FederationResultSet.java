@@ -43,7 +43,6 @@ import java.sql.SQLXML;
 import java.sql.Statement;
 import java.sql.Time;
 import java.sql.Timestamp;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -79,11 +78,11 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
     }
     
     private Map<String, Integer> createColumnLabelAndIndexMap(final SQLStatementContext<?> sqlStatementContext) {
-        SelectStatementContext statementContext = (SelectStatementContext) sqlStatementContext;
-        List<Projection> projections = new ArrayList<>(statementContext.getProjectionsContext().getProjections());
+        SelectStatementContext selectStatementContext = (SelectStatementContext) sqlStatementContext;
+        List<Projection> projections = selectStatementContext.getProjectionsContext().getExpandProjections();
         Map<String, Integer> result = new HashMap<>(projections.size(), 1);
         for (int columnIndex = 1; columnIndex <= projections.size(); columnIndex++) {
-            result.put(projections.get(columnIndex - 1).getColumnLabel(), columnIndex);
+            result.put(projections.get(columnIndex - 1).getColumnLabel().toLowerCase(), columnIndex);
         }
         return result;
     }
@@ -445,7 +444,7 @@ public final class FederationResultSet extends AbstractUnsupportedOperationResul
     }
     
     private Integer getIndexFromColumnLabelAndIndexMap(final String columnLabel) throws SQLFeatureNotSupportedException {
-        Integer result = columnLabelAndIndexMap.get(columnLabel);
+        Integer result = columnLabelAndIndexMap.get(columnLabel.toLowerCase());
         if (null == result) {
             throw new SQLFeatureNotSupportedException(String.format("can't get index from columnLabel[%s].", columnLabel));
         }
