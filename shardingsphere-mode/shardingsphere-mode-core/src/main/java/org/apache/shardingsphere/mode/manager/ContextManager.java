@@ -169,13 +169,13 @@ public final class ContextManager implements AutoCloseable {
     
     private synchronized void alterTable(final ShardingSphereDatabase database, final String schemaName, final ShardingSphereTable beBoChangedTable) {
         if (containsMutableDataNodeRule(database, schemaName, beBoChangedTable.getName())) {
-            database.reloadRules(instanceContext);
+            database.reloadRules(MutableDataNodeRule.class);
         }
         database.getSchema(schemaName).put(beBoChangedTable.getName(), beBoChangedTable);
     }
     
     private boolean containsMutableDataNodeRule(final ShardingSphereDatabase database, final String schemaName, final String tableName) {
-        return database.getRuleMetaData().findRules(MutableDataNodeRule.class).stream().anyMatch(each -> each.findSingleTableDataNode(schemaName, tableName).isPresent());
+        return database.getRuleMetaData().findRules(MutableDataNodeRule.class).stream().noneMatch(each -> each.findSingleTableDataNode(schemaName, tableName).isPresent());
     }
     
     private void dropTable(final String databaseName, final String schemaName, final String toBeDeletedTableName) {
@@ -408,7 +408,7 @@ public final class ContextManager implements AutoCloseable {
     
     private ShardingSphereSchema loadSchema(final String databaseName, final String schemaName, final String dataSourceName) throws SQLException {
         ShardingSphereDatabase database = metaDataContexts.getMetaData().getDatabase(databaseName);
-        database.reloadRules(MutableDataNodeRule.class, instanceContext);
+        database.reloadRules(MutableDataNodeRule.class);
         GenericSchemaBuilderMaterials materials = new GenericSchemaBuilderMaterials(database.getProtocolType(), database.getResource().getDatabaseType(),
                 Collections.singletonMap(dataSourceName, database.getResource().getDataSources().get(dataSourceName)),
                 database.getRuleMetaData().getRules(), metaDataContexts.getMetaData().getProps(), schemaName);

@@ -19,6 +19,7 @@ package org.apache.shardingsphere.infra.metadata.database;
 
 import org.apache.shardingsphere.infra.config.mode.ModeConfiguration;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.infra.rule.identifier.type.MutableDataNodeRule;
 import org.apache.shardingsphere.infra.util.eventbus.EventBusContext;
 import org.apache.shardingsphere.infra.instance.ComputeNodeInstance;
 import org.apache.shardingsphere.infra.instance.InstanceContext;
@@ -70,8 +71,7 @@ public final class ShardingSphereDatabaseTest {
         ShardingSphereDatabase database = new ShardingSphereDatabase("foo_db", mock(DatabaseType.class), resource, ruleMetaData, Collections.emptyMap());
         Collection<ShardingSphereRule> rules = database.getRuleMetaData().getRules();
         assertTrue(rules.isEmpty());
-        database.reloadRules(new InstanceContext(new ComputeNodeInstance(mock(InstanceMetaData.class)), new WorkerIdGeneratorFixture(Long.MIN_VALUE), modeConfig, mock(LockContext.class),
-                new EventBusContext()));
+        database.reloadRules(MutableDataNodeRule.class);
         assertFalse(rules.isEmpty());
     }
 }
