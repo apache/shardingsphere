@@ -105,12 +105,14 @@ public final class RuleAlteredJobPreparer {
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         LockDefinition lockDefinition = new ExclusiveLockDefinition(lockName);
         if (lockContext.tryLock(lockDefinition, 3000)) {
+            log.info("try lock success, jobId={}, shardingItem={}", jobConfig.getJobId(), jobContext.getShardingItem());
             try {
                 prepareAndCheckTarget(jobContext);
             } finally {
                 lockContext.unlock(lockDefinition);
             }
         } else {
+            log.info("wait lock released, jobId={}, shardingItem={}", jobConfig.getJobId(), jobContext.getShardingItem());
             waitUntilLockReleased(lockContext, lockDefinition);
         }
     }
