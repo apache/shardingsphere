@@ -178,7 +178,7 @@ public final class ContextManager implements AutoCloseable {
     private boolean containsMutableDataNodeRule(final ShardingSphereDatabase database, final String tableName) {
         // TODO Fixme Remove table conversion to lowercase
         return database.getRuleMetaData().findRules(DataNodeContainedRule.class).stream()
-                .filter(each -> !(each instanceof MutableDataNodeRule)).anyMatch(each -> each.getAllTables().contains(tableName.ç()));
+                .filter(each -> !(each instanceof MutableDataNodeRule)).anyMatch(each -> each.getAllTables().contains(tableName.toLowerCase()));
     }
     
     private void dropTable(final String databaseName, final String schemaName, final String toBeDeletedTableName) {
