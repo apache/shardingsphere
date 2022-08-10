@@ -15,21 +15,39 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.mysql.importer;
+package org.apache.shardingsphere.scaling.core.job.importer;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.importer.AbstractImporter;
+import org.apache.shardingsphere.data.pipeline.core.importer.DefaultImporter;
+import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 
 /**
- * MySQL importer.
+ * Default importer creator.
  */
-public final class MySQLImporter extends AbstractImporter {
+public final class DefaultImporterCreator implements ImporterCreator {
     
-    public MySQLImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel,
-                         final PipelineJobProgressListener jobProgressListener) {
-        super(importerConfig, dataSourceManager, channel, jobProgressListener);
+    @Override
+    public Importer createImporter(final ImporterConfiguration importerConfig,
+                                   final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel,
+                                   final PipelineJobProgressListener jobProgressListener) {
+        return new DefaultImporter(importerConfig, dataSourceManager, channel, jobProgressListener);
+    }
+
+    @Override
+    public String getType() {
+        return "MySQL";
+    }
+
+    @Override
+    public Collection<String> getTypeAliases() {
+        Collection<String> aliases = new LinkedList<>();
+        aliases.add("PostgreSQL");
+        aliases.add("openGauss");
+        return aliases;
     }
 }

@@ -56,7 +56,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public final class AbstractImporterTest {
+public final class DefaultImporterTest {
     
     private static final String TABLE_NAME = "test_table";
     
@@ -78,12 +78,11 @@ public final class AbstractImporterTest {
     @Mock
     private PreparedStatement preparedStatement;
     
-    private AbstractImporter jdbcImporter;
+    private DefaultImporter jdbcImporter;
     
     @Before
     public void setUp() throws SQLException {
-        jdbcImporter = new AbstractImporter(mockImporterConfiguration(), dataSourceManager, channel, new FixturePipelineJobProgressListener()) {
-        };
+        jdbcImporter = new DefaultImporter(mockImporterConfiguration(), dataSourceManager, channel, new FixturePipelineJobProgressListener());
         when(dataSourceManager.getDataSource(dataSourceConfig)).thenReturn(dataSource);
         when(dataSource.getConnection()).thenReturn(connection);
     }

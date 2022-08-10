@@ -15,29 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.opengauss;
+package org.apache.shardingsphere.scaling.core.job.importer;
 
-import org.apache.shardingsphere.data.pipeline.opengauss.ingest.OpenGaussWalDumper;
-import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLInventoryDumper;
-import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 /**
- * Scaling entry of openGauss.
+ * Importer factory.
  */
-public final class OpenGaussScalingEntry implements ScalingEntry {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class ImporterCreatorFactory {
     
-    @Override
-    public Class<PostgreSQLInventoryDumper> getInventoryDumperClass() {
-        return PostgreSQLInventoryDumper.class;
+    static {
+        ShardingSphereServiceLoader.register(ImporterCreator.class);
     }
     
-    @Override
-    public Class<OpenGaussWalDumper> getIncrementalDumperClass() {
-        return OpenGaussWalDumper.class;
-    }
-
-    @Override
-    public String getType() {
-        return "openGauss";
+    /**
+     * Get ImporterCreator.
+     * @param databaseType databaseType
+     * @return ImporterCreator
+     */
+    public static ImporterCreator getInstance(final String databaseType) {
+        return TypedSPIRegistry.getRegisteredService(ImporterCreator.class, databaseType);
     }
 }

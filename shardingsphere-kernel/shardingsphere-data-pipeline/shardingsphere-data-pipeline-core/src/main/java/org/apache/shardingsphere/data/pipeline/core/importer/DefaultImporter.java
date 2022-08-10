@@ -48,10 +48,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * Abstract importer.
+ * Default importer.
  */
 @Slf4j
-public abstract class AbstractImporter extends AbstractLifecycleExecutor implements Importer {
+public final class DefaultImporter extends AbstractLifecycleExecutor implements Importer {
     
     private static final DataRecordMerger MERGER = new DataRecordMerger();
     
@@ -66,8 +66,8 @@ public abstract class AbstractImporter extends AbstractLifecycleExecutor impleme
     
     private final PipelineJobProgressListener jobProgressListener;
     
-    protected AbstractImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel,
-                               final PipelineJobProgressListener jobProgressListener) {
+    public DefaultImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel,
+                           final PipelineJobProgressListener jobProgressListener) {
         this.importerConfig = importerConfig;
         this.dataSourceManager = dataSourceManager;
         this.channel = channel;

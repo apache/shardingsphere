@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql;
 
-import org.apache.shardingsphere.data.pipeline.postgresql.importer.PostgreSQLImporter;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLInventoryDumper;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLWalDumper;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
@@ -36,12 +35,7 @@ public final class PostgreSQLScalingEntry implements ScalingEntry {
     public Class<PostgreSQLWalDumper> getIncrementalDumperClass() {
         return PostgreSQLWalDumper.class;
     }
-    
-    @Override
-    public Class<PostgreSQLImporter> getImporterClass() {
-        return PostgreSQLImporter.class;
-    }
-    
+
     @Override
     public String getType() {
         return "PostgreSQL";
