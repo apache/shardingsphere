@@ -35,7 +35,7 @@ public final class MySQLScalingEntry implements ScalingEntry {
     public Class<MySQLIncrementalDumper> getIncrementalDumperClass() {
         return MySQLIncrementalDumper.class;
     }
-
+    
     @Override
     public String getType() {
         return "MySQL";

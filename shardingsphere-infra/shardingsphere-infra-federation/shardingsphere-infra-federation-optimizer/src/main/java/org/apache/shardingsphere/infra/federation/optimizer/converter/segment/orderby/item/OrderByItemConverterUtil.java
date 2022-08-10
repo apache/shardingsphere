@@ -51,7 +51,7 @@ public final class OrderByItemConverterUtil {
             } else if (each instanceof ExpressionOrderByItemSegment) {
                 throw new UnsupportedOperationException("unsupported ExpressionOrderByItemSegment");
             } else if (each instanceof IndexOrderByItemSegment) {
-                throw new UnsupportedOperationException("unsupported IndexOrderByItemSegment");
+                new IndexOrderByItemConverter().convertToSQLNode((IndexOrderByItemSegment) each).ifPresent(result::add);
             } else if (each instanceof TextOrderByItemSegment) {
                 throw new UnsupportedOperationException("unsupported TextOrderByItemSegment");
             }
@@ -70,6 +70,8 @@ public final class OrderByItemConverterUtil {
         for (SqlNode each : sqlNodeList) {
             if (each instanceof SqlIdentifier) {
                 new ColumnOrderByItemConverter().convertToSQLSegment(each).ifPresent(result::add);
+            } else {
+                new IndexOrderByItemConverter().convertToSQLSegment(each).ifPresent(result::add);
             }
         }
         return result;
