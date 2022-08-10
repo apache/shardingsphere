@@ -92,9 +92,6 @@ public final class FederationResultSetMetaData extends WrapperAdapter implements
     @Override
     public String getColumnLabel(final int column) throws SQLException {
         Projection projection = selectStatementContext.getProjectionsContext().getExpandProjections().get(column - 1);
-        if (projection instanceof ColumnProjection) {
-            return ((ColumnProjection) projection).getName();
-        }
         return projection.getColumnLabel();
     }
     
