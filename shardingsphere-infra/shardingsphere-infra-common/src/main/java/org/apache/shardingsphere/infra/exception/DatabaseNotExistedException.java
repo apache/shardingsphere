@@ -18,19 +18,20 @@
 package org.apache.shardingsphere.infra.exception;
 
 import lombok.Getter;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 /**
  * Database does not exist exception.
  */
 @Getter
-public final class DatabaseNotExistedException extends ShardingSphereException {
+public final class DatabaseNotExistedException extends ShardingSphereInsideException {
     
     private static final long serialVersionUID = -1818822065202117480L;
     
     private final String databaseName;
     
     public DatabaseNotExistedException(final String databaseName) {
-        super(String.format("Database '%s' doesn't exist.", databaseName));
+        super(String.format("Database `%s` doesn't exist.", databaseName));
         this.databaseName = databaseName;
     }
 }
