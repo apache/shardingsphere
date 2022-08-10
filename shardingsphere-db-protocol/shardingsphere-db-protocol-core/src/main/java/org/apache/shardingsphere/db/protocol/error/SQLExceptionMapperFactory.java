@@ -15,22 +15,30 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.db.protocol.error;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
-import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+import org.apache.shardingsphere.infra.util.spi.ShardingSphereServiceLoader;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPIRegistry;
 
 /**
- * Invalid parameter value exception.
+ * SQL exception mapper.
  */
-@RequiredArgsConstructor
-@Getter
-public final class InvalidParameterValueException extends ShardingSphereInsideException {
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
+public final class SQLExceptionMapperFactory {
     
-    private static final long serialVersionUID = -6561119208409452172L;
+    static {
+        ShardingSphereServiceLoader.register(SQLExceptionMapper.class);
+    }
     
-    private final String parameterName;
-    
-    private final String parameterValue;
+    /**
+     * Convert ShardingSphere inside exception into SQLException.
+     * 
+     * @param databaseType database type
+     * @return SQLException
+     */
+    public static SQLExceptionMapper getInstance(final String databaseType) {
+        return TypedSPIRegistry.getRegisteredService(SQLExceptionMapper.class, databaseType);
+    }
 }

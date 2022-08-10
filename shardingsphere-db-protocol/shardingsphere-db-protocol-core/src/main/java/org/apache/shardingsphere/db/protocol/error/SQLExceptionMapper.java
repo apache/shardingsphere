@@ -15,22 +15,25 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.db.protocol.error;
 
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
+import org.apache.shardingsphere.infra.util.spi.type.typed.TypedSPI;
+
+import java.sql.SQLException;
 
 /**
- * Table locked exception.
+ * SQL exception mapper.
  */
-@RequiredArgsConstructor
-@Getter
-public final class TableLockedException extends ShardingSphereInsideException {
+@SingletonSPI
+public interface SQLExceptionMapper extends TypedSPI {
     
-    private static final long serialVersionUID = 2622020743612706932L;
-    
-    private final String schemaName;
-    
-    private final String tableName;
+    /**
+     * Convert ShardingSphere inside exception into SQLException.
+     * 
+     * @param insideException ShardingSphere inside exception
+     * @return SQLException
+     */
+    SQLException convert(ShardingSphereInsideException insideException);
 }

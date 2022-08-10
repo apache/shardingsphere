@@ -15,24 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.infra.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 /**
- * Table lock wait timeout exception.
+ * DB create exists exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class TableLockWaitTimeoutException extends ShardingSphereInsideException {
+public final class DBCreateExistsException extends ShardingSphereInsideException {
     
-    private static final long serialVersionUID = 2599713085782288003L;
+    private static final long serialVersionUID = 779787160167652641L;
     
-    private final String schemaName;
-    
-    private final String tableName;
-    
-    private final Long timeoutMilliseconds;
+    private final String databaseName;
 }

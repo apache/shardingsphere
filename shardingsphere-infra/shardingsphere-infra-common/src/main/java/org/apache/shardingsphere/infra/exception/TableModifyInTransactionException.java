@@ -15,14 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.infra.exception;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 /**
- * Rule does not exist exception.
+ * Table modify in transaction exception.
  */
-public final class RuleNotExistedException extends ShardingSphereInsideException {
+@RequiredArgsConstructor
+@Getter
+public final class TableModifyInTransactionException extends ShardingSphereInsideException {
     
-    private static final long serialVersionUID = -4150905802300104824L;
+    private static final long serialVersionUID = 5676889868293244575L;
+    
+    private final String tableName;
 }
