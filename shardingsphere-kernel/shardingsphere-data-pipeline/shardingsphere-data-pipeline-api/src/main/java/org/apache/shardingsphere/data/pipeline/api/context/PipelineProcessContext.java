@@ -17,8 +17,33 @@
 
 package org.apache.shardingsphere.data.pipeline.api.context;
 
+import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
+import org.apache.shardingsphere.data.pipeline.spi.ratelimit.JobRateLimitAlgorithm;
+import org.apache.shardingsphere.infra.config.rule.data.pipeline.PipelineProcessConfiguration;
+
 /**
  * Pipeline process context.
  */
 public interface PipelineProcessContext {
+    
+    /**
+     * Get pipeline process config.
+     *
+     * @return pipeline process config
+     */
+    PipelineProcessConfiguration getPipelineProcessConfig();
+    
+    /**
+     * Get pipeline channel creator.
+     *
+     * @return pipeline channel creator
+     */
+    PipelineChannelCreator getPipelineChannelCreator();
+    
+    /**
+     * Get job input rate limit algorithm.
+     *
+     * @return job input rate limit algorithm
+     */
+    JobRateLimitAlgorithm getInputRateLimitAlgorithm();
 }

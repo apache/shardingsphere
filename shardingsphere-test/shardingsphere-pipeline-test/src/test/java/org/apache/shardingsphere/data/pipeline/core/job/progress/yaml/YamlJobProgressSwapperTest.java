@@ -24,19 +24,16 @@ import org.junit.Test;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public final class YamlJobProgressSwapperTest {
     
     private static final YamlJobProgressSwapper SWAPPER = new YamlJobProgressSwapper();
     
-    private JobProgress getJobProgress(final String data) {
-        return SWAPPER.swapToObject(YamlEngine.unmarshal(data, YamlJobProgress.class));
-    }
-    
     @Test
     public void assertFullSwapToYamlConfiguration() {
-        JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress.yaml"));
+        JobProgress jobProgress = SWAPPER.swapToObject(YamlEngine.unmarshal(ConfigurationFileUtil.readFile("job-progress.yaml"), YamlJobProgress.class));
         YamlJobProgress actual = SWAPPER.swapToYamlConfiguration(jobProgress);
         assertThat(actual.getStatus(), is("RUNNING"));
         assertThat(actual.getSourceDatabaseType(), is("H2"));
@@ -50,9 +47,24 @@ public final class YamlJobProgressSwapperTest {
     }
     
     @Test
-    public void assertSwapToYamlConfigurationWithNullInventory() {
-        JobProgress jobProgress = getJobProgress(ConfigurationFileUtil.readFile("job-progress-no-inventory.yaml"));
-        YamlJobProgress actual = SWAPPER.swapToYamlConfiguration(jobProgress);
-        assertThat(actual.getInventory().getFinished().length, is(0));
+    public void assertSwapWithFullConfig() {
+        YamlJobProgress yamlProgress = YamlEngine.unmarshal(ConfigurationFileUtil.readFile("job-progress.yaml"), YamlJobProgress.class);
+        YamlJobProgress actual = SWAPPER.swapToYamlConfiguration(SWAPPER.swapToObject(yamlProgress));
+        assertThat(YamlEngine.marshal(actual), is(YamlEngine.marshal(yamlProgress)));
+    }
+    
+    @Test
+    public void assertSwapWithoutInventoryIncremental() {
+        YamlJobProgress yamlProgress = YamlEngine.unmarshal(ConfigurationFileUtil.readFile("job-progress-failure.yaml"), YamlJobProgress.class);
+        JobProgress progress = SWAPPER.swapToObject(yamlProgress);
+        assertNotNull(progress.getInventory());
+        assertNotNull(progress.getIncremental());
+        assertThat(progress.getInventory().getInventoryFinishedPercentage(), is(0));
+        assertThat(progress.getIncremental().getDataSourceName(), is(""));
+        assertThat(progress.getIncremental().getIncrementalLatestActiveTimeMillis(), is(0L));
+        YamlJobProgress actual = SWAPPER.swapToYamlConfiguration(progress);
+        assertNotNull(actual.getInventory());
+        assertNotNull(actual.getIncremental());
+        assertThat(YamlEngine.marshal(actual), is(YamlEngine.marshal(yamlProgress)));
     }
 }

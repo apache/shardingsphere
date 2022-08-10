@@ -18,6 +18,7 @@
 
 <sql-cases>
     <sql-case id="select_with_block_comment" value="SELECT * /* this is &#x000D;&#x000A; block comment */ FROM /* this is another &#x000A; block comment */ t_order where status='1'" db-types="MySQL,PostgreSQL,openGauss,Oracle,SQLServer" />
+    <sql-case id="select_with_nested_block_comment" value="SELECT * /* this is &#x000D;&#x000A; /* this is another &#x000A; block comment */ block comment */ FROM t_order" db-types="PostgreSQL" />
     <sql-case id="select_with_single_comment" value="SELECT * -- this is an line comment &#x000D;&#x000A; FROM -- this is another line comment &#x000A; t_order where status='1'" db-types="MySQL,PostgreSQL,openGauss" />
     <sql-case id="select_with_single_comment_for_postgresql" value="SELECT * --this is an line comment &#x000D;&#x000A; FROM --this is another line comment &#x000A; t_order where status='1'" db-types="PostgreSQL,openGauss" />
 </sql-cases>

@@ -17,10 +17,12 @@
 
 package org.apache.shardingsphere.proxy.backend.exception;
 
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
+
 /**
  * Resource does not exist exception.
  */
-public final class ResourceNotExistedException extends BackendException {
+public final class ResourceNotExistedException extends ShardingSphereInsideException {
     
     private static final long serialVersionUID = 4146100333670404924L;
 }

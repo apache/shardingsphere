@@ -19,13 +19,14 @@ package org.apache.shardingsphere.proxy.backend.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 /**
  * DB drop exists exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class DBDropNotExistsException extends BackendException {
+public final class DBDropNotExistsException extends ShardingSphereInsideException {
     
     private static final long serialVersionUID = 6088272565526510361L;
     
