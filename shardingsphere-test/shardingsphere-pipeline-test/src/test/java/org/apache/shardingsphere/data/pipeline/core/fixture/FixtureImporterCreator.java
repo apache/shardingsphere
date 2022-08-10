@@ -35,7 +35,7 @@ public final class FixtureImporterCreator implements ImporterCreator {
                                    final PipelineJobProgressListener jobProgressListener) {
         return new FixtureImporter(importerConfig, dataSourceManager, channel, jobProgressListener);
     }
-
+    
     @Override
     public String getType() {
         return "H2";
