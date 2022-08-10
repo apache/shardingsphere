@@ -175,7 +175,7 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private boolean containsMutableDataNodeRule(final ShardingSphereDatabase database, final String schemaName, final String tableName) {
-        return database.getRuleMetaData().findRules(MutableDataNodeRule.class).stream().noneMatch(each -> each.findSingleTableDataNode(schemaName, tableName).isPresent());
+        return database.getRuleMetaData().findRules(MutableDataNodeRule.class).stream().anyMatch(each -> each.findSingleTableDataNode(schemaName, tableName).isPresent());
     }
     
     private void dropTable(final String databaseName, final String schemaName, final String toBeDeletedTableName) {
