@@ -34,8 +34,8 @@ CREATE DEFAULT SINGLE TABLE RULE RESOURCE = ds_0;
 
 ### Reserved word
 
-`CREATE`、`SHARDING`、`SINGLE`、`TABLE`、`RULE`、`RESOURCE`
+`CREATE`, `SHARDING`, `SINGLE`, `TABLE`, `RULE`, `RESOURCE`
 
 ### Related links
 
-- [Reserved word](/cn/reference/distsql/syntax/reserved-word/)
+- [Reserved word](/en/reference/distsql/syntax/reserved-word/)

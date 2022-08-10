@@ -69,5 +69,5 @@ CREATE DEFAULT SHARDING TABLE STRATEGY (
 
 ### Related links
 
-- [Reserved word](/cn/reference/distsql/syntax/reserved-word/)
+- [Reserved word](/en/reference/distsql/syntax/reserved-word/)
 - [CREATE SHARDING ALGORITHM](/en/reference/distsql/syntax/rdl/rule-definition/create-sharding-algorithm/)

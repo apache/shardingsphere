@@ -52,4 +52,4 @@ CREATE SHARDING ALGORITHM interval_algorithm (
 
 ### Related links
 
-- [Reserved word](/cn/reference/distsql/syntax/reserved-word/)
+- [Reserved word](/en/reference/distsql/syntax/reserved-word/)
