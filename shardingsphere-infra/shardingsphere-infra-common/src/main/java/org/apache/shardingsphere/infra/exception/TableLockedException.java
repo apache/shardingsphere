@@ -15,20 +15,22 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.infra.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 /**
- * In transaction exception.
+ * Table locked exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class InTransactionException extends ShardingSphereInsideException {
+public final class TableLockedException extends ShardingSphereInsideException {
     
-    private static final long serialVersionUID = 8125852172126111520L;
+    private static final long serialVersionUID = 2622020743612706932L;
     
-    private final String message;
+    private final String schemaName;
+    
+    private final String tableName;
 }

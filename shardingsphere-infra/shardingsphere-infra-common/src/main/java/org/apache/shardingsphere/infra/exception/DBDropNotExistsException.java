@@ -15,20 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.infra.exception;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 /**
- * Table modify in transaction exception.
+ * DB drop exists exception.
  */
 @RequiredArgsConstructor
 @Getter
-public final class TableModifyInTransactionException extends ShardingSphereInsideException {
+public final class DBDropNotExistsException extends ShardingSphereInsideException {
     
-    private static final long serialVersionUID = 5676889868293244575L;
+    private static final long serialVersionUID = 6088272565526510361L;
     
-    private final String tableName;
+    private final String databaseName;
 }

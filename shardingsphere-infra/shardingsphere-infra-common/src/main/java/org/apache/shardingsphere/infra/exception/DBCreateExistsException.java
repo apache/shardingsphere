@@ -15,14 +15,20 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.infra.exception;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 /**
- * Circuit break exception.
+ * DB create exists exception.
  */
-public final class CircuitBreakException extends ShardingSphereInsideException {
+@RequiredArgsConstructor
+@Getter
+public final class DBCreateExistsException extends ShardingSphereInsideException {
     
-    private static final long serialVersionUID = 6339672680026286798L;
+    private static final long serialVersionUID = 779787160167652641L;
+    
+    private final String databaseName;
 }

@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.proxy.backend.exception;
+package org.apache.shardingsphere.infra.exception;
 
 import org.apache.shardingsphere.infra.util.exception.ShardingSphereInsideException;
 
 /**
- * Resource does not exist exception.
+ * Circuit break exception.
  */
-public final class ResourceNotExistedException extends ShardingSphereInsideException {
+public final class CircuitBreakException extends ShardingSphereInsideException {
     
-    private static final long serialVersionUID = 4146100333670404924L;
+    private static final long serialVersionUID = 6339672680026286798L;
 }
