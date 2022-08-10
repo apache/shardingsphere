@@ -27,7 +27,7 @@ public interface PipelineJobId {
      *
      * @return type
      */
-    String getType();
+    String getTypeCode();
     
     /**
      * Get format version.

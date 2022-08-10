@@ -17,19 +17,10 @@
 
 package org.apache.shardingsphere.data.pipeline.api.job;
 
-import com.google.common.base.Preconditions;
-import com.google.common.base.Splitter;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.Setter;
-import lombok.SneakyThrows;
 import lombok.ToString;
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.binary.Hex;
-
-import java.nio.charset.StandardCharsets;
-import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Job id.
@@ -37,7 +28,7 @@ import java.util.stream.Collectors;
 @Getter
 @Setter
 @ToString(callSuper = true)
-// TODO refactor as SPI
+// TODO rename and change fields
 public final class RuleAlteredJobId extends AbstractPipelineJobId {
     
     public static final String CURRENT_VERSION = "01";
@@ -47,41 +38,4 @@ public final class RuleAlteredJobId extends AbstractPipelineJobId {
     
     @NonNull
     private Integer newMetadataVersion;
-    
-    /**
-     * Marshal job id.
-     *
-     * @return job id text. Format: {type} + hex({formatVersion}|{currentMetadataVersion}T{newMetadataVersion}|{databaseName})
-     */
-    public String marshal() {
-        String text = getFormatVersion() + "|" + getCurrentMetadataVersion() + "T" + getNewMetadataVersion() + "|" + getDatabaseName();
-        return getType() + Hex.encodeHexString(text.getBytes(StandardCharsets.UTF_8), true);
-    }
-    
-    /**
-     * Unmarshal from hex text.
-     *
-     * @param hexText hex text
-     * @return job id object
-     */
-    @SneakyThrows(DecoderException.class)
-    public static RuleAlteredJobId unmarshal(final String hexText) {
-        if (hexText.length() <= 2) {
-            throw new IllegalArgumentException("Invalid hex text length, hexText=" + hexText);
-        }
-        String type = hexText.substring(0, 2);
-        String text = new String(Hex.decodeHex(hexText.substring(2)), StandardCharsets.UTF_8);
-        List<String> splittedText = Splitter.on('|').splitToList(text);
-        String formatVersion = splittedText.get(0);
-        Preconditions.checkState("01".equals(formatVersion), "Unknown formatVersion=" + formatVersion);
-        List<Integer> metadataVersions = Splitter.on('T').splitToList(splittedText.get(1)).stream().map(Integer::parseInt).collect(Collectors.toList());
-        String databaseName = splittedText.get(2);
-        RuleAlteredJobId result = new RuleAlteredJobId();
-        result.setType(type);
-        result.setFormatVersion(formatVersion);
-        result.setCurrentMetadataVersion(metadataVersions.get(0));
-        result.setNewMetadataVersion(metadataVersions.get(1));
-        result.setDatabaseName(databaseName);
-        return result;
-    }
 }

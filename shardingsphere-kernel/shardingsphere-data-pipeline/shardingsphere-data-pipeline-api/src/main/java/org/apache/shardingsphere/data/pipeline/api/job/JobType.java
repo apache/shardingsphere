@@ -20,6 +20,10 @@ package org.apache.shardingsphere.data.pipeline.api.job;
 import com.google.common.base.Preconditions;
 import lombok.Getter;
 
+import java.util.Arrays;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 /**
  * Job type.
  */
@@ -28,13 +32,29 @@ public enum JobType {
     
     MIGRATION("MIGRATION", "01");
     
-    private final String name;
+    private static final Map<String, JobType> CODE_JOB_TYPE_MAP;
     
-    private final String code;
+    static {
+        CODE_JOB_TYPE_MAP = Arrays.stream(JobType.values()).collect(Collectors.toMap(JobType::getTypeCode, each -> each));
+    }
     
-    JobType(final String name, final String code) {
-        this.name = name;
-        Preconditions.checkArgument(code.length() == 2, "code length is not 2");
-        this.code = code;
+    private final String typeName;
+    
+    private final String typeCode;
+    
+    JobType(final String typeName, final String typeCode) {
+        this.typeName = typeName;
+        Preconditions.checkArgument(typeCode.length() == 2, "code length is not 2");
+        this.typeCode = typeCode;
+    }
+    
+    /**
+     * Value of by code.
+     *
+     * @param typeCode type code
+     * @return job type
+     */
+    public static JobType valueOfByCode(final String typeCode) {
+        return CODE_JOB_TYPE_MAP.get(typeCode);
     }
 }

@@ -15,27 +15,26 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.api.job;
+package org.apache.shardingsphere.data.pipeline.api.config.job;
 
-import lombok.Getter;
-import lombok.NonNull;
-import lombok.Setter;
-import lombok.ToString;
+import org.apache.shardingsphere.infra.util.yaml.YamlConfiguration;
 
 /**
- * Abstract pipeline job id.
+ * YAML pipeline job configuration.
  */
-@Getter
-@Setter
-@ToString
-public abstract class AbstractPipelineJobId implements PipelineJobId {
+public interface YamlPipelineJobConfiguration extends YamlConfiguration {
     
-    @NonNull
-    private String typeCode;
+    /**
+     * Get job id.
+     *
+     * @return job id
+     */
+    String getJobId();
     
-    @NonNull
-    private String formatVersion;
-    
-    @NonNull
-    private String databaseName;
+    /**
+     * Get database name.
+     *
+     * @return database name
+     */
+    String getDatabaseName();
 }
