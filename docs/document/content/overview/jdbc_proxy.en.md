@@ -1,13 +1,15 @@
 +++
 pre = "<b>1.3 </b>"
-title = "JDBC & Proxy"
+title = "Deployment"
 weight = 3
 chapter = true
 +++
 
+## Deployment
+
 Apache ShardingSphere includes two independent clients: ShardingSphere-JDBC & ShardingSphere-Proxy. They all provide functions of data scale-out, distributed transaction and distributed governance, applicable in a variety of scenarios such as Java isomorphism, heterogeneous languages, and a cloud-native environment.
 
-## ShardingSphere-JDBC
+### ShardingSphere-JDBC
 
 [![Maven Status](https://img.shields.io/maven-central/v/org.apache.shardingsphere/shardingsphere-jdbc.svg?color=green)](https://mvnrepository.com/artifact/org.apache.shardingsphere/shardingsphere-jdbc)
 
@@ -29,9 +31,7 @@ As the community's first product and the predecessor of Apache ShardingSphere, S
 
 ShardingSphere-JDBC is suitable for java applications.
 
-Source Codes: [https://github.com/apache/shardingsphere/tree/master/shardingsphere-jdbc](https://github.com/apache/shardingsphere/tree/master/shardingsphere-jdbc)
-
-## ShardingSphere-Proxy
+### ShardingSphere-Proxy
 
 [![Nightly-Release](https://img.shields.io/badge/nightly--builds-download-orange.svg)](https://nightlies.apache.org/shardingsphere/)
 [![Download](https://img.shields.io/badge/release-download-orange.svg)](/cn/downloads/)
@@ -59,9 +59,7 @@ It can use any kind of terminal (such as MySQL Command Client, MySQL Workbench, 
 
 The advantages of ShardingSphere-Proxy lie in supporting heterogeneous languages and providing operational entries for DBA.
 
-Source Codes: [https://github.com/apache/shardingsphere/tree/master/shardingsphere-proxy](https://github.com/apache/shardingsphere/tree/master/shardingsphere-proxy)
-
-## Hybrid Architecture
+### Hybrid Architecture
 
 ShardingSphere-JDBC adopts a decentralized architecture, applicable to high-performance light-weight OLTP applications developed with Java.
 ShardingSphere-Proxy provides static entry and supports all languages, applicable to OLAP applications and the sharding databases management and operation situation.
@@ -70,3 +68,22 @@ Apache ShardingSphere is an ecosystem composed of multiple access ports.
 By combining ShardingSphere-JDBC and ShardingSphere-Proxy, and using the same registry to configure sharding strategies, it can flexibly build application systems for various scenarios, allowing architects to freely adjust the system architecture according to the current businesses. 
 
 ![ShardingSphere Hybrid Architecture](https://shardingsphere.apache.org/document/current/img/shardingsphere-hybrid-architecture_v2.png)
+
+## Operation Modes
+
+Apache ShardingSphere is a complete set of products applicable to a wide range of usage scenarios.
+In addition to the cluster deployment of the production environment, it also provides corresponding operation modes for engineers in the development process and automated testing scenarios. Apache ShardingSphere provides two runtime modes: standalone mode and cluster mode.
+
+### Standalone mode
+
+It can achieve data persistence in terms of metadata information such as data sources and rules, but it is not able to synchronize metadata to multiple Apache ShardingSphere instances or be aware of each other in a cluster environment.
+Updating metadata through one instance causes inconsistencies in other instances because they cannot get the latest metadata.
+It is ideal for engineers to build a ShardingSphere environment locally.
+
+### Cluster mode
+
+It provides metadata sharing between multiple Apache ShardingSphere instances and the capability to coordinate states in distributed scenarios.
+In an actual production environment for deployment and release, you must use the cluster mode. 
+
+It provides the capabilities necessary for distributed systems, such as horizontal scaling of computing capability and high availability.
+Clustered environments need to store metadata and coordinate nodes' status through a separately deployed registry center.
