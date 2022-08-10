@@ -37,7 +37,6 @@ import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTa
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
 import org.apache.shardingsphere.data.pipeline.core.util.PipelineJobPreparerUtils;
-import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.prepare.InventoryTaskSplitter;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.channel.PipelineChannelCreator;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
@@ -48,7 +47,6 @@ import org.apache.shardingsphere.mode.lock.ExclusiveLockDefinition;
 
 import java.sql.SQLException;
 import java.util.Collections;
-import java.util.concurrent.TimeUnit;
 
 /**
  * Rule altered job preparer.
@@ -91,14 +89,15 @@ public final class RuleAlteredJobPreparer {
         String lockName = "prepare-" + jobConfig.getJobId();
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         LockDefinition lockDefinition = new ExclusiveLockDefinition(lockName);
-        if (lockContext.tryLock(lockDefinition, 3000)) {
+        if (lockContext.tryLock(lockDefinition, 180000)) {
+            log.info("try lock success, jobId={}, shardingItem={}", jobConfig.getJobId(), jobContext.getShardingItem());
             try {
                 JobProgress jobProgress = RuleAlteredJobAPIFactory.getInstance().getJobProgress(jobContext.getJobId(), jobContext.getShardingItem());
-                boolean prepareFlag = null == jobProgress || JobStatus.PREPARING.equals(jobProgress.getStatus()) || JobStatus.PREPARING_FAILURE.equals(jobProgress.getStatus());
+                boolean prepareFlag = null == jobProgress || JobStatus.RUNNING.equals(jobProgress.getStatus()) || JobStatus.PREPARING_FAILURE.equals(jobProgress.getStatus());
                 if (prepareFlag) {
+                    log.info("execute prepare, jobId={}, shardingItem={}", jobConfig.getJobId(), jobContext.getShardingItem());
                     jobContext.setStatus(JobStatus.PREPARING);
                     RuleAlteredJobAPIFactory.getInstance().persistJobProgress(jobContext);
-                    log.info("try lock success, jobId={}, shardingItem={}", jobConfig.getJobId(), jobContext.getShardingItem());
                     prepareAndCheckTarget(jobContext);
                     jobContext.setStatus(JobStatus.PREPARE_SUCCESS);
                     for (int i = 0; i <= jobContext.getJobConfig().getJobShardingCount(); i++) {
@@ -106,21 +105,8 @@ public final class RuleAlteredJobPreparer {
                     }
                 }
             } finally {
+                log.info("unlock, jobId={}, shardingItem={}", jobConfig.getJobId(), jobContext.getShardingItem());
                 lockContext.unlock(lockDefinition);
-            }
-        } else {
-            log.info("wait lock released, jobId={}, shardingItem={}", jobConfig.getJobId(), jobContext.getShardingItem());
-            waitUntilLockReleased(lockContext, lockDefinition);
-        }
-    }
-    
-    private void waitUntilLockReleased(final LockContext lockContext, final LockDefinition lockDefinition) {
-        for (int loopCount = 0; loopCount < 30; loopCount++) {
-            log.info("waiting for lock released, lockKey={}, loopCount={}", lockDefinition.getLockKey(), loopCount);
-            ThreadUtil.sleep(TimeUnit.SECONDS.toMillis(5));
-            if (!lockContext.isLocked(lockDefinition)) {
-                log.info("unlocked, lockName={}", lockDefinition.getLockKey());
-                return;
             }
         }
     }
