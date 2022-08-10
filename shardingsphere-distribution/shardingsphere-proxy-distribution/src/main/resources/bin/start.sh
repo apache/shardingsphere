@@ -158,11 +158,6 @@ fi
 CLASS_PATH=${CONF_PATH}:${CLASS_PATH}
 MAIN_CLASS="${MAIN_CLASS} ${PORT} ${CONF_PATH} ${ADDRESSES}"
 
-if [ $PORT = -1 ]; then
-  REAL_PORT=3307
-else
-  REAL_PORT=$PORT
-fi
 
 echo "The classpath is ${CLASS_PATH}"
 echo "main class ${MAIN_CLASS}"
@@ -174,19 +169,39 @@ if [ "${IS_DOCKER}" ]; then
 fi
 
 echo -e "Starting the $SERVER_NAME ...\c"
-for((i=1;i<=10;i++)); do
-  if [ "$i" = "10" ]; then
-    echo "failed: Address already in use"
-    exit 1
+
+function check_port() {
+  if [ $PORT = -1 ]; then
+    REGEXP_PORT=3307
+  else
+    REGEXP_PORT=$PORT
   fi
 
-  PORT_STATUS=$(netstat -ant |$GREP $REAL_PORT |$GREP LISTEN)
-  if [ -n "$PORT_STATUS" ]; then
-    echo -e ".\c"
-    sleep 1
+  if [ -n "$ADDRESSES" ]; then
+    REGEXP_ADDRESSES="\(0.0.0.0\|::\|$ADDRESSES\)"
   else
-    break
+    REGEXP_ADDRESSES="\(0.0.0.0\|::\)"
   fi
+
+  GREP_REGEXP="$REGEXP_ADDRESSES:$REGEXP_PORT\s.*LISTEN"
+  PORT_STATUS=$(netstat -ant |$GREP -e "$GREP_REGEXP")
+  if [ -n "$PORT_STATUS" ]; then
+    return 0
+  fi
+  return 1
+}
+
+for((i=1;i<=10;i++)); do
+  if [ "$i" = "10" ]; then
+    echo "FAILED: Address already in use"
+    exit 1
+  fi
+  sleep 1;check_port
+  if [ $? -eq 0 ]; then
+      echo -e ".\c"
+      continue
+  fi
+  break
 done
 
 nohup $JAVA ${JAVA_OPTS} ${JAVA_MEM_OPTS} -classpath ${CLASS_PATH} ${MAIN_CLASS} >> ${STDOUT_FILE} 2>&1 &
@@ -200,13 +215,21 @@ if [ $? -eq 0 ]; then
     ;;
   esac
   if [ $? -eq 0 ]; then
-    sleep 1
-    if ps -p "${pid}" > /dev/null 2>&1; then
-      echo "SUCCESS, PID: $pid"
-      exit 0
-    else
-      echo "FAILED TO START"
-    fi
+    for((i=1;i<=60;i++)); do
+      sleep 1; check_port
+      if [ $? -eq 1 ]; then
+        if ps -p "${pid}" > /dev/null 2>&1; then
+          echo -e ".\c"
+          continue
+        else
+          break
+        fi
+      else
+        echo "SUCCESS, PID: $pid"
+        exit 0
+      fi
+    done
+    echo "FAILED TO START"
   else
     echo "FAILED TO GET PID"
   fi
