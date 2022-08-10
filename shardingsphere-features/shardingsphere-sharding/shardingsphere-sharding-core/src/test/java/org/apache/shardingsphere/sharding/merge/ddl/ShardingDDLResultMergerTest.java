@@ -26,7 +26,7 @@ import org.apache.shardingsphere.infra.merge.result.impl.transparent.Transparent
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.metadata.database.schema.decorator.model.ShardingSphereSchema;
 import org.apache.shardingsphere.infra.session.SQLSession;
-import org.apache.shardingsphere.infra.session.cursor.CursorSessionContext;
+import org.apache.shardingsphere.infra.session.cursor.CursorSQLSession;
 import org.apache.shardingsphere.sharding.merge.common.IteratorStreamMergedResult;
 import org.apache.shardingsphere.sharding.merge.ddl.fetch.FetchStreamMergedResult;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
@@ -65,7 +65,7 @@ public final class ShardingDDLResultMergerTest {
         ShardingSphereDatabase database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getSchema(DefaultDatabase.LOGIC_NAME)).thenReturn(mock(ShardingSphereSchema.class));
         SQLSession sqlSession = mock(SQLSession.class);
-        when(sqlSession.getCursorSessionContext()).thenReturn(new CursorSessionContext());
+        when(sqlSession.getCursorSQLSession()).thenReturn(new CursorSQLSession());
         assertThat(merger.merge(createMultiQueryResults(), createFetchStatementContext(database), mock(ShardingSphereDatabase.class), sqlSession),
                 instanceOf(FetchStreamMergedResult.class));
     }

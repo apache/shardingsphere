@@ -44,6 +44,7 @@ public final class KernelProcessor {
      * @param globalRuleMetaData global rule meta data
      * @param props configuration properties
      * @param sqlSession sql session
+     * @return execution context
      */
     public ExecutionContext generateExecutionContext(final LogicSQL logicSQL, final ShardingSphereDatabase database, final ShardingSphereRuleMetaData globalRuleMetaData,
                                                      final ConfigurationProperties props, final SQLSession sqlSession) {

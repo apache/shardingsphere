@@ -48,7 +48,7 @@ import org.apache.shardingsphere.infra.route.engine.SQLRouteEngine;
 import org.apache.shardingsphere.infra.rule.ShardingSphereRule;
 import org.apache.shardingsphere.infra.rule.builder.database.DatabaseRulesBuilder;
 import org.apache.shardingsphere.infra.session.SQLSession;
-import org.apache.shardingsphere.infra.session.cursor.CursorSessionContext;
+import org.apache.shardingsphere.infra.session.cursor.CursorSQLSession;
 import org.apache.shardingsphere.infra.yaml.config.pojo.YamlRootConfiguration;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
 import org.apache.shardingsphere.infra.yaml.config.swapper.rule.YamlRuleConfigurationSwapperEngine;
@@ -131,7 +131,7 @@ public abstract class AbstractSQLRewriterParameterizedTest {
         RouteContext routeContext = new SQLRouteEngine(databaseRules, props).route(logicSQL, database);
         SQLRewriteEntry sqlRewriteEntry = new SQLRewriteEntry(database, new ShardingSphereRuleMetaData(Collections.singleton(new SQLTranslatorRule(new SQLTranslatorRuleConfiguration()))), props);
         SQLSession sqlSession = mock(SQLSession.class);
-        when(sqlSession.getCursorSessionContext()).thenReturn(new CursorSessionContext());
+        when(sqlSession.getCursorSQLSession()).thenReturn(new CursorSQLSession());
         SQLRewriteResult sqlRewriteResult = sqlRewriteEntry.rewrite(getTestParameters().getInputSQL(), getTestParameters().getInputParameters(), sqlStatementContext, routeContext, sqlSession);
         return sqlRewriteResult instanceof GenericSQLRewriteResult
                 ? Collections.singletonList(((GenericSQLRewriteResult) sqlRewriteResult).getSqlRewriteUnit())

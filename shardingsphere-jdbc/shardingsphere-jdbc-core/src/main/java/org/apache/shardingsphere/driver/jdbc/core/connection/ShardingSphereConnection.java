@@ -174,7 +174,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
             connectionManager.getConnectionTransaction().setRollbackOnly(false);
             TransactionHolder.clear();
             sqlSession.clearTrafficInstance();
-            sqlSession.getCursorSessionContext().clear();
+            sqlSession.clearCursorSQLSession();
         }
     }
     
@@ -186,7 +186,7 @@ public final class ShardingSphereConnection extends AbstractConnectionAdapter {
             connectionManager.getConnectionTransaction().setRollbackOnly(false);
             TransactionHolder.clear();
             sqlSession.clearTrafficInstance();
-            sqlSession.getCursorSessionContext().clear();
+            sqlSession.clearCursorSQLSession();
         }
     }
     

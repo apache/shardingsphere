@@ -20,7 +20,6 @@ package org.apache.shardingsphere.proxy.backend.communication.jdbc.transaction;
 import lombok.SneakyThrows;
 import org.apache.shardingsphere.infra.metadata.database.rule.ShardingSphereRuleMetaData;
 import org.apache.shardingsphere.infra.session.SQLSession;
-import org.apache.shardingsphere.infra.session.cursor.CursorSessionContext;
 import org.apache.shardingsphere.mode.manager.ContextManager;
 import org.apache.shardingsphere.proxy.backend.communication.jdbc.connection.JDBCBackendConnection;
 import org.apache.shardingsphere.proxy.backend.context.ProxyContext;
@@ -72,7 +71,6 @@ public final class JDBCBackendTransactionManagerTest extends ProxyContextRestore
         when(connectionSession.getTransactionStatus()).thenReturn(transactionStatus);
         when(backendConnection.getConnectionSession()).thenReturn(connectionSession);
         SQLSession sqlSession = mock(SQLSession.class);
-        when(sqlSession.getCursorSessionContext()).thenReturn(new CursorSessionContext());
         when(connectionSession.getSqlSession()).thenReturn(sqlSession);
     }
     

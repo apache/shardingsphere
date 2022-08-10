@@ -24,7 +24,7 @@ import org.apache.shardingsphere.infra.executor.sql.execute.result.query.QueryRe
 import org.apache.shardingsphere.infra.merge.result.MergedResult;
 import org.apache.shardingsphere.infra.metadata.database.ShardingSphereDatabase;
 import org.apache.shardingsphere.infra.session.SQLSession;
-import org.apache.shardingsphere.infra.session.cursor.CursorSessionContext;
+import org.apache.shardingsphere.infra.session.cursor.CursorSQLSession;
 import org.apache.shardingsphere.sharding.merge.ddl.ShardingDDLResultMerger;
 import org.apache.shardingsphere.sql.parser.sql.common.constant.DirectionType;
 import org.apache.shardingsphere.sql.parser.sql.common.segment.ddl.cursor.CursorNameSegment;
@@ -72,7 +72,7 @@ public final class FetchStreamMergedResultTest {
         database = mock(ShardingSphereDatabase.class, RETURNS_DEEP_STUBS);
         when(database.getName()).thenReturn(DefaultDatabase.LOGIC_NAME);
         sqlSession = mock(SQLSession.class);
-        when(sqlSession.getCursorSessionContext()).thenReturn(new CursorSessionContext());
+        when(sqlSession.getCursorSQLSession()).thenReturn(new CursorSQLSession());
     }
     
     private OpenGaussFetchStatement createFetchStatement(final boolean containsAllDirectionType) {
