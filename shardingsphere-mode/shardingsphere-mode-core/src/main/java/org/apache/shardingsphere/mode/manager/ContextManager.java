@@ -168,7 +168,7 @@ public final class ContextManager implements AutoCloseable {
     }
     
     private synchronized void alterTable(final ShardingSphereDatabase database, final String schemaName, final ShardingSphereTable beBoChangedTable) {
-        if (containsMutableDataNodeRule(database, schemaName, beBoChangedTable.getName())) {
+        if (!containsMutableDataNodeRule(database, schemaName, beBoChangedTable.getName())) {
             database.reloadRules(MutableDataNodeRule.class);
         }
         database.getSchema(schemaName).put(beBoChangedTable.getName(), beBoChangedTable);
