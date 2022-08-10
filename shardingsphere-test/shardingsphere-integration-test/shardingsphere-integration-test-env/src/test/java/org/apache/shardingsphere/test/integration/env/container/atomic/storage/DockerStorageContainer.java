@@ -80,7 +80,9 @@ public abstract class DockerStorageContainer extends DockerITContainer implement
     
     protected void setCommands(final String[] commands) {
         if (commands.length > 0) {
-            setCommand(commands);
+            for (String each : commands) {
+                setCommand(each);
+            }
         }
     }
     

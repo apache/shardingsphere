@@ -28,13 +28,6 @@ public class ScalingPostgreSQLContainerConfiguration extends DefaultPostgreSQLCo
     }
     
     @Override
-    public String[] getCommands() {
-        String[] commands = new String[1];
-        commands[0] = "-c config_file=/etc/postgresql/postgresql.conf";
-        return commands;
-    }
-    
-    @Override
     public Map<String, String> getResourceMappings() {
         return ImmutableMap.<String, String>builder().put("/env/postgresql/postgresql.conf", "/etc/postgresql/postgresql.conf").build();
     }
