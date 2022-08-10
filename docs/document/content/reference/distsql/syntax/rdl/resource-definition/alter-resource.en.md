@@ -57,9 +57,9 @@ value ::=
 - `ALTER RESOURCE` is not allowed to change the real data source associated with this resource
 - `ALTER RESOURCE` will switch the connection pool. This operation may affect the ongoing business, please use it with
   caution
-- `dataSourceName` is case-sensitive
-- `dataSourceName` needs to be unique within the current database
-- `dataSourceName` name only allows letters, numbers and `_`, and must start with a letter
+- `resourceName` is case-sensitive
+- `resourceName` needs to be unique within the current database
+- `resourceName` name only allows letters, numbers and `_`, and must start with a letter
 - `poolProperty` is used to customize connection pool parameters, `key` must be the same as the connection pool
   parameter name, `value` supports int and String types
 - When `password` contains special characters, it is recommended to use the string form; for example, the string form
