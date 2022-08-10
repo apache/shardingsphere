@@ -41,7 +41,6 @@ import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourc
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetSchemasParameter;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.PrepareTargetTablesParameter;
 import org.apache.shardingsphere.data.pipeline.core.task.IncrementalTask;
-import org.apache.shardingsphere.data.pipeline.core.task.InventoryTask;
 import org.apache.shardingsphere.data.pipeline.core.util.ThreadUtil;
 import org.apache.shardingsphere.data.pipeline.scenario.rulealtered.prepare.InventoryTaskSplitter;
 import org.apache.shardingsphere.data.pipeline.spi.check.datasource.DataSourceChecker;
@@ -54,14 +53,13 @@ import org.apache.shardingsphere.infra.datasource.pool.creator.DataSourcePoolCre
 import org.apache.shardingsphere.infra.datasource.props.DataSourceProperties;
 import org.apache.shardingsphere.infra.lock.LockContext;
 import org.apache.shardingsphere.infra.lock.LockDefinition;
-import org.apache.shardingsphere.mode.lock.ExclusiveLockDefinition;
 import org.apache.shardingsphere.infra.yaml.config.swapper.resource.YamlDataSourceConfigurationSwapper;
+import org.apache.shardingsphere.mode.lock.ExclusiveLockDefinition;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
@@ -107,18 +105,21 @@ public final class RuleAlteredJobPreparer {
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         LockDefinition lockDefinition = new ExclusiveLockDefinition(lockName);
         if (lockContext.tryLock(lockDefinition, 3000)) {
+            log.info("try lock success, jobId={}, shardingItem={}", jobConfig.getJobId(), jobContext.getShardingItem());
             try {
                 prepareAndCheckTarget(jobContext);
             } finally {
                 lockContext.unlock(lockDefinition);
             }
         } else {
+            log.info("wait lock released, jobId={}, shardingItem={}", jobConfig.getJobId(), jobContext.getShardingItem());
             waitUntilLockReleased(lockContext, lockDefinition);
         }
     }
     
     private void waitUntilLockReleased(final LockContext lockContext, final LockDefinition lockDefinition) {
         for (int loopCount = 0; loopCount < 30; loopCount++) {
+            log.info("waiting for lock released, lockKey={}, loopCount={}", lockDefinition.getLockKey(), loopCount);
             ThreadUtil.sleep(TimeUnit.SECONDS.toMillis(5));
             if (!lockContext.isLocked(lockDefinition)) {
                 log.info("unlocked, lockName={}", lockDefinition.getLockKey());
@@ -182,8 +183,9 @@ public final class RuleAlteredJobPreparer {
     }
     
     private void initInventoryTasks(final RuleAlteredJobContext jobContext) {
-        List<InventoryTask> allInventoryTasks = new InventoryTaskSplitter().splitInventoryData(jobContext);
-        jobContext.getInventoryTasks().addAll(allInventoryTasks);
+        InventoryTaskSplitter inventoryTaskSplitter = new InventoryTaskSplitter(jobContext.getSourceMetaDataLoader(), jobContext.getDataSourceManager(),
+                jobContext.getJobProcessContext().getImporterExecuteEngine(), jobContext.getSourceDataSource(), jobContext.getTaskConfig(), jobContext.getInitProgress());
+        jobContext.getInventoryTasks().addAll(inventoryTaskSplitter.splitInventoryData(jobContext));
     }
     
     private void initIncrementalTasks(final RuleAlteredJobContext jobContext) throws SQLException {
