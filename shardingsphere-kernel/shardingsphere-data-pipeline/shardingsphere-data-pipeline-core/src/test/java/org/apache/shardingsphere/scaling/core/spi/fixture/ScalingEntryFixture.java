@@ -32,7 +32,7 @@ public final class ScalingEntryFixture implements ScalingEntry {
     public Class<? extends IncrementalDumper> getIncrementalDumperClass() {
         return IncrementalDumper.class;
     }
-
+    
     @Override
     public String getType() {
         return "FIXTURE";

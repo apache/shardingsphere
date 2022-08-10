@@ -35,7 +35,7 @@ public final class PostgreSQLScalingEntry implements ScalingEntry {
     public Class<PostgreSQLWalDumper> getIncrementalDumperClass() {
         return PostgreSQLWalDumper.class;
     }
-
+    
     @Override
     public String getType() {
         return "PostgreSQL";

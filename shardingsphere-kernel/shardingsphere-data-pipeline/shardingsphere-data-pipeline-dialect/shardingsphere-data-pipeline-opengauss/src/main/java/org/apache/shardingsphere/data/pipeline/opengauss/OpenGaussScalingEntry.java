@@ -35,7 +35,7 @@ public final class OpenGaussScalingEntry implements ScalingEntry {
     public Class<OpenGaussWalDumper> getIncrementalDumperClass() {
         return OpenGaussWalDumper.class;
     }
-
+    
     @Override
     public String getType() {
         return "openGauss";

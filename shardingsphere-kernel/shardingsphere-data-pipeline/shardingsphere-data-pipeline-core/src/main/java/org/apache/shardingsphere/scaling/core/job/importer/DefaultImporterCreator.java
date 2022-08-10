@@ -37,12 +37,12 @@ public final class DefaultImporterCreator implements ImporterCreator {
                                    final PipelineJobProgressListener jobProgressListener) {
         return new DefaultImporter(importerConfig, dataSourceManager, channel, jobProgressListener);
     }
-
+    
     @Override
     public String getType() {
         return "MySQL";
     }
-
+    
     @Override
     public Collection<String> getTypeAliases() {
         Collection<String> aliases = new LinkedList<>();
