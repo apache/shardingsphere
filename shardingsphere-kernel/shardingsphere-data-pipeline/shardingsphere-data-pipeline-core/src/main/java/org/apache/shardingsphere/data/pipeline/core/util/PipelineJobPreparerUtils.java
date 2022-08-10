@@ -22,11 +22,10 @@ import org.apache.shardingsphere.data.pipeline.api.config.ingest.DumperConfigura
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.PipelineDataSourceWrapper;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfiguration;
-import org.apache.shardingsphere.data.pipeline.api.datasource.config.PipelineDataSourceConfigurationFactory;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.ShardingSpherePipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.datasource.config.impl.StandardPipelineDataSourceConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.position.IngestPosition;
-import org.apache.shardingsphere.data.pipeline.api.job.progress.JobProgress;
+import org.apache.shardingsphere.data.pipeline.api.job.progress.JobItemIncrementalTasksProgress;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
 import org.apache.shardingsphere.data.pipeline.core.ingest.position.PositionInitializerFactory;
 import org.apache.shardingsphere.data.pipeline.core.prepare.datasource.DataSourcePreparer;
@@ -85,16 +84,16 @@ public final class PipelineJobPreparerUtils {
     /**
      * Get incremental position.
      *
-     * @param initProgress init progress
+     * @param initIncremental init incremental
      * @param dumperConfig dumper config
      * @param dataSourceManager data source manager
      * @return ingest position
      * @throws SQLException sql exception
      */
-    public static IngestPosition<?> getIncrementalPosition(final JobProgress initProgress, final DumperConfiguration dumperConfig,
+    public static IngestPosition<?> getIncrementalPosition(final JobItemIncrementalTasksProgress initIncremental, final DumperConfiguration dumperConfig,
                                                            final PipelineDataSourceManager dataSourceManager) throws SQLException {
-        if (null != initProgress) {
-            Optional<IngestPosition<?>> position = initProgress.getIncremental().getIncrementalPosition(dumperConfig.getDataSourceName());
+        if (null != initIncremental) {
+            Optional<IngestPosition<?>> position = initIncremental.getIncrementalPosition(dumperConfig.getDataSourceName());
             if (position.isPresent()) {
                 return position.get();
             }
@@ -142,15 +141,13 @@ public final class PipelineJobPreparerUtils {
     /**
      * Cleanup job preparer.
      *
-     * @param databaseType database type
-     * @param dataSourceType data source type
-     * @param dataSourceParameter data source parameter
+     * @param pipelineDataSourceConfig pipeline data source config
      * @throws SQLException sql exception
      */
-    public static void cleanup(final DatabaseType databaseType, final String dataSourceType, final String dataSourceParameter) throws SQLException {
+    public static void destroyPosition(final PipelineDataSourceConfiguration pipelineDataSourceConfig) throws SQLException {
+        DatabaseType databaseType = pipelineDataSourceConfig.getDatabaseType();
         PositionInitializer positionInitializer = PositionInitializerFactory.getInstance(databaseType.getType());
-        PipelineDataSourceConfiguration pipelineDataSourceConfig = PipelineDataSourceConfigurationFactory.newInstance(dataSourceType, dataSourceParameter);
-        log.info("Cleanup database type:{}, data source type:{}", databaseType.getType(), dataSourceType);
+        log.info("Cleanup database type:{}, data source type:{}", databaseType.getType(), pipelineDataSourceConfig.getType());
         if (pipelineDataSourceConfig instanceof ShardingSpherePipelineDataSourceConfiguration) {
             ShardingSpherePipelineDataSourceConfiguration dataSourceConfig = (ShardingSpherePipelineDataSourceConfiguration) pipelineDataSourceConfig;
             for (DataSourceProperties each : new YamlDataSourceConfigurationSwapper().getDataSourcePropertiesMap(dataSourceConfig.getRootConfig()).values()) {

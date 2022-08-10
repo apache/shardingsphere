@@ -159,7 +159,7 @@ public final class RuleAlteredJobPreparer {
         ExecuteEngine incrementalDumperExecuteEngine = jobContext.getJobProcessContext().getIncrementalDumperExecuteEngine();
         TaskConfiguration taskConfig = jobContext.getTaskConfig();
         PipelineDataSourceManager dataSourceManager = jobContext.getDataSourceManager();
-        taskConfig.getDumperConfig().setPosition(PipelineJobPreparerUtils.getIncrementalPosition(jobContext.getInitProgress(), taskConfig.getDumperConfig(), dataSourceManager));
+        taskConfig.getDumperConfig().setPosition(PipelineJobPreparerUtils.getIncrementalPosition(jobContext.getInitProgress().getIncremental(), taskConfig.getDumperConfig(), dataSourceManager));
         PipelineTableMetaDataLoader sourceMetaDataLoader = jobContext.getSourceMetaDataLoader();
         DefaultPipelineJobProgressListener jobProgressListener = new DefaultPipelineJobProgressListener(jobContext.getJobId(), jobContext.getShardingItem());
         IncrementalTask incrementalTask = new IncrementalTask(taskConfig.getImporterConfig().getConcurrency(),
@@ -174,8 +174,7 @@ public final class RuleAlteredJobPreparer {
      */
     public void cleanup(final RuleAlteredJobConfiguration jobConfig) {
         try {
-            DatabaseType databaseType = DatabaseTypeFactory.getInstance(jobConfig.getSourceDatabaseType());
-            PipelineJobPreparerUtils.cleanup(databaseType, jobConfig.getSource().getType(), jobConfig.getSource().getParameter());
+            PipelineJobPreparerUtils.destroyPosition(jobConfig.getSource());
         } catch (final SQLException ex) {
             log.warn("Scaling job destroying failed", ex);
         }
