@@ -18,6 +18,7 @@
 package org.apache.shardingsphere.data.pipeline.scenario.rulealtered;
 
 import lombok.extern.slf4j.Slf4j;
+import org.apache.shardingsphere.data.pipeline.api.RuleAlteredJobAPIFactory;
 import org.apache.shardingsphere.data.pipeline.api.config.TableNameSchemaNameMapping;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.RuleAlteredJobConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.TaskConfiguration;
@@ -91,9 +92,19 @@ public final class RuleAlteredJobPreparer {
         LockContext lockContext = PipelineContext.getContextManager().getInstanceContext().getLockContext();
         LockDefinition lockDefinition = new ExclusiveLockDefinition(lockName);
         if (lockContext.tryLock(lockDefinition, 3000)) {
-            log.info("try lock success, jobId={}, shardingItem={}", jobConfig.getJobId(), jobContext.getShardingItem());
             try {
-                prepareAndCheckTarget(jobContext);
+                JobProgress jobProgress = RuleAlteredJobAPIFactory.getInstance().getJobProgress(jobContext.getJobId(), jobContext.getShardingItem());
+                boolean prepareFlag = null == jobProgress || JobStatus.PREPARING.equals(jobProgress.getStatus()) || JobStatus.PREPARING_FAILURE.equals(jobProgress.getStatus());
+                if (prepareFlag) {
+                    jobContext.setStatus(JobStatus.PREPARING);
+                    RuleAlteredJobAPIFactory.getInstance().persistJobProgress(jobContext);
+                    log.info("try lock success, jobId={}, shardingItem={}", jobConfig.getJobId(), jobContext.getShardingItem());
+                    prepareAndCheckTarget(jobContext);
+                    jobContext.setStatus(JobStatus.PREPARE_SUCCESS);
+                    for (int i = 0; i <= jobContext.getJobConfig().getJobShardingCount(); i++) {
+                        RuleAlteredJobAPIFactory.getInstance().persistJobProgress(jobContext);
+                    }
+                }
             } finally {
                 lockContext.unlock(lockDefinition);
             }
