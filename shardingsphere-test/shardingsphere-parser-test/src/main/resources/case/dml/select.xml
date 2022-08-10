@@ -2692,6 +2692,16 @@
         <comment start-index="45" stop-index="81" text="/* this is another &#x000A; block comment */"/>
     </select>
 
+    <select sql-case-id="select_with_nested_block_comment" >
+        <from>
+            <simple-table name="t_order" start-index="83" stop-index="89" />
+        </from>
+        <projections start-index="7" stop-index="7">
+            <shorthand-projection start-index="7" stop-index="7" />
+        </projections>
+        <comment start-index="9" stop-index="76" text="/* this is &#x000D;&#x000A; /* this is another &#x000A; block comment */ block comment */"/>
+    </select>
+
     <select sql-case-id="select_with_single_comment" >
         <from>
             <simple-table name="t_order" start-index="78" stop-index="84" />

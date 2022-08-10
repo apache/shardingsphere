@@ -35,7 +35,7 @@ public final class YamlJobItemIncrementalTasksProgressSwapper {
      */
     public YamlJobItemIncrementalTasksProgress swapToYaml(final JobItemIncrementalTasksProgress progress) {
         if (null == progress) {
-            return null;
+            return new YamlJobItemIncrementalTasksProgress();
         }
         return progress.getIncrementalTaskProgressMap()
                 .entrySet().stream()
@@ -45,7 +45,7 @@ public final class YamlJobItemIncrementalTasksProgressSwapper {
                     result.setPosition(entry.getValue().getPosition().toString());
                     result.setDelay(entry.getValue().getIncrementalTaskDelay());
                     return result;
-                }).findAny().orElse(null);
+                }).findAny().orElse(new YamlJobItemIncrementalTasksProgress());
     }
     
     /**
@@ -57,7 +57,7 @@ public final class YamlJobItemIncrementalTasksProgressSwapper {
      */
     public JobItemIncrementalTasksProgress swapToObject(final String databaseType, final YamlJobItemIncrementalTasksProgress yamlProgress) {
         if (null == yamlProgress) {
-            return null;
+            return new JobItemIncrementalTasksProgress(Collections.emptyMap());
         }
         IncrementalTaskProgress taskProgress = new IncrementalTaskProgress();
         // TODO databaseType

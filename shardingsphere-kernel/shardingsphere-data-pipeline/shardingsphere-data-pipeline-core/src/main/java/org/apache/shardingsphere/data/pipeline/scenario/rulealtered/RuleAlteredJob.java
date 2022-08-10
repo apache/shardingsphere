@@ -63,7 +63,8 @@ public final class RuleAlteredJob extends AbstractPipelineJob implements SimpleJ
             return;
         }
         log.info("start RuleAlteredJobScheduler, jobId={}, shardingItem={}", getJobId(), shardingItem);
-        RuleAlteredJobScheduler jobScheduler = new RuleAlteredJobScheduler(jobContext, jobContext.getInventoryTasks(), jobContext.getIncrementalTasks());
+        RuleAlteredJobScheduler jobScheduler = new RuleAlteredJobScheduler(jobContext, jobContext.getInventoryTasks(), jobContext.getIncrementalTasks(),
+                jobContext.getJobProcessContext().getInventoryDumperExecuteEngine(), jobContext.getJobProcessContext().getIncrementalDumperExecuteEngine());
         runInBackground(() -> {
             prepare(jobContext);
             jobScheduler.start();
