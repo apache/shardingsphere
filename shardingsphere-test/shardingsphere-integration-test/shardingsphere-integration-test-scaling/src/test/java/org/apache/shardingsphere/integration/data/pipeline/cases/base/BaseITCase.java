@@ -365,8 +365,7 @@ public abstract class BaseITCase {
             if (actualStatus.size() == 1 && actualStatus.contains(JobStatus.EXECUTE_INCREMENTAL_TASK.name())) {
                 break;
             } else if (actualStatus.size() >= 1 && actualStatus.containsAll(new HashSet<>(Arrays.asList("", JobStatus.EXECUTE_INCREMENTAL_TASK.name())))) {
-                log.error("one of the shardingItem was not started correctly");
-                break;
+                log.warn("one of the shardingItem was not started correctly");
             }
             ThreadUtil.sleep(2, TimeUnit.SECONDS);
         }

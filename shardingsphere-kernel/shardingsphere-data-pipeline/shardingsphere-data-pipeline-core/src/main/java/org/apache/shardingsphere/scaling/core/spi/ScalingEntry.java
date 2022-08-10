@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.scaling.core.spi;
 
-import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.IncrementalDumper;
 import org.apache.shardingsphere.data.pipeline.spi.ingest.dumper.InventoryDumper;
 import org.apache.shardingsphere.infra.util.spi.annotation.SingletonSPI;
@@ -42,11 +41,4 @@ public interface ScalingEntry extends TypedSPI {
      * @return incremental dumper type
      */
     Class<? extends IncrementalDumper> getIncrementalDumperClass();
-    
-    /**
-     * Get importer type.
-     *
-     * @return importer type
-     */
-    Class<? extends Importer> getImporterClass();
 }

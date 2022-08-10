@@ -17,7 +17,6 @@
 
 package org.apache.shardingsphere.data.pipeline.postgresql;
 
-import org.apache.shardingsphere.data.pipeline.postgresql.importer.PostgreSQLImporter;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLInventoryDumper;
 import org.apache.shardingsphere.data.pipeline.postgresql.ingest.PostgreSQLWalDumper;
 import org.apache.shardingsphere.scaling.core.spi.ScalingEntry;
@@ -34,7 +33,6 @@ public final class PostgreSQLScalingEntryTest {
     public void assertGetScalingEntryByDatabaseType() {
         ScalingEntry scalingEntry = ScalingEntryFactory.getInstance("PostgreSQL");
         assertThat(scalingEntry, instanceOf(PostgreSQLScalingEntry.class));
-        assertThat(scalingEntry.getImporterClass(), equalTo(PostgreSQLImporter.class));
         assertThat(scalingEntry.getInventoryDumperClass(), equalTo(PostgreSQLInventoryDumper.class));
         assertThat(scalingEntry.getIncrementalDumperClass(), equalTo(PostgreSQLWalDumper.class));
     }

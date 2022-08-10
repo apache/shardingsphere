@@ -15,21 +15,29 @@
  * limitations under the License.
  */
 
-package org.apache.shardingsphere.data.pipeline.opengauss.importer;
+package org.apache.shardingsphere.data.pipeline.core.fixture;
 
 import org.apache.shardingsphere.data.pipeline.api.config.rulealtered.ImporterConfiguration;
 import org.apache.shardingsphere.data.pipeline.api.ingest.channel.PipelineChannel;
 import org.apache.shardingsphere.data.pipeline.api.job.progress.listener.PipelineJobProgressListener;
 import org.apache.shardingsphere.data.pipeline.core.datasource.PipelineDataSourceManager;
-import org.apache.shardingsphere.data.pipeline.core.importer.AbstractImporter;
+import org.apache.shardingsphere.data.pipeline.spi.importer.Importer;
+import org.apache.shardingsphere.scaling.core.job.importer.ImporterCreator;
 
 /**
- * Importer of openGauss.
+ * Fixture importer creator.
  */
-public final class OpenGaussImporter extends AbstractImporter {
+public final class FixtureImporterCreator implements ImporterCreator {
     
-    public OpenGaussImporter(final ImporterConfiguration importerConfig, final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel,
-                             final PipelineJobProgressListener jobProgressListener) {
-        super(importerConfig, dataSourceManager, channel, jobProgressListener);
+    @Override
+    public Importer createImporter(final ImporterConfiguration importerConfig,
+                                   final PipelineDataSourceManager dataSourceManager, final PipelineChannel channel,
+                                   final PipelineJobProgressListener jobProgressListener) {
+        return new FixtureImporter(importerConfig, dataSourceManager, channel, jobProgressListener);
+    }
+
+    @Override
+    public String getType() {
+        return "H2";
     }
 }
