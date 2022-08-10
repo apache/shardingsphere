@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.storage.
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
-import org.testcontainers.containers.BindMode;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
 
 import java.util.Optional;
 
@@ -29,24 +29,18 @@ import java.util.Optional;
  */
 public final class OpenGaussContainer extends DockerStorageContainer {
     
-    private final String module;
+    private final StorageContainerConfiguration storageContainerConfiguration;
     
-    public OpenGaussContainer(final String dockerImageName, final String scenario, final String module) {
-        super(DatabaseTypeFactory.getInstance("openGauss"), Strings.isNullOrEmpty(dockerImageName) ? "enmotech/opengauss:3.0.0" : dockerImageName, scenario, module);
-        this.module = module;
+    public OpenGaussContainer(final String dockerImageName, final String scenario, final StorageContainerConfiguration storageContainerConfiguration) {
+        super(DatabaseTypeFactory.getInstance("openGauss"), Strings.isNullOrEmpty(dockerImageName) ? "enmotech/opengauss:3.0.0" : dockerImageName, scenario);
+        this.storageContainerConfiguration = storageContainerConfiguration;
     }
     
     @Override
     protected void configure() {
-        addEnv("GS_PASSWORD", getUnifiedPassword());
-        if (Strings.isNullOrEmpty(module)) {
-            withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/usr/local/opengauss/share/postgresql/postgresql.conf.sample", BindMode.READ_ONLY);
-            withClasspathResourceMapping("/env/opengauss/pg_hba.conf", "/usr/local/opengauss/share/postgresql/pg_hba.conf.sample", BindMode.READ_ONLY);
-        }
-        if ("scaling".equalsIgnoreCase(module)) {
-            withClasspathResourceMapping(String.format("/env/%s/postgresql/postgresql.conf", module), "/usr/local/opengauss/share/postgresql/postgresql.conf.sample", BindMode.READ_ONLY);
-            withClasspathResourceMapping(String.format("/env/%s/opengauss/pg_hba.conf", module), "/usr/local/opengauss/share/postgresql/pg_hba.conf.sample", BindMode.READ_ONLY);
-        }
+        setCommands(storageContainerConfiguration.getCommands());
+        addEnvs(storageContainerConfiguration.getEnvs());
+        mapResources(storageContainerConfiguration.getResourceMappings());
         withPrivilegedMode(true);
         super.configure();
     }

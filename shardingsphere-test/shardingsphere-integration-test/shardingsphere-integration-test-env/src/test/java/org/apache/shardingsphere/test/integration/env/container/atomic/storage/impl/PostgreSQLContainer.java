@@ -20,7 +20,7 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.storage.
 import com.google.common.base.Strings;
 import org.apache.shardingsphere.infra.database.type.DatabaseTypeFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.DockerStorageContainer;
-import org.testcontainers.containers.BindMode;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfiguration;
 
 import java.util.Optional;
 
@@ -29,23 +29,18 @@ import java.util.Optional;
  */
 public final class PostgreSQLContainer extends DockerStorageContainer {
     
-    private final String module;
+    private final StorageContainerConfiguration storageContainerConfiguration;
     
-    public PostgreSQLContainer(final String dockerImageName, final String scenario, final String module) {
-        super(DatabaseTypeFactory.getInstance("PostgreSQL"), Strings.isNullOrEmpty(dockerImageName) ? "postgres:12-alpine" : dockerImageName, scenario, module);
-        this.module = module;
+    public PostgreSQLContainer(final String dockerImageName, final String scenario, final StorageContainerConfiguration storageContainerConfiguration) {
+        super(DatabaseTypeFactory.getInstance("PostgreSQL"), Strings.isNullOrEmpty(dockerImageName) ? "postgres:12-alpine" : dockerImageName, scenario);
+        this.storageContainerConfiguration = storageContainerConfiguration;
     }
     
     @Override
     protected void configure() {
-        addEnv("POSTGRES_PASSWORD", getUnifiedPassword());
-        if (Strings.isNullOrEmpty(module)) {
-            withClasspathResourceMapping("/env/postgresql/postgresql.conf", "/etc/postgresql/postgresql.conf", BindMode.READ_ONLY);
-        }
-        if ("scaling".equalsIgnoreCase(module)) {
-            withClasspathResourceMapping(String.format("/env/%s/postgresql/postgresql.conf", module), "/etc/postgresql/postgresql.conf", BindMode.READ_ONLY);
-        }
-        setCommand("-c config_file=/etc/postgresql/postgresql.conf");
+        setCommands(storageContainerConfiguration.getCommands());
+        addEnvs(storageContainerConfiguration.getEnvs());
+        mapResources(storageContainerConfiguration.getResourceMappings());
         super.configure();
     }
     

@@ -20,6 +20,7 @@ package org.apache.shardingsphere.test.integration.env.container.atomic.storage;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.apache.shardingsphere.infra.database.type.DatabaseType;
+import org.apache.shardingsphere.test.integration.env.container.atomic.storage.config.StorageContainerConfigurationFactory;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.impl.H2Container;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.impl.MySQLContainer;
 import org.apache.shardingsphere.test.integration.env.container.atomic.storage.impl.OpenGaussContainer;
@@ -55,11 +56,11 @@ public final class StorageContainerFactory {
     public static StorageContainer newInstance(final DatabaseType databaseType, final String dockerImageName, final String scenario, final String module) {
         switch (databaseType.getType()) {
             case "MySQL":
-                return new MySQLContainer(dockerImageName, scenario, module);
+                return new MySQLContainer(dockerImageName, scenario, StorageContainerConfigurationFactory.newInstance(databaseType, scenario, module));
             case "PostgreSQL":
-                return new PostgreSQLContainer(dockerImageName, scenario, module);
+                return new PostgreSQLContainer(dockerImageName, scenario, StorageContainerConfigurationFactory.newInstance(databaseType, scenario, module));
             case "openGauss":
-                return new OpenGaussContainer(dockerImageName, scenario, module);
+                return new OpenGaussContainer(dockerImageName, scenario, StorageContainerConfigurationFactory.newInstance(databaseType, scenario, module));
             case "H2":
                 return new H2Container(scenario);
             default:
