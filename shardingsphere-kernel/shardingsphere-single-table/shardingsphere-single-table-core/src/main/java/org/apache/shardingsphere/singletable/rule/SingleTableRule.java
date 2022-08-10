@@ -227,7 +227,8 @@ public final class SingleTableRule implements DatabaseRule, DataNodeContainedRul
     }
     
     @Override
-    public ShardingSphereRule reloadRule(RuleConfiguration config, String databaseName, Map<String, DataSource> dataSourceMap, Collection<ShardingSphereRule> builtRules) {
+    public ShardingSphereRule reloadRule(final RuleConfiguration config, final String databaseName, final Map<String, DataSource> dataSourceMap,
+                                         final Collection<ShardingSphereRule> builtRules) {
         return new SingleTableRule((SingleTableRuleConfiguration) config, databaseName, dataSourceMap, builtRules);
     }
     

@@ -184,11 +184,11 @@ public final class ShardingSphereDatabase {
         RuleConfiguration config = toBeReloadedRules.stream().map(ShardingSphereRule::getConfiguration).findFirst().orElse(null);
         toBeReloadedRules.stream().findFirst().ifPresent(optional -> {
             ruleMetaData.getRules().removeAll(toBeReloadedRules);
-            ruleMetaData.getRules().addAll(buildSingleTableRule(config, (MutableDataNodeRule) optional));
+            ruleMetaData.getRules().addAll(reloadRules(config, (MutableDataNodeRule) optional));
         });
     }
     
-    private Collection<ShardingSphereRule> buildSingleTableRule(final RuleConfiguration config, final MutableDataNodeRule mutableDataNodeRule) {
+    private Collection<ShardingSphereRule> reloadRules(final RuleConfiguration config, final MutableDataNodeRule mutableDataNodeRule) {
         Collection<ShardingSphereRule> result = new LinkedList<>();
         Collection<ShardingSphereRule> dataSourceContainedRules = ruleMetaData.getRules().stream().filter(each -> each instanceof DataSourceContainedRule).collect(Collectors.toList());
         result.add(mutableDataNodeRule.reloadRule(config, name, resource.getDataSources(), dataSourceContainedRules));
