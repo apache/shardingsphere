@@ -11,9 +11,7 @@ ShardingSphere adopts the database plus design philosophy, which is committed to
 
 ## Connect: Create database upper level standard
 
- DistSQL
-
-//TODO
+ Through flexible adaptation of database protocols, SQL dialects, and database storage, it can quickly build standards on top of multi-modal heterogeneous databases, while providing standardized connection mode for applications through built-in DistSQL.
 
 ## Enhance: Database computing enhancement engine
 
